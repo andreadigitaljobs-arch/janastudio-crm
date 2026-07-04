@@ -1050,10 +1050,10 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
         <div className="glass-card" style={{ 
           textAlign: 'center', 
           padding: isMobile ? '24px' : '32px',
-          border: '1px solid rgba(212, 175, 55, 0.2)',
+          border: '1px solid rgba(196,139,159,0.2)',
           borderRadius: '24px',
-          background: 'linear-gradient(145deg, rgba(28, 28, 30, 0.95) 0%, rgba(35, 35, 38, 0.98) 100%)',
-          boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.5)'
+          background: 'white',
+          boxShadow: '0 4px 16px rgba(196,139,159,0.1)'
         }}>
           <div>
             <div style={{ fontSize: isMobile ? '12px' : '13px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px' }}>Saldo Actual</div>
@@ -1086,7 +1086,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
           </div>
           <div>
             <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>INGRESOS (HOY)</div>
-            <div style={{ fontSize: '22px', fontWeight: '900', color: 'white' }}>
+            <div style={{ fontSize: '22px', fontWeight: '900', color: 'var(--text-primary)' }}>
               {formatCurrency(todayIncome * (rates?.usd || 550), '')} Bs.
             </div>
             <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', marginTop: '2px' }}>
@@ -1115,7 +1115,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
           </div>
           <div>
             <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>EGRESOS (HOY)</div>
-            <div style={{ fontSize: '22px', fontWeight: '900', color: 'white' }}>
+            <div style={{ fontSize: '22px', fontWeight: '900', color: 'var(--text-primary)' }}>
               {formatCurrency(todayExpense * (rates?.usd || 550), '')} Bs.
             </div>
             <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', marginTop: '2px' }}>
@@ -1130,8 +1130,8 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
         marginBottom: '40px', 
         padding: '32px', 
         borderRadius: '28px',
-        background: 'linear-gradient(135deg, rgba(28,28,30,0.8), rgba(217,70,168,0.05))',
-        border: '1px solid rgba(217,70,168,0.1)'
+        background: 'white',
+        border: '1px solid var(--border-color)'
       }}>
         <div style={{ display: 'flex', alignItems: isMobile ? 'flex-start' : 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '24px', flexDirection: isMobile ? 'column' : 'row' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -1188,39 +1188,39 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
         )}
 
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)', gap: '20px' }}>
-          <div style={{ padding: '20px', backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '20px' }}>
+          <div style={{ padding: '20px', backgroundColor: '#faf5f5', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
             <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '4px' }}>EFECTIVO ($)</div>
             <div style={{ fontSize: '20px', fontWeight: '900', color: '#32d74b' }}>
               {formatCurrency(cashCloseCashUsd * (rates?.usd || 550), '')} <span style={{fontSize: '12px'}}>BS</span>
             </div>
-            <div style={{ fontSize: '11px', color: 'white', marginTop: '4px' }}>
+            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>
               REF: ${formatCurrency(cashCloseCashUsd, '')}
             </div>
           </div>
-          <div style={{ padding: '20px', backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '20px' }}>
+          <div style={{ padding: '20px', backgroundColor: '#faf5f5', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
             <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '4px' }}>PAGO MÓVIL (BS)</div>
             <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--pink-primary)' }}>
               {formatCurrency(cashCloseTransferBs, '')} <span style={{fontSize: '12px'}}>BS</span>
             </div>
-            <div style={{ fontSize: '11px', color: 'white', marginTop: '4px' }}>
+            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>
               REF: ${formatCurrency(cashCloseTransferBs / (rates?.usd || 550), '')}
             </div>
           </div>
-          <div style={{ padding: '20px', backgroundColor: 'rgba(255,69,58,0.05)', borderRadius: '20px' }}>
+          <div style={{ padding: '20px', backgroundColor: 'rgba(255,69,58,0.05)', borderRadius: '20px', border: '1px solid rgba(255,69,58,0.1)' }}>
             <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '4px' }}>COMISIONES DEUDA</div>
             <div style={{ fontSize: '20px', fontWeight: '900', color: '#ff453a' }}>
               {formatCurrency(cashCloseCommissionDebtUsd * (rates?.usd || 550), '')} <span style={{fontSize: '12px'}}>BS</span>
             </div>
-            <div style={{ fontSize: '11px', color: 'white', marginTop: '4px' }}>
+            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>
               REF: ${formatCurrency(cashCloseCommissionDebtUsd, '')}
             </div>
           </div>
-          <div style={{ padding: '20px', backgroundColor: 'rgba(217,70,168,0.1)', borderRadius: '20px', border: '1px solid var(--pink-primary)' }}>
-            <div style={{ fontSize: '10px', fontWeight: '900', color: 'black', backgroundColor: 'var(--pink-primary)', display: 'inline-block', padding: '2px 6px', borderRadius: '4px', marginBottom: '4px' }}>NETO REAL</div>
-            <div style={{ fontSize: '24px', fontWeight: '950', color: 'white' }}>
+          <div style={{ padding: '20px', backgroundColor: 'rgba(196,139,159,0.1)', borderRadius: '20px', border: '1px solid rgba(196,139,159,0.3)' }}>
+            <div style={{ fontSize: '10px', fontWeight: '900', color: 'white', backgroundColor: 'var(--pink-primary)', display: 'inline-block', padding: '2px 6px', borderRadius: '4px', marginBottom: '4px' }}>NETO REAL</div>
+            <div style={{ fontSize: '24px', fontWeight: '950', color: 'var(--text-primary)' }}>
               {formatCurrency(cashCloseNetRealUsd * (rates?.usd || 550), '')} <span style={{fontSize: '12px'}}>BS</span>
             </div>
-            <div style={{ fontSize: '12px', color: 'white', marginTop: '4px' }}>
+            <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>
               REF: ${formatCurrency(cashCloseNetRealUsd, '')}
             </div>
           </div>
@@ -1281,8 +1281,8 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
               padding: '20px',
               borderRadius: '20px',
               marginBottom: '24px',
-              backgroundColor: 'rgba(255, 255, 255, 0.01)',
-              border: '1px solid rgba(255, 255, 255, 0.05)',
+              backgroundColor: '#faf5f5',
+              border: '1px solid var(--border-color)',
               display: 'flex',
               flexDirection: 'column',
               gap: '16px'
@@ -1305,9 +1305,9 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                         width: '100%',
                         padding: '10px 12px 10px 36px',
                         borderRadius: '10px',
-                        backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        color: 'white',
+                        backgroundColor: 'white',
+                        border: '1px solid var(--border-color)',
+                        color: 'var(--text-primary)',
                         fontSize: '13px',
                         outline: 'none'
                       }}
@@ -1387,10 +1387,10 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                   gap: '16px',
                   alignItems: 'center',
                   padding: '16px',
-                  backgroundColor: 'rgba(0,0,0,0.15)',
+                  backgroundColor: 'white',
                   borderRadius: '12px',
                   flexWrap: 'wrap',
-                  border: '1px solid rgba(255,255,255,0.05)'
+                  border: '1px solid var(--border-color)'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700' }}>Desde:</span>
@@ -1453,9 +1453,9 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                     style={{
                       padding: '16px',
                       borderRadius: '20px',
-                      background: isSelected ? 'linear-gradient(135deg, rgba(217,70,168,0.06) 0%, rgba(28,28,30,0.98) 100%)' : 'rgba(28, 28, 30, 0.98)',
-                      border: isSelected ? '1px solid rgba(217,70,168,0.25)' : '1px solid rgba(255,255,255,0.05)',
-                      boxShadow: isSelected ? '0 8px 32px 0 rgba(217,70,168,0.05)' : '0 4px 16px 0 rgba(0,0,0,0.25)',
+                      background: isSelected ? 'rgba(196,139,159,0.05)' : 'white',
+                      border: isSelected ? '1px solid rgba(196,139,159,0.3)' : '1px solid var(--border-color)',
+                      boxShadow: isSelected ? '0 4px 16px rgba(196,139,159,0.15)' : '0 2px 8px rgba(0,0,0,0.04)',
                       marginBottom: '8px'
                     }}
                   >
@@ -1466,13 +1466,13 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                     >
                       <div style={{ flex: 1, minWidth: 0, paddingRight: '12px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.04)', padding: '3px 7px', borderRadius: '6px' }}>
+                          <span style={{ fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', background: '#faf5f5', padding: '3px 7px', borderRadius: '6px' }}>
                             {new Date(t.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
                           </span>
                           <span style={{ fontSize: '9px', fontWeight: '900', color: t.type === 'expense' ? '#f87171' : '#34d399', background: t.type === 'expense' ? 'rgba(248,113,113,0.12)' : 'rgba(52,211,153,0.12)', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                             {t.type === 'expense' ? 'Egreso' : 'Ingreso'}
                           </span>
-                          <span style={{ fontSize: '14px', fontWeight: '850', color: 'white' }}>
+                          <span style={{ fontSize: '14px', fontWeight: '850', color: 'var(--text-primary)' }}>
                             {clientName || 'S/N'}
                           </span>
                         </div>
@@ -1498,17 +1498,17 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
 
                     {/* Expanded Details Area */}
                     {isSelected && (
-                      <div className="animate-history-expand" style={{ marginTop: '16px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '16px' }}>
+                      <div className="animate-history-expand" style={{ marginTop: '16px', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
                           {/* Detalles del Cliente */}
                           <div className="glass-card" style={{
                             padding: '16px',
                             borderRadius: '20px',
-                            background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
-                            border: '1px solid rgba(255,255,255,0.05)',
+                            background: '#faf5f5',
+                            border: '1px solid var(--border-color)',
                             borderLeft: '4px solid var(--pink-primary)'
                           }}>
-                            <div style={{ fontSize: '11px', fontWeight: '900', color: 'white', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Detalles del Cliente</div>
+                            <div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--text-primary)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Detalles del Cliente</div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                               <div>
                                 <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Nombre</span>
@@ -1516,7 +1516,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                               </div>
                               <div>
                                 <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Cédula</span>
-                                <div style={{ fontSize: '13px', fontWeight: '750', color: 'white' }}>{t.metadata?.clientCedula || 'No registrada'}</div>
+                                <div style={{ fontSize: '13px', fontWeight: '750', color: 'var(--text-primary)' }}>{t.metadata?.clientCedula || 'No registrada'}</div>
                               </div>
                             </div>
                           </div>
@@ -1525,12 +1525,12 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                           <div className="glass-card" style={{
                             padding: '16px',
                             borderRadius: '20px',
-                            background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
-                            border: '1px solid rgba(255,255,255,0.05)',
+                            background: '#faf5f5',
+                            border: '1px solid var(--border-color)',
                             borderLeft: '4px solid var(--pink-primary)'
                           }}>
-                            <div style={{ fontSize: '11px', fontWeight: '900', color: 'white', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Servicios y Extras</div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', borderBottom: '1px dashed rgba(255,255,255,0.08)', paddingBottom: '8px' }}>
+                            <div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--text-primary)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Servicios y Extras</div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', borderBottom: '1px dashed var(--border-color)', paddingBottom: '8px' }}>
                               <div>
                                 <span style={{ fontSize: '9px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Servicio Base</span>
                                 <div style={{ fontSize: '13px', fontWeight: '800', color: 'white' }}>{serviceName}</div>
@@ -1578,7 +1578,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                               <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Venta Bruta</span>
                               <span style={{ fontSize: '13px', fontWeight: '800', color: 'white' }}>{formatCurrency((t.amount - (t.metadata?.tips_total || 0)) * rate, '')} Bs.</span>
                             </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed rgba(255,255,255,0.08)', paddingBottom: '8px', marginBottom: '8px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed var(--border-color)', paddingBottom: '8px', marginBottom: '8px' }}>
                               <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>TOTAL COBRADO</span>
                               <span style={{ fontSize: '14px', fontWeight: '950', color: 'var(--pink-primary)' }}>{formatCurrency(finalBs, '')} Bs.</span>
                             </div>
