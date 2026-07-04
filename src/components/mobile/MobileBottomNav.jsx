@@ -3,7 +3,7 @@ import {
   BarChart3, 
   Users, 
   UserCircle, 
-  Scissors, 
+  Sparkles, 
   Package, 
   Wallet, 
   Star,
@@ -25,18 +25,18 @@ const MobileBottomNav = ({ activeTab, setActiveTab, rates, activeRateType, onTog
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const allMainItems = [
-    { id: 'my-profile', label: 'Mi Perfil', icon: UserCircle, roles: ['Admin', 'Barbero', 'Recepcionista', 'Caja', 'Asistente de Lavado'] },
-    { id: 'dashboard', label: 'Inicio', icon: BarChart3, roles: ['Admin', 'Asistente de Lavado'] },
-    { id: 'clients', label: 'Clientes', icon: Users, roles: ['Admin', 'Barbero', 'Recepcionista', 'Caja'] },
+    { id: 'my-profile', label: 'Mi Perfil', icon: UserCircle, roles: ['Admin', 'Estilista', 'Recepcionista', 'Caja', 'Estilista de Tratamiento'] },
+    { id: 'dashboard', label: 'Inicio', icon: BarChart3, roles: ['Admin', 'Estilista de Tratamiento'] },
+    { id: 'clients', label: 'Clientes', icon: Users, roles: ['Admin', 'Estilista', 'Recepcionista', 'Caja'] },
     { id: 'inventory', label: 'Stock', icon: Package, roles: ['Admin', 'Caja'] },
     { id: 'checkout', label: 'Caja', icon: CreditCard, roles: ['Admin', 'Caja'] },
   ];
 
   const allSecondaryItems = [
-    { id: 'scheduling', label: 'Agenda', icon: Calendar, roles: ['Admin', 'Barbero', 'Recepcionista'] },
+    { id: 'scheduling', label: 'Agenda', icon: Calendar, roles: ['Admin', 'Estilista', 'Recepcionista'] },
     { id: 'reception', label: 'Recepción', icon: ClipboardList, roles: ['Admin', 'Recepcionista'] },
     { id: 'finance', label: 'Finanzas', icon: Wallet, roles: ['Admin', 'Caja'] },
-    { id: 'barber', label: 'Panel Barber', icon: Scissors, roles: ['Admin', 'Barbero', 'Asistente de Lavado'] },
+    { id: 'barber', label: 'Panel Estilismo', icon: Sparkles, roles: ['Admin', 'Estilista', 'Estilista de Tratamiento'] },
     { id: 'personnel', label: 'Equipo', icon: UserCheck, roles: ['Admin'] },
     { id: 'reports', label: 'Reportes', icon: PieChart, roles: ['Admin'] },
     { id: 'services', label: 'Servicios', icon: Star, roles: ['Admin'] },
@@ -91,7 +91,7 @@ const MobileBottomNav = ({ activeTab, setActiveTab, rates, activeRateType, onTog
                 alignItems: 'center',
                 gap: '4px',
                 padding: '12px 10px 4px 10px',
-                color: isActive ? 'var(--gold-primary)' : 'var(--text-muted)',
+                color: isActive ? 'var(--pink-primary)' : 'var(--text-muted)',
                 transition: 'all 0.2s',
                 cursor: 'pointer',
                 position: 'relative',
@@ -106,8 +106,8 @@ const MobileBottomNav = ({ activeTab, setActiveTab, rates, activeRateType, onTog
                   width: '28px',
                   height: '3px',
                   borderRadius: '0 0 3px 3px',
-                  background: 'var(--gold-gradient)',
-                  boxShadow: '0 0 10px var(--gold-primary)',
+                  background: 'var(--pink-gradient)',
+                  boxShadow: '0 0 10px var(--pink-primary)',
                   animation: 'fadeIn 0.25s ease-out'
                 }} />
               )}
@@ -137,7 +137,7 @@ const MobileBottomNav = ({ activeTab, setActiveTab, rates, activeRateType, onTog
               alignItems: 'center',
               gap: '4px',
               padding: '12px 10px 4px 10px',
-              color: isMenuOpen ? 'var(--gold-primary)' : 'var(--text-muted)',
+              color: isMenuOpen ? 'var(--pink-primary)' : 'var(--text-muted)',
               transition: 'all 0.2s',
               cursor: 'pointer',
               position: 'relative',
@@ -152,8 +152,8 @@ const MobileBottomNav = ({ activeTab, setActiveTab, rates, activeRateType, onTog
                 width: '28px',
                 height: '3px',
                 borderRadius: '0 0 3px 3px',
-                background: 'var(--gold-gradient)',
-                boxShadow: '0 0 10px var(--gold-primary)',
+                background: 'var(--pink-gradient)',
+                boxShadow: '0 0 10px var(--pink-primary)',
                 animation: 'fadeIn 0.25s ease-out'
               }} />
             )}
@@ -207,7 +207,7 @@ const MobileBottomNav = ({ activeTab, setActiveTab, rates, activeRateType, onTog
                 alignItems: 'center', 
                 justifyContent: 'space-between',
                 borderRadius: '18px', 
-                border: '1px solid rgba(212,175,55,0.2)', 
+                border: '1px solid rgba(196,139,159,0.2)', 
                 marginBottom: '20px',
                 background: 'rgba(255, 255, 255, 0.02)',
                 boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
@@ -217,7 +217,7 @@ const MobileBottomNav = ({ activeTab, setActiveTab, rates, activeRateType, onTog
                   <span style={{ 
                     fontSize: '15px', 
                     fontWeight: '950', 
-                    color: activeRateType === 'bcv' ? 'var(--gold-primary)' : '#26a65b', 
+                    color: activeRateType === 'bcv' ? 'var(--pink-primary)' : '#26a65b', 
                     marginTop: '2px',
                     transition: 'color 0.2s'
                   }}>
@@ -238,9 +238,9 @@ const MobileBottomNav = ({ activeTab, setActiveTab, rates, activeRateType, onTog
                       fontSize: '11px',
                       fontWeight: '950',
                       transition: 'all 0.2s',
-                      background: activeRateType === 'bcv' ? 'rgba(212,175,55,0.15)' : 'transparent',
-                      color: activeRateType === 'bcv' ? 'var(--gold-primary)' : 'var(--text-muted)',
-                      border: activeRateType === 'bcv' ? '1px solid rgba(212,175,55,0.4)' : '1px solid transparent'
+                      background: activeRateType === 'bcv' ? 'rgba(196,139,159,0.15)' : 'transparent',
+                      color: activeRateType === 'bcv' ? 'var(--pink-primary)' : 'var(--text-muted)',
+                      border: activeRateType === 'bcv' ? '1px solid rgba(196,139,159,0.4)' : '1px solid transparent'
                     }}
                   >
                     BCV
@@ -280,9 +280,9 @@ const MobileBottomNav = ({ activeTab, setActiveTab, rates, activeRateType, onTog
                     alignItems: 'center',
                     gap: '8px',
                     padding: '16px 8px',
-                    color: activeTab === item.id ? 'var(--gold-primary)' : 'white',
+                    color: activeTab === item.id ? 'var(--pink-primary)' : 'white',
                     borderRadius: '16px',
-                    backgroundColor: activeTab === item.id ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.02)',
+                    backgroundColor: activeTab === item.id ? 'rgba(196,139,159,0.1)' : 'rgba(255,255,255,0.02)',
                     transition: 'all 0.2s'
                   }}
                 >

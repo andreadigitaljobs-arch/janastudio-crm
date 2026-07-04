@@ -64,7 +64,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
       setStats(profileStats);
     } catch (error) {
       console.error('Error loading stats:', error);
-      showToast('Error cargando métricas del barbero', 'error');
+      showToast('Error cargando métricas del estilista', 'error');
     } finally {
       setLoading(false);
     }
@@ -112,7 +112,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
   };
 
   const handleRemoveTool = async (toolId) => {
-    if (!await confirm('¿Seguro que deseas eliminar esta herramienta del inventario del barbero?')) return;
+    if (!await confirm('¿Seguro que deseas eliminar esta herramienta del inventario del estilista?')) return;
     try {
       setLoading(true);
       const toolToRemove = tools.find(t => t.id === toolId);
@@ -167,13 +167,13 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
             position: 'relative',
             background: 'linear-gradient(145deg, rgba(22,22,28,0.98) 0%, rgba(14,14,18,0.99) 100%)',
             border: '1px solid rgba(255,255,255,0.08)',
-            boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,175,55,0.08)'
+            boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(196,139,159,0.08)'
           }}>
         
         {/* Header Section */}
         <div style={{ 
           padding: isMobileView ? '24px 16px 16px' : '32px 32px 24px', 
-          background: 'linear-gradient(90deg, rgba(212,175,55,0.06) 0%, transparent 60%)', 
+          background: 'linear-gradient(90deg, rgba(196,139,159,0.06) 0%, transparent 60%)', 
           borderBottom: '1px solid rgba(255,255,255,0.06)' 
         }}>
           <button 
@@ -208,7 +208,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
               borderRadius: isMobileView ? '16px' : '24px', 
               backgroundColor: 'rgba(255,255,255,0.05)', 
               overflow: 'hidden', 
-              border: '2px solid var(--gold-primary)', 
+              border: '2px solid var(--pink-primary)', 
               display: 'flex', 
               alignItems: 'center', 
               justifyContent: 'center', 
@@ -217,14 +217,14 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
               {staffMember.image_url ? (
                 <img src={staffMember.image_url} alt={staffMember.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
-                <User size={40} color="var(--gold-primary)" opacity={0.5} />
+                <User size={40} color="var(--pink-primary)" opacity={0.5} />
               )}
             </div>
             <div>
               <h2 style={{ fontSize: isMobileView ? '22px' : '28px', fontWeight: '900', color: 'white', margin: 0 }}>{staffMember.name}</h2>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--gold-primary)', fontWeight: '700', fontSize: isMobileView ? '12px' : '14px', marginTop: '4px' }}>
-                <Star size={14} fill="var(--gold-primary)" />
-                {staffMember.role?.split('|')[0] || 'Barbero'}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--pink-primary)', fontWeight: '700', fontSize: isMobileView ? '12px' : '14px', marginTop: '4px' }}>
+                <Star size={14} fill="var(--pink-primary)" />
+                {staffMember.role?.split('|')[0] || 'Estilista'}
               </div>
             </div>
           </div>
@@ -237,7 +237,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
               style={{ 
                 padding: isMobileView ? '10px 8px' : '12px 24px', 
                 borderRadius: '50px', 
-                background: activeTab === 'rendimiento' ? 'var(--gold-primary)' : 'rgba(255,255,255,0.05)', 
+                background: activeTab === 'rendimiento' ? 'var(--pink-primary)' : 'rgba(255,255,255,0.05)', 
                 color: activeTab === 'rendimiento' ? 'black' : 'white', 
                 fontWeight: '800', 
                 border: 'none', 
@@ -257,7 +257,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
               style={{ 
                 padding: isMobileView ? '10px 8px' : '12px 24px', 
                 borderRadius: '50px', 
-                background: activeTab === 'inventario' ? 'var(--gold-primary)' : 'rgba(255,255,255,0.05)', 
+                background: activeTab === 'inventario' ? 'var(--pink-primary)' : 'rgba(255,255,255,0.05)', 
                 color: activeTab === 'inventario' ? 'black' : 'white', 
                 fontWeight: '800', 
                 border: 'none', 
@@ -278,7 +278,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
         <div style={{ padding: isMobileView ? '20px 16px' : '32px', overflowY: 'auto', flex: 1 }}>
           {loading ? (
             <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
-              <Loader2 className="animate-spin" size={48} color="var(--gold-primary)" />
+              <Loader2 className="animate-spin" size={48} color="var(--pink-primary)" />
             </div>
           ) : activeTab === 'rendimiento' ? (
             <div className="animate-fade-in">
@@ -330,24 +330,24 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                 </div>
                 <div 
                   style={{ 
-                    background: 'rgba(212,175,55,0.025)', 
+                    background: 'rgba(196,139,159,0.025)', 
                     padding: isMobileView ? '16px' : '24px', 
                     borderRadius: '20px', 
-                    border: '1px solid rgba(212,175,55,0.12)', 
+                    border: '1px solid rgba(196,139,159,0.12)', 
                     display: 'flex', 
                     alignItems: 'center', 
                     gap: isMobileView ? '12px' : '20px',
                     transition: 'all 0.2s'
                   }}
-                  onMouseOver={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.04)'; e.currentTarget.style.borderColor = 'rgba(212,175,55,0.25)'; }}
-                  onMouseOut={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.025)'; e.currentTarget.style.borderColor = 'rgba(212,175,55,0.12)'; }}
+                  onMouseOver={e => { e.currentTarget.style.background = 'rgba(196,139,159,0.04)'; e.currentTarget.style.borderColor = 'rgba(196,139,159,0.25)'; }}
+                  onMouseOut={e => { e.currentTarget.style.background = 'rgba(196,139,159,0.025)'; e.currentTarget.style.borderColor = 'rgba(196,139,159,0.12)'; }}
                 >
-                  <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(212,175,55,0.1)', color: 'var(--gold-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(196,139,159,0.1)', color: 'var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <TrendingUp size={24} />
                   </div>
                   <div>
                     <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '900', letterSpacing: '1px', marginBottom: '4px' }}>TOTAL PROPINAS</div>
-                    <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--gold-primary)' }}>${(stats.totalTips || 0).toFixed(2)}</div>
+                    <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--pink-primary)' }}>${(stats.totalTips || 0).toFixed(2)}</div>
                   </div>
                 </div>
               </div>
@@ -357,16 +357,16 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                 {/* Time & Volume */}
                 <div 
                   style={{ 
-                    background: 'rgba(212,175,55,0.025)', 
+                    background: 'rgba(196,139,159,0.025)', 
                     padding: '24px', 
                     borderRadius: '20px', 
-                    border: '1px solid rgba(212,175,55,0.12)',
+                    border: '1px solid rgba(196,139,159,0.12)',
                     transition: 'all 0.2s'
                   }}
-                  onMouseOver={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.04)'; e.currentTarget.style.borderColor = 'rgba(212,175,55,0.25)'; }}
-                  onMouseOut={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.025)'; e.currentTarget.style.borderColor = 'rgba(212,175,55,0.12)'; }}
+                  onMouseOver={e => { e.currentTarget.style.background = 'rgba(196,139,159,0.04)'; e.currentTarget.style.borderColor = 'rgba(196,139,159,0.25)'; }}
+                  onMouseOut={e => { e.currentTarget.style.background = 'rgba(196,139,159,0.025)'; e.currentTarget.style.borderColor = 'rgba(196,139,159,0.12)'; }}
                 >
-                  <h4 style={{ color: 'var(--gold-primary)', fontSize: '14px', fontWeight: '900', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <h4 style={{ color: 'var(--pink-primary)', fontSize: '14px', fontWeight: '900', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Clock size={16} /> Volumen y Tiempos
                   </h4>
                   
@@ -393,7 +393,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                   onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.025)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
                 >
                   <h4 style={{ color: 'white', fontSize: '14px', fontWeight: '900', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <TrendingUp size={16} color="var(--gold-primary)" /> Servicios Más Realizados
+                    <TrendingUp size={16} color="var(--pink-primary)" /> Servicios Más Realizados
                   </h4>
                   
                   {stats.topServices.length > 0 ? (
@@ -401,7 +401,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                       {stats.topServices.map((srv, idx) => (
                         <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <span style={{ color: 'var(--text-secondary)', fontWeight: '600', fontSize: '14px' }}>{srv.name}</span>
-                          <span style={{ background: 'rgba(212,175,55,0.1)', color: 'var(--gold-primary)', padding: '4px 12px', borderRadius: '50px', fontSize: '12px', fontWeight: '800' }}>{srv.count} veces</span>
+                          <span style={{ background: 'rgba(196,139,159,0.1)', color: 'var(--pink-primary)', padding: '4px 12px', borderRadius: '50px', fontSize: '12px', fontWeight: '800' }}>{srv.count} veces</span>
                         </div>
                       ))}
                     </div>
@@ -421,7 +421,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                 <button 
                   onClick={() => setShowAddTool(!showAddTool)}
                   style={{ 
-                    background: showAddTool ? 'rgba(255,255,255,0.06)' : 'var(--gold-primary)', 
+                    background: showAddTool ? 'rgba(255,255,255,0.06)' : 'var(--pink-primary)', 
                     color: showAddTool ? 'white' : 'black', 
                     border: showAddTool ? '1px solid rgba(255,255,255,0.08)' : 'none', 
                     padding: '10px 20px', 
@@ -437,14 +437,14 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                     if (showAddTool) {
                       e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
                     } else {
-                      e.currentTarget.style.background = '#e5be44';
+                      e.currentTarget.style.background = '#c48b9f';
                     }
                   }}
                   onMouseOut={e => {
                     if (showAddTool) {
                       e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
                     } else {
-                      e.currentTarget.style.background = 'var(--gold-primary)';
+                      e.currentTarget.style.background = 'var(--pink-primary)';
                     }
                   }}
                 >
@@ -488,7 +488,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                         onChange={(val) => setNewTool({...newTool, ownership: val})} 
                         disabled={!isAdmin}
                         options={[
-                          { value: 'Propia', label: 'Propia del Barbero' },
+                          { value: 'Propia', label: 'Propia del Estilista' },
                           ...(isAdmin ? [{ value: 'Asignada', label: 'Asignada (Astro)' }] : [])
                         ]}
                       />
@@ -553,8 +553,8 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                       onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.025)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: isMobileView ? '12px' : '16px' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: tool.ownership === 'Asignada' ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <Wrench size={18} color={tool.ownership === 'Asignada' ? 'var(--gold-primary)' : 'white'} />
+                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: tool.ownership === 'Asignada' ? 'rgba(196,139,159,0.1)' : 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Wrench size={18} color={tool.ownership === 'Asignada' ? 'var(--pink-primary)' : 'white'} />
                         </div>
                         <div>
                           <div style={{ fontWeight: '800', color: 'white', fontSize: '15px' }}>{tool.name}</div>
@@ -569,7 +569,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                             fontWeight: '800', 
                             padding: '2px 10px', 
                             borderRadius: '50px', 
-                            background: tool.ownership === 'Asignada' ? 'var(--gold-primary)' : 'rgba(255,255,255,0.08)', 
+                            background: tool.ownership === 'Asignada' ? 'var(--pink-primary)' : 'rgba(255,255,255,0.08)', 
                             color: tool.ownership === 'Asignada' ? 'black' : 'white',
                             border: tool.ownership === 'Asignada' ? 'none' : '1px solid rgba(255,255,255,0.08)'
                           }}>

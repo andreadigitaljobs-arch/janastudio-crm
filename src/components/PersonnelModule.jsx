@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useNotifs } from '../context/NotificationContext';
 import { 
-  Scissors, 
+  Sparkles, 
   Trash2, 
   Edit2, 
   UserPlus,
@@ -57,10 +57,10 @@ const availableModules = [
 
 const rolePresets = {
   'Admin': availableModules.map(m => m.id),
-  'Barbero': ['scheduling', 'barber', 'clients', 'history'],
+  'Estilista': ['scheduling', 'barber', 'clients', 'history'],
   'Recepcionista': ['reception', 'scheduling', 'clients', 'history'],
   'Caja': ['checkout', 'finance', 'inventory', 'clients', 'history'],
-  'Asistente de Lavado': ['history']
+    'Asistente de Tratamiento': ['history']
 };
 
 const PersonnelModule = ({ isMobile, inventory = [] }) => {
@@ -78,13 +78,13 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({ 
     name: '', 
-    roles: ['Barbero'], 
+    roles: ['Estilista'], 
     image_url: '',
     phone: '',
     address: '',
     email: '',
     username: '',
-    permissions: rolePresets['Barbero'],
+    permissions: rolePresets['Estilista'],
     washing_rate: 0,
     birth_date: ''
   });
@@ -101,7 +101,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
   // Advanced Roles Management
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
   const [customRolePresets, setCustomRolePresets] = useState(() => {
-    const saved = localStorage.getItem('astro_custom_roles');
+    const saved = localStorage.getItem('jana_custom_roles');
     return saved ? JSON.parse(saved) : {};
   });
 
@@ -126,7 +126,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
       if (Object.keys(foundRoles).length > 0) {
         const updated = { ...customRolePresets, ...foundRoles };
         setCustomRolePresets(updated);
-        localStorage.setItem('astro_custom_roles', JSON.stringify(updated));
+        localStorage.setItem('jana_custom_roles', JSON.stringify(updated));
       }
     }
   }, [staff]);
@@ -143,7 +143,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
     try {
       const ratesData = await dataService.getExchangeRates();
       if (ratesData) {
-        const activeType = localStorage.getItem('astro_active_rate') || 'usdt';
+         const activeType = localStorage.getItem('jana_active_rate') || 'usdt';
         setExchangeRate(activeType === 'bcv' ? (ratesData.bcv || 36.5) : (ratesData.usdt || 43.2));
       }
     } catch (err) {
@@ -165,7 +165,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
   };
 
   const handleEditClick = (person) => {
-    let rolePart = person.role || 'Barbero';
+    let rolePart = person.role || 'Estilista';
     let perms = allRolePresets[rolePart] || [];
     let rolesArray = [rolePart];
     
@@ -201,15 +201,15 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
       setIsFormExiting(false);
       setFormData({ 
         name: '', 
-        role: 'Barbero', 
+        role: 'Estilista', 
         image_url: '',
         phone: '',
         address: '',
         email: '',
         username: '',
-        permissions: rolePresets['Barbero'],
+        permissions: rolePresets['Estilista'],
         washing_rate: 0,
-        roles: ['Barbero'],
+        roles: ['Estilista'],
         birth_date: ''
       });
       setIsCreatingNewRole(false);
@@ -257,7 +257,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
       
       updated[name] = perms;
       setCustomRolePresets(updated);
-      localStorage.setItem('astro_custom_roles', JSON.stringify(updated));
+      localStorage.setItem('jana_custom_roles', JSON.stringify(updated));
       showToast(`Rol "${name}" guardado correctamente.`);
       await fetchStaff();
     } catch (err) {
@@ -281,7 +281,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
     }
     
     setCustomRolePresets(updated);
-    localStorage.setItem('astro_custom_roles', JSON.stringify(updated));
+    localStorage.setItem('jana_custom_roles', JSON.stringify(updated));
     showToast(`Rol "${name}" eliminado.`);
   };
 
@@ -377,10 +377,10 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
   const getRoleIcon = (role) => {
     const iconStyle = { flexShrink: 0 };
     switch(role) {
-      case 'Barbero': return <Scissors size={16} style={iconStyle} />;
+      case 'Estilista': return <Sparkles size={16} style={iconStyle} />;
       case 'Recepcionista': return <Headset size={16} style={iconStyle} />;
       case 'Caja': return <CreditCard size={16} style={iconStyle} />;
-      case 'Asistente de Lavado': return <Droplets size={16} style={iconStyle} />;
+      case 'Asistente de Tratamiento': return <Droplets size={16} style={iconStyle} />;
       default: return <User size={16} style={iconStyle} />;
     }
   };
@@ -394,20 +394,20 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
         marginBottom: '40px'
       }}>
         <div>
-          <h2 style={{ fontSize: isMobile ? '28px' : '32px', fontWeight: '800', letterSpacing: '-0.5px' }}>Astro <span className="text-gold">Team</span></h2>
+          <h2 style={{ fontSize: isMobile ? '28px' : '32px', fontWeight: '800', letterSpacing: '-0.5px' }}>Jana <span className="text-pink">Team</span></h2>
           <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>Gestión de talento y desempeño.</p>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
           {!isMobile && (
             <button 
-              className="btn-gold" 
+              className="btn-pink" 
               onClick={() => setIsRoleModalOpen(true)}
               style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
             >
               <Shield size={18} style={{ marginRight: '8px' }} /> Roles
             </button>
           )}
-          <button className="btn-gold" onClick={() => showForm ? handleCloseForm() : setShowForm(true)}>
+          <button className="btn-pink" onClick={() => showForm ? handleCloseForm() : setShowForm(true)}>
             {showForm ? <X size={18} style={{ marginRight: '8px' }} /> : <UserPlus size={18} style={{ marginRight: '8px' }} />}
             {showForm ? 'Cancelar' : 'Nuevo miembro'}
           </button>
@@ -472,7 +472,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                 <div className="form-group">
                   <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>NOMBRE COMPLETO</label>
                   <div style={{ position: 'relative' }}>
-                    <User size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--gold-primary)' }} />
+                    <User size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
                     <input className="form-input" placeholder="Ej. Marco Silva" value={formData.name} onChange={e => setFormData({...formData, name: formatName(e.target.value)})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
                   </div>
                 </div>
@@ -515,12 +515,12 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                   {isCreatingNewRole && (
                     <div className="animate-slide-left" style={{ marginTop: '12px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                        <label style={{ fontSize: '11px', fontWeight: '900', color: 'var(--gold-primary)', letterSpacing: '1px' }}>NOMBRE DEL NUEVO ROL</label>
+                        <label style={{ fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', letterSpacing: '1px' }}>NOMBRE DEL NUEVO ROL</label>
                         <button 
                           onClick={() => { 
                             setIsCreatingNewRole(false); 
                             setNewRoleName(''); 
-                            setFormData({ ...formData, roles: ['Barbero'], permissions: allRolePresets['Barbero'] || [] });
+                            setFormData({ ...formData, roles: ['Estilista'], permissions: allRolePresets['Estilista'] || [] });
                           }}
                           style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: '10px', cursor: 'pointer', fontWeight: '800' }}
                         >
@@ -528,23 +528,23 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                         </button>
                       </div>
                       <div style={{ position: 'relative' }}>
-                        <Rocket size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--gold-primary)' }} />
+                        <Rocket size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
                         <input 
                           className="form-input" 
                           placeholder="Ej. Gerente de Piso" 
                           value={newRoleName} 
                           onChange={e => setNewRoleName(e.target.value)} 
-                          style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid var(--gold-primary)' }} 
+                          style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid var(--pink-primary)' }} 
                         />
                       </div>
                     </div>
                   )}
                 </div>
 
-                {formData.roles.includes('Asistente de Lavado') && (
+                {formData.roles.includes('Asistente de Tratamiento') && (
                   <div className="form-group animate-slide-right">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <label style={{ fontSize: '11px', fontWeight: '900', color: 'var(--gold-primary)', letterSpacing: '1px' }}>TARIFA POR LAVADO ($)</label>
+                      <label style={{ fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', letterSpacing: '1px' }}>TARIFA POR TRATAMIENTO ($)</label>
                       {formData.washing_rate > 0 && (
                         <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700' }}>
                           ≈ {(formData.washing_rate * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs.
@@ -552,7 +552,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                       )}
                     </div>
                     <div style={{ position: 'relative' }}>
-                      <Droplets size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--gold-primary)' }} />
+                      <Droplets size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
                       <input 
                         className="form-input" 
                         type="number" 
@@ -560,7 +560,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                         placeholder="Ej. 2.00" 
                         value={formData.washing_rate} 
                         onChange={e => setFormData({...formData, washing_rate: e.target.value})} 
-                        style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid rgba(212,175,55,0.3)' }} 
+                        style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid rgba(196,139,159,0.3)' }} 
                       />
                     </div>
                   </div>
@@ -570,7 +570,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
               {/* Permissions Section */}
               <div style={{ padding: '24px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                  <Key size={18} color="var(--gold-primary)" />
+                  <Key size={18} color="var(--pink-primary)" />
                   <label style={{ fontSize: '12px', fontWeight: '900', color: 'white', letterSpacing: '1px' }}>MÓDULOS ACCESIBLES</label>
                 </div>
 
@@ -590,8 +590,8 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                         gap: '10px', 
                         padding: '12px', 
                         borderRadius: '12px', 
-                        backgroundColor: formData.permissions.includes(mod.id) ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.03)',
-                        border: `1px solid ${formData.permissions.includes(mod.id) ? 'var(--gold-primary)' : 'rgba(255,255,255,0.05)'}`,
+                        backgroundColor: formData.permissions.includes(mod.id) ? 'rgba(196,139,159,0.1)' : 'rgba(255,255,255,0.03)',
+                        border: `1px solid ${formData.permissions.includes(mod.id) ? 'var(--pink-primary)' : 'rgba(255,255,255,0.05)'}`,
                         cursor: 'pointer',
                         transition: 'all 0.2s'
                       }}
@@ -600,11 +600,11 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                         width: '18px', 
                         height: '18px', 
                         borderRadius: '4px', 
-                        border: '1px solid var(--gold-primary)', 
+                        border: '1px solid var(--pink-primary)', 
                         display: 'flex', 
                         alignItems: 'center', 
                         justifyContent: 'center',
-                        backgroundColor: formData.permissions.includes(mod.id) ? 'var(--gold-primary)' : 'transparent'
+                        backgroundColor: formData.permissions.includes(mod.id) ? 'var(--pink-primary)' : 'transparent'
                       }}>
                         {formData.permissions.includes(mod.id) && <Check size={14} color="black" strokeWidth={3} />}
                       </div>
@@ -619,46 +619,46 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                 <div className="form-group">
                   <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>TELÉFONO</label>
                   <div style={{ position: 'relative' }}>
-                    <Phone size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--gold-primary)' }} />
+                    <Phone size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
                     <input className="form-input" placeholder="+58 412..." value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
                   </div>
                 </div>
                 <div className="form-group">
                   <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>CUMPLEAÑOS</label>
                   <div style={{ position: 'relative' }}>
-                    <Cake size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--gold-primary)' }} />
+                    <Cake size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
                     <BirthdayTextInput value={formData.birth_date} onChange={e => setFormData({...formData, birth_date: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
                   </div>
                 </div>
                 <div className="form-group">
                   <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>DIRECCIÓN DE HABITACIÓN</label>
                   <div style={{ position: 'relative' }}>
-                    <MapPin size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--gold-primary)' }} />
+                    <MapPin size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
                     <input className="form-input" placeholder="Av. Principal, Edif..." value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
                   </div>
                 </div>
               </div>
 
               {/* Login Credentials */}
-              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '16px', padding: '20px', backgroundColor: 'rgba(212,175,55,0.03)', borderRadius: '16px', border: '1px solid rgba(212,175,55,0.1)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '16px', padding: '20px', backgroundColor: 'rgba(196,139,159,0.03)', borderRadius: '16px', border: '1px solid rgba(196,139,159,0.1)' }}>
                 <div className="form-group">
-                  <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--gold-primary)', marginBottom: '8px', letterSpacing: '1px' }}>EMAIL DE ACCESO</label>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', marginBottom: '8px', letterSpacing: '1px' }}>EMAIL DE ACCESO</label>
                   <div style={{ position: 'relative' }}>
-                    <Mail size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--gold-primary)' }} />
-                    <input className="form-input" type="email" placeholder="persona@astrobarber.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid rgba(212,175,55,0.2)' }} />
+                    <Mail size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
+                    <input className="form-input" type="email" placeholder="persona@astrobarber.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid rgba(196,139,159,0.2)' }} />
                   </div>
                 </div>
                 <div className="form-group">
-                  <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--gold-primary)', marginBottom: '8px', letterSpacing: '1px' }}>CONTRASEÑA</label>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', marginBottom: '8px', letterSpacing: '1px' }}>CONTRASEÑA</label>
                   <div style={{ position: 'relative' }}>
-                    <Lock size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--gold-primary)' }} />
+                    <Lock size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
                     <input 
                       className="form-input" 
                       type={showPassword ? "text" : "password"} 
                       placeholder="Ingresar contraseña" 
                       value={formData.username} 
                       onChange={e => setFormData({...formData, username: e.target.value})} 
-                      style={{ width: '100%', height: '50px', paddingLeft: '48px', paddingRight: '48px', border: '1px solid rgba(212,175,55,0.2)' }} 
+                      style={{ width: '100%', height: '50px', paddingLeft: '48px', paddingRight: '48px', border: '1px solid rgba(196,139,159,0.2)' }} 
                     />
                     <button
                       type="button"
@@ -670,7 +670,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                         background: 'transparent',
                         border: 'none',
                         cursor: 'pointer',
-                        color: 'var(--gold-primary)',
+                        color: 'var(--pink-primary)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -683,7 +683,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                 </div>
               </div>
 
-              <button className="btn-gold" onClick={handleSubmit} style={{ height: '56px', width: '100%', borderRadius: '16px', fontSize: '16px', fontWeight: '800', marginTop: '10px' }}>
+              <button className="btn-pink" onClick={handleSubmit} style={{ height: '56px', width: '100%', borderRadius: '16px', fontSize: '16px', fontWeight: '800', marginTop: '10px' }}>
                 <Check size={20} style={{ marginRight: '10px' }} />
                 Confirmar y unir al equipo
               </button>
@@ -694,7 +694,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
 
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
-          <Loader2 className="animate-spin" size={48} color="var(--gold-primary)" />
+          <Loader2 className="animate-spin" size={48} color="var(--pink-primary)" />
         </div>
       ) : staff.length === 0 ? (
         <div className="glass-card" style={{ textAlign: 'center', padding: '80px', borderRadius: '32px' }}>
@@ -758,7 +758,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                         {person.image_url ? (
                           <img src={person.image_url} alt={person.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         ) : (
-                          <span style={{ fontSize: '18px', fontWeight: '900', color: 'var(--gold-primary)', opacity: 0.5 }}>
+                          <span style={{ fontSize: '18px', fontWeight: '900', color: 'var(--pink-primary)', opacity: 0.5 }}>
                             {person.name.substring(0, 1).toUpperCase()}
                           </span>
                         )}
@@ -767,7 +767,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                       {/* Name and Role */}
                       <div style={{ minWidth: 0 }}>
                         <h4 style={{ fontSize: '15px', fontWeight: '800', color: 'white', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{person.name}</h4>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--gold-primary)', fontSize: '11px', fontWeight: '700', marginTop: '2px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--pink-primary)', fontSize: '11px', fontWeight: '700', marginTop: '2px' }}>
                           {getRoleIcon(person.role?.split('|')[0]?.split(', ')[0])}
                           <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{person.role?.split('|')[0]}</span>
                         </div>
@@ -776,7 +776,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
 
                     {/* Actions */}
                     <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
-                      <button className="action-btn" onClick={() => setProfileModalData(person)} title="Ver Perfil" style={{ color: 'var(--gold-primary)', backgroundColor: 'rgba(212,175,55,0.1)', width: '34px', height: '34px', borderRadius: '8px' }}>
+                      <button className="action-btn" onClick={() => setProfileModalData(person)} title="Ver Perfil" style={{ color: 'var(--pink-primary)', backgroundColor: 'rgba(196,139,159,0.1)', width: '34px', height: '34px', borderRadius: '8px' }}>
                         <User size={15} />
                       </button>
                       <button className="action-btn" onClick={() => handleEditClick(person)} title="Editar Miembro" style={{ width: '34px', height: '34px', borderRadius: '8px' }}>
@@ -795,13 +795,13 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px' }}>
                     {/* Phone */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: person.phone ? 'var(--text-secondary)' : 'var(--text-muted)' }}>
-                      <Phone size={13} color={person.phone ? "var(--gold-primary)" : "rgba(255,255,255,0.2)"} style={{ flexShrink: 0 }} />
+                      <Phone size={13} color={person.phone ? "var(--pink-primary)" : "rgba(255,255,255,0.2)"} style={{ flexShrink: 0 }} />
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{person.phone || 'Sin teléfono'}</span>
                     </div>
 
                     {/* Address */}
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', color: person.address ? 'var(--text-secondary)' : 'var(--text-muted)' }}>
-                      <MapPin size={13} color={person.address ? "var(--gold-primary)" : "rgba(255,255,255,0.2)"} style={{ marginTop: '2px', flexShrink: 0 }} />
+                      <MapPin size={13} color={person.address ? "var(--pink-primary)" : "rgba(255,255,255,0.2)"} style={{ marginTop: '2px', flexShrink: 0 }} />
                       <span style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {person.address || 'Sin dirección'}
                       </span>
@@ -844,7 +844,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                     {person.image_url ? (
                       <img src={person.image_url} alt={person.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
-                      <span style={{ fontSize: '20px', fontWeight: '900', color: 'var(--gold-primary)', opacity: 0.5 }}>
+                      <span style={{ fontSize: '20px', fontWeight: '900', color: 'var(--pink-primary)', opacity: 0.5 }}>
                         {person.name.substring(0, 1).toUpperCase()}
                       </span>
                     )}
@@ -853,17 +853,17 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                   {/* Name/Role Column */}
                   <div style={{ minWidth: 0, overflow: 'hidden' }}>
                     <h4 style={{ fontSize: '16px', fontWeight: '800', color: 'white', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{person.name}</h4>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--gold-primary)', fontSize: '11px', fontWeight: '700', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--pink-primary)', fontSize: '11px', fontWeight: '700', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {getRoleIcon(person.role?.split('|')[0]?.split(', ')[0])}
                       <span>{person.role?.split('|')[0]}</span>
                       {person.role?.split('|')[0]?.includes(', ') && (
                         <span style={{ 
                           padding: '2px 6px', 
-                          backgroundColor: 'rgba(212,175,55,0.1)', 
+                          backgroundColor: 'rgba(196,139,159,0.1)', 
                           borderRadius: '4px', 
                           fontSize: '9px',
                           marginLeft: '4px',
-                          border: '1px solid rgba(212,175,55,0.2)',
+                          border: '1px solid rgba(196,139,159,0.2)',
                           flexShrink: 0
                         }}>
                           MULTI-ROL
@@ -875,12 +875,12 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                   {/* Phone Column */}
                   <div style={{ color: person.phone ? 'var(--text-secondary)' : 'var(--text-muted)', fontSize: '14px', minWidth: 0, overflow: 'hidden' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Phone size={14} color={person.phone ? "var(--gold-primary)" : "rgba(255,255,255,0.2)"} style={{ flexShrink: 0 }} />
+                      <Phone size={14} color={person.phone ? "var(--pink-primary)" : "rgba(255,255,255,0.2)"} style={{ flexShrink: 0 }} />
                       <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{person.phone || 'Sin teléfono'}</span>
                     </div>
                     {person.birth_date && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px', fontSize: '11px', color: 'var(--gold-primary)' }}>
-                        <Cake size={12} fill="var(--gold-primary)" style={{ flexShrink: 0 }} />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px', fontSize: '11px', color: 'var(--pink-primary)' }}>
+                        <Cake size={12} fill="var(--pink-primary)" style={{ flexShrink: 0 }} />
                         <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{new Date(person.birth_date + 'T00:00:00').toLocaleDateString([], { day: '2-digit', month: 'short' })}</span>
                       </div>
                     )}
@@ -889,7 +889,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                   {/* Address Column */}
                   <div style={{ color: person.address ? 'var(--text-secondary)' : 'var(--text-muted)', fontSize: '13px', minWidth: 0, overflow: 'hidden' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                      <MapPin size={14} color={person.address ? "var(--gold-primary)" : "rgba(255,255,255,0.2)"} style={{ marginTop: '2px', flexShrink: 0 }} />
+                      <MapPin size={14} color={person.address ? "var(--pink-primary)" : "rgba(255,255,255,0.2)"} style={{ marginTop: '2px', flexShrink: 0 }} />
                       <span style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {person.address || 'Sin dirección'}
                       </span>
@@ -935,7 +935,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
 
                   {/* Actions Column */}
                   <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                    <button className="action-btn" onClick={() => setProfileModalData(person)} title="Ver Perfil" style={{ color: 'var(--gold-primary)', backgroundColor: 'rgba(212,175,55,0.1)' }}>
+                    <button className="action-btn" onClick={() => setProfileModalData(person)} title="Ver Perfil" style={{ color: 'var(--pink-primary)', backgroundColor: 'rgba(196,139,159,0.1)' }}>
                       <User size={18} />
                     </button>
                     <button className="action-btn" onClick={() => handleEditClick(person)} title="Editar Miembro">
@@ -959,7 +959,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                   position: 'relative', 
                   zIndex: 998,
                   overflow: 'visible',
-                  border: '1px solid rgba(212,175,55,0.3)',
+                  border: '1px solid rgba(196,139,159,0.3)',
                   boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
@@ -1019,7 +1019,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                         <div className="form-group">
                           <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>NOMBRE COMPLETO</label>
                           <div style={{ position: 'relative' }}>
-                            <User size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--gold-primary)' }} />
+                    <User size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
                             <input className="form-input" placeholder="Ej. Marco Silva" value={formData.name} onChange={e => setFormData({...formData, name: formatName(e.target.value)})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
                           </div>
                         </div>
@@ -1062,12 +1062,12 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                           {isCreatingNewRole && (
                             <div className="animate-slide-left" style={{ marginTop: '12px' }}>
                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                                <label style={{ fontSize: '11px', fontWeight: '900', color: 'var(--gold-primary)', letterSpacing: '1px' }}>NOMBRE DEL NUEVO ROL</label>
+                        <label style={{ fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', letterSpacing: '1px' }}>NOMBRE DEL NUEVO ROL</label>
                                 <button 
                                   onClick={() => { 
                                     setIsCreatingNewRole(false); 
                                     setNewRoleName(''); 
-                                    setFormData({ ...formData, roles: ['Barbero'], permissions: allRolePresets['Barbero'] || [] });
+                        setFormData({ ...formData, roles: ['Estilista'], permissions: allRolePresets['Estilista'] || [] });
                                   }}
                                   style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: '10px', cursor: 'pointer', fontWeight: '800' }}
                                 >
@@ -1075,23 +1075,23 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                                 </button>
                               </div>
                               <div style={{ position: 'relative' }}>
-                                <Rocket size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--gold-primary)' }} />
+                        <Rocket size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
                                 <input 
                                   className="form-input" 
                                   placeholder="Ej. Gerente de Piso" 
                                   value={newRoleName} 
                                   onChange={e => setNewRoleName(e.target.value)} 
-                                  style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid var(--gold-primary)' }} 
+                          style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid var(--pink-primary)' }}
                                 />
                               </div>
                             </div>
                           )}
                         </div>
 
-                        {formData.roles.includes('Asistente de Lavado') && (
+                {formData.roles.includes('Asistente de Tratamiento') && (
                           <div className="form-group animate-slide-right">
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                              <label style={{ fontSize: '11px', fontWeight: '900', color: 'var(--gold-primary)', letterSpacing: '1px' }}>TARIFA POR LAVADO ($)</label>
+                      <label style={{ fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', letterSpacing: '1px' }}>TARIFA POR TRATAMIENTO ($)</label>
                               {formData.washing_rate > 0 && (
                                 <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700' }}>
                                   ≈ {(formData.washing_rate * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs.
@@ -1099,7 +1099,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                               )}
                             </div>
                             <div style={{ position: 'relative' }}>
-                              <Droplets size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--gold-primary)' }} />
+                      <Droplets size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
                               <input 
                                 className="form-input" 
                                 type="number" 
@@ -1107,7 +1107,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                                 placeholder="Ej. 2.00" 
                                 value={formData.washing_rate} 
                                 onChange={e => setFormData({...formData, washing_rate: e.target.value})} 
-                                style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid rgba(212,175,55,0.3)' }} 
+                                style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid rgba(196,139,159,0.3)' }} 
                               />
                             </div>
                           </div>
@@ -1117,7 +1117,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                       {/* Permissions Section */}
                       <div style={{ padding: '24px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                          <Key size={18} color="var(--gold-primary)" />
+                          <Key size={18} color="var(--pink-primary)" />
                           <label style={{ fontSize: '12px', fontWeight: '900', color: 'white', letterSpacing: '1px' }}>MÓDULOS ACCESIBLES</label>
                         </div>
 
@@ -1137,8 +1137,8 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                                 gap: '10px', 
                                 padding: '12px', 
                                 borderRadius: '12px', 
-                                backgroundColor: formData.permissions.includes(mod.id) ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.03)',
-                                border: `1px solid ${formData.permissions.includes(mod.id) ? 'var(--gold-primary)' : 'rgba(255,255,255,0.05)'}`,
+                                backgroundColor: formData.permissions.includes(mod.id) ? 'rgba(196,139,159,0.1)' : 'rgba(255,255,255,0.03)',
+                        border: `1px solid ${formData.permissions.includes(mod.id) ? 'var(--pink-primary)' : 'rgba(255,255,255,0.05)'}`,
                                 cursor: 'pointer',
                                 transition: 'all 0.2s'
                               }}
@@ -1147,11 +1147,11 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                                 width: '18px', 
                                 height: '18px', 
                                 borderRadius: '4px', 
-                                border: '1px solid var(--gold-primary)', 
+                        border: '1px solid var(--pink-primary)', 
                                 display: 'flex', 
                                 alignItems: 'center', 
                                 justifyContent: 'center',
-                                backgroundColor: formData.permissions.includes(mod.id) ? 'var(--gold-primary)' : 'transparent'
+                        backgroundColor: formData.permissions.includes(mod.id) ? 'var(--pink-primary)' : 'transparent'
                               }}>
                                 {formData.permissions.includes(mod.id) && <Check size={14} color="black" strokeWidth={3} />}
                               </div>
@@ -1166,46 +1166,46 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                         <div className="form-group">
                           <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>TELÉFONO</label>
                           <div style={{ position: 'relative' }}>
-                            <Phone size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--gold-primary)' }} />
+                            <Phone size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
                             <input className="form-input" placeholder="+58 412..." value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
                           </div>
                         </div>
                         <div className="form-group">
                           <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>CUMPLEAÑOS</label>
                           <div style={{ position: 'relative' }}>
-                            <Cake size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--gold-primary)' }} />
+                            <Cake size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
                             <BirthdayTextInput value={formData.birth_date} onChange={e => setFormData({...formData, birth_date: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
                           </div>
                         </div>
                         <div className="form-group">
                           <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>DIRECCIÓN DE HABITACIÓN</label>
                           <div style={{ position: 'relative' }}>
-                            <MapPin size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--gold-primary)' }} />
+                            <MapPin size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
                             <input className="form-input" placeholder="Av. Principal, Edif..." value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
                           </div>
                         </div>
                       </div>
 
                       {/* Login Credentials */}
-                      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '16px', padding: '20px', backgroundColor: 'rgba(212,175,55,0.03)', borderRadius: '16px', border: '1px solid rgba(212,175,55,0.1)' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '16px', padding: '20px', backgroundColor: 'rgba(196,139,159,0.03)', borderRadius: '16px', border: '1px solid rgba(196,139,159,0.1)' }}>
                         <div className="form-group">
-                          <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--gold-primary)', marginBottom: '8px', letterSpacing: '1px' }}>EMAIL DE ACCESO</label>
+                          <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', marginBottom: '8px', letterSpacing: '1px' }}>EMAIL DE ACCESO</label>
                           <div style={{ position: 'relative' }}>
-                            <Mail size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--gold-primary)' }} />
-                            <input className="form-input" type="email" placeholder="persona@astrobarber.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid rgba(212,175,55,0.2)' }} />
+                            <Mail size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
+                            <input className="form-input" type="email" placeholder="persona@astrobarber.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid rgba(196,139,159,0.2)' }} />
                           </div>
                         </div>
                         <div className="form-group">
-                          <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--gold-primary)', marginBottom: '8px', letterSpacing: '1px' }}>CONTRASEÑA</label>
+                          <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', marginBottom: '8px', letterSpacing: '1px' }}>CONTRASEÑA</label>
                           <div style={{ position: 'relative' }}>
-                            <Lock size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--gold-primary)' }} />
+                            <Lock size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
                             <input 
                               className="form-input" 
                               type={showPassword ? "text" : "password"} 
                               placeholder="Ingresar contraseña" 
                               value={formData.username} 
                               onChange={e => setFormData({...formData, username: e.target.value})} 
-                              style={{ width: '100%', height: '50px', paddingLeft: '48px', paddingRight: '48px', border: '1px solid rgba(212,175,55,0.2)' }} 
+                              style={{ width: '100%', height: '50px', paddingLeft: '48px', paddingRight: '48px', border: '1px solid rgba(196,139,159,0.2)' }} 
                             />
                             <button
                               type="button"
@@ -1217,7 +1217,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                                 background: 'transparent',
                                 border: 'none',
                                 cursor: 'pointer',
-                                color: 'var(--gold-primary)',
+                        color: 'var(--pink-primary)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -1230,7 +1230,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                         </div>
                       </div>
 
-                      <button className="btn-gold" onClick={handleSubmit} style={{ height: '56px', width: '100%', borderRadius: '16px', fontSize: '16px', fontWeight: '800', marginTop: '10px' }}>
+                      <button className="btn-pink" onClick={handleSubmit} style={{ height: '56px', width: '100%', borderRadius: '16px', fontSize: '16px', fontWeight: '800', marginTop: '10px' }}>
                         <Check size={20} style={{ marginRight: '10px' }} />
                         Actualizar Perfil de Miembro
                       </button>

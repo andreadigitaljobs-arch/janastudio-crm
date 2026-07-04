@@ -184,11 +184,11 @@ export const AstroDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA" })
         background: 'rgba(20, 20, 24, 0.99)',
         backdropFilter: 'blur(30px)',
         WebkitBackdropFilter: 'blur(30px)',
-        border: '1.5px solid rgba(212, 175, 55, 0.35)',
+        border: '1.5px solid rgba(196, 139, 159, 0.35)',
         borderRadius: '20px',
         padding: '16px',
         zIndex: 999999,
-        boxShadow: '0 24px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(212,175,55,0.1)'
+        boxShadow: '0 24px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(196,139,159,0.1)'
       }}
     >
       {/* Month + Year selectors */}
@@ -257,7 +257,7 @@ export const AstroDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA" })
               style={{
                 height: '34px',
                 width: '100%',
-                background: isSelected ? 'var(--gold-primary)' : 'none',
+                background: isSelected ? 'var(--pink-primary)' : 'none',
                 border: 'none',
                 borderRadius: '8px',
                 color: isSelected ? 'black' : (cell.isCurrentMonth ? 'white' : 'rgba(255,255,255,0.2)'),
@@ -268,8 +268,8 @@ export const AstroDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA" })
               }}
               onMouseEnter={e => {
                 if (cell.isCurrentMonth && !isSelected) {
-                  e.currentTarget.style.backgroundColor = 'rgba(212,175,55,0.15)';
-                  e.currentTarget.style.color = 'var(--gold-primary)';
+                  e.currentTarget.style.backgroundColor = 'rgba(196,139,159,0.15)';
+                  e.currentTarget.style.color = 'var(--pink-primary)';
                 }
               }}
               onMouseLeave={e => {
@@ -294,7 +294,7 @@ export const AstroDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA" })
         <Calendar
           style={{ position: 'absolute', left: '16px', top: '14px', zIndex: 1, pointerEvents: 'none' }}
           size={18}
-          color="var(--gold-primary)"
+          color="var(--pink-primary)"
         />
         <input
           ref={inputRef}
@@ -313,7 +313,7 @@ export const AstroDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA" })
             paddingRight: value ? '40px' : '16px',
             cursor: 'text',
             backgroundColor: 'rgba(255,255,255,0.05)',
-            border: isOpen ? '1.5px solid var(--gold-primary)' : '1px solid rgba(255,255,255,0.15)',
+            border: isOpen ? '1.5px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.15)',
             color: 'white',
             outline: 'none',
             transition: 'border-color 0.2s'

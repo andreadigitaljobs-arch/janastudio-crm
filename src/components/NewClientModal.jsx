@@ -78,7 +78,7 @@ const NewClientModal = ({ isOpen, onClose, onSuccess }) => {
               maxWidth: '450px', 
               width: '100%', 
               borderRadius: '32px', 
-              border: '1.5px solid rgba(212,175,55,0.3)',
+              border: '1.5px solid rgba(196,139,159,0.3)',
               padding: '32px',
               position: 'relative'
             }}>
@@ -113,7 +113,7 @@ const NewClientModal = ({ isOpen, onClose, onSuccess }) => {
                   alignItems: 'center',
                   gap: '10px'
                 }}>
-                  <User size={24} color="var(--gold-primary)" />
+                  <User size={24} color="var(--pink-primary)" />
                   <span>Nuevo <span className="text-gold">Cliente</span></span>
                 </h2>
                 <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
@@ -127,7 +127,7 @@ const NewClientModal = ({ isOpen, onClose, onSuccess }) => {
                     Nombre y Apellido
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <User style={{ position: 'absolute', left: '16px', top: '14px' }} size={18} color="var(--gold-primary)" />
+                    <User style={{ position: 'absolute', left: '16px', top: '14px' }} size={18} color="var(--pink-primary)" />
                     <input 
                       autoFocus
                       type="text" 
@@ -144,7 +144,7 @@ const NewClientModal = ({ isOpen, onClose, onSuccess }) => {
                     Teléfono
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <Phone style={{ position: 'absolute', left: '16px', top: '14px' }} size={18} color="var(--gold-primary)" />
+                    <Phone style={{ position: 'absolute', left: '16px', top: '14px' }} size={18} color="var(--pink-primary)" />
                     <input 
                       type="tel" 
                       placeholder="Ej. 04121234567" 
@@ -160,7 +160,7 @@ const NewClientModal = ({ isOpen, onClose, onSuccess }) => {
                     Cédula de Identidad
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <CreditCard style={{ position: 'absolute', left: '16px', top: '14px' }} size={18} color="var(--gold-primary)" />
+                    <CreditCard style={{ position: 'absolute', left: '16px', top: '14px' }} size={18} color="var(--pink-primary)" />
                     <input 
                       type="text" 
                       placeholder="Ej. 25.123.456" 
@@ -201,7 +201,7 @@ const NewClientModal = ({ isOpen, onClose, onSuccess }) => {
                   <button 
                     type="submit"
                     disabled={loading}
-                    className="btn-gold" 
+                    className="btn-pink" 
                     style={{ flex: 1.5, height: '56px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
                   >
                     {loading ? <Loader2 className="animate-spin" size={20} /> : 'REGISTRAR CLIENTE'}

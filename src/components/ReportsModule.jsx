@@ -3,7 +3,7 @@ import {
   BarChart3, 
   Calendar, 
   Users, 
-  Scissors, 
+  Sparkles, 
   TrendingUp, 
   Download,
   Clock,
@@ -126,8 +126,8 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
         // Draw header branding
         pdf.setFont("helvetica", "bold");
         pdf.setFontSize(16);
-        pdf.setTextColor(212, 175, 55);
-        pdf.text("ASTRO BARBERSHOP", 15, 18);
+        pdf.setTextColor(196, 139, 159);
+        pdf.text("JANASTUDIO", 15, 18);
 
         pdf.setFont("helvetica", "normal");
         pdf.setFontSize(7.5);
@@ -135,14 +135,14 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
         pdf.text("REPORTE OPERATIVO DE ANALÍTICA Y RENDIMIENTO", 15, 23);
 
         // Header horizontal separator line
-        pdf.setDrawColor(212, 175, 55);
+        pdf.setDrawColor(196, 139, 159);
         pdf.setLineWidth(0.5);
         pdf.line(15, 28, 195, 28);
 
         // Footer
         pdf.setFontSize(7);
         pdf.setTextColor(112, 112, 117);
-        pdf.text(`Astro Barbershop  \u2022  Reporte generado el ${dateLabel} a las ${timeLabel}`, 15, 290);
+        pdf.text(`JanaStudio  \u2022  Reporte generado el ${dateLabel} a las ${timeLabel}`, 15, 290);
         pdf.text(`Página ${pageNum} de ${totalPagesCount}`, 195, 290, { align: 'right' });
       };
 
@@ -204,45 +204,45 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
 
         pdf.setFont("helvetica", "bold");
         pdf.setFontSize(12);
-        pdf.setTextColor(kpi.isGold ? 212 : 255, kpi.isGold ? 175 : 255, kpi.isGold ? 55 : 255);
+        pdf.setTextColor(kpi.isGold ? 196 : 255, kpi.isGold ? 139 : 255, kpi.isGold ? 159 : 255);
         pdf.text(kpi.value, kpiX + 4, kpiY + 15);
       });
 
       // Split layout for Desglose Operativo
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(11);
-      pdf.setTextColor(212, 175, 55);
+      pdf.setTextColor(196, 139, 159);
       pdf.text("DESGLOSE OPERATIVO", 15, 110);
       
-      pdf.setDrawColor(212, 175, 55);
+      pdf.setDrawColor(196, 139, 159);
       pdf.setLineWidth(0.2);
       pdf.line(15, 112, 195, 112);
 
-      // Left column: Servicios por Barbero
+      // Left column: Servicios por Estilista
       pdf.setFontSize(9);
       pdf.setTextColor(255, 255, 255);
-      pdf.text("Servicios por Barbero", 15, 120);
+      pdf.text("Servicios por Estilista", 15, 120);
 
-      let barberY = 128;
-      barberServices.slice(0, 5).forEach(b => {
+      let stylistY = 128;
+      stylistServices.slice(0, 5).forEach(b => {
         pdf.setFont("helvetica", "normal");
         pdf.setFontSize(8);
         pdf.setTextColor(230, 230, 230);
-        pdf.text(String(b.name || ''), 15, barberY);
+        pdf.text(String(b.name || ''), 15, stylistY);
         
         pdf.setFont("helvetica", "bold");
-        pdf.setTextColor(212, 175, 55);
-        pdf.text(`${b.count} serv.`, 95, barberY, { align: 'right' });
+        pdf.setTextColor(196, 139, 159);
+        pdf.text(`${b.count} serv.`, 95, stylistY, { align: 'right' });
 
         // Draw custom progress bar
         pdf.setFillColor(30, 30, 35);
-        pdf.rect(15, barberY + 2, 80, 1.5, 'F');
+        pdf.rect(15, stylistY + 2, 80, 1.5, 'F');
         
-        const pct = b.count / maxBarberCount;
-        pdf.setFillColor(212, 175, 55);
-        pdf.rect(15, barberY + 2, Math.max(2, 80 * pct), 1.5, 'F');
+        const pct = b.count / maxStylistCount;
+        pdf.setFillColor(196, 139, 159);
+        pdf.rect(15, stylistY + 2, Math.max(2, 80 * pct), 1.5, 'F');
 
-        barberY += 12;
+        stylistY += 12;
       });
 
       // Right column: Actividad por Día de la Semana
@@ -260,7 +260,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
         pdf.text(String(dayLabel || ''), 110, dayY);
 
         pdf.setFont("helvetica", "bold");
-        pdf.setTextColor(212, 175, 55);
+        pdf.setTextColor(196, 139, 159);
         pdf.text(`${d.count}`, 195, dayY, { align: 'right' });
 
         // Draw progress bar
@@ -268,7 +268,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
         pdf.rect(110, dayY + 2, 85, 1.5, 'F');
 
         const pct = d.count / maxDayCount;
-        pdf.setFillColor(212, 175, 55);
+        pdf.setFillColor(196, 139, 159);
         pdf.rect(110, dayY + 2, Math.max(1, 85 * pct), 1.5, 'F');
 
         dayY += 9;
@@ -277,8 +277,8 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
       // Assistant Washing Section
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(10);
-      pdf.setTextColor(212, 175, 55);
-      pdf.text("RENDIMIENTO DE ASISTENTES DE LAVADO", 15, 205);
+      pdf.setTextColor(196, 139, 159);
+      pdf.text("RENDIMIENTO DE ASISTENTES DE TRATAMIENTO", 15, 205);
       pdf.line(15, 207, 195, 207);
 
       const assistList = assistantReport.assistants || [];
@@ -315,7 +315,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
 
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(11);
-      pdf.setTextColor(212, 175, 55);
+      pdf.setTextColor(196, 139, 159);
       pdf.text("HISTORIAL DE TRANSACCIONES DEL PERÍODO", 15, 34);
       pdf.line(15, 36, 195, 36);
 
@@ -323,7 +323,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
       pdf.setFillColor(18, 18, 21);
       pdf.rect(15, 40, 180, 7, 'F');
       pdf.setFontSize(8);
-      pdf.setTextColor(212, 175, 55);
+      pdf.setTextColor(196, 139, 159);
       pdf.text("FECHA", 18, 45);
       pdf.text("DESCRIPCIÓN / SERVICIO", 50, 45);
       pdf.text("PERSONAL INVOLUCRADO", 125, 45);
@@ -377,7 +377,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
         : dateRange === 'month' ? 'Mes'
         : 'Personalizado';
 
-      pdf.save(`Astro_Reporte_${rangeLabel}_${dateStr}.pdf`);
+      pdf.save(`JanaStudio_Reporte_${rangeLabel}_${dateStr}.pdf`);
     } catch (err) {
       console.error('Error generando PDF:', err);
     } finally {
@@ -416,10 +416,10 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
     return Array.from(list).sort();
   })();
 
-  const isBarberRole = (role = '') => {
+  const isStylistRole = (role = '') => {
     const normalizedRole = role.toLowerCase();
     const isExcluded = normalizedRole.includes('admin') || normalizedRole.includes('asistente') || normalizedRole.includes('lavado') || normalizedRole.includes('caja') || normalizedRole.includes('recepcion');
-    return !isExcluded && (normalizedRole.includes('barber') || normalizedRole.includes('barbero'));
+    return !isExcluded && (normalizedRole.includes('barber') || normalizedRole.includes('estilista') || normalizedRole.includes('stylist'));
   };
 
   const isAssistantRole = (role = '') => {
@@ -429,7 +429,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
 
   const reportStaffOptions = (() => {
     return staff
-      .filter((s) => isBarberRole(s.role))
+      .filter((s) => isStylistRole(s.role))
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((s) => ({ value: s.id, label: s.name }));
   })();
@@ -493,7 +493,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
       if (!individualServices.includes(selectedService.toLowerCase())) return false;
     }
 
-    // 3. Filtro de Personal (Barberos, Líderes y Asistentes)
+    // 3. Filtro de Personal (Estilistas y Asistentes)
     if (selectedStaff !== 'all') {
       const staffInvolved = t.metadata?.staffInvolved || [];
       const isInvolved = staffInvolved.some(s => 
@@ -609,8 +609,8 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
   const paginatedServices = serviceStats.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   const totalPages = Math.ceil(serviceStats.length / itemsPerPage) || 1;
 
-  // 2. BARBER SERVICES (Horizontal Bar Chart)
-  const barberServices = (() => {
+  // 2. STYLIST SERVICES (Horizontal Bar Chart)
+  const stylistServices = (() => {
     const stats = {};
     filteredTransactions.forEach(t => {
       if (t.type !== 'income') return;
@@ -618,11 +618,11 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
       staffInvolved.forEach(s => {
         const roleParts = (s.role || '').toLowerCase().split('|');
         const roleName = roleParts.length > 2 ? roleParts[1] : roleParts[0];
-        if (!roleName.includes('barber')) return;
+        if (!roleName.includes('barber') && !roleName.includes('estilista')) return;
         stats[s.name] = (stats[s.name] || 0) + 1;
       });
     });
-    // Map with default barbero statistics if database is fresh
+    // Map with default stylist statistics if database is fresh
     const list = Object.entries(stats).map(([name, count]) => ({ name, count }));
     if (list.length === 0) {
       return [
@@ -634,7 +634,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
     return list.sort((a, b) => b.count - a.count);
   })();
 
-  const maxBarberCount = Math.max(...barberServices.map(b => b.count)) || 1;
+  const maxStylistCount = Math.max(...stylistServices.map(b => b.count)) || 1;
 
   // 3. DAYS FLOW (Vertical Bar Chart)
   const daysFlow = (() => {
@@ -995,7 +995,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
       }}>
         <div>
           <h2 style={{ fontSize: isMobile ? '28px' : '32px', fontWeight: '800', letterSpacing: '-0.5px' }}>
-            Centro de <span className="text-gold">Analítica</span>
+            Centro de <span className="text-pink">Analítica</span>
           </h2>
           <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>Auditoría y rendimiento operativo.</p>
         </div>
@@ -1005,9 +1005,9 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
             onClick={handleCaptureFullPage}
             disabled={generatingPdf}
             style={{ 
-              backgroundColor: generatingPdf ? 'rgba(212,175,55,0.15)' : 'var(--bg-tertiary)', 
-              border: `1px solid ${generatingPdf ? 'var(--gold-primary)' : 'var(--border-color)'}`, 
-              color: generatingPdf ? 'var(--gold-primary)' : 'white', 
+              backgroundColor: generatingPdf ? 'rgba(196,139,159,0.15)' : 'var(--bg-tertiary)', 
+              border: `1px solid ${generatingPdf ? 'var(--pink-primary)' : 'var(--border-color)'}`, 
+              color: generatingPdf ? 'var(--pink-primary)' : 'white', 
               padding: '10px 16px', 
               borderRadius: '12px', 
               display: 'flex', 
@@ -1028,11 +1028,11 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
           backgroundColor: 'rgba(18, 18, 21, 0.95)',
           padding: '24px',
           borderRadius: '24px',
-          border: '1px solid rgba(212, 175, 55, 0.3)',
+          border: '1px solid rgba(196, 139, 159, 0.3)',
           marginBottom: '32px',
           color: 'white'
         }}>
-          <h1 style={{ fontSize: '24px', color: 'var(--gold-primary)', margin: '0 0 8px 0', fontWeight: '900', letterSpacing: '1px' }}>ASTRO BARBERSHOP</h1>
+          <h1 style={{ fontSize: '24px', color: 'var(--pink-primary)', margin: '0 0 8px 0', fontWeight: '900', letterSpacing: '1px' }}>JANASTUDIO</h1>
           <p style={{ fontSize: '13px', margin: '0 0 16px 0', color: '#b3b3b3', fontWeight: '600' }}>
             Reporte Ejecutivo de Analítica y Rendimiento Operativo
           </p>
@@ -1067,7 +1067,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
         display: 'grid',
         gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)',
         gap: '16px',
-        border: '1px solid rgba(212,175,55,0.15)',
+        border: '1px solid rgba(196,139,159,0.15)',
         background: 'rgba(255, 255, 255, 0.01)'
       }}>
         {/* Date Range Selector */}
@@ -1162,9 +1162,9 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
                   fontWeight: '800',
                   whiteSpace: 'nowrap',
                   cursor: 'pointer',
-                  backgroundColor: 'rgba(212,175,55,0.15)',
-                  border: '1px solid var(--gold-primary)',
-                  color: 'var(--gold-primary)',
+                  backgroundColor: 'rgba(196,139,159,0.15)',
+                  border: '1px solid var(--pink-primary)',
+                  color: 'var(--pink-primary)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
@@ -1173,12 +1173,12 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
                   justifyContent: 'center'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--gold-primary)';
+                  e.currentTarget.style.backgroundColor = 'var(--pink-primary)';
                   e.currentTarget.style.color = 'black';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(212,175,55,0.15)';
-                  e.currentTarget.style.color = 'var(--gold-primary)';
+                  e.currentTarget.style.backgroundColor = 'rgba(196,139,159,0.15)';
+                  e.currentTarget.style.color = 'var(--pink-primary)';
                 }}
               >
                 <X size={14} />
@@ -1236,7 +1236,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
               <span style={{ 
                 fontSize: m.value.length > 8 ? '16px' : '22px', 
                 fontWeight: '900', 
-                color: m.isGold ? 'var(--gold-primary)' : 'white' 
+                color: m.isGold ? 'var(--pink-primary)' : 'white' 
               }}>
                 {m.value}
               </span>
@@ -1256,7 +1256,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
         {/* CHART 1: Ref $ Over Time Line Chart */}
         <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', position: 'relative' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-            <div style={{ width: '12px', height: '6px', backgroundColor: 'var(--gold-primary)', borderRadius: '2px' }}></div>
+            <div style={{ width: '12px', height: '6px', backgroundColor: 'var(--pink-primary)', borderRadius: '2px' }}></div>
             <span style={{ fontSize: '11px', fontWeight: '900', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '1px' }}>Ref. $</span>
           </div>
           
@@ -1274,7 +1274,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
               
               {/* Timeline Path Line */}
               {timelinePath && (
-                <path d={timelinePath} fill="none" stroke="var(--gold-primary)" strokeWidth="3" strokeLinecap="round" />
+                <path d={timelinePath} fill="none" stroke="var(--pink-primary)" strokeWidth="3" strokeLinecap="round" />
               )}
 
               {/* Data points and badges */}
@@ -1293,7 +1293,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
                     cx={p.x}
                     cy={p.y}
                     r={isHovered ? "7" : "5"}
-                    fill="var(--gold-primary)"
+                    fill="var(--pink-primary)"
                     stroke={isHovered ? "#ffffff" : "#121212"}
                     strokeWidth="2"
                   />
@@ -1316,7 +1316,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
               {/* Gradients */}
               <defs>
                 <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--gold-primary)" />
+                  <stop offset="0%" stopColor="var(--pink-primary)" />
                   <stop offset="100%" stopColor="transparent" />
                 </linearGradient>
               </defs>
@@ -1345,7 +1345,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '18px', fontSize: '12px', fontWeight: '800' }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ width: '18px', height: '2px', background: 'var(--gold-primary)', display: 'inline-block', position: 'relative' }}>
+                    <span style={{ width: '18px', height: '2px', background: 'var(--pink-primary)', display: 'inline-block', position: 'relative' }}>
                       <span style={{
                         position: 'absolute',
                         left: '7px',
@@ -1353,7 +1353,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
                         width: '8px',
                         height: '8px',
                         borderRadius: '50%',
-                        background: 'var(--gold-primary)'
+                        background: 'var(--pink-primary)'
                       }} />
                     </span>
                     Ref $
@@ -1368,16 +1368,16 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
           </div>
         </div>
 
-        {/* CHART 2: Servicios Barbero Horizontal Bar Chart */}
+        {/* CHART 2: Servicios Estilista Horizontal Bar Chart */}
         <div className="glass-card" style={{ padding: '24px', borderRadius: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-            <div style={{ width: '12px', height: '6px', backgroundColor: 'var(--gold-primary)', borderRadius: '2px' }}></div>
-            <span style={{ fontSize: '11px', fontWeight: '900', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '1px' }}>Servicios Barbero</span>
+            <div style={{ width: '12px', height: '6px', backgroundColor: 'var(--pink-primary)', borderRadius: '2px' }}></div>
+            <span style={{ fontSize: '11px', fontWeight: '900', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '1px' }}>Servicios Estilista</span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', height: '170px', justifyContent: 'center' }}>
-            {barberServices.slice(0, 3).map((b, idx) => {
-              const pct = (b.count / maxBarberCount) * 80;
+            {stylistServices.slice(0, 3).map((b, idx) => {
+              const pct = (b.count / maxStylistCount) * 80;
               return (
                 <div key={idx} style={{ display: 'flex', alignItems: 'center' }}>
                   <div style={{ width: '70px', fontSize: '12px', fontWeight: '800', color: '#ffffff', textAlign: 'left' }}>
@@ -1387,13 +1387,13 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
                     <div style={{
                       width: `${pct}%`,
                       height: '24px',
-                      background: 'var(--gold-gradient)',
+                      background: 'var(--pink-gradient)',
                       borderRadius: '3px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'flex-end',
                       paddingRight: '12px',
-                      boxShadow: '0 4px 10px rgba(212,175,55,0.15)'
+                      boxShadow: '0 4px 10px rgba(196,139,159,0.15)'
                     }}>
                       <span style={{ fontSize: '11px', fontWeight: '950', color: '#000000' }}>{b.count}</span>
                     </div>
@@ -1407,7 +1407,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
         {/* CHART 3: Días Flujo Vertical Bar Chart */}
         <div className="glass-card" style={{ padding: '24px', borderRadius: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-            <div style={{ width: '12px', height: '6px', backgroundColor: 'var(--gold-primary)', borderRadius: '2px' }}></div>
+            <div style={{ width: '12px', height: '6px', backgroundColor: 'var(--pink-primary)', borderRadius: '2px' }}></div>
             <span style={{ fontSize: '11px', fontWeight: '900', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '1px' }}>Días Flujo</span>
           </div>
 
@@ -1423,13 +1423,13 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
               const h = (d.count / maxDayCount) * 90;
               return (
                 <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flex: 1 }}>
-                  <span style={{ fontSize: '10px', fontWeight: '950', color: 'var(--gold-primary)' }}>{d.count}</span>
+                  <span style={{ fontSize: '10px', fontWeight: '950', color: 'var(--pink-primary)' }}>{d.count}</span>
                   <div style={{ 
                     width: '18px', 
                     height: `${Math.max(h, 4)}px`, 
-                    background: 'var(--gold-gradient)', 
+                    background: 'var(--pink-gradient)', 
                     borderRadius: '2px 2px 0 0',
-                    boxShadow: '0 4px 10px rgba(212,175,55,0.15)'
+                    boxShadow: '0 4px 10px rgba(196,139,159,0.15)'
                   }}></div>
                   <span style={{ fontSize: '9px', fontWeight: '800', color: '#8c8c8c', textTransform: 'lowercase', marginTop: '2px' }}>
                     {d.name}
@@ -1462,7 +1462,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
           <div>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ background: '#d4af37', color: '#000000', fontSize: '12px', fontWeight: '950', textTransform: 'uppercase', fontStyle: 'italic' }}>
+                <tr style={{ background: '#c48b9f', color: '#000000', fontSize: '12px', fontWeight: '950', textTransform: 'uppercase', fontStyle: 'italic' }}>
                   <th style={{ padding: '12px 16px', textAlign: 'left', borderRadius: '4px 0 0 4px' }}>SERVICIO</th>
                   <th style={{ padding: '12px 16px', textAlign: 'right' }}>Ref $</th>
                   <th style={{ padding: '12px 16px', textAlign: 'right', borderRadius: '0 4px 4px 0' }}>%</th>
@@ -1511,7 +1511,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
                 style={{ 
                   background: 'none', 
                   border: 'none', 
-                  color: currentPage === 1 ? '#4d4d4d' : 'var(--gold-primary)', 
+                  color: currentPage === 1 ? '#4d4d4d' : 'var(--pink-primary)', 
                   cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
                   fontWeight: '900',
                   fontSize: '18px',
@@ -1526,7 +1526,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
                 style={{ 
                   background: 'none', 
                   border: 'none', 
-                  color: currentPage === totalPages ? '#4d4d4d' : 'var(--gold-primary)', 
+                  color: currentPage === totalPages ? '#4d4d4d' : 'var(--pink-primary)', 
                   cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
                   fontWeight: '900',
                   fontSize: '18px',
@@ -1542,7 +1542,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
         {/* WIDGET 2: Horas Flujo Peak Line Chart */}
         <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', minHeight: '340px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-            <div style={{ width: '12px', height: '6px', backgroundColor: 'var(--gold-primary)', borderRadius: '2px' }}></div>
+            <div style={{ width: '12px', height: '6px', backgroundColor: 'var(--pink-primary)', borderRadius: '2px' }}></div>
             <span style={{ fontSize: '11px', fontWeight: '900', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '1px' }}>Horas Flujo</span>
           </div>
 
@@ -1554,12 +1554,12 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
                 <line key={gi} x1="30" y1={gY} x2="325" y2={gY} stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
               ))}
 
-              <line x1="30" y1="175" x2="325" y2="175" stroke="var(--gold-primary)" strokeWidth="1" opacity="0.75" />
+              <line x1="30" y1="175" x2="325" y2="175" stroke="var(--pink-primary)" strokeWidth="1" opacity="0.75" />
 
               <defs>
                 <linearGradient id="hoursGoldGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--gold-primary)" stopOpacity="0.28" />
-                  <stop offset="100%" stopColor="var(--gold-primary)" stopOpacity="0" />
+                  <stop offset="0%" stopColor="var(--pink-primary)" stopOpacity="0.28" />
+                  <stop offset="100%" stopColor="var(--pink-primary)" stopOpacity="0" />
                 </linearGradient>
               </defs>
 
@@ -1569,7 +1569,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
 
               {/* Peak line path */}
               {hoursPath && (
-                <path d={hoursPath} fill="none" stroke="var(--gold-primary)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d={hoursPath} fill="none" stroke="var(--pink-primary)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
               )}
 
               {/* Hourly points */}
@@ -1588,7 +1588,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
                     cx={p.x}
                     cy={p.y}
                     r={isHovered ? "7" : "4.5"}
-                    fill="var(--gold-primary)"
+                    fill="var(--pink-primary)"
                     stroke={isHovered ? "#ffffff" : "#121212"}
                     strokeWidth="2"
                   />
@@ -1637,7 +1637,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '18px', fontSize: '12px', fontWeight: '850' }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ width: '22px', height: '3px', background: 'var(--gold-primary)', borderRadius: '8px', display: 'inline-block' }} />
+                    <span style={{ width: '22px', height: '3px', background: 'var(--pink-primary)', borderRadius: '8px', display: 'inline-block' }} />
                     Promedio
                   </span>
                   <span>{hoveredHourPoint.count.toLocaleString('es-VE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
@@ -1709,7 +1709,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
               <span style={{ fontSize: '10px', color: '#b3b3b3', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px' }}>
                 {m.label}
               </span>
-              <span style={{ fontSize: m.value.length > 8 ? '16px' : '22px', color: idx === 3 ? 'var(--gold-primary)' : '#ffffff', fontWeight: '950' }}>
+              <span style={{ fontSize: m.value.length > 8 ? '16px' : '22px', color: idx === 3 ? 'var(--pink-primary)' : '#ffffff', fontWeight: '950' }}>
                 {m.value}
               </span>
             </div>
@@ -1732,7 +1732,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
                 <div key={assistant.id} style={{ padding: '12px', borderRadius: '12px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                     <span style={{ color: '#ffffff', fontWeight: '900', fontSize: '14px' }}>{assistant.name}</span>
-                    <span style={{ color: 'var(--gold-primary)', fontWeight: '950', fontSize: '16px' }}>{Math.round(assistant.lavados)}</span>
+                    <span style={{ color: 'var(--pink-primary)', fontWeight: '950', fontSize: '16px' }}>{Math.round(assistant.lavados)}</span>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                     <div>
@@ -1745,7 +1745,7 @@ const ReportsModule = ({ isMobile, rates, staff = [] }) => {
                     </div>
                     <div>
                       <div style={{ color: '#8c8c8c', fontSize: '9px', fontWeight: '900', textTransform: 'uppercase' }}>Total</div>
-                      <div style={{ color: 'var(--gold-primary)', fontSize: '12px', fontWeight: '900' }}>${assistant.total.toFixed(2)}</div>
+                      <div style={{ color: 'var(--pink-primary)', fontSize: '12px', fontWeight: '900' }}>${assistant.total.toFixed(2)}</div>
                     </div>
                   </div>
                 </div>

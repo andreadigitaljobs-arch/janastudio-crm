@@ -3,7 +3,6 @@ import { createPortal } from 'react-dom';
 import { 
   Zap,
   TrendingUp,
-  Scissors,
   User,
   Package,
   DollarSign,
@@ -17,7 +16,6 @@ import {
   Edit3,
   Gift,
   Cake,
-  Rocket,
   Bell,
   X,
   MessageCircle,
@@ -58,9 +56,9 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
   const [isEditingGoals, setIsEditingGoals] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [goals, setGoals] = useState({
-    daily: parseFloat(localStorage.getItem('astro_daily_goal') || '500'),
-    weekly: parseFloat(localStorage.getItem('astro_weekly_goal') || '3000'),
-    monthly: parseFloat(localStorage.getItem('astro_monthly_goal') || '12000')
+    daily: parseFloat(localStorage.getItem('jana_daily_goal') || '500'),
+    weekly: parseFloat(localStorage.getItem('jana_weekly_goal') || '3000'),
+    monthly: parseFloat(localStorage.getItem('jana_monthly_goal') || '12000')
   });
 
   const [whatsappModalData, setWhatsappModalData] = useState(null);
@@ -80,14 +78,14 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
     };
 
     updateUnread();
-    window.addEventListener('astro_new_notification', updateUnread);
-    return () => window.removeEventListener('astro_new_notification', updateUnread);
+    window.addEventListener('jana_new_notification', updateUnread);
+    return () => window.removeEventListener('jana_new_notification', updateUnread);
   }, []);
 
   const handleSaveGoals = (newGoals) => {
-    localStorage.setItem('astro_daily_goal', newGoals.daily);
-    localStorage.setItem('astro_weekly_goal', newGoals.weekly);
-    localStorage.setItem('astro_monthly_goal', newGoals.monthly);
+    localStorage.setItem('jana_daily_goal', newGoals.daily);
+    localStorage.setItem('jana_weekly_goal', newGoals.weekly);
+    localStorage.setItem('jana_monthly_goal', newGoals.monthly);
     setGoals(newGoals);
     setIsEditingGoals(false);
   };
@@ -127,11 +125,11 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
   };
 
   const roleKind = getRoleKind(user?.role);
-  const isBarber = roleKind === 'barber';
-  const isAssistant = roleKind === 'assistant';
+  const isBarber = roleKind === 'stylist';
+  const isStylist = roleKind === 'assistant';
   const isAdmin = roleKind === 'admin';
 
-  const myStats = ((isBarber || isAssistant) && dbData?.staff) 
+  const myStats = ((isBarber || isStylist) && dbData?.staff) 
     ? (dbData.staff.find(s => s.id === user.id)?.stats || { income: 0, weeklyIncome: 0, monthlyIncome: 0, appointments: 0 }) 
     : (stats || { income: 0, weeklyIncome: 0, monthlyIncome: 0, appointments: 0 });
 
@@ -144,7 +142,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
     if (!dbData?.staff || dbData.staff.length === 0) return { name: "Marco Silva", count: 12 };
     const barbers = dbData.staff.filter(s => {
       const r = s.role?.toLowerCase() || '';
-      return (r.includes('barbero') || r.includes('barber')) && !r.includes('admin');
+      return (r.includes('estilista') || r.includes('stylist')) && !r.includes('admin');
     });
     if (barbers.length === 0) return { name: "Marco Silva", count: 12 };
     const sorted = [...barbers].sort((a, b) => (b.stats?.income || 0) - (a.stats?.income || 0));
@@ -161,7 +159,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
   const teamOverview = (dbData?.staff || [])
     .filter(s => {
       const r = s.role?.toLowerCase() || '';
-      return (r.includes('barbero') || r.includes('barber')) && !r.includes('archived') && !r.includes('admin');
+      return (r.includes('estilista') || r.includes('stylist')) && !r.includes('archived') && !r.includes('admin');
     })
     .sort((a, b) => (b.stats?.monthlyIncome || 0) - (a.stats?.monthlyIncome || 0))
     .slice(0, 3);
@@ -220,7 +218,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
   let astDaysFlow = [];
   let astPeakHours = { '9a.m.': 0, '12p.m.': 0, '3p.m.': 0, '6p.m.': 0, '9p.m.': 0 };
 
-  if (isAssistant) {
+  if (isStylist) {
     const myAppts = (dbData?.appointments || []).filter(a => a.appointment_staff?.some(as => String(as.staff_id) === String(user?.id)));
     const myTrans = (dbData?.transactions || []).filter(tr => tr.type === 'income' && !tr.metadata?.appointment_id && tr.metadata?.staffInvolved?.some(si => String(si.staffId) === String(user?.id)));
     
@@ -345,7 +343,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
       {/* Hello Greeting Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <div>
-          <div style={{ fontSize: '11px', color: 'var(--gold-primary)', fontWeight: '900', letterSpacing: '1.5px', textTransform: 'uppercase' }}>BIENVENIDO A CASA</div>
+          <div style={{ fontSize: '11px', color: 'var(--pink-primary)', fontWeight: '900', letterSpacing: '1.5px', textTransform: 'uppercase' }}>BIENVENIDO A JANA</div>
           <div style={{ fontSize: '28px', fontWeight: '950', letterSpacing: '-1px', marginTop: '4px', color: '#ffffff' }}>
             Panel de <span className="text-gold">Control</span>
           </div>
@@ -363,7 +361,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: unreadCount > 0 ? 'var(--gold-primary)' : 'white',
+              color: unreadCount > 0 ? 'var(--pink-primary)' : 'white',
               position: 'relative',
               cursor: 'pointer',
               outline: 'none',
@@ -399,12 +397,12 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
             width: '42px',
             height: '42px',
             borderRadius: '50%',
-            border: '1.5px solid var(--gold-primary)',
-            background: 'rgba(212,175,55,0.15)',
+            border: '1.5px solid var(--pink-primary)',
+            background: 'rgba(196,139,159,0.15)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: 'var(--gold-primary)'
+            color: 'var(--pink-primary)'
           }}>
             <Crown size={20} />
           </div>
@@ -421,14 +419,14 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
           position: 'relative', 
           overflow: 'visible',
           background: 'linear-gradient(135deg, rgba(20, 20, 20, 0.9) 0%, rgba(42, 34, 15, 0.65) 100%)',
-          border: '1px solid rgba(212, 175, 55, 0.35)',
-          boxShadow: '0 16px 45px rgba(0, 0, 0, 0.75), inset 0 0 35px rgba(212, 175, 55, 0.08)',
+          border: '1px solid rgba(196, 139, 159, 0.35)',
+          boxShadow: '0 16px 45px rgba(0, 0, 0, 0.75), inset 0 0 35px rgba(196, 139, 159, 0.08)',
           transition: 'all 0.3s ease'
         }}>
           <div style={{ position: 'relative', zIndex: 2, maxWidth: '60%' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-              <div style={{ width: '12px', height: '2px', backgroundColor: 'var(--gold-primary)' }} />
-              <span style={{ fontSize: '10px', fontWeight: '950', color: 'var(--gold-primary)', letterSpacing: '1px', textTransform: 'uppercase' }}>PENSAMIENTO ASTRO</span>
+              <div style={{ width: '12px', height: '2px', backgroundColor: 'var(--pink-primary)' }} />
+              <span style={{ fontSize: '10px', fontWeight: '950', color: 'var(--pink-primary)', letterSpacing: '1px', textTransform: 'uppercase' }}>PENSAMIENTO JANA</span>
               <button 
                 onClick={() => setQuoteIndex((prev) => (prev + 1) % QUOTES.length)}
                 style={{ 
@@ -436,9 +434,9 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
                   display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%',
                   transition: 'transform 0.2s ease, background-color 0.2s ease'
                 }}
-                title="Descubrir otro Pensamiento Astro"
+                title="Descubrir otro Pensamiento Jana"
               >
-                <Rocket size={12} color="var(--gold-primary)" className="animate-pulse" />
+                <Sparkles size={12} color="var(--pink-primary)" className="animate-pulse" />
               </button>
             </div>
             <h2 style={{ 
@@ -454,7 +452,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
             }}>
               “{QUOTES[quoteIndex].text}”
             </h2>
-            <p style={{ color: 'var(--gold-primary)', fontSize: '11px', fontWeight: '800', opacity: 0.9, letterSpacing: '0.5px' }}>
+            <p style={{ color: 'var(--pink-primary)', fontSize: '11px', fontWeight: '800', opacity: 0.9, letterSpacing: '0.5px' }}>
               — {QUOTES[quoteIndex].creator}
             </p>
           </div>
@@ -481,7 +479,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
             transform: 'translate(-50%, -50%)',
             width: '200px',
             height: '200px',
-            background: 'radial-gradient(circle, rgba(212, 175, 55, 0.14) 0%, rgba(212, 175, 55, 0.05) 35%, rgba(212, 175, 55, 0.01) 65%, transparent 100%)',
+            background: 'radial-gradient(circle, rgba(196, 139, 159, 0.14) 0%, rgba(196, 139, 159, 0.05) 35%, rgba(196, 139, 159, 0.01) 65%, transparent 100%)',
             zIndex: 2,
             pointerEvents: 'none'
           }} />
@@ -506,7 +504,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
               maxHeight: '130%', // Pop up to prevent any top cut-offs
               objectFit: 'contain',
               zIndex: 3,
-              filter: 'drop-shadow(0 12px 28px rgba(0,0,0,0.85)) drop-shadow(0 0 20px rgba(212, 175, 55, 0.35))',
+              filter: 'drop-shadow(0 12px 28px rgba(0,0,0,0.85)) drop-shadow(0 0 20px rgba(196, 139, 159, 0.35))',
               animation: 'float 8s infinite ease-in-out'
             }} 
           />
@@ -514,16 +512,16 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
       </div>
 
       {/* Business Stats Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: isAssistant ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '10px', marginBottom: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isStylist ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '10px', marginBottom: '24px' }}>
         <div className="glass-card" style={{ padding: '12px 8px', borderRadius: '16px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.03)' }}>
-          <div style={{ fontSize: '9px', color: 'var(--text-muted)', fontWeight: '800', marginBottom: '4px' }}>{isAssistant ? 'GANANCIAS SEMANALES' : 'PRODUCCIÓN'}</div>
-          <div style={{ fontSize: '15px', fontWeight: '950', color: isAssistant ? '#00c6ff' : 'var(--gold-primary)' }}>${formatCurrency(myStats.weeklyIncome || 0)}</div>
+          <div style={{ fontSize: '9px', color: 'var(--text-muted)', fontWeight: '800', marginBottom: '4px' }}>{isStylist ? 'GANANCIAS SEMANALES' : 'PRODUCCIÓN'}</div>
+          <div style={{ fontSize: '15px', fontWeight: '950', color: isStylist ? '#00c6ff' : 'var(--pink-primary)' }}>${formatCurrency(myStats.weeklyIncome || 0)}</div>
         </div>
         <div className="glass-card" style={{ padding: '12px 8px', borderRadius: '16px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.03)' }}>
-          <div style={{ fontSize: '9px', color: 'var(--text-muted)', fontWeight: '800', marginBottom: '4px' }}>{isAssistant ? 'LAVADOS SEMANALES' : 'CITAS'}</div>
-          <div style={{ fontSize: '15px', fontWeight: '950', color: 'white' }}>{isAssistant ? myStats.weeklyAppointments : myStats.weeklyAppointments}</div>
+          <div style={{ fontSize: '9px', color: 'var(--text-muted)', fontWeight: '800', marginBottom: '4px' }}>{isStylist ? 'LAVADOS SEMANALES' : 'CITAS'}</div>
+          <div style={{ fontSize: '15px', fontWeight: '950', color: 'white' }}>{isStylist ? myStats.weeklyAppointments : myStats.weeklyAppointments}</div>
         </div>
-        {!isAssistant && (
+        {!isStylist && (
           <div className="glass-card" style={{ padding: '12px 8px', borderRadius: '16px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.03)' }}>
             <div style={{ fontSize: '9px', color: 'var(--text-muted)', fontWeight: '800', marginBottom: '4px' }}>CLIENTES</div>
             <div style={{ fontSize: '15px', fontWeight: '950', color: 'white' }}>{isBarber ? myClients.length : stats.clients}</div>
@@ -532,14 +530,14 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
       </div>
 
       {/* Assistant Goals Meters Widget */}
-      {isAssistant && (
+      {isStylist && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
           {[
             { 
               id: 'personal_income', 
               title: 'Mi Meta de Ingresos', 
               current: myStats.monthlyIncome || 0, 
-              goal: parseFloat(localStorage.getItem(`astro_monthly_goal_${user?.id}`) || (parseFloat(localStorage.getItem('astro_monthly_goal') || '') < 1000 ? localStorage.getItem('astro_monthly_goal') : null) || '400'), 
+              goal: parseFloat(localStorage.getItem(`jana_monthly_goal_${user?.id}`) || (parseFloat(localStorage.getItem('jana_monthly_goal') || '') < 1000 ? localStorage.getItem('jana_monthly_goal') : null) || '400'), 
               label: 'MES EN CURSO',
               isCurrency: true
             },
@@ -552,7 +550,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
                 if (d < new Date(currentMonthStartISO)) return false;
                 return a.appointment_staff?.some(as => as.staff_id === user?.id);
               }).length, 
-              goal: parseInt(localStorage.getItem(`astro_monthly_goal_services_${user?.id}`) || localStorage.getItem('astro_monthly_goal_services') || '40'), 
+              goal: parseInt(localStorage.getItem(`jana_monthly_goal_services_${user?.id}`) || localStorage.getItem('jana_monthly_goal_services') || '40'), 
               label: 'SERVICIOS DEL MES',
               isCurrency: false
             }
@@ -560,7 +558,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
             <div key={m.id} className="glass-card" style={{ padding: '18px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.04)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Target size={14} color="var(--gold-primary)" />
+                  <Target size={14} color="var(--pink-primary)" />
                   <span style={{ fontWeight: '900', fontSize: '11px', letterSpacing: '0.5px', textTransform: 'uppercase', color: 'white' }}>{m.title}</span>
                 </div>
               </div>
@@ -569,7 +567,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
                 <div style={{ fontSize: '18px', fontWeight: '900', color: 'white' }}>
                   {m.isCurrency ? `$${formatCurrency(m.current || 0)}` : m.current} <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700' }}>/ {m.isCurrency ? `$${formatCurrency(m.goal)}` : m.goal}</span>
                 </div>
-                <div style={{ fontSize: '9px', fontWeight: '900', color: 'var(--gold-primary)', backgroundColor: 'rgba(212,175,55,0.1)', padding: '2px 6px', borderRadius: '4px' }}>
+                <div style={{ fontSize: '9px', fontWeight: '900', color: 'var(--pink-primary)', backgroundColor: 'rgba(196,139,159,0.1)', padding: '2px 6px', borderRadius: '4px' }}>
                   {Math.min(Math.round(((m.current || 0) / m.goal) * 100), 100)}%
                 </div>
               </div>
@@ -578,8 +576,8 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
                 <div style={{ 
                   width: `${Math.min(((m.current || 0) / m.goal) * 100, 100)}%`, 
                   height: '100%', 
-                  background: 'var(--gold-gradient)', 
-                  boxShadow: 'var(--gold-glow)',
+                  background: 'var(--pink-gradient)', 
+                  boxShadow: 'var(--pink-glow)',
                   transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)' 
                 }} />
               </div>
@@ -589,7 +587,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
       )}
 
       {/* Assistant Upcoming Appointments Widget */}
-      {isAssistant && (
+      {isStylist && (
         <div className="glass-card" style={{ padding: '20px', borderRadius: '24px', marginBottom: '24px', border: '1px solid rgba(255,255,255,0.04)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
             <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'rgba(0,122,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -599,13 +597,13 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', overflowY: 'auto', maxHeight: '350px', paddingRight: '4px' }} className="astro-scrollbar">
-            {(!dbData?.todayAppointments || dbData.todayAppointments.filter(app => ['Agendado', 'En Silla', 'En Lavado'].includes(app.status)).length === 0) ? (
+            {(!dbData?.todayAppointments || dbData.todayAppointments.filter(app => ['Agendado', 'En Silla', 'En Tratamiento'].includes(app.status)).length === 0) ? (
               <div style={{ textAlign: 'center', padding: '30px', color: 'var(--text-muted)' }}>
                 <p style={{ fontSize: '13px', fontWeight: '600' }}>No hay citas pendientes para hoy.</p>
               </div>
             ) : (
               dbData.todayAppointments
-                .filter(app => ['Agendado', 'En Silla', 'En Lavado'].includes(app.status))
+                .filter(app => ['Agendado', 'En Silla', 'En Tratamiento'].includes(app.status))
                 .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at))
                 .map((app, idx) => (
                   <div key={idx} style={{ 
@@ -635,8 +633,8 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
                         padding: '1px 5px', 
                         borderRadius: '4px',
                         marginTop: '3px',
-                        backgroundColor: app.status === 'En Silla' ? 'rgba(76,175,80,0.1)' : (app.status === 'En Lavado' ? 'rgba(0,122,255,0.1)' : 'rgba(212,175,55,0.1)'),
-                        color: app.status === 'En Silla' ? '#4caf50' : (app.status === 'En Lavado' ? '#007aff' : 'var(--gold-primary)'),
+                        backgroundColor: app.status === 'En Silla' ? 'rgba(76,175,80,0.1)' : (app.status === 'En Tratamiento' ? 'rgba(0,122,255,0.1)' : 'rgba(196,139,159,0.1)'),
+                        color: app.status === 'En Silla' ? '#4caf50' : (app.status === 'En Tratamiento' ? '#007aff' : 'var(--pink-primary)'),
                         display: 'inline-block'
                       }}>
                         {app.status}
@@ -660,7 +658,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
             <div key={m.id} className="glass-card" style={{ padding: '18px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.04)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Target size={14} color="var(--gold-primary)" />
+                  <Target size={14} color="var(--pink-primary)" />
                   <span style={{ fontWeight: '900', fontSize: '11px', letterSpacing: '0.5px', textTransform: 'uppercase', color: 'white' }}>{m.title}</span>
                 </div>
                 {i === 0 && (
@@ -677,7 +675,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
                 <div style={{ fontSize: '18px', fontWeight: '900', color: 'white' }}>
                   ${formatCurrency(m.current || 0)} <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700' }}>/ ${formatCurrency(m.goal)}</span>
                 </div>
-                <div style={{ fontSize: '9px', fontWeight: '900', color: 'var(--gold-primary)', backgroundColor: 'rgba(212,175,55,0.1)', padding: '2px 6px', borderRadius: '4px' }}>
+                <div style={{ fontSize: '9px', fontWeight: '900', color: 'var(--pink-primary)', backgroundColor: 'rgba(196,139,159,0.1)', padding: '2px 6px', borderRadius: '4px' }}>
                   {Math.min(Math.round(((m.current || 0) / m.goal) * 100), 100)}%
                 </div>
               </div>
@@ -686,8 +684,8 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
                 <div style={{ 
                   width: `${Math.min(((m.current || 0) / m.goal) * 100, 100)}%`, 
                   height: '100%', 
-                  background: 'var(--gold-gradient)', 
-                  boxShadow: 'var(--gold-glow)',
+                  background: 'var(--pink-gradient)', 
+                  boxShadow: 'var(--pink-glow)',
                   transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)' 
                 }} />
               </div>
@@ -699,7 +697,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
       {/* Visual Podium Section for Top Barbers (Identical to Desktop) */}
       {isAdmin && teamOverview.length >= 2 && (
         <PodiumWidget 
-          title="Top Barberos" 
+          title="Top Estilistas" 
           icon={<Trophy size={16} />}
           data={teamOverview}
           labelKey="name"
@@ -726,17 +724,17 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
       {isAdmin && teamOverview.length < 2 && (
         <div className="glass-card" style={{ padding: '20px', borderRadius: '24px', marginBottom: '24px', border: '1px solid rgba(255,255,255,0.04)' }}>
           <div style={{ fontWeight: '900', fontSize: '13px', color: '#ffffff', marginBottom: '16px', letterSpacing: '-0.3px', fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Trophy size={14} color="var(--gold-primary)" /> TOP BARBEROS (MES EN CURSO)
+            <Trophy size={14} color="var(--pink-primary)" /> TOP ESTILISTAS (MES EN CURSO)
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {teamOverview.map((st, idx) => (
               <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '8px', borderBottom: idx !== teamOverview.length - 1 ? '1px solid rgba(255,255,255,0.03)' : 'none' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '11px', fontWeight: '950', color: 'var(--gold-primary)', width: '16px' }}>{idx+1}.</span>
+                  <span style={{ fontSize: '11px', fontWeight: '950', color: 'var(--pink-primary)', width: '16px' }}>{idx+1}.</span>
                   <span style={{ fontSize: '13px', fontWeight: '800', color: '#ffffff' }}>{st.name}</span>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <span style={{ fontSize: '13px', fontWeight: '900', color: 'var(--gold-primary)' }}>${formatCurrency(st.stats?.monthlyIncome || 0)}</span>
+                  <span style={{ fontSize: '13px', fontWeight: '900', color: 'var(--pink-primary)' }}>${formatCurrency(st.stats?.monthlyIncome || 0)}</span>
                 </div>
               </div>
             ))}
@@ -748,7 +746,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
       {isAdmin && (
         <div className="glass-card" style={{ padding: '20px', borderRadius: '24px', marginBottom: '24px', border: '1px solid rgba(255,255,255,0.04)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
-            <Cake size={16} color="var(--gold-primary)" />
+            <Cake size={16} color="var(--pink-primary)" />
             <h3 style={{ fontSize: '14px', fontWeight: '900', color: '#ffffff' }}>CUMPLEAÑOS DE CLIENTES</h3>
           </div>
           
@@ -774,8 +772,8 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
                         justifyContent: 'space-between', 
                         alignItems: 'center', 
                         padding: '10px 12px', 
-                        backgroundColor: 'rgba(212,175,55,0.08)', 
-                        border: '1px solid rgba(212,175,55,0.2)', 
+                        backgroundColor: 'rgba(196,139,159,0.08)', 
+                        border: '1px solid rgba(196,139,159,0.2)', 
                         borderRadius: '12px',
                         gap: '8px 10px'
                       }}
@@ -787,7 +785,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
                         >
                           {c.name}
                         </span>
-                        <span style={{ alignSelf: 'flex-start', fontSize: '8px', fontWeight: '900', color: 'var(--gold-primary)', backgroundColor: 'rgba(212,175,55,0.1)', padding: '1px 4px', borderRadius: '3px' }}>
+                        <span style={{ alignSelf: 'flex-start', fontSize: '8px', fontWeight: '900', color: 'var(--pink-primary)', backgroundColor: 'rgba(196,139,159,0.1)', padding: '1px 4px', borderRadius: '3px' }}>
                           CLIENTE
                         </span>
                       </div>
@@ -833,7 +831,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
                   {upcomingBirthdays.map(c => (
                     <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 10px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '10px', cursor: 'pointer' }} onClick={() => onNavigate && onNavigate('clients', { clientId: c.id })}>
                       <span style={{ fontWeight: '700', color: 'var(--text-secondary)', fontSize: '12px' }}>{c.name}</span>
-                      <span style={{ fontSize: '11px', color: 'var(--gold-primary)', fontWeight: '800' }}>{c.bdayDateStr} <span style={{ fontSize: '9px', color: 'var(--text-muted)', fontWeight: '600' }}>(en {c.daysToBday}d)</span></span>
+                      <span style={{ fontSize: '11px', color: 'var(--pink-primary)', fontWeight: '800' }}>{c.bdayDateStr} <span style={{ fontSize: '9px', color: 'var(--text-muted)', fontWeight: '600' }}>(en {c.daysToBday}d)</span></span>
                     </div>
                   ))}
                 </div>
@@ -843,11 +841,11 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
         </div>
       )}
 
-      {!isAssistant && (
+      {!isStylist && (
         <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.04)', marginBottom: '24px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
             <div style={{ fontWeight: '900', fontSize: '15px', color: '#ffffff', letterSpacing: '-0.3px', fontStyle: 'italic' }}>Tendencia de Ventas</div>
-            <div style={{ fontSize: '10px', color: 'var(--gold-primary)', fontWeight: '900', backgroundColor: 'rgba(212, 175, 55, 0.1)', padding: '4px 10px', borderRadius: '8px' }}>DIARIA</div>
+            <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '900', backgroundColor: 'rgba(196, 139, 159, 0.1)', padding: '4px 10px', borderRadius: '8px' }}>DIARIA</div>
           </div>
           
           {/* Glow Line Chart in pure SVG */}
@@ -865,20 +863,20 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
 
             {/* Curved Path */}
             {pathD && (
-              <path d={pathD} fill="none" stroke="var(--gold-primary)" strokeWidth="2.5" strokeLinecap="round" />
+              <path d={pathD} fill="none" stroke="var(--pink-primary)" strokeWidth="2.5" strokeLinecap="round" />
             )}
 
             {/* Points & Tags */}
             {points.map((p, i) => (
               <g key={i}>
-                <circle cx={p.x} cy={p.y} r="4" fill="var(--gold-primary)" stroke="#121212" strokeWidth="1.5" />
+                <circle cx={p.x} cy={p.y} r="4" fill="var(--pink-primary)" stroke="#121212" strokeWidth="1.5" />
                 
                 {/* Micro Label Pill */}
                 {i % 2 === 0 && (
                   <g transform={`translate(${p.x}, ${p.y - 14})`}>
                     <rect x="-16" y="-6" width="32" height="12" rx="2" fill="#ffffff" />
                     <text x="0" y="3" fill="#000000" fontSize="8" fontWeight="950" textAnchor="middle">
-                      {isAssistant ? Math.round(p.val) : `$${Math.round(p.val)}`}
+                      {isStylist ? Math.round(p.val) : `$${Math.round(p.val)}`}
                     </text>
                   </g>
                 )}
@@ -894,7 +892,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
 
             <defs>
               <linearGradient id="mobileGoldGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="var(--gold-primary)" />
+                <stop offset="0%" stopColor="var(--pink-primary)" />
                 <stop offset="100%" stopColor="transparent" />
               </linearGradient>
             </defs>
@@ -908,7 +906,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
           {/* DÍAS FLUJO (Bar Chart) */}
           <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.04)', marginBottom: '24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-              <div style={{ width: '12px', height: '6px', backgroundColor: 'var(--gold-primary)', borderRadius: '2px' }}></div>
+              <div style={{ width: '12px', height: '6px', backgroundColor: 'var(--pink-primary)', borderRadius: '2px' }}></div>
               <span style={{ fontSize: '11px', fontWeight: '900', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '1px' }}>Días Flujo (Semana)</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: '140px', padding: '10px 0', marginTop: '20px' }}>
@@ -916,8 +914,8 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
                 const h = (d.count / maxMyDayCount) * 90;
                 return (
                   <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flex: 1 }}>
-                    <span style={{ fontSize: '10px', fontWeight: '950', color: 'var(--gold-primary)' }}>{d.count}</span>
-                    <div style={{ width: '18px', height: `${Math.max(h, 4)}px`, background: 'var(--gold-gradient)', borderRadius: '2px 2px 0 0', boxShadow: '0 4px 10px rgba(212,175,55,0.15)' }}></div>
+                    <span style={{ fontSize: '10px', fontWeight: '950', color: 'var(--pink-primary)' }}>{d.count}</span>
+                    <div style={{ width: '18px', height: `${Math.max(h, 4)}px`, background: 'var(--pink-gradient)', borderRadius: '2px 2px 0 0', boxShadow: '0 4px 10px rgba(196,139,159,0.15)' }}></div>
                     <span style={{ fontSize: '9px', fontWeight: '800', color: '#8c8c8c', textTransform: 'lowercase', marginTop: '2px' }}>
                       {d.name.substring(0, 3)}
                     </span>
@@ -930,7 +928,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
           {/* HORAS FLUJO (Line Chart) */}
           <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.04)', marginBottom: '24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-              <div style={{ width: '12px', height: '6px', backgroundColor: 'var(--gold-primary)', borderRadius: '2px' }}></div>
+              <div style={{ width: '12px', height: '6px', backgroundColor: 'var(--pink-primary)', borderRadius: '2px' }}></div>
               <span style={{ fontSize: '11px', fontWeight: '900', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '1px' }}>Horas Flujo (Semana)</span>
             </div>
             <div style={{ height: '140px', width: '100%', position: 'relative', marginTop: '20px' }}>
@@ -942,13 +940,13 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
                   const x = 30 + i * ((300 - 30) / 4);
                   const y = 110 - (myPeakHours[k] / maxMyHourCount) * 90;
                   return acc + (i === 0 ? `M ${x} ${y} ` : `L ${x} ${y} `);
-                }, '')} fill="none" stroke="var(--gold-primary)" strokeWidth="2" />
+                }, '')} fill="none" stroke="var(--pink-primary)" strokeWidth="2" />
                 {Object.keys(myPeakHours).map((k, i) => {
                   const x = 30 + i * ((300 - 30) / 4);
                   const y = 110 - (myPeakHours[k] / maxMyHourCount) * 90;
                   return (
                     <g key={i}>
-                      <circle cx={x} cy={y} r="3" fill="var(--gold-primary)" stroke="#121212" strokeWidth="1" />
+                      <circle cx={x} cy={y} r="3" fill="var(--pink-primary)" stroke="#121212" strokeWidth="1" />
                       <text x={x} y="130" fill="#8c8c8c" fontSize="9" fontWeight="800" textAnchor="middle">{k}</text>
                     </g>
                   );
@@ -959,13 +957,13 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
         </>
       )}
 
-      {isAssistant && (
+      {isStylist && (
         <>
-          {/* LAVADOS POR BARBERO (Bar Chart) */}
+          {/* TRATAMIENTOS POR ESTILISTA (Bar Chart) */}
           <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.04)', marginBottom: '24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
               <div style={{ width: '12px', height: '6px', backgroundColor: '#00c6ff', borderRadius: '2px' }}></div>
-              <span style={{ fontSize: '11px', fontWeight: '900', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '1px' }}>Lavados por Barbero</span>
+              <span style={{ fontSize: '11px', fontWeight: '900', color: '#b3b3b3', textTransform: 'uppercase', letterSpacing: '1px' }}>Tratamientos por Estilista</span>
             </div>
             {astWashesByBarber.length === 0 ? (
               <div style={{ fontSize: '12px', color: '#8c8c8c', padding: '20px 0', textAlign: 'center' }}>Sin datos esta semana</div>
@@ -1043,10 +1041,10 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
         }}>
           <div className="glass-card animate-scale-in" style={{ width: '100%', maxWidth: '360px', padding: '30px', borderRadius: '28px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(212,175,55,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Target color="var(--gold-primary)" size={18} />
+              <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Target color="var(--pink-primary)" size={18} />
               </div>
-              <h3 style={{ fontSize: '18px', fontWeight: '900', color: 'white' }}>Metas <span className="text-gold">Astro</span></h3>
+              <h3 style={{ fontSize: '18px', fontWeight: '900', color: 'white' }}>Metas <span className="text-gold">Jana</span></h3>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
@@ -1081,7 +1079,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
 
             <div style={{ display: 'flex', gap: '10px' }}>
               <button onClick={() => setIsEditingGoals(false)} style={{ flex: 1, padding: '12px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: 'none', color: 'white', fontWeight: '700' }}>Cancelar</button>
-              <button onClick={() => handleSaveGoals(goals)} className="btn-gold" style={{ flex: 1.5, padding: '12px', borderRadius: '10px', fontWeight: '800' }}>Guardar</button>
+              <button onClick={() => handleSaveGoals(goals)} className="btn-pink" style={{ flex: 1.5, padding: '12px', borderRadius: '10px', fontWeight: '800' }}>Guardar</button>
             </div>
           </div>
         </div>
@@ -1106,16 +1104,16 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
             width: '100%',
             maxWidth: '380px',
             background: 'linear-gradient(135deg, rgba(20, 20, 20, 0.95) 0%, rgba(10, 10, 10, 0.98) 100%)',
-            border: '1px solid rgba(212, 175, 55, 0.25)',
+            border: '1px solid rgba(196, 139, 159, 0.25)',
             borderRadius: '24px',
             padding: '20px',
-            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(212, 175, 55, 0.05)',
+            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(196, 139, 159, 0.05)',
             position: 'relative'
           }}>
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <MessageCircle size={18} color="var(--gold-primary)" />
+                <MessageCircle size={18} color="var(--pink-primary)" />
                 <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '900', color: 'white' }}>
                   Felicitar a {whatsappModalData.name}
                 </h3>
@@ -1284,7 +1282,7 @@ const PodiumWidget = ({ title, icon, data, labelKey, scoreKey, scoreLabel, isCli
   return (
     <div className="glass-card" style={{ padding: '20px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.04)', marginBottom: '24px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '32px' }}>
-        <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'rgba(212,175,55,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {icon}
         </div>
         <h3 style={{ fontSize: '14px', fontWeight: '900', color: 'white' }}>{title.split(' ')[0]} <span className="text-gold">{title.split(' ')[1]}</span></h3>
@@ -1310,9 +1308,9 @@ const PodiumWidget = ({ title, icon, data, labelKey, scoreKey, scoreLabel, isCli
                   height: isFirst ? '56px' : '44px', 
                   borderRadius: '16px', 
                   backgroundColor: 'var(--bg-tertiary)',
-                  border: isFirst ? '2.5px solid var(--gold-primary)' : '1.5px solid rgba(255,255,255,0.1)',
+                  border: isFirst ? '2.5px solid var(--pink-primary)' : '1.5px solid rgba(255,255,255,0.1)',
                   overflow: 'hidden',
-                  boxShadow: isFirst ? 'var(--gold-glow)' : 'none',
+                  boxShadow: isFirst ? 'var(--pink-glow)' : 'none',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center'
@@ -1320,10 +1318,10 @@ const PodiumWidget = ({ title, icon, data, labelKey, scoreKey, scoreLabel, isCli
                   {item.image_url ? (
                     <img src={item.image_url} alt={item[labelKey]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
-                    <User size={isFirst ? 24 : 18} color="var(--gold-primary)" opacity={0.5} />
+                    <User size={isFirst ? 24 : 18} color="var(--pink-primary)" opacity={0.5} />
                   )}
                 </div>
-                {isFirst && <Crown size={16} color="var(--gold-primary)" fill="var(--gold-primary)" style={{ position: 'absolute', top: '-11px', left: '50%', transform: 'translateX(-50%)' }} />}
+                {isFirst && <Crown size={16} color="var(--pink-primary)" fill="var(--pink-primary)" style={{ position: 'absolute', top: '-11px', left: '50%', transform: 'translateX(-50%)' }} />}
                 <div style={{ 
                   position: 'absolute', 
                   bottom: '-6px', 
@@ -1332,7 +1330,7 @@ const PodiumWidget = ({ title, icon, data, labelKey, scoreKey, scoreLabel, isCli
                   width: '18px', 
                   height: '18px', 
                   borderRadius: '50%', 
-                  backgroundColor: isFirst ? 'var(--gold-primary)' : isSecond ? '#C0C0C0' : '#CD7F32',
+                  backgroundColor: isFirst ? 'var(--pink-primary)' : isSecond ? '#C0C0C0' : '#CD7F32',
                   display: 'flex', 
                   alignItems: 'center', 
                   justifyContent: 'center',
@@ -1354,7 +1352,7 @@ const PodiumWidget = ({ title, icon, data, labelKey, scoreKey, scoreLabel, isCli
                   whiteSpace: 'nowrap', 
                   overflow: 'hidden', 
                   textOverflow: 'ellipsis',
-                  color: isClient ? 'var(--gold-primary)' : 'white',
+                  color: isClient ? 'var(--pink-primary)' : 'white',
                   textDecoration: isClient ? 'underline' : 'none',
                   textUnderlineOffset: '2px',
                   maxWidth: '75px',
@@ -1362,17 +1360,17 @@ const PodiumWidget = ({ title, icon, data, labelKey, scoreKey, scoreLabel, isCli
                 }}>
                   {item[labelKey].split(' ')[0]}
                 </div>
-                <div style={{ color: 'var(--gold-primary)', fontWeight: '950', fontSize: '12px', marginTop: '2px' }}>{scoreKey(item)}</div>
+                <div style={{ color: 'var(--pink-primary)', fontWeight: '950', fontSize: '12px', marginTop: '2px' }}>{scoreKey(item)}</div>
                 <div style={{ fontSize: '7px', fontWeight: '800', opacity: 0.4, letterSpacing: '0.3px', textTransform: 'uppercase' }}>{scoreLabel}</div>
                 
                 {/* Visual Podium Base */}
                 <div style={{ 
                   width: '100%', 
                   height: isFirst ? '40px' : isSecond ? '25px' : '15px', 
-                  background: 'linear-gradient(to top, rgba(212, 175, 55, 0.25), rgba(212, 175, 55, 0.08))',
+                  background: 'linear-gradient(to top, rgba(196, 139, 159, 0.25), rgba(196, 139, 159, 0.08))',
                   borderRadius: '6px 6px 0 0',
                   marginTop: '8px',
-                  border: '1px solid rgba(212, 175, 55, 0.25)',
+                  border: '1px solid rgba(196, 139, 159, 0.25)',
                   borderBottom: 'none'
                 }} />
               </div>

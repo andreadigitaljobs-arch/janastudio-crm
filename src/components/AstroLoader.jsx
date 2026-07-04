@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const loadingTexts = [
-  "Afilando navajas estelares...",
-  "Calibrando tijeras de alta precisión...",
-  "Preparando la espuma perfecta...",
-  "Calculando el desvanecido ideal...",
+  "Preparando tu experiencia de belleza...",
+  "Calibrando cálidos destellos...",
+  "Preparando el cuidado perfecto...",
+  "Calculando la magia del momento...",
   "Encendiendo las luces de la estación...",
-  "Cargando la Astro Experience..."
+  "Cargando la Jana Experience..."
 ];
 
 const LOADER_MIN_DURATION_MS = 1200;
@@ -121,10 +121,10 @@ const AstroLoader = ({ visible }) => {
   const createParticles = (x, y, count = 2) => {
     if (!canvasRef.current) return;
     const colors = [
-      'rgba(212, 175, 55, 0.95)', // Gold
-      'rgba(249, 217, 118, 0.9)',  // Soft Gold
+      'rgba(212, 160, 154, 0.95)', // Rose Gold
+      'rgba(232, 196, 190, 0.9)',  // Soft Rose Gold
       'rgba(255, 255, 255, 0.85)', // Magic White Sparkle
-      'rgba(186, 140, 28, 0.7)'    // Dark Gold
+      'rgba(180, 120, 110, 0.7)'   // Dark Rose Gold
     ];
 
     for (let i = 0; i < count; i++) {
@@ -261,7 +261,7 @@ const AstroLoader = ({ visible }) => {
         }} 
       />
 
-      {/* Interactive SVG Scissors container with 3D tilt */}
+      {/* Interactive SVG Sparkles container with 3D tilt */}
       <div 
         style={{
           zIndex: 2,
@@ -271,40 +271,38 @@ const AstroLoader = ({ visible }) => {
         }}
       >
         <div className="neon-scissors-glow">
-          {/* Custom SVG Neon outline of scissors */}
+          {/* Custom SVG Neon outline of sparkles */}
           <svg 
             width="120" 
             height="120" 
             viewBox="0 0 100 100" 
             fill="none" 
-            stroke="url(#neonGoldGrad)" 
+            stroke="url(#neonRoseGoldGrad)" 
             strokeWidth="2.2" 
             strokeLinecap="round" 
             strokeLinejoin="round"
             className="neon-scissors-svg"
           >
             <defs>
-              <linearGradient id="neonGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#f9d976" />
-                <stop offset="50%" stopColor="#d4af37" />
-                <stop offset="100%" stopColor="#b5891b" />
+              <linearGradient id="neonRoseGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#e8c4be" />
+                <stop offset="50%" stopColor="#d4a09a" />
+                <stop offset="100%" stopColor="#b47878" />
               </linearGradient>
             </defs>
-            {/* Left Ring handle */}
-            <circle cx="32" cy="72" r="12" className="neon-stroke-draw" style={{ animationDelay: '0s' }} />
-            {/* Right Ring handle */}
-            <circle cx="68" cy="72" r="12" className="neon-stroke-draw" style={{ animationDelay: '0.1s' }} />
-            {/* Blades cross & pivots */}
-            <line x1="32" y1="60" x2="68" y2="20" className="neon-stroke-draw" style={{ animationDelay: '0.2s' }} />
-            <line x1="68" y1="60" x2="32" y2="20" className="neon-stroke-draw" style={{ animationDelay: '0.3s' }} />
-            <circle cx="50" cy="40" r="2" fill="#d4af37" />
+            {/* Sparkle shape - 4-point star */}
+            <path d="M50 10 L55 40 L85 50 L55 60 L50 90 L45 60 L15 50 L45 40 Z" className="neon-stroke-draw" style={{ animationDelay: '0s' }} />
+            {/* Small sparkle accents */}
+            <circle cx="50" cy="50" r="3" fill="#d4a09a" className="neon-stroke-draw" style={{ animationDelay: '0.2s' }} />
+            <circle cx="30" cy="30" r="2" fill="#e8c4be" className="neon-stroke-draw" style={{ animationDelay: '0.3s' }} />
+            <circle cx="70" cy="70" r="2" fill="#e8c4be" className="neon-stroke-draw" style={{ animationDelay: '0.4s' }} />
           </svg>
         </div>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '280px', gap: '12px', zIndex: 2 }}>
         <div className="loader-title-neon" style={{ fontSize: '18px', letterSpacing: '4px', textAlign: 'center', fontWeight: '950', color: 'white', textTransform: 'uppercase' }}>
-          ASTRO EXPERIENCE
+          JANA EXPERIENCE
         </div>
         
         {/* Dynamic Text */}
@@ -332,23 +330,23 @@ const AstroLoader = ({ visible }) => {
           position: 'relative',
           border: '1px solid rgba(255,255,255,0.05)'
         }}>
-          {/* Golden Progress Fill */}
+          {/* Rose Gold Progress Fill */}
           <div style={{
             height: '100%',
-            background: 'linear-gradient(90deg, #d4af37, #f9d976, #d4af37)',
+            background: 'linear-gradient(90deg, #d4a09a, #e8c4be, #d4a09a)',
             width: `${progress}%`,
             transition: 'width 0.1s cubic-bezier(0.4, 0, 0.2, 1)',
-            boxShadow: '0 0 10px rgba(212, 175, 55, 0.8)'
+            boxShadow: '0 0 10px rgba(212, 160, 154, 0.8)'
           }} />
         </div>
         
         {/* Percentage Text */}
-        <div style={{ fontSize: '11px', color: 'var(--gold-primary)', fontWeight: '900', alignSelf: 'flex-end', letterSpacing: '0.5px' }}>
+        <div style={{ fontSize: '11px', color: 'var(--pink-primary)', fontWeight: '900', alignSelf: 'flex-end', letterSpacing: '0.5px' }}>
           {Math.round(progress)}%
         </div>
       </div>
       
-      {/* Background glow behind scissors */}
+      {/* Background glow behind sparkles */}
       <div style={{
         position: 'absolute',
         width: '550px',
@@ -356,7 +354,7 @@ const AstroLoader = ({ visible }) => {
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        background: 'radial-gradient(circle, rgba(212,175,55,0.08) 0%, rgba(212,175,55,0.02) 40%, transparent 75%)',
+        background: 'radial-gradient(circle, rgba(212,160,154,0.08) 0%, rgba(212,160,154,0.02) 40%, transparent 75%)',
         zIndex: -1,
         filter: 'blur(100px)',
         pointerEvents: 'none'
@@ -378,17 +376,17 @@ const AstroLoader = ({ visible }) => {
 
         @keyframes neonPulse {
           0%, 100% {
-            filter: drop-shadow(0 0 1px rgba(212, 175, 55, 0.5)) drop-shadow(0 0 4px rgba(212, 175, 55, 0.3));
+            filter: drop-shadow(0 0 1px rgba(212, 160, 154, 0.5)) drop-shadow(0 0 4px rgba(212, 160, 154, 0.3));
             opacity: 0.9;
           }
           50% {
-            filter: drop-shadow(0 0 3px rgba(212, 175, 55, 0.9)) drop-shadow(0 0 8px rgba(212, 175, 55, 0.6));
+            filter: drop-shadow(0 0 3px rgba(212, 160, 154, 0.9)) drop-shadow(0 0 8px rgba(212, 160, 154, 0.6));
             opacity: 1;
           }
         }
 
         .neon-scissors-glow {
-          filter: drop-shadow(0 0 8px rgba(212,175,55,0.4));
+          filter: drop-shadow(0 0 8px rgba(212,160,154,0.4));
           animation: rotateGlow 12s linear infinite;
         }
 
@@ -398,7 +396,7 @@ const AstroLoader = ({ visible }) => {
         }
 
         .loader-title-neon {
-          text-shadow: 0 0 10px rgba(255, 255, 255, 0.3), 0 0 20px rgba(212, 175, 55, 0.2);
+          text-shadow: 0 0 10px rgba(255, 255, 255, 0.3), 0 0 20px rgba(212, 160, 154, 0.2);
         }
       `}</style>
     </div>

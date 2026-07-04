@@ -175,7 +175,7 @@ const AstroCamera = ({ onCapture, onClose, overlayClass, cardClass }) => {
         backgroundColor: '#050505', 
         overflow: 'hidden', 
         borderRadius: '40px', 
-        border: '1.5px solid rgba(212,175,55,0.3)',
+        border: '1.5px solid rgba(196,139,159,0.3)',
         boxShadow: '0 40px 100px rgba(0,0,0,0.9)' 
       }}>
         {!capturedImage ? (
@@ -189,12 +189,12 @@ const AstroCamera = ({ onCapture, onClose, overlayClass, cardClass }) => {
             
             {/* Visual Guides */}
             {!error && (
-              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', border: '1px solid rgba(212,175,55,0.2)', width: '70%', height: '70%', borderRadius: '20px', pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', border: '1px solid rgba(196,139,159,0.2)', width: '70%', height: '70%', borderRadius: '20px', pointerEvents: 'none' }} />
             )}
 
             {error && (
               <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px', textAlign: 'center' }}>
-                <ImageIcon size={48} color="rgba(212,175,55,0.3)" style={{ marginBottom: '20px' }} />
+                <ImageIcon size={48} color="rgba(196,139,159,0.3)" style={{ marginBottom: '20px' }} />
                 <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '13px', fontWeight: '500', lineHeight: 1.5 }}>{error}</p>
               </div>
             )}
@@ -234,7 +234,7 @@ const AstroCamera = ({ onCapture, onClose, overlayClass, cardClass }) => {
                 style={{
                   width: '84px', height: '84px', borderRadius: '50%', 
                   border: '4px solid white', 
-                  backgroundColor: error ? 'rgba(255,255,255,0.05)' : 'rgba(212, 175, 55, 0.2)', 
+                  backgroundColor: error ? 'rgba(255,255,255,0.05)' : 'rgba(196, 139, 159, 0.2)', 
                   display: 'flex', alignItems: 'center', justifyContent: 'center', 
                   cursor: error ? 'not-allowed' : 'pointer',
                   opacity: error ? 0.3 : 1
@@ -262,7 +262,7 @@ const AstroCamera = ({ onCapture, onClose, overlayClass, cardClass }) => {
               </button>
               <button 
                 onClick={confirm}
-                style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'var(--gold-primary)', border: 'none', color: 'black', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 10px 25px rgba(212,175,55,0.4)' }}
+                style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'var(--pink-primary)', border: 'none', color: 'black', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 10px 25px rgba(196,139,159,0.4)' }}
               >
                 <Check size={32} strokeWidth={3} />
               </button>

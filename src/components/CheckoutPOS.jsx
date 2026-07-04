@@ -13,7 +13,6 @@ import {
   History,
   TrendingUp,
   User,
-  Scissors,
   Zap,
   Droplets,
   Edit3,
@@ -60,7 +59,7 @@ const CartSellerSelect = ({ value, onChange, options }) => {
         style={{
           background: isOpen ? 'rgba(212, 175, 55, 0.15)' : 'rgba(212, 175, 55, 0.08)',
           border: '1px solid rgba(212, 175, 55, 0.3)',
-          color: 'var(--gold-primary)',
+          color: 'var(--pink-primary)',
           fontSize: '11px',
           fontWeight: '800',
           borderRadius: '10px',
@@ -73,7 +72,7 @@ const CartSellerSelect = ({ value, onChange, options }) => {
           whiteSpace: 'nowrap',
           minWidth: '105px',
           transition: 'all 0.2s',
-          boxShadow: isOpen ? '0 0 0 2px rgba(212,175,55,0.2)' : 'none'
+          boxShadow: isOpen ? '0 0 0 2px rgba(212,160,154,0.2)' : 'none'
         }}
       >
         <span>{selected ? selected.label : '+ Vendedor'}</span>
@@ -96,7 +95,7 @@ const CartSellerSelect = ({ value, onChange, options }) => {
         }}>
           <div 
             onClick={() => { onChange(''); setIsOpen(false); }}
-            style={{ padding: '10px 14px', fontSize: '11px', color: !value ? 'var(--gold-primary)' : 'white', cursor: 'pointer', background: !value ? 'rgba(212,175,55,0.1)' : 'transparent', fontWeight: !value ? '800' : '500', transition: '0.2s' }}
+            style={{ padding: '10px 14px', fontSize: '11px', color: !value ? 'var(--pink-primary)' : 'white', cursor: 'pointer', background: !value ? 'rgba(212,160,154,0.1)' : 'transparent', fontWeight: !value ? '800' : '500', transition: '0.2s' }}
             onMouseEnter={e => { if(value) e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
             onMouseLeave={e => { if(value) e.currentTarget.style.background = 'transparent' }}
           >
@@ -106,7 +105,7 @@ const CartSellerSelect = ({ value, onChange, options }) => {
             <div 
               key={opt.value}
               onClick={() => { onChange(opt.value); setIsOpen(false); }}
-              style={{ padding: '10px 14px', fontSize: '11px', color: value === opt.value ? 'var(--gold-primary)' : 'white', cursor: 'pointer', background: value === opt.value ? 'rgba(212,175,55,0.1)' : 'transparent', fontWeight: value === opt.value ? '800' : '500', transition: '0.2s' }}
+              style={{ padding: '10px 14px', fontSize: '11px', color: value === opt.value ? 'var(--pink-primary)' : 'white', cursor: 'pointer', background: value === opt.value ? 'rgba(212,160,154,0.1)' : 'transparent', fontWeight: value === opt.value ? '800' : '500', transition: '0.2s' }}
               onMouseEnter={e => { if(value !== opt.value) e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
               onMouseLeave={e => { if(value !== opt.value) e.currentTarget.style.background = 'transparent' }}
             >
@@ -162,30 +161,30 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
   const [cashUsd, setCashUsd] = useState(0);
   const [methodUsd, setMethodUsd] = useState('Efectivo');
   const [methodBs, setMethodBs] = useState('Pago Móvil');
-  const [selectedWasherId, setSelectedWasherId] = useState('');
-  const [isWasherDropdownOpen, setIsWasherDropdownOpen] = useState(false);
+  const [selectedTreatmentStaffId, setSelectedTreatmentStaffId] = useState('');
+  const [isTreatmentStaffDropdownOpen, setIsTreatmentStaffDropdownOpen] = useState(false);
   const [openTipDropdownId, setOpenTipDropdownId] = useState(null);
-  const [washCount, setWashCount] = useState(0);
+  const [treatmentCount, setTreatmentCount] = useState(0);
   const [recurrenceChoice, setRecurrenceChoice] = useState('');
   const [customRecurrenceDays, setCustomRecurrenceDays] = useState('');
   const [bundledApps, setBundledApps] = useState([]);
   const [linkedApps, setLinkedApps] = useState([]);
   const [totalAppsInCheckout, setTotalAppsInCheckout] = useState([]);
-  const [activeAppForBarberChange, setActiveAppForBarberChange] = useState(null);
+  const [activeAppForStylistChange, setActiveAppForStylistChange] = useState(null);
 
   // Modal State
   const [showLinkModal, setShowLinkModal] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
   const [showExtraModal, setShowExtraModal] = useState(false);
   const [showServiceModal, setShowServiceModal] = useState(false);
-  const [showBarberModal, setShowBarberModal] = useState(false);
-  const [selectedServiceForBarber, setSelectedServiceForBarber] = useState(null);
+  const [showStylistModal, setShowStylistModal] = useState(false);
+  const [selectedServiceForStylist, setSelectedServiceForStylist] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   // Dialog State
   const [dialog, setDialog] = useState({ isOpen: false, type: 'alert', title: '', message: '', onConfirm: null });
   const [editingExtraPriceId, setEditingExtraPriceId] = useState(null);
-  const [isChangingBarber, setIsChangingBarber] = useState(false);
+  const [isChangingStylist, setIsChangingStylist] = useState(false);
   const [editingAppPrice, setEditingAppPrice] = useState(null);
   const [newAppPriceVal, setNewAppPriceVal] = useState('');
 
@@ -315,34 +314,34 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
       });
 
       // 3. Auto-detect washing count
-      const washEligibleCount = totalAppsInCheckout.filter(app => 
-        app.services?.included_items?.some(i => i.toLowerCase().includes('lavado')) || 
-        app.appointment_extras?.some(e => e.service_extras?.name?.toLowerCase().includes('lavado'))
+      const treatmentEligibleCount = totalAppsInCheckout.filter(app => 
+        app.services?.included_items?.some(i => i.toLowerCase().includes('tratamiento')) || 
+        app.appointment_extras?.some(e => e.service_extras?.name?.toLowerCase().includes('tratamiento'))
       ).length;
-      setWashCount(washEligibleCount);
+      setTreatmentCount(treatmentEligibleCount);
       
-      // Check if there is already a washer associated in database
-      const existingWasherRecord = totalAppsInCheckout
+      // Check if there is already a treatmentStaff associated in database
+      const existingTreatmentStaffRecord = totalAppsInCheckout
         .flatMap(a => a.appointment_staff || [])
-        .find(as => as.staff?.role?.toLowerCase().includes('asistente'));
+        .find(as => as.staff?.role?.toLowerCase().includes('estilista'));
 
-      let currentWasherId = '';
-      if (existingWasherRecord) {
-        currentWasherId = existingWasherRecord.staff_id;
+      let currentTreatmentStaffId = '';
+      if (existingTreatmentStaffRecord) {
+        currentTreatmentStaffId = existingTreatmentStaffRecord.staff_id;
       } else {
         // Default wash assistant selection (ONLY if exactly one is available)
-        const washers = allStaff.filter(s => s.role?.toLowerCase().includes('asistente'));
-        if (washers.length === 1) {
-          currentWasherId = washers[0].id;
+        const treatmentStaffArr = allStaff.filter(s => s.role?.toLowerCase().includes('estilista'));
+        if (treatmentStaffArr.length === 1) {
+          currentTreatmentStaffId = treatmentStaffArr[0].id;
         }
       }
 
-      // Use functional update to avoid needing selectedWasherId in deps
-      setSelectedWasherId(prev => prev !== currentWasherId ? currentWasherId : prev);
+      // Use functional update to avoid needing selectedTreatmentStaffId in deps
+      setSelectedTreatmentStaffId(prev => prev !== currentTreatmentStaffId ? currentTreatmentStaffId : prev);
 
       // 4. Initialize item sales associations intelligently
       // Use functional update to avoid needing itemSalesAssociations in deps
-      const finalWasherId = currentWasherId;
+      const finalTreatmentStaffId = currentTreatmentStaffId;
       setItemSalesAssociations(prev => {
         const newAssociations = { ...prev };
         let changed = false;
@@ -361,9 +360,9 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
           app.appointment_extras?.forEach(ex => {
             const itemId = ex.id;
             if (itemId && !newAssociations[itemId]) {
-              const isWashExtra = ex.service_extras?.name?.toLowerCase().includes('lavado');
-              if (isWashExtra && finalWasherId) {
-                newAssociations[itemId] = finalWasherId;
+              const isWashExtra = ex.service_extras?.name?.toLowerCase().includes('tratamiento');
+              if (isWashExtra && finalTreatmentStaffId) {
+                newAssociations[itemId] = finalTreatmentStaffId;
               } else {
                 newAssociations[itemId] = app.staff_id || '';
               }
@@ -377,8 +376,8 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
     } else if (!selectedApp && !isDirectSale) {
       setCart([]);
       setTips([]);
-      setWashCount(0);
-      setSelectedWasherId(prev => prev === '' ? prev : '');
+      setTreatmentCount(0);
+      setSelectedTreatmentStaffId(prev => prev === '' ? prev : '');
       setItemSalesAssociations(prev => Object.keys(prev).length === 0 ? prev : {});
     }
   }, [totalAppsInCheckout, isDirectSale, allStaff, selectedApp]);
@@ -387,7 +386,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
     try {
       setLoading(true);
       const [apps, inv, ext, cls, staff, srv] = await Promise.all([
-        dataService.getAppointmentsByState(['En Silla', 'Por Pagar', 'Agendado', 'En Lavado']),
+        dataService.getAppointmentsByState(['En Silla', 'Por Pagar', 'Agendado', 'En Tratamiento']),
         dataService.getSaleInventoryCatalog(),
         dataService.getExtras(),
         dataService.getClientsLite(),
@@ -497,12 +496,12 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
     setCustomRecurrenceDays('');
   }, [checkoutClient?.id]);
 
-  const washEligibleCount = totalAppsInCheckout.filter(app => 
-    app.services?.included_items?.some(i => i.toLowerCase().includes('lavado')) || 
-    app.appointment_extras?.some(e => e.service_extras?.name?.toLowerCase().includes('lavado'))
+  const treatmentEligibleCount = totalAppsInCheckout.filter(app => 
+    app.services?.included_items?.some(i => i.toLowerCase().includes('tratamiento')) || 
+    app.appointment_extras?.some(e => e.service_extras?.name?.toLowerCase().includes('tratamiento'))
   ).length;
 
-  const didWash = washCount > 0;
+  const didTreatment = treatmentCount > 0;
 
   const handleAddToCart = async (product) => {
     if (loading) return;
@@ -754,33 +753,33 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
         cashUsd: Number(cashUsd),
         transferBs: Number(remainingBs),
         totalTips: totalTips,
-        didWash: washCount > 0,
-        washCount: washCount,
+        didTreatment: treatmentCount > 0,
+        treatmentCount: treatmentCount,
         extras: totalAppsInCheckout.flatMap(a => a.appointment_extras || []),
         appointments: totalAppsInCheckout
           .filter(app => app.service_id !== null && app.service_id !== undefined)
           .map(app => {
             const appExtrasTotal = app.appointment_extras?.reduce((sum, e) => sum + (e.price || 0), 0) || 0;
             const servicePrice = app.total_price !== undefined && app.total_price !== null && Number(app.total_price) > 0 ? Number(app.total_price) : (app.services?.price || 0);
-            const includesWashing = app.services?.included_items?.some(i => i.toLowerCase().includes('lavado')) || false;
+            const includesWashing = app.services?.included_items?.some(i => i.toLowerCase().includes('tratamiento')) || false;
             return {
               id: app.id,
               staff_id: app.staff_id,
               clientName: app.clients?.name || 'Cliente',
               clientCedula: app.clients?.id_card || 'S/C',
-              barberName: app.staff?.name || 'Barbero',
+              stylistName: app.staff?.name || 'Estilista',
               serviceName: app.services?.name || 'Servicio',
               servicePrice: servicePrice,
               extrasPrice: appExtrasTotal,
               totalPrice: servicePrice + appExtrasTotal,
-              didWash: includesWashing || (washCount > 0),
+              didTreatment: includesWashing || (treatmentCount > 0),
               extras: app.appointment_extras?.map(e => e.service_extras?.name).filter(Boolean).join(', ') || ''
             };
           }),
         staffInvolved: (() => {
           const involved = [];
-          const washer = allStaff.find(s => s.id === selectedWasherId);
-          const washRate = washer ? Number(washer.washing_rate || 0) : 0;
+          const treatmentStaff = allStaff.find(s => s.id === selectedTreatmentStaffId);
+          const treatmentRate = treatmentStaff ? Number(treatmentStaff.treatment_rate || 0) : 0;
           
           let appliedWashes = 0;
           totalAppsInCheckout
@@ -791,15 +790,15 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
               let price = app.total_price !== undefined && app.total_price !== null && Number(app.total_price) > 0 ? Number(app.total_price) : (app.services?.price || 0);
               let grossBase = price;
 
-              const includesWashing = app.services?.included_items?.some(i => i.toLowerCase().includes('lavado'));
-              if (includesWashing && appliedWashes < washCount && washRate > 0) {
-                grossBase = Math.max(0, grossBase - washRate);
+              const includesWashing = app.services?.included_items?.some(i => i.toLowerCase().includes('tratamiento'));
+              if (includesWashing && appliedWashes < treatmentCount && treatmentRate > 0) {
+                grossBase = Math.max(0, grossBase - treatmentRate);
                 appliedWashes++;
               }
 
             let pct = 40;
-            if (role === 'Barbero') pct = app.services?.commission_barber ?? 40;
-            else if (role === 'Asistente de Lavado') pct = app.services?.commission_washer ?? 10;
+            if (role === 'Estilista') pct = app.services?.commission_stylist ?? 40;
+            else if (role === 'Estilista de Tratamiento') pct = app.services?.commission_treatmentStaff ?? 10;
             else if (role === 'Caja') pct = app.services?.commission_cashier ?? 0;
             else if (role === 'Recepcionista') pct = app.services?.commission_receptionist ?? 0;
             else pct = app.staff?.commission_pct ?? 40;
@@ -819,8 +818,8 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
             } else {
               involved.push({
                 staffId: app.staff_id,
-                name: app.staff?.name || 'Barbero',
-                role: app.staff?.role || 'Barbero',
+                name: app.staff?.name || 'Estilista',
+                role: app.staff?.role || 'Estilista',
                 commissionEarned: comm,
                 commissionBs: comm * fixedRate,
                 productCommissionEarned: 0,
@@ -831,25 +830,25 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
             }
           });
 
-          if (washCount > 0 && selectedWasherId) {
-            const washCommission = washCount * washRate;
-            const existing = involved.find(i => i.staffId === selectedWasherId);
+          if (treatmentCount > 0 && selectedTreatmentStaffId) {
+            const treatmentCommission = treatmentCount * treatmentRate;
+            const existing = involved.find(i => i.staffId === selectedTreatmentStaffId);
             if (existing) {
-              existing.commissionEarned += washCommission;
-              existing.commissionBs += washCommission * fixedRate;
+              existing.commissionEarned += treatmentCommission;
+              existing.commissionBs += treatmentCommission * fixedRate;
             } else {
-              const tipValW = tips.filter(t => t.staffId === selectedWasherId).reduce((acc, t) => {
+              const tipValW = tips.filter(t => t.staffId === selectedTreatmentStaffId).reduce((acc, t) => {
                 const isBs = t.currency === 'BS';
                 const amountVal = Number(t.amount || 0);
                 const usdVal = isBs ? (amountVal / fixedRate) : amountVal;
                 return acc + usdVal;
               }, 0);
               involved.push({
-                staffId: selectedWasherId,
-                name: washer?.name || 'Asistente',
-                role: washer?.role || 'Asistente de Lavado',
-                commissionEarned: washCommission,
-                commissionBs: washCommission * fixedRate,
+                staffId: selectedTreatmentStaffId,
+                name: treatmentStaff?.name || 'Estilista',
+                role: treatmentStaff?.role || 'Estilista de Tratamiento',
+                commissionEarned: treatmentCommission,
+                commissionBs: treatmentCommission * fixedRate,
                 productCommissionEarned: 0,
                 tip: tipValW,
                 tipBs: tipValW * fixedRate
@@ -867,7 +866,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
               involved.push({
                 staffId: t.staffId,
                 name: staffObj?.name || 'Staff',
-                role: staffObj?.role || 'Barbero',
+                role: staffObj?.role || 'Estilista',
                 commissionEarned: 0,
                 productCommissionEarned: 0,
                 tip: tipValT,
@@ -975,16 +974,16 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
       showToast("Por favor, identifica al cliente primero en la barra superior.", "warning");
       return;
     }
-    setSelectedServiceForBarber(service);
+    setSelectedServiceForStylist(service);
     setShowServiceModal(false);
-    setShowBarberModal(true);
+    setShowStylistModal(true);
   };
 
-  const handleConfirmServiceBarber = async (barberId) => {
+  const handleConfirmServiceStylist = async (stylistId) => {
     if (loading) return;
     try {
       setLoading(true);
-      setShowBarberModal(false);
+      setShowStylistModal(false);
       
       const clientId = selectedClient?.id || selectedApp?.client_id;
       if (!clientId) {
@@ -994,10 +993,10 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
 
       const newApp = await dataService.createAppointment({
         client_id: clientId,
-        service_id: selectedServiceForBarber.id,
-        staff_id: barberId,
+        service_id: selectedServiceForStylist.id,
+        staff_id: stylistId,
         status: 'En Silla',
-        total_price: selectedServiceForBarber.price
+        total_price: selectedServiceForStylist.price
       });
       
       // MIGRAR ITEMS EN CART (Extras o Productos) A LA NUEVA CITA
@@ -1017,57 +1016,57 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
       if (selectedApp) {
         const currentAppResel = filtered.find(a => a.id === selectedApp.id);
         if (currentAppResel) setSelectedApp(currentAppResel);
-        showToast("Servicio añadido y barbero asignado.");
+        showToast("Servicio añadido y estilista asignado.");
       } else {
         const fullyLoadedApp = filtered.find(a => a.id === newApp.id);
         if (fullyLoadedApp) {
           setIsDirectSale(false);
           setSelectedApp(fullyLoadedApp);
-          showToast("Servicio añadido y barbero asignado.");
+          showToast("Servicio añadido y estilista asignado.");
         } else {
           showToast("Cita creada. Selecciona el servicio en la lista.");
         }
       }
-      setSelectedServiceForBarber(null);
+      setSelectedServiceForStylist(null);
     } catch (e) {
       console.error(e);
-      showToast("Error al asignar barbero", "error");
+      showToast("Error al asignar estilista", "error");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleOpenChangeBarber = () => {
+  const handleOpenChangeStylist = () => {
     if (!selectedApp) return;
-    setIsChangingBarber(true);
-    setShowBarberModal(true);
+    setIsChangingStylist(true);
+    setShowStylistModal(true);
   };
 
-  const handleOpenChangeBundledBarber = (app) => {
-    setActiveAppForBarberChange(app);
-    setIsChangingBarber(true);
-    setShowBarberModal(true);
+  const handleOpenChangeBundledStylist = (app) => {
+    setActiveAppForStylistChange(app);
+    setIsChangingStylist(true);
+    setShowStylistModal(true);
   };
 
-  const handleChangeBarber = async (barberId) => {
-    const appToChange = activeAppForBarberChange || selectedApp;
+  const handleChangeStylist = async (stylistId) => {
+    const appToChange = activeAppForStylistChange || selectedApp;
     if (!appToChange) return;
 
     try {
       setLoading(true);
-      setShowBarberModal(false);
-      setIsChangingBarber(false);
-      setActiveAppForBarberChange(null);
+      setShowStylistModal(false);
+      setIsChangingStylist(false);
+      setActiveAppForStylistChange(null);
       
-      await dataService.updateAppointment(appToChange.id, { staff_id: barberId });
-      showToast("Barbero actualizado correctamente");
+      await dataService.updateAppointment(appToChange.id, { staff_id: stylistId });
+      showToast("Estilista actualizado correctamente");
       const filtered = await loadData();
       
       const updatedSelected = selectedApp ? filtered.find(a => a.id === selectedApp.id) : null;
       setSelectedApp(updatedSelected);
     } catch (e) {
       console.error(e);
-      showToast("Error al cambiar de barbero", "error");
+      showToast("Error al cambiar de estilista", "error");
     } finally {
       setLoading(false);
     }
@@ -1229,11 +1228,11 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
             display: 'flex', 
             alignItems: 'center', 
             gap: '8px', 
-            background: 'rgba(212,175,55,0.1)', 
-            border: '1px solid rgba(212,175,55,0.3)', 
+            background: 'rgba(212,160,154,0.1)', 
+            border: '1px solid rgba(212,160,154,0.3)', 
             padding: '8px 16px', 
             borderRadius: '16px', 
-            color: 'var(--gold-primary)', 
+            color: 'var(--pink-primary)', 
             fontSize: '11px', 
             fontWeight: '900',
             letterSpacing: '0.5px'
@@ -1275,11 +1274,11 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
               marginBottom: '20px' 
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <History size={20} color="var(--gold-primary)" />
+                <History size={20} color="var(--pink-primary)" />
                 <span style={{ fontWeight: '800', fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase' }}>Cola de Cobro</span>
               </div>
               <button 
-                className="btn-gold" 
+                className="btn-pink" 
                 onClick={handleManualSale}
                 style={{ padding: '8px 16px', borderRadius: '10px', fontSize: '10px' }}
               >
@@ -1288,7 +1287,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
             </div>
 
             <div style={{ position: 'relative', marginBottom: '24px' }}>
-              <Search style={{ position: 'absolute', left: '16px', top: '14px' }} size={18} color="var(--gold-primary)" />
+              <Search style={{ position: 'absolute', left: '16px', top: '14px' }} size={18} color="var(--pink-primary)" />
               <input 
                 type="text" 
                 placeholder="Buscar por Cédula o Nombre..." 
@@ -1319,7 +1318,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                     });
                   }
                 }}
-                style={{ width: '100%', paddingLeft: '48px', backgroundColor: 'rgba(212,175,55,0.05)', border: '1px solid rgba(212,175,55,0.2)', height: '48px', borderRadius: '14px' }}
+                style={{ width: '100%', paddingLeft: '48px', backgroundColor: 'rgba(212,160,154,0.05)', border: '1px solid rgba(212,160,154,0.2)', height: '48px', borderRadius: '14px' }}
               />
             </div>
 
@@ -1334,7 +1333,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
               ) : (
                 groupedActiveServices.map(group => {
                   const isSelected = selectedApp?.client_id === group.client_id;
-                  const badgeStatus = group.apps.some(a => a.status === 'En Silla') ? 'En Silla' : (group.apps.some(a => a.status === 'En Lavado') ? 'En Lavado' : 'Por Pagar');
+                  const badgeStatus = group.apps.some(a => a.status === 'En Silla') ? 'En Silla' : (group.apps.some(a => a.status === 'En Tratamiento') ? 'En Tratamiento' : 'Por Pagar');
                   const serviceNames = group.apps.map(a => a.services?.name).filter(Boolean).join(' + ') || 'Venta de Productos';
                   const staffNames = Array.from(new Set(group.apps.map(a => a.staff?.name?.split(' ')[0]).filter(Boolean))).join(', ') || 'Caja';
                   const totalUsd = group.apps.reduce((acc, a) => acc + (a.total_price !== undefined && a.total_price !== null && Number(a.total_price) > 0 ? Number(a.total_price) : (a.services?.price || 0)), 0);
@@ -1346,8 +1345,8 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                       style={{ 
                         padding: '16px', 
                         borderRadius: '16px', 
-                        border: isSelected ? '1px solid var(--gold-primary)' : '1px solid rgba(255,255,255,0.05)',
-                        background: isSelected ? 'rgba(212,175,55,0.05)' : 'rgba(255,255,255,0.02)',
+                        border: isSelected ? '1px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)',
+                        background: isSelected ? 'rgba(212,160,154,0.05)' : 'rgba(255,255,255,0.02)',
                         cursor: 'pointer',
                         transition: 'all 0.2s'
                       }}
@@ -1356,9 +1355,9 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                         <span style={{ fontWeight: '800' }}>{group.client_name}</span>
                         <span style={{ 
                           fontSize: '10px', 
-                          backgroundColor: badgeStatus === 'En Silla' ? 'var(--gold-primary)' : (badgeStatus === 'En Lavado' ? 'rgba(0,122,255,0.15)' : '#4caf50'), 
-                          color: badgeStatus === 'En Silla' ? 'black' : (badgeStatus === 'En Lavado' ? '#007aff' : 'white'), 
-                          border: badgeStatus === 'En Lavado' ? '1px solid rgba(0,122,255,0.3)' : 'none',
+                          backgroundColor: badgeStatus === 'En Silla' ? 'var(--pink-primary)' : (badgeStatus === 'En Tratamiento' ? 'rgba(0,122,255,0.15)' : '#4caf50'), 
+                          color: badgeStatus === 'En Silla' ? 'black' : (badgeStatus === 'En Tratamiento' ? '#007aff' : 'white'), 
+                          border: badgeStatus === 'En Tratamiento' ? '1px solid rgba(0,122,255,0.3)' : 'none',
                           padding: '2px 8px', 
                           borderRadius: '10px', 
                           fontWeight: '900' 
@@ -1366,10 +1365,10 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                       </div>
                       <div style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', maxWidth: '70%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          <Scissors size={12} /> {serviceNames} • <span style={{ fontWeight: '600' }}>{staffNames}</span>
+                          <Sparkles size={12} /> {serviceNames} • <span style={{ fontWeight: '600' }}>{staffNames}</span>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
-                          <span style={{ fontWeight: '700', color: 'var(--gold-primary)' }}>{(totalUsd * fixedRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.</span>
+                          <span style={{ fontWeight: '700', color: 'var(--pink-primary)' }}>{(totalUsd * fixedRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.</span>
                           <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Ref: ${Number(totalUsd).toFixed(2)}</span>
                         </div>
                       </div>
@@ -1380,7 +1379,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
             </div>
 
             <div style={{ marginTop: '24px' }}>
-              <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--gold-primary)', marginBottom: '16px', letterSpacing: '1px' }}>PRÓXIMAS CITAS (AGENDA HOY)</label>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', marginBottom: '16px', letterSpacing: '1px' }}>PRÓXIMAS CITAS (AGENDA HOY)</label>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {groupedScheduledServices.length === 0 ? (
                   <div style={{ padding: '20px', textAlign: 'center', color: 'rgba(255,255,255,0.1)', fontSize: '12px', border: '1px dashed rgba(255,255,255,0.1)', borderRadius: '16px' }}>No hay más citas para hoy</div>
@@ -1415,7 +1414,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                             handleStartGroupAppointments(group.apps);
                             triggerRocket();
                           }}
-                          className="btn-gold"
+                          className="btn-pink"
                           style={{ padding: '6px 12px', borderRadius: '10px', fontSize: '11px', fontWeight: '900' }}
                         >
                           Iniciar
@@ -1432,12 +1431,12 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
             <div className="glass-card animate-slide-up" style={{ borderRadius: isMobile ? '18px' : '24px', padding: isMobile ? '10px' : '16px', display: 'flex', gap: isMobile ? '8px' : '12px', width: '100%', boxSizing: 'border-box' }}>
               <button 
                 onClick={() => setShowProductModal(true)}
-                style={{ flex: 1, padding: isMobile ? '14px 8px' : '24px', borderRadius: isMobile ? '14px' : '20px', border: '1px solid rgba(212,175,55,0.3)', background: 'linear-gradient(145deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02))', color: 'white', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: isMobile ? '6px' : '12px', transition: 'all 0.3s ease', boxShadow: '0 4px 15px rgba(0,0,0,0.2)', minWidth: 0 }}
+                style={{ flex: 1, padding: isMobile ? '14px 8px' : '24px', borderRadius: isMobile ? '14px' : '20px', border: '1px solid rgba(212,160,154,0.3)', background: 'linear-gradient(145deg, rgba(212,160,154,0.08), rgba(212,160,154,0.02))', color: 'white', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: isMobile ? '6px' : '12px', transition: 'all 0.3s ease', boxShadow: '0 4px 15px rgba(0,0,0,0.2)', minWidth: 0 }}
                 className="hover-item"
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(212,175,55,0.15)'; }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(212,160,154,0.15)'; }}
                 onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)'; }}
               >
-                <div style={{ background: 'var(--gold-primary)', width: isMobile ? '36px' : '48px', height: isMobile ? '36px' : '48px', borderRadius: isMobile ? '10px' : '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black', boxShadow: '0 4px 10px rgba(212,175,55,0.3)', flexShrink: 0 }}>
+                <div style={{ background: 'var(--pink-primary)', width: isMobile ? '36px' : '48px', height: isMobile ? '36px' : '48px', borderRadius: isMobile ? '10px' : '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black', boxShadow: '0 4px 10px rgba(212,160,154,0.3)', flexShrink: 0 }}>
                   <ShoppingBag size={isMobile ? 18 : 24} strokeWidth={2.5} />
                 </div>
                 <div style={{ fontWeight: '900', fontSize: isMobile ? '9px' : '12px', letterSpacing: '0.5px', textShadow: '0 2px 4px rgba(0,0,0,0.5)', textAlign: 'center' }}>PRODUCTOS</div>
@@ -1445,12 +1444,12 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
 
               <button 
                 onClick={() => setShowExtraModal(true)}
-                style={{ flex: 1, padding: isMobile ? '14px 8px' : '24px', borderRadius: isMobile ? '14px' : '20px', border: '1px solid rgba(212,175,55,0.3)', background: 'linear-gradient(145deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02))', color: 'white', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: isMobile ? '6px' : '12px', transition: 'all 0.3s ease', boxShadow: '0 4px 15px rgba(0,0,0,0.2)', minWidth: 0 }}
+                style={{ flex: 1, padding: isMobile ? '14px 8px' : '24px', borderRadius: isMobile ? '14px' : '20px', border: '1px solid rgba(212,160,154,0.3)', background: 'linear-gradient(145deg, rgba(212,160,154,0.08), rgba(212,160,154,0.02))', color: 'white', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: isMobile ? '6px' : '12px', transition: 'all 0.3s ease', boxShadow: '0 4px 15px rgba(0,0,0,0.2)', minWidth: 0 }}
                 className="hover-item"
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(212,175,55,0.15)'; }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(212,160,154,0.15)'; }}
                 onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)'; }}
               >
-                <div style={{ background: 'var(--gold-primary)', width: isMobile ? '36px' : '48px', height: isMobile ? '36px' : '48px', borderRadius: isMobile ? '10px' : '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black', boxShadow: '0 4px 10px rgba(212,175,55,0.3)', flexShrink: 0 }}>
+                <div style={{ background: 'var(--pink-primary)', width: isMobile ? '36px' : '48px', height: isMobile ? '36px' : '48px', borderRadius: isMobile ? '10px' : '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black', boxShadow: '0 4px 10px rgba(212,160,154,0.3)', flexShrink: 0 }}>
                   <Zap size={isMobile ? 18 : 24} strokeWidth={2.5} />
                 </div>
                 <div style={{ fontWeight: '900', fontSize: isMobile ? '9px' : '12px', letterSpacing: '0.5px', textShadow: '0 2px 4px rgba(0,0,0,0.5)', textAlign: 'center' }}>EXTRAS</div>
@@ -1458,13 +1457,13 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
 
               <button 
                 onClick={() => setShowServiceModal(true)}
-                style={{ flex: 1, padding: isMobile ? '14px 8px' : '24px', borderRadius: isMobile ? '14px' : '20px', border: '1px solid rgba(212,175,55,0.3)', background: 'linear-gradient(145deg, rgba(212,175,55,0.08), rgba(212,175,55,0.02))', color: 'white', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: isMobile ? '6px' : '12px', transition: 'all 0.3s ease', boxShadow: '0 4px 15px rgba(0,0,0,0.2)', minWidth: 0 }}
+                style={{ flex: 1, padding: isMobile ? '14px 8px' : '24px', borderRadius: isMobile ? '14px' : '20px', border: '1px solid rgba(212,160,154,0.3)', background: 'linear-gradient(145deg, rgba(212,160,154,0.08), rgba(212,160,154,0.02))', color: 'white', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: isMobile ? '6px' : '12px', transition: 'all 0.3s ease', boxShadow: '0 4px 15px rgba(0,0,0,0.2)', minWidth: 0 }}
                 className="hover-item"
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(212,175,55,0.15)'; }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(212,160,154,0.15)'; }}
                 onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)'; }}
               >
-                <div style={{ background: 'var(--gold-primary)', width: isMobile ? '36px' : '48px', height: isMobile ? '36px' : '48px', borderRadius: isMobile ? '10px' : '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black', boxShadow: '0 4px 10px rgba(212,175,55,0.3)', flexShrink: 0 }}>
-                  <Scissors size={isMobile ? 18 : 24} strokeWidth={2.5} />
+                <div style={{ background: 'var(--pink-primary)', width: isMobile ? '36px' : '48px', height: isMobile ? '36px' : '48px', borderRadius: isMobile ? '10px' : '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black', boxShadow: '0 4px 10px rgba(212,160,154,0.3)', flexShrink: 0 }}>
+                  <Sparkles size={isMobile ? 18 : 24} strokeWidth={2.5} />
                 </div>
                 <div style={{ fontWeight: '900', fontSize: isMobile ? '9px' : '12px', letterSpacing: '0.5px', textShadow: '0 2px 4px rgba(0,0,0,0.5)', textAlign: 'center' }}>SERVICIOS</div>
               </button>
@@ -1479,7 +1478,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
               <h3>Selecciona un cliente de la lista para cobrar</h3>
             </div>
           ) : (
-            <div className="glass-card animate-scale-in" style={{ borderRadius: isMobile ? '20px' : '32px', padding: isMobile ? '16px' : '32px', border: '1.5px solid rgba(212,175,55,0.3)', background: 'linear-gradient(135deg, var(--bg-secondary) 0%, rgba(28,28,30,1) 100%)' }}>
+            <div className="glass-card animate-scale-in" style={{ borderRadius: isMobile ? '20px' : '32px', padding: isMobile ? '16px' : '32px', border: '1.5px solid rgba(212,160,154,0.3)', background: 'linear-gradient(135deg, var(--bg-secondary) 0%, rgba(28,28,30,1) 100%)' }}>
               <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', gap: isMobile ? '12px' : '0', marginBottom: isMobile ? '16px' : '32px' }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <h3 style={{ fontSize: isMobile ? '18px' : '24px', fontWeight: '900' }}>{selectedApp ? 'Resumen de Cobro' : 'Venta Directa'}</h3>
@@ -1494,7 +1493,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                     ) : (
                       <>
                         {selectedClient ? (
-                          <div className="animate-scale-in" style={{ padding: '12px 16px', background: 'rgba(212,175,55,0.1)', borderRadius: '12px', border: '1px solid rgba(212,175,55,0.2)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div className="animate-scale-in" style={{ padding: '12px 16px', background: 'rgba(212,160,154,0.1)', borderRadius: '12px', border: '1px solid rgba(212,160,154,0.2)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div>
                               <div style={{ fontWeight: '800', fontSize: isMobile ? '14px' : '16px' }}>{selectedClient.name}</div>
                               <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>V-{selectedClient.id_card}</div>
@@ -1515,7 +1514,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                                   style={{ width: '100%', paddingLeft: '34px', height: '40px', fontSize: isMobile ? '12px' : '13px', boxSizing: 'border-box' }}
                                 />
                               </div>
-                              <button onClick={handleDirectSaleIdSearch} className="btn-gold" style={{ padding: '0 10px', height: '40px', flexShrink: 0, fontSize: isMobile ? '10px' : '12px' }}>{isMobile ? 'OK' : 'ENLAZAR'}</button>
+                              <button onClick={handleDirectSaleIdSearch} className="btn-pink" style={{ padding: '0 10px', height: '40px', flexShrink: 0, fontSize: isMobile ? '10px' : '12px' }}>{isMobile ? 'OK' : 'ENLAZAR'}</button>
                               <button 
                                 onClick={() => setShowNewClientModal(true)} 
                                 style={{ padding: '0 10px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}
@@ -1538,7 +1537,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                                     key={c.id} 
                                     onClick={() => handleSelectDirectSaleClient(c)}
                                     style={{ padding: '10px 16px', cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-                                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(212,175,55,0.1)'}
+                                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(212,160,154,0.1)'}
                                     onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                   >
                                     <span style={{ fontWeight: '700', fontSize: '13px', color: 'white' }}>{c.name}</span>
@@ -1559,7 +1558,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                     type="number" 
                     value={fixedRate} 
                     onChange={(e) => setFixedRate(e.target.value)}
-                    style={{ width: isMobile ? '90px' : '100px', textAlign: 'right', fontWeight: '900', color: 'var(--gold-primary)', background: 'none', border: '1px solid rgba(212,175,55,0.3)', marginLeft: isMobile ? '0' : '10px' }}
+                    style={{ width: isMobile ? '90px' : '100px', textAlign: 'right', fontWeight: '900', color: 'var(--pink-primary)', background: 'none', border: '1px solid rgba(212,160,154,0.3)', marginLeft: isMobile ? '0' : '10px' }}
                   />
                 </div>
               </div>
@@ -1588,15 +1587,15 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                             <XCircle size={isMobile ? 12 : 14} style={{ opacity: 0.8 }} />
                           </button>
                         )}
-                        {isLinked && <span style={{ color: 'var(--gold-primary)', fontWeight: '800', fontSize: '10px', flexShrink: 0 }}>({app.clients?.name?.split(' ')[0]}):</span>}
+                        {isLinked && <span style={{ color: 'var(--pink-primary)', fontWeight: '800', fontSize: '10px', flexShrink: 0 }}>({app.clients?.name?.split(' ')[0]}):</span>}
                         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'rgba(255,255,255,0.9)' }}>
                           {app.services ? `Servicio: ${app.services.name}` : 'Extras'}
                         </span>
                         {' • '}
                         <span 
-                          onClick={() => handleOpenChangeBundledBarber(app)}
+                          onClick={() => handleOpenChangeBundledStylist(app)}
                           style={{ 
-                            color: 'var(--gold-primary)', 
+                            color: 'var(--pink-primary)', 
                             fontWeight: '700', 
                             cursor: 'pointer',
                             textDecoration: 'underline',
@@ -1606,7 +1605,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                             fontSize: '10px',
                             flexShrink: 0
                           }}
-                          title="Click para cambiar barbero"
+                          title="Click para cambiar estilista"
                         >
                           {app.staff?.name?.split(' ')[0] || 'Caja'}
                           <Edit3 size={8} />
@@ -1617,7 +1616,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                           <>
                             {editingAppPrice?.id === app.id ? (
                               <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', fontSize: '11px', color: 'var(--gold-primary)', fontWeight: '800' }}>Bs.</span>
+                                <span style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', fontSize: '11px', color: 'var(--pink-primary)', fontWeight: '800' }}>Bs.</span>
                                 <input 
                                   type="number"
                                   autoFocus
@@ -1664,7 +1663,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                                       setEditingAppPrice(null);
                                     }
                                   }}
-                                  style={{ width: '95px', height: '28px', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--gold-primary)', borderRadius: '6px', color: 'white', paddingLeft: '28px', paddingRight: '6px', fontSize: '12px', fontWeight: '800', textAlign: 'right', outline: 'none' }}
+                                  style={{ width: '95px', height: '28px', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--pink-primary)', borderRadius: '6px', color: 'white', paddingLeft: '28px', paddingRight: '6px', fontSize: '12px', fontWeight: '800', textAlign: 'right', outline: 'none' }}
                                 />
                               </div>
                             ) : (
@@ -1680,7 +1679,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                                   </span>
                                   <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>Ref: ${Number(sPrice).toFixed(2)}</span>
                                 </div>
-                                <Edit3 size={12} color="var(--gold-primary)" style={{ opacity: 0.8 }} />
+                                <Edit3 size={12} color="var(--pink-primary)" style={{ opacity: 0.8 }} />
                               </div>
                             )}
                           </>
@@ -1699,9 +1698,9 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                       width: '100%', 
                       padding: '8px', 
                       borderRadius: '10px', 
-                      border: '1px dashed var(--gold-primary)', 
-                      background: 'rgba(212,175,55,0.05)', 
-                      color: 'var(--gold-primary)', 
+                      border: '1px dashed var(--pink-primary)', 
+                      background: 'rgba(212,160,154,0.05)', 
+                      color: 'var(--pink-primary)', 
                       fontWeight: '800', 
                       fontSize: '10px', 
                       cursor: 'pointer',
@@ -1726,14 +1725,14 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px', background: 'rgba(255,255,255,0.05)', padding: '1px 4px', borderRadius: '4px', flexShrink: 0 }}>
                         <button 
                           onClick={() => handleDecrementProduct(p)}
-                          style={{ background: 'none', border: 'none', color: 'var(--gold-primary)', cursor: 'pointer', padding: '1px', display: 'flex', alignItems: 'center' }}
+                          style={{ background: 'none', border: 'none', color: 'var(--pink-primary)', cursor: 'pointer', padding: '1px', display: 'flex', alignItems: 'center' }}
                         >
                           <Minus size={8} />
                         </button>
                         <span style={{ fontSize: '9px', fontWeight: '900', color: 'white', minWidth: '10px', textAlign: 'center' }}>{p.quantity}</span>
                         <button 
                           onClick={() => handleIncrementProduct(p)}
-                          style={{ background: 'none', border: 'none', color: 'var(--gold-primary)', cursor: 'pointer', padding: '1px', display: 'flex', alignItems: 'center' }}
+                          style={{ background: 'none', border: 'none', color: 'var(--pink-primary)', cursor: 'pointer', padding: '1px', display: 'flex', alignItems: 'center' }}
                         >
                           <Plus size={8} />
                         </button>
@@ -1761,12 +1760,12 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                     appId: app.id
                   })) || []
                 ).map(extra => (
-                  <div key={extra.id} style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--gold-primary)', alignItems: 'center', gap: '8px', borderBottom: '1px solid rgba(255,255,255,0.03)', paddingBottom: '8px' }}>
+                  <div key={extra.id} style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--pink-primary)', alignItems: 'center', gap: '8px', borderBottom: '1px solid rgba(255,255,255,0.03)', paddingBottom: '8px' }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: isMobile ? '11px' : '13px', flex: 1, minWidth: 0 }}>
                       <button onClick={() => handleRemoveExtra(extra.id)} style={{ background: 'none', border: 'none', color: '#ff453a', cursor: 'pointer', padding: '2px', display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
                         <XCircle size={isMobile ? 12 : 14} style={{ opacity: 0.8 }} />
                       </button>
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--gold-primary)' }}>{extra.service_extras?.name}</span>
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--pink-primary)' }}>{extra.service_extras?.name}</span>
                       
                       {/* Staff Selector for Extra */}
                       <CartSellerSelect
@@ -1778,14 +1777,14 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 0 }}>
                       {editingExtraPriceId === extra.id ? (
                         <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                          <span style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', fontSize: '11px', color: 'var(--gold-primary)', fontWeight: '800' }}>Bs.</span>
+                          <span style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', fontSize: '11px', color: 'var(--pink-primary)', fontWeight: '800' }}>Bs.</span>
                           <input 
                             type="number"
                             autoFocus
                             defaultValue={(extra.price * fixedRate).toFixed(2)}
                             onBlur={(e) => handleUpdateExtraPrice(extra.id, e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleUpdateExtraPrice(extra.id, e.target.value)}
-                            style={{ width: '95px', height: '28px', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--gold-primary)', borderRadius: '6px', color: 'white', paddingLeft: '28px', paddingRight: '6px', fontSize: '12px', fontWeight: '800', textAlign: 'right', outline: 'none' }}
+                            style={{ width: '95px', height: '28px', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--pink-primary)', borderRadius: '6px', color: 'white', paddingLeft: '28px', paddingRight: '6px', fontSize: '12px', fontWeight: '800', textAlign: 'right', outline: 'none' }}
                           />
                         </div>
                       ) : (
@@ -1801,7 +1800,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                             </span>
                             <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>Ref: ${Number(extra.price).toFixed(2)}</span>
                           </div>
-                          <Edit3 size={12} color="var(--gold-primary)" style={{ opacity: 0.8 }} />
+                          <Edit3 size={12} color="var(--pink-primary)" style={{ opacity: 0.8 }} />
                         </div>
                       )}
                     </div>
@@ -1809,7 +1808,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                 ))}
 
                 {/* Washing Section */}
-                {washEligibleCount > 0 && (
+                {treatmentEligibleCount > 0 && (
                   <div className="glass-card animate-slide-up" style={{ padding: isMobile ? '12px 14px' : '24px', borderRadius: '16px', marginBottom: isMobile ? '16px' : '24px', border: '1px solid rgba(10,132,255,0.15)', background: 'rgba(10,132,255,0.02)' }}>
                     <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: '8px', marginBottom: isMobile ? '10px' : '20px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -1817,22 +1816,22 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                           <Droplets size={isMobile ? 16 : 20} />
                         </div>
                         <div>
-                          <h4 style={{ fontSize: isMobile ? '12px' : '15px', fontWeight: '800', color: 'white', margin: 0 }}>Lavados de Cabello</h4>
-                          <p style={{ fontSize: isMobile ? '9px' : '11px', color: 'var(--text-secondary)', margin: 0 }}>Selecciona la cantidad de lavados.</p>
+                          <h4 style={{ fontSize: isMobile ? '12px' : '15px', fontWeight: '800', color: 'white', margin: 0 }}>Tratamientos de Cabello</h4>
+                          <p style={{ fontSize: isMobile ? '9px' : '11px', color: 'var(--text-secondary)', margin: 0 }}>Selecciona la cantidad de tratamientos.</p>
                         </div>
                       </div>
                       
                       <div style={{ display: 'flex', gap: '6px', width: isMobile ? '100%' : 'auto' }}>
-                        {Array.from({ length: washEligibleCount + 1 }).map((_, idx) => (
+                        {Array.from({ length: treatmentEligibleCount + 1 }).map((_, idx) => (
                           <button
                             key={idx}
-                            onClick={() => setWashCount(idx)}
+                            onClick={() => setTreatmentCount(idx)}
                             style={{
                               padding: isMobile ? '4px 8px' : '8px 16px',
                               borderRadius: '8px',
                               border: 'none',
-                              backgroundColor: washCount === idx ? '#0a84ff' : 'rgba(255,255,255,0.05)',
-                              color: washCount === idx ? 'white' : 'var(--text-muted)',
+                              backgroundColor: treatmentCount === idx ? '#0a84ff' : 'rgba(255,255,255,0.05)',
+                              color: treatmentCount === idx ? 'white' : 'var(--text-muted)',
                               fontWeight: '900',
                               fontSize: isMobile ? '10px' : '12px',
                               cursor: 'pointer',
@@ -1840,17 +1839,17 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                               flex: isMobile ? 1 : 'none'
                             }}
                           >
-                            {idx} {idx === 1 ? 'lavado' : 'lavados'}
+                            {idx} {idx === 1 ? 'tratamiento' : 'tratamientos'}
                           </button>
                         ))}
                       </div>
                     </div>
 
-                    {washCount > 0 && (
+                    {treatmentCount > 0 && (
                       <div className="animate-fade-in" style={{ position: 'relative' }}>
                         {/* Selected value button */}
                         <div 
-                          onClick={() => setIsWasherDropdownOpen(!isWasherDropdownOpen)}
+                          onClick={() => setIsTreatmentStaffDropdownOpen(!isTreatmentStaffDropdownOpen)}
                           style={{
                             width: '100%',
                             padding: isMobile ? '10px 12px' : '14px 16px',
@@ -1866,31 +1865,31 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                             transition: 'all 0.2s',
                             boxSizing: 'border-box'
                           }}
-                          onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(212,175,55,0.6)'}
-                          onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(212,175,55,0.25)'}
+                          onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(212,160,154,0.6)'}
+                          onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(212,160,154,0.25)'}
                         >
                           <span>
-                            {selectedWasherId 
+                            {selectedTreatmentStaffId 
                               ? (() => {
-                                  const washer = allStaff.find(s => s.id === selectedWasherId);
-                                  return washer ? `${washer.name} ($${washer.washing_rate || 0}/lavado) - Disponible` : 'Seleccionar Asistente de Lavado';
+                                  const treatmentStaff = allStaff.find(s => s.id === selectedTreatmentStaffId);
+                                  return treatmentStaff ? `${treatmentStaff.name} ($${treatmentStaff.treatment_rate || 0}/tratamiento) - Disponible` : 'Seleccionar Estilista de Tratamiento';
                                 })()
-                              : 'Seleccionar Asistente de Lavado'
+                              : 'Seleccionar Estilista de Tratamiento'
                             }
                           </span>
-                          <ChevronDown size={16} color="var(--gold-primary)" style={{
-                            transform: isWasherDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                          <ChevronDown size={16} color="var(--pink-primary)" style={{
+                            transform: isTreatmentStaffDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                             transition: 'transform 0.2s ease',
                             flexShrink: 0
                           }} />
                         </div>
 
                         {/* Custom Dropdown Menu */}
-                        {isWasherDropdownOpen && (
+                        {isTreatmentStaffDropdownOpen && (
                           <>
                             {/* Transparent overlay to close dropdown */}
                             <div 
-                              onClick={() => setIsWasherDropdownOpen(false)}
+                              onClick={() => setIsTreatmentStaffDropdownOpen(false)}
                               style={{ position: 'fixed', inset: 0, zIndex: 999 }}
                             />
                             
@@ -1909,11 +1908,11 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                               zIndex: 1000,
                               boxShadow: '0 15px 35px rgba(0, 0, 0, 0.6)'
                             }}>
-                              {/* Option: Seleccionar Asistente de Lavado */}
+                              {/* Option: Seleccionar Estilista de Tratamiento */}
                               <div
                                 onClick={() => {
-                                  setSelectedWasherId('');
-                                  setIsWasherDropdownOpen(false);
+                                  setSelectedTreatmentStaffId('');
+                                  setIsTreatmentStaffDropdownOpen(false);
                                 }}
                                 style={{
                                   padding: '12px 16px',
@@ -1926,17 +1925,17 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                                 onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.03)'}
                                 onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
                               >
-                                Seleccionar Asistente de Lavado
+                                Seleccionar Estilista de Tratamiento
                               </div>
                               
                               {allStaff
-                                .filter(s => s.role?.toLowerCase().includes('asistente'))
+                                .filter(s => s.role?.toLowerCase().includes('estilista'))
                                 .map(s => (
                                   <div
                                     key={s.id}
                                     onClick={() => {
-                                      setSelectedWasherId(s.id);
-                                      setIsWasherDropdownOpen(false);
+                                      setSelectedTreatmentStaffId(s.id);
+                                      setIsTreatmentStaffDropdownOpen(false);
                                     }}
                                     style={{
                                       padding: '12px 16px',
@@ -1948,22 +1947,22 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                                       justifyContent: 'space-between',
                                       alignItems: 'center',
                                       transition: 'background-color 0.2s',
-                                      backgroundColor: selectedWasherId === s.id ? 'rgba(212, 175, 55, 0.1)' : 'transparent'
+                                      backgroundColor: selectedTreatmentStaffId === s.id ? 'rgba(212, 175, 55, 0.1)' : 'transparent'
                                     }}
                                     onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(212, 175, 55, 0.06)'}
-                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = selectedWasherId === s.id ? 'rgba(212, 175, 55, 0.1)' : 'transparent'}
+                                    onMouseLeave={e => e.currentTarget.style.backgroundColor = selectedTreatmentStaffId === s.id ? 'rgba(212, 175, 55, 0.1)' : 'transparent'}
                                   >
-                                    <span style={{ fontWeight: selectedWasherId === s.id ? '800' : '500' }}>{s.name}</span>
-                                    <span style={{ fontSize: '11px', color: 'var(--gold-primary)' }}>${s.washing_rate || 0}/lavado</span>
+                                    <span style={{ fontWeight: selectedTreatmentStaffId === s.id ? '800' : '500' }}>{s.name}</span>
+                                    <span style={{ fontSize: '11px', color: 'var(--pink-primary)' }}>${s.treatment_rate || 0}/tratamiento</span>
                                   </div>
                                 ))
                               }
                             </div>
                           </>
                         )}
-                        {allStaff.filter(s => s.role?.toLowerCase().includes('asistente')).length > 1 && !selectedWasherId && (
+                        {allStaff.filter(s => s.role?.toLowerCase().includes('estilista')).length > 1 && !selectedTreatmentStaffId && (
                           <div style={{ marginTop: '6px', fontSize: '9px', color: '#ff9500', fontWeight: '800' }}>
-                            ⚠️ Hay múltiples asistentes. Por favor selecciona una.
+                            ⚠️ Hay múltiples estilistas. Por favor selecciona una.
                           </div>
                         )}
                       </div>
@@ -1975,11 +1974,11 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                 <div style={{ paddingTop: '10px', borderTop: '1px dashed rgba(255,255,255,0.1)', marginBottom: '16px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                     <span style={{ color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
-                      <TrendingUp size={14} color="var(--gold-primary)" /> PROPINAS
+                      <TrendingUp size={14} color="var(--pink-primary)" /> PROPINAS
                     </span>
                     <button 
                       onClick={() => setTips([...tips, { id: Date.now().toString(), staffId: allStaff[0]?.id || '', amount: 0, currency: 'USD' }])}
-                      style={{ background: 'rgba(212,175,55,0.1)', border: 'none', color: 'var(--gold-primary)', borderRadius: '8px', padding: '4px 8px', fontSize: '10px', fontWeight: '900', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                      style={{ background: 'rgba(212,160,154,0.1)', border: 'none', color: 'var(--pink-primary)', borderRadius: '8px', padding: '4px 8px', fontSize: '10px', fontWeight: '900', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
                     >
                       <Plus size={12} /> AGREGAR PROPINA
                     </button>
@@ -2007,7 +2006,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                               userSelect: 'none',
                               boxSizing: 'border-box'
                             }}
-                            onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(212,175,55,0.4)'}
+                            onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(212,160,154,0.4)'}
                             onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'}
                           >
                             <span>
@@ -2016,7 +2015,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                                 : 'Seleccionar Integrante'
                               }
                             </span>
-                            <ChevronDown size={14} color="var(--gold-primary)" style={{
+                            <ChevronDown size={14} color="var(--pink-primary)" style={{
                               transform: openTipDropdownId === t.id ? 'rotate(180deg)' : 'rotate(0deg)',
                               transition: 'transform 0.2s ease',
                               flexShrink: 0
@@ -2105,10 +2104,10 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                           style={{ 
                             width: '44px', 
                             height: '36px', 
-                            background: t.currency === 'BS' ? 'rgba(255,255,255,0.05)' : 'rgba(212,175,55,0.15)', 
+                            background: t.currency === 'BS' ? 'rgba(255,255,255,0.05)' : 'rgba(212,160,154,0.15)', 
                             border: '1px solid rgba(255,255,255,0.1)', 
                             borderRadius: '10px', 
-                            color: t.currency === 'BS' ? '#ffffff' : 'var(--gold-primary)', 
+                            color: t.currency === 'BS' ? '#ffffff' : 'var(--pink-primary)', 
                             fontWeight: '900', 
                             fontSize: '11px',
                             cursor: 'pointer',
@@ -2131,7 +2130,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                               newTips[idx].amount = parseFloat(e.target.value) || 0;
                               setTips(newTips);
                             }}
-                            style={{ width: '100%', height: '36px', textAlign: 'right', background: 'rgba(212,175,55,0.1)', border: 'none', borderRadius: '10px', color: 'var(--gold-primary)', fontWeight: '800', paddingRight: '12px' }} 
+                            style={{ width: '100%', height: '36px', textAlign: 'right', background: 'rgba(212,160,154,0.1)', border: 'none', borderRadius: '10px', color: 'var(--pink-primary)', fontWeight: '800', paddingRight: '12px' }} 
                           />
                         </div>
                         <button 
@@ -2148,7 +2147,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: '12px' }}>
                   <span style={{ fontSize: isMobile ? '13px' : '16px', fontWeight: '900' }}>TOTAL A PAGAR</span>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: '950', color: 'var(--gold-primary)' }}>{formatCurrency(totalBs)} Bs.</div>
+                    <div style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: '950', color: 'var(--pink-primary)' }}>{formatCurrency(totalBs)} Bs.</div>
                     <div style={{ fontSize: isMobile ? '11px' : '13px', color: 'var(--text-muted)' }}>Ref: ${formatCurrency(totalUsd)}</div>
                   </div>
                 </div>
@@ -2158,15 +2157,15 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
                   <button 
                     onClick={() => { setPaymentMode('full_usd'); setCashUsd(totalUsd); }}
-                    style={{ flex: 1, height: '38px', borderRadius: '10px', border: paymentMode === 'full_usd' ? '2px solid var(--gold-primary)' : '1px solid rgba(255,255,255,0.1)', background: paymentMode === 'full_usd' ? 'rgba(212,175,55,0.1)' : 'none', color: paymentMode === 'full_usd' ? 'var(--gold-primary)' : 'white', fontWeight: '800', cursor: 'pointer', fontSize: '9px' }}
+                    style={{ flex: 1, height: '38px', borderRadius: '10px', border: paymentMode === 'full_usd' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.1)', background: paymentMode === 'full_usd' ? 'rgba(212,160,154,0.1)' : 'none', color: paymentMode === 'full_usd' ? 'var(--pink-primary)' : 'white', fontWeight: '800', cursor: 'pointer', fontSize: '9px' }}
                   >TODO EN $</button>
                   <button 
                     onClick={() => { setPaymentMode('full_bs'); setCashUsd(0); }}
-                    style={{ flex: 1, height: '38px', borderRadius: '10px', border: paymentMode === 'full_bs' ? '2px solid var(--gold-primary)' : '1px solid rgba(255,255,255,0.1)', background: paymentMode === 'full_bs' ? 'rgba(212,175,55,0.1)' : 'none', color: paymentMode === 'full_bs' ? 'var(--gold-primary)' : 'white', fontWeight: '800', cursor: 'pointer', fontSize: '9px' }}
+                    style={{ flex: 1, height: '38px', borderRadius: '10px', border: paymentMode === 'full_bs' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.1)', background: paymentMode === 'full_bs' ? 'rgba(212,160,154,0.1)' : 'none', color: paymentMode === 'full_bs' ? 'var(--pink-primary)' : 'white', fontWeight: '800', cursor: 'pointer', fontSize: '9px' }}
                   >TODO EN BS</button>
                   <button 
                     onClick={() => setPaymentMode('mixed')}
-                    style={{ flex: 1, height: '38px', borderRadius: '10px', border: paymentMode === 'mixed' ? '2px solid var(--gold-primary)' : '1px solid rgba(255,255,255,0.1)', background: paymentMode === 'mixed' ? 'rgba(212,175,55,0.1)' : 'none', color: paymentMode === 'mixed' ? 'var(--gold-primary)' : 'white', fontWeight: '800', cursor: 'pointer', fontSize: '9px' }}
+                    style={{ flex: 1, height: '38px', borderRadius: '10px', border: paymentMode === 'mixed' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.1)', background: paymentMode === 'mixed' ? 'rgba(212,160,154,0.1)' : 'none', color: paymentMode === 'mixed' ? 'var(--pink-primary)' : 'white', fontWeight: '800', cursor: 'pointer', fontSize: '9px' }}
                   >PAGO MIXTO</button>
                 </div>
 
@@ -2178,7 +2177,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                         <button 
                           key={m}
                           onClick={() => setMethodUsd(m)}
-                          style={{ flex: 1, padding: '8px', borderRadius: '10px', border: methodUsd === m ? '1.5px solid var(--gold-primary)' : '1px solid rgba(255,255,255,0.05)', background: methodUsd === m ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.02)', color: methodUsd === m ? 'var(--gold-primary)' : 'white', fontSize: '10px', fontWeight: '700', cursor: 'pointer' }}
+                          style={{ flex: 1, padding: '8px', borderRadius: '10px', border: methodUsd === m ? '1.5px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)', background: methodUsd === m ? 'rgba(212,160,154,0.1)' : 'rgba(255,255,255,0.02)', color: methodUsd === m ? 'var(--pink-primary)' : 'white', fontSize: '10px', fontWeight: '700', cursor: 'pointer' }}
                         >{m}</button>
                       ))}
                     </div>
@@ -2189,7 +2188,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                   <div className="animate-slide-up" style={{ padding: '16px', backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: '16px', marginBottom: '12px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                       <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)' }}>TOTAL EN BOLÍVARES (BS)</label>
-                      <div style={{ fontWeight: '900', color: 'var(--gold-primary)', fontSize: '16px' }}>{formatCurrency(totalBs)} BS</div>
+                      <div style={{ fontWeight: '900', color: 'var(--pink-primary)', fontSize: '16px' }}>{formatCurrency(totalBs)} BS</div>
                     </div>
                     <label style={{ fontSize: '9px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>MÉTODO DE PAGO (BS)</label>
                     <div style={{ display: 'flex', gap: '6px' }}>
@@ -2197,7 +2196,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                         <button 
                           key={m}
                           onClick={() => setMethodBs(m)}
-                          style={{ flex: 1, padding: '8px', borderRadius: '10px', border: methodBs === m ? '1.5px solid var(--gold-primary)' : '1px solid rgba(255,255,255,0.05)', background: methodBs === m ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.02)', color: methodBs === m ? 'var(--gold-primary)' : 'white', fontSize: '9px', fontWeight: '700', cursor: 'pointer' }}
+                          style={{ flex: 1, padding: '8px', borderRadius: '10px', border: methodBs === m ? '1.5px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)', background: methodBs === m ? 'rgba(212,160,154,0.1)' : 'rgba(255,255,255,0.02)', color: methodBs === m ? 'var(--pink-primary)' : 'white', fontSize: '9px', fontWeight: '700', cursor: 'pointer' }}
                         >{m}</button>
                       ))}
                     </div>
@@ -2220,7 +2219,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                             <button 
                               key={m}
                               onClick={() => setMethodUsd(m)}
-                              style={{ flex: '1 0 45%', padding: '6px', borderRadius: '8px', border: methodUsd === m ? '1.5px solid var(--gold-primary)' : '1px solid rgba(255,255,255,0.05)', background: methodUsd === m ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.02)', color: methodUsd === m ? 'var(--gold-primary)' : 'white', fontSize: '9px', fontWeight: '700', cursor: 'pointer' }}
+                              style={{ flex: '1 0 45%', padding: '6px', borderRadius: '8px', border: methodUsd === m ? '1.5px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)', background: methodUsd === m ? 'rgba(212,160,154,0.1)' : 'rgba(255,255,255,0.02)', color: methodUsd === m ? 'var(--pink-primary)' : 'white', fontSize: '9px', fontWeight: '700', cursor: 'pointer' }}
                             >{m}</button>
                           ))}
                         </div>
@@ -2230,13 +2229,13 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                     <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '12px' }}>
                       <label style={{ fontSize: '9px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>2. RESTANTE EN BOLÍVARES (BS)</label>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                        <div style={{ fontWeight: '900', color: 'var(--gold-primary)', fontSize: '16px' }}>{formatCurrency(remainingBs)} BS</div>
+                        <div style={{ fontWeight: '900', color: 'var(--pink-primary)', fontSize: '16px' }}>{formatCurrency(remainingBs)} BS</div>
                         <div style={{ display: 'flex', flex: 1.5, gap: '4px', flexWrap: 'wrap', marginLeft: '10px' }}>
                           {['Pago Móvil', 'Efectivo', 'Transfe'].map(m => (
                             <button 
                               key={m}
                               onClick={() => setMethodBs(m === 'Transfe' ? 'Transferencia' : m)}
-                              style={{ flex: '1 0 45%', padding: '6px', borderRadius: '8px', border: (methodBs === m || (m==='Transfe' && methodBs==='Transferencia')) ? '1.5px solid var(--gold-primary)' : '1px solid rgba(255,255,255,0.05)', background: (methodBs === m || (m==='Transfe' && methodBs==='Transferencia')) ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.02)', color: (methodBs === m || (m==='Transfe' && methodBs==='Transferencia')) ? 'var(--gold-primary)' : 'white', fontSize: '9px', fontWeight: '700', cursor: 'pointer' }}
+                              style={{ flex: '1 0 45%', padding: '6px', borderRadius: '8px', border: (methodBs === m || (m==='Transfe' && methodBs==='Transferencia')) ? '1.5px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)', background: (methodBs === m || (m==='Transfe' && methodBs==='Transferencia')) ? 'rgba(212,160,154,0.1)' : 'rgba(255,255,255,0.02)', color: (methodBs === m || (m==='Transfe' && methodBs==='Transferencia')) ? 'var(--pink-primary)' : 'white', fontSize: '9px', fontWeight: '700', cursor: 'pointer' }}
                             >{m}</button>
                           ))}
                         </div>
@@ -2247,9 +2246,9 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
               </div>
 
               {checkoutClient && checkoutHasService && (
-                <div style={{ marginTop: '12px', padding: '14px', borderRadius: '14px', background: 'rgba(212,175,55,0.07)', border: '1px solid rgba(212,175,55,0.18)' }}>
+                <div style={{ marginTop: '12px', padding: '14px', borderRadius: '14px', background: 'rgba(212,160,154,0.07)', border: '1px solid rgba(212,160,154,0.18)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: hasConfiguredRecurrence ? 0 : '10px' }}>
-                    <Clock size={16} color="var(--gold-primary)" />
+                    <Clock size={16} color="var(--pink-primary)" />
                     <div>
                       <div style={{ color: 'white', fontWeight: '900', fontSize: '12px' }}>Recordatorio de proximo corte</div>
                       <div style={{ color: 'var(--text-muted)', fontSize: '10px', marginTop: '2px' }}>
@@ -2264,19 +2263,19 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
                         {[10, 14].map(days => (
                           <button key={days} type="button" onClick={() => setRecurrenceChoice(String(days))}
-                            style={{ padding: '9px 4px', borderRadius: '9px', cursor: 'pointer', fontSize: '10px', fontWeight: '900', color: recurrenceChoice === String(days) ? '#111' : 'white', background: recurrenceChoice === String(days) ? 'var(--gold-primary)' : 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                            style={{ padding: '9px 4px', borderRadius: '9px', cursor: 'pointer', fontSize: '10px', fontWeight: '900', color: recurrenceChoice === String(days) ? '#111' : 'white', background: recurrenceChoice === String(days) ? 'var(--pink-primary)' : 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
                             {days} dias
                           </button>
                         ))}
                         <button type="button" onClick={() => setRecurrenceChoice('custom')}
-                          style={{ padding: '9px 4px', borderRadius: '9px', cursor: 'pointer', fontSize: '10px', fontWeight: '900', color: recurrenceChoice === 'custom' ? '#111' : 'white', background: recurrenceChoice === 'custom' ? 'var(--gold-primary)' : 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                          style={{ padding: '9px 4px', borderRadius: '9px', cursor: 'pointer', fontSize: '10px', fontWeight: '900', color: recurrenceChoice === 'custom' ? '#111' : 'white', background: recurrenceChoice === 'custom' ? 'var(--pink-primary)' : 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
                           Personalizado
                         </button>
                       </div>
                       {recurrenceChoice === 'custom' && (
                         <input type="number" min="1" max="365" inputMode="numeric" value={customRecurrenceDays}
                           onChange={event => setCustomRecurrenceDays(event.target.value)} placeholder="Cantidad de dias"
-                          style={{ width: '100%', marginTop: '8px', height: '38px', borderRadius: '9px', padding: '0 12px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(212,175,55,0.25)', color: 'white', fontWeight: '800' }} />
+                          style={{ width: '100%', marginTop: '8px', height: '38px', borderRadius: '9px', padding: '0 12px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(212,160,154,0.25)', color: 'white', fontWeight: '800' }} />
                       )}
                       {recurrenceDaysToSave > 0 && (
                         <div style={{ marginTop: '8px', color: '#30d158', fontSize: '10px', fontWeight: '800' }}>
@@ -2321,7 +2320,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                 <button 
                   onClick={handleProcessCheckout}
                   disabled={loading}
-                  className="btn-gold" 
+                  className="btn-pink" 
                   style={{ flex: '2', height: isMobile ? '44px' : '54px', borderRadius: '14px', fontSize: isMobile ? '13px' : '15px', gap: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
                   {loading ? (
@@ -2354,15 +2353,15 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
       <AnimatedModal isOpen={showProductModal}>
         {(overlayClass, cardClass) => (
           <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-            <div className={`${cardClass}`} style={{ maxWidth: '680px', width: '100%', borderRadius: '32px', border: '1px solid rgba(212,175,55,0.25)', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'linear-gradient(160deg, rgba(30,30,32,0.98) 0%, rgba(20,20,22,0.99) 100%)', boxShadow: '0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset' }}>
+            <div className={`${cardClass}`} style={{ maxWidth: '680px', width: '100%', borderRadius: '32px', border: '1px solid rgba(212,160,154,0.25)', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'linear-gradient(160deg, rgba(30,30,32,0.98) 0%, rgba(20,20,22,0.99) 100%)', boxShadow: '0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset' }}>
               
               {/* Header */}
               <div style={{ padding: '28px 28px 0', flexShrink: 0 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-                      <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg, rgba(212,175,55,0.2), rgba(212,175,55,0.05))', border: '1px solid rgba(212,175,55,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <ShoppingBag size={18} color="var(--gold-primary)" />
+                      <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg, rgba(212,160,154,0.2), rgba(212,160,154,0.05))', border: '1px solid rgba(212,160,154,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <ShoppingBag size={18} color="var(--pink-primary)" />
                       </div>
                       <h2 style={{ fontWeight: '900', fontSize: '22px', letterSpacing: '-0.3px', color: 'white' }}>Seleccionar Producto</h2>
                     </div>
@@ -2375,7 +2374,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
 
                 {/* Search */}
                 <div style={{ position: 'relative', marginBottom: '20px' }}>
-                  <Search style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }} size={16} color="rgba(212,175,55,0.7)" />
+                  <Search style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }} size={16} color="rgba(212,160,154,0.7)" />
                   <input
                     autoFocus
                     type="text"
@@ -2414,7 +2413,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                             overflow: 'hidden',
                             transition: 'all 0.22s cubic-bezier(0.4,0,0.2,1)',
                           }}
-                          onMouseEnter={e => { if (!isOutOfStock) { e.currentTarget.style.border = '1px solid rgba(212,175,55,0.5)'; e.currentTarget.style.background = 'rgba(212,175,55,0.06)'; e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(0,0,0,0.3)'; }}}
+                          onMouseEnter={e => { if (!isOutOfStock) { e.currentTarget.style.border = '1px solid rgba(212,160,154,0.5)'; e.currentTarget.style.background = 'rgba(212,160,154,0.06)'; e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(0,0,0,0.3)'; }}}
                           onMouseLeave={e => { e.currentTarget.style.border = isOutOfStock ? '1px solid rgba(255,59,48,0.2)' : '1px solid rgba(255,255,255,0.07)'; e.currentTarget.style.background = isOutOfStock ? 'rgba(255,59,48,0.03)' : 'rgba(255,255,255,0.03)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
                         >
                           {/* Image area */}
@@ -2435,7 +2434,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                           <div style={{ padding: '12px 14px 14px' }}>
                             <div style={{ fontWeight: '800', fontSize: '13px', color: 'white', marginBottom: '8px', lineHeight: '1.3' }}>{item.name}</div>
                             <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                              <span style={{ color: 'var(--gold-primary)', fontWeight: '900', fontSize: '18px' }}>${item.price}</span>
+                              <span style={{ color: 'var(--pink-primary)', fontWeight: '900', fontSize: '18px' }}>${item.price}</span>
                             </div>
                             {rates?.usd > 0 && <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>≈ {Math.round(item.price * rates.usd).toLocaleString()} Bs.</div>}
                           </div>
@@ -2454,13 +2453,13 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
       <AnimatedModal isOpen={showExtraModal}>
         {(overlayClass, cardClass) => (
           <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-            <div className={`${cardClass}`} style={{ maxWidth: '520px', width: '100%', borderRadius: '32px', border: '1px solid rgba(212,175,55,0.25)', overflow: 'hidden', background: 'linear-gradient(160deg, rgba(30,30,32,0.98) 0%, rgba(20,20,22,0.99) 100%)', boxShadow: '0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset' }}>
+            <div className={`${cardClass}`} style={{ maxWidth: '520px', width: '100%', borderRadius: '32px', border: '1px solid rgba(212,160,154,0.25)', overflow: 'hidden', background: 'linear-gradient(160deg, rgba(30,30,32,0.98) 0%, rgba(20,20,22,0.99) 100%)', boxShadow: '0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset' }}>
               {/* Header */}
               <div style={{ padding: '28px 28px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'linear-gradient(135deg, rgba(212,175,55,0.2), rgba(212,175,55,0.05))', border: '1px solid rgba(212,175,55,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Zap size={20} color="var(--gold-primary)" />
+                    <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'linear-gradient(135deg, rgba(212,160,154,0.2), rgba(212,160,154,0.05))', border: '1px solid rgba(212,160,154,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Zap size={20} color="var(--pink-primary)" />
                     </div>
                     <div>
                       <h2 style={{ fontWeight: '900', fontSize: '20px', color: 'white', marginBottom: '2px' }}>Servicios Extras</h2>
@@ -2485,7 +2484,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                     if (cleanName.includes('profundo')) {
                       return { Icon: Waves };
                     }
-                    if (cleanName.includes('lavado') || cleanName.includes('express')) {
+                    if (cleanName.includes('tratamiento') || cleanName.includes('express')) {
                       return { Icon: ShowerHead };
                     }
                     if (cleanName.includes('mask') || cleanName.includes('mascarilla')) {
@@ -2501,7 +2500,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                       return { Icon: Sparkles };
                     }
                     if (cleanName.includes('barba') || cleanName.includes('afeitado') || cleanName.includes('perfilado') || cleanName.includes('epilacion') || cleanName.includes('epilación') || cleanName.includes('ceja')) {
-                      return { Icon: Scissors };
+                      return { Icon: Sparkles };
                     }
                     return { Icon: Zap };
                   };
@@ -2529,9 +2528,9 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                       }}
                       onMouseEnter={e => { 
                         e.currentTarget.style.background = 'linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))'; 
-                        e.currentTarget.style.border = '1px solid rgba(212,175,55,0.6)'; 
+                        e.currentTarget.style.border = '1px solid rgba(212,160,154,0.6)'; 
                         e.currentTarget.style.transform = 'translateY(-4px)'; 
-                        e.currentTarget.style.boxShadow = '0 12px 24px rgba(212,175,55,0.15)';
+                        e.currentTarget.style.boxShadow = '0 12px 24px rgba(212,160,154,0.15)';
                       }}
                       onMouseLeave={e => { 
                         e.currentTarget.style.background = 'linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))'; 
@@ -2541,10 +2540,10 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: '14px' }}>
-                        <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'transparent', border: '1px solid var(--gold-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 0 10px rgba(212,175,55,0.1)' }}>
-                          <IconComponent size={20} color="var(--gold-primary)" strokeWidth={1.5} />
+                        <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'transparent', border: '1px solid var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 0 10px rgba(212,160,154,0.1)' }}>
+                          <IconComponent size={20} color="var(--pink-primary)" strokeWidth={1.5} />
                         </div>
-                        <div style={{ fontWeight: '900', fontSize: '18px', color: 'var(--gold-primary)', background: 'rgba(212,175,55,0.1)', padding: '4px 10px', borderRadius: '10px' }}>${extra.price}</div>
+                        <div style={{ fontWeight: '900', fontSize: '18px', color: 'var(--pink-primary)', background: 'rgba(212,160,154,0.1)', padding: '4px 10px', borderRadius: '10px' }}>${extra.price}</div>
                       </div>
                       
                       <div style={{ width: '100%' }}>
@@ -2555,7 +2554,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                           ) : (
                             <div />
                           )}
-                          <div style={{ fontSize: '10px', color: 'var(--gold-primary)', fontWeight: '900', letterSpacing: '0.5px' }}>+ AGREGAR</div>
+                          <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '900', letterSpacing: '0.5px' }}>+ AGREGAR</div>
                         </div>
                       </div>
                     </button>
@@ -2571,13 +2570,13 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
       <AnimatedModal isOpen={showServiceModal}>
         {(overlayClass, cardClass) => (
           <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-            <div className={`${cardClass}`} style={{ maxWidth: '600px', width: '100%', borderRadius: '32px', border: '1px solid rgba(212,175,55,0.25)', overflow: 'hidden', background: 'linear-gradient(160deg, rgba(30,30,32,0.98) 0%, rgba(20,20,22,0.99) 100%)', boxShadow: '0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset' }}>
+            <div className={`${cardClass}`} style={{ maxWidth: '600px', width: '100%', borderRadius: '32px', border: '1px solid rgba(212,160,154,0.25)', overflow: 'hidden', background: 'linear-gradient(160deg, rgba(30,30,32,0.98) 0%, rgba(20,20,22,0.99) 100%)', boxShadow: '0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset' }}>
               {/* Header */}
               <div style={{ padding: '28px 28px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'linear-gradient(135deg, rgba(212,175,55,0.25), rgba(212,175,55,0.05))', border: '1px solid rgba(212,175,55,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Scissors size={20} color="var(--gold-primary)" />
+                    <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'linear-gradient(135deg, rgba(212,160,154,0.25), rgba(212,160,154,0.05))', border: '1px solid rgba(212,160,154,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Sparkles size={20} color="var(--pink-primary)" />
                     </div>
                     <div>
                       <h2 style={{ fontWeight: '900', fontSize: '20px', color: 'white', marginBottom: '2px' }}>Catálogo de Servicios</h2>
@@ -2593,17 +2592,17 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                   <button
                     key={service.id}
                     onClick={() => handleAddService(service)}
-                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '18px', borderRadius: '18px', border: '1px solid rgba(212,175,55,0.12)', background: 'rgba(212,175,55,0.03)', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s cubic-bezier(0.4,0,0.2,1)', position: 'relative', overflow: 'hidden' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.09)'; e.currentTarget.style.border = '1px solid rgba(212,175,55,0.45)'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(212,175,55,0.12)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.03)'; e.currentTarget.style.border = '1px solid rgba(212,175,55,0.12)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '18px', borderRadius: '18px', border: '1px solid rgba(212,160,154,0.12)', background: 'rgba(212,160,154,0.03)', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s cubic-bezier(0.4,0,0.2,1)', position: 'relative', overflow: 'hidden' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(212,160,154,0.09)'; e.currentTarget.style.border = '1px solid rgba(212,160,154,0.45)'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(212,160,154,0.12)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(212,160,154,0.03)'; e.currentTarget.style.border = '1px solid rgba(212,160,154,0.12)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
                   >
                     {/* Accent stripe */}
                     <div style={{ position: 'absolute', top: 0, left: 0, width: '3px', height: '100%', background: `linear-gradient(to bottom, hsl(${45 + i * 15}, 80%, 55%), hsl(${45 + i * 15}, 60%, 30%))`, borderRadius: '0 0 0 0' }} />
-                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(212,175,55,0.12)', border: '1px solid rgba(212,175,55,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
-                      <Scissors size={15} color="var(--gold-primary)" />
+                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(212,160,154,0.12)', border: '1px solid rgba(212,160,154,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
+                      <Sparkles size={15} color="var(--pink-primary)" />
                     </div>
                     <div style={{ fontWeight: '800', fontSize: '14px', color: 'white', marginBottom: '6px', lineHeight: '1.3' }}>{service.name}</div>
-                    <div style={{ fontWeight: '900', fontSize: '20px', color: 'var(--gold-primary)' }}>${service.price}</div>
+                    <div style={{ fontWeight: '900', fontSize: '20px', color: 'var(--pink-primary)' }}>${service.price}</div>
                     {rates?.usd > 0 && <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>≈ {Math.round(service.price * rates.usd).toLocaleString()} Bs.</div>}
                   </button>
                 ))}
@@ -2615,20 +2614,20 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
 
 
 
-      {/* Barber Select Modal */}
-      <AnimatedModal isOpen={showBarberModal}>
+      {/* Stylist Select Modal */}
+      <AnimatedModal isOpen={showStylistModal}>
         {(overlayClass, cardClass) => (
           <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
             <div className={`${cardClass} glass-card`} style={{ width: '100%', maxWidth: '400px', borderRadius: '32px', padding: '32px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <h2 style={{ fontWeight: '900', fontSize: '20px' }}>Seleccionar Barbero / Asistente</h2>
-                <button onClick={() => { setShowBarberModal(false); setIsChangingBarber(false); }} style={{ background: 'none', border: 'none', color: 'white', fontSize: '24px', cursor: 'pointer' }}>&times;</button>
+                <h2 style={{ fontWeight: '900', fontSize: '20px' }}>Seleccionar Estilista</h2>
+                <button onClick={() => { setShowStylistModal(false); setIsChangingStylist(false); }} style={{ background: 'none', border: 'none', color: 'white', fontSize: '24px', cursor: 'pointer' }}>&times;</button>
               </div>
               <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', fontSize: '13px' }}>
-                {isChangingBarber ? (
-                  "Selecciona el nuevo barbero o asistente para esta cita."
+                {isChangingStylist ? (
+                  "Selecciona el nuevo estilista para esta cita."
                 ) : (
-                  <>Selecciona el barbero o asistente al que se le asignará la comisión por el servicio <strong>{selectedServiceForBarber?.name}</strong>.</>
+                  <>Selecciona el estilista al que se le asignará la comisión por el servicio <strong>{selectedServiceForStylist?.name}</strong>.</>
                 )}
               </p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '10px', maxHeight: '400px', overflowY: 'auto', paddingRight: '8px' }}>
@@ -2637,18 +2636,18 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                   return !roleName.includes('admin') && 
                          !roleName.includes('recepcionista') && 
                          !roleName.includes('caja');
-                }).map(barber => (
+                }).map(stylist => (
                   <button 
-                    key={barber.id} 
-                    onClick={() => isChangingBarber ? handleChangeBarber(barber.id) : handleConfirmServiceBarber(barber.id)} 
+                    key={stylist.id} 
+                    onClick={() => isChangingStylist ? handleChangeStylist(stylist.id) : handleConfirmServiceStylist(stylist.id)} 
                     style={{ padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }} 
                     className="hover-item"
                   >
-                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--gold-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black' }}>
-                      <Scissors size={20} />
+                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--pink-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black' }}>
+                      <Sparkles size={20} />
                     </div>
                     <div>
-                      <div style={{ fontWeight: '800', color: 'white', fontSize: '15px' }}>{barber.name}</div>
+                      <div style={{ fontWeight: '800', color: 'white', fontSize: '15px' }}>{stylist.name}</div>
                     </div>
                   </button>
                 ))}
@@ -2668,7 +2667,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
       <AnimatedModal isOpen={showLinkModal}>
         {(overlayClass, cardClass) => (
           <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-            <div className={`${cardClass} glass-card`} style={{ maxWidth: '500px', width: '100%', borderRadius: '32px', border: '1.5px solid rgba(212,175,55,0.3)', padding: '28px' }}>
+            <div className={`${cardClass} glass-card`} style={{ maxWidth: '500px', width: '100%', borderRadius: '32px', border: '1.5px solid rgba(212,160,154,0.3)', padding: '28px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                 <h2 style={{ fontWeight: '900', fontSize: '20px' }}>Enlazar Citas en Espera</h2>
                 <button onClick={() => setShowLinkModal(false)} style={{ background: 'none', border: 'none', color: 'white', fontSize: '24px', cursor: 'pointer' }}>&times;</button>
@@ -2700,7 +2699,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                             <div style={{ textAlign: 'right' }}>
-                              <div style={{ fontWeight: '700', color: 'var(--gold-primary)', fontSize: '13px' }}>{(tPrice * fixedRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.</div>
+                              <div style={{ fontWeight: '700', color: 'var(--pink-primary)', fontSize: '13px' }}>{(tPrice * fixedRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.</div>
                               <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Ref: ${Number(tPrice).toFixed(2)}</div>
                             </div>
                             <button 
@@ -2708,7 +2707,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                                 setLinkedApps([...linkedApps, ...group.apps]);
                                 showToast(`Cita de ${group.client_name} enlazada.`);
                               }}
-                              className="btn-gold"
+                              className="btn-pink"
                               style={{ padding: '6px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: '900' }}
                             >
                               Enlazar
@@ -2723,7 +2722,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
               <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end' }}>
                 <button 
                   onClick={() => setShowLinkModal(false)} 
-                  className="btn-gold" 
+                  className="btn-pink" 
                   style={{ padding: '10px 24px', borderRadius: '12px', fontWeight: '800' }}
                 >
                   LISTO
@@ -2736,8 +2735,8 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
 
       <style>{`
         .hover-item:hover {
-          border-color: var(--gold-primary) !important;
-          background-color: rgba(212,175,55,0.05) !important;
+          border-color: var(--pink-primary) !important;
+          background-color: rgba(212,160,154,0.05) !important;
           transform: translateY(-2px);
         }
       `}</style>

@@ -16,8 +16,8 @@ const NotificationsDrawer = ({ isOpen, onClose }) => {
       loadNotifications();
     };
 
-    window.addEventListener('astro_new_notification', handleUpdate);
-    return () => window.removeEventListener('astro_new_notification', handleUpdate);
+    window.addEventListener('jana_new_notification', handleUpdate);
+    return () => window.removeEventListener('jana_new_notification', handleUpdate);
   }, [isOpen]);
 
   const loadNotifications = () => {
@@ -44,14 +44,14 @@ const NotificationsDrawer = ({ isOpen, onClose }) => {
     if (res === 'granted') {
       notificationService.sendNotification(
         '¡Permiso Activado! 🎉',
-        'Las notificaciones push del CRM de Astro Barber ya están activadas en este dispositivo.'
+        'Las notificaciones push del CRM de Jana Beauty ya están activadas en este dispositivo.'
       );
     }
   };
 
   const handleSendTestNotification = () => {
     notificationService.sendNotification(
-      'Astro Barber CRM 🚀',
+      'Jana Beauty CRM 🚀',
       '¡Funciona genial! Esta notificación llegará a tu teléfono o computadora de forma instantánea.'
     );
   };
@@ -87,7 +87,7 @@ const NotificationsDrawer = ({ isOpen, onClose }) => {
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        borderLeft: '1px solid rgba(212,175,55,0.3)',
+        borderLeft: '1px solid rgba(212,160,154,0.3)',
         borderRadius: '0',
         background: 'rgba(18, 18, 18, 0.98)',
         boxShadow: '-10px 0 30px rgba(0,0,0,0.5)',
@@ -103,8 +103,8 @@ const NotificationsDrawer = ({ isOpen, onClose }) => {
           alignItems: 'center'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Bell size={22} className="text-gold" />
-            <h3 style={{ fontSize: '18px', fontWeight: '900', color: 'white', margin: 0 }}>Notificaciones Astro</h3>
+            <Bell size={22} className="text-pink" />
+            <h3 style={{ fontSize: '18px', fontWeight: '900', color: 'white', margin: 0 }}>Notificaciones Jana</h3>
           </div>
           <button 
             onClick={onClose}
@@ -131,14 +131,14 @@ const NotificationsDrawer = ({ isOpen, onClose }) => {
             margin: '16px 24px 0 24px',
             padding: '16px',
             borderRadius: '16px',
-            background: 'linear-gradient(135deg, rgba(212,175,55,0.15), rgba(0,0,0,0.3))',
-            border: '1.5px solid rgba(212,175,55,0.4)',
+            background: 'linear-gradient(135deg, rgba(212,160,154,0.15), rgba(0,0,0,0.3))',
+            border: '1.5px solid rgba(212,160,154,0.4)',
             display: 'flex',
             flexDirection: 'column',
             gap: '12px'
           }}>
             <div style={{ display: 'flex', gap: '10px' }}>
-              <Smartphone size={20} className="text-gold" style={{ flexShrink: 0 }} />
+              <Smartphone size={20} className="text-pink" style={{ flexShrink: 0 }} />
               <div>
                 <span style={{ fontSize: '13px', fontWeight: '850', color: 'white', display: 'block' }}>Habilitar Notificaciones Push</span>
                 
@@ -160,7 +160,7 @@ const NotificationsDrawer = ({ isOpen, onClose }) => {
             </div>
             <button 
               onClick={handleRequestPermission}
-              className="btn-gold" 
+              className="btn-pink" 
               style={{ padding: '8px 16px', borderRadius: '10px', fontSize: '12px', fontWeight: '900' }}
             >
               {!isSecure ? 'Ver requisitos de red' : isIOS && !isStandalone ? 'Ver guía de instalación' : 'Activar Notificaciones'}
@@ -182,7 +182,7 @@ const NotificationsDrawer = ({ isOpen, onClose }) => {
               onClick={handleMarkAllRead} 
               style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
             >
-              <CheckCheck size={14} className="text-gold" /> Marcar leídas
+              <CheckCheck size={14} className="text-pink" /> Marcar leídas
             </button>
             <button 
               onClick={handleClearHistory} 
@@ -210,8 +210,8 @@ const NotificationsDrawer = ({ isOpen, onClose }) => {
                 padding: '12px',
                 borderRadius: '12px',
                 background: 'rgba(255,255,255,0.03)',
-                border: '1px dashed rgba(212,175,55,0.3)',
-                color: 'var(--gold-primary)',
+                border: '1px dashed rgba(212,160,154,0.3)',
+                color: 'var(--pink-primary)',
                 fontSize: '12px',
                 fontWeight: '800',
                 cursor: 'pointer',
@@ -245,8 +245,8 @@ const NotificationsDrawer = ({ isOpen, onClose }) => {
                 style={{
                   padding: '16px',
                   borderRadius: '16px',
-                  background: n.read ? 'rgba(255,255,255,0.02)' : 'rgba(212,175,55,0.04)',
-                  border: n.read ? '1px solid rgba(255,255,255,0.05)' : '1.5px solid rgba(212,175,55,0.25)',
+                  background: n.read ? 'rgba(255,255,255,0.02)' : 'rgba(212,160,154,0.04)',
+                  border: n.read ? '1px solid rgba(255,255,255,0.05)' : '1.5px solid rgba(212,160,154,0.25)',
                   position: 'relative',
                   transition: 'all 0.2s'
                 }}
@@ -259,7 +259,7 @@ const NotificationsDrawer = ({ isOpen, onClose }) => {
                     width: '6px',
                     height: '6px',
                     borderRadius: '50%',
-                    backgroundColor: 'var(--gold-primary)'
+                    backgroundColor: 'var(--pink-primary)'
                   }} />
                 )}
                 <h4 style={{ fontSize: '13px', fontWeight: '900', color: 'white', margin: '0 0 4px 0', paddingRight: '12px' }}>

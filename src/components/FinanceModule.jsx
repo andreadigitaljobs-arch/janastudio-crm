@@ -21,7 +21,7 @@ import {
   List,
   RefreshCw,
   User,
-  Scissors,
+  Sparkles,
   TrendingUp
 } from 'lucide-react';
 
@@ -30,7 +30,7 @@ import AstroDialog from './AstroDialog';
 import AstroDatePicker from './AstroDatePicker';
 import AstroSelect from './AstroSelect';
 import AnimatedModal from './AnimatedModal';
-import { isWash } from '../utils/wash';
+import { isTreatment } from '../utils/treatment';
 
 const getStartOfWeek = () => {
   const now = new Date();
@@ -116,7 +116,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterService, setFilterService] = useState('all');
   const [filterType, setFilterType] = useState('all'); // 'all', 'income', 'expense'
-  const [filterBarber, setFilterBarber] = useState('all'); // 'all' or staff ID
+  const [filterStylist, setFilterStylist] = useState('all'); // 'all' or staff ID
   const [filterDate, setFilterDate] = useState('this_week'); // 'all', 'today', 'this_week', 'this_month', 'custom'
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -146,7 +146,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
 
   // Business Logic States (from Excel 2)
   const [fixedCosts, setFixedCosts] = useState(() => {
-    const saved = localStorage.getItem('astro_fixed_costs');
+    const saved = localStorage.getItem('jana_fixed_costs');
     const defaults = { 
       rent: 522, 
       services: 300, 
@@ -178,7 +178,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
 
   // Payroll / Nómina States
   const [assistantConfig, setAssistantConfig] = useState(() => {
-    const saved = localStorage.getItem('astro_assistant_config');
+    const saved = localStorage.getItem('jana_assistant_config');
     const defaults = {
       weeklyVacaUsd: 20,
       splits: {}
@@ -253,10 +253,10 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
       const chosenMethod = valeModal.paymentMethod || 'Efectivo ($)';
       
       const newTx = {
-        description: `ADELANTO VALE - Barbero: ${valeModal.staff.name} (${chosenMethod})`,
+        description: `ADELANTO VALE - Estilista: ${valeModal.staff.name} (${chosenMethod})`,
         amount: amountUsd,
         type: 'expense',
-        category: 'Vales Barberos',
+        category: 'Vales Estilistas',
         currency: 'USD',
         exchange_rate: payrollRate,
         metadata: {
@@ -278,7 +278,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
 
         await dataService.syncValeToSheets({
           fecha: new Date().toLocaleDateString('es-VE'),
-          barbero: valeModal.staff.name,
+          estilista: valeModal.staff.name,
           vale: amountBs,
           montoUsd: isUsdMethod ? `${amountUsd.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}$` : "0,00$",
           montoBs: !isUsdMethod ? `${amountBs.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}Bs.` : "0,00Bs.",
@@ -287,7 +287,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
           servicio: "Adelanto (Vale)",
           cliente: "ADELANTO VALE",
           cedula: "S/C",
-          lavado: 0,
+          tratamiento: 0,
           tasa: `${payrollRate.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}Bs./$`
         });
       } catch (sheetErr) {
@@ -326,19 +326,19 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
     }
   };
 
-  const eligibleBarbers = staff.filter(s => {
+  const eligibleStylists = staff.filter(s => {
     const rolePart = (s.role?.split('|')[0] || '').toLowerCase();
-    const isAssistant = rolePart.includes('asistente') || rolePart.includes('lavado') || rolePart.includes('operaciones');
-    return !isAssistant && (rolePart.includes('barbero') || rolePart.includes('barber')) && !rolePart.includes('archived') && !rolePart.includes('admin');
+    const isAssistant = rolePart.includes('asistente') || rolePart.includes('tratamiento') || rolePart.includes('operaciones');
+    return !isAssistant && (rolePart.includes('estilista') || rolePart.includes('stylist')) && !rolePart.includes('archived') && !rolePart.includes('admin');
   });
 
   const handleWeeklyTotalChange = (val) => {
     const numVal = Number(val) || 0;
-    const count = eligibleBarbers.length || 1;
+    const count = eligibleStylists.length || 1;
     const equalShare = Number((numVal / count).toFixed(2));
     
     const newSplits = {};
-    eligibleBarbers.forEach(s => {
+    eligibleStylists.forEach(s => {
       newSplits[s.id] = equalShare;
     });
     
@@ -348,7 +348,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
     });
   };
 
-  const handleBarberSplitChange = (staffId, val) => {
+  const handleStylistSplitChange = (staffId, val) => {
     const numVal = val === '' ? '' : Number(val);
     const newSplits = {
       ...(assistantConfig?.splits || {}),
@@ -376,7 +376,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
       )
     };
     setAssistantConfig(normalizedConfig);
-    localStorage.setItem('astro_assistant_config', JSON.stringify(normalizedConfig));
+    localStorage.setItem('jana_assistant_config', JSON.stringify(normalizedConfig));
     setIsConfiguringPayroll(false);
     showToast('Configuración de Asistente guardada', 'success');
   };
@@ -564,7 +564,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
-      link.setAttribute("download", `finanzas_astro_${new Date().toLocaleDateString()}.csv`);
+      link.setAttribute("download", `finanzas_janastudio_${new Date().toLocaleDateString()}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -604,8 +604,8 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
     const desc = t.description || "";
     
     let clientName = meta.clientName || desc.split(' - Cliente: ')[1]?.split(' - ')[0] || "S/N";
-    let serviceName = meta.serviceName || desc.split(' - Servi: ')[1] || (t.category === 'Ventas Astro' || t.category === 'Ventas Pro' ? "Servicio" : t.description);
-    let barbero = meta.staffInvolved?.find(s => s.role?.includes('Barbero'))?.name || 
+    let serviceName = meta.serviceName || desc.split(' - Servi: ')[1] || (t.category === 'Ventas JanaStudio' || t.category === 'Ventas Pro' ? "Servicio" : t.description);
+    let estilista = meta.staffInvolved?.find(s => s.role?.includes('Estilista') || s.role?.includes('Stylist'))?.name || 
                   meta.staffInvolved?.[0]?.name || 
                   "N/A";
     
@@ -621,9 +621,9 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
       }
     }
     
-    const didWash = isWash(meta.didWash) ? 'Si' : 'No';
+    const didTreatment = isTreatment(meta.didTreatment) ? 'Si' : 'No';
 
-    return { clientName, serviceName, barbero, paymentMethod, didWash };
+    return { clientName, serviceName, estilista, paymentMethod, didTreatment };
   };
 
   const formatCurrency = (amount, currencySymbol = '$') => {
@@ -680,7 +680,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
 
   // Analysis Logic (Excel Replication)
   const analysisData = (() => {
-    const barberStats = {};
+    const stylistStats = {};
     const paymentStats = {};
     const serviceStats = {};
 
@@ -695,20 +695,20 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
       const method = meta.method_usd || meta.method_bs || 'Otro';
       paymentStats[method] = (paymentStats[method] || 0) + t.amount;
 
-      // 2. Barber Stats (Based on staffInvolved)
+      // 2. Stylist Stats (Based on staffInvolved)
       staffInvolved.forEach(s => {
         // Find staff name from staffId if possible, or use ID
         // Note: We might need the full staff list here or just use what's in metadata if we store names there.
         // For now, let's assume we can at least aggregate by ID and we'll need names later.
         const sId = s.staffId;
-        if (!barberStats[sId]) {
-          barberStats[sId] = { id: sId, services: 0, incomeBs: 0, lavados: 0 };
+        if (!stylistStats[sId]) {
+          stylistStats[sId] = { id: sId, services: 0, incomeBs: 0, treatments: 0 };
         }
         
         // If they earned commission and it's an appointment (not just tip)
         if (meta.appointment_id) {
-          barberStats[sId].services += 1;
-          barberStats[sId].incomeBs += bsAmount;
+          stylistStats[sId].services += 1;
+          stylistStats[sId].incomeBs += bsAmount;
           
           // Washing Logic: If this staff member was involved and there was a washer selected
           if (meta.staffInvolved.some(si => si.staffId === sId && si.commissionEarned > 0)) {
@@ -726,7 +726,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
       }
     });
 
-    return { barberStats, paymentStats, serviceStats };
+    return { stylistStats, paymentStats, serviceStats };
   })();
 
   const totalFixedCosts = Object.entries(fixedCosts).reduce((acc, [key, val]) => {
@@ -736,7 +736,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
 
   const netProfit = balance - totalFixedCosts;
   const breakEven = totalFixedCosts / 0.4; // Assuming 40% margin (after 60% commission)
-  const avgTicket = totalIncome / (Object.values(analysisData.barberStats).reduce((acc, b) => acc + b.services, 0) || 1);
+  const avgTicket = totalIncome / (Object.values(analysisData.stylistStats).reduce((acc, b) => acc + b.services, 0) || 1);
 
   const filteredTransactions = useMemo(() => transactions.filter(t => {
     // 1. Filter by Type
@@ -756,9 +756,9 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
       if (!matchClient && !matchDesc) return false;
     }
     
-    // 4. Filter by Barber
-    if (filterBarber !== 'all') {
-      const isAssociated = t.metadata?.staffInvolved?.some(s => String(s.staffId) === String(filterBarber));
+    // 4. Filter by Stylist
+    if (filterStylist !== 'all') {
+      const isAssociated = t.metadata?.staffInvolved?.some(s => String(s.staffId) === String(filterStylist));
       if (!isAssociated) return false;
     }
     
@@ -771,7 +771,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
     }
     
     return true;
-  }), [transactions, filterType, filterService, searchQuery, filterBarber, filterDate, startDate, endDate]);
+  }), [transactions, filterType, filterService, searchQuery, filterStylist, filterDate, startDate, endDate]);
 
   const uniqueServices = useMemo(() => (
     Array.from(new Set(transactions.map(t => parseTxExcel(t).serviceName).filter(Boolean)))
@@ -813,7 +813,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
     const valesTransactions = operationalTransactions.filter(t => {
       const d = new Date(t.created_at);
       return t.type === 'expense' &&
-             t.category === 'Vales Barberos' &&
+             t.category === 'Vales Estilistas' &&
              String(t.metadata?.staffId) === String(st.id) &&
              d >= dateFilterStart &&
              d <= dateFilterEnd;
@@ -842,34 +842,34 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
     const paidBs = weeklyTransactions.filter(t => t.type === 'expense' && ['Pago Nómina', 'Pago NÃ³mina'].includes(t.category) && String(t.metadata?.staffId) === String(st.id)).reduce((sum, t) => sum + (t.metadata?.amountBs || 0) + (t.metadata?.deductionBs || 0), 0);
     
     const rolePart = (st.role?.split('|')[0] || '').toLowerCase();
-    const isAssistant = rolePart.includes('asistente') || rolePart.includes('lavado') || rolePart.includes('operaciones');
-    const isBarber = !isAssistant && (rolePart.includes('barbero') || rolePart.includes('barber') || rolePart.includes('socio') || rolePart.includes('estilista') || rolePart.includes('lider'));
+    const isAssistant = rolePart.includes('asistente') || rolePart.includes('tratamiento') || rolePart.includes('operaciones');
+    const isStylist = !isAssistant && (rolePart.includes('estilista') || rolePart.includes('stylist') || rolePart.includes('socio') || rolePart.includes('estilista') || rolePart.includes('lider'));
     
     let grossIncomeBs = 0;
-    let lavadosCount = 0;
-    let lavadoDeductionBs = 0;
+    let treatmentsCount = 0;
+    let treatmentDeductionBs = 0;
     let weeklyAssistanceUsd = 0;
     let weeklyAssistanceBs = 0;
     let netIncomeBs = 0;
     
-    if (isBarber) {
+    if (isStylist) {
       grossIncomeBs = serviceTransactions.reduce((sum, t) => sum + ((t.amount || 0) * (t.exchange_rate || payrollRate)), 0);
-      lavadosCount = serviceTransactions.filter(t => isWash(t.metadata?.didWash)).length;
-      lavadoDeductionBs = lavadosCount * payrollRate;
+      treatmentsCount = serviceTransactions.filter(t => isTreatment(t.metadata?.didTreatment)).length;
+      treatmentDeductionBs = treatmentsCount * payrollRate;
       weeklyAssistanceUsd = assistantConfig?.splits?.[st.id] || 0;
       weeklyAssistanceBs = weeklyAssistanceUsd * payrollRate;
       // Replicar la fórmula canónica de la hoja original. La hoja usa 1,666
       // (no 1,666...), por lo que multiplicar la deducción por 60 % introduce
       // pequeñas diferencias acumuladas en los cierres semanales.
       const commissionPct = Number(st.commission_pct || 60);
-      netIncomeBs = (grossIncomeBs * (commissionPct / 100)) - (lavadoDeductionBs / 1.666) - weeklyAssistanceBs;
+      netIncomeBs = (grossIncomeBs * (commissionPct / 100)) - (treatmentDeductionBs / 1.666) - weeklyAssistanceBs;
     } else if (isAssistant) {
-      lavadosCount = serviceTransactions.filter(t => isWash(t.metadata?.didWash)).length;
-      const totalBarberAssistanceUsd = Object.values(assistantConfig?.splits || {}).reduce((sum, val) => sum + (Number(val) || 0), 0);
-      weeklyAssistanceUsd = totalBarberAssistanceUsd;
-      weeklyAssistanceBs = totalBarberAssistanceUsd * payrollRate;
-      lavadoDeductionBs = lavadosCount * payrollRate;
-      earnedBs = lavadoDeductionBs + productCommissionBs;
+      treatmentsCount = serviceTransactions.filter(t => isTreatment(t.metadata?.didTreatment)).length;
+      const totalStylistAssistanceUsd = Object.values(assistantConfig?.splits || {}).reduce((sum, val) => sum + (Number(val) || 0), 0);
+      weeklyAssistanceUsd = totalStylistAssistanceUsd;
+      weeklyAssistanceBs = totalStylistAssistanceUsd * payrollRate;
+      treatmentDeductionBs = treatmentsCount * payrollRate;
+      earnedBs = treatmentDeductionBs + productCommissionBs;
       netIncomeBs = earnedBs + weeklyAssistanceBs;
     } else {
       netIncomeBs = earnedBs;
@@ -880,12 +880,12 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
     
     return {
       ...st,
-      isBarber,
+      isStylist,
       isAssistant,
       servicesCount,
-      lavadosCount,
+      treatmentsCount,
       grossIncomeBs,
-      lavadoDeductionBs,
+      treatmentDeductionBs,
       weeklyAssistanceUsd,
       weeklyAssistanceBs,
       earnedBs,
@@ -900,17 +900,17 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
   }), [staff, weeklyTransactions, operationalTransactions, dateFilterStart, dateFilterEnd, payrollRate, assistantConfig])
     .filter(s => s.balanceBs !== 0 || s.earnedBs > 0 || s.paidBs > 0 || s.valesBs > 0);
 
-  const astroGrossIncomeBs = processedPayroll.reduce((sum, s) => sum + (s.isBarber ? s.grossIncomeBs : 0), 0);
-  const astroNetProfitBs = Math.max(0, processedPayroll.reduce((sum, s) => {
-    if (!s.isBarber) return sum;
+  const janaGrossIncomeBs = processedPayroll.reduce((sum, s) => sum + (s.isStylist ? s.grossIncomeBs : 0), 0);
+  const janaNetProfitBs = Math.max(0, processedPayroll.reduce((sum, s) => {
+    if (!s.isStylist) return sum;
     const marginPct = 1 - (Number(s.commission_pct || 60) / 100);
-    return sum + ((s.grossIncomeBs - s.lavadoDeductionBs) * marginPct);
+    return sum + ((s.grossIncomeBs - s.treatmentDeductionBs) * marginPct);
   }, 0));
-  const astroNetProfitUsd = astroNetProfitBs / payrollRate;
+  const janaNetProfitUsd = janaNetProfitBs / payrollRate;
 
   const handleSaveCosts = (e) => {
     e.preventDefault();
-    localStorage.setItem('astro_fixed_costs', JSON.stringify(fixedCosts));
+    localStorage.setItem('jana_fixed_costs', JSON.stringify(fixedCosts));
     setIsEditingCosts(false);
     showToast("Estructura de costos actualizada.");
   };
@@ -938,7 +938,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
           width: isMobile ? '100%' : 'auto',
           flexDirection: isMobile ? 'row' : 'row' // Keep side-by-side if refined enough
         }}>
-          <button className="btn-gold" onClick={() => handleManualTransaction('income')} style={{ 
+          <button className="btn-pink" onClick={() => handleManualTransaction('income')} style={{ 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
@@ -988,13 +988,13 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
             padding: isMobile ? '12px 4px' : '12px 20px', 
             background: 'none', 
             border: 'none', 
-            color: activeTab === 'transactions' ? 'var(--gold-primary)' : 'var(--text-secondary)',
+            color: activeTab === 'transactions' ? 'var(--pink-primary)' : 'var(--text-secondary)',
             fontWeight: '800',
             fontSize: isMobile ? '12px' : '14px',
             cursor: 'pointer',
             flex: isMobile ? 1 : 'none',
             textAlign: 'center',
-            borderBottom: activeTab === 'transactions' ? '2px solid var(--gold-primary)' : '2px solid transparent',
+            borderBottom: activeTab === 'transactions' ? '2px solid var(--pink-primary)' : '2px solid transparent',
             transition: '0.2s'
           }}
         >
@@ -1006,13 +1006,13 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
             padding: isMobile ? '12px 4px' : '12px 20px', 
             background: 'none', 
             border: 'none', 
-            color: activeTab === 'payroll' ? 'var(--gold-primary)' : 'var(--text-secondary)',
+            color: activeTab === 'payroll' ? 'var(--pink-primary)' : 'var(--text-secondary)',
             fontWeight: '800',
             fontSize: isMobile ? '12px' : '14px',
             cursor: 'pointer',
             flex: isMobile ? 1 : 'none',
             textAlign: 'center',
-            borderBottom: activeTab === 'payroll' ? '2px solid var(--gold-primary)' : '2px solid transparent',
+            borderBottom: activeTab === 'payroll' ? '2px solid var(--pink-primary)' : '2px solid transparent',
             transition: '0.2s'
           }}
         >
@@ -1024,13 +1024,13 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
             padding: isMobile ? '12px 4px' : '12px 20px', 
             background: 'none', 
             border: 'none', 
-            color: activeTab === 'analysis' ? 'var(--gold-primary)' : 'var(--text-secondary)',
+            color: activeTab === 'analysis' ? 'var(--pink-primary)' : 'var(--text-secondary)',
             fontWeight: '800',
             fontSize: isMobile ? '12px' : '14px',
             cursor: 'pointer',
             flex: isMobile ? 1 : 'none',
             textAlign: 'center',
-            borderBottom: activeTab === 'analysis' ? '2px solid var(--gold-primary)' : '2px solid transparent',
+            borderBottom: activeTab === 'analysis' ? '2px solid var(--pink-primary)' : '2px solid transparent',
             transition: '0.2s'
           }}
         >
@@ -1057,7 +1057,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
         }}>
           <div>
             <div style={{ fontSize: isMobile ? '12px' : '13px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px' }}>Saldo Actual</div>
-            <div style={{ fontSize: isMobile ? '38px' : '44px', fontWeight: '950', color: 'var(--gold-primary)', letterSpacing: '-1px' }}>
+            <div style={{ fontSize: isMobile ? '38px' : '44px', fontWeight: '950', color: 'var(--pink-primary)', letterSpacing: '-1px' }}>
               {formatCurrency(balance * (rates?.usd || 550), '')} Bs.
             </div>
             <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '750', marginTop: '4px' }}>
@@ -1130,15 +1130,15 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
         marginBottom: '40px', 
         padding: '32px', 
         borderRadius: '28px',
-        background: 'linear-gradient(135deg, rgba(28,28,30,0.8), rgba(212,175,55,0.05))',
-        border: '1px solid rgba(212,175,55,0.1)'
+        background: 'linear-gradient(135deg, rgba(28,28,30,0.8), rgba(217,70,168,0.05))',
+        border: '1px solid rgba(217,70,168,0.1)'
       }}>
         <div style={{ display: 'flex', alignItems: isMobile ? 'flex-start' : 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '24px', flexDirection: isMobile ? 'column' : 'row' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: 'var(--gold-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: 'var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Wallet size={20} color="black" />
             </div>
-            <h3 style={{ fontSize: '20px', fontWeight: '900' }}>Cierre de Caja <span className="text-gold">Astro</span></h3>
+            <h3 style={{ fontSize: '20px', fontWeight: '900' }}>Cierre de Caja <span className="text-gold">JanaStudio</span></h3>
           </div>
           <div style={{ width: isMobile ? '100%' : '260px' }}>
             <AstroSelect
@@ -1199,7 +1199,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
           </div>
           <div style={{ padding: '20px', backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '20px' }}>
             <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '4px' }}>PAGO MÓVIL (BS)</div>
-            <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--gold-primary)' }}>
+            <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--pink-primary)' }}>
               {formatCurrency(cashCloseTransferBs, '')} <span style={{fontSize: '12px'}}>BS</span>
             </div>
             <div style={{ fontSize: '11px', color: 'white', marginTop: '4px' }}>
@@ -1215,8 +1215,8 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
               REF: ${formatCurrency(cashCloseCommissionDebtUsd, '')}
             </div>
           </div>
-          <div style={{ padding: '20px', backgroundColor: 'rgba(212,175,55,0.1)', borderRadius: '20px', border: '1px solid var(--gold-primary)' }}>
-            <div style={{ fontSize: '10px', fontWeight: '900', color: 'black', backgroundColor: 'var(--gold-primary)', display: 'inline-block', padding: '2px 6px', borderRadius: '4px', marginBottom: '4px' }}>NETO REAL</div>
+          <div style={{ padding: '20px', backgroundColor: 'rgba(217,70,168,0.1)', borderRadius: '20px', border: '1px solid var(--pink-primary)' }}>
+            <div style={{ fontSize: '10px', fontWeight: '900', color: 'black', backgroundColor: 'var(--pink-primary)', display: 'inline-block', padding: '2px 6px', borderRadius: '4px', marginBottom: '4px' }}>NETO REAL</div>
             <div style={{ fontSize: '24px', fontWeight: '950', color: 'white' }}>
               {formatCurrency(cashCloseNetRealUsd * (rates?.usd || 550), '')} <span style={{fontSize: '12px'}}>BS</span>
             </div>
@@ -1256,7 +1256,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
             </button>
             <button onClick={() => setShowFilterPanel(!showFilterPanel)} style={{ 
               flex: 1,
-              background: showFilterPanel ? 'var(--gold-primary)' : 'var(--bg-tertiary)', 
+              background: showFilterPanel ? 'var(--pink-primary)' : 'var(--bg-tertiary)', 
               border: '1px solid var(--border-color)', 
               color: showFilterPanel ? 'black' : 'var(--text-secondary)', 
               padding: '10px 16px', 
@@ -1344,17 +1344,17 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                   />
                 </div>
 
-                {/* Barber Select */}
+                {/* Stylist Select */}
                 <div style={{ flex: 1, minWidth: '150px' }}>
                   <AstroSelect 
-                    label="Barbero Asignado"
-                    value={filterBarber}
-                    onChange={setFilterBarber}
+                    label="Estilista Asignado"
+                    value={filterStylist}
+                    onChange={setFilterStylist}
                     options={[
-                      { value: 'all', label: 'Cualquier Barbero' },
+                      { value: 'all', label: 'Cualquier Estilista' },
                       ...staff.filter(s => {
                         const role = s.role?.toLowerCase() || '';
-                        return role.includes('barber') || role.includes('estilista') || role.includes('socio') || role.includes('lider');
+                        return role.includes('stylist') || role.includes('estilista') || role.includes('socio') || role.includes('lider');
                       }).map(s => ({ value: s.id, label: s.name }))
                     ]}
                   />
@@ -1433,7 +1433,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                 else dateLabel = txDate.toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'short' });
               }
 
-              const { clientName, serviceName, barbero, paymentMethod, didWash } = parseTxExcel(t);
+                    const { clientName, serviceName, estilista, paymentMethod, didTreatment } = parseTxExcel(t);
               const isSelected = selectedTxId === t.id;
               
               const isTx = t.category === 'Ingreso Manual' || t.category === 'Gasto Manual' || !t.metadata?.appointment_id;
@@ -1444,7 +1444,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
               return (
                 <React.Fragment key={t.id}>
                   {showDateHeader && (
-                    <div style={{ padding: '8px 4px 0px 4px', color: 'var(--gold-primary)', fontWeight: '900', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', marginTop: idx === 0 ? '0' : '16px' }}>
+                    <div style={{ padding: '8px 4px 0px 4px', color: 'var(--pink-primary)', fontWeight: '900', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', marginTop: idx === 0 ? '0' : '16px' }}>
                       {dateLabel}
                     </div>
                   )}
@@ -1453,9 +1453,9 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                     style={{
                       padding: '16px',
                       borderRadius: '20px',
-                      background: isSelected ? 'linear-gradient(135deg, rgba(212,175,55,0.06) 0%, rgba(28,28,30,0.98) 100%)' : 'rgba(28, 28, 30, 0.98)',
-                      border: isSelected ? '1px solid rgba(212,175,55,0.25)' : '1px solid rgba(255,255,255,0.05)',
-                      boxShadow: isSelected ? '0 8px 32px 0 rgba(212,175,55,0.05)' : '0 4px 16px 0 rgba(0,0,0,0.25)',
+                      background: isSelected ? 'linear-gradient(135deg, rgba(217,70,168,0.06) 0%, rgba(28,28,30,0.98) 100%)' : 'rgba(28, 28, 30, 0.98)',
+                      border: isSelected ? '1px solid rgba(217,70,168,0.25)' : '1px solid rgba(255,255,255,0.05)',
+                      boxShadow: isSelected ? '0 8px 32px 0 rgba(217,70,168,0.05)' : '0 4px 16px 0 rgba(0,0,0,0.25)',
                       marginBottom: '8px'
                     }}
                   >
@@ -1483,14 +1483,14 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                       
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', textAlign: 'right', flexShrink: 0 }}>
                         <div>
-                          <div style={{ fontSize: '15px', fontWeight: '900', color: 'var(--gold-primary)', whiteSpace: 'nowrap' }}>
+                          <div style={{ fontSize: '15px', fontWeight: '900', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>
                             {t.type === 'expense' ? '-' : '+'}{formatCurrency(finalBs, '')} Bs.
                           </div>
                           <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', whiteSpace: 'nowrap' }}>
                             Ref: {t.type === 'expense' ? '-' : ''}${formatCurrency(t.amount, '')}
                           </div>
                         </div>
-                        <div style={{ color: isSelected ? 'var(--gold-primary)' : 'var(--text-muted)', transform: isSelected ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }}>
+                        <div style={{ color: isSelected ? 'var(--pink-primary)' : 'var(--text-muted)', transform: isSelected ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }}>
                           <span style={{ display: 'block', transform: 'rotate(90deg)' }}>&#10148;</span>
                         </div>
                       </div>
@@ -1506,13 +1506,13 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                             borderRadius: '20px',
                             background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
                             border: '1px solid rgba(255,255,255,0.05)',
-                            borderLeft: '4px solid var(--gold-primary)'
+                            borderLeft: '4px solid var(--pink-primary)'
                           }}>
                             <div style={{ fontSize: '11px', fontWeight: '900', color: 'white', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Detalles del Cliente</div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                               <div>
                                 <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Nombre</span>
-                                <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--gold-primary)' }}>{clientName}</div>
+                                <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--pink-primary)' }}>{clientName}</div>
                               </div>
                               <div>
                                 <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Cédula</span>
@@ -1527,7 +1527,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                             borderRadius: '20px',
                             background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
                             border: '1px solid rgba(255,255,255,0.05)',
-                            borderLeft: '4px solid var(--gold-primary)'
+                            borderLeft: '4px solid var(--pink-primary)'
                           }}>
                             <div style={{ fontSize: '11px', fontWeight: '900', color: 'white', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Servicios y Extras</div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', borderBottom: '1px dashed rgba(255,255,255,0.08)', paddingBottom: '8px' }}>
@@ -1537,7 +1537,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                               </div>
                               {!isTx && (
                                 <div style={{ textAlign: 'right' }}>
-                                  <div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--gold-primary)' }}>
+                                  <div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--pink-primary)' }}>
                                     {formatCurrency(Math.max(0, (t.amount - (t.metadata?.tips_total || 0) - (t.metadata?.extras?.reduce((acc, ex) => acc + (ex.price || 0), 0) || 0) - (t.metadata?.products_sold?.reduce((acc, pr) => acc + (pr.price || 0), 0) || 0))) * rate, '')} Bs.
                                   </div>
                                 </div>
@@ -1547,21 +1547,21 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                             {t.metadata?.extras?.map((ex, i) => (
                               <div key={`ex-${i}`} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '6px' }}>
                                 <span style={{ color: 'var(--text-secondary)' }}>+ {ex.name || ex.service_extras?.name} (Extra)</span>
-                                <span style={{ fontWeight: '800', color: 'var(--gold-primary)' }}>+{formatCurrency(ex.price * rate, '')} Bs.</span>
+                                <span style={{ fontWeight: '800', color: 'var(--pink-primary)' }}>+{formatCurrency(ex.price * rate, '')} Bs.</span>
                               </div>
                             ))}
 
                             {t.metadata?.products_sold?.map((pr, i) => (
                               <div key={`pr-${i}`} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '6px' }}>
                                 <span style={{ color: 'var(--text-secondary)' }}>+ {pr.name || pr.inventory?.name} x{pr.quantity}</span>
-                                <span style={{ fontWeight: '800', color: 'var(--gold-primary)' }}>+{formatCurrency(pr.price * rate, '')} Bs.</span>
+                                <span style={{ fontWeight: '800', color: 'var(--pink-primary)' }}>+{formatCurrency(pr.price * rate, '')} Bs.</span>
                               </div>
                             ))}
 
                             {t.metadata?.tips_total > 0 && (
                               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', borderTop: '1px dashed rgba(255,255,255,0.08)', paddingTop: '6px', marginTop: '6px' }}>
-                                <span style={{ color: 'var(--gold-primary)', fontWeight: '700' }}>Propinas Recibidas</span>
-                                <span style={{ fontWeight: '850', color: 'var(--gold-primary)' }}>+{formatCurrency(t.metadata.tips_total * rate, '')} Bs.</span>
+                                <span style={{ color: 'var(--pink-primary)', fontWeight: '700' }}>Propinas Recibidas</span>
+                                <span style={{ fontWeight: '850', color: 'var(--pink-primary)' }}>+{formatCurrency(t.metadata.tips_total * rate, '')} Bs.</span>
                               </div>
                             )}
                           </div>
@@ -1571,16 +1571,16 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                             padding: '16px',
                             borderRadius: '24px',
                             background: 'linear-gradient(135deg, rgba(20,20,22,0.85) 0%, rgba(10,10,12,0.95) 100%)',
-                            border: '1px solid rgba(212,175,55,0.15)'
+                            border: '1px solid rgba(217,70,168,0.15)'
                           }}>
-                            <div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--gold-primary)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Liquidación de Caja</div>
+                            <div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Liquidación de Caja</div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                               <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Venta Bruta</span>
                               <span style={{ fontSize: '13px', fontWeight: '800', color: 'white' }}>{formatCurrency((t.amount - (t.metadata?.tips_total || 0)) * rate, '')} Bs.</span>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed rgba(255,255,255,0.08)', paddingBottom: '8px', marginBottom: '8px' }}>
                               <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>TOTAL COBRADO</span>
-                              <span style={{ fontSize: '14px', fontWeight: '950', color: 'var(--gold-primary)' }}>{formatCurrency(finalBs, '')} Bs.</span>
+                              <span style={{ fontSize: '14px', fontWeight: '950', color: 'var(--pink-primary)' }}>{formatCurrency(finalBs, '')} Bs.</span>
                             </div>
 
                             <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '6px' }}>Método de Pago: {paymentMethod}</div>
@@ -1590,7 +1590,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                               {t.metadata?.staffInvolved?.map((s, idx) => (
                                 <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '4px' }}>
                                   <span>{s.name.split(' ')[0]} ({s.role?.split('|')[0] || 'Personal'})</span>
-                                  <span style={{ fontWeight: '800', color: 'var(--gold-primary)' }}>+{formatCurrency((s.commissionEarned || 0) * rate, '')} Bs.</span>
+                                  <span style={{ fontWeight: '800', color: 'var(--pink-primary)' }}>+{formatCurrency((s.commissionEarned || 0) * rate, '')} Bs.</span>
                                 </div>
                               ))}
                               {(!t.metadata?.staffInvolved?.length) && (
@@ -1626,10 +1626,10 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                   <tr style={{ backgroundColor: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                     <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Fecha</th>
                     <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Cliente</th>
-                    <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Barbero</th>
+                    <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Estilista</th>
                     <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Servicio</th>
                     <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Método de Pago</th>
-                    <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center' }}>Lavado</th>
+                    <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center' }}>Tratamiento</th>
                     <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'right' }}>Monto</th>
                     <th style={{ padding: '20px 24px', width: '60px' }}></th>
                   </tr>
@@ -1640,7 +1640,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                       <td colSpan="8" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>No hay transacciones registradas que coincidan.</td>
                     </tr>
                   ) : filteredTransactions.map((t, idx) => {
-                    const { clientName, serviceName, barbero, paymentMethod, didWash } = parseTxExcel(t);
+              const { clientName, serviceName, estilista, paymentMethod, didTreatment } = parseTxExcel(t);
                     const isSelected = selectedTxId === t.id;
                     
                     const isTx = t.category === 'Ingreso Manual' || t.category === 'Gasto Manual' || !t.metadata?.appointment_id;
@@ -1654,7 +1654,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                           style={{
                             borderBottom: '1px solid rgba(255,255,255,0.03)',
                             cursor: 'pointer',
-                            backgroundColor: isSelected ? 'rgba(212,175,55,0.05)' : 'transparent',
+                            backgroundColor: isSelected ? 'rgba(217,70,168,0.05)' : 'transparent',
                             transition: 'background-color 0.2s'
                           }}
                         >
@@ -1670,7 +1670,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                             {clientName}
                           </td>
                           <td style={{ padding: '18px 24px', fontSize: '14px', fontWeight: '700', color: 'var(--text-secondary)' }}>
-                            {barbero}
+                            {estilista}
                           </td>
                           <td style={{ padding: '18px 24px', fontSize: '14px', fontWeight: '500', color: 'var(--text-secondary)' }}>
                             {serviceName}
@@ -1682,16 +1682,16 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                             <span style={{ 
                               padding: '4px 10px', 
                               borderRadius: '6px', 
-                              backgroundColor: didWash === 'Si' ? 'rgba(50, 215, 75, 0.1)' : 'rgba(255,255,255,0.05)',
-                              color: didWash === 'Si' ? '#32d74b' : 'var(--text-muted)',
+                              backgroundColor: didTreatment === 'Si' ? 'rgba(50, 215, 75, 0.1)' : 'rgba(255,255,255,0.05)',
+                              color: didTreatment === 'Si' ? '#32d74b' : 'var(--text-muted)',
                               fontWeight: '900',
                               fontSize: '11px'
                             }}>
-                              {didWash}
+                              {didTreatment}
                             </span>
                           </td>
                           <td style={{ padding: '18px 24px', textAlign: 'right' }}>
-                            <div style={{ fontSize: '15px', fontWeight: '950', color: 'var(--gold-primary)' }}>
+                            <div style={{ fontSize: '15px', fontWeight: '950', color: 'var(--pink-primary)' }}>
                               {t.type === 'expense' ? '-' : '+'}{formatCurrency(finalBs, '')} Bs.
                             </div>
                             <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', marginTop: '2px' }}>
@@ -1709,7 +1709,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                                   <Trash2 size={14} />
                                 </button>
                               )}
-                              <div style={{ color: isSelected ? 'var(--gold-primary)' : 'var(--text-muted)', transform: isSelected ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <div style={{ color: isSelected ? 'var(--pink-primary)' : 'var(--text-muted)', transform: isSelected ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <ChevronRight size={16} style={{ transform: isSelected ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }} />
                               </div>
                             </div>
@@ -1722,8 +1722,8 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                                 margin: '0 16px', 
                                 padding: '32px 40px', 
                                 borderRadius: '0 0 20px 20px',
-                                background: 'linear-gradient(180deg, rgba(212,175,55,0.02), transparent)',
-                                border: '1px solid rgba(212,175,55,0.08)',
+                                background: 'linear-gradient(180deg, rgba(217,70,168,0.02), transparent)',
+                                border: '1px solid rgba(217,70,168,0.08)',
                                 borderTop: 'none'
                               }}>
                                 <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '32px', alignItems: 'start' }}>
@@ -1737,7 +1737,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                                       borderRadius: '20px',
                                       background: 'linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.005) 100%)',
                                       border: '1px solid rgba(255,255,255,0.05)',
-                                      borderLeft: '4px solid var(--gold-primary)',
+                                      borderLeft: '4px solid var(--pink-primary)',
                                       boxShadow: '0 4px 24px rgba(0,0,0,0.15)'
                                     }}>
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
@@ -1745,14 +1745,14 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                                           width: '32px', 
                                           height: '32px', 
                                           borderRadius: '10px', 
-                                          background: 'rgba(212,175,55,0.15)', 
-                                          color: 'var(--gold-primary)', 
+                                          background: 'rgba(217,70,168,0.15)', 
+                                          color: 'var(--pink-primary)', 
                                           display: 'flex', 
                                           alignItems: 'center', 
                                           justifyContent: 'center', 
-                                          border: '1px solid rgba(212,175,55,0.3)'
+                                          border: '1px solid rgba(217,70,168,0.3)'
                                         }}>
-                                          <User size={16} color="var(--gold-primary)" />
+                                          <User size={16} color="var(--pink-primary)" />
                                         </div>
                                         <span style={{ fontSize: '11px', fontWeight: '900', color: 'white', letterSpacing: '1px', textTransform: 'uppercase' }}>
                                           DETALLES DEL CLIENTE
@@ -1761,7 +1761,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                                       <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', gap: '20px' }}>
                                         <div>
                                           <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '6px', letterSpacing: '0.5px' }}>NOMBRE</span>
-                                          <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--gold-primary)' }}>{clientName}</span>
+                                          <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--pink-primary)' }}>{clientName}</span>
                                         </div>
                                         <div>
                                           <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '6px', letterSpacing: '0.5px' }}>CÉDULA</span>
@@ -1780,7 +1780,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                                       borderRadius: '20px',
                                       background: 'linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.005) 100%)',
                                       border: '1px solid rgba(255,255,255,0.05)',
-                                      borderLeft: '4px solid var(--gold-primary)',
+                                      borderLeft: '4px solid var(--pink-primary)',
                                       boxShadow: '0 4px 24px rgba(0,0,0,0.15)'
                                     }}>
                                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
@@ -1788,14 +1788,14 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                                           width: '32px', 
                                           height: '32px', 
                                           borderRadius: '10px', 
-                                          background: 'rgba(212,175,55,0.15)', 
-                                          color: 'var(--gold-primary)', 
+                                          background: 'rgba(217,70,168,0.15)', 
+                                          color: 'var(--pink-primary)', 
                                           display: 'flex', 
                                           alignItems: 'center', 
                                           justifyContent: 'center', 
-                                          border: '1px solid rgba(212,175,55,0.3)'
+                                          border: '1px solid rgba(217,70,168,0.3)'
                                         }}>
-                                          <Scissors size={16} color="var(--gold-primary)" />
+                                          <Sparkles size={16} color="var(--pink-primary)" />
                                         </div>
                                         <span style={{ fontSize: '11px', fontWeight: '900', color: 'white', letterSpacing: '1px', textTransform: 'uppercase' }}>
                                           SERVICIO Y EXTRAS REALIZADOS
@@ -1809,7 +1809,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                                           </div>
                                           {!isTx && (
                                             <div style={{ textAlign: 'right' }}>
-                                              <span style={{ fontSize: '14px', fontWeight: '900', color: 'var(--gold-primary)', whiteSpace: 'nowrap' }}>
+                                              <span style={{ fontSize: '14px', fontWeight: '900', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>
                                                 {formatCurrency(Math.max(0, (t.amount - (t.metadata?.tips_total || 0) - (t.metadata?.extras?.reduce((acc, ex) => acc + (ex.price || 0), 0) || 0) - (t.metadata?.products_sold?.reduce((acc, pr) => acc + (pr.price || 0), 0) || 0))) * rate, '')} Bs.
                                               </span>
                                               <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', fontWeight: '700' }}>Ref: ${formatCurrency(Math.max(0, (t.amount - (t.metadata?.tips_total || 0) - (t.metadata?.extras?.reduce((acc, ex) => acc + (ex.price || 0), 0) || 0) - (t.metadata?.products_sold?.reduce((acc, pr) => acc + (pr.price || 0), 0) || 0))), '')}</span>
@@ -1824,10 +1824,10 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                                             {t.metadata?.extras?.map((ex, idx) => (
                                               <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', background: 'rgba(255,255,255,0.01)', padding: '8px 12px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.04)' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                  <span style={{ fontSize: '8px', fontWeight: '900', color: 'var(--gold-primary)', background: 'rgba(212,175,55,0.1)', borderRadius: '4px', padding: '2px 4px' }}>EXTRA</span>
+                                                  <span style={{ fontSize: '8px', fontWeight: '900', color: 'var(--pink-primary)', background: 'rgba(217,70,168,0.1)', borderRadius: '4px', padding: '2px 4px' }}>EXTRA</span>
                                                   <span style={{ color: 'white', fontWeight: '700' }}>{ex.name || ex.service_extras?.name}</span>
                                                 </div>
-                                                <span style={{ fontWeight: '800', color: 'var(--gold-primary)' }}>+{formatCurrency(ex.price * rate, '')} Bs.</span>
+                                                <span style={{ fontWeight: '800', color: 'var(--pink-primary)' }}>+{formatCurrency(ex.price * rate, '')} Bs.</span>
                                               </div>
                                             ))}
                                             {t.metadata?.products_sold?.map((pr, idx) => (
@@ -1836,7 +1836,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                                                   <span style={{ fontSize: '8px', fontWeight: '900', color: '#60a5fa', background: 'rgba(96,165,250,0.1)', borderRadius: '4px', padding: '2px 4px' }}>PRODUCTO</span>
                                                   <span style={{ color: 'white', fontWeight: '700' }}>{pr.name || pr.inventory?.name} ({pr.quantity}u)</span>
                                                 </div>
-                                                <span style={{ fontWeight: '800', color: 'var(--gold-primary)' }}>+{formatCurrency(pr.price * rate, '')} Bs.</span>
+                                                <span style={{ fontWeight: '800', color: 'var(--pink-primary)' }}>+{formatCurrency(pr.price * rate, '')} Bs.</span>
                                               </div>
                                             ))}
                                             {(!t.metadata?.extras?.length && !t.metadata?.products_sold?.length) && (
@@ -1847,8 +1847,8 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
  
                                         {t.metadata?.tips_total > 0 && (
                                           <div style={{ marginTop: '12px', borderTop: '1px dashed rgba(255,255,255,0.08)', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-                                            <span style={{ color: 'var(--gold-primary)', fontWeight: '700' }}>Propinas Recibidas</span>
-                                            <span style={{ fontWeight: '800', color: 'var(--gold-primary)' }}>+{formatCurrency(t.metadata.tips_total * rate, '')} Bs.</span>
+                                            <span style={{ color: 'var(--pink-primary)', fontWeight: '700' }}>Propinas Recibidas</span>
+                                            <span style={{ fontWeight: '800', color: 'var(--pink-primary)' }}>+{formatCurrency(t.metadata.tips_total * rate, '')} Bs.</span>
                                           </div>
                                         )}
                                       </div>
@@ -1860,8 +1860,8 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                                     padding: '24px',
                                     borderRadius: '24px',
                                     background: 'linear-gradient(135deg, rgba(20,20,22,0.85) 0%, rgba(10,10,12,0.95) 100%)',
-                                    border: '1px solid rgba(212,175,55,0.15)',
-                                    borderLeft: '4px solid var(--gold-primary)',
+                                    border: '1px solid rgba(217,70,168,0.15)',
+                                    borderLeft: '4px solid var(--pink-primary)',
                                     boxShadow: '0 8px 32px 0 rgba(0,0,0,0.4)',
                                     display: 'flex',
                                     flexDirection: 'column',
@@ -1872,14 +1872,14 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                                         width: '32px', 
                                         height: '32px', 
                                         borderRadius: '10px', 
-                                        background: 'rgba(212,175,55,0.15)', 
-                                        color: 'var(--gold-primary)', 
+                                        background: 'rgba(217,70,168,0.15)', 
+                                        color: 'var(--pink-primary)', 
                                         display: 'flex', 
                                         alignItems: 'center', 
                                         justifyContent: 'center', 
-                                        border: '1px solid rgba(212,175,55,0.3)'
+                                        border: '1px solid rgba(217,70,168,0.3)'
                                       }}>
-                                        <TrendingUp size={16} color="var(--gold-primary)" />
+                                        <TrendingUp size={16} color="var(--pink-primary)" />
                                       </div>
                                       <div>
                                         <span style={{ fontSize: '12px', fontWeight: '900', color: 'white', letterSpacing: '1px', textTransform: 'uppercase', display: 'block' }}>
@@ -1907,7 +1907,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', paddingTop: '16px', borderTop: '2px solid rgba(255,255,255,0.08)' }}>
                                           <span style={{ fontSize: '12px', color: 'white', fontWeight: '900', letterSpacing: '0.5px' }}>TOTAL COBRADO</span>
                                           <div style={{ textAlign: 'right' }}>
-                                            <div style={{ fontSize: '18px', fontWeight: '950', color: 'var(--gold-primary)', whiteSpace: 'nowrap' }}>
+                                            <div style={{ fontSize: '18px', fontWeight: '950', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>
                                               {formatCurrency(finalBs, '')} Bs.
                                             </div>
                                             <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '800' }}>
@@ -1934,7 +1934,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                                                   <span style={{ fontSize: '13px', fontWeight: '850', color: 'white' }}>Total {s.name.split(' ')[0]}</span>
                                                 </div>
                                                 <div style={{ textAlign: 'right' }}>
-                                                  <span style={{ fontSize: '13px', fontWeight: '900', color: 'var(--gold-primary)' }}>
+                                                  <span style={{ fontSize: '13px', fontWeight: '900', color: 'var(--pink-primary)' }}>
                                                     +{formatCurrency(staffTotal * rate, '')} Bs.
                                                   </span>
                                                   <span style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'block' }}>Ref: +${formatCurrency(staffTotal)}</span>
@@ -1961,20 +1961,20 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                                           <div style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center' }}>Operación manual sin personal.</div>
                                         )}
  
-                                        {/* Total Astro (Neto) */}
+                                         {/* Total JanaStudio (Neto) */}
                                         {(() => {
                                           const serviceBase = Math.max(0, (t.amount - (t.metadata?.tips_total || 0)));
                                           const commissions = t.metadata?.staffInvolved?.reduce((sum, s) => sum + Number(s.commissionEarned || 0), 0) || 0;
                                           const astroProfit = serviceBase - commissions;
                                           return (
-                                            <div style={{ marginTop: '8px', padding: '14px', borderRadius: '16px', background: 'rgba(212,175,55,0.06)', border: '1px solid rgba(212,175,55,0.15)', boxShadow: 'inset 0 0 12px rgba(212,175,55,0.05)' }}>
+                                            <div style={{ marginTop: '8px', padding: '14px', borderRadius: '16px', background: 'rgba(217,70,168,0.06)', border: '1px solid rgba(217,70,168,0.15)', boxShadow: 'inset 0 0 12px rgba(217,70,168,0.05)' }}>
                                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--gold-primary)' }} />
-                                                  <span style={{ fontSize: '13px', fontWeight: '900', color: 'var(--gold-primary)', letterSpacing: '0.5px' }}>Total Astro (Neto)</span>
+                                                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--pink-primary)' }} />
+                                                   <span style={{ fontSize: '13px', fontWeight: '900', color: 'var(--pink-primary)', letterSpacing: '0.5px' }}>Total JanaStudio (Neto)</span>
                                                 </div>
                                                 <div style={{ textAlign: 'right' }}>
-                                                  <div style={{ fontSize: '14px', fontWeight: '950', color: 'var(--gold-primary)', whiteSpace: 'nowrap' }}>
+                                                  <div style={{ fontSize: '14px', fontWeight: '950', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>
                                                     +{formatCurrency(astroProfit * rate, '')} Bs.
                                                   </div>
                                                   <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', fontWeight: '800', whiteSpace: 'nowrap' }}>
@@ -2058,9 +2058,9 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                     padding: '14px 16px', 
                     fontSize: '13px', 
                     borderRadius: '12px',
-                    background: 'rgba(212,175,55,0.1)',
-                    border: '1px solid rgba(212,175,55,0.3)',
-                    color: 'var(--gold-primary)',
+                    background: 'rgba(217,70,168,0.1)',
+                    border: '1px solid rgba(217,70,168,0.3)',
+                    color: 'var(--pink-primary)',
                     fontWeight: '800',
                     display: 'flex',
                     alignItems: 'center',
@@ -2097,10 +2097,10 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
               </div>
             </div>
 
-            {/* ASTRO GENERAL RESULTS (Resultados Astro) */}
+            {/* JANASTUDIO GENERAL RESULTS (Resultados JanaStudio) */}
             <div className="glass-card animate-fade-in" style={{ 
-              background: 'linear-gradient(135deg, rgba(212,175,55,0.15) 0%, rgba(212,175,55,0.02) 100%)', 
-              border: '1px solid rgba(212,175,55,0.3)',
+              background: 'linear-gradient(135deg, rgba(217,70,168,0.15) 0%, rgba(217,70,168,0.02) 100%)', 
+              border: '1px solid rgba(217,70,168,0.3)',
               borderRadius: '24px',
               padding: isMobile ? '20px' : '24px',
               marginBottom: '32px',
@@ -2112,37 +2112,37 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
             }}>
               <div style={{ width: '100%' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--gold-primary)' }}></div>
-                  <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--gold-primary)', letterSpacing: '1.5px', textTransform: 'uppercase' }}>
-                    Resultados Astro ({
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--pink-primary)' }}></div>
+                  <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--pink-primary)', letterSpacing: '1.5px', textTransform: 'uppercase' }}>
+                    Resultados JanaStudio ({
                       payrollFilterDate === 'this_week' ? 'Semanal' :
                       payrollFilterDate === 'last_week' ? 'Semana Pasada' : 'Personalizado'
                     })
                   </span>
                 </div>
-                <h4 style={{ fontSize: isMobile ? '18px' : '20px', fontWeight: '900', color: 'white', margin: 0, lineHeight: '1.3' }}>Rendimiento General de la Barbería</h4>
+                <h4 style={{ fontSize: isMobile ? '18px' : '20px', fontWeight: '900', color: 'white', margin: 0, lineHeight: '1.3' }}>Rendimiento General del Salón</h4>
               </div>
               
               <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '12px' : '40px', width: isMobile ? '100%' : 'auto', justifyContent: isMobile ? 'flex-start' : 'flex-end', background: isMobile ? 'rgba(0,0,0,0.2)' : 'transparent', padding: isMobile ? '16px' : '0', borderRadius: isMobile ? '16px' : '0' }}>
                 <div style={{ textAlign: 'left', display: 'flex', justifyContent: isMobile ? 'space-between' : 'flex-start', width: '100%', flexDirection: isMobile ? 'row' : 'column', alignItems: isMobile ? 'center' : 'flex-end' }}>
                   <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase', marginBottom: isMobile ? '0' : '4px' }}>Ingreso Bruto</div>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: '900', color: 'white', whiteSpace: 'nowrap' }}>{formatCurrency(astroGrossIncomeBs, '')} Bs</div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', marginTop: '2px' }}>REF: ${formatCurrency(astroGrossIncomeBs / payrollRate, '')}</div>
+                    <div style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: '900', color: 'white', whiteSpace: 'nowrap' }}>{formatCurrency(janaGrossIncomeBs, '')} Bs</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', marginTop: '2px' }}>REF: ${formatCurrency(janaGrossIncomeBs / payrollRate, '')}</div>
                   </div>
                 </div>
                 {isMobile && <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', width: '100%' }}></div>}
                 <div style={{ textAlign: 'left', display: 'flex', justifyContent: isMobile ? 'space-between' : 'flex-start', width: '100%', flexDirection: isMobile ? 'row' : 'column', alignItems: isMobile ? 'center' : 'flex-end' }}>
-                  <div style={{ fontSize: '11px', color: 'var(--gold-primary)', fontWeight: '800', textTransform: 'uppercase', marginBottom: isMobile ? '0' : '4px' }}>Ganancia Neta</div>
+                  <div style={{ fontSize: '11px', color: 'var(--pink-primary)', fontWeight: '800', textTransform: 'uppercase', marginBottom: isMobile ? '0' : '4px' }}>Ganancia Neta</div>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: isMobile ? '18px' : '22px', fontWeight: '900', color: '#32d74b', whiteSpace: 'nowrap' }}>{formatCurrency(astroNetProfitBs, '')} Bs</div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', marginTop: '2px' }}>REF: ${astroNetProfitUsd.toFixed(2)}</div>
+                    <div style={{ fontSize: isMobile ? '18px' : '22px', fontWeight: '900', color: '#32d74b', whiteSpace: 'nowrap' }}>{formatCurrency(janaNetProfitBs, '')} Bs</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', marginTop: '2px' }}>REF: ${janaNetProfitUsd.toFixed(2)}</div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Barber Yield Summary Card */}
+            {/* Stylist Yield Summary Card */}
             <div className="glass-card animate-fade-in" style={{
               padding: '24px',
               borderRadius: '24px',
@@ -2151,16 +2151,16 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
               border: '1px solid rgba(255, 255, 255, 0.05)'
             }}>
               <h4 style={{ fontSize: '16px', fontWeight: '850', color: 'white', marginBottom: '16px' }}>
-                Rendimiento Neto por Barbero ({payrollFilterDate === 'this_week' ? 'Esta Semana' : payrollFilterDate === 'last_week' ? 'Semana Pasada' : 'Personalizado'})
+                Rendimiento Neto por Estilista ({payrollFilterDate === 'this_week' ? 'Esta Semana' : payrollFilterDate === 'last_week' ? 'Semana Pasada' : 'Personalizado'})
               </h4>
               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '16px' }}>
-                {processedPayroll.filter(s => s.isBarber).map(s => {
-                  const yieldBs = Math.max(0, (s.grossIncomeBs - s.lavadoDeductionBs) * (1 - (Number(s.commission_pct || 60) / 100)));
+                {processedPayroll.filter(s => s.isStylist).map(s => {
+                  const yieldBs = Math.max(0, (s.grossIncomeBs - s.treatmentDeductionBs) * (1 - (Number(s.commission_pct || 60) / 100)));
                   const yieldUsd = yieldBs / payrollRate;
                   const margin = s.grossIncomeBs > 0 ? (yieldBs / s.grossIncomeBs) * 100 : 0;
                   return (
                     <div key={s.id} style={{ padding: '16px', backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.03)' }}>
-                      <div style={{ fontWeight: '800', color: 'var(--gold-primary)', fontSize: '14px', marginBottom: '8px' }}>{s.name}</div>
+                      <div style={{ fontWeight: '800', color: 'var(--pink-primary)', fontSize: '14px', marginBottom: '8px' }}>{s.name}</div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '4px', alignItems: 'center' }}>
                         <span style={{ color: 'var(--text-secondary)' }}>Total Creado:</span>
                         <div style={{ textAlign: 'right' }}>
@@ -2169,14 +2169,14 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                         </div>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '4px', alignItems: 'center' }}>
-                        <span style={{ color: 'var(--text-secondary)' }}>Costo Barbero:</span>
+                          <span style={{ color: 'var(--text-secondary)' }}>Costo Estilista:</span>
                         <div style={{ textAlign: 'right' }}>
                           <span style={{ color: '#ff453a', fontWeight: '700', display: 'block' }}>-{formatCurrency(s.netIncomeBs, '')} Bs</span>
                           <span style={{ color: 'var(--text-muted)', fontSize: '10px', display: 'block' }}>REF: ${formatCurrency(s.netIncomeBs / payrollRate, '')}</span>
                         </div>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', borderTop: '1px dashed rgba(255,255,255,0.1)', paddingTop: '6px', marginTop: '6px' }}>
-                        <span style={{ color: 'white', fontWeight: '800' }}>Ganancia Astro:</span>
+                        <span style={{ color: 'white', fontWeight: '800' }}>Ganancia JanaStudio:</span>
                         <span style={{ color: '#32d74b', fontWeight: '900' }}>+{formatCurrency(yieldBs, '')} Bs</span>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>
@@ -2204,11 +2204,11 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                         width: '40px', 
                         height: '40px', 
                         borderRadius: '12px', 
-                        background: st.isAssistant ? 'rgba(0,191,255,0.1)' : 'rgba(212,175,55,0.1)', 
+                        background: st.isAssistant ? 'rgba(0,191,255,0.1)' : 'rgba(217,70,168,0.1)', 
                         display: 'flex', 
                         alignItems: 'center', 
                         justifyContent: 'center', 
-                        color: st.isAssistant ? '#00bfff' : 'var(--gold-primary)', 
+                        color: st.isAssistant ? '#00bfff' : 'var(--pink-primary)', 
                         fontWeight: '900', 
                         fontSize: '18px' 
                       }}>
@@ -2216,26 +2216,26 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                       </div>
                       <div>
                         <div style={{ fontWeight: '800', fontSize: '16px', color: 'white' }}>{st.name}</div>
-                        <div style={{ fontSize: '11px', color: st.isAssistant ? '#00bfff' : 'var(--gold-primary)', fontWeight: '800', textTransform: 'uppercase' }}>
+                        <div style={{ fontSize: '11px', color: st.isAssistant ? '#00bfff' : 'var(--pink-primary)', fontWeight: '800', textTransform: 'uppercase' }}>
                           {st.role?.split('|')[0] || 'Miembro'}
                         </div>
                       </div>
                     </div>
                   </div>
                   <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '16px', marginBottom: '16px' }}>
-                    {st.isBarber ? (
+                    {st.isStylist ? (
                       <>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                           <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Servicios Realizados</span>
                           <span style={{ fontSize: '12px', fontWeight: '850', color: 'white' }}>{st.servicesCount}</span>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Lavados (#)</span>
-                          <span style={{ fontSize: '12px', fontWeight: '850', color: 'white' }}>{st.lavadosCount}</span>
+                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Tratamientos (#)</span>
+                          <span style={{ fontSize: '12px', fontWeight: '850', color: 'white' }}>{st.treatmentsCount}</span>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Lavado (Bs)</span>
-                          <span style={{ fontSize: '12px', fontWeight: '850', color: 'var(--gold-primary)' }}>{formatCurrency(st.lavadoDeductionBs, '')} Bs.</span>
+                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Tratamiento (Bs)</span>
+                          <span style={{ fontSize: '12px', fontWeight: '850', color: 'var(--pink-primary)' }}>{formatCurrency(st.treatmentDeductionBs, '')} Bs.</span>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                           <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Ingreso Bruto</span>
@@ -2251,7 +2251,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                           <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>REF (USD)</span>
-                          <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--gold-primary)' }}>${formatCurrency(st.netIncomeUsd, '')}</span>
+                          <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--pink-primary)' }}>${formatCurrency(st.netIncomeUsd, '')}</span>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
                           <span style={{ fontSize: '12px', color: '#32d74b', fontWeight: '800' }}>Propinas (+)</span>
@@ -2265,15 +2265,15 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                     ) : st.isAssistant ? (
                       <>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Lavados Realizados</span>
-                          <span style={{ fontSize: '12px', fontWeight: '850', color: 'white' }}>{st.lavadosCount}</span>
+                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Tratamientos Realizados</span>
+                          <span style={{ fontSize: '12px', fontWeight: '850', color: 'white' }}>{st.treatmentsCount}</span>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                           <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Asistencia Semanal</span>
                           <span style={{ fontSize: '12px', fontWeight: '850', color: '#00bfff' }}>{formatCurrency(st.weeklyAssistanceBs, '')} Bs.</span>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Comisión Lavados</span>
+                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Comisión Tratamientos</span>
                           <span style={{ fontSize: '12px', fontWeight: '850', color: 'white' }}>{formatCurrency(st.earnedBs, '')} Bs.</span>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
@@ -2299,12 +2299,12 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                       <span style={{ fontSize: '12px', fontWeight: '800', color: '#ff453a' }}>-{formatCurrency(st.paidBs, '')} Bs.</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                      <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--gold-primary)' }}>Por Pagar (Bs)</span>
+                      <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--pink-primary)' }}>Por Pagar (Bs)</span>
                       <span style={{ fontSize: '16px', fontWeight: '950', color: '#32d74b' }}>{formatCurrency(st.balanceBs, '')} Bs.</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
                       <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>REF (USD)</span>
-                      <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--gold-primary)' }}>${formatCurrency(st.balanceBs / payrollRate, '')}</span>
+                      <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--pink-primary)' }}>${formatCurrency(st.balanceBs / payrollRate, '')}</span>
                     </div>
                   </div>
                   
@@ -2316,7 +2316,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                       <Eye size={16} /> <span style={{fontSize: '11px', fontWeight: '800'}}>Detalle</span>
                     </button>
                     
-                    {(st.isBarber || st.isAssistant) && (
+                    {(st.isStylist || st.isAssistant) && (
                       <button 
                         onClick={() => {
                           setValeModal({
@@ -2347,7 +2347,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                         });
                       }}
                       disabled={st.balanceBs <= 0}
-                      style={{ flex: 1, minWidth: '70px', padding: '10px', borderRadius: '10px', background: 'rgba(212,175,55,0.1)', color: 'var(--gold-primary)', border: '1px solid var(--gold-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', cursor: st.balanceBs > 0 ? 'pointer' : 'not-allowed', opacity: st.balanceBs > 0 ? 1 : 0.5 }}
+                      style={{ flex: 1, minWidth: '70px', padding: '10px', borderRadius: '10px', background: 'rgba(217,70,168,0.1)', color: 'var(--pink-primary)', border: '1px solid var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', cursor: st.balanceBs > 0 ? 'pointer' : 'not-allowed', opacity: st.balanceBs > 0 ? 1 : 0.5 }}
                     >
                       <WalletCards size={16} /> <span style={{fontSize: '11px', fontWeight: '800'}}>Abonar</span>
                     </button>
@@ -2366,7 +2366,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                         });
                       }}
                       disabled={st.balanceBs <= 0}
-                      style={{ width: '100%', padding: '12px', borderRadius: '12px', background: st.balanceBs > 0 ? 'var(--gold-primary)' : 'rgba(255,255,255,0.05)', color: st.balanceBs > 0 ? '#000' : 'var(--text-muted)', fontWeight: '950', border: 'none', cursor: st.balanceBs > 0 ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                      style={{ width: '100%', padding: '12px', borderRadius: '12px', background: st.balanceBs > 0 ? 'var(--pink-primary)' : 'rgba(255,255,255,0.05)', color: st.balanceBs > 0 ? '#000' : 'var(--text-muted)', fontWeight: '950', border: 'none', cursor: st.balanceBs > 0 ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                     >
                       {st.balanceBs > 0 ? 'Realizar Pago Total' : 'Al Día'}
                     </button>
@@ -2380,16 +2380,16 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
       {activeTab === 'analysis' && (() => {
         // Ejecución de Fórmulas Financieras (Basadas en el Excel de Rentabilidad)
         const ingresosTotales = operationalTransactions.filter(t => t.type === 'income').reduce((acc, t) => acc + (t.amount || 0), 0);
-        const egresosBarberos = operationalTransactions.filter(t => t.type === 'income').reduce((acc, t) => {
+        const egresosEstilistas = operationalTransactions.filter(t => t.type === 'income').reduce((acc, t) => {
           return acc + (t.metadata?.staffInvolved?.reduce((sum, s) => sum + (s.commissionEarned || 0), 0) || 0);
         }, 0);
         
-        const profitBruto = ingresosTotales - egresosBarberos;
+        const profitBruto = ingresosTotales - egresosEstilistas;
         const costosVariables = totalExpense; // Usamos los gastos registrados como variables
         const utilidadNetaCalculada = profitBruto - totalFixedCosts - costosVariables;
         const rentabilidadReal = ingresosTotales > 0 ? (utilidadNetaCalculada / ingresosTotales) * 100 : 0;
         
-        const serviciosTotales = Object.values(analysisData.barberStats).reduce((acc, b) => acc + b.services, 0) || 0;
+        const serviciosTotales = Object.values(analysisData.stylistStats).reduce((acc, b) => acc + b.services, 0) || 0;
         const ticketProm = serviciosTotales > 0 ? ingresosTotales / serviciosTotales : 0;
         
         // Ocupación
@@ -2398,7 +2398,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
         const ocupacionPct = capacidadMensual > 0 ? (serviciosTotales / capacidadMensual) * 100 : 0;
         
         // Punto de Equilibrio
-        const margenContribucion = ingresosTotales - costosVariables - egresosBarberos;
+        const margenContribucion = ingresosTotales - costosVariables - egresosEstilistas;
         const margenPct = ingresosTotales > 0 ? margenContribucion / ingresosTotales : 0;
         const ptoEquilibrio = margenPct > 0 ? totalFixedCosts / margenPct : 0;
 
@@ -2406,7 +2406,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
           <div className="animate-fade-in">
             <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '16px' : '0', marginBottom: '32px' }}>
               <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-secondary)', letterSpacing: '1px' }}>DASHBOARD DE RENTABILIDAD Y OCUPACIÓN</h3>
-              <button onClick={() => setIsEditingCosts(true)} className="btn-gold" style={{ padding: '8px 16px', fontSize: '12px', borderRadius: '10px', width: isMobile ? '100%' : 'auto' }}>
+              <button onClick={() => setIsEditingCosts(true)} className="btn-pink" style={{ padding: '8px 16px', fontSize: '12px', borderRadius: '10px', width: isMobile ? '100%' : 'auto' }}>
                 Configurar Costos Fijos
               </button>
             </div>
@@ -2420,7 +2420,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
               </div>
               <div className="glass-card" style={{ padding: isMobile ? '16px' : '24px', borderRadius: isMobile ? '16px' : '24px', textAlign: 'center' }}>
                 <div style={{ fontSize: isMobile ? '9px' : '10px', fontWeight: '800', color: 'var(--text-secondary)', marginBottom: '8px' }}>RENTABILIDAD</div>
-                <div style={{ fontSize: isMobile ? '18px' : '24px', fontWeight: '900', color: rentabilidadReal >= 0 ? 'var(--gold-primary)' : '#ff453a' }}>
+                <div style={{ fontSize: isMobile ? '18px' : '24px', fontWeight: '900', color: rentabilidadReal >= 0 ? 'var(--pink-primary)' : '#ff453a' }}>
                   {rentabilidadReal.toFixed(1)}%
                 </div>
               </div>
@@ -2449,8 +2449,8 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                      <span style={{ fontWeight: '800', color: '#32d74b' }}>${formatCurrency(ingresosTotales)}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                     <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Egresos Totales a Barberos</span>
-                     <span style={{ fontWeight: '700', color: '#ff453a' }}>-${formatCurrency(egresosBarberos)}</span>
+                     <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Egresos Totales a Estilistas</span>
+                     <span style={{ fontWeight: '700', color: '#ff453a' }}>-${formatCurrency(egresosEstilistas)}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                       <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Costos Fijos Operativos</span>
@@ -2486,7 +2486,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                      <span style={{ fontWeight: '700', color: '#ff453a' }}>-${formatCurrency(costosVariables)}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', fontWeight: '900', marginTop: '10px', fontSize: '18px' }}>
-                     <span style={{ color: 'var(--gold-primary)' }}>Utilidad Neta</span>
+                     <span style={{ color: 'var(--pink-primary)' }}>Utilidad Neta</span>
                      <span style={{ color: utilidadNetaCalculada >= 0 ? '#32d74b' : '#ff453a' }}>${formatCurrency(utilidadNetaCalculada)}</span>
                   </div>
                 </div>
@@ -2512,48 +2512,48 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                   <div style={{ marginTop: '10px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                       <span style={{ fontSize: '11px', fontWeight: '800' }}>NIVEL DE OCUPACIÓN REAL</span>
-                      <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--gold-primary)' }}>{ocupacionPct.toFixed(1)}%</span>
+                      <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--pink-primary)' }}>{ocupacionPct.toFixed(1)}%</span>
                     </div>
                     <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
-                      <div style={{ width: `${Math.min(ocupacionPct, 100)}%`, height: '100%', background: 'var(--gold-gradient)' }}></div>
+                      <div style={{ width: `${Math.min(ocupacionPct, 100)}%`, height: '100%', background: 'var(--pink-gradient)' }}></div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Rendimiento por Barbero */}
+            {/* Rendimiento por Estilista */}
             <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', marginBottom: '32px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '900', marginBottom: '20px' }}>Rendimiento por Barbero (Bs)</h3>
+              <h3 style={{ fontSize: '18px', fontWeight: '900', marginBottom: '20px' }}>Rendimiento por Estilista (Bs)</h3>
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr style={{ color: 'var(--text-muted)', fontSize: '11px', textTransform: 'uppercase', borderBottom: '1px solid var(--border-color)' }}>
-                      <th style={{ padding: '12px', textAlign: 'left' }}>Barbero</th>
+                      <th style={{ padding: '12px', textAlign: 'left' }}>Estilista</th>
                       <th style={{ padding: '12px', textAlign: 'center' }}>Servicios</th>
                       <th style={{ padding: '12px', textAlign: 'right' }}>Total Creado (Bs)</th>
-                      <th style={{ padding: '12px', textAlign: 'right' }}>Costo Barbero (Bs)</th>
-                      <th style={{ padding: '12px', textAlign: 'right' }}>Ganancia Barbería (Bs)</th>
+                      <th style={{ padding: '12px', textAlign: 'right' }}>Costo Estilista (Bs)</th>
+                      <th style={{ padding: '12px', textAlign: 'right' }}>Ganancia Salón (Bs)</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {Object.values(analysisData.barberStats).filter(b => b.services > 0 || b.incomeBs > 0).map(b => {
+                    {Object.values(analysisData.stylistStats).filter(b => b.services > 0 || b.incomeBs > 0).map(b => {
                       const staffMember = staff.find(s => String(s.id) === String(b.id));
                       const staffName = staffMember?.name || `Eliminado (${String(b.id).substring(0, 5)})`;
                       
-                      // Calculate commission and deductions for this barber from operationalTransactions
-                      const barberTx = operationalTransactions.filter(t => t.type === 'income' && t.metadata?.staffInvolved?.some(x => String(x.staffId) === String(b.id)));
-                      const earnedBs = barberTx.reduce((sum, t) => {
+                      // Calculate commission and deductions for this stylist from operationalTransactions
+                      const stylistTx = operationalTransactions.filter(t => t.type === 'income' && t.metadata?.staffInvolved?.some(x => String(x.staffId) === String(b.id)));
+                      const earnedBs = stylistTx.reduce((sum, t) => {
                         const s = t.metadata?.staffInvolved?.find(x => String(x.staffId) === String(b.id));
                         return sum + (s ? (s.commissionBs || 0) + (s.productCommissionBs || 0) : 0);
                       }, 0);
                       
-                      const lavadosCount = barberTx.filter(t => isWash(t.metadata?.didWash)).length;
-                      const lavadoDeductionBs = lavadosCount * payrollRate;
+                      const treatmentsCount = stylistTx.filter(t => isTreatment(t.metadata?.didTreatment)).length;
+                      const treatmentDeductionBs = treatmentsCount * payrollRate;
                       const weeklyAssistanceUsd = assistantConfig?.splits?.[b.id] || 0;
                       const weeklyAssistanceBs = weeklyAssistanceUsd * payrollRate;
-                      const netCostoBs = (b.incomeBs * (Number(staffMember?.commission_pct || 60) / 100)) - (lavadoDeductionBs / 1.666) - weeklyAssistanceBs;
-                      const gananciaBarberiaBs = Math.max(0, (b.incomeBs - lavadoDeductionBs) * (1 - (Number(staffMember?.commission_pct || 60) / 100)));
+                      const netCostoBs = (b.incomeBs * (Number(staffMember?.commission_pct || 60) / 100)) - (treatmentDeductionBs / 1.666) - weeklyAssistanceBs;
+                      const gananciaSalonBs = Math.max(0, (b.incomeBs - treatmentDeductionBs) * (1 - (Number(staffMember?.commission_pct || 60) / 100)));
 
                       return (
                         <tr key={b.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
@@ -2568,7 +2568,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                             -{formatCurrency(netCostoBs, '')} Bs
                           </td>
                           <td style={{ padding: '12px', textAlign: 'right', color: '#32d74b', fontWeight: '800' }}>
-                            {formatCurrency(gananciaBarberiaBs, '')} Bs
+                            {formatCurrency(gananciaSalonBs, '')} Bs
                           </td>
                         </tr>
                       );
@@ -2594,8 +2594,8 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                     type="button" 
                     onClick={() => setIsCostsLocked(!isCostsLocked)}
                     style={{ 
-                      background: isCostsLocked ? 'rgba(212,175,55,0.1)' : 'var(--gold-primary)', 
-                      color: isCostsLocked ? 'var(--gold-primary)' : 'black', 
+                      background: isCostsLocked ? 'rgba(217,70,168,0.1)' : 'var(--pink-primary)', 
+                      color: isCostsLocked ? 'var(--pink-primary)' : 'black', 
                       border: 'none', 
                       width: '40px', 
                       height: '40px', 
@@ -2605,7 +2605,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                       justifyContent: 'center', 
                       cursor: 'pointer', 
                       transition: 'all 0.3s ease',
-                      boxShadow: !isCostsLocked ? '0 0 15px rgba(212,175,55,0.3)' : 'none'
+                      boxShadow: !isCostsLocked ? '0 0 15px rgba(217,70,168,0.3)' : 'none'
                     }}
                     title={isCostsLocked ? "Desbloquear para editar" : "Bloquear edición"}
                   >
@@ -2706,13 +2706,13 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                         extraCosts: [...(fixedCosts.extraCosts || []), { label: '', value: 0 }] 
                       });
                     }}
-                    style={{ gridColumn: 'span 2', background: 'rgba(212,175,55,0.1)', border: '1px dashed var(--gold-primary)', color: 'var(--gold-primary)', padding: '12px', borderRadius: '12px', cursor: isCostsLocked ? 'not-allowed' : 'pointer', fontWeight: '800', fontSize: '12px', marginTop: '8px', opacity: isCostsLocked ? 0.5 : 1, transition: 'all 0.3s' }}
+                    style={{ gridColumn: 'span 2', background: 'rgba(217,70,168,0.1)', border: '1px dashed var(--pink-primary)', color: 'var(--pink-primary)', padding: '12px', borderRadius: '12px', cursor: isCostsLocked ? 'not-allowed' : 'pointer', fontWeight: '800', fontSize: '12px', marginTop: '8px', opacity: isCostsLocked ? 0.5 : 1, transition: 'all 0.3s' }}
                   >
                     + AGREGAR COSTO ADICIONAL
                   </button>
                   <div style={{ gridColumn: 'span 2', display: 'flex', gap: '12px', marginTop: '20px' }}>
                     <button type="button" onClick={() => { setIsEditingCosts(false); setIsCostsLocked(true); }} style={{ flex: 1, padding: '14px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: 'none', color: 'white', fontWeight: '700', cursor: 'pointer' }}>Cancelar</button>
-                    <button type="submit" disabled={isCostsLocked} className="btn-gold" style={{ flex: 1, padding: '14px', borderRadius: '12px', fontWeight: '800', opacity: isCostsLocked ? 0.5 : 1, cursor: isCostsLocked ? 'not-allowed' : 'pointer' }}>Guardar Cambios</button>
+                    <button type="submit" disabled={isCostsLocked} className="btn-pink" style={{ flex: 1, padding: '14px', borderRadius: '12px', fontWeight: '800', opacity: isCostsLocked ? 0.5 : 1, cursor: isCostsLocked ? 'not-allowed' : 'pointer' }}>Guardar Cambios</button>
                   </div>
                 </form>
               </div>
@@ -2738,8 +2738,8 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                     />
                   </div>
                   <div>
-                    <h4 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-secondary)', marginBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '8px' }}>Aporte Semanal por Barbero (USD $)</h4>
-                    {eligibleBarbers.map(s => (
+                    <h4 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-secondary)', marginBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '8px' }}>Aporte Semanal por Estilista (USD $)</h4>
+                    {eligibleStylists.map(s => (
                       <div key={s.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                         <div>
                           <span style={{ fontSize: '14px', fontWeight: '600' }}>{s.name}</span>
@@ -2753,7 +2753,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                             type="number" 
                             step="any"
                             value={assistantConfig?.splits?.[s.id] ?? ''}
-                            onChange={(e) => handleBarberSplitChange(s.id, e.target.value)} 
+                            onChange={(e) => handleStylistSplitChange(s.id, e.target.value)} 
                             style={{ width: '100px', padding: '8px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', textAlign: 'center' }} 
                           />
                         </div>
@@ -2762,7 +2762,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                   </div>
                   <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
                     <button type="button" onClick={() => setIsConfiguringPayroll(false)} style={{ flex: 1, padding: '14px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: 'none', color: 'white', fontWeight: '700' }}>Cancelar</button>
-                    <button type="submit" className="btn-gold" style={{ flex: 1, padding: '14px', borderRadius: '12px', fontWeight: '800' }}>Guardar</button>
+                    <button type="submit" className="btn-pink" style={{ flex: 1, padding: '14px', borderRadius: '12px', fontWeight: '800' }}>Guardar</button>
                   </div>
                 </form>
               </div>
@@ -2830,7 +2830,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                     </p>
                     <button 
                       onClick={() => setWeeklyCloseModal({ isOpen: false, loading: false, success: false, error: null })} 
-                      style={{ width: '100%', padding: '14px', borderRadius: '12px', background: 'var(--gold-primary)', border: 'none', color: '#000', fontWeight: '900', cursor: 'pointer' }}
+                      style={{ width: '100%', padding: '14px', borderRadius: '12px', background: 'var(--pink-primary)', border: 'none', color: '#000', fontWeight: '900', cursor: 'pointer' }}
                     >
                       Entendido
                     </button>
@@ -2861,12 +2861,12 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
 
                   {payrollModal.isAbono ? (
                     <div>
-                      <label style={{ fontSize: '12px', fontWeight: '800', color: 'var(--gold-primary)', display: 'block', marginBottom: '8px' }}>Monto a Abonar (Bs)</label>
+                      <label style={{ fontSize: '12px', fontWeight: '800', color: 'var(--pink-primary)', display: 'block', marginBottom: '8px' }}>Monto a Abonar (Bs)</label>
                       <input 
                         type="number" 
                         value={payrollModal.paymentAmountBs} 
                         onChange={(e) => setPayrollModal({...payrollModal, paymentAmountBs: Number(e.target.value)})} 
-                        style={{ width: '100%', padding: '14px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--gold-primary)', color: 'white', fontSize: '18px', fontWeight: '900' }} 
+                        style={{ width: '100%', padding: '14px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--pink-primary)', color: 'white', fontSize: '18px', fontWeight: '900' }} 
                       />
                     </div>
                   ) : (
@@ -2878,7 +2878,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                   )}
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px dashed rgba(255,255,255,0.1)' }}>
-                    <span style={{ fontSize: '16px', fontWeight: '900', color: 'var(--gold-primary)' }}>Total a Transferir:</span>
+                    <span style={{ fontSize: '16px', fontWeight: '900', color: 'var(--pink-primary)' }}>Total a Transferir:</span>
                     <span style={{ fontSize: '24px', fontWeight: '900', color: '#32d74b' }}>
                       {formatCurrency(payrollModal.isAbono ? payrollModal.paymentAmountBs : (payrollModal.earnedBs - payrollModal.deductionBs), '')} Bs
                     </span>
@@ -2902,11 +2902,11 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
 
                   <div>
                     <label style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-secondary)', display: 'block', marginBottom: '8px' }}>Comprobante de Pago (Foto / Capture)</label>
-                    <div style={{ position: 'relative', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: payrollModal.file ? '12px' : '24px 16px', background: payrollModal.file ? 'rgba(50,215,75,0.05)' : 'rgba(212,175,55,0.05)', border: payrollModal.file ? '1px dashed rgba(50,215,75,0.3)' : '1px dashed rgba(212,175,55,0.3)', borderRadius: '16px', cursor: 'pointer', transition: 'all 0.3s' }}>
+                    <div style={{ position: 'relative', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: payrollModal.file ? '12px' : '24px 16px', background: payrollModal.file ? 'rgba(50,215,75,0.05)' : 'rgba(217,70,168,0.05)', border: payrollModal.file ? '1px dashed rgba(50,215,75,0.3)' : '1px dashed rgba(217,70,168,0.3)', borderRadius: '16px', cursor: 'pointer', transition: 'all 0.3s' }}>
                       <input type="file" accept="image/*" onChange={handleFileUpload} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer', zIndex: 10 }} />
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
                         <span style={{ fontSize: payrollModal.file ? '16px' : '24px' }}>{payrollModal.file ? '✅' : '📸'}</span>
-                        <span style={{ color: payrollModal.file ? '#32d74b' : 'var(--gold-primary)', fontWeight: '800', fontSize: '12px' }}>
+                        <span style={{ color: payrollModal.file ? '#32d74b' : 'var(--pink-primary)', fontWeight: '800', fontSize: '12px' }}>
                           {payrollModal.file ? '¡Comprobante cargado! (Toca para cambiar)' : 'Toca para subir comprobante'}
                         </span>
                       </div>
@@ -2918,7 +2918,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
 
                   <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
                     <button onClick={() => setPayrollModal({...payrollModal, isOpen: false})} style={{ flex: 1, padding: '14px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: 'none', color: 'white', fontWeight: '700' }}>Cancelar</button>
-                    <button onClick={handleProcessPayroll} className="btn-gold" style={{ flex: 1, padding: '14px', borderRadius: '12px', fontWeight: '800' }}>Confirmar {payrollModal.isAbono ? 'Abono' : 'Pago'}</button>
+                    <button onClick={handleProcessPayroll} className="btn-pink" style={{ flex: 1, padding: '14px', borderRadius: '12px', fontWeight: '800' }}>Confirmar {payrollModal.isAbono ? 'Abono' : 'Pago'}</button>
                   </div>
                 </div>
               </div>
@@ -2937,12 +2937,12 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                 <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginBottom: '24px' }}>
                   Ingresa el monto del adelanto en Bolívares (Bs) para <span style={{ fontWeight: '800', color: 'white' }}>{valeModal.staff?.name}</span>. Este monto se descontará automáticamente de su pago semanal.
                   <br /><br />
-                  <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--gold-primary)' }}>Saldo Disponible: {formatCurrency(valeModal.maxBalance || 0, '')} Bs.</span>
+                  <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--pink-primary)' }}>Saldo Disponible: {formatCurrency(valeModal.maxBalance || 0, '')} Bs.</span>
                 </p>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <div>
-                    <label style={{ fontSize: '12px', fontWeight: '800', color: 'var(--gold-primary)', display: 'block', marginBottom: '8px' }}>Monto del Vale (Bs)</label>
+                    <label style={{ fontSize: '12px', fontWeight: '800', color: 'var(--pink-primary)', display: 'block', marginBottom: '8px' }}>Monto del Vale (Bs)</label>
                     <input 
                       type="number" 
                       value={valeModal.amountBs} 
@@ -2953,7 +2953,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                         padding: '14px', 
                         borderRadius: '12px', 
                         background: 'rgba(255,255,255,0.05)', 
-                        border: '1px solid var(--gold-primary)', 
+                        border: '1px solid var(--pink-primary)', 
                         color: 'white', 
                         fontSize: '18px', 
                         fontWeight: '900',
@@ -2987,7 +2987,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                     </button>
                     <button 
                       onClick={handleRegisterVale} 
-                      className="btn-gold" 
+                      className="btn-pink" 
                       style={{ flex: 1, padding: '14px', borderRadius: '12px', fontWeight: '800', cursor: 'pointer' }}
                     >
                       Registrar Vale
@@ -3015,10 +3015,10 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                   ) : (
                     payrollDetail.transactions.map((t, idx) => {
                                 // CASO 1: VALE / ADELANTO (Gasto - En Rojo)
-                      if (t.type === 'expense' && t.category === 'Vales Barberos') {
+                      if (t.type === 'expense' && t.category === 'Vales Estilistas') {
                         const amountBs = t.metadata?.amountBs || t.amount * payrollRate;
                         const amountUsd = t.amount;
-                        const reason = t.description.replace(`ADELANTO VALE - Barbero: ${payrollDetail.staff?.name}`, '').replace(' - ', '').trim();
+                        const reason = t.description.replace(`ADELANTO VALE - Estilista: ${payrollDetail.staff?.name}`, '').replace(' - ', '').trim();
                         
                         return (
                           <div key={idx} style={{ background: 'rgba(255, 69, 58, 0.04)', padding: '20px', borderRadius: '20px', borderLeft: '4px solid #ff453a', border: '1px solid rgba(255, 69, 58, 0.12)' }}>
@@ -3051,7 +3051,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                       const serviceFromDesc = descParts.find(s => s.toLowerCase().includes('servi:'))?.split(': ')[1];
 
                       const clientName = t.metadata?.clientName || clientFromDesc || 'S/N';
-                      const serviceName = t.metadata?.serviceName || serviceFromDesc || (t.category === 'Ventas Astro' ? 'Servicio' : t.description);
+                      const serviceName = t.metadata?.serviceName || serviceFromDesc || (t.category === 'Ventas JanaStudio' ? 'Servicio' : t.description);
                       
                       const stInvolved = t.metadata?.staffInvolved?.find(s => String(s.staffId) === String(payrollDetail.staff.id));
                       const commBs = stInvolved?.commissionBs || 0;
@@ -3100,13 +3100,13 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                           marginBottom: '16px'
                         }}>
                           {/* Accent line */}
-                          <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '4px', background: isWash(t.metadata?.didWash) ? 'linear-gradient(to bottom, #007aff, #00c6ff)' : 'rgba(255,255,255,0.15)' }}></div>
+                          <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '4px', background: isTreatment(t.metadata?.didTreatment) ? 'linear-gradient(to bottom, #007aff, #00c6ff)' : 'rgba(255,255,255,0.15)' }}></div>
 
                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', paddingLeft: '8px' }}>
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
                               <span style={{ fontWeight: '900', fontSize: '18px', color: 'white', letterSpacing: '-0.5px' }}>{serviceName}</span>
                               <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600', marginTop: '6px' }}>
-                                <span style={{ color: 'var(--gold-primary)', fontWeight: '800' }}>{clientName}</span> <span style={{opacity: 0.5, margin: '0 4px'}}>•</span> Costo Total: <span style={{ color: 'white', fontWeight: '800' }}>${(commUsd / 0.4).toFixed(2)} USD</span> <span style={{opacity: 0.6, whiteSpace: 'nowrap'}}>({(commBs / 0.4).toFixed(2)} Bs)</span>
+                                <span style={{ color: 'var(--pink-primary)', fontWeight: '800' }}>{clientName}</span> <span style={{opacity: 0.5, margin: '0 4px'}}>•</span> Costo Total: <span style={{ color: 'white', fontWeight: '800' }}>${(commUsd / 0.4).toFixed(2)} USD</span> <span style={{opacity: 0.6, whiteSpace: 'nowrap'}}>({(commBs / 0.4).toFixed(2)} Bs)</span>
                               </span>
                             </div>
                             <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }}>
@@ -3115,7 +3115,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                             </div>
                           </div>
                           
-                          {/* Desglose de ganancias reales del barbero */}
+                           {/* Desglose de ganancias reales del estilista */}
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', margin: '16px 0', padding: '16px', background: 'rgba(0,0,0,0.3)', borderRadius: '16px', fontSize: '12px', border: '1px solid rgba(255,255,255,0.03)', boxShadow: 'inset 0 4px 12px rgba(0,0,0,0.2)' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                               <span style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>Comisión Servicio:</span>
@@ -3139,9 +3139,9 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                             <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.08)', color: 'white', padding: '6px 12px', borderRadius: '8px', fontWeight: '700', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '6px', letterSpacing: '0.5px' }}>
                               <span style={{opacity: 0.6}}>💳</span> {methodText.toUpperCase()}
                             </span>
-                            {isWash(t.metadata?.didWash) && (
+                            {isTreatment(t.metadata?.didTreatment) && (
                               <span style={{ fontSize: '11px', background: 'linear-gradient(45deg, rgba(0,122,255,0.15), rgba(0,198,255,0.15))', color: '#64d2ff', padding: '6px 12px', borderRadius: '8px', fontWeight: '800', border: '1px solid rgba(0,122,255,0.3)', display: 'flex', alignItems: 'center', gap: '6px', letterSpacing: '0.5px' }}>
-                                💧 LAVADO
+                                ✨ TRATAMIENTO
                               </span>
                             )}
                           </div>
@@ -3149,19 +3149,19 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                           {(t.metadata?.extras?.length > 0 || t.metadata?.products_sold?.length > 0) && (
                             <div style={{ padding: '16px', background: 'rgba(212, 175, 55, 0.05)', borderRadius: '16px', marginBottom: '16px', border: '1px dashed rgba(212, 175, 55, 0.2)' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                                <span style={{ color: 'var(--gold-primary)' }}>🛍️</span>
-                                <div style={{ fontSize: '11px', color: 'var(--gold-primary)', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>Detalle de Venta</div>
+                                <span style={{ color: 'var(--pink-primary)' }}>🛍️</span>
+                                <div style={{ fontSize: '11px', color: 'var(--pink-primary)', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>Detalle de Venta</div>
                               </div>
                               {t.metadata?.extras?.map((ex, eidx) => (
                                 <div key={eidx} style={{ fontSize: '12px', color: 'white', display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                                   <span style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>• {ex.service_extras?.name || 'Extra'} <span style={{opacity:0.5, fontSize:'10px'}}>(Extra)</span></span>
-                                  <span style={{ color: 'var(--gold-primary)', fontWeight: '800', fontFamily: 'monospace' }}>+${ex.price.toFixed(2)}</span>
+                                  <span style={{ color: 'var(--pink-primary)', fontWeight: '800', fontFamily: 'monospace' }}>+${ex.price.toFixed(2)}</span>
                                 </div>
                               ))}
                               {t.metadata?.products_sold?.map((p, pidx) => (
                                 <div key={pidx} style={{ fontSize: '12px', color: 'white', display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                                  <span style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>• {p.name} <span style={{color: 'var(--gold-primary)', opacity: 0.8}}>(x{p.quantity})</span></span>
-                                  <span style={{ color: 'var(--gold-primary)', fontWeight: '800', fontFamily: 'monospace' }}>+${(p.price * p.quantity).toFixed(2)}</span>
+                                  <span style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>• {p.name} <span style={{color: 'var(--pink-primary)', opacity: 0.8}}>(x{p.quantity})</span></span>
+                                  <span style={{ color: 'var(--pink-primary)', fontWeight: '800', fontFamily: 'monospace' }}>+${(p.price * p.quantity).toFixed(2)}</span>
                                 </div>
                               ))}
                             </div>
@@ -3179,7 +3179,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                   )}
                 </div>
 
-                <button onClick={() => setPayrollDetail({ isOpen: false, staff: null, transactions: [] })} className="btn-gold" style={{ width: '100%', marginTop: '24px', padding: '14px', borderRadius: '12px', fontWeight: '800' }}>Cerrar</button>
+                <button onClick={() => setPayrollDetail({ isOpen: false, staff: null, transactions: [] })} className="btn-pink" style={{ width: '100%', marginTop: '24px', padding: '14px', borderRadius: '12px', fontWeight: '800' }}>Cerrar</button>
               </div>
             </div>
             )}

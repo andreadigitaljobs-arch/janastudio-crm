@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Plus, Search, Edit2, Trash2, Clock, Scissors, Rocket,
+  Plus, Search, Edit2, Trash2, Clock, Rocket,
   Droplets, Zap, Check, X, Loader2,
   Settings, DollarSign, LayoutList, Star, Crown,
   LayoutGrid, Table, Eye, Info, Pencil,
@@ -38,25 +38,25 @@ const NailPolishIcon = ({ size = 20 }) => (
 
 const AVAILABLE_ICONS = [
   { name: 'Scissors',    label: 'Corte general' },
-  { name: 'UserRound',   label: 'Barbería / Barba' },
+  { name: 'UserRound',   label: 'Estilismo / Barba' },
   { name: 'Wind',        label: 'Secado / Blower' },
   { name: 'Palette',     label: 'Colorimetría / Tintes' },
   { name: 'NailPolish',  label: 'Manicura / Esmalte' },
-  { name: 'Droplets',    label: 'Lavado / Hidratación' },
+  { name: 'Droplets',    label: 'Tratamiento / Hidratación' },
   { name: 'Brush',       label: 'Maquillaje / Cejas' },
   { name: 'Sparkles',    label: 'Estilismo / Peinados' },
   { name: 'Flower2',     label: 'Spa / Masajes' },
   { name: 'Feather',     label: 'Tratamientos suaves' },
   { name: 'Heart',       label: 'Depilación / Bienestar' },
   { name: 'Waves',       label: 'Keratina / Alaciado' },
-  { name: 'Crown',       label: 'VIP / Astro Elite' },
+  { name: 'Crown',       label: 'VIP / Jana Elite' },
   { name: 'Smile',       label: 'Faciales / Afeitado' },
   { name: 'Star',        label: 'Tendencias / Adicional' }
 ];
 
 const getIconComponent = (iconName, size = 20) => {
   switch (iconName) {
-    case 'Scissors':    return <Scissors size={size} />;
+    case 'Scissors':    return <Sparkles size={size} />;
     case 'UserRound':   return <UserRound size={size} />;
     case 'Wind':        return <Wind size={size} />;
     case 'Palette':     return <Palette size={size} />;
@@ -329,20 +329,20 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
     name: '', 
     price: '', 
     icon: 'Scissors',
-    category: 'Barbería',
+    category: 'Estilismo',
     strategy_type: 'MVP',
     duration: 30,
     insumo_cost: 0,
     variable_cost: 0.50,
     included_items: [],
-    commission_barber: 40,
+    commission_stylist: 40,
     commission_washer: 0,
     commission_cashier: 0,
     commission_receptionist: 0
   });
 
   const totalCommissions = 
-    (Number(newService.commission_barber) || 0) + 
+    (Number(newService.commission_stylist) || 0) + 
     (Number(newService.commission_washer) || 0) + 
     (Number(newService.commission_cashier) || 0) + 
     (Number(newService.commission_receptionist) || 0);
@@ -360,7 +360,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
       duration: service.duration || 30,
       description: service.description || '',
       included_items: service.included_items || [],
-      commission_barber: service.commission_barber !== undefined ? service.commission_barber : 40,
+      commission_stylist: service.commission_stylist !== undefined ? service.commission_stylist : 40,
       commission_washer: service.commission_washer || 0,
       commission_cashier: service.commission_cashier || 0,
       commission_receptionist: service.commission_receptionist || 0
@@ -382,14 +382,14 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
       setNewService({ 
         name: '', 
         price: '', 
-        category: 'Barbería',
+        category: 'Estilismo',
         strategy_type: 'MVP',
         duration: 30,
         insumo_cost: 0,
         variable_cost: 0.50,
         description: '',
         included_items: [],
-        commission_barber: 40,
+        commission_stylist: 40,
         commission_washer: 0,
         commission_cashier: 0,
         commission_receptionist: 0
@@ -418,7 +418,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
 
   const getFallbackIconName = (catName) => {
     switch(catName) {
-      case 'Barbería': return 'Scissors';
+      case 'Estilismo': return 'Scissors';
       case 'Estilismo': return 'Sparkles';
       case 'Tratamientos': return 'Droplets';
       default: return 'Wind';
@@ -442,7 +442,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
         marginBottom: '40px'
       }}>
         <div>
-          <h2 style={{ fontSize: isMobile ? '28px' : '32px', fontWeight: '800', letterSpacing: '-0.5px' }}><span className="text-gold">Servicios</span></h2>
+          <h2 style={{ fontSize: isMobile ? '28px' : '32px', fontWeight: '800', letterSpacing: '-0.5px' }}><span className="text-pink">Servicios</span></h2>
           <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>Define tu oferta y servicios adicionales.</p>
         </div>
         <div style={{ 
@@ -468,8 +468,8 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                   padding: '8px 12px', 
                   borderRadius: '8px', 
                   border: 'none', 
-                  backgroundColor: viewMode === 'grid' ? 'rgba(212,175,55,0.1)' : 'transparent',
-                  color: viewMode === 'grid' ? 'var(--gold-primary)' : 'var(--text-muted)',
+                  backgroundColor: viewMode === 'grid' ? 'rgba(196,139,159,0.1)' : 'transparent',
+                  color: viewMode === 'grid' ? 'var(--pink-primary)' : 'var(--text-muted)',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -486,8 +486,8 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                   padding: '8px 12px', 
                   borderRadius: '8px', 
                   border: 'none', 
-                  backgroundColor: viewMode === 'table' ? 'rgba(212,175,55,0.1)' : 'transparent',
-                  color: viewMode === 'table' ? 'var(--gold-primary)' : 'var(--text-muted)',
+                  backgroundColor: viewMode === 'table' ? 'rgba(196,139,159,0.1)' : 'transparent',
+                  color: viewMode === 'table' ? 'var(--pink-primary)' : 'var(--text-muted)',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
@@ -501,34 +501,34 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
             </div>
           )}
 
-          <button className="btn-gold" onClick={() => setIsCategoriesModalOpen(true)} style={{ backgroundColor: 'rgba(212,175,55,0.1)', color: 'var(--gold-primary)', border: '1px solid rgba(212,175,55,0.2)', justifyContent: 'center', width: isMobile ? '100%' : 'auto', padding: isMobile ? '10px 8px' : undefined, fontSize: isMobile ? '12px' : undefined }}>
+          <button className="btn-pink" onClick={() => setIsCategoriesModalOpen(true)} style={{ backgroundColor: 'rgba(196,139,159,0.1)', color: 'var(--pink-primary)', border: '1px solid rgba(196,139,159,0.2)', justifyContent: 'center', width: isMobile ? '100%' : 'auto', padding: isMobile ? '10px 8px' : undefined, fontSize: isMobile ? '12px' : undefined }}>
             <Settings size={18} style={{ marginRight: '8px' }} />
             Categorías
           </button>
-          <button className="btn-gold" onClick={() => setIsStrategiesModalOpen(true)} style={{ backgroundColor: 'rgba(212,175,55,0.1)', color: 'var(--gold-primary)', border: '1px solid rgba(212,175,55,0.2)', justifyContent: 'center', width: isMobile ? '100%' : 'auto', padding: isMobile ? '10px 8px' : undefined, fontSize: isMobile ? '12px' : undefined }}>
+          <button className="btn-pink" onClick={() => setIsStrategiesModalOpen(true)} style={{ backgroundColor: 'rgba(196,139,159,0.1)', color: 'var(--pink-primary)', border: '1px solid rgba(196,139,159,0.2)', justifyContent: 'center', width: isMobile ? '100%' : 'auto', padding: isMobile ? '10px 8px' : undefined, fontSize: isMobile ? '12px' : undefined }}>
             <Crown size={18} style={{ marginRight: '8px' }} />
             Estrategias
           </button>
-          <button className="btn-gold" onClick={() => setIsBillableExtrasModalOpen(true)} style={{ backgroundColor: 'rgba(212,175,55,0.1)', color: 'var(--gold-primary)', border: '1px solid rgba(212,175,55,0.2)', justifyContent: 'center', width: isMobile ? '100%' : 'auto', padding: isMobile ? '10px 8px' : undefined, fontSize: isMobile ? '12px' : undefined }}>
+          <button className="btn-pink" onClick={() => setIsBillableExtrasModalOpen(true)} style={{ backgroundColor: 'rgba(196,139,159,0.1)', color: 'var(--pink-primary)', border: '1px solid rgba(196,139,159,0.2)', justifyContent: 'center', width: isMobile ? '100%' : 'auto', padding: isMobile ? '10px 8px' : undefined, fontSize: isMobile ? '12px' : undefined }}>
             <Rocket size={18} style={{ marginRight: '8px' }} />
             Extras
           </button>
           <button 
-            className="btn-gold" 
+            className="btn-pink" 
             onClick={() => {
               setIsEditing(false);
               setNewService({ 
                 name: '', 
                 price: '', 
                 icon: 'Scissors',
-                category: 'Barbería',
+                category: 'Estilismo',
                 strategy_type: 'MVP',
                 duration: 30,
                 insumo_cost: 0,
                 variable_cost: 0.50,
                 description: '',
                 included_items: [],
-                commission_barber: 40,
+                commission_stylist: 40,
                 commission_washer: 0,
                 commission_cashier: 0,
                 commission_receptionist: 0
@@ -545,11 +545,11 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
 
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '100px' }}>
-          <Loader2 className="animate-spin" color="var(--gold-primary)" size={40} />
+          <Loader2 className="animate-spin" color="var(--pink-primary)" size={40} />
         </div>
       ) : services.length === 0 ? (
         <div className="glass-card" style={{ textAlign: 'center', padding: '80px', borderRadius: '32px' }}>
-          <Star size={64} color="rgba(212, 175, 55, 0.1)" style={{ marginBottom: '24px' }} />
+                    <Star size={64} color="rgba(212, 160, 154, 0.1)" style={{ marginBottom: '24px' }} />
           <h3 style={{ fontSize: '20px', color: 'var(--text-primary)' }}>Tu catálogo está vacío</h3>
           <p style={{ color: 'var(--text-muted)', marginTop: '8px' }}>Comienza agregando los servicios que definirán tu marca.</p>
         </div>
@@ -579,11 +579,11 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                         {/* Top: Icon + Name & Actions */}
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0, flex: 1 }}>
-                            <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: 'rgba(212, 175, 55, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'var(--gold-primary)' }}>
+                            <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: 'rgba(196, 139, 159, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'var(--pink-primary)' }}>
                               {service.icon ? getIconComponent(service.icon, 20) : getCategoryIcon(service.category)}
                             </div>
                             <div style={{ minWidth: 0, flex: 1 }}>
-                              <div style={{ fontSize: '9px', fontWeight: '900', color: 'var(--gold-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{service.category}</div>
+                              <div style={{ fontSize: '9px', fontWeight: '900', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{service.category}</div>
                               <h4 style={{ fontSize: '15px', fontWeight: '800', color: 'white', margin: '2px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{service.name}</h4>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
                                 <Clock size={12} /> {service.duration || 30} min
@@ -611,7 +611,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
 
                         {/* Description */}
                         {service.description && (
-                          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.55)', margin: '0', lineHeight: '1.4', fontStyle: 'italic', borderLeft: '2px solid rgba(212, 175, 55, 0.3)', paddingLeft: '10px' }}>
+                          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.55)', margin: '0', lineHeight: '1.4', fontStyle: 'italic', borderLeft: '2px solid rgba(196, 139, 159, 0.3)', paddingLeft: '10px' }}>
                             {service.description}
                           </p>
                         )}
@@ -639,7 +639,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                         }}>
                           <div>
                             {service.strategy_type ? (
-                              <div style={{ padding: '4px 12px', borderRadius: '20px', border: '1px solid rgba(212, 175, 55, 0.3)', fontSize: '10px', fontWeight: '900', color: 'var(--gold-primary)', backgroundColor: 'rgba(212, 175, 55, 0.05)' }}>
+                              <div style={{ padding: '4px 12px', borderRadius: '20px', border: '1px solid rgba(196, 139, 159, 0.3)', fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)', backgroundColor: 'rgba(196, 139, 159, 0.05)' }}>
                                 {service.strategy_type}
                               </div>
                             ) : <div />}
@@ -650,7 +650,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                             <div style={{ fontSize: '18px', fontWeight: '900', color: 'white', display: 'flex', alignItems: 'baseline', gap: '6px', justifyContent: 'flex-end' }}>
                               <span>${service.price}</span>
                               {rates?.usd > 0 && (
-                                <span style={{ fontSize: '12px', color: 'var(--gold-primary)', fontWeight: '700' }}>
+                                <span style={{ fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '700' }}>
                                   ≈ {Math.round(service.price * rates.usd).toLocaleString()} Bs.
                                 </span>
                               )}
@@ -676,11 +676,11 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                       gap: '24px'
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '16px', minWidth: '200px' }}>
-                        <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: 'rgba(212, 175, 55, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: 'rgba(196, 139, 159, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           {service.icon ? getIconComponent(service.icon, 20) : getCategoryIcon(service.category)}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--gold-primary)', textTransform: 'uppercase', letterSpacing: '1px' }}>{service.category}</div>
+                          <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '1px' }}>{service.category}</div>
                           <h4 style={{ fontSize: '16px', fontWeight: '800', color: 'white', margin: '2px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{service.name}</h4>
                           {service.description && (
                             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', margin: '4px 0', maxWidth: '250px', lineHeight: '1.4', fontStyle: 'italic' }}>{service.description}</p>
@@ -705,7 +705,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                         gap: '32px'
                       }}>
                         {service.strategy_type && (
-                          <div style={{ padding: '4px 12px', borderRadius: '20px', border: '1px solid rgba(212, 175, 55, 0.3)', fontSize: '10px', fontWeight: '900', color: 'var(--gold-primary)', backgroundColor: 'rgba(212, 175, 55, 0.05)' }}>
+                          <div style={{ padding: '4px 12px', borderRadius: '20px', border: '1px solid rgba(196, 139, 159, 0.3)', fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)', backgroundColor: 'rgba(196, 139, 159, 0.05)' }}>
                             {service.strategy_type}
                           </div>
                         )}
@@ -714,7 +714,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                           <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)' }}>PRECIO</div>
                           <div style={{ fontSize: '18px', fontWeight: '900', color: 'white' }}>${service.price}</div>
                           {rates?.usd > 0 && (
-                            <div style={{ fontSize: '11px', color: 'var(--gold-primary)', fontWeight: '700' }}>
+                            <div style={{ fontSize: '11px', color: 'var(--pink-primary)', fontWeight: '700' }}>
                               ≈ {Math.round(service.price * rates.usd).toLocaleString()} Bs.
                             </div>
                           )}
@@ -737,7 +737,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               })}
             </div>
           ) : (
-            <div className="animate-slide-up" style={{ background: 'rgba(28, 28, 30, 0.95)', padding: '0', borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(212, 175, 55, 0.15)' }}>
+            <div className="animate-slide-up" style={{ background: 'rgba(28, 28, 30, 0.95)', padding: '0', borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(196, 139, 159, 0.15)' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                 <thead>
                   <tr style={{ backgroundColor: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
@@ -757,7 +757,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                         {service.description && <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic', maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{service.description}</div>}
                       </td>
                       <td style={{ padding: '16px 24px' }}>
-                        <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--gold-primary)', backgroundColor: 'rgba(212,175,55,0.05)', padding: '4px 10px', borderRadius: '8px' }}>
+                        <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--pink-primary)', backgroundColor: 'rgba(196,139,159,0.05)', padding: '4px 10px', borderRadius: '8px' }}>
                           {service.category}
                         </span>
                       </td>
@@ -766,12 +766,12 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                       </td>
                       <td style={{ padding: '16px 24px' }}>
                         <div style={{ fontWeight: '800', color: 'white' }}>${service.price}</div>
-                        {rates?.usd > 0 && <div style={{ fontSize: '11px', color: 'var(--gold-primary)' }}>{Math.round(service.price * rates.usd).toLocaleString()} Bs.</div>}
+                        {rates?.usd > 0 && <div style={{ fontSize: '11px', color: 'var(--pink-primary)' }}>{Math.round(service.price * rates.usd).toLocaleString()} Bs.</div>}
                       </td>
                       <td style={{ padding: '16px 24px' }}>
                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                          <span title="Comisión del Barbero" style={{ fontSize: '11px', color: '#32d74b', fontWeight: '700' }}>
-                            Barbero: {service.commission_barber}%
+                          <span title="Comisión del Estilista" style={{ fontSize: '11px', color: '#32d74b', fontWeight: '700' }}>
+                            Estilista: {service.commission_stylist}%
                           </span>
                         </div>
                       </td>
@@ -806,12 +806,12 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
             <div className={`${cardClass} glass-card astro-scrollbar`} style={{
               width: '100%', maxWidth: '420px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden',
               display: 'flex', flexDirection: 'column', padding: isMobile ? '20px 16px' : '24px',
-              borderRadius: '28px', border: '1px solid rgba(212,175,55,0.2)',
+              borderRadius: '28px', border: '1px solid rgba(196,139,159,0.2)',
               boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.6)'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <div>
-                  <h3 style={{ fontSize: '20px', fontWeight: '800', letterSpacing: '-0.5px' }}><span className="text-gold">Items</span></h3>
+                   <h3 style={{ fontSize: '20px', fontWeight: '800', letterSpacing: '-0.5px' }}><span className="text-pink">Items</span></h3>
                 </div>
                 <button 
                   onClick={() => setIsExtrasModalOpen(false)} 
@@ -870,7 +870,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                     style={{ flex: 1, height: '40px', fontSize: '13px', minWidth: 0 }}
                   />
 
-                  <button onClick={handleAddMasterChecklistItem} className="btn-gold" style={{ width: '40px', height: '40px', borderRadius: '10px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <button onClick={handleAddMasterChecklistItem} className="btn-pink" style={{ width: '40px', height: '40px', borderRadius: '10px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <Plus size={20} />
                   </button>
                 </div>
@@ -884,11 +884,11 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
       <AnimatedModal isOpen={isBillableExtrasModalOpen}>
         {(overlayClass, cardClass) => (
           <div className={overlayClass} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px' : '20px' }}>
-            <div className={`${cardClass} glass-card astro-scrollbar`} style={{ width: '100%', maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden', padding: isMobile ? '20px 16px' : '32px', borderRadius: '32px', border: '1px solid rgba(212,175,55,0.2)' }}>
+            <div className={`${cardClass} glass-card astro-scrollbar`} style={{ width: '100%', maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden', padding: isMobile ? '20px 16px' : '32px', borderRadius: '32px', border: '1px solid rgba(196,139,159,0.2)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px' }}>
                 <div>
                   <h3 style={{ fontSize: '20px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <Rocket size={24} color="var(--gold-primary)" /> Servicios Extras
+                    <Rocket size={24} color="var(--pink-primary)" /> Servicios Extras
                   </h3>
                   <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>Servicios con costo extra que se añaden en caja.</p>
                 </div>
@@ -915,16 +915,16 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                             fontSize: '14px', 
                             fontWeight: '700', 
                             width: '100%',
-                            color: editingExtra?.id === extra.id ? 'var(--gold-primary)' : 'white',
+                            color: editingExtra?.id === extra.id ? 'var(--pink-primary)' : 'white',
                             pointerEvents: editingExtra?.id === extra.id ? 'auto' : 'none'
                           }}
                         />
-                        <div style={{ fontSize: '11px', color: 'var(--gold-primary)', marginTop: '4px', fontWeight: '800' }}>PRECIO EN CAJA</div>
+                        <div style={{ fontSize: '11px', color: 'var(--pink-primary)', marginTop: '4px', fontWeight: '800' }}>PRECIO EN CAJA</div>
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                         <div style={{ position: 'relative', width: '80px' }}>
-                          <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--gold-primary)', fontSize: '11px', fontWeight: '800' }}>$</span>
+                          <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--pink-primary)', fontSize: '11px', fontWeight: '800' }}>$</span>
                           <input 
                             className="form-input"
                             type="number"
@@ -939,7 +939,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                               fontWeight: '800', 
                               textAlign: 'right', 
                               background: editingExtra?.id === extra.id ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.2)', 
-                              border: editingExtra?.id === extra.id ? '1px solid var(--gold-primary)' : '1px solid transparent', 
+                              border: editingExtra?.id === extra.id ? '1px solid var(--pink-primary)' : '1px solid transparent', 
                               width: '100%',
                               pointerEvents: editingExtra?.id === extra.id ? 'auto' : 'none'
                             }}
@@ -975,11 +975,11 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                   <div style={{ width: '90px', flexShrink: 0 }}>
                     <label style={{ display: 'block', fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '4px', letterSpacing: '0.5px' }}>PRECIO</label>
                     <div style={{ position: 'relative' }}>
-                      <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--gold-primary)', fontSize: '12px', fontWeight: '800' }}>$</span>
+                      <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--pink-primary)', fontSize: '12px', fontWeight: '800' }}>$</span>
                       <input className="form-input" type="number" step="0.01" value={newExtraPrice} onChange={e => setNewExtraPrice(e.target.value)} style={{ height: '44px', paddingLeft: '24px', fontSize: '13px', fontWeight: '800', width: '100%' }} />
                     </div>
                   </div>
-                  <button onClick={handleAddBillableExtra} className="btn-gold" style={{ height: '44px', width: '44px', borderRadius: '12px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <button onClick={handleAddBillableExtra} className="btn-pink" style={{ height: '44px', width: '44px', borderRadius: '12px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <Plus size={24} />
                   </button>
                 </div>
@@ -1001,7 +1001,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               <div className={`${cardClass} glass-card astro-scrollbar`} style={{
                 width: '100%', maxWidth: '440px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden',
                 padding: isMobile ? '20px 16px' : '24px', borderRadius: '28px',
-                border: '1px solid rgba(212,175,55,0.2)',
+                border: '1px solid rgba(212,160,154,0.2)',
                 boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.6)',
                 position: 'relative'
               }}>
@@ -1013,13 +1013,13 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                 </button>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', paddingRight: '40px' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: 'rgba(212,175,55,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--gold-primary)' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--pink-primary)' }}>
                     {selectedServiceDetail.icon ? getIconComponent(selectedServiceDetail.icon, 20) : getCategoryIcon(selectedServiceDetail.category)}
                   </div>
                   <div>
-                    <span style={{ fontSize: '10px', fontWeight: '900', color: 'var(--gold-primary)', textTransform: 'uppercase', letterSpacing: '1px' }}>{selectedServiceDetail.category}</span>
+                    <span style={{ fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '1px' }}>{selectedServiceDetail.category}</span>
                     {selectedServiceDetail.strategy_type && (
-                      <span style={{ marginLeft: '8px', fontSize: '9px', fontWeight: '900', backgroundColor: 'rgba(212,175,55,0.1)', padding: '2px 8px', borderRadius: '10px', border: '1px solid rgba(212,175,55,0.2)', color: 'var(--gold-primary)' }}>
+                      <span style={{ marginLeft: '8px', fontSize: '9px', fontWeight: '900', backgroundColor: 'rgba(196,139,159,0.1)', padding: '2px 8px', borderRadius: '10px', border: '1px solid rgba(196,139,159,0.2)', color: 'var(--pink-primary)' }}>
                         {selectedServiceDetail.strategy_type}
                       </span>
                     )}
@@ -1030,12 +1030,12 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
 
                 <div style={{ display: 'flex', gap: '16px', marginBottom: '20px', fontSize: '13px', color: 'var(--text-secondary)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: 'rgba(255,255,255,0.03)', padding: '6px 12px', borderRadius: '10px' }}>
-                    <Clock size={14} color="var(--gold-primary)" />
+                    <Clock size={14} color="var(--pink-primary)" />
                     <strong>Duración:</strong> {selectedServiceDetail.duration || 30} min
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: 'rgba(255,255,255,0.03)', padding: '6px 12px', borderRadius: '10px' }}>
-                    <Scissors size={14} color="var(--gold-primary)" />
-                    <strong>Comisión:</strong> {selectedServiceDetail.commission_barber}%
+                    <Sparkles size={14} color="var(--pink-primary)" />
+                    <strong>Comisión:</strong> {selectedServiceDetail.commission_stylist}%
                   </div>
                 </div>
 
@@ -1053,8 +1053,8 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                     <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Checklist Incluido ({selectedServiceDetail.included_items.length})</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                       {selectedServiceDetail.included_items.map((item, idx) => (
-                        <span key={idx} style={{ fontSize: '11px', padding: '6px 12px', borderRadius: '8px', backgroundColor: 'rgba(212,175,55,0.05)', color: 'white', border: '1px solid rgba(212,175,55,0.1)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Check size={12} color="var(--gold-primary)" strokeWidth={3} /> {item}
+                        <span key={idx} style={{ fontSize: '11px', padding: '6px 12px', borderRadius: '8px', backgroundColor: 'rgba(196,139,159,0.05)', color: 'white', border: '1px solid rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Check size={12} color="var(--pink-primary)" strokeWidth={3} /> {item}
                         </span>
                       ))}
                     </div>
@@ -1069,7 +1069,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                   {rates?.usd > 0 && (
                     <div style={{ textAlign: 'right' }}>
                       <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Precio en Bolívares</div>
-                      <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--gold-primary)' }}>
+                      <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--pink-primary)' }}>
                         {Math.round(selectedServiceDetail.price * rates.usd).toLocaleString()} Bs.
                       </div>
                     </div>
@@ -1082,7 +1082,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                       setSelectedServiceDetail(null);
                       handleEditClick(selectedServiceDetail);
                     }} 
-                    className="btn-gold" 
+                    className="btn-pink" 
                     style={{ flex: 1, height: '44px', borderRadius: '12px' }}
                   >
                     Editar Servicio
@@ -1114,7 +1114,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
             <div className={`${cardClass} glass-card astro-scrollbar`} style={{
               width: '100%', maxWidth: '480px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden',
               padding: isMobile ? '20px 16px' : '28px', borderRadius: '28px',
-              border: '1px solid rgba(212,175,55,0.2)',
+              border: '1px solid rgba(212,160,154,0.2)',
               boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.6)',
               position: 'relative'
             }}>
@@ -1126,7 +1126,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               </button>
 
               <h3 style={{ fontSize: '20px', fontWeight: '800', color: 'white', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', paddingRight: '40px' }}>
-                <Settings size={20} color="var(--gold-primary)" /> Categorías
+                <Settings size={20} color="var(--pink-primary)" /> Categorías
               </h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '20px' }}>Agrega o elimina las categorías disponibles para clasificar tus servicios.</p>
 
@@ -1146,7 +1146,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                   {editingCategory && (
                     <button 
                       onClick={handleCancelEditCategory} 
-                      className="btn-gold" 
+                      className="btn-pink" 
                       style={{ height: '44px', width: '44px', borderRadius: '12px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }}
                       type="button"
                     >
@@ -1155,7 +1155,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                   )}
                   <button 
                     onClick={handleSaveCategory} 
-                    className="btn-gold" 
+                    className="btn-pink" 
                     style={{ height: '44px', width: '44px', borderRadius: '12px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
                   >
                     {editingCategory ? <Check size={20} /> : <Plus size={24} />}
@@ -1182,9 +1182,9 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                         style={{
                           height: '40px',
                           borderRadius: '8px',
-                          border: isSelected ? '1px solid var(--gold-primary)' : '1px solid transparent',
-                          background: isSelected ? 'rgba(212, 175, 55, 0.15)' : 'transparent',
-                          color: isSelected ? 'var(--gold-primary)' : 'rgba(255,255,255,0.6)',
+                          border: isSelected ? '1px solid var(--pink-primary)' : '1px solid transparent',
+                          background: isSelected ? 'rgba(196, 139, 159, 0.15)' : 'transparent',
+                          color: isSelected ? 'var(--pink-primary)' : 'rgba(255,255,255,0.6)',
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
@@ -1204,7 +1204,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                 {categories.map((catObj, idx) => (
                   <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <div style={{ color: 'var(--gold-primary)' }}>
+                      <div style={{ color: 'var(--pink-primary)' }}>
                         {getIconComponent(catObj.icon || getFallbackIconName(catObj.name), 20)}
                       </div>
                       <span style={{ fontSize: '14px', fontWeight: '700', color: 'white' }}>{catObj.name}</span>
@@ -1212,7 +1212,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <button 
                         onClick={() => handleEditCategoryClick(catObj)} 
-                        style={{ background: 'rgba(212,175,55,0.1)', border: 'none', color: 'var(--gold-primary)', cursor: 'pointer', width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        style={{ background: 'rgba(196,139,159,0.1)', border: 'none', color: 'var(--pink-primary)', cursor: 'pointer', width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                       >
                         <Pencil size={14} />
                       </button>
@@ -1230,7 +1230,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               <div style={{ display: 'flex', gap: '12px', marginTop: '24px', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '20px' }}>
                 <button 
                   onClick={() => setIsCategoriesModalOpen(false)} 
-                  className="btn-gold" 
+                  className="btn-pink" 
                   style={{ flex: 1, height: '44px', borderRadius: '12px' }}
                 >
                   Cerrar
@@ -1253,7 +1253,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
             <div className={`${cardClass} glass-card astro-scrollbar`} style={{
               width: '100%', maxWidth: '520px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden',
               padding: isMobile ? '20px 16px' : '28px', borderRadius: '28px',
-              border: '1px solid rgba(212,175,55,0.2)',
+              border: '1px solid rgba(212,160,154,0.2)',
               boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.6)',
               position: 'relative'
             }}>
@@ -1265,7 +1265,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               </button>
 
               <h3 style={{ fontSize: '20px', fontWeight: '800', color: 'white', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', paddingRight: '40px' }}>
-                <Crown size={20} color="var(--gold-primary)" /> Estrategias de Venta
+                <Crown size={20} color="var(--pink-primary)" /> Estrategias de Venta
               </h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '20px' }}>Configura los tipos de estrategias de venta cruzada y retención para tus servicios.</p>
 
@@ -1295,7 +1295,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                 </div>
                 <button 
                   onClick={handleAddStrategy} 
-                  className="btn-gold" 
+                  className="btn-pink" 
                   style={{ height: '44px', width: '100%', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                 >
                   <Plus size={18} /> Agregar Estrategia
@@ -1308,7 +1308,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                   <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                       <span style={{ fontSize: '14px', fontWeight: '700', color: 'white' }}>{strat.label}</span>
-                      <span style={{ fontSize: '11px', color: 'var(--gold-primary)', fontWeight: '900' }}>VALOR: {strat.value}</span>
+                      <span style={{ fontSize: '11px', color: 'var(--pink-primary)', fontWeight: '900' }}>VALOR: {strat.value}</span>
                     </div>
                     <button 
                       onClick={() => handleDeleteStrategy(strat.value)} 
@@ -1323,7 +1323,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               <div style={{ display: 'flex', gap: '12px', marginTop: '24px', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '20px' }}>
                 <button 
                   onClick={() => setIsStrategiesModalOpen(false)} 
-                  className="btn-gold" 
+                  className="btn-pink" 
                   style={{ flex: 1, height: '44px', borderRadius: '12px' }}
                 >
                   Cerrar
@@ -1348,7 +1348,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                 width: '100%', maxWidth: '900px',
                 maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column',
                 padding: isMobile ? '20px 16px' : '32px', borderRadius: '28px',
-                border: '1px solid rgba(212,175,55,0.2)',
+                border: '1px solid rgba(212,160,154,0.2)',
                 boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.6)',
                 position: 'relative'
               }}>
@@ -1360,7 +1360,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                 </button>
 
                 <div className="astro-scrollbar" style={{ overflowY: 'auto', overflowX: 'hidden', flex: 1, paddingRight: '8px' }}><h3 style={{ fontSize: '22px', fontWeight: '800', marginBottom: '24px', paddingRight: '40px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ color: 'var(--gold-primary)', display: 'flex', alignItems: 'center' }}>
+                  <span style={{ color: 'var(--pink-primary)', display: 'flex', alignItems: 'center' }}>
                     {getIconComponent(newService.icon || 'Scissors', 22)}
                   </span>
                   {isEditing ? 'Editar Servicio' : 'Nuevo Servicio'}
@@ -1372,7 +1372,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                     <div className="form-group">
                       <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>NOMBRE DEL SERVICIO</label>
                       <div style={{ position: 'relative' }}>
-                        <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--gold-primary)', display: 'flex', alignItems: 'center' }}>
+                        <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--pink-primary)', display: 'flex', alignItems: 'center' }}>
                           {getIconComponent(newService.icon || 'Scissors', 18)}
                         </span>
                         <input className="form-input" placeholder="Ej. Corte Suprema" value={newService.name} onChange={e => setNewService({...newService, name: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
@@ -1393,12 +1393,12 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                               height: '40px',
                               borderRadius: '10px',
                               border: newService.icon === ic.name
-                                ? '2px solid var(--gold-primary)'
+                                ? '2px solid var(--pink-primary)'
                                 : '1px solid rgba(255,255,255,0.08)',
                               background: newService.icon === ic.name
-                                ? 'rgba(212,175,55,0.15)'
+                                ? 'rgba(196,139,159,0.15)'
                                 : 'rgba(255,255,255,0.04)',
-                              color: newService.icon === ic.name ? 'var(--gold-primary)' : 'var(--text-muted)',
+                              color: newService.icon === ic.name ? 'var(--pink-primary)' : 'var(--text-muted)',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
@@ -1468,30 +1468,30 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
 
                     {/* Commissions Distribution */}
                     <div className="modal-commissions">
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', fontWeight: '900', color: 'var(--gold-primary)', marginBottom: '16px', letterSpacing: '1px' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', marginBottom: '16px', letterSpacing: '1px' }}>
                         <DollarSign size={14} /> DISTRIBUCIÓN DE INGRESOS (%)
                       </label>
                       
                       <div className="commissions-fields-grid" style={{ marginBottom: '16px' }}>
                         <div className="form-group">
-                          <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '8px' }}>COMISIÓN BARBERO (%)</label>
+                          <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '8px' }}>COMISIÓN ESTILISTA (%)</label>
                           <input 
                             className="form-input" 
                             type="number" 
                             placeholder="40"
-                            value={newService.commission_barber === 0 ? '' : newService.commission_barber} 
-                            onChange={e => setNewService({...newService, commission_barber: e.target.value === '' ? 0 : Number(e.target.value)})} 
-                            style={{ width: '100%', fontSize: '15px', fontWeight: '800', height: '48px', color: 'var(--gold-primary)' }} 
+                            value={newService.commission_stylist === 0 ? '' : newService.commission_stylist} 
+                            onChange={e => setNewService({...newService, commission_stylist: e.target.value === '' ? 0 : Number(e.target.value)})} 
+                            style={{ width: '100%', fontSize: '15px', fontWeight: '800', height: '48px', color: 'var(--pink-primary)' }} 
                           />
                         </div>
 
                         <div className="form-group">
-                          <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '8px' }}>GANANCIA BARBERÍA (%)</label>
+                          <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '8px' }}>GANANCIA SALÓN (%)</label>
                           <input 
                             className="form-input" 
                             type="number" 
                             readOnly
-                            value={100 - (Number(newService.commission_barber) || 0)} 
+                            value={100 - (Number(newService.commission_stylist) || 0)} 
                             style={{ width: '100%', fontSize: '15px', fontWeight: '800', height: '48px', color: 'var(--text-muted)', backgroundColor: 'rgba(255,255,255,0.01)', cursor: 'not-allowed' }} 
                           />
                         </div>
@@ -1501,7 +1501,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                       {(newService.price > 0) && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '20px' }}>
                           
-                          {/* Row 1: Ganancia Barbería */}
+                          {/* Row 1: Ganancia Estilismo */}
                           <div style={{ 
                             padding: '12px 16px', 
                             borderRadius: '14px', 
@@ -1513,45 +1513,45 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                           }}>
                             <div>
                               <div style={{ fontSize: '9px', fontWeight: '800', color: '#32d74b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                Ganancia Real Barbería
+                                Ganancia Real Estilismo
                               </div>
                               <div style={{ fontSize: '18px', fontWeight: '900', color: 'white', marginTop: '2px' }}>
-                                ${((Number(newService.price) || 0) - ((Number(newService.price) || 0) * (Number(newService.commission_barber) || 0) / 100)).toFixed(2)}
+                                ${((Number(newService.price) || 0) - ((Number(newService.price) || 0) * (Number(newService.commission_stylist) || 0) / 100)).toFixed(2)}
                               </div>
                             </div>
                             {rates?.usd > 0 && (
                               <div style={{ textAlign: 'right' }}>
                                 <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>EQUIVALENTE BS.</div>
                                 <div style={{ fontSize: '13px', fontWeight: '800', color: '#32d74b', marginTop: '2px' }}>
-                                  {Math.round(((Number(newService.price) || 0) - ((Number(newService.price) || 0) * (Number(newService.commission_barber) || 0) / 100)) * rates.usd).toLocaleString()} Bs.
+                                  {Math.round(((Number(newService.price) || 0) - ((Number(newService.price) || 0) * (Number(newService.commission_stylist) || 0) / 100)) * rates.usd).toLocaleString()} Bs.
                                 </div>
                               </div>
                             )}
                           </div>
 
-                          {/* Row 2: Pago Barbero */}
+                          {/* Row 2: Pago Estilista */}
                           <div style={{ 
                             padding: '12px 16px', 
                             borderRadius: '14px', 
-                            background: 'rgba(212, 175, 55, 0.05)', 
-                            border: '1px solid rgba(212, 175, 55, 0.15)',
+                            background: 'rgba(196, 139, 159, 0.05)', 
+                            border: '1px solid rgba(196, 139, 159, 0.15)',
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center'
                           }}>
                             <div>
-                              <div style={{ fontSize: '9px', fontWeight: '800', color: 'var(--gold-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                Pago Real Barbero
+                              <div style={{ fontSize: '9px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                Pago Real Estilista
                               </div>
                               <div style={{ fontSize: '18px', fontWeight: '900', color: 'white', marginTop: '2px' }}>
-                                ${(((Number(newService.price) || 0) * (Number(newService.commission_barber) || 0)) / 100).toFixed(2)}
+                                ${(((Number(newService.price) || 0) * (Number(newService.commission_stylist) || 0)) / 100).toFixed(2)}
                               </div>
                             </div>
                             {rates?.usd > 0 && (
                               <div style={{ textAlign: 'right' }}>
                                 <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>EQUIVALENTE BS.</div>
-                                <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--gold-primary)', marginTop: '2px' }}>
-                                  {Math.round((((Number(newService.price) || 0) * (Number(newService.commission_barber) || 0)) / 100) * rates.usd).toLocaleString()} Bs.
+                                <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--pink-primary)', marginTop: '2px' }}>
+                                  {Math.round((((Number(newService.price) || 0) * (Number(newService.commission_stylist) || 0)) / 100) * rates.usd).toLocaleString()} Bs.
                                 </div>
                               </div>
                             )}
@@ -1565,14 +1565,14 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                   {/* Right Column: Checklist */}
                   <div style={{ backgroundColor: 'rgba(255,255,255,0.02)', padding: '24px', borderRadius: '20px', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: '900', color: 'var(--gold-primary)', letterSpacing: '1px' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: '900', color: 'var(--pink-primary)', letterSpacing: '1px' }}>
                         <LayoutList size={16} /> CHECKLIST (INCLUIDO)
                       </label>
                       <button 
                         onClick={() => setIsExtrasModalOpen(true)}
                         style={{ 
-                          background: 'rgba(212,175,55,0.1)', 
-                          border: '1px solid rgba(212,175,55,0.2)', 
+                          background: 'rgba(196,139,159,0.1)', 
+                          border: '1px solid rgba(212,160,154,0.2)', 
                           borderRadius: '8px', 
                           padding: '4px 12px', 
                           fontSize: '10px',
@@ -1581,7 +1581,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                           alignItems: 'center', 
                           gap: '6px',
                           cursor: 'pointer', 
-                          color: 'var(--gold-primary)',
+                          color: 'var(--pink-primary)',
                           textTransform: 'uppercase',
                           letterSpacing: '0.5px'
                         }}
@@ -1612,8 +1612,8 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                               gap: '10px',
                               cursor: 'pointer',
                               transition: 'all 0.2s',
-                              background: newService.included_items?.includes(item.name) ? 'rgba(212,175,55,0.15)' : 'rgba(255,255,255,0.02)',
-                              border: newService.included_items?.includes(item.name) ? '1px solid var(--gold-primary)' : '1px solid rgba(255,255,255,0.05)',
+                              background: newService.included_items?.includes(item.name) ? 'rgba(196,139,159,0.15)' : 'rgba(255,255,255,0.02)',
+                              border: newService.included_items?.includes(item.name) ? '1px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)',
                               color: newService.included_items?.includes(item.name) ? 'white' : 'var(--text-muted)'
                             }}
                           >
@@ -1625,7 +1625,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              backgroundColor: newService.included_items?.includes(item.name) ? 'var(--gold-primary)' : 'transparent'
+                              backgroundColor: newService.included_items?.includes(item.name) ? 'var(--pink-primary)' : 'transparent'
                             }}>
                               {newService.included_items?.includes(item.name) && <Check size={12} color="black" strokeWidth={4} />}
                             </div>
@@ -1646,7 +1646,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                   >
                     Cancelar
                   </button>
-                  <button className="btn-gold" onClick={handleCreateService} style={{ height: '54px', padding: '0 40px', fontSize: '16px', borderRadius: '16px' }}>
+                  <button className="btn-pink" onClick={handleCreateService} style={{ height: '54px', padding: '0 40px', fontSize: '16px', borderRadius: '16px' }}>
                     {isEditing ? 'Guardar Cambios' : 'Lanzar Servicio al Catálogo'}
                   </button>
                 </div>

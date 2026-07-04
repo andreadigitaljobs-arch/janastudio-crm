@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { CalendarRange, ChevronDown, Coins, Droplets, Loader2, ReceiptText, Scissors } from 'lucide-react';
+import { CalendarRange, ChevronDown, Coins, Droplets, Loader2, ReceiptText, Sparkles } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import {
   businessDateEnd,
@@ -52,7 +52,7 @@ const DetailRow = ({ label, value }) => (
 const MoneyRow = ({ label, usd, transactionRate, accent = false, strong = false }) => (
   <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', marginBottom: '8px', paddingBottom: strong ? '8px' : 0, borderBottom: strong ? '1px dashed rgba(255,255,255,0.08)' : 'none' }}>
     <span style={{ color: accent ? '#32d74b' : 'var(--text-secondary)', fontSize: '12px', fontWeight: accent || strong ? '850' : '650' }}>{label}</span>
-    <span style={{ textAlign: 'right', color: accent ? '#32d74b' : strong ? 'var(--gold-primary)' : 'white', fontSize: strong ? '14px' : '12px', fontWeight: '900' }}>
+    <span style={{ textAlign: 'right', color: accent ? '#32d74b' : strong ? 'var(--pink-primary)' : 'white', fontSize: strong ? '14px' : '12px', fontWeight: '900' }}>
       {Math.round(Number(usd || 0) * transactionRate).toLocaleString('es-VE')} Bs.
       <small style={{ display: 'block', color: 'var(--text-muted)', fontSize: '9px', marginTop: '2px' }}>Ref: ${Number(usd || 0).toFixed(2)}</small>
     </span>
@@ -93,7 +93,7 @@ const StaffTransactionHistory = ({ staffMember, rates, isMobile }) => {
   const [selectedTransactionId, setSelectedTransactionId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const isAssistant = /asistente|lavado|operaciones/i.test(staffMember?.role || '');
+  const isStylist = /asistente|lavado|operaciones/i.test(staffMember?.role || '');
   const customStart = customRange.start;
   const customEnd = customRange.end;
 
@@ -157,7 +157,7 @@ const StaffTransactionHistory = ({ staffMember, rates, isMobile }) => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
-              <ReceiptText size={19} color={'var(--gold-primary)'} />
+              <ReceiptText size={19} color={'var(--pink-primary)'} />
               <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '900' }}>Mi historial de transacciones</h3>
             </div>
             <p style={{ margin: '6px 0 0', color: 'var(--text-secondary)', fontSize: '12px' }}>
@@ -177,7 +177,7 @@ const StaffTransactionHistory = ({ staffMember, rates, isMobile }) => {
                   fontWeight: '850',
                   fontSize: '11px',
                   color: filter === option.id ? '#080808' : 'var(--text-secondary)',
-                  background: filter === option.id ? 'var(--gold-primary)' : 'transparent'
+                  background: filter === option.id ? 'var(--pink-primary)' : 'transparent'
                 }}
               >
                 {option.label}
@@ -213,9 +213,9 @@ const StaffTransactionHistory = ({ staffMember, rates, isMobile }) => {
 
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '12px' }}>
         {[
-          { label: isAssistant ? 'Comisiones y propinas' : 'Ganancia personal', value: totals.earnings, valueBs: totals.earningsBs, icon: <Coins size={18} color={'#32d74b'} /> },
+          { label: isStylist ? 'Comisiones y propinas' : 'Ganancia personal', value: totals.earnings, valueBs: totals.earningsBs, icon: <Coins size={18} color={'#32d74b'} /> },
           { label: 'Propinas', value: totals.tips, valueBs: totals.tipsBs, icon: <Coins size={18} color={'#ff9f0a'} /> },
-          { label: isAssistant ? 'Lavados registrados' : 'Servicios cobrados', count: rows.length, icon: isAssistant ? <Droplets size={18} color={'#007aff'} /> : <Scissors size={18} color={'var(--gold-primary)'} /> }
+          { label: isStylist ? 'Tratamientos registrados' : 'Servicios cobrados', count: rows.length, icon: isStylist ? <Droplets size={18} color={'#007aff'} /> : <Sparkles size={18} color={'var(--pink-primary)'} /> }
         ].map(card => (
           <div key={card.label} className={'glass-card'} style={{ padding: '18px', borderRadius: '18px' }}>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center', color: 'var(--text-secondary)', fontSize: '11px', fontWeight: '850', textTransform: 'uppercase' }}>
@@ -254,7 +254,7 @@ const StaffTransactionHistory = ({ staffMember, rates, isMobile }) => {
               const appointment = transaction.appointments?.[0] || null;
               const descriptionClient = transaction.description?.match(/Cliente:\s*(.*?)(?:\s+-\s+(?:Servi|Servicio):|$)/i)?.[1];
               const clientName = transaction.client?.name || appointment?.clients?.name || metadata.clientName || metadata.client_name || metadata.originalClientName || descriptionClient || 'Cliente no identificado';
-              const serviceName = appointment?.services?.name || metadata.serviceName || metadata.service_name || (isAssistant ? 'Lavado' : 'Servicio');
+                    const serviceName = appointment?.services?.name || metadata.serviceName || metadata.service_name || (isStylist ? 'Lavado' : 'Servicio');
               const transactionRate = getTransactionRate(transaction, rate);
               const personalBs = transaction.staffAmounts.earnings * transactionRate;
               const totalBs = Number(transaction.amount || 0) * transactionRate;
@@ -277,10 +277,10 @@ const StaffTransactionHistory = ({ staffMember, rates, isMobile }) => {
                   role={'button'}
                   tabIndex={0}
                   aria-expanded={selected}
-                  style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'minmax(150px, 0.8fr) minmax(180px, 1.6fr) minmax(170px, 0.8fr)', gap: '12px', alignItems: 'center', padding: '15px', borderRadius: '16px', background: selected ? 'rgba(212,175,55,0.05)' : 'rgba(255,255,255,0.025)', border: selected ? '1px solid rgba(212,175,55,0.2)' : '1px solid rgba(255,255,255,0.05)', cursor: 'pointer' }}
+                  style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'minmax(150px, 0.8fr) minmax(180px, 1.6fr) minmax(170px, 0.8fr)', gap: '12px', alignItems: 'center', padding: '15px', borderRadius: '16px', background: selected ? 'rgba(219,112,147,0.05)' : 'rgba(255,255,255,0.025)', border: selected ? '1px solid rgba(219,112,147,0.2)' : '1px solid rgba(255,255,255,0.05)', cursor: 'pointer' }}
                 >
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '7px', color: 'var(--gold-primary)', fontWeight: '850', fontSize: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '7px', color: 'var(--pink-primary)', fontWeight: '850', fontSize: '12px' }}>
                       <CalendarRange size={14} />
                       {new Date(transaction.created_at).toLocaleDateString('es-VE', { timeZone: 'America/Caracas', day: '2-digit', month: 'short', year: 'numeric' })}
                     </div>
@@ -305,13 +305,13 @@ const StaffTransactionHistory = ({ staffMember, rates, isMobile }) => {
                   {selected && (
                     <div className={'animate-history-expand'} onClick={event => event.stopPropagation()} style={{ gridColumn: '1 / -1', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
                       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, minmax(0, 1fr))', gap: '12px' }}>
-                        <div style={{ padding: '15px', borderRadius: '14px', background: 'rgba(255,255,255,0.025)', borderLeft: '3px solid var(--gold-primary)' }}>
+                        <div style={{ padding: '15px', borderRadius: '14px', background: 'rgba(255,255,255,0.025)', borderLeft: '3px solid var(--pink-primary)' }}>
                           <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '10px' }}>Cliente y servicio</div>
                           <DetailRow label={'Cliente'} value={clientName} />
                           <DetailRow label={'Cédula'} value={clientCedula} />
                           <DetailRow label={'Teléfono'} value={clientPhone} />
                           <DetailRow label={'Servicio'} value={serviceName} />
-                          {appointment?.staff?.name && <DetailRow label={'Barbero'} value={appointment.staff.name} />}
+                          {appointment?.staff?.name && <DetailRow label={'Estilista'} value={appointment.staff.name} />}
                         </div>
 
                         <div style={{ padding: '15px', borderRadius: '14px', background: 'rgba(255,255,255,0.025)', borderLeft: '3px solid #32d74b' }}>
@@ -350,9 +350,9 @@ const StaffTransactionHistory = ({ staffMember, rates, isMobile }) => {
                         </div>
                       </div>
 
-                      <div style={{ marginTop: '12px', padding: '13px 15px', borderRadius: '13px', background: 'rgba(212,175,55,0.07)', display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <div style={{ marginTop: '12px', padding: '13px 15px', borderRadius: '13px', background: 'rgba(219,112,147,0.07)', display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                         <span style={{ color: 'var(--text-secondary)', fontSize: '12px', fontWeight: '750' }}>Transacción completa</span>
-                        <span style={{ color: 'var(--gold-primary)', fontSize: '16px', fontWeight: '950' }}>{Math.round(totalBs).toLocaleString('es-VE')} Bs. <small style={{ color: 'var(--text-muted)', fontSize: '10px' }}>· Ref: ${formatUsd(transaction.amount)}</small></span>
+                        <span style={{ color: 'var(--pink-primary)', fontSize: '16px', fontWeight: '950' }}>{Math.round(totalBs).toLocaleString('es-VE')} Bs. <small style={{ color: 'var(--text-muted)', fontSize: '10px' }}>· Ref: ${formatUsd(transaction.amount)}</small></span>
                       </div>
                     </div>
                   )}

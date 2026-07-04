@@ -394,3 +394,33 @@ select:focus-visible {
   background: rgba(196, 139, 159, 0.3);
   color: white;
 }
+
+.btn-pink {
+  background: linear-gradient(135deg, #d4a09a 0%, #c48b9f 50%, #a0506a 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(196, 139, 159, 0.3);
+}
+
+.btn-pink:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(196, 139, 159, 0.4);
+}
+
+.btn-pink:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.text-pink {
+  background: linear-gradient(135deg, #d4a09a 0%, #a0506a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

@@ -7,7 +7,7 @@ import {
   User, 
   Phone, 
   Calendar, 
-  Scissors, 
+  Sparkles, 
   Camera,
   Image as ImageIcon,
   ChevronRight,
@@ -51,7 +51,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
   useScrollLock(showMessageModal);
 
   const [defaultBdayMessage, setDefaultBdayMessage] = useState(getBirthdayMessageTemplate());
-  const [defaultFollowupMessage, setDefaultFollowupMessage] = useState('Hola {{nombre}}! Ya es momento de renovar tu corte \u2702\uFE0F Te esperamos en Astro Barbershop.');
+  const [defaultFollowupMessage, setDefaultFollowupMessage] = useState('Hola {{nombre}}! Ya es momento de renovar tu servicio 💅 Te esperamos en Jana Studio.');
   const [messageTemplateTab, setMessageTemplateTab] = useState('birthday');
   const [savingTemplate, setSavingTemplate] = useState(false);
 
@@ -141,10 +141,10 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
     return dateB - dateA;
   });
 
-  // Barbers only see clients they created or served
+  // Stylists only see clients they created or served
   const roleKind = getRoleKind(user?.role);
-  const isBarber = roleKind === 'barber';
-  const roleFilteredClients = isBarber
+  const isStylist = roleKind === 'stylist';
+  const roleFilteredClients = isStylist
     ? sortedClients.filter(c =>
         c.created_by_staff_id === user?.id ||
         (c.served_by_staff_ids || []).includes(user?.id)
@@ -219,7 +219,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
             marginBottom: isMobile ? '24px' : '40px'
           }}>
             <div>
-              <h2 style={{ fontSize: isMobile ? '26px' : '28px', fontWeight: '800', letterSpacing: '-0.5px', lineHeight: '1.2' }}>Archivo de <span className="text-gold">Clientes</span></h2>
+              <h2 style={{ fontSize: isMobile ? '26px' : '28px', fontWeight: '800', letterSpacing: '-0.5px', lineHeight: '1.2' }}>Archivo de <span className="text-pink">Clientes</span></h2>
               <p style={{ color: 'var(--text-secondary)', marginTop: '6px', fontSize: isMobile ? '13px' : '15px' }}>Fichas técnicas y galería de evolución.</p>
             </div>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap', width: isMobile ? '100%' : 'auto' }}>
@@ -240,8 +240,8 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
                     padding: '8px 12px', 
                     borderRadius: '8px', 
                     border: 'none', 
-                    backgroundColor: viewMode === 'grid' ? 'rgba(212,175,55,0.1)' : 'transparent',
-                    color: viewMode === 'grid' ? 'var(--gold-primary)' : 'var(--text-muted)',
+                    backgroundColor: viewMode === 'grid' ? 'rgba(217,70,168,0.1)' : 'transparent',
+                    color: viewMode === 'grid' ? 'var(--pink-primary)' : 'var(--text-muted)',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -260,8 +260,8 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
                     padding: '8px 12px', 
                     borderRadius: '8px', 
                     border: 'none', 
-                    backgroundColor: viewMode === 'table' ? 'rgba(212,175,55,0.1)' : 'transparent',
-                    color: viewMode === 'table' ? 'var(--gold-primary)' : 'var(--text-muted)',
+                    backgroundColor: viewMode === 'table' ? 'rgba(217,70,168,0.1)' : 'transparent',
+                    color: viewMode === 'table' ? 'var(--pink-primary)' : 'var(--text-muted)',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -277,7 +277,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
               </div>
 
               <button 
-                className="btn-gold" 
+                className="btn-pink" 
                 onClick={() => setShowMessageModal(true)} 
                 style={{ 
                   borderRadius: '12px', 
@@ -299,7 +299,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
                 {isMobile && "Mensajes"}
               </button>
 
-              <button className="btn-gold" onClick={() => setShowAddForm(!showAddForm)} style={{ 
+              <button className="btn-pink" onClick={() => setShowAddForm(!showAddForm)} style={{ 
                 borderRadius: '12px', 
                 display: 'flex', 
                 alignItems: 'center', 
@@ -358,7 +358,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
                   ]}
                 />
                 <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                  <button className="btn-gold" onClick={handleAddClient} disabled={creating} style={{ width: '100%', height: '48px', borderRadius: '12px' }}>
+                  <button className="btn-pink" onClick={handleAddClient} disabled={creating} style={{ width: '100%', height: '48px', borderRadius: '12px' }}>
                     {creating ? <Loader2 className="animate-spin" /> : 'Registrar Ficha Técnica'}
                   </button>
                 </div>
@@ -395,7 +395,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
           </div>
           {loading ? (
             <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
-              <Loader2 className="animate-spin" size={40} color="var(--gold-primary)" />
+              <Loader2 className="animate-spin" size={40} color="var(--pink-primary)" />
             </div>
           ) : clients.length === 0 ? (
             <div className="glass-card" style={{ textAlign: 'center', padding: '80px', borderStyle: 'dashed' }}>
@@ -427,18 +427,18 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
                       width: isMobile ? '36px' : '48px', 
                       height: isMobile ? '36px' : '48px', 
                       borderRadius: isMobile ? '10px' : '14px', 
-                      backgroundColor: 'rgba(212,175,55,0.05)', 
+                      backgroundColor: 'rgba(217,70,168,0.05)', 
                       display: 'flex', 
                       alignItems: 'center', 
                       justifyContent: 'center',
-                      border: '1px solid rgba(212,175,55,0.1)',
+                      border: '1px solid rgba(217,70,168,0.1)',
                       flexShrink: 0
                     }}>
-                      <User size={isMobile ? 16 : 20} color="var(--gold-primary)" />
+                      <User size={isMobile ? 16 : 20} color="var(--pink-primary)" />
                     </div>
                     <span style={{ fontWeight: '700', fontSize: isMobile ? '13px' : '16px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{client.name}</span>
-                    {isBarber && (
-                      <span style={{ fontSize: '9px', fontWeight: '900', color: client.created_by_staff_id === user?.id ? 'var(--gold-primary)' : '#34d399', background: client.created_by_staff_id === user?.id ? 'rgba(212,175,55,0.12)' : 'rgba(52,211,153,0.12)', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.5px', flexShrink: 0 }}>
+                    {isStylist && (
+                      <span style={{ fontSize: '9px', fontWeight: '900', color: client.created_by_staff_id === user?.id ? 'var(--pink-primary)' : '#34d399', background: client.created_by_staff_id === user?.id ? 'rgba(217,70,168,0.12)' : 'rgba(52,211,153,0.12)', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.5px', flexShrink: 0 }}>
                         {client.created_by_staff_id === user?.id ? 'Creado' : 'Atendido'}
                       </span>
                     )}
@@ -460,8 +460,8 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
                     <span style={{ 
                       padding: isMobile ? '4px 8px' : '6px 14px', 
                       borderRadius: '10px', 
-                      backgroundColor: 'rgba(212,175,55,0.05)', 
-                      color: 'var(--gold-primary)',
+                      backgroundColor: 'rgba(217,70,168,0.05)', 
+                      color: 'var(--pink-primary)',
                       fontSize: isMobile ? '10px' : '12px',
                       fontWeight: '700',
                       letterSpacing: '0.3px',
@@ -475,7 +475,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
               ))}
             </div>
           ) : (
-            <div className="animate-slide-up" style={{ background: 'rgba(28, 28, 30, 0.95)', padding: '0', borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(212, 175, 55, 0.15)' }}>
+            <div className="animate-slide-up" style={{ background: 'rgba(28, 28, 30, 0.95)', padding: '0', borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(217, 70, 168, 0.15)' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', tableLayout: 'auto' }}>
                 <thead>
                   <tr style={{ backgroundColor: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
@@ -513,7 +513,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
                         </td>
                       )}
                       <td style={{ padding: isMobile ? '12px 12px' : '16px 24px', textAlign: isMobile ? 'right' : 'left' }}>
-                        <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--gold-primary)', backgroundColor: 'rgba(212,175,55,0.05)', padding: '4px 8px', borderRadius: '8px', whiteSpace: 'nowrap' }}>
+                        <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--pink-primary)', backgroundColor: 'rgba(217,70,168,0.05)', padding: '4px 8px', borderRadius: '8px', whiteSpace: 'nowrap' }}>
                           {client.total_visits || 0} {!isMobile && "Visitas"}
                         </span>
                       </td>
@@ -548,8 +548,8 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
                   padding: '8px 16px',
                   borderRadius: '10px',
                   border: '1px solid rgba(255,255,255,0.1)',
-                  backgroundColor: currentPage === 1 ? 'transparent' : 'rgba(212,175,55,0.1)',
-                  color: currentPage === 1 ? 'var(--text-muted)' : 'var(--gold-primary)',
+                  backgroundColor: currentPage === 1 ? 'transparent' : 'rgba(217,70,168,0.1)',
+                  color: currentPage === 1 ? 'var(--text-muted)' : 'var(--pink-primary)',
                   cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
                   fontWeight: '700',
                   fontSize: '13px',
@@ -568,8 +568,8 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
                   padding: '8px 16px',
                   borderRadius: '10px',
                   border: '1px solid rgba(255,255,255,0.1)',
-                  backgroundColor: currentPage === totalPages ? 'transparent' : 'rgba(212,175,55,0.1)',
-                  color: currentPage === totalPages ? 'var(--text-muted)' : 'var(--gold-primary)',
+                  backgroundColor: currentPage === totalPages ? 'transparent' : 'rgba(217,70,168,0.1)',
+                  color: currentPage === totalPages ? 'var(--text-muted)' : 'var(--pink-primary)',
                   cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
                   fontWeight: '700',
                   fontSize: '13px',
@@ -629,10 +629,10 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
             width: '100%',
             maxWidth: '460px',
             background: 'linear-gradient(135deg, rgba(20, 20, 20, 0.95) 0%, rgba(10, 10, 10, 0.98) 100%)',
-            border: '1px solid rgba(212, 175, 55, 0.25)',
+            border: '1px solid rgba(217, 70, 168, 0.25)',
             borderRadius: '24px',
             padding: '24px',
-            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(212, 175, 55, 0.05)',
+            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(217, 70, 168, 0.05)',
             position: 'relative',
             transform: showMessageModal ? 'scale(1) translateY(0)' : 'scale(0.9) translateY(20px)',
             transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease',
@@ -641,7 +641,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <MessageCircle size={20} color="var(--gold-primary)" />
+                <MessageCircle size={20} color="var(--pink-primary)" />
                 <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: 'white' }}>
                   {messageTemplateTab === 'birthday' ? 'Mensaje de Cumplea\u00f1os' : 'Mensaje Recurrente'}
                 </h3>
@@ -667,7 +667,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '18px' }}>
               {[['birthday', 'Cumplea\u00f1os'], ['followup', 'Recurrente']].map(([value, label]) => (
                 <button key={value} type="button" onClick={() => setMessageTemplateTab(value)}
-                  style={{ padding: '10px', borderRadius: '10px', cursor: 'pointer', border: '1px solid rgba(212,175,55,0.2)', background: messageTemplateTab === value ? 'var(--gold-primary)' : 'rgba(255,255,255,0.04)', color: messageTemplateTab === value ? '#111' : 'white', fontWeight: '900', fontSize: '12px' }}>
+                  style={{ padding: '10px', borderRadius: '10px', cursor: 'pointer', border: '1px solid rgba(217,70,168,0.2)', background: messageTemplateTab === value ? 'var(--pink-primary)' : 'rgba(255,255,255,0.04)', color: messageTemplateTab === value ? '#111' : 'white', fontWeight: '900', fontSize: '12px' }}>
                   {label}
                 </button>
               ))}
@@ -681,12 +681,12 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
             </p>
 
             <div style={{ 
-              backgroundColor: 'rgba(212, 175, 55, 0.1)', 
-              border: '1px solid rgba(212, 175, 55, 0.2)',
+              backgroundColor: 'rgba(217, 70, 168, 0.1)', 
+              border: '1px solid rgba(217, 70, 168, 0.2)',
               borderRadius: '12px',
               padding: '12px',
               fontSize: '12px',
-              color: 'var(--gold-primary)',
+              color: 'var(--pink-primary)',
               marginBottom: '16px',
               lineHeight: '1.4'
             }}>
@@ -725,7 +725,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
                   flex: 1,
                   padding: '12px',
                   borderRadius: '12px',
-                  backgroundColor: 'var(--gold-primary)',
+                  backgroundColor: 'var(--pink-primary)',
                   color: 'black',
                   fontWeight: '850',
                   fontSize: '13px',
@@ -765,7 +765,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
 
       <style>{`
         .list-item:hover {
-          border-color: var(--gold-primary);
+          border-color: var(--pink-primary);
           transform: scale(1.01) translateY(-2px);
           background-color: var(--bg-tertiary) !important;
           box-shadow: 0 12px 24px rgba(0,0,0,0.3);
@@ -865,7 +865,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
       ctx.fillRect(20, height - 60, 100, 40);
       ctx.fillRect(width/2 + 20, height - 60, 120, 40);
       
-      ctx.fillStyle = '#d4af37';
+      ctx.fillStyle = '#d946a8';
       ctx.font = 'bold 20px Inter, sans-serif';
       ctx.fillText('ANTES', 35, height - 33);
       ctx.fillText('DESPUÉS', width/2 + 35, height - 33);
@@ -873,7 +873,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
       // Add Branding
       ctx.fillStyle = 'white';
       ctx.font = '16px Inter, sans-serif';
-      ctx.fillText('ASTRO BARBER SHOP', width - 200, 30);
+      ctx.fillText('JANA STUDIO', width - 200, 30);
       
       const link = document.createElement('a');
       link.download = `Comparativa_${client.name}.jpg`;
@@ -923,7 +923,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
         service_name: photoMeta.serviceId ? history.find(h => h.id === photoMeta.serviceId)?.services?.name : 'Subida manual'
       };
 
-      // Fetch latest gallery from DB to avoid overwriting barber's photos
+      // Fetch latest gallery from DB to avoid overwriting stylist's photos
       const { data: latestClient } = await supabase
         .from('clients')
         .select('work_gallery')
@@ -1000,13 +1000,13 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
               {/* User Info Column */}
               <div style={{ textAlign: 'center' }}>
                 <div style={{ width: '70px', height: '70px', borderRadius: '50%', backgroundColor: 'var(--bg-tertiary)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 10px', border: '2px solid var(--border-color)' }}>
-                  <User size={36} color="var(--gold-primary)" />
+                  <User size={36} color="var(--pink-primary)" />
                 </div>
                 {isEditing ? (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <input className="form-input" value={editData.name} onChange={e => setEditData({...editData, name: formatName(e.target.value)})} placeholder="Nombre" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
                     <input className="form-input" value={editData.phone} onChange={e => setEditData({...editData, phone: e.target.value})} placeholder="Teléfono" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
-                    <button className="btn-gold" onClick={() => { onUpdate(editData); setIsEditing(false); }} style={{ fontSize: '12px', padding: '8px' }}>Guardar</button>
+                    <button className="btn-pink" onClick={() => { onUpdate(editData); setIsEditing(false); }} style={{ fontSize: '12px', padding: '8px' }}>Guardar</button>
                     <button onClick={() => setIsEditing(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '11px' }}>Cancelar</button>
                   </div>
                 ) : (
@@ -1014,10 +1014,10 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                     <h3 style={{ fontSize: '15px', marginBottom: '4px', fontWeight: '800' }}>{client.name}</h3>
                     <p style={{ color: 'var(--text-muted)', fontSize: '10px', marginBottom: '8px' }}>V-{client.id_card || '00.000.000'}</p>
                     <p style={{ color: 'var(--text-secondary)', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', fontSize: '11px' }}>
-                      <Phone size={10} color="var(--gold-primary)" /> {client.phone}
+                      <Phone size={10} color="var(--pink-primary)" /> {client.phone}
                     </p>
                     <div style={{ backgroundColor: 'var(--bg-tertiary)', padding: '6px', borderRadius: '6px', fontSize: '11px' }}>
-                      <span style={{ color: 'var(--gold-primary)', fontWeight: '700' }}>{history.length}</span> Visitas
+                      <span style={{ color: 'var(--pink-primary)', fontWeight: '700' }}>{history.length}</span> Visitas
                     </div>
                   </>
                 )}
@@ -1034,7 +1034,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                 {!isEditing && (
                   <button 
                     onClick={() => setIsEditing(true)}
-                    style={{ width: '100%', marginTop: '10px', background: 'none', border: '1px solid var(--gold-primary)', color: 'var(--gold-primary)', padding: '5px', borderRadius: '6px', cursor: 'pointer', fontSize: '11px', fontWeight: '700' }}
+                    style={{ width: '100%', marginTop: '10px', background: 'none', border: '1px solid var(--pink-primary)', color: 'var(--pink-primary)', padding: '5px', borderRadius: '6px', cursor: 'pointer', fontSize: '11px', fontWeight: '700' }}
                   >
                     Editar
                   </button>
@@ -1074,7 +1074,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
           {/* Mobile: History (last 5 + show more) */}
           <div className="glass-card">
             <h4 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Calendar size={18} color="var(--gold-primary)" /> Historial de Servicios
+              <Calendar size={18} color="var(--pink-primary)" /> Historial de Servicios
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {loadingHistory ? (
@@ -1107,9 +1107,9 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                       style={{ 
                         width: '100%', 
                         padding: '12px', 
-                        background: showAllHistory ? 'rgba(255,255,255,0.03)' : 'rgba(212,175,55,0.08)', 
-                        border: '1px solid var(--gold-primary)', 
-                        color: 'var(--gold-primary)', 
+                        background: showAllHistory ? 'rgba(255,255,255,0.03)' : 'rgba(217,70,168,0.08)', 
+                        border: '1px solid var(--pink-primary)', 
+                        color: 'var(--pink-primary)', 
                         borderRadius: '10px', 
                         cursor: 'pointer',
                         fontWeight: '700',
@@ -1129,14 +1129,14 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
           <div className="glass-card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <ImageIcon size={18} color="var(--gold-primary)" /> Galería de Trabajos
+                <ImageIcon size={18} color="var(--pink-primary)" /> Galería de Trabajos
               </h4>
               <button 
                 onClick={() => setShowCollage(!showCollage)}
                 style={{ 
-                  background: showCollage ? 'var(--gold-primary)' : 'rgba(212,175,55,0.1)', 
-                  border: '1px solid var(--gold-primary)', 
-                  color: showCollage ? 'black' : 'var(--gold-primary)',
+                  background: showCollage ? 'var(--pink-primary)' : 'rgba(217,70,168,0.1)', 
+                  border: '1px solid var(--pink-primary)', 
+                  color: showCollage ? 'black' : 'var(--pink-primary)',
                   padding: '6px 12px',
                   borderRadius: '6px',
                   fontSize: '12px',
@@ -1161,7 +1161,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                       borderRadius: '16px', 
                       overflow: 'hidden', 
                       backgroundColor: 'rgba(255,255,255,0.02)',
-                      border: selectingFor === 'A' ? '2px solid var(--gold-primary)' : '1px solid rgba(255,255,255,0.05)',
+                      border: selectingFor === 'A' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)',
                       position: 'relative',
                       cursor: 'pointer'
                     }}
@@ -1174,7 +1174,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                         <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)' }}>FOTO ANTES</span>
                       </div>
                     )}
-                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', backgroundColor: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'var(--gold-primary)' }}>ANTES</div>
+                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', backgroundColor: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)' }}>ANTES</div>
                   </div>
 
                   <div 
@@ -1184,7 +1184,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                       borderRadius: '16px', 
                       overflow: 'hidden', 
                       backgroundColor: 'rgba(255,255,255,0.02)',
-                      border: selectingFor === 'B' ? '2px solid var(--gold-primary)' : '1px solid rgba(255,255,255,0.05)',
+                      border: selectingFor === 'B' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)',
                       position: 'relative',
                       cursor: 'pointer'
                     }}
@@ -1197,7 +1197,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                         <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)' }}>FOTO DESPUÉS</span>
                       </div>
                     )}
-                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', backgroundColor: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'var(--gold-primary)' }}>DESPUÉS</div>
+                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', backgroundColor: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)' }}>DESPUÉS</div>
                   </div>
                 </div>
 
@@ -1211,7 +1211,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                     />
                     <button 
                       onClick={handleDownloadComparison}
-                      className="btn-gold" 
+                      className="btn-pink" 
                       style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
                     >
                       <Download size={18} /> Descargar Comparativa
@@ -1234,7 +1234,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                             alignItems: 'center',
                             gap: '8px'
                           }}>
-                            <ImageIcon size={20} color="var(--gold-primary)" />
+                            <ImageIcon size={20} color="var(--pink-primary)" />
                             <span>Elegir Foto {selectingFor}</span>
                           </h4>
                           <button onClick={() => setSelectingFor(null)} style={{ background: 'none', border: 'none', color: 'white' }}><X size={20} /></button>
@@ -1255,7 +1255,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                                 borderRadius: '8px', 
                                 overflow: 'hidden', 
                                 cursor: 'pointer',
-                                border: (selectingFor === 'A' ? photoA === img.url : photoB === img.url) ? '3px solid var(--gold-primary)' : 'none'
+                                border: (selectingFor === 'A' ? photoA === img.url : photoB === img.url) ? '3px solid var(--pink-primary)' : 'none'
                               }}
                             >
                               <img src={img.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -1272,7 +1272,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                 {gallery.map((img, i) => (
                   <div key={i} style={{ aspectRatio: '1/1', backgroundColor: 'var(--bg-tertiary)', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-color)', position: 'relative' }} className="group">
                     <img src={img.url || img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', padding: '8px', fontSize: '9px', fontWeight: '800', color: 'var(--gold-primary)' }}>
+                    <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', padding: '8px', fontSize: '9px', fontWeight: '800', color: 'var(--pink-primary)' }}>
                       {img.type || 'FOTO'}
                     </div>
                     <button 
@@ -1295,11 +1295,11 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                 ))}
                 <div 
                   onClick={() => setShowCamera(true)}
-                  style={{ aspectRatio: '1/1', backgroundColor: 'rgba(212,175,55,0.02)', borderRadius: '12px', border: '2px dashed var(--gold-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: '0.2s' }}
-                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(212,175,55,0.05)'}
-                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(212,175,55,0.02)'}
+                  style={{ aspectRatio: '1/1', backgroundColor: 'rgba(217,70,168,0.02)', borderRadius: '12px', border: '2px dashed var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: '0.2s' }}
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(217,70,168,0.05)'}
+                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(217,70,168,0.02)'}
                 >
-                  <Camera size={24} color="var(--gold-primary)" />
+                  <Camera size={24} color="var(--pink-primary)" />
                 </div>
                 <input 
                   type="file" 
@@ -1318,7 +1318,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <div className="glass-card" style={{ textAlign: 'center' }}>
             <div style={{ width: '120px', height: '120px', borderRadius: '50%', backgroundColor: 'var(--bg-tertiary)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', border: '2px solid var(--border-color)' }}>
-              <User size={64} color="var(--gold-primary)" />
+              <User size={64} color="var(--pink-primary)" />
             </div>
             {isEditing ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -1353,7 +1353,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   ]}
                   style={{ marginBottom: '12px' }}
                 />
-                <button className="btn-gold" onClick={() => { onUpdate(editData); setIsEditing(false); }}>Actualizar Ficha</button>
+                <button className="btn-pink" onClick={() => { onUpdate(editData); setIsEditing(false); }}>Actualizar Ficha</button>
                 <button onClick={() => setIsEditing(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '12px' }}>Cancelar</button>
               </div>
             ) : (
@@ -1361,10 +1361,10 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                 <h3 style={{ fontSize: '20px', marginBottom: '4px' }}>{client.name}</h3>
                 <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '16px' }}>V-{client.id_card || '00.000.000'}</p>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                  <Phone size={14} color="var(--gold-primary)" /> {client.phone}
+                  <Phone size={14} color="var(--pink-primary)" /> {client.phone}
                 </p>
                 <div style={{ backgroundColor: 'var(--bg-tertiary)', padding: '12px', borderRadius: '8px', fontSize: '14px' }}>
-                  <span style={{ color: 'var(--gold-primary)', fontWeight: '700' }}>{history.length}</span> Visitas registradas
+                  <span style={{ color: 'var(--pink-primary)', fontWeight: '700' }}>{history.length}</span> Visitas registradas
                 </div>
               </>
             )}
@@ -1381,7 +1381,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
             {!isEditing && (
               <button 
                 onClick={() => setIsEditing(true)}
-                style={{ width: '100%', marginTop: '20px', background: 'none', border: '1px solid var(--gold-primary)', color: 'var(--gold-primary)', padding: '8px', borderRadius: '6px', cursor: 'pointer' }}
+                style={{ width: '100%', marginTop: '20px', background: 'none', border: '1px solid var(--pink-primary)', color: 'var(--pink-primary)', padding: '8px', borderRadius: '6px', cursor: 'pointer' }}
               >
                 Editar Perfil
               </button>
@@ -1394,14 +1394,14 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
           <div className="glass-card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <ImageIcon size={18} color="var(--gold-primary)" /> Galería de Trabajos
+                <ImageIcon size={18} color="var(--pink-primary)" /> Galería de Trabajos
               </h4>
               <button 
                 onClick={() => setShowCollage(!showCollage)}
                 style={{ 
-                  background: showCollage ? 'var(--gold-primary)' : 'rgba(212,175,55,0.1)', 
-                  border: '1px solid var(--gold-primary)', 
-                  color: showCollage ? 'black' : 'var(--gold-primary)',
+                  background: showCollage ? 'var(--pink-primary)' : 'rgba(217,70,168,0.1)', 
+                  border: '1px solid var(--pink-primary)', 
+                  color: showCollage ? 'black' : 'var(--pink-primary)',
                   padding: '6px 12px',
                   borderRadius: '6px',
                   fontSize: '12px',
@@ -1426,7 +1426,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                       borderRadius: '16px', 
                       overflow: 'hidden', 
                       backgroundColor: 'rgba(255,255,255,0.02)',
-                      border: selectingFor === 'A' ? '2px solid var(--gold-primary)' : '1px solid rgba(255,255,255,0.05)',
+                      border: selectingFor === 'A' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)',
                       position: 'relative',
                       cursor: 'pointer'
                     }}
@@ -1439,7 +1439,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                         <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)' }}>FOTO ANTES</span>
                       </div>
                     )}
-                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', backgroundColor: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'var(--gold-primary)' }}>ANTES</div>
+                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', backgroundColor: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)' }}>ANTES</div>
                   </div>
 
                   <div 
@@ -1449,7 +1449,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                       borderRadius: '16px', 
                       overflow: 'hidden', 
                       backgroundColor: 'rgba(255,255,255,0.02)',
-                      border: selectingFor === 'B' ? '2px solid var(--gold-primary)' : '1px solid rgba(255,255,255,0.05)',
+                      border: selectingFor === 'B' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)',
                       position: 'relative',
                       cursor: 'pointer'
                     }}
@@ -1462,7 +1462,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                         <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)' }}>FOTO DESPUÉS</span>
                       </div>
                     )}
-                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', backgroundColor: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'var(--gold-primary)' }}>DESPUÉS</div>
+                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', backgroundColor: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)' }}>DESPUÉS</div>
                   </div>
                 </div>
 
@@ -1476,7 +1476,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                     />
                     <button 
                       onClick={handleDownloadComparison}
-                      className="btn-gold" 
+                      className="btn-pink" 
                       style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
                     >
                       <Download size={18} /> Descargar Comparativa
@@ -1512,7 +1512,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                                 borderRadius: '8px', 
                                 overflow: 'hidden', 
                                 cursor: 'pointer',
-                                border: (selectingFor === 'A' ? photoA === img.url : photoB === img.url) ? '3px solid var(--gold-primary)' : 'none'
+                                border: (selectingFor === 'A' ? photoA === img.url : photoB === img.url) ? '3px solid var(--pink-primary)' : 'none'
                               }}
                             >
                               <img src={img.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -1529,7 +1529,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                 {gallery.map((img, i) => (
                   <div key={i} style={{ aspectRatio: '1/1', backgroundColor: 'var(--bg-tertiary)', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-color)', position: 'relative' }} className="group">
                     <img src={img.url || img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', padding: '8px', fontSize: '9px', fontWeight: '800', color: 'var(--gold-primary)' }}>
+                    <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', padding: '8px', fontSize: '9px', fontWeight: '800', color: 'var(--pink-primary)' }}>
                       {img.type || 'FOTO'}
                     </div>
                     <button 
@@ -1552,11 +1552,11 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                 ))}
                 <div 
                   onClick={() => setShowCamera(true)}
-                  style={{ aspectRatio: '1/1', backgroundColor: 'rgba(212,175,55,0.02)', borderRadius: '12px', border: '2px dashed var(--gold-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: '0.2s' }}
-                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(212,175,55,0.05)'}
-                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(212,175,55,0.02)'}
+                  style={{ aspectRatio: '1/1', backgroundColor: 'rgba(217,70,168,0.02)', borderRadius: '12px', border: '2px dashed var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: '0.2s' }}
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(217,70,168,0.05)'}
+                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(217,70,168,0.02)'}
                 >
-                  <Camera size={24} color="var(--gold-primary)" />
+                  <Camera size={24} color="var(--pink-primary)" />
                 </div>
                 <input 
                   type="file" 
@@ -1571,7 +1571,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
 
           <div className="glass-card">
             <h4 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Calendar size={18} color="var(--gold-primary)" /> {isMobile ? 'Historial de Servicios' : 'Historial de Visitas'}
+              <Calendar size={18} color="var(--pink-primary)" /> {isMobile ? 'Historial de Servicios' : 'Historial de Visitas'}
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {loadingHistory ? (
@@ -1604,9 +1604,9 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                       style={{ 
                         width: '100%', 
                         padding: '12px', 
-                        background: showAllHistory ? 'rgba(255,255,255,0.03)' : 'rgba(212,175,55,0.08)', 
-                        border: '1px solid var(--gold-primary)', 
-                        color: 'var(--gold-primary)', 
+                        background: showAllHistory ? 'rgba(255,255,255,0.03)' : 'rgba(217,70,168,0.08)', 
+                        border: '1px solid var(--pink-primary)', 
+                        color: 'var(--pink-primary)', 
                         borderRadius: '10px', 
                         cursor: 'pointer',
                         fontWeight: '700',
@@ -1646,7 +1646,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
       <AnimatedModal isOpen={!!pendingPhoto}>
         {(overlayClass, cardClass) => (
           <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-            <div className={`glass-card ${cardClass}`} style={{ maxWidth: '400px', width: '100%', borderRadius: '32px', padding: '24px', border: '1.5px solid rgba(212,175,55,0.3)' }}>
+            <div className={`glass-card ${cardClass}`} style={{ maxWidth: '400px', width: '100%', borderRadius: '32px', padding: '24px', border: '1.5px solid rgba(217,70,168,0.3)' }}>
               <h3 style={{ 
                 marginBottom: '20px', 
                 fontWeight: '900',
@@ -1654,8 +1654,8 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                 alignItems: 'center',
                 gap: '10px'
               }}>
-                <Camera size={22} color="var(--gold-primary)" />
-                <span>Configurar <span className="text-gold">Foto</span></span>
+                <Camera size={22} color="var(--pink-primary)" />
+                <span>Configurar <span className="text-pink">Foto</span></span>
               </h3>
               
               <div style={{ width: '100%', aspectRatio: '1/1', borderRadius: '16px', overflow: 'hidden', marginBottom: '20px' }}>
@@ -1689,7 +1689,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
 
                 <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
                   <button onClick={() => setPendingPhoto(null)} style={{ flex: 1, padding: '14px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: 'none', color: 'white', fontWeight: '700' }}>CANCELAR</button>
-                  <button onClick={confirmSavePhoto} className="btn-gold" style={{ flex: 1, height: '48px', borderRadius: '14px' }}>GUARDAR FOTO</button>
+                  <button onClick={confirmSavePhoto} className="btn-pink" style={{ flex: 1, height: '48px', borderRadius: '14px' }}>GUARDAR FOTO</button>
                 </div>
               </div>
             </div>
@@ -1711,7 +1711,7 @@ const VisitDetailModal = ({ isOpen, visit, onClose, gallery = [] }) => {
     <AnimatedModal isOpen={isOpen}>
       {(overlayClass, cardClass) => (
         <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-          <div className={`glass-card ${cardClass}`} style={{ maxWidth: '480px', width: '100%', borderRadius: '28px', padding: '32px', border: '1.5px solid rgba(212,175,55,0.3)', maxHeight: '90vh', overflowY: 'auto' }}>
+          <div className={`glass-card ${cardClass}`} style={{ maxWidth: '480px', width: '100%', borderRadius: '28px', padding: '32px', border: '1.5px solid rgba(217,70,168,0.3)', maxHeight: '90vh', overflowY: 'auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <h3 style={{ 
                 fontSize: '20px', 
@@ -1720,8 +1720,8 @@ const VisitDetailModal = ({ isOpen, visit, onClose, gallery = [] }) => {
                 alignItems: 'center',
                 gap: '10px'
               }}>
-                <Receipt size={22} color="var(--gold-primary)" />
-                <span>Recibo de <span className="text-gold">Visita</span></span>
+                <Receipt size={22} color="var(--pink-primary)" />
+                <span>Recibo de <span className="text-pink">Visita</span></span>
               </h3>
               <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><X size={24} /></button>
             </div>
@@ -1736,14 +1736,14 @@ const VisitDetailModal = ({ isOpen, visit, onClose, gallery = [] }) => {
                   </span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Barbero</span>
-                  <span style={{ fontSize: '14px', fontWeight: '800', color: 'white' }}>{visit.barber_name || 'No especificado'}</span>
+                  <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Estilista</span>
+                  <span style={{ fontSize: '14px', fontWeight: '800', color: 'white' }}>{visit.stylist_name || 'Sin asignar'}</span>
                 </div>
               </div>
 
               {/* Invoice Items */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--gold-primary)', letterSpacing: '1px', textTransform: 'uppercase' }}>Detalle de Cargos</label>
+                <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--pink-primary)', letterSpacing: '1px', textTransform: 'uppercase' }}>Detalle de Cargos</label>
                 
                 {/* Main Service */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1779,10 +1779,10 @@ const VisitDetailModal = ({ isOpen, visit, onClose, gallery = [] }) => {
               </div>
 
               {/* Totals Section */}
-              <div style={{ marginTop: '10px', paddingTop: '16px', borderTop: '2px solid rgba(212,175,55,0.2)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+              <div style={{ marginTop: '10px', paddingTop: '16px', borderTop: '2px solid rgba(217,70,168,0.2)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                 <div>
                   <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>TOTAL A PAGAR</label>
-                  <div style={{ fontSize: '32px', fontWeight: '900', color: 'var(--gold-primary)', lineHeight: '1' }}>${visit.amount}</div>
+                  <div style={{ fontSize: '32px', fontWeight: '900', color: 'var(--pink-primary)', lineHeight: '1' }}>${visit.amount}</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: '16px', fontWeight: '800', color: 'white' }}>{totalBs.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.</div>
@@ -1791,8 +1791,8 @@ const VisitDetailModal = ({ isOpen, visit, onClose, gallery = [] }) => {
               </div>
 
               {/* Payment Method */}
-              <div style={{ padding: '16px', backgroundColor: 'rgba(212,175,55,0.05)', borderRadius: '16px', border: '1px solid rgba(212,175,55,0.1)' }}>
-                <label style={{ display: 'block', fontSize: '10px', fontWeight: '800', color: 'var(--gold-primary)', marginBottom: '12px', letterSpacing: '1px' }}>MÉTODO DE PAGO</label>
+              <div style={{ padding: '16px', backgroundColor: 'rgba(217,70,168,0.05)', borderRadius: '16px', border: '1px solid rgba(217,70,168,0.1)' }}>
+                <label style={{ display: 'block', fontSize: '10px', fontWeight: '800', color: 'var(--pink-primary)', marginBottom: '12px', letterSpacing: '1px' }}>MÉTODO DE PAGO</label>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontWeight: '700', fontSize: '16px' }}>{visit.payment_method}</span>
                   <span style={{ fontSize: '11px', fontWeight: '900', color: '#34c759', backgroundColor: 'rgba(52,199,89,0.1)', padding: '4px 8px', borderRadius: '6px' }}>{visit.status?.toUpperCase() || 'PAGADO'}</span>
@@ -1820,7 +1820,7 @@ const VisitDetailModal = ({ isOpen, visit, onClose, gallery = [] }) => {
               )}
             </div>
 
-            <button onClick={onClose} className="btn-gold" style={{ width: '100%', marginTop: '32px', height: '52px', borderRadius: '16px', fontWeight: '900' }}>CERRAR RECIBO</button>
+            <button onClick={onClose} className="btn-pink" style={{ width: '100%', marginTop: '32px', height: '52px', borderRadius: '16px', fontWeight: '900' }}>CERRAR RECIBO</button>
           </div>
         </div>
       )}
@@ -1849,7 +1849,7 @@ const HistoryItem = ({ date, service, price, onClick }) => (
       transition: 'all 0.2s',
       border: '1px solid transparent'
     }}
-    onMouseOver={(e) => { e.currentTarget.style.borderColor = 'var(--gold-primary)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+    onMouseOver={(e) => { e.currentTarget.style.borderColor = 'var(--pink-primary)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
     onMouseOut={(e) => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.transform = 'translateY(0)'; }}
   >
     <div>
@@ -1857,7 +1857,7 @@ const HistoryItem = ({ date, service, price, onClick }) => (
       <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>{date}</div>
     </div>
     <div style={{ textAlign: 'right' }}>
-      <div style={{ fontWeight: '800', color: 'var(--gold-primary)', fontSize: '16px' }}>${price}</div>
+      <div style={{ fontWeight: '800', color: 'var(--pink-primary)', fontSize: '16px' }}>${price}</div>
       <div style={{ fontSize: '10px', color: 'var(--text-secondary)', fontWeight: '700' }}>VER DETALLE</div>
     </div>
   </div>
@@ -1933,7 +1933,7 @@ const BeforeAfterSlider = ({ photoA, photoB, sliderPos, setSliderPos }) => {
           alignItems: 'center',
           justifyContent: 'center',
           boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
-          color: 'var(--gold-primary)'
+          color: 'var(--pink-primary)'
         }}>
           <ColumnsIcon size={18} style={{ transform: 'rotate(90deg)' }} />
         </div>
@@ -1941,7 +1941,7 @@ const BeforeAfterSlider = ({ photoA, photoB, sliderPos, setSliderPos }) => {
 
       {/* Labels */}
       <div style={{ position: 'absolute', top: '12px', left: '12px', backgroundColor: 'rgba(0,0,0,0.6)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'white', pointerEvents: 'none' }}>ANTES</div>
-      <div style={{ position: 'absolute', top: '12px', right: '12px', backgroundColor: 'rgba(212,175,55,0.8)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'black', pointerEvents: 'none' }}>DESPUÉS</div>
+      <div style={{ position: 'absolute', top: '12px', right: '12px', backgroundColor: 'rgba(217,70,168,0.8)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'black', pointerEvents: 'none' }}>DESPUÉS</div>
     </div>
   );
 };

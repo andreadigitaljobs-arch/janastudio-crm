@@ -10,7 +10,7 @@ import {
   Key,
   Info,
   Crown,
-  Scissors,
+  Sparkles,
   UserCheck,
   Package,
   Users,
@@ -22,8 +22,8 @@ import AnimatedModal from './AnimatedModal';
 
 // Map role names to icons & accent colors
 const ROLE_STYLES = {
-  'Admin':          { icon: Crown,     color: '#d4af37', bg: 'rgba(212,175,55,0.12)' },
-  'Barbero':        { icon: Scissors,  color: '#0a84ff', bg: 'rgba(10,132,255,0.12)' },
+  'Admin':          { icon: Crown,     color: '#c48b9f', bg: 'rgba(196,139,159,0.12)' },
+  'Estilista':      { icon: Sparkles,  color: '#c48b9f', bg: 'rgba(196,139,159,0.12)' },
   'Recepcionista':  { icon: UserCheck, color: '#30d158', bg: 'rgba(48,209,88,0.12)'  },
   'Caja':           { icon: Package,   color: '#ff9f0a', bg: 'rgba(255,159,10,0.12)' },
   'Asistente de Lavado': { icon: Users, color: '#64d2ff', bg: 'rgba(100,210,255,0.12)' },
@@ -33,7 +33,7 @@ const getRoleStyle = (name) => {
   for (const key of Object.keys(ROLE_STYLES)) {
     if (name.toLowerCase().includes(key.toLowerCase())) return ROLE_STYLES[key];
   }
-  return { icon: Shield, color: 'var(--gold-primary)', bg: 'rgba(212,175,55,0.1)' };
+  return { icon: Shield, color: 'var(--pink-primary)', bg: 'rgba(196,139,159,0.1)' };
 };
 
 const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, availableModules }) => {
@@ -89,7 +89,7 @@ const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, av
             overflow: 'hidden',
             background: 'linear-gradient(145deg, rgba(22,22,28,0.98) 0%, rgba(14,14,18,0.99) 100%)',
             border: '1px solid rgba(255,255,255,0.08)',
-            boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,175,55,0.08)'
+            boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(196,139,159,0.08)'
           }}>
 
             {/* Header */}
@@ -97,17 +97,17 @@ const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, av
               padding: '24px 28px',
               borderBottom: '1px solid rgba(255,255,255,0.06)',
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              background: 'linear-gradient(90deg, rgba(212,175,55,0.06) 0%, transparent 60%)'
+              background: 'linear-gradient(90deg, rgba(196,139,159,0.06) 0%, transparent 60%)'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                 <div style={{
                   width: '44px', height: '44px', borderRadius: '14px',
-                  background: 'linear-gradient(135deg, rgba(212,175,55,0.2), rgba(212,175,55,0.05))',
-                  border: '1px solid rgba(212,175,55,0.25)',
+                  background: 'linear-gradient(135deg, rgba(196,139,159,0.2), rgba(196,139,159,0.05))',
+                  border: '1px solid rgba(196,139,159,0.25)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: '0 4px 12px rgba(212,175,55,0.15)'
+                  boxShadow: '0 4px 12px rgba(196,139,159,0.15)'
                 }}>
-                  <Shield size={22} color="var(--gold-primary)" />
+                  <Shield size={22} color="var(--pink-primary)" />
                 </div>
                 <div>
                   <h2 style={{ fontSize: '19px', fontWeight: '900', margin: 0, letterSpacing: '-0.3px' }}>Gestión de Roles</h2>
@@ -139,7 +139,7 @@ const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, av
                     </span>
                     <button
                       onClick={handleCreateClick}
-                      className="btn-gold"
+                      className="btn-pink"
                       style={{ padding: '8px 18px', borderRadius: '50px', fontSize: '12px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
                     >
                       <Plus size={15} /> Nuevo Rol
@@ -250,7 +250,7 @@ const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, av
 
                   <div style={{ padding: '20px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                      <Key size={16} color="var(--gold-primary)" />
+                      <Key size={16} color="var(--pink-primary)" />
                       <label style={{ fontSize: '11px', fontWeight: '900', color: 'white', letterSpacing: '1px', textTransform: 'uppercase' }}>Permisos</label>
                     </div>
 
@@ -265,16 +265,16 @@ const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, av
                               display: 'flex', alignItems: 'center', gap: '10px',
                               padding: '12px 14px',
                               borderRadius: '14px',
-                              backgroundColor: active ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.03)',
-                              border: `1px solid ${active ? 'rgba(212,175,55,0.5)' : 'rgba(255,255,255,0.06)'}`,
+                              backgroundColor: active ? 'rgba(196,139,159,0.1)' : 'rgba(255,255,255,0.03)',
+                              border: `1px solid ${active ? 'rgba(196,139,159,0.5)' : 'rgba(255,255,255,0.06)'}`,
                               cursor: 'pointer', transition: 'all 0.18s'
                             }}
                           >
                             <div style={{
                               width: '20px', height: '20px', borderRadius: '6px',
-                              border: `1.5px solid ${active ? 'var(--gold-primary)' : 'rgba(255,255,255,0.2)'}`,
+                              border: `1.5px solid ${active ? 'var(--pink-primary)' : 'rgba(255,255,255,0.2)'}`,
                               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                              backgroundColor: active ? 'var(--gold-primary)' : 'transparent',
+                              backgroundColor: active ? 'var(--pink-primary)' : 'transparent',
                               transition: 'all 0.18s'
                             }}>
                               {active && <Check size={13} color="black" strokeWidth={3} />}
@@ -297,7 +297,7 @@ const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, av
                     </button>
                     <button
                       onClick={handleSave}
-                      className="btn-gold"
+                      className="btn-pink"
                       style={{ flex: 2, height: '50px', borderRadius: '14px', fontWeight: '800' }}
                     >
                       Guardar Cambios
@@ -310,12 +310,12 @@ const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, av
             {/* Footer */}
             <div style={{
               padding: '14px 28px',
-              background: 'linear-gradient(90deg, rgba(212,175,55,0.06) 0%, transparent 70%)',
-              borderTop: '1px solid rgba(212,175,55,0.1)',
+              background: 'linear-gradient(90deg, rgba(196,139,159,0.06) 0%, transparent 70%)',
+              borderTop: '1px solid rgba(196,139,159,0.1)',
               display: 'flex', alignItems: 'center', gap: '10px'
             }}>
-              <Info size={15} color="var(--gold-primary)" style={{ flexShrink: 0 }} />
-              <p style={{ fontSize: '11px', color: 'rgba(212,175,55,0.8)', margin: 0, fontWeight: '600' }}>
+              <Info size={15} color="var(--pink-primary)" style={{ flexShrink: 0 }} />
+              <p style={{ fontSize: '11px', color: 'rgba(196,139,159,0.8)', margin: 0, fontWeight: '600' }}>
                 Los cambios en los permisos se aplicarán a los nuevos miembros que se unan con este rol.
               </p>
             </div>

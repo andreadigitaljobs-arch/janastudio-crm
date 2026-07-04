@@ -165,9 +165,9 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
     const searchMatch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
     if (!searchMatch) return false;
 
-    // Filter for barbers: They see everything EXCEPT other barbers' tools
-    const isBarber = user?.role === 'Barbero' || user?.role?.startsWith('Barbero|');
-    if (isBarber) {
+    // Filter for stylists: They see everything EXCEPT other stylists' tools
+    const isStylist = user?.role === 'Estilista' || user?.role?.startsWith('Estilista|');
+    if (isStylist) {
       // If it's a tool, it MUST be mine or have no owner
       if (item.category === 'Herramienta') {
         return String(item.staff_id) === String(user.id);
@@ -188,12 +188,12 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
         marginBottom: isMobile ? '24px' : '40px' 
       }}>
         <div>
-          <h2 style={{ fontSize: isMobile ? '26px' : '32px', fontWeight: '800', letterSpacing: '-0.5px', lineHeight: '1.2' }}>Control de <span className="text-gold">Stock</span></h2>
+          <h2 style={{ fontSize: isMobile ? '26px' : '32px', fontWeight: '800', letterSpacing: '-0.5px', lineHeight: '1.2' }}>Control de <span className="text-pink">Stock</span></h2>
           <p style={{ color: 'var(--text-secondary)', marginTop: '6px', fontSize: isMobile ? '13px' : '15px' }}>Gestión de productos y suministros críticos.</p>
         </div>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', width: isMobile ? '100%' : 'auto' }}>
           <button 
-            className="btn-gold" 
+            className="btn-pink" 
             onClick={async () => {
               setShowHistoryModal(true);
               setLoadingHistory(true);
@@ -207,7 +207,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
               }
             }} 
             style={{ 
-              backgroundColor: 'rgba(212, 175, 55, 0.1)', color: 'var(--gold-primary)', border: '1px solid rgba(212, 175, 55, 0.2)',
+              backgroundColor: 'rgba(212, 160, 154, 0.1)', color: 'var(--pink-primary)', border: '1px solid rgba(212, 160, 154, 0.2)',
               flex: isMobile ? '1 1 45%' : 'none', justifyContent: 'center', fontSize: isMobile ? '13px' : '14px', padding: isMobile ? '12px 8px' : '12px 16px', whiteSpace: 'nowrap'
             }}
           >
@@ -215,7 +215,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
             {isMobile ? 'Historial' : 'Ver Historial'}
           </button>
           <button 
-            className="btn-gold" 
+            className="btn-pink" 
             onClick={() => {
               if (showAddForm) {
                 setShowAddForm(false);
@@ -268,7 +268,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
             {newItem.category === 'Herramienta' && (
               <AstroSelect 
                 label="ASIGNAR A"
-                placeholder="Selecciona barbero"
+                placeholder="Selecciona estilista"
                 value={newItem.staff_id}
                 onChange={(val) => setNewItem({...newItem, staff_id: val})}
                 options={[
@@ -303,14 +303,14 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                     <img src={newItem.image_url} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.6 }} />
                     <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
-                         <Camera size={20} color="var(--gold-primary)" />
+                           <Camera size={20} color="var(--pink-primary)" />
                        </div>
                        <span style={{ fontSize: '12px', color: 'white', fontWeight: '800', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>Tocar para cambiar foto</span>
                     </div>
                   </>
                 ) : (
                   <>
-                    <Camera size={18} color="var(--gold-primary)" />
+                       <Camera size={18} color="var(--pink-primary)" />
                     <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Tomar o subir foto...</span>
                   </>
                 )}
@@ -367,7 +367,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end' }}>
               <button 
-                className="btn-gold" 
+                className="btn-pink" 
                 onClick={handleAddItem} 
                 disabled={saving}
                 style={{ width: '100%', height: '48px', opacity: saving ? 0.6 : 1 }}
@@ -433,7 +433,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
               padding: '8px 16px', 
               border: 'none', 
               borderRadius: '8px', 
-              backgroundColor: viewMode === 'grid' ? 'var(--gold-primary)' : 'transparent',
+              backgroundColor: viewMode === 'grid' ? 'var(--pink-primary)' : 'transparent',
               color: viewMode === 'grid' ? 'black' : 'white',
               cursor: 'pointer',
               display: 'flex',
@@ -453,7 +453,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
               padding: '8px 16px', 
               border: 'none', 
               borderRadius: '8px', 
-              backgroundColor: viewMode === 'list' ? 'var(--gold-primary)' : 'transparent',
+              backgroundColor: viewMode === 'list' ? 'var(--pink-primary)' : 'transparent',
               color: viewMode === 'list' ? 'black' : 'white',
               cursor: 'pointer',
               display: 'flex',
@@ -472,7 +472,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
 
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
-          <Loader2 className="animate-spin" size={48} color="var(--gold-primary)" />
+          <Loader2 className="animate-spin" size={48} color="var(--pink-primary)" />
         </div>
       ) : filteredInventory.length === 0 ? (
         <div className="glass-card" style={{ textAlign: 'center', padding: '80px', borderRadius: '32px' }}>
@@ -480,7 +480,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
           <p style={{ color: 'var(--text-muted)', fontSize: '18px' }}>No hay productos que coincidan.</p>
         </div>
       ) : viewMode === 'list' ? (
-        <div className="animate-slide-up" style={{ background: 'rgba(28, 28, 30, 0.95)', padding: '0', borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(212, 175, 55, 0.15)' }}>
+        <div className="animate-slide-up" style={{ background: 'rgba(28, 28, 30, 0.95)', padding: '0', borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(196, 139, 159, 0.15)' }}>
             <div style={{ width: '100%', overflowX: 'hidden' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', tableLayout: 'auto' }}>
                 <thead>
@@ -519,7 +519,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                         </div>
                       </td>
                       <td style={{ padding: isMobile ? '12px 6px' : '16px 20px', textAlign: 'right' }}>
-                        <div style={{ fontWeight: '900', color: 'var(--gold-primary)', fontSize: isMobile ? '13px' : '14px' }}>${item.price?.toFixed(2) || '0.00'}</div>
+                        <div style={{ fontWeight: '900', color: 'var(--pink-primary)', fontSize: isMobile ? '13px' : '14px' }}>${item.price?.toFixed(2) || '0.00'}</div>
                       </td>
                       <td style={{ padding: isMobile ? '12px 16px 12px 6px' : '16px 20px', textAlign: 'right' }}>
                         <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end', flexWrap: isMobile ? 'wrap' : 'nowrap' }}>
@@ -537,7 +537,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                           </button>
                           <button 
                             onClick={() => setEditingItem(item)}
-                            className="action-btn" style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', padding: 0, backgroundColor: 'rgba(212,175,55,0.1)', color: 'var(--gold-primary)' }}
+                            className="action-btn" style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', padding: 0, backgroundColor: 'rgba(212,160,154,0.1)', color: 'var(--pink-primary)' }}
                           >
                             <Edit3 size={14} />
                           </button>
@@ -563,9 +563,9 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
               <div key={item.id} className="glass-card inventory-card animate-scale-in" style={{ 
                 position: 'relative',
                 borderRadius: '24px',
-                border: isLowStock ? '1px solid rgba(212, 175, 55, 0.3)' : '1px solid rgba(212, 175, 55, 0.1)',
-                boxShadow: isLowStock ? '0 10px 30px rgba(212, 175, 55, 0.1)' : '0 10px 30px rgba(0,0,0,0.2)',
-                background: isLowStock ? 'linear-gradient(135deg, rgba(28,28,30,0.9), rgba(212, 175, 55, 0.05))' : 'var(--bg-secondary)'
+                border: isLowStock ? '1px solid rgba(196, 139, 159, 0.3)' : '1px solid rgba(196, 139, 159, 0.1)',
+                boxShadow: isLowStock ? '0 10px 30px rgba(196, 139, 159, 0.1)' : '0 10px 30px rgba(0,0,0,0.2)',
+                background: isLowStock ? 'linear-gradient(135deg, rgba(28,28,30,0.9), rgba(196, 139, 159, 0.05))' : 'var(--bg-secondary)'
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', alignItems: 'center' }}>
                   <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
@@ -573,7 +573,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                       <button 
                         onClick={() => setEditingItem(item)}
                         style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px' }}
-                        onMouseOver={(e) => e.currentTarget.style.color = 'var(--gold-primary)'}
+                        onMouseOver={(e) => e.currentTarget.style.color = 'var(--pink-primary)'}
                         onMouseOut={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
                       >
                         <Edit3 size={16} />
@@ -612,7 +612,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                     width: '64px', 
                     height: '64px', 
                     borderRadius: '16px', 
-                    background: item.image_url ? 'rgba(255,255,255,0.02)' : 'linear-gradient(135deg, rgba(212,175,55,0.08), rgba(0,0,0,0.4))', 
+                    background: item.image_url ? 'rgba(255,255,255,0.02)' : 'linear-gradient(135deg, rgba(196,139,159,0.08), rgba(0,0,0,0.4))', 
                     overflow: 'hidden',
                     border: '1px solid rgba(255,255,255,0.1)',
                     boxShadow: 'inset 0 0 10px rgba(0,0,0,0.5)',
@@ -623,7 +623,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                     {item.image_url ? (
                       <img src={item.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
-                      <Package size={24} color="var(--gold-primary)" style={{ opacity: 0.6 }} />
+                      <Package size={24} color="var(--pink-primary)" style={{ opacity: 0.6 }} />
                     )}
                   </div>
                   <div style={{ flex: 1 }}>
@@ -634,10 +634,10 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                           fontSize: '10px', 
                           fontWeight: '800', 
                           padding: '4px 8px', 
-                          backgroundColor: 'rgba(212,175,55,0.1)', 
-                          color: 'var(--gold-primary)', 
+                          backgroundColor: 'rgba(212,160,154,0.1)', 
+                          color: 'var(--pink-primary)', 
                           borderRadius: '8px',
-                          border: '1px solid rgba(212,175,55,0.2)'
+                          border: '1px solid rgba(196,139,159,0.2)'
                         }}>
                           ASIGNADA A {staff.find(s => s.id === item.staff_id)?.name.split(' ')[0].toUpperCase() || 'DESCONOCIDO'}
                         </div>
@@ -648,7 +648,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                         <>
                           <div style={{ display: 'flex', flexDirection: 'column' }}>
                             <span style={{ fontSize: '9px', fontWeight: '900', color: 'var(--text-muted)' }}>VENTA</span>
-                            <div style={{ fontSize: '20px', fontWeight: '950', color: 'var(--gold-primary)', lineHeight: '1.1' }}>
+                            <div style={{ fontSize: '20px', fontWeight: '950', color: 'var(--pink-primary)', lineHeight: '1.1' }}>
                               <span style={{ fontSize: '13px', verticalAlign: 'super', marginRight: '2px' }}>$</span>
                               {item.price?.toFixed(2) || '0.00'}
                             </div>
@@ -710,8 +710,8 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                     </button>
                     <span style={{ 
                       fontSize: '18px', fontWeight: '950', minWidth: '40px', textAlign: 'center', 
-                      color: isLowStock ? 'var(--gold-primary)' : 'white',
-                      textShadow: isLowStock ? '0 0 10px rgba(212,175,55,0.5)' : 'none'
+                      color: isLowStock ? 'var(--pink-primary)' : 'white',
+                      textShadow: isLowStock ? '0 0 10px rgba(196,139,159,0.5)' : 'none'
                     }}>
                       {item.stock}
                     </span>
@@ -766,7 +766,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
       <AnimatedModal isOpen={showHistoryModal}>
         {(overlayClass, cardClass) => (
           <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', zIndex: 99999, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: isMobile ? '12px' : '20px' }}>
-            <div className={`glass-card ${cardClass}`} style={{ maxWidth: '800px', width: '100%', borderRadius: '32px', border: '1.5px solid rgba(212,175,55,0.3)', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden' }}>
+            <div className={`glass-card ${cardClass}`} style={{ maxWidth: '800px', width: '100%', borderRadius: '32px', border: '1.5px solid rgba(196,139,159,0.3)', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', padding: isMobile ? '24px 20px 0 20px' : '24px 32px 0 32px', gap: '16px' }}>
                 <div>
                   <h2 style={{ 
@@ -778,7 +778,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                     alignItems: 'center',
                     gap: '8px'
                   }}>
-                    <History size={isMobile ? 20 : 24} color="var(--gold-primary)" />
+                    <History size={isMobile ? 20 : 24} color="var(--pink-primary)" />
                     {isMobile ? 'Historial Stock' : 'Historial de Movimientos'}
                   </h2>
                   <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginTop: '4px' }}>Registro detallado de entradas y salidas de almacén.</p>
@@ -820,9 +820,9 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                         borderRadius: '10px',
                         fontSize: isMobile ? '11px' : '12px',
                         fontWeight: '800',
-                        backgroundColor: historyFilter === tab.value ? 'var(--gold-primary)' : 'rgba(255,255,255,0.03)',
+                        backgroundColor: historyFilter === tab.value ? 'var(--pink-primary)' : 'rgba(255,255,255,0.03)',
                         color: historyFilter === tab.value ? 'black' : 'white',
-                        border: '1px solid ' + (historyFilter === tab.value ? 'var(--gold-primary)' : 'rgba(255,255,255,0.08)'),
+                        border: '1px solid ' + (historyFilter === tab.value ? 'var(--pink-primary)' : 'rgba(255,255,255,0.08)'),
                         cursor: 'pointer',
                         transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
                       }}
@@ -834,7 +834,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
 
                 {loadingHistory ? (
                   <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
-                    <Loader2 className="animate-spin" size={40} color="var(--gold-primary)" />
+                    <Loader2 className="animate-spin" size={40} color="var(--pink-primary)" />
                   </div>
                 ) : (
                   (() => {
@@ -990,8 +990,8 @@ const EditInventoryModal = ({ isOpen, item, onClose, onSave }) => {
                 alignItems: 'center',
                 gap: '10px'
               }}>
-                <Package size={22} color="var(--gold-primary)" />
-                <span>Editar <span className="text-gold">Producto</span></span>
+                <Package size={22} color="var(--pink-primary)" />
+                <span>Editar <span className="text-pink">Producto</span></span>
               </h3>
               <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><Plus size={24} style={{ transform: 'rotate(45deg)' }} /></button>
             </div>
@@ -1017,7 +1017,7 @@ const EditInventoryModal = ({ isOpen, item, onClose, onSave }) => {
               {formData.category === 'Herramienta' && (
                 <AstroSelect 
                   label="ASIGNAR A"
-                  placeholder="Selecciona barbero"
+                placeholder="Selecciona estilista"
                   value={formData.staff_id}
                   onChange={(val) => setFormData({...formData, staff_id: val})}
                   options={[
@@ -1070,14 +1070,14 @@ const EditInventoryModal = ({ isOpen, item, onClose, onSave }) => {
                       <img src={formData.image_url} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 1 }} />
                       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', justifyContent: 'center', background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)' }}>
                          <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)' }}>
-                           <Camera size={20} color="var(--gold-primary)" />
+                         <Camera size={20} color="var(--pink-primary)" />
                          </div>
                          <span style={{ fontSize: '12px', color: 'white', fontWeight: '800', textShadow: '0 2px 4px rgba(0,0,0,0.8)', backgroundColor: 'rgba(0,0,0,0.4)', padding: '4px 10px', borderRadius: '12px', backdropFilter: 'blur(4px)' }}>Tocar para cambiar foto</span>
                       </div>
                     </>
                   ) : (
                     <>
-                      <Camera size={18} color="var(--gold-primary)" />
+                    <Camera size={18} color="var(--pink-primary)" />
                       <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Tomar o subir foto...</span>
                     </>
                   )}
@@ -1105,7 +1105,7 @@ const EditInventoryModal = ({ isOpen, item, onClose, onSave }) => {
               >
                 Cancelar
               </button>
-              <button onClick={handleSave} className="btn-gold" style={{ flex: 2, padding: '14px', borderRadius: '14px', fontSize: '15px', fontWeight: '800' }} disabled={loading}>
+              <button onClick={handleSave} className="btn-pink" style={{ flex: 2, padding: '14px', borderRadius: '14px', fontSize: '15px', fontWeight: '800' }} disabled={loading}>
                 {loading ? <Loader2 className="animate-spin" /> : 'Guardar Cambios'}
               </button>
             </div>

@@ -15,7 +15,7 @@ export const NotificationProvider = ({ children }) => {
       <div className="toast-container">
         {notifs.toasts.map((t) => (
           <div key={t.id} className="toast animate-scale-in">
-            {t.type === 'success' ? <CheckCircle size={20} color="var(--gold-primary)" /> : <AlertCircle size={20} color="#ff453a" />}
+            {t.type === 'success' ? <CheckCircle size={20} color="var(--pink-primary)" /> : <AlertCircle size={20} color="#ff453a" />}
             <span style={{ fontSize: '14px', fontWeight: '600' }}>{t.message}</span>
           </div>
         ))}

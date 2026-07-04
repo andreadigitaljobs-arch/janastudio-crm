@@ -4,7 +4,7 @@ import {
   Users, 
   Search, 
   UserPlus, 
-  Scissors, 
+  Sparkles, 
   Calendar, 
   Zap,
   CheckCircle2,
@@ -76,7 +76,7 @@ const ReceptionModule = ({ isMobile }) => {
       setClients(c || []);
       setServices(s || []);
       setStaff((st || []).filter(member => {
-        const roleName = (member.role?.split('|')[0] || 'Barbero').toLowerCase();
+        const roleName = (member.role?.split('|')[0] || 'Estilista').toLowerCase();
         return !roleName.includes('admin') && 
                !roleName.includes('recepcionista') && 
                !roleName.includes('caja');
@@ -92,7 +92,7 @@ const ReceptionModule = ({ isMobile }) => {
       setUpcomingAppointments((allApps || []).filter(a => a.status === 'Agendado' && (a.scheduled_at?.startsWith(today) || a.created_at?.startsWith(today))));
 
       if (ratesData) {
-        const activeType = localStorage.getItem('astro_active_rate') || 'usdt';
+         const activeType = localStorage.getItem('jana_active_rate') || 'usdt';
         setExchangeRate(activeType === 'bcv' ? (ratesData.bcv || 36.5) : (ratesData.usdt || 43.2));
       }
     } catch (err) {
@@ -191,7 +191,7 @@ const ReceptionModule = ({ isMobile }) => {
 
   const handleScheduleClick = () => {
     if (!selectedClient || (selectedServices.length === 0 && selectedExtras.length === 0) || !formData.staffId) {
-      showToast("Selecciona cliente, servicio/extra y barbero/asistente primero", "warning");
+      showToast("Selecciona cliente, servicio/extra y estilista/asistente primero", "warning");
       return;
     }
     setIsScheduleModalOpen(true);
@@ -239,7 +239,7 @@ const ReceptionModule = ({ isMobile }) => {
 
     const hasStaffRequired = selectedServices.length > 0 || selectedExtras.length > 0;
     if (hasStaffRequired && !formData.staffId) {
-      showToast("Selecciona un barbero o asistente", "error");
+      showToast("Selecciona un estilista o asistente", "error");
       return;
     }
 
@@ -362,7 +362,7 @@ const ReceptionModule = ({ isMobile }) => {
       <div className="r-orb r-orb-1" />
       <div className="r-orb r-orb-2" />
       <header style={{ marginBottom: '40px', textAlign: isMobile ? 'center' : 'left' }}>
-        <h1 style={{ fontSize: '32px', fontWeight: '900' }}>Recepción <span className="text-gold">Astro</span></h1>
+        <h1 style={{ fontSize: '32px', fontWeight: '900' }}>Recepción <span className="text-pink">Jana</span></h1>
         <p style={{ color: 'var(--text-secondary)' }}>Módulo de atención y agendamiento rápido.</p>
       </header>
 
@@ -373,19 +373,19 @@ const ReceptionModule = ({ isMobile }) => {
           <div className="glass-card animate-slide-up animate-stagger-1" style={{ marginBottom: '24px', borderRadius: '24px', position: 'relative', zIndex: searchResults.length > 0 ? 9999 : 1 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Users size={20} color="var(--gold-primary)" />
+                <Users size={20} color="var(--pink-primary)" />
                 <span style={{ fontWeight: '800', fontSize: '14px', letterSpacing: '1px', textTransform: 'uppercase' }}>1. Cliente</span>
               </div>
               <button 
                 onClick={handleCreateClient}
-                style={{ background: 'rgba(212,175,55,0.1)', border: 'none', color: 'var(--gold-primary)', padding: '6px 12px', borderRadius: '10px', fontSize: '12px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                style={{ background: 'rgba(212,160,154,0.1)', border: 'none', color: 'var(--pink-primary)', padding: '6px 12px', borderRadius: '10px', fontSize: '12px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
               >
                 <UserPlus size={14} /> Nuevo
               </button>
             </div>
 
             {selectedClient ? (
-              <div className="animate-scale-in" style={{ padding: '20px', backgroundColor: 'rgba(212,175,55,0.05)', borderRadius: '16px', border: '1px solid rgba(212,175,55,0.2)' }}>
+              <div className="animate-scale-in" style={{ padding: '20px', backgroundColor: 'rgba(212,160,154,0.05)', borderRadius: '16px', border: '1px solid rgba(212,160,154,0.2)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
                     <div style={{ fontWeight: '800', fontSize: '18px' }}>{selectedClient.name}</div>
@@ -396,11 +396,11 @@ const ReceptionModule = ({ isMobile }) => {
                       marginTop: '6px',
                       padding: '3px 8px', 
                       borderRadius: '6px', 
-                      backgroundColor: 'rgba(212, 175, 55, 0.1)', 
-                      border: '1px solid rgba(212, 175, 55, 0.25)',
+                      backgroundColor: 'rgba(212, 160, 154, 0.1)', 
+                      border: '1px solid rgba(212, 160, 154, 0.25)',
                       fontSize: '11px', 
                       fontWeight: '800', 
-                      color: 'var(--gold-primary)',
+                      color: 'var(--pink-primary)',
                       letterSpacing: '0.5px'
                     }}>
                       <span style={{ opacity: 0.6, fontSize: '9px', fontWeight: '900' }}>CÉDULA:</span> V-{selectedClient.id_card}
@@ -435,7 +435,7 @@ const ReceptionModule = ({ isMobile }) => {
                   />
                   <button 
                     onClick={handleIdSearch} 
-                    className="btn-gold" 
+                         className="btn-pink" 
                     style={{ 
                       position: 'absolute',
                       right: '6px',
@@ -466,11 +466,11 @@ const ReceptionModule = ({ isMobile }) => {
                         key={c.id} 
                         onClick={() => handleSelectClient(c)}
                         style={{ padding: '12px 16px', cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-                        onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(212,175,55,0.1)'}
+                        onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(212,160,154,0.1)'}
                         onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                       >
                         <span style={{ fontWeight: '700', fontSize: '14px', color: 'white' }}>{c.name}</span>
-                        <span style={{ fontSize: '12px', color: 'var(--gold-primary)', fontWeight: '700' }}>V-{c.id_card}</span>
+                        <span style={{ fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '700' }}>V-{c.id_card}</span>
                       </div>
                     ))}
                   </div>
@@ -481,7 +481,7 @@ const ReceptionModule = ({ isMobile }) => {
 
           <div className="glass-card animate-slide-up animate-stagger-2" style={{ borderRadius: '24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
-              <Receipt size={20} color="var(--gold-primary)" />
+              <Receipt size={20} color="var(--pink-primary)" />
               <span style={{ fontWeight: '800', fontSize: '14px', letterSpacing: '1px', textTransform: 'uppercase' }}>2. Detalle de la Orden</span>
             </div>
             
@@ -491,7 +491,7 @@ const ReceptionModule = ({ isMobile }) => {
                 className="action-add-btn btn-service reception-animate-item"
                 style={{ animationDelay: '0ms' }}
               >
-                <Scissors size={18} /> <span style={{ whiteSpace: 'nowrap' }}>+ SERVICIO</span>
+                <Sparkles size={18} /> <span style={{ whiteSpace: 'nowrap' }}>+ SERVICIO</span>
               </button>
               <button 
                 onClick={() => setIsExtraModalOpen(true)}
@@ -517,7 +517,7 @@ const ReceptionModule = ({ isMobile }) => {
                       <span style={{ color: 'white', fontWeight: '700' }}>{s.name}</span>
                       <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
-                          <span style={{ color: 'var(--gold-primary)', fontWeight: '800' }}>{(s.price * exchangeRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.</span>
+                          <span style={{ color: 'var(--pink-primary)', fontWeight: '800' }}>{(s.price * exchangeRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.</span>
                           <span style={{ color: 'var(--text-muted)', fontSize: '10px', fontWeight: '600' }}>Ref: ${s.price}</span>
                         </div>
                         <button onClick={() => toggleService(s.id)} style={{ background: 'none', border: 'none', color: '#ff453a', cursor: 'pointer', fontSize: '14px', marginLeft: '4px' }}>&times;</button>
@@ -530,7 +530,7 @@ const ReceptionModule = ({ isMobile }) => {
                       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                         {editingExtraPriceId === e.id ? (
                           <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                            <span style={{ position: 'absolute', left: '6px', fontSize: '10px', color: 'var(--gold-primary)', fontWeight: '800' }}>$</span>
+                            <span style={{ position: 'absolute', left: '6px', fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '800' }}>$</span>
                             <input 
                               type="number"
                               autoFocus
@@ -538,7 +538,7 @@ const ReceptionModule = ({ isMobile }) => {
                               onChange={(val) => updateExtraPrice(e.id, val.target.value)}
                               onBlur={() => setEditingExtraPriceId(null)}
                               onKeyDown={(key) => key.key === 'Enter' && setEditingExtraPriceId(null)}
-                              style={{ width: '60px', height: '24px', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--gold-primary)', borderRadius: '4px', color: 'white', paddingLeft: '14px', fontSize: '12px', fontWeight: '800', textAlign: 'right' }}
+                              style={{ width: '60px', height: '24px', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--pink-primary)', borderRadius: '4px', color: 'white', paddingLeft: '14px', fontSize: '12px', fontWeight: '800', textAlign: 'right' }}
                             />
                           </div>
                         ) : (
@@ -549,7 +549,7 @@ const ReceptionModule = ({ isMobile }) => {
                             onMouseOut={(ev) => ev.currentTarget.style.backgroundColor = 'transparent'}
                           >
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
-                              <span style={{ color: 'var(--gold-primary)', fontWeight: '800' }}>{((e.customPrice ?? e.price) * exchangeRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.</span>
+                              <span style={{ color: 'var(--pink-primary)', fontWeight: '800' }}>{((e.customPrice ?? e.price) * exchangeRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.</span>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                                 <span style={{ color: 'var(--text-muted)', fontSize: '10px', fontWeight: '600' }}>Ref: ${e.customPrice ?? e.price}</span>
                                 <Edit3 size={8} color="var(--text-muted)" />
@@ -566,7 +566,7 @@ const ReceptionModule = ({ isMobile }) => {
                       <span style={{ color: '#32d74b' }}>📦 {p.name}</span>
                       <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
-                          <span style={{ color: 'var(--gold-primary)', fontWeight: '800' }}>{(p.price * exchangeRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.</span>
+                          <span style={{ color: 'var(--pink-primary)', fontWeight: '800' }}>{(p.price * exchangeRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.</span>
                           <span style={{ color: 'var(--text-muted)', fontSize: '10px', fontWeight: '600' }}>Ref: ${p.price}</span>
                         </div>
                         <button onClick={() => toggleProduct(p)} style={{ background: 'none', border: 'none', color: '#ff453a', cursor: 'pointer', fontSize: '14px', marginLeft: '4px' }}>&times;</button>
@@ -574,7 +574,7 @@ const ReceptionModule = ({ isMobile }) => {
                     </div>
                   ))}
                 </div>
-                <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'right', fontWeight: '900', color: 'var(--gold-primary)' }}>
+                <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'right', fontWeight: '900', color: 'var(--pink-primary)' }}>
                   <div style={{ fontSize: '18px' }}>
                     TOTAL: {((selectedServices.reduce((acc, s) => acc + s.price, 0) + selectedExtras.reduce((acc, e) => acc + (e.customPrice ?? e.price), 0) + selectedProducts.reduce((acc, p) => acc + (p.price * p.quantity), 0)) * exchangeRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.
                   </div>
@@ -586,7 +586,7 @@ const ReceptionModule = ({ isMobile }) => {
             )}
 
             <div>
-              <label style={{ display: 'block', fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '12px' }}>BARBEROS Y ASISTENTES DISPONIBLES</label>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '12px' }}>ESTILISTAS Y ASISTENTES DISPONIBLES</label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: '12px' }}>
                 {staff.map((s, idx) => {
                   const active = activeAppointments.find(a => a.staff_id === s.id);
@@ -614,9 +614,9 @@ const ReceptionModule = ({ isMobile }) => {
                       style={{
                         padding: '16px 8px',
                         borderRadius: '20px',
-                        border: formData.staffId === s.id ? '2px solid var(--gold-primary)' : isBusy ? '1px solid rgba(255,69,58,0.3)' : '1px solid var(--border-color)',
-                        backgroundColor: formData.staffId === s.id ? 'rgba(212,175,55,0.1)' : isBusy ? 'rgba(255,69,58,0.05)' : 'rgba(255,255,255,0.02)',
-                        color: formData.staffId === s.id ? 'var(--gold-primary)' : 'white',
+                        border: formData.staffId === s.id ? '2px solid var(--pink-primary)' : isBusy ? '1px solid rgba(255,69,58,0.3)' : '1px solid var(--border-color)',
+                        backgroundColor: formData.staffId === s.id ? 'rgba(212,160,154,0.1)' : isBusy ? 'rgba(255,69,58,0.05)' : 'rgba(255,255,255,0.02)',
+                        color: formData.staffId === s.id ? 'var(--pink-primary)' : 'white',
                         cursor: 'pointer',
                         display: 'flex',
                         flexDirection: 'column',
@@ -675,8 +675,8 @@ const ReceptionModule = ({ isMobile }) => {
             {/* Upcoming Appointments List */}
             <div style={{ marginTop: '24px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                <Calendar size={16} color="var(--gold-primary)" />
-                <span style={{ fontWeight: '800', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--gold-primary)' }}>Próximas Citas (Agenda Hoy)</span>
+                <Calendar size={16} color="var(--pink-primary)" />
+                <span style={{ fontWeight: '800', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--pink-primary)' }}>Próximas Citas (Agenda Hoy)</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {upcomingAppointments.length === 0 ? (
@@ -708,11 +708,11 @@ const ReceptionModule = ({ isMobile }) => {
                           justifyContent: 'center',
                           padding: '6px 12px',
                           borderRadius: '12px',
-                          background: 'rgba(212, 175, 55, 0.08)',
-                          border: '1px solid rgba(212, 175, 55, 0.25)',
+                          background: 'rgba(212, 160, 154, 0.08)',
+                          border: '1px solid rgba(212, 160, 154, 0.25)',
                           minWidth: isMobile ? '80px' : '92px'
                         }}>
-                          <span style={{ fontSize: isMobile ? '10px' : '11px', fontWeight: '900', color: 'var(--gold-primary)', whiteSpace: 'nowrap' }}>
+                          <span style={{ fontSize: isMobile ? '10px' : '11px', fontWeight: '900', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>
                             {(() => {
                               const d = new Date(app.scheduled_at || app.created_at);
                               let h = d.getHours();
@@ -767,7 +767,7 @@ const ReceptionModule = ({ isMobile }) => {
                           style={{ 
                             padding: '10px 16px', 
                             borderRadius: '12px', 
-                            background: 'var(--gold-primary)', 
+                            background: 'var(--pink-primary)', 
                             color: 'black', 
                             border: 'none', 
                             fontSize: '11px', 
@@ -802,7 +802,7 @@ const ReceptionModule = ({ isMobile }) => {
                 <div className="radar-container">
                   <div className="radar-circle" />
                   <div className="radar-glow" />
-                  <Search size={28} color="var(--gold-primary)" style={{ position: 'relative', zIndex: 2 }} />
+                   <Search size={28} color="var(--pink-primary)" style={{ position: 'relative', zIndex: 2 }} />
                 </div>
                 <h3 style={{ color: 'white', fontWeight: '800', fontSize: '18px' }}>Escaneando Clientes</h3>
                 <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '8px', maxWidth: '280px', lineHeight: '1.5' }}>
@@ -811,13 +811,13 @@ const ReceptionModule = ({ isMobile }) => {
               </div>
             ) : selectedServices.length === 0 && selectedProducts.length === 0 && selectedExtras.length === 0 ? (
               <>
-                <Scissors size={48} color="rgba(212,175,55,0.2)" style={{ marginBottom: '20px' }} />
+                <Sparkles size={48} color="rgba(212,160,154,0.2)" style={{ marginBottom: '20px' }} />
                 <h3 style={{ color: 'var(--text-secondary)' }}>Añade productos o servicios</h3>
                 <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '8px' }}>Selecciona lo que el cliente desea adquirir.</p>
               </>
             ) : (
               <div className="animate-slide-up" style={{ width: '100%' }}>
-                <CheckCircle2 size={56} color="var(--gold-primary)" style={{ marginBottom: '24px' }} />
+                 <CheckCircle2 size={56} color="var(--pink-primary)" style={{ marginBottom: '24px' }} />
                 <h3 style={{ fontSize: '24px', marginBottom: '8px' }}>Todo Listo</h3>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', fontSize: '14px' }}>
                   Confirmación para <span style={{ color: 'white', fontWeight: '800' }}>{selectedClient.name}</span>
@@ -825,12 +825,12 @@ const ReceptionModule = ({ isMobile }) => {
 
                 {/* Detailed Summary for Confirmation */}
                 <div style={{ backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: '20px', padding: '20px', marginBottom: '32px', textAlign: 'left', border: '1px solid rgba(255,255,255,0.05)' }}>
-                  <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--gold-primary)', letterSpacing: '1px', marginBottom: '12px', textTransform: 'uppercase' }}>Resumen de Atención</div>
+                  <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)', letterSpacing: '1px', marginBottom: '12px', textTransform: 'uppercase' }}>Resumen de Atención</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {selectedServices.map(s => (
                       <div key={s.id}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <Scissors size={14} color="var(--gold-primary)" />
+                          <Sparkles size={14} color="var(--pink-primary)" />
                           <span style={{ fontSize: '13px', fontWeight: '700' }}>{s.name}</span>
                         </div>
                         {s.included_items && s.included_items.length > 0 && (
@@ -845,11 +845,11 @@ const ReceptionModule = ({ isMobile }) => {
                             borderRadius: '10px',
                             border: '1px solid rgba(255, 255, 255, 0.04)'
                           }}>
-                            <div style={{ fontSize: '9px', fontWeight: '900', color: 'var(--gold-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Incluye:</div>
+                            <div style={{ fontSize: '9px', fontWeight: '900', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Incluye:</div>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '6px' }}>
                               {s.included_items.map((item, idx) => (
                                 <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', fontSize: '11px', color: 'var(--text-secondary)', lineHeight: '1.3' }}>
-                                  <span style={{ color: 'var(--gold-primary)', fontSize: '11px', lineHeight: '1' }}>✓</span>
+                                  <span style={{ color: 'var(--pink-primary)', fontSize: '11px', lineHeight: '1' }}>✓</span>
                                   <span>{item}</span>
                                 </div>
                               ))}
@@ -860,7 +860,7 @@ const ReceptionModule = ({ isMobile }) => {
                     ))}
                     {selectedExtras.map(e => (
                       <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <Rocket size={14} color="var(--gold-primary)" />
+                        <Rocket size={14} color="var(--pink-primary)" />
                         <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{e.name} (Extra)</span>
                       </div>
                     ))}
@@ -883,7 +883,7 @@ const ReceptionModule = ({ isMobile }) => {
                       <button 
                         disabled={loading || (formData.staffId && activeAppointments.some(a => a.staff_id === formData.staffId))}
                         onClick={() => handleSubmit('En Silla')}
-                        className="btn-gold" 
+                             className="btn-pink" 
                         style={{ 
                           height: '60px', 
                           borderRadius: '18px', 
@@ -914,7 +914,7 @@ const ReceptionModule = ({ isMobile }) => {
                     <button 
                       disabled={loading}
                       onClick={() => handleSubmit('Por Pagar')}
-                      className="btn-gold" 
+                           className="btn-pink" 
                       style={{ height: '60px', borderRadius: '18px', fontSize: '16px', backgroundColor: '#32d74b', color: 'black', border: 'none' }}
                     >
                       <ShoppingBag size={20} /> ENVIAR A CAJA (PRODUCTOS)
@@ -958,7 +958,7 @@ const ReceptionModule = ({ isMobile }) => {
         isOpen={isServiceModalOpen}
         onClose={() => setIsServiceModalOpen(false)}
         title="Seleccionar Servicios"
-        icon={<Scissors size={24} color="var(--gold-primary)" />}
+        icon={<Sparkles size={24} color="var(--pink-primary)" />}
         items={services}
         selectedItems={selectedServices}
         onToggle={(s) => toggleService(s.id)}
@@ -970,7 +970,7 @@ const ReceptionModule = ({ isMobile }) => {
         isOpen={isExtraModalOpen}
         onClose={() => setIsExtraModalOpen(false)}
         title="Añadir Extras"
-        icon={<Rocket size={24} color="var(--gold-primary)" />}
+        icon={<Rocket size={24} color="var(--pink-primary)" />}
         items={allExtras}
         selectedItems={selectedExtras}
         onToggle={toggleExtra}
@@ -982,7 +982,7 @@ const ReceptionModule = ({ isMobile }) => {
         isOpen={isProductModalOpen}
         onClose={() => setIsProductModalOpen(false)}
         title="Venta de Productos"
-        icon={<ShoppingBag size={24} color="var(--gold-primary)" />}
+        icon={<ShoppingBag size={24} color="var(--pink-primary)" />}
         items={inventory}
         selectedItems={selectedProducts}
         onToggle={toggleProduct}
@@ -992,7 +992,7 @@ const ReceptionModule = ({ isMobile }) => {
 
       <style>{`
         .hover-item:hover {
-          background-color: rgba(212,175,55,0.1) !important;
+          background-color: rgba(212,160,154,0.1) !important;
           transform: translateX(5px);
         }
 
@@ -1009,7 +1009,7 @@ const ReceptionModule = ({ isMobile }) => {
         .r-orb-1 {
           width: 500px;
           height: 500px;
-          background: radial-gradient(circle, var(--gold-primary) 0%, transparent 70%);
+          background: radial-gradient(circle, var(--pink-primary) 0%, transparent 70%);
           top: -10%;
           right: 5%;
           animation-duration: 26s;
@@ -1055,7 +1055,7 @@ const ReceptionModule = ({ isMobile }) => {
         }
         
         .action-add-btn.btn-service {
-          color: var(--gold-primary) !important;
+          color: var(--pink-primary) !important;
           border-color: rgba(212, 175, 55, 0.25) !important;
         }
         .action-add-btn.btn-service:hover {
@@ -1144,7 +1144,7 @@ const ReceptionModule = ({ isMobile }) => {
           width: 100%;
           height: 100%;
           border-radius: 50%;
-          border: 2.5px solid var(--gold-primary);
+          border: 2.5px solid var(--pink-primary);
           animation: radar-sweep 2.5s infinite linear;
           box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
         }
@@ -1160,7 +1160,7 @@ const ReceptionModule = ({ isMobile }) => {
           border-radius: 99px;
           background: rgba(212, 175, 55, 0.1);
           border: 1px solid rgba(212, 175, 55, 0.2);
-          color: var(--gold-primary);
+          color: var(--pink-primary);
           font-size: 11px;
           font-weight: 800;
           letter-spacing: 1.5px;
@@ -1180,11 +1180,11 @@ const ReceptionModule = ({ isMobile }) => {
         }
         .selection-modal-item.is-selected:hover {
           background: rgba(212, 175, 55, 0.1) !important;
-          border-color: var(--gold-primary) !important;
+          border-color: var(--pink-primary) !important;
           box-shadow: 0 6px 20px rgba(212, 175, 55, 0.15);
         }
         .btn-premium-modal-ready {
-          background: var(--gold-primary) !important;
+          background: var(--pink-primary) !important;
           color: black !important;
           font-weight: 900 !important;
           letter-spacing: 1.5px !important;
@@ -1294,7 +1294,7 @@ const SelectionModal = ({ isOpen, onClose, title, icon, items, selectedItems, on
                   style={{
                     padding: '16px 20px',
                     borderRadius: '20px',
-                    border: isSelected ? '1px solid var(--gold-primary)' : '1px solid rgba(255,255,255,0.05)',
+                     border: isSelected ? '1px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)',
                     background: isSelected ? 'rgba(212,175,55,0.06)' : 'rgba(255,255,255,0.02)',
                     textAlign: 'left',
                     cursor: 'pointer',
@@ -1309,7 +1309,7 @@ const SelectionModal = ({ isOpen, onClose, title, icon, items, selectedItems, on
                     width: '46px', 
                     height: '46px', 
                     borderRadius: '12px', 
-                    background: isSelected ? 'var(--gold-primary)' : 'rgba(255,255,255,0.04)', 
+                     background: isSelected ? 'var(--pink-primary)' : 'rgba(255,255,255,0.04)', 
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'center', 
@@ -1320,7 +1320,7 @@ const SelectionModal = ({ isOpen, onClose, title, icon, items, selectedItems, on
                       <img src={item.image_url} alt={item.name} style={{ width: '100%', height: '100%', borderRadius: '12px', objectFit: 'cover' }} />
                     ) : (
                       type === 'service' ? (
-                        <Scissors size={20} color={isSelected ? 'black' : 'var(--gold-primary)'} />
+                         <Sparkles size={20} color={isSelected ? 'black' : 'var(--pink-primary)'} />
                       ) : type === 'extra' ? (
                         <Rocket size={20} color={isSelected ? 'black' : '#ff9f0a'} />
                       ) : (
@@ -1331,9 +1331,9 @@ const SelectionModal = ({ isOpen, onClose, title, icon, items, selectedItems, on
                   
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div style={{ fontSize: '14px', fontWeight: '750', color: isSelected ? 'var(--gold-primary)' : 'white', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</div>
+                       <div style={{ fontSize: '14px', fontWeight: '750', color: isSelected ? 'var(--pink-primary)' : 'white', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</div>
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginLeft: '10px' }}>
-                        <div style={{ fontSize: '15px', fontWeight: '900', color: 'var(--gold-primary)' }}>{(item.price * exchangeRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.</div>
+                         <div style={{ fontSize: '15px', fontWeight: '900', color: 'var(--pink-primary)' }}>{(item.price * exchangeRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.</div>
                         <div style={{ fontSize: '11px', color: isSelected ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.55)', fontWeight: '700' }}>Ref: ${item.price}</div>
                       </div>
                     </div>
@@ -1348,7 +1348,7 @@ const SelectionModal = ({ isOpen, onClose, title, icon, items, selectedItems, on
                           <span key={i} style={{ 
                             fontSize: '9.5px', 
                             fontWeight: '700',
-                            color: isSelected ? 'var(--gold-primary)' : 'rgba(255,255,255,0.5)',
+                             color: isSelected ? 'var(--pink-primary)' : 'rgba(255,255,255,0.5)',
                             backgroundColor: isSelected ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.04)',
                             padding: '4px 10px',
                             borderRadius: '8px',
@@ -1364,7 +1364,7 @@ const SelectionModal = ({ isOpen, onClose, title, icon, items, selectedItems, on
                   </div>
 
                   {isSelected && (
-                    <div style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: 'var(--gold-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                     <div style={{ width: '22px', height: '22px', borderRadius: '50%', backgroundColor: 'var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <CheckCircle2 size={15} color="black" />
                     </div>
                   )}

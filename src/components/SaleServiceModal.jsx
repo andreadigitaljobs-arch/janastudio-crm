@@ -6,7 +6,7 @@ import {
   Search, 
   Plus, 
   Rocket, 
-  Scissors, 
+  Sparkles, 
   CreditCard, 
   Loader2, 
   UserPlus,
@@ -42,7 +42,7 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
   
   // Form Data
   const [selectedService, setSelectedService] = useState(null);
-  const [involvedStaff, setInvolvedStaff] = useState([{ staffId: '', role: 'Barbero' }]);
+  const [involvedStaff, setInvolvedStaff] = useState([{ staffId: '', role: 'Estilista' }]);
   const [selectedExtras, setSelectedExtras] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -64,7 +64,7 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
       setSelectedClient(null);
       setIdSearch('');
       setSelectedService(null);
-      setInvolvedStaff([{ staffId: '', role: 'Barbero' }]);
+      setInvolvedStaff([{ staffId: '', role: 'Estilista' }]);
       setSelectedExtras([]);
       setSelectedProducts([]);
       setTotalPrice(0);
@@ -134,7 +134,7 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
     }
 
     if (selectedService && involvedStaff.some(s => !s.staffId)) {
-      showToast('Por favor selecciona un barbero.', 'error');
+      showToast('Por favor selecciona un estilista.', 'error');
       return;
     }
 
@@ -238,8 +238,8 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
               Operación <span className="text-gold">Rápida</span>
             </h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: step === 1 ? 'var(--gold-primary)' : 'rgba(255,255,255,0.2)' }} />
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: step === 2 ? 'var(--gold-primary)' : 'rgba(255,255,255,0.2)' }} />
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: step === 1 ? 'var(--pink-primary)' : 'rgba(255,255,255,0.2)' }} />
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: step === 2 ? 'var(--pink-primary)' : 'rgba(255,255,255,0.2)' }} />
               <span style={{ fontSize: '12px', color: 'var(--text-secondary)', marginLeft: '4px' }}>Paso {step} de 2</span>
             </div>
           </div>
@@ -254,7 +254,7 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
           {step === 1 && (
             <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div style={{ position: 'relative' }}>
-                <Search style={{ position: 'absolute', left: '16px', top: '16px' }} size={20} color="var(--gold-primary)" />
+                <Search style={{ position: 'absolute', left: '16px', top: '16px' }} size={20} color="var(--pink-primary)" />
                 <input 
                   type="text" 
                   placeholder="Busca por Cédula o Nombre..." 
@@ -262,7 +262,7 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
                   onChange={(e) => setIdSearch(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleIdSearch()}
                   autoFocus
-                  style={{ width: '100%', paddingLeft: '52px', height: '52px', fontSize: '16px', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(212,175,55,0.2)' }}
+                  style={{ width: '100%', paddingLeft: '52px', height: '52px', fontSize: '16px', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(196,139,159,0.2)' }}
                 />
               </div>
 
@@ -280,13 +280,13 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
                         <div style={{ fontWeight: '800', fontSize: '14px' }}>{c.name}</div>
                         <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>V-{c.id_card}</div>
                       </div>
-                      <ArrowRight size={14} color="var(--gold-primary)" />
+                      <ArrowRight size={14} color="var(--pink-primary)" />
                     </div>
                   ))}
                 </div>
               )}
 
-              <button onClick={() => setShowNewClientModal(true)} style={{ width: '100%', height: '52px', borderRadius: '16px', border: '1.5px dashed rgba(212,175,55,0.3)', background: 'rgba(212,175,55,0.05)', color: 'var(--gold-primary)', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+              <button onClick={() => setShowNewClientModal(true)} style={{ width: '100%', height: '52px', borderRadius: '16px', border: '1.5px dashed rgba(196,139,159,0.3)', background: 'rgba(196,139,159,0.05)', color: 'var(--pink-primary)', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
                 <UserPlus size={18} /> Registrar Nuevo Cliente
               </button>
             </div>
@@ -295,15 +295,15 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
           {step === 2 && selectedClient && (
             <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
               {/* Selected Client Summary */}
-              <div style={{ padding: '16px 20px', background: 'rgba(212,175,55,0.05)', borderRadius: '20px', border: '1px solid rgba(212,175,55,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ padding: '16px 20px', background: 'rgba(196,139,159,0.05)', borderRadius: '20px', border: '1px solid rgba(196,139,159,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'var(--gold-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><User color="black" size={18} /></div>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><User color="black" size={18} /></div>
                   <div>
                     <div style={{ fontWeight: '900', fontSize: '14px' }}>{selectedClient.name}</div>
                     <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>V-{selectedClient.id_card}</div>
                   </div>
                 </div>
-                <button onClick={() => setStep(1)} style={{ background: 'none', border: 'none', color: 'var(--gold-primary)', fontSize: '10px', fontWeight: '800', cursor: 'pointer' }}>CAMBIAR</button>
+                <button onClick={() => setStep(1)} style={{ background: 'none', border: 'none', color: 'var(--pink-primary)', fontSize: '10px', fontWeight: '800', cursor: 'pointer' }}>CAMBIAR</button>
               </div>
 
               {/* Service & Staff */}
@@ -313,14 +313,14 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
                   value={selectedService?.id || ''}
                   onChange={val => setSelectedService((services || []).find(s => s.id == val))}
                   options={(services || []).map(s => ({ label: `${s.name} — $${s.price}`, value: s.id }))}
-                  icon={<Rocket size={18} color="var(--gold-primary)" />}
+                  icon={<Rocket size={18} color="var(--pink-primary)" />}
                 />
                 <AstroSelect 
                   label="Atendido por"
                   value={involvedStaff[0].staffId}
                   onChange={val => setInvolvedStaff([{ ...involvedStaff[0], staffId: val }])}
                   options={staff.map(s => ({ label: s.name, value: s.id }))}
-                  icon={<Scissors size={18} color="var(--gold-primary)" />}
+                  icon={<Sparkles size={18} color="var(--pink-primary)" />}
                 />
               </div>
 
@@ -344,9 +344,9 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
                       onClick={() => toggleExtra(e)}
                       style={{ 
                         padding: '8px 12px', borderRadius: '10px', fontSize: '11px', fontWeight: '700', 
-                        backgroundColor: selectedExtras.find(se => se.id === e.id) ? 'rgba(212,175,55,0.2)' : 'rgba(255,255,255,0.03)',
-                        border: selectedExtras.find(se => se.id === e.id) ? '1px solid var(--gold-primary)' : '1px solid rgba(255,255,255,0.05)',
-                        color: selectedExtras.find(se => se.id === e.id) ? 'var(--gold-primary)' : 'white',
+                        backgroundColor: selectedExtras.find(se => se.id === e.id) ? 'rgba(196,139,159,0.2)' : 'rgba(255,255,255,0.03)',
+                        border: selectedExtras.find(se => se.id === e.id) ? '1px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)',
+                        color: selectedExtras.find(se => se.id === e.id) ? 'var(--pink-primary)' : 'white',
                         cursor: 'pointer', transition: 'all 0.2s'
                       }}
                     >
@@ -377,7 +377,7 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
                     return (
                       <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.03)', opacity: isOutOfStock ? 0.6 : 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <Package size={14} color={isOutOfStock ? "var(--text-muted)" : "var(--gold-primary)"} />
+                          <Package size={14} color={isOutOfStock ? "var(--text-muted)" : "var(--pink-primary)"} />
                           <div>
                             <div style={{ fontSize: '13px', fontWeight: '700', color: isOutOfStock ? 'var(--text-muted)' : 'white' }}>{p.name}</div>
                             <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>${p.price}</div>
@@ -389,9 +389,9 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                           {selected ? (
                             <>
-                              <button onClick={() => updateProductQuantity(p, -1)} style={{ background: 'none', border: 'none', color: 'var(--gold-primary)', cursor: 'pointer' }}><MinusCircle size={18} /></button>
+                              <button onClick={() => updateProductQuantity(p, -1)} style={{ background: 'none', border: 'none', color: 'var(--pink-primary)', cursor: 'pointer' }}><MinusCircle size={18} /></button>
                               <span style={{ fontWeight: '800', fontSize: '13px', minWidth: '12px', textAlign: 'center' }}>{selected.quantity}</span>
-                              <button onClick={() => updateProductQuantity(p, 1)} style={{ background: 'none', border: 'none', color: 'var(--gold-primary)', cursor: 'pointer' }} disabled={isOutOfStock || (selected.quantity >= p.stock)}><PlusCircle size={18} /></button>
+                              <button onClick={() => updateProductQuantity(p, 1)} style={{ background: 'none', border: 'none', color: 'var(--pink-primary)', cursor: 'pointer' }} disabled={isOutOfStock || (selected.quantity >= p.stock)}><PlusCircle size={18} /></button>
                             </>
                           ) : (
                             <button 
@@ -400,9 +400,9 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
                               style={{ 
                                 padding: '6px 12px', 
                                 borderRadius: '8px', 
-                                border: isOutOfStock ? '1px dashed rgba(255,255,255,0.1)' : '1px solid rgba(212,175,55,0.2)', 
+                                border: isOutOfStock ? '1px dashed rgba(255,255,255,0.1)' : '1px solid rgba(196,139,159,0.2)', 
                                 background: 'none', 
-                                color: isOutOfStock ? 'var(--text-muted)' : 'var(--gold-primary)', 
+                                color: isOutOfStock ? 'var(--text-muted)' : 'var(--pink-primary)', 
                                 fontSize: '11px', 
                                 fontWeight: '800', 
                                 cursor: isOutOfStock ? 'not-allowed' : 'pointer' 
@@ -433,7 +433,7 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
             flexShrink: 0
           }}>
             <div>
-              <div style={{ fontSize: '10px', color: 'var(--gold-primary)', fontWeight: '800', textTransform: 'uppercase', marginBottom: '2px' }}>Total Estimado</div>
+              <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '800', textTransform: 'uppercase', marginBottom: '2px' }}>Total Estimado</div>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <div style={{ fontSize: '24px', fontWeight: '950', color: 'white' }}>${totalPrice}</div>
                 {rates?.usd > 0 && (
@@ -444,7 +444,7 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
               </div>
             </div>
             <button 
-              className="btn-gold" 
+              className="btn-pink" 
               onClick={handleSubmit}
               disabled={loading || (!selectedService && selectedProducts.length === 0)}
               style={{ height: '52px', padding: '0 24px', borderRadius: '14px', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}
@@ -466,11 +466,11 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
 
           <style>{`
             .client-search-item:hover {
-              background-color: rgba(212,175,55,0.05) !important;
+              background-color: rgba(196,139,159,0.05) !important;
             }
             .astro-scrollbar::-webkit-scrollbar { width: 4px; }
             .astro-scrollbar::-webkit-scrollbar-track { background: transparent; }
-            .astro-scrollbar::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.2); borderRadius: 10px; }
+            .astro-scrollbar::-webkit-scrollbar-thumb { background: rgba(196,139,159,0.2); borderRadius: 10px; }
           `}</style>
         </div>
       </div>

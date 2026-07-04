@@ -117,8 +117,8 @@ const AstroSelect = ({
               padding: '12px 16px',
               borderRadius: '10px',
               cursor: 'pointer',
-              backgroundColor: value === opt.value ? 'rgba(212, 175, 55, 0.15)' : 'transparent',
-              color: value === opt.value ? 'var(--gold-primary)' : 'white',
+              backgroundColor: value === opt.value ? 'rgba(196, 139, 159, 0.15)' : 'transparent',
+              color: value === opt.value ? 'var(--pink-primary)' : 'white',
               transition: '0.2s',
               fontSize: '14px',
               fontWeight: value === opt.value ? '700' : '500',
@@ -151,7 +151,7 @@ const AstroSelect = ({
           onClick={() => !disabled && setIsOpen(!isOpen)}
           style={{
             background: 'rgba(255, 255, 255, 0.05)',
-            border: isOpen ? '1px solid var(--gold-primary)' : '1px solid rgba(255, 255, 255, 0.1)',
+            border: isOpen ? '1px solid var(--pink-primary)' : '1px solid rgba(255, 255, 255, 0.1)',
             padding: '12px 16px',
             borderRadius: '12px',
             color: selectedOption ? 'white' : 'var(--text-muted)',
@@ -160,13 +160,13 @@ const AstroSelect = ({
             justifyContent: 'space-between',
             alignItems: 'center',
             transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-            boxShadow: isOpen ? '0 0 0 4px rgba(212, 175, 55, 0.1)' : 'none',
+            boxShadow: isOpen ? '0 0 0 4px rgba(196, 139, 159, 0.1)' : 'none',
             fontSize: '15px',
             userSelect: 'none'
           }}
         >
           <span>{selectedOption ? selectedOption.label : placeholder}</span>
-          <ChevronDown size={18} color="var(--gold-primary)" style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: '0.3s', flexShrink: 0 }} />
+          <ChevronDown size={18} color="var(--pink-primary)" style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: '0.3s', flexShrink: 0 }} />
         </div>
       </div>
 
@@ -184,7 +184,7 @@ const AstroSelect = ({
               display: block !important;
             }
             .astro-select-dropdown.astro-scrollbar::-webkit-scrollbar-thumb {
-              background: rgba(212, 175, 55, 0.2);
+              background: rgba(196, 139, 159, 0.2);
               border-radius: 10px;
             }
           `}</style>

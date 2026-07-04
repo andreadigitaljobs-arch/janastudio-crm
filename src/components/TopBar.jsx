@@ -33,11 +33,11 @@ const TopBar = ({
     };
 
     updateUnread();
-    window.addEventListener('astro_new_notification', updateUnread);
-    window.addEventListener('astro_active_barber_changed', handleStaffChange);
+    window.addEventListener('jana_new_notification', updateUnread);
+    window.addEventListener('jana_active_staff_changed', handleStaffChange);
     return () => {
-      window.removeEventListener('astro_new_notification', updateUnread);
-      window.removeEventListener('astro_active_barber_changed', handleStaffChange);
+      window.removeEventListener('jana_new_notification', updateUnread);
+      window.removeEventListener('jana_active_staff_changed', handleStaffChange);
     };
   }, []);
 

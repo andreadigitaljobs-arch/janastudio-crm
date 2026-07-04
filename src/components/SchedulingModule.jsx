@@ -3,7 +3,6 @@ import {
   Calendar as CalendarIcon, 
   Clock, 
   User, 
-  Scissors, 
   Plus, 
   ChevronLeft, 
   ChevronRight,
@@ -48,7 +47,7 @@ const getAppointmentUsd = (appointment) => Number(
     : (appointment?.services?.price || 0)
 ) || 0;
 
-const HistoricalAmount = ({ amount, rate, color = 'var(--gold-primary)', prefix = '' }) => {
+const HistoricalAmount = ({ amount, rate, color = 'var(--pink-primary)', prefix = '' }) => {
   const usd = Number(amount) || 0;
   const bs = usd * (Number(rate) || 0);
   return (
@@ -141,9 +140,9 @@ const SchedulingModule = ({ isMobile, rates }) => {
 
   const loadAllAppointments = async () => {
     try {
-      let data = await dataService.getAppointmentsByState(['Agendado', 'En Silla', 'En Lavado', 'Por Pagar', 'Completado', 'Cancelada']);
+      let data = await dataService.getAppointmentsByState(['Agendado', 'En Silla', 'En Tratamiento', 'Por Pagar', 'Completado', 'Cancelada']);
       
-      const isBarber = user?.role === 'Barbero' || user?.role?.startsWith('Barbero|') || user?.role === 'Líder Barbero' || user?.role?.startsWith('Líder Barbero|') || user?.role === 'Lider Barbero' || user?.role?.startsWith('Lider Barbero|');
+      const isBarber = user?.role === 'Estilista' || user?.role?.startsWith('Estilista|') || user?.role === 'Líder Estilista' || user?.role?.startsWith('Líder Estilista|') || user?.role === 'Lider Estilista' || user?.role?.startsWith('Lider Estilista|');
       if (isBarber) {
         data = data.filter(a => String(a.staff_id) === String(user.id));
       }
@@ -157,9 +156,9 @@ const SchedulingModule = ({ isMobile, rates }) => {
   const loadFilteredAppointments = async () => {
     try {
       setLoading(true);
-      let data = await dataService.getAppointmentsByState(['Agendado', 'En Silla', 'En Lavado', 'Por Pagar', 'Completado', 'Cancelada']);
+      let data = await dataService.getAppointmentsByState(['Agendado', 'En Silla', 'En Tratamiento', 'Por Pagar', 'Completado', 'Cancelada']);
       
-      const isBarber = user?.role === 'Barbero' || user?.role?.startsWith('Barbero|') || user?.role === 'Líder Barbero' || user?.role?.startsWith('Líder Barbero|') || user?.role === 'Lider Barbero' || user?.role?.startsWith('Lider Barbero|');
+      const isBarber = user?.role === 'Estilista' || user?.role?.startsWith('Estilista|') || user?.role === 'Líder Estilista' || user?.role?.startsWith('Líder Estilista|') || user?.role === 'Lider Estilista' || user?.role?.startsWith('Lider Estilista|');
       if (isBarber) {
         data = data.filter(a => String(a.staff_id) === String(user.id));
       }
@@ -365,9 +364,9 @@ const SchedulingModule = ({ isMobile, rates }) => {
 
   const getStatusColor = (status) => {
     const colors = {
-      'Agendado': { text: 'var(--gold-primary)', bg: 'rgba(212,175,55,0.1)', border: 'rgba(212,175,55,0.25)', dot: 'var(--gold-primary)' },
+      'Agendado': { text: 'var(--pink-primary)', bg: 'rgba(212,160,154,0.1)', border: 'rgba(212,160,154,0.25)', dot: 'var(--pink-primary)' },
       'En Silla': { text: '#0a84ff', bg: 'rgba(10,132,255,0.1)', border: 'rgba(10,132,255,0.25)', dot: '#0a84ff' },
-      'En Lavado': { text: '#64d2ff', bg: 'rgba(100,210,255,0.1)', border: 'rgba(100,210,255,0.25)', dot: '#64d2ff' },
+      'En Tratamiento': { text: '#64d2ff', bg: 'rgba(100,210,255,0.1)', border: 'rgba(100,210,255,0.25)', dot: '#64d2ff' },
       'Por Pagar': { text: '#bf5af2', bg: 'rgba(191,90,242,0.1)', border: 'rgba(191,90,242,0.25)', dot: '#bf5af2' },
       'Completado': { text: '#30d158', bg: 'rgba(48,209,88,0.15)', border: 'rgba(48,209,88,0.35)', dot: '#30d158' },
       'Cancelada': { text: '#ff453a', bg: 'rgba(255,69,58,0.1)', border: 'rgba(255,69,58,0.25)', dot: '#ff453a' }
@@ -528,9 +527,9 @@ const SchedulingModule = ({ isMobile, rates }) => {
           background: rgba(255, 255, 255, 0.02);
         }
         .premium-filter-btn.active {
-          background: var(--gold-primary);
+          background: var(--pink-primary);
           color: #121212;
-          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.25);
+          box-shadow: 0 4px 15px rgba(212, 160, 154, 0.25);
         }
         .premium-search-box {
           background: rgba(18, 18, 18, 0.4);
@@ -546,8 +545,8 @@ const SchedulingModule = ({ isMobile, rates }) => {
           animation: schedulingCardFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
         .premium-search-box:focus-within {
-          border-color: rgba(212, 175, 55, 0.4);
-          box-shadow: 0 0 20px rgba(212, 175, 55, 0.15), inset 0 0 10px rgba(0,0,0,0.5);
+          border-color: rgba(212, 160, 154, 0.4);
+          box-shadow: 0 0 20px rgba(212, 160, 154, 0.15), inset 0 0 10px rgba(0,0,0,0.5);
         }
         .premium-search-input {
           flex: 1;
@@ -597,7 +596,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
         }
         .premium-row-card:hover {
           background-color: rgba(255, 255, 255, 0.02);
-          border-color: rgba(212, 175, 55, 0.12);
+          border-color: rgba(212, 160, 154, 0.12);
           transform: scale(1.002);
         }
         .avatar-gradient-circle {
@@ -605,16 +604,16 @@ const SchedulingModule = ({ isMobile, rates }) => {
           height: 36px;
           min-width: 36px;
           border-radius: 50%;
-          background: linear-gradient(135deg, rgba(212, 175, 55, 0.25) 0%, rgba(212, 175, 55, 0.05) 100%);
-          border: 1.5px solid rgba(212, 175, 55, 0.4);
+          background: linear-gradient(135deg, rgba(212, 160, 154, 0.25) 0%, rgba(212, 160, 154, 0.05) 100%);
+          border: 1.5px solid rgba(212, 160, 154, 0.4);
           display: flex;
           align-items: center;
           justify-content: center;
           font-size: 13px;
-          color: var(--gold-primary);
+          color: var(--pink-primary);
           font-weight: 900;
           line-height: 1;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 8px rgba(212,175,55,0.15);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 8px rgba(212,160,154,0.15);
           flex-shrink: 0;
         }
         .status-glow-badge {
@@ -645,10 +644,10 @@ const SchedulingModule = ({ isMobile, rates }) => {
           color: rgba(255, 255, 255, 0.6);
         }
         .action-icon-btn.edit:hover {
-          color: var(--gold-primary);
-          border-color: rgba(212, 175, 55, 0.3);
-          background: rgba(212, 175, 55, 0.08);
-          box-shadow: 0 4px 10px rgba(212, 175, 55, 0.1);
+          color: var(--pink-primary);
+          border-color: rgba(212, 160, 154, 0.3);
+          background: rgba(212, 160, 154, 0.08);
+          box-shadow: 0 4px 10px rgba(212, 160, 154, 0.1);
         }
         .action-icon-btn.delete:hover {
           color: #ff453a;
@@ -817,10 +816,10 @@ const SchedulingModule = ({ isMobile, rates }) => {
           color: white;
         }
         .premium-tab-btn.active {
-          background: var(--gold-primary);
+          background: var(--pink-primary);
           color: #121212;
           font-weight: 800;
-          box-shadow: 0 2px 8px rgba(212, 175, 55, 0.2);
+          box-shadow: 0 2px 8px rgba(212, 160, 154, 0.2);
         }
 
         .weekly-ribbon {
@@ -858,19 +857,19 @@ const SchedulingModule = ({ isMobile, rates }) => {
           background: rgba(255, 255, 255, 0.04);
         }
         .ribbon-day-btn.active {
-          background: var(--gold-primary);
+          background: var(--pink-primary);
           color: #121212;
           font-weight: 800;
-          box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
+          box-shadow: 0 4px 12px rgba(212, 160, 154, 0.25);
         }
         .ribbon-day-btn.today {
-          border: 1px solid rgba(212, 175, 55, 0.45) !important;
-          background: rgba(212, 175, 55, 0.08);
-          color: var(--gold-primary);
+          border: 1px solid rgba(212, 160, 154, 0.45) !important;
+          background: rgba(212, 160, 154, 0.08);
+          color: var(--pink-primary);
         }
         .ribbon-day-btn.today.active {
           border: none !important;
-          background: var(--gold-primary);
+          background: var(--pink-primary);
           color: #121212;
         }
         .ribbon-day-name {
@@ -894,7 +893,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
 
       <header className="scheduling-header">
         <div>
-          <h1 style={{ fontSize: '32px', fontWeight: '950', letterSpacing: '-0.8px', fontFamily: 'Outfit, var(--font-sans), system-ui' }}>Agenda <span className="text-gold">Astro</span></h1>
+          <h1 style={{ fontSize: '32px', fontWeight: '950', letterSpacing: '-0.8px', fontFamily: 'Outfit, var(--font-sans), system-ui' }}>Agenda <span className="text-pink">Jana</span></h1>
           <p style={{ color: 'var(--text-secondary)' }}>Gestión inteligente de citas y disponibilidad.</p>
         </div>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
@@ -903,19 +902,19 @@ const SchedulingModule = ({ isMobile, rates }) => {
             style={{
               display: 'flex', alignItems: 'center', gap: '8px',
               padding: '12px 18px', borderRadius: '14px',
-              border: '1.5px solid rgba(212,175,55,0.35)',
-              background: 'rgba(212,175,55,0.06)',
-              color: 'var(--gold-primary)',
+              border: '1.5px solid rgba(212,160,154,0.35)',
+              background: 'rgba(212,160,154,0.06)',
+              color: 'var(--pink-primary)',
               fontWeight: '800', fontSize: '14px',
               cursor: 'pointer', transition: 'all 0.2s',
               whiteSpace: 'nowrap'
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.12)'; e.currentTarget.style.borderColor = 'rgba(212,175,55,0.6)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.06)'; e.currentTarget.style.borderColor = 'rgba(212,175,55,0.35)'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(212,160,154,0.12)'; e.currentTarget.style.borderColor = 'rgba(212,160,154,0.6)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(212,160,154,0.06)'; e.currentTarget.style.borderColor = 'rgba(212,160,154,0.35)'; }}
           >
             <User size={16} /> Nuevo Cliente
           </button>
-          <button className="btn-gold" style={{ boxShadow: '0 5px 15px rgba(212, 175, 55, 0.25)', whiteSpace: 'nowrap' }} onClick={() => {
+          <button className="btn-pink" style={{ boxShadow: '0 5px 15px rgba(212, 160, 154, 0.25)', whiteSpace: 'nowrap' }} onClick={() => {
               setEditingApp(null);
               setNewApp({ clientId: '', serviceId: '', staffId: user?.id || '', time: '10:00', extras: [], products: [] });
               setClientSearchTerm('');
@@ -941,7 +940,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
           />
 
           <div className="premium-calendar-aside">
-            <h4 style={{ fontSize: '11px', fontWeight: '900', color: 'var(--gold-primary)', letterSpacing: '1.5px', marginBottom: '16px', textTransform: 'uppercase' }}>Filtros de Vista</h4>
+            <h4 style={{ fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', letterSpacing: '1.5px', marginBottom: '16px', textTransform: 'uppercase' }}>Filtros de Vista</h4>
             <div className="premium-filter-segment-list">
               {[
                 { id: 'day', label: 'Hoy / Día', icon: <Clock size={14} /> },
@@ -966,7 +965,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
         <main className="animate-slide-up animate-stagger-2" style={{ minWidth: 0, maxWidth: '100%', boxSizing: 'border-box' }}>
           <div className="date-navigator-card">
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-              <div style={{ background: 'var(--gold-primary)', width: '36px', height: '36px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black', boxShadow: '0 4px 10px rgba(212, 175, 55, 0.3)' }}>
+              <div style={{ background: 'var(--pink-primary)', width: '36px', height: '36px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black', boxShadow: '0 4px 10px rgba(212, 160, 154, 0.3)' }}>
                 <CalendarIcon size={16} />
               </div>
               <h2 style={{ fontSize: '18px', fontWeight: '900', textTransform: 'capitalize', color: 'white', fontFamily: 'Outfit, var(--font-sans), system-ui' }}>{formatDateLabel(selectedDate)}</h2>
@@ -976,7 +975,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
                 onClick={() => setShowFullCalendar(!showFullCalendar)} 
                 className="show-on-tablet" 
                 style={{ 
-                  background: showFullCalendar ? 'var(--gold-primary)' : 'rgba(255,255,255,0.05)', 
+                  background: showFullCalendar ? 'var(--pink-primary)' : 'rgba(255,255,255,0.05)', 
                   border: '1px solid rgba(255,255,255,0.08)', 
                   borderRadius: '12px', 
                   width: '38px', 
@@ -1072,8 +1071,8 @@ const SchedulingModule = ({ isMobile, rates }) => {
                       <span 
                         className="ribbon-dot" 
                         style={{ 
-                          backgroundColor: isSelected ? '#121212' : (isToday ? 'var(--gold-primary)' : 'var(--gold-primary)'),
-                          boxShadow: isSelected ? 'none' : '0 0 4px var(--gold-primary)'
+                          backgroundColor: isSelected ? '#121212' : (isToday ? 'var(--pink-primary)' : 'var(--pink-primary)'),
+                          boxShadow: isSelected ? 'none' : '0 0 4px var(--pink-primary)'
                         }} 
                       />
                     )}
@@ -1085,7 +1084,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
 
           {/* Glowing Search Box */}
           <div className="premium-search-box">
-            <Search size={18} color="var(--gold-primary)" />
+            <Search size={18} color="var(--pink-primary)" />
             <input 
               type="text" 
               placeholder="Buscar por nombre, cédula o teléfono..." 
@@ -1108,12 +1107,12 @@ const SchedulingModule = ({ isMobile, rates }) => {
           <div className="appointment-list-wrapper" style={{ background: 'transparent', border: 'none', boxShadow: 'none' }}>
             {loading ? (
               <div style={{ padding: '100px', textAlign: 'center' }}>
-                <Loader2 className="animate-spin" size={32} color="var(--gold-primary)" style={{ margin: '0 auto', marginBottom: '16px' }} />
+                <Loader2 className="animate-spin" size={32} color="var(--pink-primary)" style={{ margin: '0 auto', marginBottom: '16px' }} />
                 <div style={{ color: 'var(--text-muted)', fontWeight: '800', fontSize: '14px' }}>Cargando agenda de citas...</div>
               </div>
             ) : filteredApps.length === 0 ? (
               <div style={{ padding: '80px', textAlign: 'center' }}>
-                <Search size={44} color="rgba(212,175,55,0.1)" style={{ marginBottom: '16px' }} />
+                <Search size={44} color="rgba(212,160,154,0.1)" style={{ marginBottom: '16px' }} />
                 <div style={{ color: 'var(--text-muted)', fontSize: '13px', fontWeight: '700' }}>No se encontraron citas registradas</div>
               </div>
             ) : (
@@ -1123,7 +1122,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
                   {/* Metrics Summary Banner - scrolls with content */}
                   <div className="scheduling-metrics-banner" style={{ marginBottom: '16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', borderRadius: '12px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.03)' }}>
-                      <div style={{ background: 'rgba(212, 175, 55, 0.1)', color: 'var(--gold-primary)', borderRadius: '10px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <div style={{ background: 'rgba(212, 160, 154, 0.1)', color: 'var(--pink-primary)', borderRadius: '10px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         <CalendarIcon size={18} />
                       </div>
                       <div>
@@ -1146,15 +1145,15 @@ const SchedulingModule = ({ isMobile, rates }) => {
                         <User size={18} />
                       </div>
                       <div>
-                        <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Barberos</div>
+                        <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estilistas</div>
                         <div style={{ fontSize: '16px', fontWeight: '800', color: 'white' }}>{activeStaffCount}</div>
                       </div>
                     </div>
                   </div>
 
                   {[
-                    { key: 'morning', title: 'Mañana (12:00 AM - 11:59 AM)', apps: morningApps, icon: <Sunrise size={16} />, color: 'var(--gold-primary)' },
-                    { key: 'afternoon', title: 'Tarde (12:00 PM - 06:59 PM)', apps: afternoonApps, icon: <Sun size={16} />, color: '#f39c12' },
+                    { key: 'morning', title: 'Mañana (12:00 AM - 11:59 AM)', apps: morningApps, icon: <Sunrise size={16} />, color: 'var(--pink-primary)' },
+                    { key: 'afternoon', title: 'Tarde (12:00 PM - 06:59 PM)', apps: afternoonApps, icon: <Sun size={16} />, color: '#e8c4be' },
                     { key: 'evening', title: 'Noche (07:00 PM - 11:59 PM)', apps: eveningApps, icon: <Moon size={16} />, color: '#9b59b6' }
                   ].map((group, groupIdx) => {
                     if (group.apps.length === 0) return null;
@@ -1229,7 +1228,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
                                             app.staff?.name?.charAt(0)
                                           )}
                                         </div>
-                                        <div style={{ fontWeight: '850', fontSize: '8px', color: 'var(--gold-primary)', whiteSpace: 'nowrap', textTransform: 'uppercase', letterSpacing: '0.3px', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>
+                                        <div style={{ fontWeight: '850', fontSize: '8px', color: 'var(--pink-primary)', whiteSpace: 'nowrap', textTransform: 'uppercase', letterSpacing: '0.3px', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>
                                           {app.staff?.name?.split(' ')[0]}
                                         </div>
                                       </div>
@@ -1238,7 +1237,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
                                       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                         {/* Top Row: Time and Date */}
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                          <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--gold-primary)', whiteSpace: 'nowrap' }}>
+                                          <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>
                                             {new Date(app.scheduled_at || app.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }).replace(' ', '').toLowerCase()}
                                           </span>
                                           {filterType !== 'day' && (
@@ -1254,7 +1253,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
                                             {app.clients?.name}
                                           </div>
                                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0 }}>
-                                            <span className="price-highlight-tag" style={{ fontSize: '14px', fontWeight: '950', color: 'var(--gold-primary)', lineHeight: '1.2' }}>
+                                            <span className="price-highlight-tag" style={{ fontSize: '14px', fontWeight: '950', color: 'var(--pink-primary)', lineHeight: '1.2' }}>
                                               {`${getAppointmentBs(app).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs.`}
                                             </span>
                                             <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.55)', fontWeight: '800', marginTop: '1px' }}>
@@ -1281,7 +1280,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
                                               gap: '4px'
                                             }}>
                                               <span className="blinking-dot" style={{ backgroundColor: statusStyle.dot, width: '4px', height: '4px', borderRadius: '50%', display: 'inline-block' }} />
-                                              {app.status === 'Agendado' ? 'Agenda' : app.status === 'En Silla' ? 'Silla' : app.status === 'En Lavado' ? 'Lavado' : app.status === 'Por Pagar' ? 'Cobro' : app.status === 'Completado' ? 'Listo' : 'Canc'}
+                                              {app.status === 'Agendado' ? 'Agenda' : app.status === 'En Silla' ? 'Silla' : app.status === 'En Tratamiento' ? 'Tratamiento' : app.status === 'Por Pagar' ? 'Cobro' : app.status === 'Completado' ? 'Listo' : 'Canc'}
                                             </span>
                                           </div>
                                         </div>
@@ -1298,7 +1297,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
                                               style={{ 
                                                 padding: '6px 12px', 
                                                 borderRadius: '8px', 
-                                                background: 'var(--gold-primary)', 
+                                                background: 'var(--pink-primary)', 
                                                 color: 'black', 
                                                 border: 'none', 
                                                 fontSize: '11px', 
@@ -1342,7 +1341,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
                                             app.staff?.name?.charAt(0)
                                           )}
                                         </div>
-                                        <div style={{ fontWeight: '850', fontSize: '9px', color: 'var(--gold-primary)', whiteSpace: 'nowrap', textTransform: 'uppercase', letterSpacing: '0.3px', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>
+                                        <div style={{ fontWeight: '850', fontSize: '9px', color: 'var(--pink-primary)', whiteSpace: 'nowrap', textTransform: 'uppercase', letterSpacing: '0.3px', textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>
                                           {app.staff?.name?.split(' ')[0]}
                                         </div>
                                       </div>
@@ -1350,7 +1349,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
                                   <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                     {/* Top Row: Time and Date */}
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                      <span style={{ fontSize: '13px', fontWeight: '900', color: 'var(--gold-primary)', whiteSpace: 'nowrap' }}>
+                                      <span style={{ fontSize: '13px', fontWeight: '900', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>
                                         {new Date(app.scheduled_at || app.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }).replace(' ', '').toLowerCase()}
                                       </span>
                                       {filterType !== 'day' && (
@@ -1366,7 +1365,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
                                         {app.clients?.name}
                                       </div>
                                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0 }}>
-                                          <span className="price-highlight-tag" style={{ fontSize: '15px', fontWeight: '950', color: 'var(--gold-primary)', lineHeight: '1.2' }}>
+                                          <span className="price-highlight-tag" style={{ fontSize: '15px', fontWeight: '950', color: 'var(--pink-primary)', lineHeight: '1.2' }}>
                                             {`${getAppointmentBs(app).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs.`}
                                           </span>
                                           <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.55)', fontWeight: '800', marginTop: '1px' }}>
@@ -1410,7 +1409,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
                                           style={{ 
                                             padding: '6px 12px', 
                                             borderRadius: '8px', 
-                                            background: 'var(--gold-primary)', 
+                                            background: 'var(--pink-primary)', 
                                             color: 'black', 
                                             border: 'none', 
                                             fontSize: '11px', 
@@ -1454,7 +1453,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
                                   borderRadius: '12px',
                                   border: '1px solid rgba(212,175,55,0.2)',
                                   background: 'rgba(212,175,55,0.05)',
-                                  color: 'var(--gold-primary)',
+                                  color: 'var(--pink-primary)',
                                   fontSize: '12px',
                                   fontWeight: '800',
                                   cursor: 'pointer',
@@ -1526,14 +1525,14 @@ const SchedulingModule = ({ isMobile, rates }) => {
             <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(8,8,10,0.92)', zIndex: 9999, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', backdropFilter: 'blur(8px)' }}>
               <div className={`glass-card ${cardClass}`} style={{ maxWidth: '480px', width: '100%', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.08)', maxHeight: '92vh', overflowY: 'auto', padding: '0px', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}>
                 {/* Gradient Accent Bar */}
-                <div style={{ height: '5px', background: 'linear-gradient(90deg, #d4af37 0%, #f39c12 50%, #d4af37 100%)', width: '100%', borderTopLeftRadius: '23px', borderTopRightRadius: '23px' }}></div>
+                <div style={{ height: '5px', background: 'linear-gradient(90deg, #c48b9f 0%, #e8c4be 50%, #c48b9f 100%)', width: '100%', borderTopLeftRadius: '23px', borderTopRightRadius: '23px' }}></div>
                 
                 <div style={{ padding: '30px' }}>
                   {/* Header */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                       <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: 'rgba(212,175,55,0.08)', border: '1px solid rgba(212,175,55,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <CalendarIcon color="var(--gold-primary)" size={20} />
+                        <CalendarIcon color="var(--pink-primary)" size={20} />
                       </div>
                       <div>
                         <h3 style={{ fontSize: '20px', fontWeight: '950', margin: 0, fontFamily: 'Outfit, sans-serif', color: 'white', letterSpacing: '-0.3px' }}>
@@ -1563,11 +1562,11 @@ const SchedulingModule = ({ isMobile, rates }) => {
                           <div>
                             <div style={{ fontWeight: '800', color: 'white', fontSize: '15px' }}>{selectedClient.name}</div>
                             <div style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.85)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                              <span><strong style={{ color: 'var(--gold-primary)', fontWeight: '800' }}>Cédula:</strong> V-{selectedClient.id_card}</span>
+                              <span><strong style={{ color: 'var(--pink-primary)', fontWeight: '800' }}>Cédula:</strong> V-{selectedClient.id_card}</span>
                               {selectedClient.phone && (
                                 <>
                                   <span style={{ color: 'rgba(255,255,255,0.3)' }}>•</span>
-                                  <span><strong style={{ color: 'var(--gold-primary)', fontWeight: '800' }}>Cel:</strong> {selectedClient.phone}</span>
+                                  <span><strong style={{ color: 'var(--pink-primary)', fontWeight: '800' }}>Cel:</strong> {selectedClient.phone}</span>
                                 </>
                               )}
                             </div>
@@ -1622,7 +1621,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
                               width: '100%', height: '40px', borderRadius: '12px',
                               border: '1.5px dashed rgba(212,175,55,0.3)',
                               background: 'rgba(212,175,55,0.04)',
-                              color: 'var(--gold-primary)', fontWeight: '700', fontSize: '12px',
+                              color: 'var(--pink-primary)', fontWeight: '700', fontSize: '12px',
                               cursor: 'pointer', display: 'flex', alignItems: 'center',
                               justifyContent: 'center', gap: '8px', transition: 'all 0.2s'
                             }}
@@ -1673,18 +1672,18 @@ const SchedulingModule = ({ isMobile, rates }) => {
 
                     {/* Barber Selection */}
                     <AstroSelect 
-                      label="BARBERO" 
-                      placeholder="Selecciona barbero" 
+                      label="ESTILISTA" 
+                       placeholder="Selecciona estilista"
                       value={newApp.staffId} 
                       onChange={(val) => setNewApp({...newApp, staffId: val})} 
                       options={staff
                         .filter(s => {
                           const roleName = (s.role?.split('|')[0] || '').toLowerCase();
-                          return roleName.includes('barber') && !roleName.includes('admin');
+                          return roleName.includes('estilista') && !roleName.includes('admin');
                         })
                         .map(s => ({ label: s.name, value: s.id }))
                       } 
-                      disabled={user?.role === 'Barbero' || user?.role?.startsWith('Barbero|') || user?.role === 'Líder Barbero' || user?.role?.startsWith('Líder Barbero|') || user?.role === 'Lider Barbero' || user?.role?.startsWith('Lider Barbero|')}
+                      disabled={user?.role === 'Estilista' || user?.role?.startsWith('Estilista|') || user?.role === 'Estilista Senior' || user?.role?.startsWith('Estilista Senior|')}
                     />
 
                     {/* Extras Selection */}
@@ -1709,9 +1708,9 @@ const SchedulingModule = ({ isMobile, rates }) => {
                                 padding: '8px 14px',
                                 borderRadius: '12px',
                                 border: '1px solid',
-                                borderColor: isSelected ? 'var(--gold-primary)' : 'rgba(255,255,255,0.08)',
+                                borderColor: isSelected ? 'var(--pink-primary)' : 'rgba(255,255,255,0.08)',
                                 background: isSelected ? 'rgba(212,175,55,0.08)' : 'rgba(255,255,255,0.02)',
-                                color: isSelected ? 'var(--gold-primary)' : 'rgba(255,255,255,0.8)',
+                                color: isSelected ? 'var(--pink-primary)' : 'rgba(255,255,255,0.8)',
                                 fontSize: '12px',
                                 fontWeight: '700',
                                 cursor: 'pointer',
@@ -1750,7 +1749,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
                             return (
                               <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '10px 14px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.05)' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                  <Package size={14} color="var(--gold-primary)" />
+                                  <Package size={14} color="var(--pink-primary)" />
                                   <span style={{ fontSize: '13px', fontWeight: '600', color: 'rgba(255,255,255,0.9)' }}>{product.name}</span>
                                   <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>(${product.price})</span>
                                 </div>
@@ -1799,7 +1798,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
                     <div style={{ background: 'linear-gradient(135deg, rgba(212,175,55,0.06) 0%, rgba(212,175,55,0.02) 100%)', border: '1px solid rgba(212,175,55,0.15)', borderRadius: '16px', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
                       <div>
                         <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800', letterSpacing: '0.5px' }}>TOTAL ESTIMADO</div>
-                        <div style={{ fontSize: '24px', fontWeight: '950', color: 'var(--gold-primary)', fontFamily: 'Outfit, sans-serif', marginTop: '2px' }}>
+                        <div style={{ fontSize: '24px', fontWeight: '950', color: 'var(--pink-primary)', fontFamily: 'Outfit, sans-serif', marginTop: '2px' }}>
                           Bs. {rates?.usd ? (totalEstimated * rates.usd).toLocaleString('es-VE', { maximumFractionDigits: 0 }) : (totalEstimated * 550).toLocaleString('es-VE', { maximumFractionDigits: 0 })}
                         </div>
                         <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', fontWeight: '600', marginTop: '2px' }}>Ref: ${totalEstimated.toFixed(2)}</div>
@@ -1817,12 +1816,12 @@ const SchedulingModule = ({ isMobile, rates }) => {
                     <button 
                       onClick={() => { 
                         if (!newApp.clientId || !newApp.serviceId || !newApp.staffId) { 
-                          showToast("Selecciona cliente, servicio y barbero", "error"); 
+                          showToast("Selecciona cliente, servicio y estilista", "error"); 
                           return; 
                         } 
                         setShowScheduleModal(true); 
                       }} 
-                      className="btn-gold" 
+                      className="btn-pink" 
                       style={{ width: '100%', height: '52px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '14px', fontWeight: '800' }}
                     >
                       <Clock size={16} /> 
@@ -1892,7 +1891,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
                       flexShrink: 0,
                       fontSize: '18px',
                       fontWeight: '900',
-                      color: 'var(--gold-primary)',
+                      color: 'var(--pink-primary)',
                       fontFamily: 'Outfit, sans-serif'
                     }}>
                       {initials}
@@ -1932,14 +1931,14 @@ const SchedulingModule = ({ isMobile, rates }) => {
                 {/* Date and Time block */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.04)', alignItems: 'center' }}>
-                    <Clock size={16} color="var(--gold-primary)" style={{ marginBottom: '2px' }} />
+                    <Clock size={16} color="var(--pink-primary)" style={{ marginBottom: '2px' }} />
                     <span style={{ fontSize: '9px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Hora</span>
                     <span style={{ fontSize: '13px', fontWeight: '900', color: 'white', fontFamily: 'Outfit, sans-serif' }}>
                       {new Date(activeDetail.scheduled_at || activeDetail.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
                     </span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.04)', alignItems: 'center', textAlign: 'center' }}>
-                    <CalendarIcon size={16} color="var(--gold-primary)" style={{ marginBottom: '2px' }} />
+                    <CalendarIcon size={16} color="var(--pink-primary)" style={{ marginBottom: '2px' }} />
                     <span style={{ fontSize: '9px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Fecha</span>
                     <span style={{ fontSize: '13px', fontWeight: '900', color: 'white', whiteSpace: 'nowrap', fontFamily: 'Outfit, sans-serif' }}>
                       {new Date(activeDetail.scheduled_at || activeDetail.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -1952,13 +1951,13 @@ const SchedulingModule = ({ isMobile, rates }) => {
                   {/* Primary Service */}
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                      <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--gold-primary)' }} />
+                      <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--pink-primary)' }} />
                       <label style={{ fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Servicio Principal</label>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '12px 16px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.04)' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-                        <div style={{ background: 'rgba(212,175,55,0.1)', color: 'var(--gold-primary)', borderRadius: '10px', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <Scissors size={15} />
+                        <div style={{ background: 'rgba(212,175,55,0.1)', color: 'var(--pink-primary)', borderRadius: '10px', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Sparkles size={15} />
                         </div>
                         <div style={{ minWidth: 0 }}>
                           <div style={{ fontWeight: '850', color: 'white', fontSize: '13px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -1980,14 +1979,14 @@ const SchedulingModule = ({ isMobile, rates }) => {
                   {activeDetail.appointment_extras && activeDetail.appointment_extras.length > 0 && (
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                        <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--gold-primary)' }} />
+                        <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--pink-primary)' }} />
                         <label style={{ fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Servicios Extras</label>
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {activeDetail.appointment_extras.map(e => (
                           <div key={e.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.01)', padding: '10px 16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.03)' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: 'rgba(255,255,255,0.85)', fontWeight: '600' }}>
-                              <Sparkles size={12} color="var(--gold-primary)" style={{ opacity: 0.7 }} />
+                              <Sparkles size={12} color="var(--pink-primary)" style={{ opacity: 0.7 }} />
                               <span>{e.service_extras?.name}</span>
                             </div>
                             <HistoricalAmount amount={e.price} rate={getAppointmentRate(activeDetail)} prefix="+" />
@@ -2001,7 +2000,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
                   {activeDetail.appointment_products && activeDetail.appointment_products.length > 0 && (
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                        <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--gold-primary)' }} />
+                        <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--pink-primary)' }} />
                         <label style={{ fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Productos Vendidos</label>
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -2019,7 +2018,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
                   {activeDetail.appointment_staff && activeDetail.appointment_staff.length > 0 && (
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                        <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--gold-primary)' }} />
+                        <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--pink-primary)' }} />
                         <label style={{ fontSize: '10px', fontWeight: '900', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Comisiones & Propinas</label>
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -2060,11 +2059,11 @@ const SchedulingModule = ({ isMobile, rates }) => {
                 {/* Total Block */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(135deg, rgba(212,175,55,0.12) 0%, rgba(212,175,55,0.02) 100%)', padding: '20px', borderRadius: '18px', border: '1px solid rgba(212,175,55,0.25)', boxShadow: '0 8px 32px rgba(212,175,55,0.06)' }}>
                   <div>
-                    <span style={{ fontSize: '10px', fontWeight: '900', color: 'var(--gold-primary)', textTransform: 'uppercase', display: 'block', marginBottom: '2px', letterSpacing: '0.5px' }}>Total de la Cita</span>
+                    <span style={{ fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)', textTransform: 'uppercase', display: 'block', marginBottom: '2px', letterSpacing: '0.5px' }}>Total de la Cita</span>
                     <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Ref: ${getAppointmentUsd(activeDetail).toFixed(2)} USD</span>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <span style={{ fontSize: '22px', fontWeight: '950', color: 'var(--gold-primary)', textShadow: '0 0 15px rgba(212,175,55,0.35)', fontFamily: 'Outfit, sans-serif' }}>
+                    <span style={{ fontSize: '22px', fontWeight: '950', color: 'var(--pink-primary)', textShadow: '0 0 15px rgba(212,175,55,0.35)', fontFamily: 'Outfit, sans-serif' }}>
                       {`${getAppointmentBs(activeDetail).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs.`}
                     </span>
                   </div>
@@ -2101,7 +2100,7 @@ const MiniCalendar = ({ selectedDate, onDateSelect, allAppointments }) => {
       </header>
       
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', textAlign: 'center' }}>
-        {["D", "L", "M", "M", "J", "V", "S"].map(d => <div key={d} style={{ fontSize: '9px', fontWeight: '900', color: 'var(--gold-primary)', opacity: 0.6, marginBottom: '8px' }}>{d}</div>)}
+        {["D", "L", "M", "M", "J", "V", "S"].map(d => <div key={d} style={{ fontSize: '9px', fontWeight: '900', color: 'var(--pink-primary)', opacity: 0.6, marginBottom: '8px' }}>{d}</div>)}
         {days.map((date, idx) => {
           if (!date) return <div key={`empty-${idx}`} />;
           const isSelected = selectedDate.toDateString() === date.toDateString();
@@ -2125,8 +2124,8 @@ const MiniCalendar = ({ selectedDate, onDateSelect, allAppointments }) => {
                 cursor: 'pointer', 
                 fontSize: '12px', 
                 fontWeight: isSelected ? '900' : (isToday ? '800' : '600'),
-                background: isSelected ? 'var(--gold-primary)' : (isToday ? 'rgba(212,175,55,0.08)' : 'none'), 
-                color: isSelected ? '#121212' : (isToday ? 'var(--gold-primary)' : (isWeekend ? 'rgba(255, 255, 255, 0.4)' : 'white')), 
+                background: isSelected ? 'var(--pink-primary)' : (isToday ? 'rgba(212,175,55,0.08)' : 'none'), 
+                color: isSelected ? '#121212' : (isToday ? 'var(--pink-primary)' : (isWeekend ? 'rgba(255, 255, 255, 0.4)' : 'white')), 
                 transition: 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)', 
                 position: 'relative'
               }}
@@ -2149,12 +2148,12 @@ const MiniCalendar = ({ selectedDate, onDateSelect, allAppointments }) => {
                   width: '4px', 
                   height: '4px', 
                   borderRadius: '50%', 
-                  backgroundColor: isSelected ? '#121212' : 'var(--gold-primary)',
+                  backgroundColor: isSelected ? '#121212' : 'var(--pink-primary)',
                   position: 'absolute',
                   bottom: '4px',
                   left: '50%',
                   transform: 'translateX(-50%)',
-                  boxShadow: isSelected ? 'none' : '0 0 5px var(--gold-primary)'
+                  boxShadow: isSelected ? 'none' : '0 0 5px var(--pink-primary)'
                 }} />
               )}
             </button>

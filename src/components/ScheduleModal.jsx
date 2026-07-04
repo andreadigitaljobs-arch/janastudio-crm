@@ -102,7 +102,7 @@ const ScheduleModal = ({ isOpen, onClose, client, service, staff, onSchedule, de
     <AnimatedModal isOpen={isOpen}>
       {(overlayClass, cardClass) => (
         <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)', zIndex: 20000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-          <div className={`glass-card ${cardClass}`} style={{ maxWidth: '600px', width: '100%', borderRadius: '32px', padding: '32px', border: '1px solid rgba(212,175,55,0.2)' }}>
+          <div className={`glass-card ${cardClass}`} style={{ maxWidth: '600px', width: '100%', borderRadius: '32px', padding: '32px', border: '1px solid rgba(196,139,159,0.2)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
           <div>
             <h2 style={{ fontSize: '24px', fontWeight: '900' }}>Agendar <span className="text-gold">Turno</span></h2>
@@ -138,9 +138,9 @@ const ScheduleModal = ({ isOpen, onClose, client, service, staff, onSchedule, de
             onClick={() => setIsCustomMode(false)}
             style={{ 
               flex: 1, height: '40px', borderRadius: '12px', fontSize: '12px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s',
-              backgroundColor: !isCustomMode ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.02)',
-              border: !isCustomMode ? '1px solid var(--gold-primary)' : '1px solid rgba(255,255,255,0.05)',
-              color: !isCustomMode ? 'var(--gold-primary)' : 'white'
+              backgroundColor: !isCustomMode ? 'rgba(196,139,159,0.1)' : 'rgba(255,255,255,0.02)',
+              border: !isCustomMode ? '1px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)',
+              color: !isCustomMode ? 'var(--pink-primary)' : 'white'
             }}
           >
             HORARIOS DISPONIBLES
@@ -149,9 +149,9 @@ const ScheduleModal = ({ isOpen, onClose, client, service, staff, onSchedule, de
             onClick={() => setIsCustomMode(true)}
             style={{ 
               flex: 1, height: '40px', borderRadius: '12px', fontSize: '12px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s',
-              backgroundColor: isCustomMode ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.02)',
-              border: isCustomMode ? '1px solid var(--gold-primary)' : '1px solid rgba(255,255,255,0.05)',
-              color: isCustomMode ? 'var(--gold-primary)' : 'white'
+              backgroundColor: isCustomMode ? 'rgba(196,139,159,0.1)' : 'rgba(255,255,255,0.02)',
+              border: isCustomMode ? '1px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)',
+              color: isCustomMode ? 'var(--pink-primary)' : 'white'
             }}
           >
             PERSONALIZADO
@@ -162,16 +162,16 @@ const ScheduleModal = ({ isOpen, onClose, client, service, staff, onSchedule, de
         <div style={{ marginBottom: '32px' }}>
           {isCustomMode ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', padding: '24px 0' }}>
-              <label style={{ fontSize: '11px', fontWeight: '900', color: 'var(--gold-primary)', letterSpacing: '1px', textTransform: 'uppercase' }}>Ingresa la hora deseada</label>
+              <label style={{ fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', letterSpacing: '1px', textTransform: 'uppercase' }}>Ingresa la hora deseada</label>
               <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <Clock size={20} color="var(--gold-primary)" />
+                <Clock size={20} color="var(--pink-primary)" />
                 <input
                   type="time"
                   value={customTime}
                   onChange={(e) => setCustomTime(e.target.value)}
                   style={{
                     backgroundColor: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(212,175,55,0.3)',
+                    border: '1px solid rgba(196,139,159,0.3)',
                     borderRadius: '12px',
                     color: 'white',
                     fontSize: '22px',
@@ -186,7 +186,7 @@ const ScheduleModal = ({ isOpen, onClose, client, service, staff, onSchedule, de
             </div>
           ) : (
             <>
-              <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--gold-primary)', marginBottom: '16px', letterSpacing: '1px' }}>SELECCIONA UN TURNO</label>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', marginBottom: '16px', letterSpacing: '1px' }}>SELECCIONA UN TURNO</label>
               {loading ? (
                 <div style={{ textAlign: 'center', padding: '40px' }}>Cargando disponibilidad...</div>
               ) : (
@@ -205,7 +205,7 @@ const ScheduleModal = ({ isOpen, onClose, client, service, staff, onSchedule, de
                           fontSize: '11px',
                           fontWeight: '800',
                           cursor: slot.isAvailable ? 'pointer' : 'not-allowed',
-                          backgroundColor: selectedSlot === slot.time ? 'var(--gold-primary)' : slot.isAvailable ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.01)',
+                          backgroundColor: selectedSlot === slot.time ? 'var(--pink-primary)' : slot.isAvailable ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.01)',
                           border: selectedSlot === slot.time ? 'none' : '1px solid rgba(255,255,255,0.05)',
                           color: selectedSlot === slot.time ? 'black' : slot.isAvailable ? 'white' : 'rgba(255,255,255,0.1)',
                           transition: 'all 0.2s',
@@ -225,7 +225,7 @@ const ScheduleModal = ({ isOpen, onClose, client, service, staff, onSchedule, de
         <button 
           onClick={handleSchedule}
           disabled={isCustomMode ? !customTime : !selectedSlot}
-          className="btn-gold" 
+          className="btn-pink" 
           style={{ width: '100%', height: '56px', borderRadius: '16px', fontSize: '16px', gap: '10px', opacity: (isCustomMode ? customTime : selectedSlot) ? 1 : 0.5 }}
         >
           <Check size={20} /> CONFIRMAR PARA LAS {isCustomMode ? getDisplayTime(customTime) : getDisplayTime(selectedSlot)}
