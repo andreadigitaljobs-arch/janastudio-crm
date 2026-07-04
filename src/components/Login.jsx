@@ -9,14 +9,17 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const { signIn } = useAuth();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     try {
-      await signIn(email, password);
+      const result = await login(email, password);
+      if (result && !result.success) {
+        setError(result.message || 'Credenciales incorrectas');
+      }
     } catch (err) {
       setError(err.message || 'Credenciales incorrectas');
     } finally {
