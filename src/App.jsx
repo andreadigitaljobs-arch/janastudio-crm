@@ -430,7 +430,7 @@ function App() {
         height: '100vh',
         overflowY: 'auto',
         overflowX: 'hidden',
-        backgroundColor: 'transparent',
+        backgroundColor: '#faf5f5',
         transition: 'all 0.3s ease'
       }}>
         <div key={activeTab} className={isAppLoading ? "opacity-0" : "animate-page-fade-in"} style={{ height: '100%' }}>

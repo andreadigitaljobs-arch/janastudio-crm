@@ -32,23 +32,23 @@ const ParticleBackground = () => {
     window.addEventListener('mouseleave', handleMouseLeave);
 
     const particles = [];
-    const particleCount = 75;
+    const particleCount = 50;
 
     for (let i = 0; i < particleCount; i++) {
-      const isSparkle = Math.random() > 0.8;
+      const isSparkle = Math.random() > 0.7;
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
         baseX: Math.random() * canvas.width,
         baseY: Math.random() * canvas.height,
-        size: isSparkle ? Math.random() * 2 + 1.2 : Math.random() * 1.5 + 0.5,
-        speedX: Math.random() * 0.4 - 0.2,
-        speedY: Math.random() * -0.5 - 0.15,
-        opacity: Math.random() * 0.5 + 0.15,
-        baseOpacity: Math.random() * 0.4 + 0.2,
+        size: isSparkle ? Math.random() * 1.5 + 0.8 : Math.random() * 1.2 + 0.4,
+        speedX: Math.random() * 0.3 - 0.15,
+        speedY: Math.random() * -0.4 - 0.1,
+        opacity: Math.random() * 0.3 + 0.1,
+        baseOpacity: Math.random() * 0.25 + 0.1,
         color: isSparkle
-          ? '#ffffff'
-          : Math.random() > 0.4
+          ? '#c48b9f'
+          : Math.random() > 0.5
             ? '#d4a09a'
             : '#e8c4be',
         isSparkle,
@@ -63,14 +63,14 @@ const ParticleBackground = () => {
     }
 
     const orbs = [
-      { x: canvas.width * 0.2, y: canvas.height * 0.3, radius: 250, color: 'rgba(196, 139, 159, 0.03)', speedX: 0.05, speedY: 0.03, angle: 0 },
-      { x: canvas.width * 0.8, y: canvas.height * 0.7, radius: 300, color: 'rgba(160, 80, 106, 0.02)', speedX: -0.04, speedY: 0.05, angle: Math.PI }
+      { x: canvas.width * 0.2, y: canvas.height * 0.3, radius: 250, color: 'rgba(196, 139, 159, 0.06)', speedX: 0.05, speedY: 0.03, angle: 0 },
+      { x: canvas.width * 0.8, y: canvas.height * 0.7, radius: 300, color: 'rgba(160, 80, 106, 0.04)', speedX: -0.04, speedY: 0.05, angle: Math.PI }
     ];
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      ctx.strokeStyle = 'rgba(196, 139, 159, 0.012)';
+      ctx.strokeStyle = 'rgba(196, 139, 159, 0.04)';
       ctx.lineWidth = 1;
       const gridSize = 60;
 
