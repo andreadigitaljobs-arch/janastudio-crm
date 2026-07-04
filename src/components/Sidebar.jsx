@@ -1,19 +1,8 @@
 import { useRef, useState, useEffect } from 'react';
 import {
-  BarChart3,
-  Users,
-  UserCircle,
-  Sparkles,
-  Package,
-  Wallet,
-  Star,
-  Calendar,
-  LogOut,
-  PanelLeftClose,
-  PanelLeftOpen,
-  Receipt,
-  Flower2,
-  Settings
+  BarChart3, Users, UserCircle, Sparkles, Package, Wallet,
+  Star, Calendar, LogOut, PanelLeftClose, PanelLeftOpen,
+  Receipt, Percent, Settings, Sliders
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useModal } from '../context/ModalContext';
@@ -29,22 +18,22 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
     { id: 'reception', label: 'Recepción', icon: UserCircle, roles: ['Admin', 'Recepcionista'] },
     { id: 'clients', label: 'Clientes', icon: Users, roles: ['Admin', 'Recepcionista', 'Manicurista', 'Lashista'] },
     { id: 'services', label: 'Servicios', icon: Star, roles: ['Admin'] },
-    { id: 'costing', label: 'Costeo', icon: Receipt, roles: ['Admin'] },
     { id: 'personnel', label: 'Equipo', icon: Sparkles, roles: ['Admin'] },
     { id: 'inventory', label: 'Inventario', icon: Package, roles: ['Admin', 'Caja'] },
     { id: 'finance', label: 'Finanzas', icon: Wallet, roles: ['Admin', 'Caja'] },
+    { id: 'finance', label: 'Promociones', icon: Percent, roles: ['Admin'], id: 'promotions' },
+    { id: 'finance', label: 'Configuración', icon: Sliders, roles: ['Admin'], id: 'settings' },
   ];
 
-  const menuItems = allMenuItems.filter(item => canAccessModule(user?.role, item.id));
+  const menuItems = allMenuItems
+    .filter(item => canAccessModule(user?.role, item.id || item.id))
+    .filter((item, index, self) => self.findIndex(i => i.label === item.label) === index);
 
   const sidebarRef = useRef(null);
   const [hoveredTab, setHoveredTab] = useState(null);
   const [indicatorStyle, setIndicatorStyle] = useState({
-    transform: 'translateY(0px)',
-    height: '0px',
-    opacity: 0
+    transform: 'translateY(0px)', height: '0px', opacity: 0
   });
-
   const itemRefs = useRef([]);
 
   const updateIndicator = (element) => {
@@ -69,15 +58,16 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
   }, [displayedTab, menuItems, isCollapsed]);
 
   const sidebarStyle = isMobile ? {
-    width: '100%', height: 'auto', backgroundColor: 'transparent', display: 'flex', flexDirection: 'column', padding: '0'
+    width: '100%', height: 'auto', backgroundColor: 'transparent',
+    display: 'flex', flexDirection: 'column', padding: '0'
   } : {
-    width: isCollapsed ? '80px' : '260px', 
-    height: '100vh', 
-    background: 'linear-gradient(180deg, #2d1f2d 0%, #4a3040 50%, #6b4a5a 100%)',
-    display: 'flex', flexDirection: 'column', 
-    padding: isCollapsed ? '16px 10px' : '20px 16px', 
-    position: 'fixed', left: 0, top: 0, 
-    overflowY: 'auto',
+    width: isCollapsed ? '80px' : '260px',
+    height: '100vh',
+    background: 'linear-gradient(180deg, #2d1f2d 0%, #3d2a3a 40%, #4a3040 70%, #5a3d50 100%)',
+    display: 'flex', flexDirection: 'column',
+    padding: isCollapsed ? '16px 10px' : '20px 16px',
+    position: 'fixed', left: 0, top: 0,
+    overflowY: 'auto', overflowX: 'hidden',
     transition: 'all 0.3s ease', zIndex: 100,
     transform: isModalOpen ? 'translateX(-100%)' : 'translateX(0)',
     opacity: isModalOpen ? 0 : 1,
@@ -87,37 +77,42 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
   return (
     <div className="sidebar" style={sidebarStyle}>
       {!isMobile && (
-        <div className="logo-container" style={{ marginBottom: isCollapsed ? '16px' : '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', position: 'relative' }}>
+        <div style={{
+          marginBottom: isCollapsed ? '16px' : '20px',
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
+          gap: '4px', position: 'relative'
+        }}>
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
             style={{
               position: isCollapsed ? 'static' : 'absolute',
-              right: isCollapsed ? 'auto' : '0',
-              top: '0',
-              background: 'transparent',
-              border: 'none',
-              color: 'rgba(255,255,255,0.4)',
-              cursor: 'pointer',
-              marginBottom: isCollapsed ? '16px' : '0'
+              right: isCollapsed ? 'auto' : '0', top: '0',
+              background: 'transparent', border: 'none',
+              color: 'rgba(255,255,255,0.3)', cursor: 'pointer',
+              marginBottom: isCollapsed ? '12px' : '0'
             }}
           >
-            {isCollapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}
+            {isCollapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
           </button>
 
           {!isCollapsed && (
             <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              marginTop: '12px'
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              marginTop: '8px', padding: '8px 0'
             }}>
               <img
                 src="/logo.png"
                 alt="JanaStudio"
-                style={{ height: '48px', marginBottom: '4px', filter: 'brightness(1.2) drop-shadow(0 0 12px rgba(196, 139, 159, 0.3))' }}
+                style={{
+                  height: '52px', marginBottom: '6px',
+                  filter: 'brightness(1.1) drop-shadow(0 0 16px rgba(196, 139, 159, 0.25))'
+                }}
               />
-              <p style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.5)', marginTop: '-2px', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
-                Premium Beauty Salon
+              <p style={{
+                fontSize: '0.62rem', color: 'rgba(255,255,255,0.4)',
+                letterSpacing: '1.5px', textTransform: 'uppercase', fontWeight: '600'
+              }}>
+                PREMIUM BEAUTY SALON
               </p>
             </div>
           )}
@@ -125,7 +120,10 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
             <img
               src="/logo.png"
               alt="JS"
-              style={{ height: '36px', marginTop: '4px', filter: 'brightness(1.2) drop-shadow(0 0 8px rgba(196, 139, 159, 0.3))' }}
+              style={{
+                height: '36px', marginTop: '4px',
+                filter: 'brightness(1.1) drop-shadow(0 0 8px rgba(196, 139, 159, 0.25))'
+              }}
             />
           )}
         </div>
@@ -133,19 +131,15 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
 
       <nav
         onMouseLeave={() => setHoveredTab(null)}
-        style={{ display: 'flex', flexDirection: 'column', gap: '4px', position: 'relative' }}
+        style={{ display: 'flex', flexDirection: 'column', gap: '2px', position: 'relative' }}
       >
         <div
-          className="menu-active-indicator"
           style={{
-            position: 'absolute',
-            left: 0,
-            width: '100%',
-            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            position: 'absolute', left: 0, width: '100%',
+            backgroundColor: 'rgba(196, 139, 159, 0.2)',
             borderRadius: '12px',
             transition: 'transform 0.22s cubic-bezier(0.25, 1, 0.5, 1), height 0.22s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s ease',
-            pointerEvents: 'none',
-            zIndex: 0,
+            pointerEvents: 'none', zIndex: 0,
             ...indicatorStyle
           }}
         />
@@ -154,111 +148,129 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
           const isActive = activeTab === item.id;
           return (
             <button
-              key={item.id}
+              key={item.id + item.label}
               ref={el => itemRefs.current[index] = el}
               onClick={() => setActiveTab(item.id)}
               onMouseEnter={() => setHoveredTab(item.id)}
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                padding: isCollapsed ? '12px' : '12px 16px',
-                borderRadius: '12px',
-                border: 'none',
-                background: isActive ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
-                color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.6)',
-                cursor: 'pointer',
-                fontSize: '0.9rem',
+                display: 'flex', alignItems: 'center', gap: '12px',
+                padding: isCollapsed ? '11px' : '11px 14px',
+                borderRadius: '12px', border: 'none',
+                background: isActive ? 'rgba(255, 255, 255, 0.12)' : 'transparent',
+                color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.5)',
+                cursor: 'pointer', fontSize: '0.88rem',
                 fontWeight: isActive ? 600 : 400,
-                transition: 'all 0.2s ease',
-                width: '100%',
+                transition: 'all 0.2s ease', width: '100%',
                 textAlign: 'left',
                 justifyContent: isCollapsed ? 'center' : 'flex-start',
-                position: 'relative',
-                zIndex: 1
+                position: 'relative', zIndex: 1
               }}
             >
-              <Icon size={20} style={{ color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.4)' }} />
+              <Icon size={19} style={{ color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.35)' }} />
               {!isCollapsed && <span>{item.label}</span>}
             </button>
           );
         })}
       </nav>
 
-      <div style={{ marginTop: 'auto', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+      <div style={{ marginTop: 'auto', paddingTop: '16px' }}>
+        {/* Salon Brand Card */}
+        {!isCollapsed && (
+          <div style={{
+            padding: '16px', borderRadius: '14px',
+            background: 'rgba(255, 255, 255, 0.06)',
+            marginBottom: '16px', position: 'relative', overflow: 'hidden'
+          }}>
+            <div style={{
+              width: '100%', height: '80px', borderRadius: '10px',
+              background: 'linear-gradient(135deg, rgba(196, 139, 159, 0.15) 0%, rgba(160, 80, 106, 0.1) 100%)',
+              marginBottom: '10px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}>
+              <Sparkles size={28} color="rgba(196, 139, 159, 0.4)" />
+            </div>
+            <div style={{
+              fontFamily: 'Georgia, serif', fontSize: '1rem',
+              color: '#ffffff', fontWeight: '500', marginBottom: '2px'
+            }}>
+              Jana Studio
+            </div>
+            <div style={{
+              fontSize: '0.72rem', color: 'rgba(255,255,255,0.4)',
+              lineHeight: '1.4'
+            }}>
+              Belleza que inspira confianza.
+            </div>
+          </div>
+        )}
+
+        {/* Exchange Rates */}
         {!isCollapsed && rates && rates.usdt > 0 && (
           <div style={{
-            padding: '12px',
-            borderRadius: '12px',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            marginBottom: '12px',
-            fontSize: '0.8rem'
+            padding: '10px 12px', borderRadius: '10px',
+            backgroundColor: 'rgba(255, 255, 255, 0.04)',
+            marginBottom: '12px', fontSize: '0.78rem'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-              <span style={{ color: 'rgba(255,255,255,0.5)' }}>BCV</span>
-              <span style={{ color: 'rgba(255,255,255,0.9)' }}>Bs. {rates.bcv?.toFixed(2)}</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
+              <span style={{ color: 'rgba(255,255,255,0.4)' }}>BCV</span>
+              <span style={{ color: 'rgba(255,255,255,0.8)' }}>Bs. {rates.bcv?.toFixed(2)}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'rgba(255,255,255,0.5)' }}>USDT</span>
+              <span style={{ color: 'rgba(255,255,255,0.4)' }}>USDT</span>
               <span style={{ color: '#ffffff', fontWeight: 600 }}>Bs. {rates.usdt?.toFixed(2)}</span>
             </div>
           </div>
         )}
 
         {/* User Profile */}
-        {!isCollapsed && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '10px',
+          padding: '10px 12px', borderRadius: '12px',
+          backgroundColor: 'rgba(255, 255, 255, 0.04)',
+          marginBottom: '8px'
+        }}>
           <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            padding: '12px',
-            borderRadius: '12px',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            marginBottom: '12px'
+            width: '36px', height: '36px', borderRadius: '50%',
+            background: 'linear-gradient(135deg, #c48b9f 0%, #a0506a 100%)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: 'white', fontWeight: 600, fontSize: '0.85rem', flexShrink: 0
           }}>
-            <div style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #c48b9f 0%, #a0506a 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontWeight: 600,
-              fontSize: '0.85rem'
-            }}>
-              {user?.name?.charAt(0) || 'A'}
-            </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 600, color: '#ffffff', fontSize: '0.85rem' }}>{user?.name || 'Admin'}</div>
-              <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>{user?.role || 'Admin'}</div>
-            </div>
+            {user?.name?.charAt(0) || 'A'}
           </div>
-        )}
+          {!isCollapsed && (
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{
+                fontWeight: 600, color: '#ffffff', fontSize: '0.82rem',
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+              }}>
+                {user?.name || 'Administrador'}
+              </div>
+              <div style={{
+                fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)',
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+              }}>
+                {user?.email || 'admin@janastudio.com'}
+              </div>
+            </div>
+          )}
+        </div>
 
         <button
           onClick={logout}
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            padding: isCollapsed ? '12px' : '12px 16px',
-            borderRadius: '12px',
-            border: 'none',
-            background: 'transparent',
-            color: 'rgba(255, 255, 255, 0.5)',
-            cursor: 'pointer',
-            fontSize: '0.9rem',
-            width: '100%',
+            display: 'flex', alignItems: 'center', gap: '12px',
+            padding: isCollapsed ? '10px' : '10px 14px',
+            borderRadius: '12px', border: 'none', background: 'transparent',
+            color: 'rgba(255, 255, 255, 0.4)', cursor: 'pointer',
+            fontSize: '0.85rem', width: '100%',
             textAlign: 'left',
             justifyContent: isCollapsed ? 'center' : 'flex-start',
             transition: 'all 0.2s ease'
           }}
           onMouseEnter={(e) => e.currentTarget.style.color = '#ff6b6b'}
-          onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)'}
+          onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.4)'}
         >
-          <LogOut size={20} />
+          <LogOut size={18} />
           {!isCollapsed && <span>Cerrar Sesión</span>}
         </button>
       </div>
