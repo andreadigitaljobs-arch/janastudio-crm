@@ -367,34 +367,6 @@ const ReceptionModule = ({ isMobile }) => {
               </div>
             )}
 
-            {/* Próximas Citas */}
-            <div style={{ marginTop: '14px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
-                <Calendar size={14} color="#c48b9f" />
-                <span style={{ fontWeight: 600, fontSize: '0.75rem', color: '#2d2d2d' }}>Próximas Citas (Agenda Hoy)</span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {DEMO_UPCOMING.map((apt, idx) => {
-                  const sc = apt.status === 'Confirmada' ? { bg: '#f0fdf4', text: '#16a34a', border: '#bbf7d0' } : { bg: '#fffbeb', text: '#d97706', border: '#fde68a' };
-                  return (
-                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 10px', borderRadius: '10px', background: '#faf5f5', fontSize: '0.72rem' }}>
-                      <div style={{ width: '50px', textAlign: 'center' }}>
-                        <div style={{ fontWeight: 700, color: '#c48b9f', fontSize: '0.75rem' }}>{apt.time.split(' ')[0]}</div>
-                        <div style={{ fontSize: '0.58rem', color: '#9e9e9e' }}>{apt.time.split(' ')[1]}</div>
-                      </div>
-                      <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, fontSize: '0.68rem', flexShrink: 0 }}>{apt.initial}</div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: 600, color: '#2d2d2d' }}>{apt.client}</div>
-                        <div style={{ fontSize: '0.62rem', color: '#9e9e9e' }}>- {apt.service}</div>
-                      </div>
-                      <div style={{ fontSize: '0.62rem', color: '#6b6b6b' }}>{apt.staff}</div>
-                      <span style={{ padding: '3px 8px', borderRadius: '20px', fontSize: '0.58rem', fontWeight: 600, background: sc.bg, color: sc.text, border: `1px solid ${sc.border}` }}>{apt.status}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
             {/* Estilistas Disponibles */}
             <div style={{ marginTop: '14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
@@ -421,6 +393,34 @@ const ReceptionModule = ({ isMobile }) => {
                   background: 'transparent', color: '#c48b9f', fontSize: '0.68rem', fontWeight: 600,
                   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px'
                 }}><Users size={12} /> Ver todos</button>
+              </div>
+            </div>
+
+            {/* Próximas Citas */}
+            <div style={{ marginTop: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
+                <Calendar size={14} color="#c48b9f" />
+                <span style={{ fontWeight: 600, fontSize: '0.75rem', color: '#2d2d2d' }}>Próximas Citas (Agenda Hoy)</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {DEMO_UPCOMING.map((apt, idx) => {
+                  const sc = apt.status === 'Confirmada' ? { bg: '#f0fdf4', text: '#16a34a', border: '#bbf7d0' } : { bg: '#fffbeb', text: '#d97706', border: '#fde68a' };
+                  return (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 10px', borderRadius: '10px', background: '#faf5f5', fontSize: '0.72rem' }}>
+                      <div style={{ width: '50px', textAlign: 'center' }}>
+                        <div style={{ fontWeight: 700, color: '#c48b9f', fontSize: '0.75rem' }}>{apt.time.split(' ')[0]}</div>
+                        <div style={{ fontSize: '0.58rem', color: '#9e9e9e' }}>{apt.time.split(' ')[1]}</div>
+                      </div>
+                      <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, fontSize: '0.68rem', flexShrink: 0 }}>{apt.initial}</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 600, color: '#2d2d2d' }}>{apt.client}</div>
+                        <div style={{ fontSize: '0.62rem', color: '#9e9e9e' }}>- {apt.service}</div>
+                      </div>
+                      <div style={{ fontSize: '0.62rem', color: '#6b6b6b' }}>{apt.staff}</div>
+                      <span style={{ padding: '3px 8px', borderRadius: '20px', fontSize: '0.58rem', fontWeight: 600, background: sc.bg, color: sc.text, border: `1px solid ${sc.border}` }}>{apt.status}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
