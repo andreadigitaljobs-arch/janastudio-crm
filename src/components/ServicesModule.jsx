@@ -456,10 +456,10 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
           {!isMobile && (
             <div style={{ 
               display: 'flex', 
-              backgroundColor: 'rgba(255,255,255,0.03)', 
+              backgroundColor: '#faf5f5', 
               borderRadius: '12px', 
               padding: '4px',
-              border: '1px solid rgba(255,255,255,0.05)',
+              border: '1px solid var(--border-color)',
               marginRight: '12px'
             }}>
               <button 
@@ -737,10 +737,10 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               })}
             </div>
           ) : (
-            <div className="animate-slide-up" style={{ background: 'rgba(28, 28, 30, 0.95)', padding: '0', borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(196, 139, 159, 0.15)' }}>
+            <div className="animate-slide-up" style={{ background: 'white', padding: '0', borderRadius: '24px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                 <thead>
-                  <tr style={{ backgroundColor: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                  <tr style={{ backgroundColor: '#faf5f5', borderBottom: '1px solid var(--border-color)' }}>
                     <th style={{ padding: '16px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Servicio</th>
                     <th style={{ padding: '16px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Categoría</th>
                     <th style={{ padding: '16px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Duración</th>
@@ -751,13 +751,13 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                 </thead>
                 <tbody>
                   {services.map((service) => (
-                    <tr key={service.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', transition: 'background-color 0.2s' }} className="table-row-hover">
+                    <tr key={service.id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'background-color 0.2s' }} className="table-row-hover">
                       <td style={{ padding: '16px 24px' }}>
-                        <div style={{ fontWeight: '700', color: 'white', marginBottom: '4px' }}>{service.name}</div>
+                        <div style={{ fontWeight: '700', color: 'var(--text-primary)', marginBottom: '4px' }}>{service.name}</div>
                         {service.description && <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic', maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{service.description}</div>}
                       </td>
                       <td style={{ padding: '16px 24px' }}>
-                        <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--pink-primary)', backgroundColor: 'rgba(196,139,159,0.05)', padding: '4px 10px', borderRadius: '8px' }}>
+                        <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--pink-primary)', backgroundColor: 'rgba(196,139,159,0.1)', padding: '4px 10px', borderRadius: '8px' }}>
                           {service.category}
                         </span>
                       </td>
@@ -765,7 +765,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                         {service.duration} min
                       </td>
                       <td style={{ padding: '16px 24px' }}>
-                        <div style={{ fontWeight: '800', color: 'white' }}>${service.price}</div>
+                        <div style={{ fontWeight: '800', color: 'var(--text-primary)' }}>${service.price}</div>
                         {rates?.usd > 0 && <div style={{ fontSize: '11px', color: 'var(--pink-primary)' }}>{Math.round(service.price * rates.usd).toLocaleString()} Bs.</div>}
                       </td>
                       <td style={{ padding: '16px 24px' }}>
@@ -799,15 +799,16 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
         {(overlayClass, cardClass) => (
           <div className={overlayClass} style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(15px)',
+            backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             zIndex: 99999, padding: isMobile ? '12px' : '20px'
           }}>
             <div className={`${cardClass} glass-card astro-scrollbar`} style={{
               width: '100%', maxWidth: '420px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden',
               display: 'flex', flexDirection: 'column', padding: isMobile ? '20px 16px' : '24px',
-              borderRadius: '28px', border: '1px solid rgba(196,139,159,0.2)',
-              boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.6)'
+              borderRadius: '28px', border: '1px solid var(--border-color)',
+              boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.2)',
+              backgroundColor: 'white'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <div>
@@ -883,8 +884,8 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
       {/* Billable Extras Management Modal */}
       <AnimatedModal isOpen={isBillableExtrasModalOpen}>
         {(overlayClass, cardClass) => (
-          <div className={overlayClass} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px' : '20px' }}>
-            <div className={`${cardClass} glass-card astro-scrollbar`} style={{ width: '100%', maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden', padding: isMobile ? '20px 16px' : '32px', borderRadius: '32px', border: '1px solid rgba(196,139,159,0.2)' }}>
+          <div className={overlayClass} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px' : '20px' }}>
+            <div className={`${cardClass} glass-card astro-scrollbar`} style={{ width: '100%', maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden', padding: isMobile ? '20px 16px' : '32px', borderRadius: '32px', border: '1px solid var(--border-color)', backgroundColor: 'white' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px' }}>
                 <div>
                   <h3 style={{ fontSize: '20px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -994,15 +995,16 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
           selectedServiceDetail && (
             <div className={overlayClass} style={{
               position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-              backgroundColor: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(10px)',
+              backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               zIndex: 99999, padding: isMobile ? '12px' : '20px'
             }}>
               <div className={`${cardClass} glass-card astro-scrollbar`} style={{
                 width: '100%', maxWidth: '440px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden',
                 padding: isMobile ? '20px 16px' : '24px', borderRadius: '28px',
-                border: '1px solid rgba(212,160,154,0.2)',
-                boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.6)',
+                border: '1px solid var(--border-color)',
+                boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.2)',
+                backgroundColor: 'white',
                 position: 'relative'
               }}>
                 <button 

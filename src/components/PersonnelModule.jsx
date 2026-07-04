@@ -733,7 +733,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                 <div className="glass-card animate-slide-up" style={{ 
                   padding: '16px', 
                   borderRadius: '20px',
-                  border: '1px solid rgba(255,255,255,0.05)',
+                  border: '1px solid var(--border-color)',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '14px',
@@ -747,13 +747,13 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                         width: '48px', 
                         height: '48px', 
                         borderRadius: '12px', 
-                        backgroundColor: 'rgba(255,255,255,0.02)',
-                        overflow: 'hidden',
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center',
-                        border: '1px solid rgba(255,255,255,0.08)',
-                        flexShrink: 0
+                    backgroundColor: 'rgba(255,255,255,0.02)',
+                    overflow: 'hidden',
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    border: '1px solid var(--border-color)',
+                    flexShrink: 0
                       }}>
                         {person.image_url ? (
                           <img src={person.image_url} alt={person.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -766,7 +766,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                       
                       {/* Name and Role */}
                       <div style={{ minWidth: 0 }}>
-                        <h4 style={{ fontSize: '15px', fontWeight: '800', color: 'white', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{person.name}</h4>
+                        <h4 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{person.name}</h4>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--pink-primary)', fontSize: '11px', fontWeight: '700', marginTop: '2px' }}>
                           {getRoleIcon(person.role?.split('|')[0]?.split(', ')[0])}
                           <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{person.role?.split('|')[0]}</span>
@@ -789,7 +789,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                   </div>
 
                   {/* Divider line */}
-                  <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', width: '100%' }} />
+                  <div style={{ height: '1px', background: 'var(--border-color)', width: '100%' }} />
 
                   {/* Details Section */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px' }}>
@@ -822,7 +822,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                 <div className="glass-card animate-slide-up" style={{ 
                   padding: '16px 24px', 
                   borderRadius: '20px',
-                  border: '1px solid rgba(255,255,255,0.05)',
+                  border: '1px solid var(--border-color)',
                   display: 'grid',
                   gridTemplateColumns: '80px 1.5fr 1fr 1.5fr 1.2fr 140px',
                   alignItems: 'center',
@@ -852,7 +852,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                   
                   {/* Name/Role Column */}
                   <div style={{ minWidth: 0, overflow: 'hidden' }}>
-                    <h4 style={{ fontSize: '16px', fontWeight: '800', color: 'white', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{person.name}</h4>
+                    <h4 style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{person.name}</h4>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--pink-primary)', fontSize: '11px', fontWeight: '700', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {getRoleIcon(person.role?.split('|')[0]?.split(', ')[0])}
                       <span>{person.role?.split('|')[0]}</span>
@@ -1115,7 +1115,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                       </div>
 
                       {/* Permissions Section */}
-                      <div style={{ padding: '24px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
+              <div style={{ padding: '24px', backgroundColor: '#faf5f5', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
                           <Key size={18} color="var(--pink-primary)" />
                           <label style={{ fontSize: '12px', fontWeight: '900', color: 'white', letterSpacing: '1px' }}>MÓDULOS ACCESIBLES</label>

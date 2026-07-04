@@ -426,7 +426,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
           </div>
         )}
 
-        <div style={{ display: 'flex', backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: '12px', padding: '4px', flex: isMobile ? '1 1 100%' : 'none', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', backgroundColor: '#faf5f5', borderRadius: '12px', padding: '4px', flex: isMobile ? '1 1 100%' : 'none', justifyContent: 'space-between', border: '1px solid var(--border-color)' }}>
           <button 
             onClick={() => setViewMode('grid')}
             style={{ 
@@ -480,11 +480,11 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
           <p style={{ color: 'var(--text-muted)', fontSize: '18px' }}>No hay productos que coincidan.</p>
         </div>
       ) : viewMode === 'list' ? (
-        <div className="animate-slide-up" style={{ background: 'rgba(28, 28, 30, 0.95)', padding: '0', borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(196, 139, 159, 0.15)' }}>
+        <div className="animate-slide-up" style={{ background: 'white', padding: '0', borderRadius: '24px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
             <div style={{ width: '100%', overflowX: 'hidden' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', tableLayout: 'auto' }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', backgroundColor: 'rgba(255,255,255,0.02)' }}>
+                  <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: '#faf5f5' }}>
                     <th style={{ padding: isMobile ? '12px 6px 12px 16px' : '20px', fontSize: isMobile ? '10px' : '11px', fontWeight: '900', color: 'var(--text-muted)' }}>PRODUCTO</th>
                     <th style={{ padding: isMobile ? '12px 6px' : '20px', fontSize: isMobile ? '10px' : '11px', fontWeight: '900', color: 'var(--text-muted)', display: isMobile ? 'none' : 'table-cell' }}>CATEGORÍA</th>
                     <th style={{ padding: isMobile ? '12px 6px' : '20px', fontSize: isMobile ? '10px' : '11px', fontWeight: '900', color: 'var(--text-muted)', textAlign: 'center' }}>STOCK</th>
@@ -494,7 +494,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                 </thead>
                 <tbody>
                   {filteredInventory.map(item => (
-                    <tr key={item.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', transition: 'background 0.2s' }} className="table-row-hover">
+                    <tr key={item.id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'background 0.2s' }} className="table-row-hover">
                       <td style={{ padding: isMobile ? '12px 6px 12px 16px' : '16px 20px', maxWidth: isMobile ? '120px' : 'none', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
                            <span style={{ fontWeight: '800', fontSize: isMobile ? '13px' : '14px', lineHeight: '1.2' }}>{item.name}</span>
@@ -759,14 +759,14 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
           100% { opacity: 0.6; transform: scale(0.95); }
         }
         .table-row-hover:hover {
-          background-color: rgba(255,255,255,0.02) !important;
+          background-color: #faf5f5 !important;
         }
       `}</style>
 
       <AnimatedModal isOpen={showHistoryModal}>
         {(overlayClass, cardClass) => (
-          <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', zIndex: 99999, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: isMobile ? '12px' : '20px' }}>
-            <div className={`glass-card ${cardClass}`} style={{ maxWidth: '800px', width: '100%', borderRadius: '32px', border: '1.5px solid rgba(196,139,159,0.3)', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden' }}>
+          <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', zIndex: 99999, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: isMobile ? '12px' : '20px' }}>
+            <div className={`glass-card ${cardClass}`} style={{ maxWidth: '800px', width: '100%', borderRadius: '32px', border: '1px solid var(--border-color)', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden', backgroundColor: 'white' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', padding: isMobile ? '24px 20px 0 20px' : '24px 32px 0 32px', gap: '16px' }}>
                 <div>
                   <h2 style={{ 
@@ -980,8 +980,8 @@ const EditInventoryModal = ({ isOpen, item, onClose, onSave }) => {
   return (
     <AnimatedModal isOpen={isOpen}>
       {(overlayClass, cardClass) => (
-        <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', zIndex: 99999, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-          <div className={`glass-card ${cardClass} astro-scrollbar`} style={{ maxWidth: '500px', width: '100%', maxHeight: '90vh', overflowY: 'auto', borderRadius: '28px', padding: '32px', display: 'flex', flexDirection: 'column' }}>
+        <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', zIndex: 99999, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+          <div className={`glass-card ${cardClass} astro-scrollbar`} style={{ maxWidth: '500px', width: '100%', maxHeight: '90vh', overflowY: 'auto', borderRadius: '28px', padding: '32px', display: 'flex', flexDirection: 'column', backgroundColor: 'white', border: '1px solid var(--border-color)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexShrink: 0 }}>
               <h3 style={{ 
                 fontSize: '20px', 

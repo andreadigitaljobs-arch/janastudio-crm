@@ -226,10 +226,10 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
               {/* View Toggles */}
               <div style={{ 
                 display: 'flex', 
-                backgroundColor: 'rgba(255,255,255,0.03)', 
+                backgroundColor: '#faf5f5', 
                 borderRadius: '12px', 
                 padding: '4px',
-                border: '1px solid rgba(255,255,255,0.05)',
+                border: '1px solid var(--border-color)',
                 marginRight: isMobile ? '0' : '12px',
                 flex: isMobile ? '1 1 100%' : 'none',
                 justifyContent: 'space-between'
@@ -284,9 +284,9 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
                   display: 'flex', 
                   alignItems: 'center', 
                   gap: '8px',
-                  backgroundColor: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  color: 'white',
+                  backgroundColor: 'rgba(196,139,159,0.1)',
+                  border: '1px solid rgba(196,139,159,0.2)',
+                  color: 'var(--pink-primary)',
                   cursor: 'pointer',
                   flex: isMobile ? '1 1 45%' : 'none',
                   justifyContent: 'center',
@@ -427,11 +427,11 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
                       width: isMobile ? '36px' : '48px', 
                       height: isMobile ? '36px' : '48px', 
                       borderRadius: isMobile ? '10px' : '14px', 
-                      backgroundColor: 'rgba(217,70,168,0.05)', 
+                      backgroundColor: 'rgba(196,139,159,0.1)', 
                       display: 'flex', 
                       alignItems: 'center', 
                       justifyContent: 'center',
-                      border: '1px solid rgba(217,70,168,0.1)',
+                      border: '1px solid rgba(196,139,159,0.2)',
                       flexShrink: 0
                     }}>
                       <User size={isMobile ? 16 : 20} color="var(--pink-primary)" />
@@ -475,10 +475,10 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
               ))}
             </div>
           ) : (
-            <div className="animate-slide-up" style={{ background: 'rgba(28, 28, 30, 0.95)', padding: '0', borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(217, 70, 168, 0.15)' }}>
+            <div className="animate-slide-up" style={{ background: 'white', padding: '0', borderRadius: '24px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', tableLayout: 'auto' }}>
                 <thead>
-                  <tr style={{ backgroundColor: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                  <tr style={{ backgroundColor: '#faf5f5', borderBottom: '1px solid var(--border-color)' }}>
                     <th style={{ padding: isMobile ? '12px 12px' : '16px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Cliente</th>
                     {!isMobile && <th style={{ padding: '16px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Cédula / ID</th>}
                     <th style={{ padding: isMobile ? '12px 12px' : '16px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Contacto</th>
@@ -492,11 +492,11 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
                     <tr 
                       key={client.id} 
                       onClick={() => setSelectedClient(client)}
-                      style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', transition: 'background-color 0.2s', cursor: 'pointer' }} 
+                      style={{ borderBottom: '1px solid var(--border-color)', transition: 'background-color 0.2s', cursor: 'pointer' }} 
                       className="table-row-hover"
                     >
                       <td style={{ padding: isMobile ? '12px 12px' : '16px 24px' }}>
-                        <div style={{ fontWeight: '700', color: 'white', fontSize: isMobile ? '13px' : '16px' }}>{client.name}</div>
+                        <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: isMobile ? '13px' : '16px' }}>{client.name}</div>
                         {isMobile && client.id_card && <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>V-{client.id_card}</div>}
                       </td>
                       {!isMobile && (
@@ -513,7 +513,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
                         </td>
                       )}
                       <td style={{ padding: isMobile ? '12px 12px' : '16px 24px', textAlign: isMobile ? 'right' : 'left' }}>
-                        <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--pink-primary)', backgroundColor: 'rgba(217,70,168,0.05)', padding: '4px 8px', borderRadius: '8px', whiteSpace: 'nowrap' }}>
+                        <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--pink-primary)', backgroundColor: 'rgba(196,139,159,0.1)', padding: '4px 8px', borderRadius: '8px', whiteSpace: 'nowrap' }}>
                           {client.total_visits || 0} {!isMobile && "Visitas"}
                         </span>
                       </td>
@@ -537,9 +537,9 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
               gap: '16px', 
               marginTop: '32px',
               padding: '12px',
-              backgroundColor: 'rgba(255,255,255,0.02)',
+              backgroundColor: 'white',
               borderRadius: '16px',
-              border: '1px solid rgba(255,255,255,0.05)'
+              border: '1px solid var(--border-color)'
             }}>
               <button 
                 disabled={currentPage === 1}
@@ -547,8 +547,8 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
                 style={{
                   padding: '8px 16px',
                   borderRadius: '10px',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  backgroundColor: currentPage === 1 ? 'transparent' : 'rgba(217,70,168,0.1)',
+                  border: '1px solid var(--border-color)',
+                  backgroundColor: currentPage === 1 ? '#faf5f5' : 'rgba(196,139,159,0.1)',
                   color: currentPage === 1 ? 'var(--text-muted)' : 'var(--pink-primary)',
                   cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
                   fontWeight: '700',
@@ -567,8 +567,8 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
                 style={{
                   padding: '8px 16px',
                   borderRadius: '10px',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  backgroundColor: currentPage === totalPages ? 'transparent' : 'rgba(217,70,168,0.1)',
+                  border: '1px solid var(--border-color)',
+                  backgroundColor: currentPage === totalPages ? '#faf5f5' : 'rgba(196,139,159,0.1)',
                   color: currentPage === totalPages ? 'var(--text-muted)' : 'var(--pink-primary)',
                   cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
                   fontWeight: '700',
@@ -628,28 +628,28 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
           <div className="glass-card" style={{
             width: '100%',
             maxWidth: '460px',
-            background: 'linear-gradient(135deg, rgba(20, 20, 20, 0.95) 0%, rgba(10, 10, 10, 0.98) 100%)',
-            border: '1px solid rgba(217, 70, 168, 0.25)',
+            background: 'white',
+            border: '1px solid var(--border-color)',
             borderRadius: '24px',
             padding: '24px',
-            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(217, 70, 168, 0.05)',
+            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.15)',
             position: 'relative',
             transform: showMessageModal ? 'scale(1) translateY(0)' : 'scale(0.9) translateY(20px)',
             transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease',
             opacity: showMessageModal ? 1 : 0
           }}>
             {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <MessageCircle size={20} color="var(--pink-primary)" />
-                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: 'white' }}>
+                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '900', color: 'var(--text-primary)' }}>
                   {messageTemplateTab === 'birthday' ? 'Mensaje de Cumplea\u00f1os' : 'Mensaje Recurrente'}
                 </h3>
               </div>
               <button 
                 onClick={() => setShowMessageModal(false)}
                 style={{
-                  background: 'rgba(255,255,255,0.05)',
+                  background: '#faf5f5',
                   border: 'none',
                   borderRadius: '50%',
                   width: '28px',
@@ -667,7 +667,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '18px' }}>
               {[['birthday', 'Cumplea\u00f1os'], ['followup', 'Recurrente']].map(([value, label]) => (
                 <button key={value} type="button" onClick={() => setMessageTemplateTab(value)}
-                  style={{ padding: '10px', borderRadius: '10px', cursor: 'pointer', border: '1px solid rgba(217,70,168,0.2)', background: messageTemplateTab === value ? 'var(--pink-primary)' : 'rgba(255,255,255,0.04)', color: messageTemplateTab === value ? '#111' : 'white', fontWeight: '900', fontSize: '12px' }}>
+                  style={{ padding: '10px', borderRadius: '10px', cursor: 'pointer', border: '1px solid rgba(196,139,159,0.2)', background: messageTemplateTab === value ? 'var(--pink-primary)' : '#faf5f5', color: messageTemplateTab === value ? 'white' : 'var(--text-primary)', fontWeight: '900', fontSize: '12px' }}>
                   {label}
                 </button>
               ))}
@@ -681,8 +681,8 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
             </p>
 
             <div style={{ 
-              backgroundColor: 'rgba(217, 70, 168, 0.1)', 
-              border: '1px solid rgba(217, 70, 168, 0.2)',
+              backgroundColor: 'rgba(196,139,159,0.1)', 
+              border: '1px solid rgba(196,139,159,0.2)',
               borderRadius: '12px',
               padding: '12px',
               fontSize: '12px',
@@ -702,10 +702,10 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
                 rows={6}
                 style={{
                   padding: '12px 14px',
-                  backgroundColor: 'rgba(255,255,255,0.02)',
-                  border: '1px solid rgba(255,255,255,0.08)',
+                  backgroundColor: '#faf5f5',
+                  border: '1px solid var(--border-color)',
                   borderRadius: '12px',
-                  color: 'white',
+                  color: 'var(--text-primary)',
                   fontSize: '13px',
                   fontWeight: '600',
                   outline: 'none',
@@ -726,7 +726,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
                   padding: '12px',
                   borderRadius: '12px',
                   backgroundColor: 'var(--pink-primary)',
-                  color: 'black',
+                  color: 'white',
                   fontWeight: '850',
                   fontSize: '13px',
                   border: 'none',
@@ -746,11 +746,11 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
                   flex: 1,
                   padding: '12px',
                   borderRadius: '12px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  color: 'white',
+                  backgroundColor: '#faf5f5',
+                  color: 'var(--text-primary)',
                   fontWeight: '700',
                   fontSize: '13px',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  border: '1px solid var(--border-color)',
                   cursor: 'pointer',
                   textAlign: 'center'
                 }}
@@ -767,8 +767,8 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
         .list-item:hover {
           border-color: var(--pink-primary);
           transform: scale(1.01) translateY(-2px);
-          background-color: var(--bg-tertiary) !important;
-          box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+          background-color: #faf5f5 !important;
+          box-shadow: 0 8px 24px rgba(196,139,159,0.15);
         }
       `}</style>
     </div>
