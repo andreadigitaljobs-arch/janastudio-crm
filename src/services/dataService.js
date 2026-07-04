@@ -541,8 +541,10 @@ export const dataService = {
     try {
       const response = await fetch('https://ve.dolarapi.com/v1/dolares');
       const data = await response.json();
-      const bcv = data.find(d => d.nombre === 'Oficial')?.promedio || 0;
-      const usdt = data.find(d => d.nombre === 'Externo')?.promedio || 0;
+      const oficial = data.find(d => d.fuente === 'oficial');
+      const paralelo = data.find(d => d.fuente === 'paralelo');
+      const bcv = oficial?.promedio || 0;
+      const usdt = paralelo?.promedio || 0;
       return { bcv, usdt, updated_at: new Date().toISOString() };
     } catch (e) {
       console.error('Error fetching exchange rates:', e);
