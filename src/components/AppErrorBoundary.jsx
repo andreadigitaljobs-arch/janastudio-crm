@@ -1,8 +1,8 @@
 import React from 'react';
 
 const CHUNK_ERROR_PATTERN = /ChunkLoadError|Loading chunk|Failed to fetch dynamically imported module|Importing a module script failed/i;
-const CHUNK_RELOAD_KEY = 'astro_chunk_reload_at';
-const LAST_CRASH_KEY = 'astro_last_crash';
+const CHUNK_RELOAD_KEY = 'jana_chunk_reload_at';
+const LAST_CRASH_KEY = 'jana_last_crash';
 
 class AppErrorBoundary extends React.Component {
   constructor(props) {
@@ -42,7 +42,7 @@ class AppErrorBoundary extends React.Component {
   };
 
   handleDashboard = () => {
-    localStorage.setItem('astro_active_tab', 'dashboard');
+    localStorage.setItem('jana_active_tab', 'dashboard');
     window.location.reload();
   };
 

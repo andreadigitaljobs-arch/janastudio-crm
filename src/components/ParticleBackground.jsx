@@ -18,7 +18,6 @@ const ParticleBackground = () => {
     window.addEventListener('resize', resize);
     resize();
 
-    // Mouse position tracker (listens to window events since pointer-events is none on canvas)
     const handleMouseMove = (e) => {
       mouseRef.current.targetX = e.clientX;
       mouseRef.current.targetY = e.clientY;
@@ -35,7 +34,6 @@ const ParticleBackground = () => {
     const particles = [];
     const particleCount = 75;
 
-    // Initialize particles with richer attributes
     for (let i = 0; i < particleCount; i++) {
       const isSparkle = Math.random() > 0.8;
       particles.push({
@@ -45,42 +43,37 @@ const ParticleBackground = () => {
         baseY: Math.random() * canvas.height,
         size: isSparkle ? Math.random() * 2 + 1.2 : Math.random() * 1.5 + 0.5,
         speedX: Math.random() * 0.4 - 0.2,
-        speedY: Math.random() * -0.5 - 0.15, // float upwards slowly
+        speedY: Math.random() * -0.5 - 0.15,
         opacity: Math.random() * 0.5 + 0.15,
         baseOpacity: Math.random() * 0.4 + 0.2,
-        color: isSparkle 
-          ? '#ffffff' // pure white sparkle
-          : Math.random() > 0.4 
-            ? '#d4af37' // classic gold
-            : '#f9d976', // lighter gold
+        color: isSparkle
+          ? '#ffffff'
+          : Math.random() > 0.4
+            ? '#d4a09a'
+            : '#e8c4be',
         isSparkle,
         twinkleSpeed: Math.random() * 0.02 + 0.005,
         twinkleAngle: Math.random() * Math.PI,
-        // Sine wave horizontal drift
         waveRange: Math.random() * 15 + 5,
         waveSpeed: Math.random() * 0.01 + 0.002,
         waveAngle: Math.random() * Math.PI,
-        // Current displacement
         offsetX: 0,
         offsetY: 0
       });
     }
 
-    // Ambient glow orbs in the background
     const orbs = [
-      { x: canvas.width * 0.2, y: canvas.height * 0.3, radius: 250, color: 'rgba(212, 175, 55, 0.03)', speedX: 0.05, speedY: 0.03, angle: 0 },
-      { x: canvas.width * 0.8, y: canvas.height * 0.7, radius: 300, color: 'rgba(138, 109, 28, 0.02)', speedX: -0.04, speedY: 0.05, angle: Math.PI }
+      { x: canvas.width * 0.2, y: canvas.height * 0.3, radius: 250, color: 'rgba(196, 139, 159, 0.03)', speedX: 0.05, speedY: 0.03, angle: 0 },
+      { x: canvas.width * 0.8, y: canvas.height * 0.7, radius: 300, color: 'rgba(160, 80, 106, 0.02)', speedX: -0.04, speedY: 0.05, angle: Math.PI }
     ];
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // 1. Draw subtle Grid system directly on canvas for optimized rendering
-      ctx.strokeStyle = 'rgba(212, 175, 55, 0.012)';
+      ctx.strokeStyle = 'rgba(196, 139, 159, 0.012)';
       ctx.lineWidth = 1;
       const gridSize = 60;
-      
-      // Draw grid lines
+
       for (let x = 0; x < canvas.width; x += gridSize) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
@@ -94,12 +87,10 @@ const ParticleBackground = () => {
         ctx.stroke();
       }
 
-      // Smooth mouse lerping
       const mouse = mouseRef.current;
       mouse.x += (mouse.targetX - mouse.x) * 0.08;
       mouse.y += (mouse.targetY - mouse.y) * 0.08;
 
-      // 2. Render and animate ambient background orbs
       orbs.forEach(orb => {
         orb.angle += 0.0005;
         const currentX = orb.x + Math.cos(orb.angle) * 50;
@@ -118,20 +109,16 @@ const ParticleBackground = () => {
         ctx.fill();
       });
 
-      // 3. Render and animate particles
       particles.forEach(p => {
-        // Floating movement
         p.y += p.speedY;
         p.waveAngle += p.waveSpeed;
         p.x += p.speedX + Math.sin(p.waveAngle) * 0.15;
 
-        // Twinkle opacity for sparkles
         if (p.isSparkle) {
           p.twinkleAngle += p.twinkleSpeed;
           p.opacity = p.baseOpacity + Math.sin(p.twinkleAngle) * 0.15;
         }
 
-        // Mouse displacement physics (repulsion)
         if (mouse.active) {
           const dx = p.x - mouse.x;
           const dy = p.y - mouse.y;
@@ -155,7 +142,6 @@ const ParticleBackground = () => {
           p.offsetY *= 0.95;
         }
 
-        // Boundary wrap
         if (p.y < -10) {
           p.y = canvas.height + 10;
           p.x = Math.random() * canvas.width;
@@ -165,7 +151,6 @@ const ParticleBackground = () => {
         if (p.x < -10) p.x = canvas.width + 10;
         if (p.x > canvas.width + 10) p.x = -10;
 
-        // Draw particle
         ctx.globalAlpha = p.opacity;
         ctx.fillStyle = p.color;
         ctx.beginPath();
@@ -187,7 +172,7 @@ const ParticleBackground = () => {
     };
   }, []);
 
-  return <canvas id="astro-particles" ref={canvasRef} />;
+  return <canvas ref={canvasRef} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }} />;
 };
 
 export default ParticleBackground;

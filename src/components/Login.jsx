@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Eye, EyeOff, Scissors } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import ParticleBackground from './ParticleBackground';
 
 export default function Login() {
@@ -32,11 +32,8 @@ export default function Login() {
       <ParticleBackground />
       <div className="login-card">
         <div className="login-logo">
-          <div className="login-logo-icon">
-            <Scissors size={40} />
-          </div>
-          <h1 className="login-title">JanaStudio</h1>
-          <p className="login-subtitle">Sistema de Gestión para Salón de Belleza</p>
+          <img src="/logo.png" alt="JanaStudio" />
+          <p className="login-subtitle">Premium Beauty Salon</p>
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">
@@ -97,7 +94,7 @@ export default function Login() {
 
         <div className="login-footer">
           <p>JanaStudio CRM v1.0</p>
-          <p>Desarrollado por JanaStudio</p>
+          <p>Premium Beauty Management</p>
         </div>
       </div>
     </div>

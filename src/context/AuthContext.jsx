@@ -16,7 +16,7 @@ const toSessionUser = (staffProfile, authUser) => ({
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     try {
-      const cached = localStorage.getItem('astro_auth_user');
+      const cached = localStorage.getItem('jana_auth_user');
       return cached ? JSON.parse(cached) : null;
     } catch {
       return null;
@@ -27,9 +27,9 @@ export const AuthProvider = ({ children }) => {
   const updateAndCacheUser = (newUser) => {
     setUser(newUser);
     if (newUser) {
-      localStorage.setItem('astro_auth_user', JSON.stringify(newUser));
+      localStorage.setItem('jana_auth_user', JSON.stringify(newUser));
     } else {
-      localStorage.removeItem('astro_auth_user');
+      localStorage.removeItem('jana_auth_user');
     }
   };
 
@@ -154,8 +154,8 @@ export const AuthProvider = ({ children }) => {
       await dataService.supabase.auth.signOut();
     } finally {
       updateAndCacheUser(null);
-      localStorage.removeItem('astro_active_tab');
-      localStorage.removeItem('astro_auth_user');
+      localStorage.removeItem('jana_active_tab');
+      localStorage.removeItem('jana_auth_user');
       setLoading(false);
     }
   };

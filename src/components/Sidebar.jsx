@@ -1,17 +1,18 @@
 import { useRef, useState, useEffect } from 'react';
-import { 
-  BarChart3, 
-  Users, 
-  UserCircle, 
-  Scissors, 
-  Package, 
-  Wallet, 
+import {
+  BarChart3,
+  Users,
+  UserCircle,
+  Sparkles,
+  Package,
+  Wallet,
   Star,
   Calendar,
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
-  Receipt
+  Receipt,
+  Flower2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useModal } from '../context/ModalContext';
@@ -28,7 +29,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
     { id: 'clients', label: 'Clientes', icon: Users, roles: ['Admin', 'Recepcionista', 'Manicurista', 'Lashista'] },
     { id: 'services', label: 'Servicios', icon: Star, roles: ['Admin'] },
     { id: 'costing', label: 'Costeo', icon: Receipt, roles: ['Admin'] },
-    { id: 'personnel', label: 'Equipo', icon: Scissors, roles: ['Admin'] },
+    { id: 'personnel', label: 'Equipo', icon: Sparkles, roles: ['Admin'] },
     { id: 'inventory', label: 'Inventario', icon: Package, roles: ['Admin', 'Caja'] },
     { id: 'finance', label: 'Finanzas', icon: Wallet, roles: ['Admin', 'Caja'] },
   ];
@@ -81,15 +82,15 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
     <div className="sidebar" style={sidebarStyle}>
       {!isMobile && (
         <div className="logo-container" style={{ marginBottom: isCollapsed ? '16px' : '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', position: 'relative' }}>
-          <button 
+          <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            style={{ 
-              position: isCollapsed ? 'static' : 'absolute', 
-              right: isCollapsed ? 'auto' : '0', 
-              top: '0', 
-              background: 'transparent', 
-              border: 'none', 
-              color: 'var(--text-muted)', 
+            style={{
+              position: isCollapsed ? 'static' : 'absolute',
+              right: isCollapsed ? 'auto' : '0',
+              top: '0',
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--text-muted)',
               cursor: 'pointer',
               marginBottom: isCollapsed ? '16px' : '0'
             }}
@@ -98,53 +99,43 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
           </button>
 
           {!isCollapsed && (
-            <div style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
               marginTop: '12px'
             }}>
-              <div style={{
-                width: '60px',
-                height: '60px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #d946a8 0%, #8b5cf6 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '8px'
-              }}>
-                <Scissors size={28} color="white" />
-              </div>
-              <h1 style={{ 
-                fontSize: '1.5rem', 
-                fontWeight: 800, 
-                background: 'linear-gradient(135deg, #d946a8 0%, #8b5cf6 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                letterSpacing: '-0.02em'
-              }}>
-                JanaStudio
-              </h1>
-              <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '-4px' }}>
-                Salón de Belleza
+              <img
+                src="/logo.png"
+                alt="JanaStudio"
+                style={{ height: '48px', marginBottom: '4px', filter: 'drop-shadow(0 0 12px rgba(196, 139, 159, 0.2))' }}
+              />
+              <p style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '-2px', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+                Premium Beauty Salon
               </p>
             </div>
+          )}
+          {isCollapsed && (
+            <img
+              src="/logo.png"
+              alt="JS"
+              style={{ height: '36px', marginTop: '4px', filter: 'drop-shadow(0 0 8px rgba(196, 139, 159, 0.2))' }}
+            />
           )}
         </div>
       )}
 
-      <nav 
+      <nav
         onMouseLeave={() => setHoveredTab(null)}
         style={{ display: 'flex', flexDirection: 'column', gap: '2px', position: 'relative' }}
       >
-        <div 
+        <div
           className="menu-active-indicator"
           style={{
             position: 'absolute',
             left: 0,
             width: '100%',
-            backgroundColor: 'rgba(217, 70, 168, 0.08)',
+            backgroundColor: 'rgba(196, 139, 159, 0.08)',
             borderRadius: '10px',
             transition: 'transform 0.22s cubic-bezier(0.25, 1, 0.5, 1), height 0.22s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s ease',
             pointerEvents: 'none',
@@ -157,7 +148,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
           const isActive = activeTab === item.id;
           return (
             <button
-              key={item.id} 
+              key={item.id}
               ref={el => itemRefs.current[index] = el}
               onClick={() => setActiveTab(item.id)}
               onMouseEnter={() => setHoveredTab(item.id)}
@@ -168,8 +159,8 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
                 padding: isCollapsed ? '12px' : '12px 16px',
                 borderRadius: '10px',
                 border: 'none',
-                background: isActive ? 'rgba(217, 70, 168, 0.1)' : 'transparent',
-                color: isActive ? '#d946a8' : 'var(--text-primary)',
+                background: isActive ? 'rgba(196, 139, 159, 0.1)' : 'transparent',
+                color: isActive ? 'var(--pink-primary)' : 'var(--text-primary)',
                 cursor: 'pointer',
                 fontSize: '0.9rem',
                 fontWeight: isActive ? 600 : 400,
@@ -181,7 +172,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
                 zIndex: 1
               }}
             >
-              <Icon size={20} style={{ color: isActive ? '#d946a8' : 'var(--text-muted)' }} />
+              <Icon size={20} style={{ color: isActive ? 'var(--pink-primary)' : 'var(--text-muted)' }} />
               {!isCollapsed && <span>{item.label}</span>}
             </button>
           );
@@ -190,10 +181,10 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
 
       <div style={{ marginTop: 'auto', paddingTop: '20px', borderTop: '1px solid var(--border-color)' }}>
         {!isCollapsed && rates && rates.usdt > 0 && (
-          <div style={{ 
-            padding: '12px', 
-            borderRadius: '10px', 
-            backgroundColor: 'rgba(217, 70, 168, 0.05)',
+          <div style={{
+            padding: '12px',
+            borderRadius: '10px',
+            backgroundColor: 'rgba(196, 139, 159, 0.05)',
             marginBottom: '12px',
             fontSize: '0.8rem'
           }}>
@@ -203,7 +194,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-muted)' }}>USDT</span>
-              <span style={{ color: '#d946a8', fontWeight: 600 }}>Bs. {rates.usdt?.toFixed(2)}</span>
+              <span style={{ color: 'var(--pink-primary)', fontWeight: 600 }}>Bs. {rates.usdt?.toFixed(2)}</span>
             </div>
           </div>
         )}
@@ -226,8 +217,8 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
             justifyContent: isCollapsed ? 'center' : 'flex-start',
             transition: 'all 0.2s ease'
           }}
-          onMouseEnter={(e) => e.target.style.color = '#ef4444'}
-          onMouseLeave={(e) => e.target.style.color = 'var(--text-muted)'}
+          onMouseEnter={(e) => e.currentTarget.style.color = '#f87171'}
+          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
         >
           <LogOut size={20} />
           {!isCollapsed && <span>Cerrar Sesión</span>}

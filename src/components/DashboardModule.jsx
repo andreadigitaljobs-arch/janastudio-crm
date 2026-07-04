@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  TrendingUp, 
-  Users, 
+import {
+  TrendingUp,
+  Users,
   Clock,
   Calendar,
   Sparkles,
   RefreshCw,
-  Scissors
+  Flower2,
+  Heart
 } from 'lucide-react';
 import {
   Chart as ChartJS,
@@ -39,20 +40,20 @@ const QUOTES = [
   { text: "Las manos que embellecen, tocan el alma.", creator: "Arte" },
   { text: "La confianza es la mejor belleza.", creator: "Reflejo" },
   { text: "Un buen servicio vale más que mil palabras.", creator: "Negocios" },
-  { text: "La paciencia es la madre del arte.", creator: "Sabiduría" },
+  { text: "El arte de la belleza es una pasión que inspira.", creator: "JanaStudio" },
   { text: "Cada detalle cuenta cuando se hace con amor.", creator: "Pasión" },
 ];
 
-const DashboardModule = ({ 
-  isMobile, 
+const DashboardModule = ({
+  isMobile,
   isTablet,
   isCollapsed,
-  onOpenSale, 
-  stats, 
-  chartData, 
-  dbData, 
-  handleSeedData, 
-  rates, 
+  onOpenSale,
+  stats,
+  chartData,
+  dbData,
+  handleSeedData,
+  rates,
   onNavigate,
   onRefresh
 }) => {
@@ -72,11 +73,11 @@ const DashboardModule = ({
     return () => clearInterval(interval);
   }, []);
 
-  const today = new Date().toLocaleDateString('es-VE', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
+  const today = new Date().toLocaleDateString('es-VE', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
   });
 
   const quote = QUOTES[quoteIndex];
@@ -86,15 +87,15 @@ const DashboardModule = ({
       {/* Header */}
       <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <h1 style={{ 
-            fontSize: isMobile ? '1.5rem' : '2rem', 
-            fontWeight: 800, 
+          <h1 style={{
+            fontSize: isMobile ? '1.5rem' : '2rem',
+            fontWeight: 800,
             color: 'var(--text-primary)',
             display: 'flex',
             alignItems: 'center',
             gap: '12px'
           }}>
-            <Sparkles size={28} style={{ color: '#d946a8' }} />
+            <Sparkles size={28} style={{ color: 'var(--pink-primary)' }} />
             Dashboard
           </h1>
           <p style={{ color: 'var(--text-muted)', marginTop: '4px', textTransform: 'capitalize' }}>
@@ -125,20 +126,20 @@ const DashboardModule = ({
       <div style={{
         padding: '20px',
         borderRadius: '16px',
-        background: 'linear-gradient(135deg, rgba(217, 70, 168, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)',
-        border: '1px solid rgba(217, 70, 168, 0.2)',
+        background: 'linear-gradient(135deg, rgba(196, 139, 159, 0.08) 0%, rgba(160, 80, 106, 0.08) 100%)',
+        border: '1px solid rgba(196, 139, 159, 0.15)',
         marginBottom: '24px'
       }}>
-        <p style={{ 
-          fontSize: '1.1rem', 
-          fontStyle: 'italic', 
+        <p style={{
+          fontSize: '1.1rem',
+          fontStyle: 'italic',
           color: 'var(--text-primary)',
           margin: 0
         }}>
           "{quote.text}"
         </p>
-        <p style={{ 
-          fontSize: '0.85rem', 
+        <p style={{
+          fontSize: '0.85rem',
           color: 'var(--text-muted)',
           marginTop: '8px',
           textAlign: 'right'
@@ -148,31 +149,27 @@ const DashboardModule = ({
       </div>
 
       {/* Stats Cards */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', 
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
         gap: '16px',
         marginBottom: '24px'
       }}>
         <div style={{
           padding: '20px',
           borderRadius: '16px',
-          background: 'linear-gradient(135deg, rgba(217, 70, 168, 0.15) 0%, rgba(217, 70, 168, 0.05) 100%)',
-          border: '1px solid rgba(217, 70, 168, 0.2)'
+          background: 'linear-gradient(135deg, rgba(196, 139, 159, 0.12) 0%, rgba(196, 139, 159, 0.04) 100%)',
+          border: '1px solid rgba(196, 139, 159, 0.15)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>Ingresos Hoy</p>
-              <h3 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#d946a8', margin: '8px 0 0 0' }}>
+              <h3 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--pink-primary)', margin: '8px 0 0 0' }}>
                 ${formatCurrency(stats?.income || 0)}
               </h3>
             </div>
-            <div style={{
-              padding: '10px',
-              borderRadius: '12px',
-              background: 'rgba(217, 70, 168, 0.2)'
-            }}>
-              <TrendingUp size={20} color="#d946a8" />
+            <div style={{ padding: '10px', borderRadius: '12px', background: 'rgba(196, 139, 159, 0.15)' }}>
+              <TrendingUp size={20} style={{ color: 'var(--pink-primary)' }} />
             </div>
           </div>
         </div>
@@ -180,22 +177,18 @@ const DashboardModule = ({
         <div style={{
           padding: '20px',
           borderRadius: '16px',
-          background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0.05) 100%)',
-          border: '1px solid rgba(139, 92, 246, 0.2)'
+          background: 'linear-gradient(135deg, rgba(160, 80, 106, 0.12) 0%, rgba(160, 80, 106, 0.04) 100%)',
+          border: '1px solid rgba(160, 80, 106, 0.15)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>Ingresos Semana</p>
-              <h3 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#8b5cf6', margin: '8px 0 0 0' }}>
+              <h3 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--magenta-primary)', margin: '8px 0 0 0' }}>
                 ${formatCurrency(stats?.weeklyIncome || 0)}
               </h3>
             </div>
-            <div style={{
-              padding: '10px',
-              borderRadius: '12px',
-              background: 'rgba(139, 92, 246, 0.2)'
-            }}>
-              <Calendar size={20} color="#8b5cf6" />
+            <div style={{ padding: '10px', borderRadius: '12px', background: 'rgba(160, 80, 106, 0.15)' }}>
+              <Calendar size={20} style={{ color: 'var(--magenta-primary)' }} />
             </div>
           </div>
         </div>
@@ -203,8 +196,8 @@ const DashboardModule = ({
         <div style={{
           padding: '20px',
           borderRadius: '16px',
-          background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.05) 100%)',
-          border: '1px solid rgba(34, 197, 94, 0.2)'
+          background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.12) 0%, rgba(34, 197, 94, 0.04) 100%)',
+          border: '1px solid rgba(34, 197, 94, 0.15)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
@@ -213,11 +206,7 @@ const DashboardModule = ({
                 {stats?.clients || 0}
               </h3>
             </div>
-            <div style={{
-              padding: '10px',
-              borderRadius: '12px',
-              background: 'rgba(34, 197, 94, 0.2)'
-            }}>
+            <div style={{ padding: '10px', borderRadius: '12px', background: 'rgba(34, 197, 94, 0.15)' }}>
               <Users size={20} color="#22c55e" />
             </div>
           </div>
@@ -226,22 +215,18 @@ const DashboardModule = ({
         <div style={{
           padding: '20px',
           borderRadius: '16px',
-          background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.15) 0%, rgba(234, 179, 8, 0.05) 100%)',
-          border: '1px solid rgba(234, 179, 8, 0.2)'
+          background: 'linear-gradient(135deg, rgba(212, 160, 154, 0.12) 0%, rgba(212, 160, 154, 0.04) 100%)',
+          border: '1px solid rgba(212, 160, 154, 0.15)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>Servicios Hoy</p>
-              <h3 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#eab308', margin: '8px 0 0 0' }}>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>Citas Hoy</p>
+              <h3 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--rose-gold)', margin: '8px 0 0 0' }}>
                 {stats?.appointments || 0}
               </h3>
             </div>
-            <div style={{
-              padding: '10px',
-              borderRadius: '12px',
-              background: 'rgba(234, 179, 8, 0.2)'
-            }}>
-              <Scissors size={20} color="#eab308" />
+            <div style={{ padding: '10px', borderRadius: '12px', background: 'rgba(212, 160, 154, 0.15)' }}>
+              <Heart size={20} style={{ color: 'var(--rose-gold)' }} />
             </div>
           </div>
         </div>
@@ -278,7 +263,7 @@ const DashboardModule = ({
                 },
                 y: {
                   grid: { color: 'rgba(255,255,255,0.05)' },
-                  ticks: { 
+                  ticks: {
                     color: 'var(--text-muted)',
                     callback: (value) => `$${value}`
                   }
@@ -310,7 +295,7 @@ const DashboardModule = ({
                   width: '40px',
                   height: '40px',
                   borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #d946a8 0%, #8b5cf6 100%)',
+                  background: 'linear-gradient(135deg, #d4a09a 0%, #a0506a 100%)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -328,13 +313,13 @@ const DashboardModule = ({
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', textAlign: 'center' }}>
                 <div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Hoy</div>
-                  <div style={{ fontWeight: 600, color: '#d946a8' }}>
+                  <div style={{ fontWeight: 600, color: 'var(--pink-primary)' }}>
                     ${formatCurrency(member.stats?.income || 0)}
                   </div>
                 </div>
                 <div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Semana</div>
-                  <div style={{ fontWeight: 600, color: '#8b5cf6' }}>
+                  <div style={{ fontWeight: 600, color: 'var(--magenta-primary)' }}>
                     ${formatCurrency(member.stats?.weeklyIncome || 0)}
                   </div>
                 </div>

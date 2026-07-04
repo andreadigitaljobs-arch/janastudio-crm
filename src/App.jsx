@@ -1,16 +1,17 @@
 import React, { lazy, Suspense, useState, useEffect, useMemo } from 'react';
 import Sidebar from './components/Sidebar';
-import { 
-  BarChart3, 
-  UserCircle, 
-  Users, 
-  Scissors, 
-  Star, 
-  Package, 
-  Wallet, 
+import {
+  BarChart3,
+  UserCircle,
+  Users,
+  Sparkles,
+  Star,
+  Package,
+  Wallet,
   Calendar,
   X,
-  Receipt
+  Receipt,
+  Heart
 } from 'lucide-react';
 import { dataService } from './services/dataService';
 
@@ -97,7 +98,7 @@ function App() {
   // Real-time Notifications
   useEffect(() => {
     if (!user) return;
-    const channel = dataService.supabase.channel('jana-notifications')
+    const channel = dataService.supabase.channel('jana-notifications-v2')
       .on('broadcast', { event: 'crm-notification' }, ({ payload }) => {
         const userRole = user?.role || '';
         const roleName = userRole.split('|')[0];
@@ -147,8 +148,8 @@ function App() {
     datasets: [{
       label: 'Ingresos ($)',
       data: [0, 0, 0, 0, 0, 0, 0],
-      borderColor: '#d946a8',
-      backgroundColor: 'rgba(217, 70, 168, 0.1)',
+      borderColor: '#c48b9f',
+      backgroundColor: 'rgba(196, 139, 159, 0.1)',
       fill: true,
       tension: 0.4
     }]
@@ -161,7 +162,7 @@ function App() {
     { id: 'clients', label: 'Clientes', icon: Users },
     { id: 'services', label: 'Servicios', icon: Star },
     { id: 'costing', label: 'Costeo', icon: Receipt, roles: ['Admin'] },
-    { id: 'personnel', label: 'Equipo', icon: Scissors },
+    { id: 'personnel', label: 'Equipo', icon: Sparkles },
     { id: 'inventory', label: 'Inventario', icon: Package, roles: ['Admin', 'Caja'] },
     { id: 'finance', label: 'Finanzas', icon: Wallet, roles: ['Admin', 'Caja'] },
   ];
@@ -268,13 +269,13 @@ function App() {
           );
           setChartData({
             labels: ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'],
-            datasets: [{ 
-              label: 'Ingresos ($)', 
-              data: dailyTotals, 
-              borderColor: '#d946a8', 
-              backgroundColor: 'rgba(217, 70, 168, 0.1)', 
-              fill: true, 
-              tension: 0.4 
+            datasets: [{
+              label: 'Ingresos ($)',
+              data: dailyTotals,
+              borderColor: '#c48b9f',
+              backgroundColor: 'rgba(196, 139, 159, 0.1)',
+              fill: true,
+              tension: 0.4
             }]
           });
         }, 0);
@@ -310,9 +311,9 @@ function App() {
     try {
       await dataService.addStaff({ name: 'María García', role: 'Manicurista', commission_pct: 40 });
       await dataService.addStaff({ name: 'Ana López', role: 'Lashista', commission_pct: 40 });
-      await dataService.addService({ name: 'Manicuría Francesa', price: 15, category: 'Uñas', duration_minutes: 60 });
-      await dataService.addService({ name: 'Pestañas Rusa', price: 25, category: 'Pestañas', duration_minutes: 120 });
-      await dataService.addService({ name: 'Alisado', price: 80, category: 'Cabello', duration_minutes: 180 });
+      await dataService.addService({ name: 'Manicuría Francesa', price: 35, category: 'Uñas', duration_minutes: 60 });
+      await dataService.addService({ name: 'Pestañas Rusa', price: 45, category: 'Pestañas', duration_minutes: 120 });
+      await dataService.addService({ name: 'Alisado Premium', price: 120, category: 'Cabello', duration_minutes: 180 });
       await dataService.addClient({ name: 'Laura Demo', phone: '555-0123', skin_type: 'Normal' });
       await alert('Datos de demo cargados!');
       fetchInitialData();

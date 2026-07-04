@@ -151,7 +151,7 @@ const CostingModule = ({ isMobile, services = [], inventory = [] }) => {
           alignItems: 'center',
           gap: '12px'
         }}>
-          <Receipt size={28} style={{ color: '#d946a8' }} />
+          <Receipt size={28} style={{ color: 'var(--pink-primary)' }} />
           Costeo de Servicios
         </h1>
         <p style={{ color: 'var(--text-muted)', marginTop: '4px' }}>
@@ -173,7 +173,7 @@ const CostingModule = ({ isMobile, services = [], inventory = [] }) => {
                 style={{
                   padding: '12px',
                   borderRadius: '10px',
-                  border: selectedService?.id === service.id ? '2px solid #d946a8' : '1px solid var(--border-color)',
+                  border: selectedService?.id === service.id ? '2px solid var(--pink-primary)' : '1px solid var(--border-color)',
                   background: selectedService?.id === service.id ? 'rgba(217, 70, 168, 0.1)' : 'var(--bg-primary)',
                   cursor: 'pointer',
                   textAlign: 'left',
@@ -234,7 +234,7 @@ const CostingModule = ({ isMobile, services = [], inventory = [] }) => {
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
                       Costo Total
                     </div>
-                    <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#d946a8' }}>
+                    <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--pink-primary)' }}>
                       ${profitData[0].total_cost?.toFixed(2) || '0.00'}
                     </div>
                   </div>
@@ -306,7 +306,7 @@ const CostingModule = ({ isMobile, services = [], inventory = [] }) => {
                       padding: '8px 16px',
                       borderRadius: '8px',
                       border: 'none',
-                      background: '#d946a8',
+                      background: 'var(--pink-primary)',
                       color: 'white',
                       cursor: 'pointer',
                       fontSize: '0.85rem',
@@ -402,7 +402,7 @@ const CostingModule = ({ isMobile, services = [], inventory = [] }) => {
                         
                         <div style={{ 
                           fontWeight: 600, 
-                          color: '#d946a8',
+                          color: 'var(--pink-primary)',
                           textAlign: 'right',
                           minWidth: '70px'
                         }}>
@@ -596,7 +596,7 @@ const CostingModule = ({ isMobile, services = [], inventory = [] }) => {
                   padding: '10px 20px',
                   borderRadius: '8px',
                   border: 'none',
-                  background: '#d946a8',
+                  background: 'var(--pink-primary)',
                   color: 'white',
                   cursor: 'pointer',
                   fontWeight: 600,
