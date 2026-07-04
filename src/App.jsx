@@ -422,9 +422,9 @@ function App() {
       />
       <main className="main-content no-scrollbar" style={{ 
         flex: 1, 
-        width: isMobile ? '100%' : (isCollapsed ? 'calc(100% - 80px)' : 'calc(100% - 260px)'),
-        maxWidth: isMobile ? '100%' : (isCollapsed ? 'calc(100% - 80px)' : 'calc(100% - 260px)'),
-        marginLeft: isMobile ? '0' : (isCollapsed ? '80px' : '260px'), 
+        width: isMobile ? '100%' : (isCollapsed ? 'calc(100% - 70px)' : 'calc(100% - 220px)'),
+        maxWidth: isMobile ? '100%' : (isCollapsed ? 'calc(100% - 70px)' : 'calc(100% - 220px)'),
+        marginLeft: isMobile ? '0' : (isCollapsed ? '70px' : '220px'), 
         padding: 'var(--spacing-xl)', 
         paddingBottom: '80px',
         height: '100vh',

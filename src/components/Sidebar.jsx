@@ -61,11 +61,11 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
     width: '100%', height: 'auto', backgroundColor: 'transparent',
     display: 'flex', flexDirection: 'column', padding: '0'
   } : {
-    width: isCollapsed ? '80px' : '260px',
+    width: isCollapsed ? '70px' : '220px',
     height: '100vh',
     background: 'linear-gradient(180deg, #2d1f2d 0%, #3d2a3a 40%, #4a3040 70%, #5a3d50 100%)',
     display: 'flex', flexDirection: 'column',
-    padding: isCollapsed ? '16px 10px' : '20px 16px',
+    padding: isCollapsed ? '12px 8px' : '16px 12px',
     position: 'fixed', left: 0, top: 0,
     overflowY: 'auto', overflowX: 'hidden',
     transition: 'all 0.3s ease', zIndex: 100,
@@ -104,12 +104,12 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
                 src="/logo.png"
                 alt="JanaStudio"
                 style={{
-                  height: '52px', marginBottom: '6px',
-                  filter: 'brightness(1.1) drop-shadow(0 0 16px rgba(196, 139, 159, 0.25))'
+                  height: '42px', marginBottom: '4px',
+                  filter: 'brightness(1.1) drop-shadow(0 0 12px rgba(196, 139, 159, 0.2))'
                 }}
               />
               <p style={{
-                fontSize: '0.62rem', color: 'rgba(255,255,255,0.4)',
+                fontSize: '0.55rem', color: 'rgba(255,255,255,0.35)',
                 letterSpacing: '1.5px', textTransform: 'uppercase', fontWeight: '600'
               }}>
                 PREMIUM BEAUTY SALON
@@ -153,12 +153,12 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
               onClick={() => setActiveTab(item.id)}
               onMouseEnter={() => setHoveredTab(item.id)}
               style={{
-                display: 'flex', alignItems: 'center', gap: '12px',
-                padding: isCollapsed ? '11px' : '11px 14px',
-                borderRadius: '12px', border: 'none',
+                display: 'flex', alignItems: 'center', gap: '10px',
+                padding: isCollapsed ? '9px' : '9px 12px',
+                borderRadius: '10px', border: 'none',
                 background: isActive ? 'rgba(255, 255, 255, 0.12)' : 'transparent',
                 color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.5)',
-                cursor: 'pointer', fontSize: '0.88rem',
+                cursor: 'pointer', fontSize: '0.8rem',
                 fontWeight: isActive ? 600 : 400,
                 transition: 'all 0.2s ease', width: '100%',
                 textAlign: 'left',
@@ -166,7 +166,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
                 position: 'relative', zIndex: 1
               }}
             >
-              <Icon size={19} style={{ color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.35)' }} />
+              <Icon size={17} style={{ color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.35)' }} />
               {!isCollapsed && <span>{item.label}</span>}
             </button>
           );
@@ -177,30 +177,26 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
         {/* Salon Brand Card */}
         {!isCollapsed && (
           <div style={{
-            padding: '16px', borderRadius: '14px',
+            padding: '12px', borderRadius: '12px',
             background: 'rgba(255, 255, 255, 0.06)',
-            marginBottom: '16px', position: 'relative', overflow: 'hidden'
+            marginBottom: '12px', position: 'relative', overflow: 'hidden'
           }}>
             <div style={{
-              width: '100%', height: '80px', borderRadius: '10px',
-              background: 'linear-gradient(135deg, rgba(196, 139, 159, 0.15) 0%, rgba(160, 80, 106, 0.1) 100%)',
-              marginBottom: '10px',
+              width: '100%', height: '60px', borderRadius: '8px',
+              background: 'linear-gradient(135deg, rgba(196, 139, 159, 0.12) 0%, rgba(160, 80, 106, 0.08) 100%)',
+              marginBottom: '8px',
               display: 'flex', alignItems: 'center', justifyContent: 'center'
             }}>
-              <Sparkles size={28} color="rgba(196, 139, 159, 0.4)" />
+              <Sparkles size={22} color="rgba(196, 139, 159, 0.35)" />
             </div>
             <div style={{
-              fontFamily: 'Georgia, serif', fontSize: '1rem',
+              fontFamily: 'Georgia, serif', fontSize: '0.88rem',
               color: '#ffffff', fontWeight: '500', marginBottom: '2px'
-            }}>
-              Jana Studio
-            </div>
+            }}>Jana Studio</div>
             <div style={{
-              fontSize: '0.72rem', color: 'rgba(255,255,255,0.4)',
-              lineHeight: '1.4'
-            }}>
-              Belleza que inspira confianza.
-            </div>
+              fontSize: '0.62rem', color: 'rgba(255,255,255,0.35)',
+              lineHeight: '1.3'
+            }}>Belleza que inspira confianza.</div>
           </div>
         )}
 
@@ -224,29 +220,29 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
 
         {/* User Profile */}
         <div style={{
-          display: 'flex', alignItems: 'center', gap: '10px',
-          padding: '10px 12px', borderRadius: '12px',
+          display: 'flex', alignItems: 'center', gap: '8px',
+          padding: '8px 10px', borderRadius: '10px',
           backgroundColor: 'rgba(255, 255, 255, 0.04)',
-          marginBottom: '8px'
+          marginBottom: '6px'
         }}>
           <div style={{
-            width: '36px', height: '36px', borderRadius: '50%',
+            width: '30px', height: '30px', borderRadius: '50%',
             background: 'linear-gradient(135deg, #c48b9f 0%, #a0506a 100%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: 'white', fontWeight: 600, fontSize: '0.85rem', flexShrink: 0
+            color: 'white', fontWeight: 600, fontSize: '0.72rem', flexShrink: 0
           }}>
             {user?.name?.charAt(0) || 'A'}
           </div>
           {!isCollapsed && (
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{
-                fontWeight: 600, color: '#ffffff', fontSize: '0.82rem',
+                fontWeight: 600, color: '#ffffff', fontSize: '0.72rem',
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
               }}>
                 {user?.name || 'Administrador'}
               </div>
               <div style={{
-                fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)',
+                fontSize: '0.6rem', color: 'rgba(255,255,255,0.35)',
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
               }}>
                 {user?.email || 'admin@janastudio.com'}

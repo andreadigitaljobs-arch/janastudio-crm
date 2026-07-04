@@ -26,14 +26,14 @@
   --border-color: rgba(0, 0, 0, 0.06);
   --accent-color: #c48b9f;
 
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
+  --spacing-xs: 3px;
+  --spacing-sm: 6px;
+  --spacing-md: 12px;
+  --spacing-lg: 18px;
+  --spacing-xl: 24px;
 
-  --radius-md: 12px;
-  --radius-xl: 20px;
+  --radius-md: 10px;
+  --radius-xl: 16px;
   --radius-pill: 100px;
 
   --glass-bg: rgba(255, 255, 255, 0.92);

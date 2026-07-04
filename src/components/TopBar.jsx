@@ -43,33 +43,33 @@ const TopBar = ({
   return (
     <div style={{
       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      marginBottom: '24px', flexWrap: 'wrap', gap: '16px'
+      marginBottom: '18px', flexWrap: 'wrap', gap: '12px'
     }}>
       {/* Left: Greeting */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         <div style={{ position: 'relative' }}>
           <div style={{
-            width: '52px', height: '52px', borderRadius: '50%',
+            width: '42px', height: '42px', borderRadius: '50%',
             background: 'linear-gradient(135deg, #c48b9f 0%, #a0506a 100%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 4px 14px rgba(196, 139, 159, 0.3)'
+            boxShadow: '0 3px 10px rgba(196, 139, 159, 0.25)'
           }}>
             {user?.image_url ? (
               <img src={user.image_url} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
             ) : (
-              <User color="white" size={22} />
+              <User color="white" size={18} />
             )}
           </div>
           <div style={{
             position: 'absolute', bottom: '0', right: '0',
-            width: '14px', height: '14px', borderRadius: '50%',
+            width: '12px', height: '12px', borderRadius: '50%',
             backgroundColor: isStoreOpen ? '#22c55e' : '#ef4444',
-            border: '3px solid #faf5f5'
+            border: '2.5px solid #faf5f5'
           }} />
         </div>
         <div>
           <h1 style={{
-            fontSize: '22px', fontWeight: '700', color: '#2d2d2d',
+            fontSize: '18px', fontWeight: '700', color: '#2d2d2d',
             letterSpacing: '-0.3px', margin: 0
           }}>
             {getGreeting()}, <span className="text-gradient">
@@ -77,53 +77,51 @@ const TopBar = ({
             </span> ✨
           </h1>
           <p style={{
-            fontSize: '0.82rem', color: '#9e9e9e', margin: '4px 0 0 0',
+            fontSize: '0.72rem', color: '#9e9e9e', margin: '2px 0 0 0',
             fontStyle: 'italic'
-          }}>
-            Tu pasión hace brillar cada detalle.
-          </p>
+          }}>Tu pasión hace brillar cada detalle.</p>
         </div>
       </div>
 
       {/* Right: Chips + Actions */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
         {/* Location Chip */}
         <div style={{
-          padding: '8px 14px', borderRadius: '12px', background: '#ffffff',
-          border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 1px 4px rgba(0,0,0,0.03)',
-          display: 'flex', alignItems: 'center', gap: '8px'
+          padding: '6px 12px', borderRadius: '10px', background: '#ffffff',
+          border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+          display: 'flex', alignItems: 'center', gap: '7px'
         }}>
           <div style={{
-            width: '28px', height: '28px', borderRadius: '8px',
+            width: '24px', height: '24px', borderRadius: '7px',
             background: 'rgba(196, 139, 159, 0.1)',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
-            <MapPin size={14} color="#c48b9f" />
+            <MapPin size={12} color="#c48b9f" />
           </div>
           <div>
-            <div style={{ fontSize: '0.72rem', fontWeight: '600', color: '#2d2d2d' }}>Sucursal Principal</div>
-            <div style={{ fontSize: '0.68rem', color: '#9e9e9e' }}>Maracay, Venezuela</div>
+            <div style={{ fontSize: '0.65rem', fontWeight: '600', color: '#2d2d2d' }}>Sucursal Principal</div>
+            <div style={{ fontSize: '0.6rem', color: '#9e9e9e' }}>Maracay, Venezuela</div>
           </div>
         </div>
 
         {/* Date/Time Chip */}
         <div style={{
-          padding: '8px 14px', borderRadius: '12px', background: '#ffffff',
-          border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 1px 4px rgba(0,0,0,0.03)',
-          display: 'flex', alignItems: 'center', gap: '8px'
+          padding: '6px 12px', borderRadius: '10px', background: '#ffffff',
+          border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+          display: 'flex', alignItems: 'center', gap: '7px'
         }}>
           <div style={{
-            width: '28px', height: '28px', borderRadius: '8px',
+            width: '24px', height: '24px', borderRadius: '7px',
             background: 'rgba(196, 139, 159, 0.1)',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
-            <Calendar size={14} color="#c48b9f" />
+            <Calendar size={12} color="#c48b9f" />
           </div>
           <div>
-            <div style={{ fontSize: '0.72rem', fontWeight: '600', color: '#2d2d2d', textTransform: 'capitalize' }}>
+            <div style={{ fontSize: '0.65rem', fontWeight: '600', color: '#2d2d2d', textTransform: 'capitalize' }}>
               {formatDay(today.split(',')[0])}, {today.split(',').slice(1).join(',').trim()}
             </div>
-            <div style={{ fontSize: '0.68rem', color: '#9e9e9e' }}>{currentTime}</div>
+            <div style={{ fontSize: '0.6rem', color: '#9e9e9e' }}>{currentTime}</div>
           </div>
         </div>
 
@@ -131,28 +129,25 @@ const TopBar = ({
         <button
           onClick={onOpenNotifications}
           style={{
-            width: '44px', height: '44px', borderRadius: '12px',
+            width: '36px', height: '36px', borderRadius: '10px',
             background: '#ffffff', border: '1px solid rgba(0,0,0,0.04)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             cursor: 'pointer', position: 'relative',
             color: unreadCount > 0 ? '#c48b9f' : '#6b6b6b',
-            boxShadow: '0 1px 4px rgba(0,0,0,0.03)',
-            transition: 'all 0.2s'
+            boxShadow: '0 1px 3px rgba(0,0,0,0.02)', transition: 'all 0.2s'
           }}
         >
-          <Bell size={19} />
+          <Bell size={16} />
           {unreadCount > 0 && (
             <div style={{
-              position: 'absolute', top: '6px', right: '6px',
+              position: 'absolute', top: '5px', right: '5px',
               backgroundColor: '#ef4444', color: 'white',
-              fontSize: '9px', fontWeight: '700', borderRadius: '50%',
-              minWidth: '16px', height: '16px',
+              fontSize: '8px', fontWeight: '700', borderRadius: '50%',
+              minWidth: '14px', height: '14px',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               padding: '0 2px', border: '2px solid #ffffff',
               animation: 'pulse 2s infinite'
-            }}>
-              {unreadCount}
-            </div>
+            }}>{unreadCount}</div>
           )}
         </button>
 
@@ -160,16 +155,16 @@ const TopBar = ({
         <button
           onClick={onOpenSale}
           style={{
-            height: '44px', padding: '0 22px', borderRadius: '12px',
-            fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px',
-            fontSize: '0.88rem', border: 'none',
+            height: '36px', padding: '0 16px', borderRadius: '10px',
+            fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px',
+            fontSize: '0.78rem', border: 'none',
             background: 'linear-gradient(135deg, #d4a09a 0%, #c48b9f 50%, #a0506a 100%)',
             color: 'white', cursor: 'pointer',
-            boxShadow: '0 4px 16px rgba(196, 139, 159, 0.3)',
+            boxShadow: '0 3px 12px rgba(196, 139, 159, 0.25)',
             transition: 'all 0.3s ease'
           }}
         >
-          <Calendar size={18} /> Nueva Cita
+          <Calendar size={15} /> Nueva Cita
         </button>
       </div>
     </div>
