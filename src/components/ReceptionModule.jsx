@@ -191,7 +191,7 @@ const ReceptionModule = ({ isMobile }) => {
 
   const handleScheduleClick = () => {
     if (!selectedClient || (selectedServices.length === 0 && selectedExtras.length === 0) || !formData.staffId) {
-      showToast("Selecciona cliente, servicio/extra y estilista/asistente primero", "warning");
+      showToast("Selecciona cliente, servicio/extra y estilista primero", "warning");
       return;
     }
     setIsScheduleModalOpen(true);
@@ -239,7 +239,7 @@ const ReceptionModule = ({ isMobile }) => {
 
     const hasStaffRequired = selectedServices.length > 0 || selectedExtras.length > 0;
     if (hasStaffRequired && !formData.staffId) {
-      showToast("Selecciona un estilista o asistente", "error");
+      showToast("Selecciona un estilista", "error");
       return;
     }
 
@@ -586,7 +586,7 @@ const ReceptionModule = ({ isMobile }) => {
             )}
 
             <div>
-              <label style={{ display: 'block', fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '12px' }}>ESTILISTAS Y ASISTENTES DISPONIBLES</label>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '12px' }}>ESTILISTAS DISPONIBLES</label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: '12px' }}>
                 {staff.map((s, idx) => {
                   const active = activeAppointments.find(a => a.staff_id === s.id);

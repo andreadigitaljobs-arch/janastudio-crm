@@ -1286,7 +1286,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                     <label style={{ display: 'block', fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '0.5px' }}>ETIQUETA VISIBLE</label>
                     <input 
                       className="form-input" 
-                      placeholder="Ej. Servicio VIP Astro" 
+                      placeholder="Ej. Servicio VIP Jana" 
                       value={newStrategyLabel} 
                       onChange={e => setNewStrategyLabel(e.target.value)} 
                       style={{ height: '44px', width: '100%' }} 

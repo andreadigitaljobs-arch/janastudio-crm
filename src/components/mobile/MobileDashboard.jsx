@@ -36,10 +36,10 @@ const QUOTES = [
   { text: "La disciplina es el puente entre metas y logros.", creator: "Jim Rohn" },
   { text: "El estilo es una forma de decir quién eres sin hablar.", creator: "Rachel Zoe" },
   { text: "Invierte en tu imagen, es tu carta de presentación.", creator: "Negocios" },
-  { text: "Un corte de pelo puede cambiar una vida.", creator: "Arte Astro" },
+  { text: "Un corte de pelo puede cambiar una vida.", creator: "JanaStudio" },
   { text: "La calidad atrae, el detalle retiene.", creator: "Estrategia" },
   { text: "No busques clientes, busca fans.", creator: "Crecimiento" },
-  { text: "La barbería es el arte de esculpir confianza.", creator: "Mística Astro" },
+  { text: "El arte de la belleza es una pasión que inspira.", creator: "JanaStudio" },
   { text: "El éxito es la suma de pequeños esfuerzos diarios.", creator: "Robert Collier" },
   { text: "Domina tu oficio, luego rompe las reglas.", creator: "Maestros" },
   { text: "Cada cliente es una oportunidad de crear una obra maestra.", creator: "Visión" },
@@ -496,7 +496,7 @@ const MobileDashboard = ({ onOpenSale, stats, chartData, dbData, onNavigate, onO
           }} />
           <img 
             src="/barber-chair.png" 
-            alt="Astro Chair" 
+            alt="JanaStudio Chair" 
             className="chair-float"
             style={{ 
               width: '100%', 

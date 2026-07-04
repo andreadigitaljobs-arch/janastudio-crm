@@ -156,7 +156,7 @@ const AstroCamera = ({ onCapture, onClose, overlayClass, cardClass }) => {
     }}>
       {/* Header with Close */}
       <div style={{ position: 'absolute', top: '24px', left: 0, right: 0, padding: '0 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 12 }}>
-        <div style={{ color: 'white', fontWeight: '800', fontSize: '14px', letterSpacing: '1px' }}>ASTRO REC</div>
+        <div style={{ color: 'white', fontWeight: '800', fontSize: '14px', letterSpacing: '1px' }}>JANA STUDIO</div>
         <button 
           onClick={onClose}
           style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', padding: '12px', borderRadius: '50%', cursor: 'pointer' }}

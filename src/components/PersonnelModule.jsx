@@ -43,10 +43,10 @@ import AnimatedModal from './AnimatedModal';
 
 const availableModules = [
   { id: 'dashboard', label: 'Dashboard' },
-  { id: 'scheduling', label: 'Agenda (Astro)' },
+  { id: 'scheduling', label: 'Agenda' },
   { id: 'reception', label: 'Recepción (Padre)' },
   { id: 'checkout', label: 'Caja (Pro)' },
-  { id: 'barber', label: 'Panel Barber (Hijo)' },
+  { id: 'barber', label: 'Panel Estilismo' },
   { id: 'clients', label: 'Clientes' },
   { id: 'personnel', label: 'Personal' },
   { id: 'services', label: 'Servicios' },
@@ -645,7 +645,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                   <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', marginBottom: '8px', letterSpacing: '1px' }}>EMAIL DE ACCESO</label>
                   <div style={{ position: 'relative' }}>
                     <Mail size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
-                    <input className="form-input" type="email" placeholder="persona@astrobarber.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid rgba(196,139,159,0.2)' }} />
+                    <input className="form-input" type="email" placeholder="persona@janastudio.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid rgba(196,139,159,0.2)' }} />
                   </div>
                 </div>
                 <div className="form-group">
@@ -1192,7 +1192,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                           <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', marginBottom: '8px', letterSpacing: '1px' }}>EMAIL DE ACCESO</label>
                           <div style={{ position: 'relative' }}>
                             <Mail size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
-                            <input className="form-input" type="email" placeholder="persona@astrobarber.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid rgba(196,139,159,0.2)' }} />
+                            <input className="form-input" type="email" placeholder="persona@janastudio.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid rgba(196,139,159,0.2)' }} />
                           </div>
                         </div>
                         <div className="form-group">

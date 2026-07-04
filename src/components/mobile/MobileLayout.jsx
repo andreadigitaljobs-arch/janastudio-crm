@@ -28,7 +28,7 @@ const MobileLayout = ({ children, activeTab, setActiveTab, onOpenSale, rates, ac
         zIndex: 100,
       }}>
         <div style={{ width: '40px' }} /> {/* Spacer */}
-        <img src={logo} alt="Astro Barber" style={{ height: '30px', width: 'auto' }} />
+        <img src={logo} alt="JanaStudio" style={{ height: '30px', width: 'auto' }} />
         <button 
           onClick={logout}
           style={{ background: 'none', border: 'none', color: '#ff453a', padding: '10px' }}
