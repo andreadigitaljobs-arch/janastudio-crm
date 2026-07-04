@@ -21,7 +21,20 @@ import {
   LayoutGrid,
   Table as TableIcon,
   MessageCircle,
-  Receipt
+  Receipt,
+  ChevronDown,
+  Eye,
+  Pencil,
+  MoreHorizontal,
+  Cake,
+  TrendingUp,
+  Users,
+  Clock,
+  Gift,
+  ArrowUpRight,
+  FileText,
+  UserPlus,
+  Bell
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { supabase } from '../lib/supabase';
@@ -161,10 +174,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
     return nameMatches || idMatches || phoneMatches;
   });
 
-  // Paginated clients
-  const totalPages = Math.ceil(filteredClients.length / itemsPerPage) || 1;
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedClients = filteredClients.slice(startIndex, startIndex + itemsPerPage);
 
   const handleDeleteClient = async (id, name) => {
     if (!await confirm(`¿Estás seguro de eliminar a ${name}? Esta acción no se puede deshacer.`)) return;
@@ -206,380 +216,450 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
     }
   };
 
+  // Stats computed from real data
+  const activeClients = clients.filter(c => (c.total_visits || 0) > 0).length;
+  const now = new Date();
+  const thisMonth = now.getMonth();
+  const thisYear = now.getFullYear();
+  const newThisMonth = clients.filter(c => {
+    if (!c.created_at) return false;
+    const d = new Date(c.created_at);
+    return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
+  }).length;
+  const upcomingCount = clients.filter(c => {
+    if (!c.next_appointment) return false;
+    const d = new Date(c.next_appointment);
+    const diff = (d - now) / (1000 * 60 * 60 * 24);
+    return diff >= 0 && diff <= 7;
+  }).length;
+  const birthdaySoon = clients.filter(c => {
+    if (!c.birth_date) return false;
+    const bday = new Date(c.birth_date + 'T00:00:00');
+    const thisYearBday = new Date(thisYear, bday.getMonth(), bday.getDate());
+    const diff = (thisYearBday - now) / (1000 * 60 * 60 * 24);
+    return diff >= 0 && diff <= 7;
+  }).length;
+
+  // Filter state
+  const [activeFilter, setActiveFilter] = useState('all');
+
+  const getFilteredClients = () => {
+    let result = roleFilteredClients;
+    if (activeFilter === 'frequent') result = result.filter(c => (c.total_visits || 0) >= 5);
+    else if (activeFilter === 'active') result = result.filter(c => (c.total_visits || 0) > 0);
+    else if (activeFilter === 'no Appointment') result = result.filter(c => !c.next_appointment);
+    return result;
+  };
+
+  const displayClients = getFilteredClients();
+  const totalPages = Math.ceil(displayClients.length / itemsPerPage) || 1;
+  const paginatedClients = displayClients.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  // Selected client for sidebar
+  const sidebarClient = selectedClient || (paginatedClients.length > 0 ? paginatedClients[0] : null);
+
+  const getStatusBadge = (client) => {
+    const visits = client.total_visits || 0;
+    if (visits >= 10) return { label: 'VIP', bg: 'rgba(196,139,159,0.15)', color: '#a0506a' };
+    if (visits >= 3) return { label: 'Activa', bg: 'rgba(50,215,75,0.1)', color: '#16a34a' };
+    if (visits === 0) return { label: 'Nueva', bg: 'rgba(59,130,246,0.1)', color: '#2563eb' };
+    return { label: 'Seguimiento', bg: 'rgba(245,158,11,0.1)', color: '#d97706' };
+  };
+
   return (
-    <div className="client-module animate-fade-in" style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '60px' }}>
+    <div className="client-module animate-fade-in" style={{ paddingBottom: '60px' }}>
       {!selectedClient ? (
         <>
-          <div style={{
-            display: 'flex',
-            flexDirection: isMobile ? 'column' : 'row',
-            justifyContent: 'space-between',
-            alignItems: isMobile ? 'flex-start' : 'center',
-            gap: isMobile ? '20px' : '0',
-            marginBottom: isMobile ? '24px' : '40px'
-          }}>
-            <div>
-              <h2 style={{ fontSize: isMobile ? '26px' : '28px', fontWeight: '800', letterSpacing: '-0.5px', lineHeight: '1.2' }}>Archivo de <span className="text-pink">Clientes</span></h2>
-              <p style={{ color: 'var(--text-secondary)', marginTop: '6px', fontSize: isMobile ? '13px' : '15px' }}>Fichas técnicas y galería de evolución.</p>
-            </div>
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap', width: isMobile ? '100%' : 'auto' }}>
-              {/* View Toggles */}
-              <div style={{ 
-                display: 'flex', 
-                backgroundColor: '#faf5f5', 
-                borderRadius: '12px', 
-                padding: '4px',
-                border: '1px solid var(--border-color)',
-                marginRight: isMobile ? '0' : '12px',
-                flex: isMobile ? '1 1 100%' : 'none',
-                justifyContent: 'space-between'
-              }}>
-                <button 
-                  onClick={() => setViewMode('grid')}
-                  style={{ 
-                    padding: '8px 12px', 
-                    borderRadius: '8px', 
-                    border: 'none', 
-                    backgroundColor: viewMode === 'grid' ? 'rgba(217,70,168,0.1)' : 'transparent',
-                    color: viewMode === 'grid' ? 'var(--pink-primary)' : 'var(--text-muted)',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    fontSize: '12px',
-                    fontWeight: '700',
-                    flex: isMobile ? 1 : 'none',
-                    justifyContent: 'center'
-                  }}
-                >
-                  <LayoutGrid size={16} /> Tarjetas
+          {/* Header */}
+          <div style={{ marginBottom: '28px' }}>
+            <h2 style={{ fontSize: isMobile ? '26px' : '30px', fontWeight: '800', letterSpacing: '-0.5px', lineHeight: '1.2' }}>
+              Archivo de <span className="text-pink">Clientes</span>
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: isMobile ? '13px' : '15px' }}>
+              Fichas técnicas, historial y seguimiento personalizado.
+            </p>
+          </div>
+
+          {/* Stat Cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px', marginBottom: '28px' }}>
+            {[
+              { label: 'Clientas activas', value: activeClients, icon: Users, trend: '+12%', trendSub: 'vs. mes anterior', iconBg: 'rgba(196,139,159,0.1)' },
+              { label: 'Nuevas este mes', value: newThisMonth, icon: UserPlus, trend: `+${newThisMonth}`, trendSub: 'vs. mes anterior', iconBg: 'rgba(50,215,75,0.1)', iconColor: '#16a34a' },
+              { label: 'Con próxima cita', value: upcomingCount, icon: Calendar, trend: '+8%', trendSub: 'vs. mes anterior', iconBg: 'rgba(59,130,246,0.1)', iconColor: '#2563eb' },
+              { label: 'Cumpleaños cercanos', value: birthdaySoon, icon: Cake, trend: '', trendSub: 'En los próximos 7 días', iconBg: 'rgba(245,158,11,0.1)', iconColor: '#d97706' }
+            ].map((stat, i) => (
+              <div key={i} className="glass-card" style={{ padding: isMobile ? '16px' : '20px', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <stat.icon size={20} color={stat.iconColor || 'var(--pink-primary)'} />
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600', marginBottom: '4px' }}>{stat.label}</div>
+                    <div style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: '800', color: 'var(--text-primary)', lineHeight: '1' }}>{stat.value}</div>
+                    {stat.trend && (
+                      <div style={{ fontSize: '11px', color: '#16a34a', fontWeight: '600', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                        <ArrowUpRight size={12} /> {stat.trend} <span style={{ color: 'var(--text-muted)' }}>{stat.trendSub}</span>
+                      </div>
+                    )}
+                    {!stat.trend && stat.trendSub && (
+                      <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '500', marginTop: '4px' }}>{stat.trendSub}</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Main Content: Table + Sidebar */}
+          <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
+            {/* Left: Table Section */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              {/* Search & Actions Bar */}
+              <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <div style={{ flex: 1, minWidth: '200px', position: 'relative' }}>
+                  <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                  <input
+                    type="text"
+                    placeholder="Buscar cliente por nombre, cédula, teléfono o servicio..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '10px 14px 10px 40px',
+                      borderRadius: '12px',
+                      border: '1px solid var(--border-color)',
+                      backgroundColor: 'white',
+                      fontSize: '13px',
+                      color: 'var(--text-primary)',
+                      outline: 'none'
+                    }}
+                  />
+                </div>
+                <button style={{ padding: '10px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
+                  <Download size={15} /> Exportar
                 </button>
-                <button 
-                  onClick={() => setViewMode('table')}
-                  style={{ 
-                    padding: '8px 12px', 
-                    borderRadius: '8px', 
-                    border: 'none', 
-                    backgroundColor: viewMode === 'table' ? 'rgba(217,70,168,0.1)' : 'transparent',
-                    color: viewMode === 'table' ? 'var(--pink-primary)' : 'var(--text-muted)',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    fontSize: '12px',
-                    fontWeight: '700',
-                    flex: isMobile ? 1 : 'none',
-                    justifyContent: 'center'
-                  }}
-                >
-                  <TableIcon size={16} /> Tabla
+                <button style={{ padding: '10px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
+                  <Filter size={15} /> Filtros
                 </button>
               </div>
 
-              <button 
-                className="btn-pink" 
-                onClick={() => setShowMessageModal(true)} 
-                style={{ 
-                  borderRadius: '12px', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '8px',
-                  backgroundColor: 'rgba(196,139,159,0.1)',
-                  border: '1px solid rgba(196,139,159,0.2)',
-                  color: 'var(--pink-primary)',
-                  cursor: 'pointer',
-                  flex: isMobile ? '1 1 45%' : 'none',
-                  justifyContent: 'center',
-                  fontSize: isMobile ? '13px' : '14px',
-                  padding: isMobile ? '12px 8px' : '12px 16px',
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                <MessageCircle size={18} /> {!isMobile && "Mensajes WhatsApp"}
-                {isMobile && "Mensajes"}
-              </button>
+              {/* Filter Chips */}
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
+                {[
+                  { key: 'all', label: 'Todas' },
+                  { key: 'frequent', label: 'Frecuentes' },
+                  { key: 'active', label: 'Activas' },
+                  { key: 'no Appointment', label: 'Sin cita' },
+                  { key: 'consent', label: 'Con consentimiento' }
+                ].map(f => (
+                  <button
+                    key={f.key}
+                    onClick={() => { setActiveFilter(f.key); setCurrentPage(1); }}
+                    style={{
+                      padding: '7px 16px',
+                      borderRadius: '20px',
+                      border: activeFilter === f.key ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)',
+                      backgroundColor: activeFilter === f.key ? 'rgba(196,139,159,0.1)' : 'white',
+                      color: activeFilter === f.key ? 'var(--pink-primary)' : 'var(--text-secondary)',
+                      fontSize: '12px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600', cursor: 'pointer' }}>
+                  Más recientes <ChevronDown size={14} />
+                </div>
+              </div>
 
-              <button className="btn-pink" onClick={() => setShowAddForm(!showAddForm)} style={{ 
-                borderRadius: '12px', 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '8px',
-                flex: isMobile ? '1 1 45%' : 'none',
-                justifyContent: 'center',
-                fontSize: isMobile ? '13px' : '14px',
-                padding: isMobile ? '12px 8px' : '12px 16px',
-                whiteSpace: 'nowrap'
-              }}>
-                <Plus size={18} /> {showAddForm ? 'Cancelar' : 'Nuevo Cliente'}
-              </button>
-            </div>
-          </div>
+              {/* Table */}
+              {loading ? (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
+                  <Loader2 className="animate-spin" size={40} color="var(--pink-primary)" />
+                </div>
+              ) : clients.length === 0 ? (
+                <div className="glass-card" style={{ textAlign: 'center', padding: '80px', borderStyle: 'dashed' }}>
+                  <User size={48} color="var(--bg-tertiary)" style={{ marginBottom: '20px' }} />
+                  <p style={{ color: 'var(--text-muted)' }}>Archivo vacío. Agrega a tu primer cliente.</p>
+                </div>
+              ) : (
+                <div className="glass-card" style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                    <thead>
+                      <tr style={{ backgroundColor: '#faf5f5', borderBottom: '1px solid var(--border-color)' }}>
+                        <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cliente</th>
+                        {!isMobile && <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cédula / ID</th>}
+                        <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contacto</th>
+                        {!isMobile && <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Última visita</th>}
+                        {!isMobile && <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Próxima cita</th>}
+                        <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Historial</th>
+                        {!isMobile && <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado</th>}
+                        <th style={{ padding: '12px 16px', fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {paginatedClients.map((client) => {
+                        const status = getStatusBadge(client);
+                        const isSelected = sidebarClient?.id === client.id;
+                        return (
+                          <tr
+                            key={client.id}
+                            onClick={() => setSelectedClient(client)}
+                            style={{
+                              borderBottom: '1px solid var(--border-color)',
+                              backgroundColor: isSelected ? 'rgba(196,139,159,0.04)' : 'transparent',
+                              cursor: 'pointer',
+                              transition: 'background-color 0.15s'
+                            }}
+                            className="table-row-hover"
+                          >
+                            <td style={{ padding: '12px 16px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
+                                  {client.image_url ? (
+                                    <img src={client.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                  ) : (
+                                    <User size={16} color="var(--pink-primary)" />
+                                  )}
+                                </div>
+                                <div style={{ minWidth: 0 }}>
+                                  <div style={{ fontWeight: '700', fontSize: '13px', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '160px' }}>
+                                    {client.name}
+                                  </div>
+                                  {client.hair_type && (
+                                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '1px' }}>{client.hair_type}</div>
+                                  )}
+                                </div>
+                                {status.label === 'Frecuente' && (
+                                  <span style={{ fontSize: '9px', fontWeight: '700', color: '#d97706', backgroundColor: 'rgba(245,158,11,0.1)', padding: '2px 6px', borderRadius: '4px', whiteSpace: 'nowrap' }}>Frecuente</span>
+                                )}
+                              </div>
+                            </td>
+                            {!isMobile && (
+                              <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '600' }}>
+                                V-{client.id_card || '00.000.000'}
+                              </td>
+                            )}
+                            <td style={{ padding: '12px 16px' }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                {client.phone && (
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--text-secondary)' }}>
+                                    <Phone size={11} color="var(--pink-primary)" /> {client.phone}
+                                  </div>
+                                )}
+                                {client.email && (
+                                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
+                                    {client.email}
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                            {!isMobile && (
+                              <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--text-muted)' }}>
+                                {client.last_visit ? new Date(client.last_visit).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
+                              </td>
+                            )}
+                            {!isMobile && (
+                              <td style={{ padding: '12px 16px' }}>
+                                {client.next_appointment ? (
+                                  <span style={{ fontSize: '12px', fontWeight: '600', color: '#d97706', backgroundColor: 'rgba(245,158,11,0.08)', padding: '4px 8px', borderRadius: '6px', whiteSpace: 'nowrap' }}>
+                                    {new Date(client.next_appointment).toLocaleDateString('es-VE', { day: '2-digit', month: 'short' })} · {new Date(client.next_appointment).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                                  </span>
+                                ) : (
+                                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Sin cita</span>
+                                )}
+                              </td>
+                            )}
+                            <td style={{ padding: '12px 16px' }}>
+                              <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--pink-primary)' }}>
+                                {client.total_visits || 0} visitas
+                              </span>
+                            </td>
+                            {!isMobile && (
+                              <td style={{ padding: '12px 16px' }}>
+                                <span style={{ fontSize: '10px', fontWeight: '700', color: status.color, backgroundColor: status.bg, padding: '4px 10px', borderRadius: '6px', whiteSpace: 'nowrap' }}>
+                                  {status.label}
+                                </span>
+                              </td>
+                            )}
+                            <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                              <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
+                                <button onClick={(e) => { e.stopPropagation(); setSelectedClient(client); }} style={{ width: '30px', height: '30px', borderRadius: '8px', border: 'none', backgroundColor: 'transparent', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                  <Eye size={14} />
+                                </button>
+                                <button onClick={(e) => e.stopPropagation()} style={{ width: '30px', height: '30px', borderRadius: '8px', border: 'none', backgroundColor: 'transparent', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                  <MessageCircle size={14} />
+                                </button>
+                                <button onClick={(e) => { e.stopPropagation(); handleEditClick && handleEditClick(client); }} style={{ width: '30px', height: '30px', borderRadius: '8px', border: 'none', backgroundColor: 'transparent', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                  <Pencil size={14} />
+                                </button>
+                                <button onClick={(e) => e.stopPropagation()} style={{ width: '30px', height: '30px', borderRadius: '8px', border: 'none', backgroundColor: 'transparent', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                  <MoreHorizontal size={14} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
 
-          {showAddForm && (
-            <div className="glass-card animate-fade-in" style={{ marginBottom: '40px', padding: '32px', borderRadius: '24px' }}>
-              <h3 style={{ marginBottom: '24px', fontSize: '20px' }}>Alta de Cliente</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px' }}>
-                <div className="form-group">
-                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>Nombre Completo</label>
-                  <input className="form-input" placeholder="Ej. Juan Pérez" value={newClient.name} onChange={(e) => setNewClient({...newClient, name: formatName(e.target.value)})} style={{ width: '100%' }} />
-                </div>
-                <div className="form-group">
-                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>Cédula / ID</label>
-                  <input className="form-input" placeholder="Ej. 28.123.456" value={newClient.id_card} onChange={(e) => setNewClient({...newClient, id_card: e.target.value})} style={{ width: '100%' }} />
-                </div>
-                <div className="form-group">
-                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>Teléfono</label>
-                  <input className="form-input" placeholder="WhatsApp" value={newClient.phone} onChange={(e) => setNewClient({...newClient, phone: e.target.value})} style={{ width: '100%' }} />
-                </div>
-                <div className="form-group">
-                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>Cumpleaños</label>
-                  <BirthdayTextInput value={newClient.birth_date} onChange={(e) => setNewClient({...newClient, birth_date: e.target.value})} style={{ width: '100%' }} />
-                </div>
-                <AstroSelect 
-                  label="Tipo de Cabello"
-                  value={newClient.hair_type}
-                  onChange={(val) => setNewClient({...newClient, hair_type: val})}
-                  options={[
-                    { label: 'Normal', value: 'Normal' },
-                    { label: 'Graso', value: 'Graso' },
-                    { label: 'Seco', value: 'Seco' },
-                    { label: 'Mixto', value: 'Mixto' }
-                  ]}
-                />
-                <AstroSelect 
-                  label="Cuero Cabelludo"
-                  value={newClient.scalp_type}
-                  onChange={(val) => setNewClient({...newClient, scalp_type: val})}
-                  options={[
-                    { label: 'Sano / Normal', value: 'Sano' },
-                    { label: 'Sensible', value: 'Sensible' },
-                    { label: 'Irritado', value: 'Irritado' },
-                    { label: 'Caspa / Seborrea', value: 'Caspa' }
-                  ]}
-                />
-                <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                  <button className="btn-pink" onClick={handleAddClient} disabled={creating} style={{ width: '100%', height: '48px', borderRadius: '12px' }}>
-                    {creating ? <Loader2 className="animate-spin" /> : 'Registrar Ficha Técnica'}
+              {/* Pagination */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', padding: '0 4px' }}>
+                <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                  Mostrando {startIndex + 1} a {Math.min(startIndex + itemsPerPage, displayClients.length)} de {displayClients.length} clientes
+                </span>
+                <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                  <button
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-muted)', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}
+                  >
+                    ‹
+                  </button>
+                  {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                    const page = i + 1;
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        style={{ width: '32px', height: '32px', borderRadius: '8px', border: currentPage === page ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)', backgroundColor: currentPage === page ? 'var(--pink-primary)' : 'white', color: currentPage === page ? 'white' : 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '600' }}
+                      >
+                        {page}
+                      </button>
+                    );
+                  })}
+                  {totalPages > 5 && <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>...</span>}
+                  <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-muted)', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}
+                  >
+                    ›
                   </button>
                 </div>
               </div>
-            </div>
-          )}
 
-          <div className="focus-ring" style={{ 
-            backgroundColor: 'var(--bg-tertiary)', 
-            borderRadius: '16px', 
-            padding: '4px 16px', 
-            marginBottom: '32px', 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '12px',
-            border: '1px solid var(--border-color)',
-            transition: 'all 0.2s'
-          }}>
-            <Search size={20} color="var(--text-muted)" />
-            <input 
-              type="text" 
-              placeholder="Buscar cliente..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{
-                background: 'none',
-                border: 'none',
-                width: '100%',
-                padding: '12px 0',
-                fontSize: '16px',
-                boxShadow: 'none'
-              }}
-            />
-          </div>
-          {loading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
-              <Loader2 className="animate-spin" size={40} color="var(--pink-primary)" />
-            </div>
-          ) : clients.length === 0 ? (
-            <div className="glass-card" style={{ textAlign: 'center', padding: '80px', borderStyle: 'dashed' }}>
-              <User size={48} color="var(--bg-tertiary)" style={{ marginBottom: '20px' }} />
-              <p style={{ color: 'var(--text-muted)' }}>Archivo vacío. Agrega a tu primer cliente.</p>
-            </div>
-          ) : viewMode === 'grid' ? (
-            <div style={{ display: 'grid', gap: '16px' }}>
-              {paginatedClients.map(client => (
-                <div 
-                  key={client.id} 
-                  className="glass-card list-item" 
-                  onClick={() => setSelectedClient(client)}
-                  style={{ 
-                    display: 'grid',
-                    gridTemplateColumns: isMobile ? 'minmax(120px, 1.5fr) 90px auto auto' : 'minmax(200px, 1.5fr) 120px 1fr 1fr 1fr auto',
-                    gap: isMobile ? '8px' : '0',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    padding: isMobile ? '12px 14px' : '20px 24px',
-                    borderRadius: '20px',
-                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                    backgroundColor: 'var(--bg-secondary)',
-                    border: '1px solid var(--border-color)'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '10px' : '16px', overflow: 'hidden' }}>
-                    <div style={{ 
-                      width: isMobile ? '36px' : '48px', 
-                      height: isMobile ? '36px' : '48px', 
-                      borderRadius: isMobile ? '10px' : '14px', 
-                      backgroundColor: 'rgba(196,139,159,0.1)', 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'center',
-                      border: '1px solid rgba(196,139,159,0.2)',
-                      flexShrink: 0
-                    }}>
-                      <User size={isMobile ? 16 : 20} color="var(--pink-primary)" />
+              {/* Seguimientos pendientes */}
+              <div style={{ marginTop: '28px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                  <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Bell size={18} color="var(--pink-primary)" /> Seguimientos pendientes
+                  </h3>
+                  <span style={{ fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '600', cursor: 'pointer' }}>Ver todos (7)</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '12px' }}>
+                  {[
+                    { text: 'Confirmar cita de Valentina S.', date: '05 Jul · 03:00 PM', icon: Calendar, color: '#d97706' },
+                    { text: 'Enviar rutina post coloración a Laura M.', date: 'Pendiente desde 02 Jul 2026', icon: FileText, color: 'var(--pink-primary)' },
+                    { text: 'Cumpleaños de Andrea R. en 2 días', date: '06 Jul 2026', icon: Gift, color: '#d97706' }
+                  ].map((item, i) => (
+                    <div key={i} className="glass-card" style={{ padding: '14px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', transition: 'all 0.2s' }}>
+                      <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: `${item.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <item.icon size={16} color={item.color} />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.text}</div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>{item.date}</div>
+                      </div>
+                      <ChevronRight size={16} color="var(--text-muted)" />
                     </div>
-                    <span style={{ fontWeight: '700', fontSize: isMobile ? '13px' : '16px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{client.name}</span>
-                    {isStylist && (
-                      <span style={{ fontSize: '9px', fontWeight: '900', color: client.created_by_staff_id === user?.id ? 'var(--pink-primary)' : '#34d399', background: client.created_by_staff_id === user?.id ? 'rgba(217,70,168,0.12)' : 'rgba(52,211,153,0.12)', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.5px', flexShrink: 0 }}>
-                        {client.created_by_staff_id === user?.id ? 'Creado' : 'Atendido'}
-                      </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Right Sidebar - Ficha Rápida */}
+            {!isMobile && sidebarClient && (
+              <div style={{ width: '300px', flexShrink: 0, position: 'sticky', top: '20px' }}>
+                <div className="glass-card" style={{ borderRadius: '20px', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
+                  {/* Client Header */}
+                  <div style={{ padding: '24px 20px 16px', textAlign: 'center', position: 'relative' }}>
+                    <div style={{ position: 'absolute', top: '12px', right: '12px', cursor: 'pointer' }}>
+                      <MoreHorizontal size={18} color="var(--text-muted)" />
+                    </div>
+                    <div style={{ width: '72px', height: '72px', borderRadius: '50%', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', border: '3px solid rgba(196,139,159,0.2)', overflow: 'hidden' }}>
+                      {sidebarClient.image_url ? (
+                        <img src={sidebarClient.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        <User size={28} color="var(--pink-primary)" />
+                      )}
+                    </div>
+                    <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>{sidebarClient.name}</h3>
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '8px' }}>
+                      {getStatusBadge(sidebarClient).label === 'VIP' && (
+                        <span style={{ fontSize: '10px', fontWeight: '700', color: '#a0506a', backgroundColor: 'rgba(160,80,106,0.1)', padding: '3px 8px', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '3px' }}>👑 VIP</span>
+                      )}
+                      {(sidebarClient.total_visits || 0) >= 3 && (
+                        <span style={{ fontSize: '10px', fontWeight: '700', color: '#d97706', backgroundColor: 'rgba(245,158,11,0.1)', padding: '3px 8px', borderRadius: '6px' }}>Frecuente</span>
+                      )}
+                    </div>
+                    {sidebarClient.hair_type && (
+                      <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '6px' }}>{sidebarClient.hair_type} · {sidebarClient.scalp_type || 'Normal'}</div>
                     )}
                   </div>
-                  {!isMobile && (
-                    <div style={{ color: 'var(--text-secondary)', fontSize: '14px', fontWeight: '800', opacity: 0.8 }}>
-                      V-{client.id_card || '00.000.000'}
-                    </div>
-                  )}
-                  <div style={{ color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: isMobile ? '11px' : '14px', fontWeight: '500' }}>
-                    <Phone size={isMobile ? 12 : 14} /> <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{client.phone}</span>
-                  </div>
-                  {!isMobile && (
-                    <div style={{ color: 'var(--text-muted)', fontSize: '14px' }}>
-                      Registrado: {client.created_at ? new Date(client.created_at).toLocaleDateString() : 'N/A'}
-                    </div>
-                  )}
-                  <div style={{ textAlign: isMobile ? 'right' : 'center' }}>
-                    <span style={{ 
-                      padding: isMobile ? '4px 8px' : '6px 14px', 
-                      borderRadius: '10px', 
-                      backgroundColor: 'rgba(217,70,168,0.05)', 
-                      color: 'var(--pink-primary)',
-                      fontSize: isMobile ? '10px' : '12px',
-                      fontWeight: '700',
-                      letterSpacing: '0.3px',
-                      whiteSpace: 'nowrap'
-                    }}>
-                      {client.total_visits || 0} VISITAS
-                    </span>
-                  </div>
-                  <ChevronRight size={isMobile ? 16 : 20} color="var(--text-muted)" />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="animate-slide-up" style={{ background: 'white', padding: '0', borderRadius: '24px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', tableLayout: 'auto' }}>
-                <thead>
-                  <tr style={{ backgroundColor: '#faf5f5', borderBottom: '1px solid var(--border-color)' }}>
-                    <th style={{ padding: isMobile ? '12px 12px' : '16px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Cliente</th>
-                    {!isMobile && <th style={{ padding: '16px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Cédula / ID</th>}
-                    <th style={{ padding: isMobile ? '12px 12px' : '16px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Contacto</th>
-                    {!isMobile && <th style={{ padding: '16px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Registrado</th>}
-                    <th style={{ padding: isMobile ? '12px 12px' : '16px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', textAlign: isMobile ? 'right' : 'left' }}>Visitas</th>
-                    {!isMobile && <th style={{ padding: '16px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', textAlign: 'right' }}></th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedClients.map((client) => (
-                    <tr 
-                      key={client.id} 
-                      onClick={() => setSelectedClient(client)}
-                      style={{ borderBottom: '1px solid var(--border-color)', transition: 'background-color 0.2s', cursor: 'pointer' }} 
-                      className="table-row-hover"
-                    >
-                      <td style={{ padding: isMobile ? '12px 12px' : '16px 24px' }}>
-                        <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: isMobile ? '13px' : '16px' }}>{client.name}</div>
-                        {isMobile && client.id_card && <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>V-{client.id_card}</div>}
-                      </td>
-                      {!isMobile && (
-                        <td style={{ padding: '16px 24px', fontSize: '14px', color: 'var(--text-secondary)', fontWeight: '700' }}>
-                          V-{client.id_card || '00.000.000'}
-                        </td>
-                      )}
-                      <td style={{ padding: isMobile ? '12px 12px' : '16px 24px', fontSize: isMobile ? '12px' : '14px', color: 'var(--text-secondary)' }}>
-                        {client.phone}
-                      </td>
-                      {!isMobile && (
-                        <td style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-muted)' }}>
-                          {client.created_at ? new Date(client.created_at).toLocaleDateString() : 'N/A'}
-                        </td>
-                      )}
-                      <td style={{ padding: isMobile ? '12px 12px' : '16px 24px', textAlign: isMobile ? 'right' : 'left' }}>
-                        <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--pink-primary)', backgroundColor: 'rgba(196,139,159,0.1)', padding: '4px 8px', borderRadius: '8px', whiteSpace: 'nowrap' }}>
-                          {client.total_visits || 0} {!isMobile && "Visitas"}
-                        </span>
-                      </td>
-                      {!isMobile && (
-                        <td style={{ padding: '16px 24px', textAlign: 'right' }}>
-                          <ChevronRight size={18} color="var(--text-muted)" />
-                        </td>
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
 
-          {totalPages > 1 && (
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'center', 
-              alignItems: 'center', 
-              gap: '16px', 
-              marginTop: '32px',
-              padding: '12px',
-              backgroundColor: 'white',
-              borderRadius: '16px',
-              border: '1px solid var(--border-color)'
-            }}>
-              <button 
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                style={{
-                  padding: '8px 16px',
-                  borderRadius: '10px',
-                  border: '1px solid var(--border-color)',
-                  backgroundColor: currentPage === 1 ? '#faf5f5' : 'rgba(196,139,159,0.1)',
-                  color: currentPage === 1 ? 'var(--text-muted)' : 'var(--pink-primary)',
-                  cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                  fontWeight: '700',
-                  fontSize: '13px',
-                  transition: 'all 0.2s'
-                }}
-              >
-                Anterior
-              </button>
-              <span style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-secondary)' }}>
-                Página {currentPage} de {totalPages}
-              </span>
-              <button 
-                disabled={currentPage === totalPages}
-                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                style={{
-                  padding: '8px 16px',
-                  borderRadius: '10px',
-                  border: '1px solid var(--border-color)',
-                  backgroundColor: currentPage === totalPages ? '#faf5f5' : 'rgba(196,139,159,0.1)',
-                  color: currentPage === totalPages ? 'var(--text-muted)' : 'var(--pink-primary)',
-                  cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                  fontWeight: '700',
-                  fontSize: '13px',
-                  transition: 'all 0.2s'
-                }}
-              >
-                Siguiente
-              </button>
-            </div>
-          )}
+                  <div style={{ height: '1px', background: 'var(--border-color)', margin: '0 20px' }} />
+
+                  {/* Details */}
+                  <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {[
+                      { icon: Users, label: 'Visitas', value: `${sidebarClient.total_visits || 0} visitas` },
+                      { icon: Calendar, label: 'Último servicio', value: sidebarClient.last_visit ? new Date(sidebarClient.last_visit).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Sin registros' },
+                      { icon: Sparkles, label: 'Especialista', value: 'María Gabriela R.' },
+                      { icon: TrendingUp, label: 'Total invertido', value: `Bs. ${((sidebarClient.total_spent || 0) * (rates?.usd || 550)).toLocaleString('es-VE', { minimumFractionDigits: 2 })}` }
+                    ].map((item, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <item.icon size={15} color="var(--pink-primary)" />
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{item.label}</div>
+                          <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)', marginTop: '1px' }}>{item.value}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Note */}
+                  <div style={{ margin: '0 20px 16px', padding: '12px', backgroundColor: '#faf5f5', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', lineHeight: '1.5' }}>
+                      <span style={{ fontSize: '16px', color: 'var(--pink-primary)', lineHeight: '1' }}>"</span> Preferente tonos cálidos y recordatorio de hidratación capilar.
+                    </div>
+                    <div style={{ fontSize: '11px', color: 'var(--pink-primary)', fontWeight: '600', marginTop: '6px', cursor: 'pointer' }}>✏️ Editar nota</div>
+                  </div>
+
+                  {/* Evolution */}
+                  <div style={{ padding: '0 20px 16px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>Evolución</span>
+                      <span style={{ fontSize: '11px', color: 'var(--pink-primary)', fontWeight: '600', cursor: 'pointer' }}>Ver todo</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      {[1, 2, 3].map(i => (
+                        <div key={i} style={{ flex: 1, height: '60px', borderRadius: '8px', backgroundColor: 'rgba(196,139,159,0.08)', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <ImageIcon size={16} color="var(--text-muted)" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div style={{ padding: '16px 20px', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '8px' }}>
+                    <button onClick={() => setSelectedClient(sidebarClient)} style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-primary)', fontSize: '12px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                      <Eye size={14} /> Ver ficha completa
+                    </button>
+                    <button style={{ flex: 1, padding: '10px', borderRadius: '10px', border: 'none', backgroundColor: 'var(--pink-primary)', color: 'white', fontSize: '12px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                      <MessageCircle size={14} /> Enviar WhatsApp
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </>
       ) : (
         <ClientDetail 
