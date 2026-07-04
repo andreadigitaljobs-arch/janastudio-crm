@@ -53,7 +53,7 @@ import { useScrollLock } from '../hooks/useScrollLock';
 import { useAuth } from '../context/AuthContext';
 import { getRoleKind } from '../utils/roles';
 
-const ClientModule = ({ isMobile, clients, onRefresh, initialClientId }) => {
+const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) => {
   const { user } = useAuth();
   const { showToast } = useNotifs();
   const { confirm } = useDialog();
