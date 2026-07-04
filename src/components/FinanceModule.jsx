@@ -30,7 +30,7 @@ import AstroDialog from './AstroDialog';
 import AstroDatePicker from './AstroDatePicker';
 import AstroSelect from './AstroSelect';
 import AnimatedModal from './AnimatedModal';
-import { isTreatment } from '../utils/treatment';
+const isTreatment = (val) => String(val).toLowerCase().includes('tratamiento') || String(val).toLowerCase().includes('si');
 
 const getStartOfWeek = () => {
   const now = new Date();
