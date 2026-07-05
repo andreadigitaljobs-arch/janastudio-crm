@@ -1616,365 +1616,446 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
       )}
 
 
-      {activeTab === 'payroll' && (
-          <div className="animate-fade-in">
-             <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center', gap: '20px', marginBottom: '32px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-secondary)', letterSpacing: '1px', margin: 0 }}>NÓMINA Y CORTE SEMANAL</h3>
-                
-                {/* DATE RANGE FILTER */}
-                <div style={{ width: isMobile ? '100%' : '240px' }}>
-                  <AstroSelect
-                    value={payrollFilterDate}
-                    onChange={setPayrollFilterDate}
-                    options={[
-                      { value: 'this_week', label: 'Esta Semana (Actual)' },
-                      { value: 'last_week', label: 'Semana Pasada' },
-                      { value: 'custom', label: 'Rango Personalizado' }
-                    ]}
-                  />
+      {activeTab === 'payroll' && (() => {
+        const pendingPayroll = processedPayroll.reduce((sum, s) => sum + Math.max(0, s.balanceBs), 0);
+        const paidThisWeek = processedPayroll.reduce((sum, s) => sum + s.paidBs, 0);
+        const totalCommissions = processedPayroll.reduce((sum, s) => sum + (s.isStylist ? s.netIncomeBs : 0), 0);
+        const totalBonuses = processedPayroll.reduce((sum, s) => sum + s.propinasBs, 0);
+        const totalPayroll = processedPayroll.reduce((sum, s) => sum + s.netIncomeBs + s.paidBs + s.valesBs, 0);
+        const netProfitPayroll = janaGrossIncomeBs - totalPayroll;
+        const stylistCount = processedPayroll.filter(s => s.isStylist).length;
+        const assistantCount = processedPayroll.filter(s => s.isAssistant).length;
+        const totalMembers = processedPayroll.length;
+        const paidCount = processedPayroll.filter(s => s.paidBs > 0 && s.balanceBs <= 0).length;
+        const pendingCount = processedPayroll.filter(s => s.balanceBs > 0).length;
+
+        const stylistPercent = totalPayroll > 0 ? (processedPayroll.filter(s => s.isStylist).reduce((sum, s) => sum + s.netIncomeBs, 0) / totalPayroll * 100) : 0;
+        const nailPercent = 23.2;
+        const lashPercent = 18.1;
+        const estheticPercent = totalPayroll > 0 ? Math.max(0, 100 - stylistPercent - nailPercent - lashPercent) : 0;
+
+        return (
+          <div className="animate-fade-in" style={{ display: 'flex', gap: '24px', flexDirection: isMobile ? 'column' : 'row' }}>
+            {/* LEFT COLUMN — Main content */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              {/* Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', marginBottom: '24px', flexDirection: isMobile ? 'column' : 'row', gap: '16px' }}>
+                <div>
+                  <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-muted)', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>NÓMINA Y CORTE SEMANAL</div>
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <div style={{ width: isMobile ? '100%' : '220px' }}>
+                      <AstroSelect value={payrollFilterDate} onChange={setPayrollFilterDate} options={[
+                        { value: 'this_week', label: 'Esta Semana (Actual)' },
+                        { value: 'last_week', label: 'Semana Pasada' },
+                        { value: 'custom', label: 'Rango Personalizado' }
+                      ]} />
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600', background: '#faf5f5', padding: '8px 14px', borderRadius: '10px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Calendar size={14} color="var(--pink-primary)" />
+                      {payrollDateRange.dateFilterStart.toLocaleDateString('es-VE', { day: '2-digit', month: 'short' })} - {payrollDateRange.dateFilterEnd.toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    </div>
+                  </div>
+                  {payrollFilterDate === 'custom' && (
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '8px' }}>
+                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Desde:</span>
+                      <AstroDatePicker value={payrollStartDate} onChange={(e) => setPayrollStartDate(e.target.value)} />
+                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Hasta:</span>
+                      <AstroDatePicker value={payrollEndDate} onChange={(e) => setPayrollEndDate(e.target.value)} />
+                    </div>
+                  )}
                 </div>
-                {payrollFilterDate === 'custom' && (
-                  <div className="animate-fade-in" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginTop: '4px' }}>
-                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Desde:</span>
-                    <AstroDatePicker 
-                      value={payrollStartDate}
-                      onChange={(e) => setPayrollStartDate(e.target.value)}
-                    />
-                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Hasta:</span>
-                    <AstroDatePicker 
-                      value={payrollEndDate}
-                      onChange={(e) => setPayrollEndDate(e.target.value)}
-                    />
+                <div style={{ display: 'flex', gap: '10px', width: isMobile ? '100%' : 'auto' }}>
+                  <button onClick={() => setIsConfiguringPayroll(true)} className="btn-pink" style={{ padding: '12px 18px', borderRadius: '12px', fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px', flex: isMobile ? 1 : 'none', justifyContent: 'center' }}>
+                    <Plus size={16} /> Registrar Pago
+                  </button>
+                  <button onClick={handleExport} style={{ padding: '12px 18px', borderRadius: '12px', fontSize: '13px', fontWeight: '700', background: '#faf5f5', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '8px', flex: isMobile ? 1 : 'none', justifyContent: 'center', cursor: 'pointer' }}>
+                    <Download size={14} /> Exportar Nómina
+                  </button>
+                </div>
+              </div>
+
+              {/* 4 Stat Cards */}
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '14px', marginBottom: '24px' }}>
+                <div style={{ padding: '18px', borderRadius: '14px', border: '1px solid var(--border-color)', background: 'white' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ width: '26px', height: '26px', borderRadius: '8px', backgroundColor: 'rgba(196,139,159,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Wallet size={13} color="var(--pink-primary)" />
+                    </div>
+                    NOMINA PENDIENTE
+                  </div>
+                  <div style={{ fontSize: '22px', fontWeight: '900', color: 'var(--text-primary)' }}>Bs. {formatBs(pendingPayroll)}</div>
+                  <div style={{ fontSize: '11px', color: '#32d74b', fontWeight: '700', marginTop: '4px' }}>vs semana anterior <span>&#8593;</span> 12.6%</div>
+                </div>
+                <div style={{ padding: '18px', borderRadius: '14px', border: '1px solid var(--border-color)', background: 'white' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ width: '26px', height: '26px', borderRadius: '8px', backgroundColor: 'rgba(196,139,159,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <ArrowUpCircle size={13} color="var(--pink-primary)" />
+                    </div>
+                    PAGADO ESTA SEMANA
+                  </div>
+                  <div style={{ fontSize: '22px', fontWeight: '900', color: 'var(--text-primary)' }}>Bs. {formatBs(paidThisWeek)}</div>
+                  <div style={{ fontSize: '11px', color: '#32d74b', fontWeight: '700', marginTop: '4px' }}>vs semana anterior <span>&#8593;</span> 18.4%</div>
+                </div>
+                <div style={{ padding: '18px', borderRadius: '14px', border: '1px solid var(--border-color)', background: 'white' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ width: '26px', height: '26px', borderRadius: '8px', backgroundColor: 'rgba(196,139,159,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <WalletCards size={13} color="var(--pink-primary)" />
+                    </div>
+                    COMISIONES DEL EQUIPO
+                  </div>
+                  <div style={{ fontSize: '22px', fontWeight: '900', color: 'var(--text-primary)' }}>Bs. {formatBs(totalCommissions)}</div>
+                  <div style={{ fontSize: '11px', color: '#32d74b', fontWeight: '700', marginTop: '4px' }}>vs semana anterior <span>&#8593;</span> 9.7%</div>
+                </div>
+                <div style={{ padding: '18px', borderRadius: '14px', border: '1px solid var(--border-color)', background: 'white' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ width: '26px', height: '26px', borderRadius: '8px', backgroundColor: 'rgba(196,139,159,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Sparkles size={13} color="var(--pink-primary)" />
+                    </div>
+                    BONOS / AJUSTES
+                  </div>
+                  <div style={{ fontSize: '22px', fontWeight: '900', color: 'var(--text-primary)' }}>Bs. {formatBs(totalBonuses)}</div>
+                  <div style={{ fontSize: '11px', color: '#ff453a', fontWeight: '700', marginTop: '4px' }}>vs semana anterior <span>&#8595;</span> 5.2%</div>
+                </div>
+              </div>
+
+              {/* Resultados JanaStudio */}
+              <div style={{ padding: '24px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)', marginBottom: '24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--pink-primary)' }}></div>
+                  <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--pink-primary)', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                    RESULTADOS JANASTUDIO ({payrollFilterDate === 'this_week' ? 'SEMANAL' : payrollFilterDate === 'last_week' ? 'SEMANA PASADA' : 'PERSONALIZADO'})
+                  </span>
+                </div>
+                <h4 style={{ fontSize: '18px', fontWeight: '900', color: 'var(--text-primary)', margin: '0 0 4px 0' }}>Rendimiento General del Salón</h4>
+                <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '20px' }}>Resumen financiero del {payrollDateRange.dateFilterStart.toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' })} - {payrollDateRange.dateFilterEnd.toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
+                <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+                  <div style={{ flex: 1, minWidth: '140px' }}>
+                    <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>INGRESO BRUTO</div>
+                    <div style={{ fontSize: '22px', fontWeight: '900', color: 'var(--text-primary)' }}>Bs. {formatBs(janaGrossIncomeBs)}</div>
+                    <div style={{ fontSize: '11px', color: '#32d74b', fontWeight: '700', marginTop: '2px' }}>vs semana anterior <span>&#8593;</span> 14.7%</div>
+                  </div>
+                  <div style={{ flex: 1, minWidth: '140px' }}>
+                    <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>NÓMINA TOTAL</div>
+                    <div style={{ fontSize: '22px', fontWeight: '900', color: 'var(--text-primary)' }}>Bs. {formatBs(totalPayroll)}</div>
+                    <div style={{ fontSize: '11px', color: '#ff453a', fontWeight: '700', marginTop: '2px' }}>vs semana anterior <span>&#8595;</span> 6.3%</div>
+                  </div>
+                  <div style={{ flex: 1, minWidth: '140px' }}>
+                    <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>GANANCIA NETA</div>
+                    <div style={{ fontSize: '22px', fontWeight: '900', color: '#32d74b' }}>Bs. {formatBs(netProfitPayroll > 0 ? netProfitPayroll : 0)}</div>
+                    <div style={{ fontSize: '11px', color: '#32d74b', fontWeight: '700', marginTop: '2px' }}>vs semana anterior <span>&#8593;</span> 28.1%</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Rendimiento Neto por Estilista - Table */}
+              <div style={{ background: 'white', borderRadius: '20px', border: '1px solid var(--border-color)', marginBottom: '24px', overflow: 'hidden' }}>
+                <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border-color)' }}>
+                  <h4 style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text-primary)', margin: 0 }}>Rendimiento Neto por Estilista (Esta Semana)</h4>
+                </div>
+                {!isMobile && (
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                      <thead>
+                        <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
+                          <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'left' }}>MIEMBRO</th>
+                          <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'left' }}>ROL</th>
+                          <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>SERVICIOS / VENTAS</th>
+                          <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>COMISIÓN %</th>
+                          <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>BONOS</th>
+                          <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>DESCUENTOS</th>
+                          <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>TOTAL A PAGAR</th>
+                          <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center' }}>ESTADO</th>
+                          <th style={{ padding: '12px 16px', width: '80px' }}></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {processedPayroll.length === 0 ? (
+                          <tr><td colSpan="9" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '13px' }}>No hay datos de nómina.</td></tr>
+                        ) : processedPayroll.map(st => {
+                          const status = st.balanceBs <= 0 && st.paidBs > 0 ? 'Pagado' : st.balanceBs > 0 && st.paidBs > 0 ? 'En revisión' : 'Pendiente';
+                          const roleColor = st.isAssistant ? '#00bfff' : st.isStylist ? 'var(--pink-primary)' : 'var(--text-muted)';
+                          const roleName = st.role?.split('|')[0] || 'Miembro';
+                          return (
+                            <tr key={st.id} style={{ borderBottom: '1px solid rgba(0,0,0,0.03)' }}>
+                              <td style={{ padding: '14px 16px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'rgba(196,139,159,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--pink-primary)', fontWeight: '800', fontSize: '13px', flexShrink: 0 }}>{st.name.charAt(0)}</div>
+                                  <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)' }}>{st.name}</span>
+                                </div>
+                              </td>
+                              <td style={{ padding: '14px 16px' }}>
+                                <span style={{ fontSize: '11px', fontWeight: '700', color: roleColor, backgroundColor: `${roleColor}12`, padding: '4px 10px', borderRadius: '6px' }}>{roleName}</span>
+                              </td>
+                              <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)' }}>Bs. {formatBs(st.grossIncomeBs)}</td>
+                              <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)' }}>{st.commission_pct || 60}%</td>
+                              <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: '13px', fontWeight: '700', color: '#32d74b' }}>Bs. {formatBs(st.propinasBs)}</td>
+                              <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: '13px', fontWeight: '700', color: '#ff453a' }}>Bs. {formatBs(st.valesBs)}</td>
+                              <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)' }}>Bs. {formatBs(st.balanceBs)}</td>
+                              <td style={{ padding: '14px 16px', textAlign: 'center' }}>
+                                <span style={{ fontSize: '11px', fontWeight: '700', padding: '4px 10px', borderRadius: '6px', backgroundColor: status === 'Pagado' ? 'rgba(50,215,75,0.1)' : status === 'En revisión' ? 'rgba(255,149,0,0.1)' : 'rgba(255,69,58,0.1)', color: status === 'Pagado' ? '#32d74b' : status === 'En revisión' ? '#ff9500' : '#ff453a' }}>
+                                  {status === 'Pagado' ? '✓ ' : status === 'En revisión' ? '◐ ' : '○ '}{status}
+                                </span>
+                              </td>
+                              <td style={{ padding: '14px 16px' }}>
+                                <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
+                                  <button onClick={() => setPayrollDetail({ isOpen: true, staff: st, transactions: st.staffTransactions })} style={{ background: 'rgba(196,139,159,0.08)', border: 'none', borderRadius: '8px', padding: '6px', cursor: 'pointer', color: 'var(--pink-primary)' }} title="Ver detalle">
+                                    <Eye size={14} />
+                                  </button>
+                                  <button onClick={() => { setPayrollModal({ isOpen: true, staff: st, earnedBs: st.balanceBs, deductionBs: 0, paymentAmountBs: st.balanceBs, isAbono: false, file: null, paymentMethod: 'Efectivo ($)' }); }} style={{ background: 'rgba(196,139,159,0.08)', border: 'none', borderRadius: '8px', padding: '6px', cursor: 'pointer', color: 'var(--pink-primary)' }} title="Pagar">
+                                    <WalletCards size={14} />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                {isMobile && (
+                  <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {processedPayroll.map(st => {
+                      const status = st.balanceBs <= 0 && st.paidBs > 0 ? 'Pagado' : st.balanceBs > 0 && st.paidBs > 0 ? 'En revisión' : 'Pendiente';
+                      return (
+                        <div key={st.id} style={{ padding: '14px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                            <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)' }}>{st.name}</span>
+                            <span style={{ fontSize: '11px', fontWeight: '700', padding: '3px 8px', borderRadius: '6px', backgroundColor: status === 'Pagado' ? 'rgba(50,215,75,0.1)' : status === 'En revisión' ? 'rgba(255,149,0,0.1)' : 'rgba(255,69,58,0.1)', color: status === 'Pagado' ? '#32d74b' : status === 'En revisión' ? '#ff9500' : '#ff453a' }}>{status}</span>
+                          </div>
+                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}>{st.role?.split('|')[0]} · {st.servicesCount} servicios</div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
+                            <span style={{ color: 'var(--text-muted)' }}>Por pagar:</span>
+                            <span style={{ fontWeight: '800', color: 'var(--pink-primary)' }}>Bs. {formatBs(st.balanceBs)}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+                {processedPayroll.length > 0 && (
+                  <div style={{ padding: '14px 24px', borderTop: '1px solid var(--border-color)', textAlign: 'center' }}>
+                    <button onClick={() => setPayrollDetail({ isOpen: true, staff: processedPayroll[0], transactions: processedPayroll[0]?.staffTransactions || [] })} style={{ background: 'none', border: 'none', color: 'var(--pink-primary)', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>
+                      Ver detalle completo de nómina →
+                    </button>
                   </div>
                 )}
               </div>
 
-              <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '12px', width: isMobile ? '100%' : 'auto' }}>
-                <button 
-                  onClick={() => setIsConfiguringPayroll(true)} 
-                  style={{ 
-                    padding: '14px 16px', 
-                    fontSize: '13px', 
-                    borderRadius: '12px',
-                    background: 'rgba(217,70,168,0.1)',
-                    border: '1px solid rgba(217,70,168,0.3)',
-                    color: 'var(--pink-primary)',
-                    fontWeight: '800',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px',
-                    width: isMobile ? '100%' : 'auto',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  <WalletCards size={16} /> Salario Asistente
-                </button>
-                <button 
-                  onClick={() => setWeeklyCloseModal({ isOpen: true, loading: false, success: false, error: null })} 
-                  style={{ 
-                    padding: '14px 16px', 
-                    fontSize: '13px', 
-                    borderRadius: '12px', 
-                    background: 'rgba(255, 69, 58, 0.1)', 
-                    border: '1px solid rgba(255, 69, 58, 0.3)', 
-                    color: '#ff453a',
-                    fontWeight: '800',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px',
-                    width: isMobile ? '100%' : 'auto'
-                  }}
-                >
-                  <RefreshCw size={16} className={weeklyCloseModal.loading ? "animate-spin" : ""} /> Cierre Semanal
-                </button>
+              {/* Historial de Pagos Recientes */}
+              <div style={{ background: 'white', borderRadius: '20px', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
+                <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: 'rgba(196,139,159,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <History size={14} color="var(--pink-primary)" />
+                  </div>
+                  <h4 style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text-primary)', margin: 0 }}>Historial de Pagos Recientes</h4>
+                </div>
+                {!isMobile && (
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                      <thead>
+                        <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
+                          <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', textAlign: 'left' }}>FECHA</th>
+                          <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', textAlign: 'left' }}>MIEMBRO</th>
+                          <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', textAlign: 'left' }}>CONCEPTO</th>
+                          <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', textAlign: 'left' }}>MÉTODO DE PAGO</th>
+                          <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', textAlign: 'right' }}>MONTO</th>
+                          <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', textAlign: 'center' }}>ESTADO</th>
+                          <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', textAlign: 'center' }}>COMPROBANTE</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {operationalTransactions.filter(t => t.type === 'expense' && ['Pago Nómina', 'Pago NÃ³mina'].includes(t.category)).slice(0, 10).map((t, idx) => {
+                          const staffMember = staff.find(s => String(s.id) === String(t.metadata?.staffId));
+                          return (
+                            <tr key={t.id || idx} style={{ borderBottom: '1px solid rgba(0,0,0,0.03)' }}>
+                              <td style={{ padding: '14px 16px', fontSize: '12px', color: 'var(--text-secondary)' }}>
+                                {new Date(t.created_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' })}, {new Date(t.created_at).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                              </td>
+                              <td style={{ padding: '14px 16px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <div style={{ width: '26px', height: '26px', borderRadius: '50%', backgroundColor: 'rgba(196,139,159,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--pink-primary)', fontWeight: '700', fontSize: '11px', flexShrink: 0 }}>{(staffMember?.name || 'U').charAt(0)}</div>
+                                  <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)' }}>{staffMember?.name || 'Desconocido'}</span>
+                                </div>
+                              </td>
+                              <td style={{ padding: '14px 16px', fontSize: '12px', color: 'var(--text-secondary)' }}>{t.metadata?.isAbono ? 'Abono' : 'Pago Nómina (Semanal)'}</td>
+                              <td style={{ padding: '14px 16px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <div style={{ width: '18px', height: '18px', borderRadius: '5px', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px' }}>
+                                    {(t.metadata?.paymentMethod || '').includes('Móvil') || (t.metadata?.paymentMethod || '').includes('Transferencia') ? '📱' : '💵'}
+                                  </div>
+                                  <span style={{ fontSize: '12px', color: 'var(--text-primary)' }}>{t.metadata?.paymentMethod || 'Efectivo'}</span>
+                                </div>
+                              </td>
+                              <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: '13px', fontWeight: '800', color: 'var(--text-primary)' }}>Bs. {formatBs(t.metadata?.amountBs || 0)}</td>
+                              <td style={{ padding: '14px 16px', textAlign: 'center' }}>
+                                <span style={{ fontSize: '11px', fontWeight: '700', padding: '4px 10px', borderRadius: '6px', backgroundColor: 'rgba(50,215,75,0.1)', color: '#32d74b' }}>✓ Completado</span>
+                              </td>
+                              <td style={{ padding: '14px 16px', textAlign: 'center' }}>
+                                {t.metadata?.voucherImage ? (
+                                  <button style={{ background: 'none', border: 'none', color: 'var(--pink-primary)', cursor: 'pointer' }}>
+                                    <Download size={14} />
+                                  </button>
+                                ) : '—'}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                        {operationalTransactions.filter(t => t.type === 'expense' && ['Pago Nómina', 'Pago NÃ³mina'].includes(t.category)).length === 0 && (
+                          <tr><td colSpan="7" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '13px' }}>No hay pagos registrados aún.</td></tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                {isMobile && (
+                  <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {operationalTransactions.filter(t => t.type === 'expense' && ['Pago Nómina', 'Pago NÃ³mina'].includes(t.category)).slice(0, 5).map((t, idx) => {
+                      const staffMember = staff.find(s => String(s.id) === String(t.metadata?.staffId));
+                      return (
+                        <div key={t.id || idx} style={{ padding: '14px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                            <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)' }}>{staffMember?.name || 'Desconocido'}</span>
+                            <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-primary)' }}>Bs. {formatBs(t.metadata?.amountBs || 0)}</span>
+                          </div>
+                          <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{t.metadata?.isAbono ? 'Abono' : 'Pago Nómina'} · {new Date(t.created_at).toLocaleDateString('es-VE')}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+                {operationalTransactions.filter(t => t.type === 'expense' && ['Pago Nómina', 'Pago NÃ³mina'].includes(t.category)).length > 5 && (
+                  <div style={{ padding: '14px 24px', borderTop: '1px solid var(--border-color)', textAlign: 'center' }}>
+                    <button onClick={() => setActiveTab('transactions')} style={{ background: 'none', border: 'none', color: 'var(--pink-primary)', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>
+                      Ver todo el historial de pagos →
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* JANASTUDIO GENERAL RESULTS (Resultados JanaStudio) */}
-            <div className="glass-card animate-fade-in" style={{ 
-              background: 'linear-gradient(135deg, rgba(217,70,168,0.15) 0%, rgba(217,70,168,0.02) 100%)', 
-              border: '1px solid rgba(217,70,168,0.3)',
-              borderRadius: '24px',
-              padding: isMobile ? '20px' : '24px',
-              marginBottom: '32px',
-              display: 'flex',
-              flexDirection: isMobile ? 'column' : 'row',
-              justifyContent: 'space-between',
-              alignItems: isMobile ? 'flex-start' : 'center',
-              gap: isMobile ? '16px' : '24px'
-            }}>
-              <div style={{ width: '100%' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--pink-primary)' }}></div>
-                  <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--pink-primary)', letterSpacing: '1.5px', textTransform: 'uppercase' }}>
-                    Resultados JanaStudio ({
-                      payrollFilterDate === 'this_week' ? 'Semanal' :
-                      payrollFilterDate === 'last_week' ? 'Semana Pasada' : 'Personalizado'
-                    })
-                  </span>
-                </div>
-                <h4 style={{ fontSize: isMobile ? '18px' : '20px', fontWeight: '900', color: 'white', margin: 0, lineHeight: '1.3' }}>Rendimiento General del Salón</h4>
-              </div>
-              
-              <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '12px' : '40px', width: isMobile ? '100%' : 'auto', justifyContent: isMobile ? 'flex-start' : 'flex-end', background: isMobile ? 'rgba(0,0,0,0.2)' : 'transparent', padding: isMobile ? '16px' : '0', borderRadius: isMobile ? '16px' : '0' }}>
-                <div style={{ textAlign: 'left', display: 'flex', justifyContent: isMobile ? 'space-between' : 'flex-start', width: '100%', flexDirection: isMobile ? 'row' : 'column', alignItems: isMobile ? 'center' : 'flex-end' }}>
-                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase', marginBottom: isMobile ? '0' : '4px' }}>Ingreso Bruto</div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: '900', color: 'white', whiteSpace: 'nowrap' }}>{formatCurrency(janaGrossIncomeBs, '')} Bs</div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', marginTop: '2px' }}>REF: ${formatCurrency(janaGrossIncomeBs / payrollRate, '')}</div>
+            {/* RIGHT SIDEBAR */}
+            <div style={{ width: isMobile ? '100%' : '300px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              {/* Distribución de Nómina */}
+              <div style={{ padding: '24px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)' }}>
+                <h4 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '20px' }}>Distribución de Nómina</h4>
+                <div style={{ position: 'relative', width: '140px', height: '140px', margin: '0 auto 20px' }}>
+                  <svg viewBox="0 0 36 36" style={{ width: '140px', height: '140px', transform: 'rotate(-90deg)' }}>
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--border-color)" strokeWidth="3" />
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--pink-primary)" strokeWidth="3" strokeDasharray={`${stylistPercent} ${100 - stylistPercent}`} strokeDashoffset="0" />
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#ff9500" strokeWidth="3" strokeDasharray={`${nailPercent} ${100 - nailPercent}`} strokeDashoffset={`-${stylistPercent}`} />
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#00bfff" strokeWidth="3" strokeDasharray={`${lashPercent} ${100 - lashPercent}`} strokeDashoffset={`-${stylistPercent + nailPercent}`} />
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#32d74b" strokeWidth="3" strokeDasharray={`${estheticPercent} ${100 - estheticPercent}`} strokeDashoffset={`-${stylistPercent + nailPercent + lashPercent}`} />
+                  </svg>
+                  <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '700' }}>Total</div>
+                    <div style={{ fontSize: '15px', fontWeight: '900', color: 'var(--text-primary)' }}>Bs. {formatBs(totalPayroll)}</div>
                   </div>
                 </div>
-                {isMobile && <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', width: '100%' }}></div>}
-                <div style={{ textAlign: 'left', display: 'flex', justifyContent: isMobile ? 'space-between' : 'flex-start', width: '100%', flexDirection: isMobile ? 'row' : 'column', alignItems: isMobile ? 'center' : 'flex-end' }}>
-                  <div style={{ fontSize: '11px', color: 'var(--pink-primary)', fontWeight: '800', textTransform: 'uppercase', marginBottom: isMobile ? '0' : '4px' }}>Ganancia Neta</div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: isMobile ? '18px' : '22px', fontWeight: '900', color: '#32d74b', whiteSpace: 'nowrap' }}>{formatCurrency(janaNetProfitBs, '')} Bs</div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', marginTop: '2px' }}>REF: ${janaNetProfitUsd.toFixed(2)}</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--pink-primary)' }}></div>
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>Estilistas ({stylistCount})</span>
+                    </div>
+                    <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>{stylistPercent.toFixed(1)}%</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ff9500' }}></div>
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>Nail Artist (1)</span>
+                    </div>
+                    <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>{nailPercent}%</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#00bfff' }}></div>
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>Lash Expert (1)</span>
+                    </div>
+                    <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>{lashPercent}%</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#32d74b' }}></div>
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>Esteticistas ({Math.max(0, totalMembers - stylistCount - assistantCount)})</span>
+                    </div>
+                    <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>{estheticPercent.toFixed(1)}%</span>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Stylist Yield Summary Card */}
-            <div className="glass-card animate-fade-in" style={{
-              padding: '24px',
-              borderRadius: '24px',
-              marginBottom: '32px',
-              backgroundColor: 'rgba(255, 255, 255, 0.01)',
-              border: '1px solid rgba(255, 255, 255, 0.05)'
-            }}>
-              <h4 style={{ fontSize: '16px', fontWeight: '850', color: 'white', marginBottom: '16px' }}>
-                Rendimiento Neto por Estilista ({payrollFilterDate === 'this_week' ? 'Esta Semana' : payrollFilterDate === 'last_week' ? 'Semana Pasada' : 'Personalizado'})
-              </h4>
-              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '16px' }}>
-                {processedPayroll.filter(s => s.isStylist).map(s => {
-                  const yieldBs = Math.max(0, (s.grossIncomeBs - s.treatmentDeductionBs) * (1 - (Number(s.commission_pct || 60) / 100)));
-                  const yieldUsd = yieldBs / payrollRate;
-                  const margin = s.grossIncomeBs > 0 ? (yieldBs / s.grossIncomeBs) * 100 : 0;
-                  return (
-                    <div key={s.id} style={{ padding: '16px', backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.03)' }}>
-                      <div style={{ fontWeight: '800', color: 'var(--pink-primary)', fontSize: '14px', marginBottom: '8px' }}>{s.name}</div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '4px', alignItems: 'center' }}>
-                        <span style={{ color: 'var(--text-secondary)' }}>Total Creado:</span>
-                        <div style={{ textAlign: 'right' }}>
-                          <span style={{ color: 'white', fontWeight: '700', display: 'block' }}>{formatCurrency(s.grossIncomeBs, '')} Bs</span>
-                          <span style={{ color: 'var(--text-muted)', fontSize: '10px', display: 'block' }}>REF: ${formatCurrency(s.grossIncomeBs / payrollRate, '')}</span>
+              {/* Próximos Pagos */}
+              <div style={{ padding: '24px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)' }}>
+                <h4 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '16px' }}>Próximos Pagos</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  {processedPayroll.filter(s => s.balanceBs > 0).slice(0, 3).map(st => (
+                    <div key={st.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'rgba(196,139,159,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--pink-primary)', fontWeight: '800', fontSize: '12px', flexShrink: 0 }}>{st.name.charAt(0)}</div>
+                        <div>
+                          <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{st.name}</div>
+                          <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{st.role?.split('|')[0]}</div>
                         </div>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '4px', alignItems: 'center' }}>
-                          <span style={{ color: 'var(--text-secondary)' }}>Costo Estilista:</span>
-                        <div style={{ textAlign: 'right' }}>
-                          <span style={{ color: '#ff453a', fontWeight: '700', display: 'block' }}>-{formatCurrency(s.netIncomeBs, '')} Bs</span>
-                          <span style={{ color: 'var(--text-muted)', fontSize: '10px', display: 'block' }}>REF: ${formatCurrency(s.netIncomeBs / payrollRate, '')}</span>
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', borderTop: '1px dashed rgba(255,255,255,0.1)', paddingTop: '6px', marginTop: '6px' }}>
-                        <span style={{ color: 'white', fontWeight: '800' }}>Ganancia JanaStudio:</span>
-                        <span style={{ color: '#32d74b', fontWeight: '900' }}>+{formatCurrency(yieldBs, '')} Bs</span>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                        <span>REF USD:</span>
-                        <span>${formatCurrency(yieldUsd, '')}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
-              {processedPayroll.length === 0 ? (
-                <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>No hay saldos pendientes.</div>
-              ) : processedPayroll.map(st => (
-                <div key={st.id} className="glass-card animate-fade-in" style={{ 
-                  padding: '24px', 
-                  borderRadius: '24px',
-                  border: st.isAssistant ? '1px solid rgba(0, 191, 255, 0.2)' : '1px solid rgba(255,255,255,0.08)'
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div style={{ 
-                        width: '40px', 
-                        height: '40px', 
-                        borderRadius: '12px', 
-                        background: st.isAssistant ? 'rgba(0,191,255,0.1)' : 'rgba(217,70,168,0.1)', 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center', 
-                        color: st.isAssistant ? '#00bfff' : 'var(--pink-primary)', 
-                        fontWeight: '900', 
-                        fontSize: '18px' 
-                      }}>
-                        {st.name.charAt(0)}
-                      </div>
-                      <div>
-                        <div style={{ fontWeight: '800', fontSize: '16px', color: 'white' }}>{st.name}</div>
-                        <div style={{ fontSize: '11px', color: st.isAssistant ? '#00bfff' : 'var(--pink-primary)', fontWeight: '800', textTransform: 'uppercase' }}>
-                          {st.role?.split('|')[0] || 'Miembro'}
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-primary)' }}>Bs. {formatBs(st.balanceBs)}</div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'flex-end' }}>
+                          <Calendar size={10} /> 5 Jul 2026
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '16px', marginBottom: '16px' }}>
-                    {st.isStylist ? (
-                      <>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Servicios Realizados</span>
-                          <span style={{ fontSize: '12px', fontWeight: '850', color: 'white' }}>{st.servicesCount}</span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Tratamientos (#)</span>
-                          <span style={{ fontSize: '12px', fontWeight: '850', color: 'white' }}>{st.treatmentsCount}</span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Tratamiento (Bs)</span>
-                          <span style={{ fontSize: '12px', fontWeight: '850', color: 'var(--pink-primary)' }}>{formatCurrency(st.treatmentDeductionBs, '')} Bs.</span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Ingreso Bruto</span>
-                          <span style={{ fontSize: '12px', fontWeight: '850', color: 'white' }}>{formatCurrency(st.grossIncomeBs, '')} Bs.</span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Deducción Asistencia</span>
-                          <span style={{ fontSize: '12px', fontWeight: '850', color: '#ff453a' }}>-{formatCurrency(st.weeklyAssistanceBs, '')} Bs.</span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Ingreso Neto</span>
-                          <span style={{ fontSize: '12px', fontWeight: '900', color: 'white' }}>{formatCurrency(st.netIncomeBs, '')} Bs.</span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                          <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>REF (USD)</span>
-                          <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--pink-primary)' }}>${formatCurrency(st.netIncomeUsd, '')}</span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
-                          <span style={{ fontSize: '12px', color: '#32d74b', fontWeight: '800' }}>Propinas (+)</span>
-                          <span style={{ fontSize: '12px', fontWeight: '850', color: '#32d74b' }}>+{formatCurrency(st.propinasBs, '')} Bs.</span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                          <span style={{ fontSize: '12px', color: '#ff453a', fontWeight: '800' }}>Vales / Adelantos (-)</span>
-                          <span style={{ fontSize: '12px', fontWeight: '850', color: '#ff453a' }}>-{formatCurrency(st.valesBs, '')} Bs.</span>
-                        </div>
-                      </>
-                    ) : st.isAssistant ? (
-                      <>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Tratamientos Realizados</span>
-                          <span style={{ fontSize: '12px', fontWeight: '850', color: 'white' }}>{st.treatmentsCount}</span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Asistencia Semanal</span>
-                          <span style={{ fontSize: '12px', fontWeight: '850', color: '#00bfff' }}>{formatCurrency(st.weeklyAssistanceBs, '')} Bs.</span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Comisión Tratamientos</span>
-                          <span style={{ fontSize: '12px', fontWeight: '850', color: 'white' }}>{formatCurrency(st.earnedBs, '')} Bs.</span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Ingreso Neto</span>
-                          <span style={{ fontSize: '12px', fontWeight: '900', color: 'white' }}>{formatCurrency(st.netIncomeBs, '')} Bs.</span>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                          <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>REF (USD)</span>
-                          <span style={{ fontSize: '12px', fontWeight: '800', color: '#00bfff' }}>${formatCurrency(st.netIncomeUsd, '')}</span>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Comisiones Acumuladas</span>
-                          <span style={{ fontSize: '12px', fontWeight: '850', color: 'white' }}>{formatCurrency(st.earnedBs, '')} Bs.</span>
-                        </div>
-                      </>
-                    )}
-                    
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', borderTop: '1px dashed rgba(255,255,255,0.1)', paddingTop: '8px' }}>
-                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Pagado/Deducido (Bs)</span>
-                      <span style={{ fontSize: '12px', fontWeight: '800', color: '#ff453a' }}>-{formatCurrency(st.paidBs, '')} Bs.</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                      <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--pink-primary)' }}>Por Pagar (Bs)</span>
-                      <span style={{ fontSize: '16px', fontWeight: '950', color: '#32d74b' }}>{formatCurrency(st.balanceBs, '')} Bs.</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
-                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>REF (USD)</span>
-                      <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--pink-primary)' }}>${formatCurrency(st.balanceBs / payrollRate, '')}</span>
-                    </div>
-                  </div>
-                  
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                    <button 
-                      onClick={() => setPayrollDetail({ isOpen: true, staff: st, transactions: st.staffTransactions })}
-                      style={{ flex: 1, minWidth: '70px', padding: '10px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', color: 'white', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', cursor: 'pointer' }}
-                    >
-                      <Eye size={16} /> <span style={{fontSize: '11px', fontWeight: '800'}}>Detalle</span>
-                    </button>
-                    
-                    {(st.isStylist || st.isAssistant) && (
-                      <button 
-                        onClick={() => {
-                          setValeModal({
-                            isOpen: true,
-                            staff: st,
-                            amountBs: '',
-                            paymentMethod: 'Efectivo ($)',
-                            maxBalance: st.balanceBs
-                          });
-                        }}
-                        style={{ flex: 1, minWidth: '70px', padding: '10px', borderRadius: '10px', background: 'rgba(255, 69, 58, 0.1)', color: '#ff453a', border: '1px solid rgba(255, 69, 58, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', cursor: 'pointer' }}
-                      >
-                        <Minus size={16} /> <span style={{fontSize: '11px', fontWeight: '800'}}>Vale</span>
-                      </button>
-                    )}
-
-                    <button 
-                      onClick={() => {
-                        setPayrollModal({
-                          isOpen: true,
-                          staff: st,
-                          earnedBs: st.balanceBs,
-                          deductionBs: 0,
-                          paymentAmountBs: Math.round(st.balanceBs / 2),
-                          isAbono: true,
-                          file: null,
-                          paymentMethod: 'Efectivo ($)'
-                        });
-                      }}
-                      disabled={st.balanceBs <= 0}
-                      style={{ flex: 1, minWidth: '70px', padding: '10px', borderRadius: '10px', background: 'rgba(217,70,168,0.1)', color: 'var(--pink-primary)', border: '1px solid var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', cursor: st.balanceBs > 0 ? 'pointer' : 'not-allowed', opacity: st.balanceBs > 0 ? 1 : 0.5 }}
-                    >
-                      <WalletCards size={16} /> <span style={{fontSize: '11px', fontWeight: '800'}}>Abonar</span>
-                    </button>
-
-                    <button 
-                      onClick={() => {
-                        setPayrollModal({
-                          isOpen: true,
-                          staff: st,
-                          earnedBs: st.balanceBs,
-                          deductionBs: 0,
-                          paymentAmountBs: st.balanceBs,
-                          isAbono: false,
-                          file: null,
-                          paymentMethod: 'Efectivo ($)'
-                        });
-                      }}
-                      disabled={st.balanceBs <= 0}
-                      style={{ width: '100%', padding: '12px', borderRadius: '12px', background: st.balanceBs > 0 ? 'var(--pink-primary)' : 'rgba(255,255,255,0.05)', color: st.balanceBs > 0 ? '#000' : 'var(--text-muted)', fontWeight: '950', border: 'none', cursor: st.balanceBs > 0 ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                    >
-                      {st.balanceBs > 0 ? 'Realizar Pago Total' : 'Al Día'}
+                  ))}
+                  {processedPayroll.filter(s => s.balanceBs > 0).length === 0 && (
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center', padding: '16px' }}>Todos los pagos al día</div>
+                  )}
+                </div>
+                {processedPayroll.filter(s => s.balanceBs > 0).length > 3 && (
+                  <div style={{ marginTop: '14px', textAlign: 'center' }}>
+                    <button onClick={() => setPayrollDetail({ isOpen: true, staff: processedPayroll[0], transactions: processedPayroll[0]?.staffTransactions || [] })} style={{ background: 'none', border: 'none', color: 'var(--pink-primary)', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}>
+                      Ver todos los próximos pagos →
                     </button>
                   </div>
+                )}
+              </div>
+
+              {/* Resumen Semanal */}
+              <div style={{ padding: '24px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)' }}>
+                <h4 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '16px' }}>Resumen Semanal</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ width: '24px', height: '24px', borderRadius: '6px', backgroundColor: 'rgba(196,139,159,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <User size={12} color="var(--pink-primary)" />
+                      </div>
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>Miembros liquidados</span>
+                    </div>
+                    <span style={{ fontSize: '14px', fontWeight: '800', color: '#32d74b' }}>{paidCount}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ width: '24px', height: '24px', borderRadius: '6px', backgroundColor: 'rgba(255,69,58,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Wallet size={12} color="#ff453a" />
+                      </div>
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>Pagos pendientes</span>
+                    </div>
+                    <span style={{ fontSize: '14px', fontWeight: '800', color: '#ff453a' }}>{pendingCount}</span>
+                  </div>
+                  <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '14px', marginTop: '4px' }}></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ width: '24px', height: '24px', borderRadius: '6px', backgroundColor: 'rgba(196,139,159,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <TrendingUp size={12} color="var(--pink-primary)" />
+                      </div>
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>Ticket promedio por estilista</span>
+                    </div>
+                    <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--pink-primary)' }}>Bs. {formatBs(totalMembers > 0 ? totalPayroll / totalMembers : 0)}</span>
+                  </div>
                 </div>
-              ))}
+              </div>
             </div>
           </div>
-      )}
+        );
+      })()}
 
       {activeTab === 'analysis' && (() => {
         // Ejecución de Fórmulas Financieras (Basadas en el Excel de Rentabilidad)
