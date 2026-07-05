@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import {
   BarChart3, Users, UserCircle, Sparkles, Package, Wallet,
   Star, Calendar, LogOut, PanelLeftClose, PanelLeftOpen,
-  Receipt, Percent, Settings, Sliders
+  Receipt, Percent, Settings, Sliders, FileText
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useModal } from '../context/ModalContext';
@@ -21,6 +21,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
     { id: 'personnel', label: 'Equipo', icon: Sparkles, roles: ['Admin'] },
     { id: 'inventory', label: 'Inventario', icon: Package, roles: ['Admin', 'Caja'] },
     { id: 'finance', label: 'Finanzas', icon: Wallet, roles: ['Admin', 'Caja'] },
+    { id: 'reports', label: 'Reportes', icon: FileText, roles: ['Admin'] },
     { id: 'finance', label: 'Promociones', icon: Percent, roles: ['Admin'], id: 'promotions' },
     { id: 'finance', label: 'Configuración', icon: Sliders, roles: ['Admin'], id: 'settings' },
   ];
