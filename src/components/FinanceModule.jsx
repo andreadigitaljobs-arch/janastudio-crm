@@ -2058,206 +2058,264 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
       })()}
 
       {activeTab === 'analysis' && (() => {
-        // Ejecución de Fórmulas Financieras (Basadas en el Excel de Rentabilidad)
         const ingresosTotales = operationalTransactions.filter(t => t.type === 'income').reduce((acc, t) => acc + (t.amount || 0), 0);
         const egresosEstilistas = operationalTransactions.filter(t => t.type === 'income').reduce((acc, t) => {
           return acc + (t.metadata?.staffInvolved?.reduce((sum, s) => sum + (s.commissionEarned || 0), 0) || 0);
         }, 0);
-        
         const profitBruto = ingresosTotales - egresosEstilistas;
-        const costosVariables = totalExpense; // Usamos los gastos registrados como variables
+        const costosVariables = totalExpense;
         const utilidadNetaCalculada = profitBruto - totalFixedCosts - costosVariables;
         const rentabilidadReal = ingresosTotales > 0 ? (utilidadNetaCalculada / ingresosTotales) * 100 : 0;
-        
         const serviciosTotales = Object.values(analysisData.stylistStats).reduce((acc, b) => acc + b.services, 0) || 0;
         const ticketProm = serviciosTotales > 0 ? ingresosTotales / serviciosTotales : 0;
-        
-        // Ocupación
         const sillas = Number(fixedCosts.workstations || 3);
-        const capacidadMensual = sillas * 6 * 4 * 13; // 6 dias, 4 semanas, 13 servicios por silla
+        const capacidadMensual = sillas * 6 * 4 * 13;
         const ocupacionPct = capacidadMensual > 0 ? (serviciosTotales / capacidadMensual) * 100 : 0;
-        
-        // Punto de Equilibrio
         const margenContribucion = ingresosTotales - costosVariables - egresosEstilistas;
         const margenPct = ingresosTotales > 0 ? margenContribucion / ingresosTotales : 0;
         const ptoEquilibrio = margenPct > 0 ? totalFixedCosts / margenPct : 0;
 
         return (
-          <div className="animate-fade-in">
-            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '16px' : '0', marginBottom: '32px' }}>
-              <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-secondary)', letterSpacing: '1px' }}>DASHBOARD DE RENTABILIDAD Y OCUPACIÓN</h3>
-              <button onClick={() => setIsEditingCosts(true)} className="btn-pink" style={{ padding: '8px 16px', fontSize: '12px', borderRadius: '10px', width: isMobile ? '100%' : 'auto' }}>
-                Configurar Costos Fijos
-              </button>
-            </div>
+          <div style={{ display: 'flex', gap: '24px', flexDirection: isMobile ? 'column' : 'row' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '16px' : '0', marginBottom: '28px' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-secondary)', letterSpacing: '1px' }}>DASHBOARD DE RENTABILIDAD Y OCUPACIÓN</h3>
+                <button onClick={() => setIsEditingCosts(true)} className="btn-pink" style={{ padding: '8px 16px', fontSize: '12px', borderRadius: '10px', width: isMobile ? '100%' : 'auto' }}>
+                  Configurar Costos Fijos
+                </button>
+              </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: isMobile ? '12px' : '20px', marginBottom: '32px' }}>
-              <div className="glass-card" style={{ padding: isMobile ? '16px' : '24px', borderRadius: isMobile ? '16px' : '24px', textAlign: 'center' }}>
-                <div style={{ fontSize: isMobile ? '9px' : '10px', fontWeight: '800', color: 'var(--text-secondary)', marginBottom: '8px' }}>UTILIDAD NETA</div>
-                <div style={{ fontSize: isMobile ? '18px' : '24px', fontWeight: '900', color: utilidadNetaCalculada >= 0 ? '#32d74b' : '#ff453a' }}>
-                  ${formatCurrency(utilidadNetaCalculada)}
+              <section style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px', marginBottom: '28px' }}>
+                <div style={{ padding: '20px', borderRadius: '16px', border: '1px solid var(--border-color)', background: 'white' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <TrendingUp size={14} color="var(--pink-primary)" />
+                    </div>
+                    UTILIDAD NETA
+                  </div>
+                  <div style={{ fontSize: '24px', fontWeight: '900', color: utilidadNetaCalculada >= 0 ? '#32d74b' : '#ff453a', letterSpacing: '-0.5px' }}>
+                    Bs. {formatBs(utilidadNetaCalculada)}
+                  </div>
                 </div>
-              </div>
-              <div className="glass-card" style={{ padding: isMobile ? '16px' : '24px', borderRadius: isMobile ? '16px' : '24px', textAlign: 'center' }}>
-                <div style={{ fontSize: isMobile ? '9px' : '10px', fontWeight: '800', color: 'var(--text-secondary)', marginBottom: '8px' }}>RENTABILIDAD</div>
-                <div style={{ fontSize: isMobile ? '18px' : '24px', fontWeight: '900', color: rentabilidadReal >= 0 ? 'var(--pink-primary)' : '#ff453a' }}>
-                  {rentabilidadReal.toFixed(1)}%
+                <div style={{ padding: '20px', borderRadius: '16px', border: '1px solid var(--border-color)', background: 'white' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <TrendingUp size={14} color="var(--pink-primary)" />
+                    </div>
+                    RENTABILIDAD
+                  </div>
+                  <div style={{ fontSize: '24px', fontWeight: '900', color: rentabilidadReal >= 0 ? 'var(--pink-primary)' : '#ff453a', letterSpacing: '-0.5px' }}>
+                    {rentabilidadReal.toFixed(1)}%
+                  </div>
                 </div>
-              </div>
-              <div className="glass-card" style={{ padding: isMobile ? '16px' : '24px', borderRadius: isMobile ? '16px' : '24px', textAlign: 'center' }}>
-                <div style={{ fontSize: isMobile ? '9px' : '10px', fontWeight: '800', color: 'var(--text-secondary)', marginBottom: '8px' }}>PTO. DE EQUILIBRIO</div>
-                <div style={{ fontSize: isMobile ? '18px' : '24px', fontWeight: '900' }}>
-                  ${formatCurrency(ptoEquilibrio)}
+                <div style={{ padding: '20px', borderRadius: '16px', border: '1px solid var(--border-color)', background: 'white' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Wallet size={14} color="var(--pink-primary)" />
+                    </div>
+                    PTO. DE EQUILIBRIO
+                  </div>
+                  <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
+                    Bs. {formatBs(ptoEquilibrio)}
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>Facturación Necesaria</div>
                 </div>
-                <div style={{ fontSize: isMobile ? '8px' : '10px', color: 'var(--text-muted)' }}>Facturación Necesaria</div>
-              </div>
-              <div className="glass-card" style={{ padding: isMobile ? '16px' : '24px', borderRadius: isMobile ? '16px' : '24px', textAlign: 'center' }}>
-                <div style={{ fontSize: isMobile ? '9px' : '10px', fontWeight: '800', color: 'var(--text-secondary)', marginBottom: '8px' }}>TICKET PROMEDIO</div>
-                <div style={{ fontSize: isMobile ? '18px' : '24px', fontWeight: '900' }}>
-                  ${formatCurrency(ticketProm)}
+                <div style={{ padding: '20px', borderRadius: '16px', border: '1px solid var(--border-color)', background: 'white' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Users size={14} color="var(--pink-primary)" />
+                    </div>
+                    TICKET PROMEDIO
+                  </div>
+                  <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
+                    Bs. {formatBs(ticketProm)}
+                  </div>
                 </div>
-              </div>
-            </div>
+              </section>
 
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap: '24px', marginBottom: '32px' }}>
-              {/* Estructura de Gastos e Ingresos */}
-              <div className="glass-card" style={{ padding: '24px', borderRadius: '24px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '900', marginBottom: '20px' }}>Estructura de Gastos Mensuales</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                     <span style={{ fontSize: '14px', color: 'white', fontWeight: '700' }}>Ingresos Brutos (Facturación)</span>
-                     <span style={{ fontWeight: '800', color: '#32d74b' }}>${formatCurrency(ingresosTotales)}</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                     <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Egresos Totales a Estilistas</span>
-                     <span style={{ fontWeight: '700', color: '#ff453a' }}>-${formatCurrency(egresosEstilistas)}</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap: '24px', marginBottom: '28px' }}>
+                <div style={{ padding: '24px', borderRadius: '16px', border: '1px solid var(--border-color)', background: 'white' }}>
+                  <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '20px' }}>Estructura de Gastos Mensuales</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border-color)' }}>
+                      <span style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: '700' }}>Ingresos Brutos (Facturación)</span>
+                      <span style={{ fontWeight: '800', color: '#32d74b' }}>Bs. {formatBs(ingresosTotales)}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border-color)' }}>
+                      <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Egresos Totales a Estilistas</span>
+                      <span style={{ fontWeight: '700', color: '#ff453a' }}>-Bs. {formatBs(egresosEstilistas)}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border-color)' }}>
                       <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Costos Fijos Operativos</span>
-                      <span style={{ fontWeight: '700', color: '#ff453a' }}>-${formatCurrency(totalFixedCosts)}</span>
-                   </div>
-                   
-                   {/* Grilla de Desglose de Costos (2 columnas para ahorrar espacio) */}
-                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 20px', padding: '12px 16px', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', margin: '8px 0' }}>
-                     {[
-                       { key: 'rent', defaultLabel: 'Alquiler' },
-                       { key: 'services', defaultLabel: 'Servicios' },
-                       { key: 'payroll', defaultLabel: 'Nómina Fija' },
-                       { key: 'software', defaultLabel: 'Software' },
-                       { key: 'marketing', defaultLabel: 'Marketing' },
-                       { key: 'tax', defaultLabel: 'Impuestos' }
-                     ].map(c => (
-                       <div key={c.key} style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}>
+                      <span style={{ fontWeight: '700', color: '#ff453a' }}>-Bs. {formatBs(totalFixedCosts)}</span>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 20px', padding: '12px 16px', background: '#faf5f5', borderRadius: '12px', margin: '4px 0' }}>
+                      {[
+                        { key: 'rent', defaultLabel: 'Alquiler' },
+                        { key: 'services', defaultLabel: 'Servicios' },
+                        { key: 'payroll', defaultLabel: 'Nómina Fija' },
+                        { key: 'software', defaultLabel: 'Software' },
+                        { key: 'marketing', defaultLabel: 'Marketing' },
+                        { key: 'tax', defaultLabel: 'Impuestos' }
+                      ].map(c => (
+                        <div key={c.key} style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}>
                           <span style={{ fontSize: '11px', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>↳ {fixedCosts.customLabels?.[c.key] || c.defaultLabel}</span>
-                          <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-secondary)', marginLeft: '8px' }}>-${formatCurrency(fixedCosts[c.key] || 0)}</span>
-                       </div>
-                     ))}
-
-                     {fixedCosts.extraCosts?.map((c, i) => (
-                       <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}>
+                          <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-secondary)', marginLeft: '8px' }}>-Bs. {formatBs(fixedCosts[c.key] || 0)}</span>
+                        </div>
+                      ))}
+                      {fixedCosts.extraCosts?.map((c, i) => (
+                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}>
                           <span style={{ fontSize: '11px', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>↳ {c.label || 'Sin nombre'}</span>
-                          <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-secondary)', marginLeft: '8px' }}>-${formatCurrency(c.value)}</span>
-                       </div>
-                     ))}
-                   </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                     <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Costos Variables (Caja Chica)</span>
-                     <span style={{ fontWeight: '700', color: '#ff453a' }}>-${formatCurrency(costosVariables)}</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', fontWeight: '900', marginTop: '10px', fontSize: '18px' }}>
-                     <span style={{ color: 'var(--pink-primary)' }}>Utilidad Neta</span>
-                     <span style={{ color: utilidadNetaCalculada >= 0 ? '#32d74b' : '#ff453a' }}>${formatCurrency(utilidadNetaCalculada)}</span>
+                          <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-secondary)', marginLeft: '8px' }}>-Bs. {formatBs(c.value)}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border-color)' }}>
+                      <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Costos Variables (Caja Chica)</span>
+                      <span style={{ fontWeight: '700', color: '#ff453a' }}>-Bs. {formatBs(costosVariables)}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', fontWeight: '900', marginTop: '4px', fontSize: '18px' }}>
+                      <span style={{ color: 'var(--pink-primary)' }}>Utilidad Neta</span>
+                      <span style={{ color: utilidadNetaCalculada >= 0 ? '#32d74b' : '#ff453a' }}>Bs. {formatBs(utilidadNetaCalculada)}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Occupancy Logic */}
-              <div className="glass-card" style={{ padding: '24px', borderRadius: '24px' }}>
-                <h3 style={{ fontSize: '16px', fontWeight: '900', marginBottom: '20px' }}>Capacidad y Ocupación</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Sillas / Estaciones Activas</span>
-                    <span style={{ fontWeight: '700' }}>{sillas}</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Servicios Realizados</span>
-                    <span style={{ fontWeight: '700' }}>{serviciosTotales}</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Capacidad Máxima Mensual</span>
-                    <span style={{ fontWeight: '700' }}>{capacidadMensual}</span>
-                  </div>
-                  {/* Proyección de Ocupación */}
-                  <div style={{ marginTop: '10px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                      <span style={{ fontSize: '11px', fontWeight: '800' }}>NIVEL DE OCUPACIÓN REAL</span>
-                      <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--pink-primary)' }}>{ocupacionPct.toFixed(1)}%</span>
+                <div style={{ padding: '24px', borderRadius: '16px', border: '1px solid var(--border-color)', background: 'white' }}>
+                  <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '20px' }}>Capacidad y Ocupación</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Sillas / Estaciones Activas</span>
+                      <span style={{ fontWeight: '700', color: 'var(--text-primary)' }}>{sillas}</span>
                     </div>
-                    <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
-                      <div style={{ width: `${Math.min(ocupacionPct, 100)}%`, height: '100%', background: 'var(--pink-gradient)' }}></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Servicios Realizados</span>
+                      <span style={{ fontWeight: '700', color: 'var(--text-primary)' }}>{serviciosTotales}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Capacidad Máxima Mensual</span>
+                      <span style={{ fontWeight: '700', color: 'var(--text-primary)' }}>{capacidadMensual}</span>
+                    </div>
+                    <div style={{ marginTop: '8px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                        <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-primary)' }}>NIVEL DE OCUPACIÓN REAL</span>
+                        <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--pink-primary)' }}>{ocupacionPct.toFixed(1)}%</span>
+                      </div>
+                      <div style={{ height: '8px', background: '#f0e4e8', borderRadius: '4px', overflow: 'hidden' }}>
+                        <div style={{ width: `${Math.min(ocupacionPct, 100)}%`, height: '100%', background: 'var(--pink-gradient)', borderRadius: '4px' }}></div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Rendimiento por Estilista */}
-            <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', marginBottom: '32px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: '900', marginBottom: '20px' }}>Rendimiento por Estilista (Bs)</h3>
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr style={{ color: 'var(--text-muted)', fontSize: '11px', textTransform: 'uppercase', borderBottom: '1px solid var(--border-color)' }}>
-                      <th style={{ padding: '12px', textAlign: 'left' }}>Estilista</th>
-                      <th style={{ padding: '12px', textAlign: 'center' }}>Servicios</th>
-                      <th style={{ padding: '12px', textAlign: 'right' }}>Total Creado (Bs)</th>
-                      <th style={{ padding: '12px', textAlign: 'right' }}>Costo Estilista (Bs)</th>
-                      <th style={{ padding: '12px', textAlign: 'right' }}>Ganancia Salón (Bs)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Object.values(analysisData.stylistStats).filter(b => b.services > 0 || b.incomeBs > 0).map(b => {
-                      const staffMember = staff.find(s => String(s.id) === String(b.id));
-                      const staffName = staffMember?.name || `Eliminado (${String(b.id).substring(0, 5)})`;
-                      
-                      // Calculate commission and deductions for this stylist from operationalTransactions
-                      const stylistTx = operationalTransactions.filter(t => t.type === 'income' && t.metadata?.staffInvolved?.some(x => String(x.staffId) === String(b.id)));
-                      const earnedBs = stylistTx.reduce((sum, t) => {
-                        const s = t.metadata?.staffInvolved?.find(x => String(x.staffId) === String(b.id));
-                        return sum + (s ? (s.commissionBs || 0) + (s.productCommissionBs || 0) : 0);
-                      }, 0);
-                      
-                      const treatmentsCount = stylistTx.filter(t => isTreatment(t.metadata?.didTreatment)).length;
-                      const treatmentDeductionBs = treatmentsCount * payrollRate;
-                      const weeklyAssistanceUsd = assistantConfig?.splits?.[b.id] || 0;
-                      const weeklyAssistanceBs = weeklyAssistanceUsd * payrollRate;
-                      const netCostoBs = (b.incomeBs * (Number(staffMember?.commission_pct || 60) / 100)) - (treatmentDeductionBs / 1.666) - weeklyAssistanceBs;
-                      const gananciaSalonBs = Math.max(0, (b.incomeBs - treatmentDeductionBs) * (1 - (Number(staffMember?.commission_pct || 60) / 100)));
-
-                      return (
-                        <tr key={b.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                          <td style={{ padding: '12px', fontWeight: '700' }}>
-                            {staffName}
-                          </td>
-                          <td style={{ padding: '12px', textAlign: 'center' }}>{b.services}</td>
-                          <td style={{ padding: '12px', textAlign: 'right', color: 'white', fontWeight: '700' }}>
-                            {formatCurrency(b.incomeBs, '')} Bs
-                          </td>
-                          <td style={{ padding: '12px', textAlign: 'right', color: '#ff453a', fontWeight: '700' }}>
-                            -{formatCurrency(netCostoBs, '')} Bs
-                          </td>
-                          <td style={{ padding: '12px', textAlign: 'right', color: '#32d74b', fontWeight: '800' }}>
-                            {formatCurrency(gananciaSalonBs, '')} Bs
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+              <div style={{ padding: '24px', borderRadius: '16px', border: '1px solid var(--border-color)', background: 'white', marginBottom: '28px' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '16px' }}>Rendimiento por Estilista</h3>
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ color: 'var(--text-muted)', fontSize: '10px', textTransform: 'uppercase', borderBottom: '1px solid var(--border-color)' }}>
+                        <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: '700' }}>Estilista</th>
+                        <th style={{ padding: '10px 12px', textAlign: 'center', fontWeight: '700' }}>Servicios</th>
+                        <th style={{ padding: '10px 12px', textAlign: 'right', fontWeight: '700' }}>Total Creado</th>
+                        <th style={{ padding: '10px 12px', textAlign: 'right', fontWeight: '700' }}>Costo Estilista</th>
+                        <th style={{ padding: '10px 12px', textAlign: 'right', fontWeight: '700' }}>Ganancia Salón</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.values(analysisData.stylistStats).filter(b => b.services > 0 || b.incomeBs > 0).map(b => {
+                        const staffMember = staff.find(s => String(s.id) === String(b.id));
+                        const staffName = staffMember?.name || `Eliminado (${String(b.id).substring(0, 5)})`;
+                        const stylistTx = operationalTransactions.filter(t => t.type === 'income' && t.metadata?.staffInvolved?.some(x => String(x.staffId) === String(b.id)));
+                        const treatmentsCount = stylistTx.filter(t => isTreatment(t.metadata?.didTreatment)).length;
+                        const treatmentDeductionBs = treatmentsCount * payrollRate;
+                        const weeklyAssistanceUsd = assistantConfig?.splits?.[b.id] || 0;
+                        const weeklyAssistanceBs = weeklyAssistanceUsd * payrollRate;
+                        const netCostoBs = (b.incomeBs * (Number(staffMember?.commission_pct || 60) / 100)) - (treatmentDeductionBs / 1.666) - weeklyAssistanceBs;
+                        const gananciaSalonBs = Math.max(0, (b.incomeBs - treatmentDeductionBs) * (1 - (Number(staffMember?.commission_pct || 60) / 100)));
+                        return (
+                          <tr key={b.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                            <td style={{ padding: '10px 12px', fontWeight: '700', color: 'var(--text-primary)' }}>{staffName}</td>
+                            <td style={{ padding: '10px 12px', textAlign: 'center', color: 'var(--text-primary)' }}>{b.services}</td>
+                            <td style={{ padding: '10px 12px', textAlign: 'right', color: 'var(--text-primary)', fontWeight: '700' }}>Bs. {formatBs(b.incomeBs)}</td>
+                            <td style={{ padding: '10px 12px', textAlign: 'right', color: '#ff453a', fontWeight: '700' }}>-Bs. {formatBs(netCostoBs)}</td>
+                            <td style={{ padding: '10px 12px', textAlign: 'right', color: '#32d74b', fontWeight: '800' }}>Bs. {formatBs(gananciaSalonBs)}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
 
+            <div style={{ width: isMobile ? '100%' : '280px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div style={{ padding: '24px', borderRadius: '16px', border: '1px solid var(--border-color)', background: 'white' }}>
+                <h4 style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '16px' }}>Resumen del Día</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Servicios Hoy</span>
+                    <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-primary)' }}>{todayOperationalTransactions.filter(t => t.type === 'income' && t.metadata?.appointment_id).length}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Clientes Atendidos</span>
+                    <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-primary)' }}>{new Set(todayOperationalTransactions.map(t => t.metadata?.clientName).filter(Boolean)).size || 0}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Ticket Promedio Hoy</span>
+                    <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--pink-primary)' }}>Bs. {formatBs(todayOperationalTransactions.filter(t => t.type === 'income').length > 0 ? todayOperationalTransactions.filter(t => t.type === 'income').reduce((acc, t) => acc + (t.amount || 0), 0) / todayOperationalTransactions.filter(t => t.type === 'income').length : 0)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ padding: '24px', borderRadius: '16px', border: '1px solid var(--border-color)', background: 'white' }}>
+                <h4 style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '16px' }}>Indicadores Clave</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                      <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-secondary)' }}>Margen de Contribución</span>
+                      <span style={{ fontSize: '12px', fontWeight: '800', color: margenPct >= 0.3 ? '#32d74b' : '#ff453a' }}>{(margenPct * 100).toFixed(1)}%</span>
+                    </div>
+                    <div style={{ height: '6px', background: '#f0e4e8', borderRadius: '3px', overflow: 'hidden' }}>
+                      <div style={{ width: `${Math.min(margenPct * 100, 100)}%`, height: '100%', background: margenPct >= 0.3 ? '#32d74b' : '#ff453a', borderRadius: '3px' }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                      <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-secondary)' }}>Ocupación del Salón</span>
+                      <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--pink-primary)' }}>{ocupacionPct.toFixed(1)}%</span>
+                    </div>
+                    <div style={{ height: '6px', background: '#f0e4e8', borderRadius: '3px', overflow: 'hidden' }}>
+                      <div style={{ width: `${Math.min(ocupacionPct, 100)}%`, height: '100%', background: 'var(--pink-gradient)', borderRadius: '3px' }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                      <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-secondary)' }}>Rentabilidad Neta</span>
+                      <span style={{ fontSize: '12px', fontWeight: '800', color: rentabilidadReal >= 0 ? '#32d74b' : '#ff453a' }}>{rentabilidadReal.toFixed(1)}%</span>
+                    </div>
+                    <div style={{ height: '6px', background: '#f0e4e8', borderRadius: '3px', overflow: 'hidden' }}>
+                      <div style={{ width: `${Math.min(Math.abs(rentabilidadReal), 100)}%`, height: '100%', background: rentabilidadReal >= 0 ? '#32d74b' : '#ff453a', borderRadius: '3px' }}></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ padding: '24px', borderRadius: '16px', border: '1px solid var(--border-color)', background: 'white' }}>
+                <h4 style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '16px' }}>Próximos Pagos</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {processedPayroll.filter(s => s.balanceBs > 0).slice(0, 3).map(st => (
+                    <div key={st.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>
+                      <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{st.name}</span>
+                      <span style={{ fontSize: '12px', fontWeight: '800', color: '#ff453a' }}>Bs. {formatBs(st.balanceBs)}</span>
+                    </div>
+                  ))}
+                  {processedPayroll.filter(s => s.balanceBs > 0).length === 0 && (
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center', padding: '12px 0' }}>Todos al día</div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         );
       })()}
