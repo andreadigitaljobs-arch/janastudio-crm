@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   Plus, Search, Edit2, Trash2, Clock, Rocket,
   Droplets, Zap, Check, X, Loader2,
   Settings, DollarSign, LayoutList, Star, Crown,
   LayoutGrid, Table, Eye, Info, Pencil,
   Sparkles, Smile, Heart, Wind, Palette,
-  Brush, Flower2, UserRound, Waves, Feather
+  Brush, Flower2, UserRound, Waves, Feather,
+  ChevronDown, ArrowUpDown
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { useDialog } from '../context/DialogContext';
@@ -100,6 +101,11 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
   const [newExtraPrice, setNewExtraPrice] = useState('2.00');
   const [newExtraCost, setNewExtraCost] = useState('0.50');
   const [selectedServiceDetail, setSelectedServiceDetail] = useState(null);
+  const [categoryFilter, setCategoryFilter] = useState('Todas');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('mostBooked');
+  const [sortByOpen, setSortByOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const { showToast } = useNotifs();
   const { confirm } = useDialog();
 
@@ -196,7 +202,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
   };
 
   const handleDeleteCategory = async (catObj) => {
-    if (!await confirm(`¿Estás seguro de eliminar la categoría "${catObj.name}"?`)) return;
+    if (!await confirm(`Â¿Estás seguro de eliminar la categoría "${catObj.name}"?`)) return;
     try {
       await dataService.deleteServiceCategory(catObj.name, catObj.icon);
       await fetchCategories();
@@ -223,7 +229,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
   };
 
   const handleDeleteStrategy = async (value) => {
-    if (!await confirm('¿Estás seguro de eliminar esta estrategia?')) return;
+    if (!await confirm('Â¿Estás seguro de eliminar esta estrategia?')) return;
     try {
       await dataService.deleteServiceStrategy(value);
       await fetchStrategies();
@@ -251,7 +257,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
     try {
       await dataService.updateChecklistItem(id, { name, base_cost: Number(base_cost) });
       await fetchBaseItems();
-      showToast('Ítem del checklist actualizado.');
+      showToast('Átem del checklist actualizado.');
     } catch (e) {
       showToast('Error al actualizar ítem.', 'error');
     }
@@ -259,11 +265,11 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
 
   const handleDeleteMasterItem = async (e, id, name) => {
     e.stopPropagation();
-    if (!await confirm(`¿Eliminar "${name}" del checklist maestro?`)) return;
+    if (!await confirm(`Â¿Eliminar "${name}" del checklist maestro?`)) return;
     try {
       await dataService.deleteChecklistItem(id);
       await fetchBaseItems();
-      showToast('Ítem eliminado.');
+      showToast('Átem eliminado.');
     } catch (e) {
       showToast('Error al eliminar ítem.', 'error');
     }
@@ -299,7 +305,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
 
   const handleDeleteBillableExtra = async (e, id, name) => {
     e.stopPropagation();
-    if (!await confirm(`¿Archivar el extra "${name}"? Se mantendrá en el historial pero ya no se podrá seleccionar para nuevos servicios.`)) return;
+    if (!await confirm(`Â¿Archivar el extra "${name}"? Se mantendrá en el historial pero ya no se podrá seleccionar para nuevos servicios.`)) return;
     try {
       await dataService.deleteExtra(id);
       await fetchBillableExtras();
@@ -310,7 +316,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
   };
 
   const handleDeleteService = async (id, name) => {
-    if (!await confirm(`¿Archivar el servicio "${name}"? Se mantendrá en el historial pero ya no se podrá seleccionar.`)) return;
+    if (!await confirm(`Â¿Archivar el servicio "${name}"? Se mantendrá en el historial pero ya no se podrá seleccionar.`)) return;
     try {
       setLoading(true);
       await dataService.deleteService(id);
@@ -374,10 +380,10 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
       setLoading(true);
       if (isEditing && newService.id) {
         await dataService.updateService(newService.id, newService);
-        showToast(`¡Servicio ${newService.name} actualizado!`);
+        showToast(`Â¡Servicio ${newService.name} actualizado!`);
       } else {
         await dataService.addService(newService);
-        showToast(`¡Servicio ${newService.name} agregado al catálogo!`);
+        showToast(`Â¡Servicio ${newService.name} agregado al catálogo!`);
       }
       setNewService({ 
         name: '', 
@@ -431,366 +437,561 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
     return getIconComponent(iconName || getFallbackIconName(catName), 20);
   };
 
+  const formatBs = (price) => {
+    return `${(Number(price) * (rates?.usd || 550)).toLocaleString('es-VE')} Bs.`;
+  };
+
+  const itemsPerPage = 8;
+
+  const activeServices = services.filter(s => s.active !== false);
+  const activeServicesCount = activeServices.length;
+
+  const uniqueCategories = [...new Set(activeServices.map(s => s.category).filter(Boolean))];
+  const categoriesCount = uniqueCategories.length;
+
+  const mostBookedService = activeServices.length > 0
+    ? activeServices.reduce((max, s) => (s.total_bookings || 0) > (max.total_bookings || 0) ? s : max, activeServices[0])
+    : { name: '-', total_bookings: 0 };
+
+  const avgTicket = activeServices.length > 0
+    ? activeServices.reduce((sum, s) => sum + (Number(s.price) || 0), 0) / activeServices.length
+    : 0;
+
+  const defaultCategories = ['Cabello', 'Uñas', 'Pestañas', 'Facial', 'Combos'];
+  const allCategories = [...new Set([...defaultCategories, ...uniqueCategories])];
+
+  const sortOptions = [
+    { value: 'mostBooked', label: 'Más reservados' },
+    { value: 'name', label: 'Nombre' },
+    { value: 'priceAsc', label: 'Menor precio' },
+    { value: 'priceDesc', label: 'Mayor precio' },
+    { value: 'newest', label: 'Más recientes' },
+  ];
+
+  const filteredServices = activeServices.filter(s => {
+    const matchCategory = categoryFilter === 'Todas' || s.category === categoryFilter;
+    const matchSearch = !searchQuery || s.name.toLowerCase().includes(searchQuery.toLowerCase()) || (s.description && s.description.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchCategory && matchSearch;
+  }).sort((a, b) => {
+    if (sortBy === 'mostBooked') return (b.total_bookings || 0) - (a.total_bookings || 0);
+    if (sortBy === 'name') return a.name.localeCompare(b.name);
+    if (sortBy === 'priceAsc') return (Number(a.price) || 0) - (Number(b.price) || 0);
+    if (sortBy === 'priceDesc') return (Number(b.price) || 0) - (Number(a.price) || 0);
+    if (sortBy === 'newest') return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+    return 0;
+  });
+
+  const totalPages = Math.ceil(filteredServices.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedServices = filteredServices.slice(startIndex, startIndex + itemsPerPage);
+
+  const getBadge = (service) => {
+    if ((service.total_bookings || 0) >= 100) return { label: 'Top', color: '#22c55e', bg: 'rgba(34,197,94,0.1)' };
+    if ((service.total_bookings || 0) >= 50) return { label: 'Popular', color: '#22c55e', bg: 'rgba(34,197,94,0.1)' };
+    if ((service.total_bookings || 0) >= 10) return { label: 'Nuevo', color: '#a855f7', bg: 'rgba(168,85,247,0.1)' };
+    return null;
+  };
+
   return (
     <div className="animate-fade-in" style={{ paddingBottom: isMobile ? '120px' : '60px' }}>
-      <div style={{
-        display: 'flex',
-        flexDirection: isMobile ? 'column' : 'row',
-        justifyContent: 'space-between',
-        alignItems: isMobile ? 'flex-start' : 'center',
-        gap: isMobile ? '20px' : '0',
-        marginBottom: '40px'
-      }}>
-        <div>
-          <h2 style={{ fontSize: isMobile ? '28px' : '32px', fontWeight: '800', letterSpacing: '-0.5px' }}><span className="text-pink">Servicios</span></h2>
-          <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>Define tu oferta y servicios adicionales.</p>
-        </div>
-        <div style={{ 
-          display: isMobile ? 'grid' : 'flex', 
-          gridTemplateColumns: isMobile ? '1fr 1fr' : 'none',
-          gap: '12px', 
-          alignItems: 'center',
-          width: isMobile ? '100%' : 'auto'
-        }}>
-          {/* View Toggles */}
-          {!isMobile && (
-            <div style={{ 
-              display: 'flex', 
-              backgroundColor: '#faf5f5', 
-              borderRadius: '12px', 
-              padding: '4px',
-              border: '1px solid var(--border-color)',
-              marginRight: '12px'
-            }}>
-              <button 
-                onClick={() => setViewMode('grid')}
-                style={{ 
-                  padding: '8px 12px', 
-                  borderRadius: '8px', 
-                  border: 'none', 
-                  backgroundColor: viewMode === 'grid' ? 'rgba(196,139,159,0.1)' : 'transparent',
-                  color: viewMode === 'grid' ? 'var(--pink-primary)' : 'var(--text-muted)',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  fontSize: '12px',
-                  fontWeight: '700'
-                }}
-              >
-                <LayoutGrid size={16} /> Tarjetas
-              </button>
-              <button 
-                onClick={() => setViewMode('table')}
-                style={{ 
-                  padding: '8px 12px', 
-                  borderRadius: '8px', 
-                  border: 'none', 
-                  backgroundColor: viewMode === 'table' ? 'rgba(196,139,159,0.1)' : 'transparent',
-                  color: viewMode === 'table' ? 'var(--pink-primary)' : 'var(--text-muted)',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  fontSize: '12px',
-                  fontWeight: '700'
-                }}
-              >
-                <Table size={16} /> Tabla
-              </button>
-            </div>
-          )}
-
-          <button className="btn-pink" onClick={() => setIsCategoriesModalOpen(true)} style={{ backgroundColor: 'rgba(196,139,159,0.1)', color: 'var(--pink-primary)', border: '1px solid rgba(196,139,159,0.2)', justifyContent: 'center', width: isMobile ? '100%' : 'auto', padding: isMobile ? '10px 8px' : undefined, fontSize: isMobile ? '12px' : undefined }}>
-            <Settings size={18} style={{ marginRight: '8px' }} />
-            Categorías
-          </button>
-          <button className="btn-pink" onClick={() => setIsStrategiesModalOpen(true)} style={{ backgroundColor: 'rgba(196,139,159,0.1)', color: 'var(--pink-primary)', border: '1px solid rgba(196,139,159,0.2)', justifyContent: 'center', width: isMobile ? '100%' : 'auto', padding: isMobile ? '10px 8px' : undefined, fontSize: isMobile ? '12px' : undefined }}>
-            <Crown size={18} style={{ marginRight: '8px' }} />
-            Estrategias
-          </button>
-          <button className="btn-pink" onClick={() => setIsBillableExtrasModalOpen(true)} style={{ backgroundColor: 'rgba(196,139,159,0.1)', color: 'var(--pink-primary)', border: '1px solid rgba(196,139,159,0.2)', justifyContent: 'center', width: isMobile ? '100%' : 'auto', padding: isMobile ? '10px 8px' : undefined, fontSize: isMobile ? '12px' : undefined }}>
-            <Rocket size={18} style={{ marginRight: '8px' }} />
-            Extras
-          </button>
-          <button 
-            className="btn-pink" 
-            onClick={() => {
-              setIsEditing(false);
-              setNewService({ 
-                name: '', 
-                price: '', 
-                icon: 'Scissors',
-                category: 'Estilismo',
-                strategy_type: 'MVP',
-                duration: 30,
-                insumo_cost: 0,
-                variable_cost: 0.50,
-                description: '',
-                included_items: [],
-                commission_stylist: 40,
-                commission_washer: 0,
-                commission_cashier: 0,
-                commission_receptionist: 0
-              });
-              setShowAddForm(true);
-            }} 
-            style={{ height: '48px', padding: isMobile ? '10px 8px' : '0 24px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: isMobile ? '100%' : 'auto', fontSize: isMobile ? '12px' : undefined }}
-          >
-            <Plus size={18} />
-            Nuevo Servicio
-          </button>
-        </div>
-      </div>
-
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '100px' }}>
           <Loader2 className="animate-spin" color="var(--pink-primary)" size={40} />
         </div>
       ) : services.length === 0 ? (
         <div className="glass-card" style={{ textAlign: 'center', padding: '80px', borderRadius: '32px' }}>
-                    <Star size={64} color="rgba(212, 160, 154, 0.1)" style={{ marginBottom: '24px' }} />
+          <Star size={64} color="rgba(212, 160, 154, 0.1)" style={{ marginBottom: '24px' }} />
           <h3 style={{ fontSize: '20px', color: 'var(--text-primary)' }}>Tu catálogo está vacío</h3>
           <p style={{ color: 'var(--text-muted)', marginTop: '8px' }}>Comienza agregando los servicios que definirán tu marca.</p>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-
-          {viewMode === 'grid' || isMobile ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {services.map(service => {
-                if (isMobile) {
-                  return (
-                    <React.Fragment key={service.id}>
-                      <div 
-                        className="glass-card" 
-                        onClick={() => setSelectedServiceDetail(service)}
-                        style={{ 
-                          borderRadius: '24px',
-                          padding: '20px',
-                          border: '1px solid rgba(255,255,255,0.05)',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: '16px',
-                          cursor: 'pointer',
-                          transition: 'all 0.3s'
+        <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '24px' }}>
+          
+          {/* │││ LEFT COLUMN │││ */}
+          <div style={{ flex: isMobile ? 1 : 3, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            
+            {/* Header */}
+            <div>
+              <h2 style={{ fontSize: isMobile ? '28px' : '32px', fontWeight: '800', letterSpacing: '-0.5px', color: 'var(--text-primary)' }}>Servicios</h2>
+              <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>Define tu oferta y servicios adicionales.</p>
+            </div>
+            
+            {/* Action Buttons Row */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
+              <button 
+                onClick={() => setViewMode('grid')}
+                style={{ 
+                  padding: '8px 16px', borderRadius: '20px', border: 'none',
+                  backgroundColor: viewMode === 'grid' ? 'var(--pink-primary)' : '#faf5f5',
+                  color: viewMode === 'grid' ? 'white' : 'var(--text-muted)',
+                  cursor: 'pointer', fontSize: '13px', fontWeight: '700', transition: 'all 0.2s'
+                }}
+              >
+                <LayoutGrid size={14} style={{ marginRight: '6px', verticalAlign: 'middle' }} /> Tarjetas
+              </button>
+              <button 
+                onClick={() => setViewMode('table')}
+                style={{ 
+                  padding: '8px 16px', borderRadius: '20px', border: 'none',
+                  backgroundColor: viewMode === 'table' ? 'var(--pink-primary)' : '#faf5f5',
+                  color: viewMode === 'table' ? 'white' : 'var(--text-muted)',
+                  cursor: 'pointer', fontSize: '13px', fontWeight: '700', transition: 'all 0.2s'
+                }}
+              >
+                <Table size={14} style={{ marginRight: '6px', verticalAlign: 'middle' }} /> Tabla
+              </button>
+              <button 
+                onClick={() => setIsCategoriesModalOpen(true)}
+                style={{ 
+                  padding: '8px 16px', borderRadius: '20px', border: 'none',
+                  backgroundColor: '#faf5f5', color: 'var(--text-muted)',
+                  cursor: 'pointer', fontSize: '13px', fontWeight: '700', transition: 'all 0.2s'
+                }}
+              >
+                Categorías
+              </button>
+              <button 
+                onClick={() => setIsStrategiesModalOpen(true)}
+                style={{ 
+                  padding: '8px 16px', borderRadius: '20px', border: 'none',
+                  backgroundColor: '#faf5f5', color: 'var(--text-muted)',
+                  cursor: 'pointer', fontSize: '13px', fontWeight: '700', transition: 'all 0.2s'
+                }}
+              >
+                Estrategias
+              </button>
+              <button 
+                onClick={() => setIsBillableExtrasModalOpen(true)}
+                style={{ 
+                  padding: '8px 16px', borderRadius: '20px', border: 'none',
+                  backgroundColor: '#faf5f5', color: 'var(--text-muted)',
+                  cursor: 'pointer', fontSize: '13px', fontWeight: '700', transition: 'all 0.2s'
+                }}
+              >
+                Extras
+              </button>
+              <button 
+                className="btn-pink"
+                onClick={() => {
+                  setIsEditing(false);
+                  setNewService({ 
+                    name: '', price: '', icon: 'Scissors', category: 'Estilismo',
+                    strategy_type: 'MVP', duration: 30, insumo_cost: 0, variable_cost: 0.50,
+                    description: '', included_items: [],
+                    commission_stylist: 40, commission_washer: 0, commission_cashier: 0, commission_receptionist: 0
+                  });
+                  setShowAddForm(true);
+                }}
+                style={{ 
+                  padding: '8px 16px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '6px',
+                  fontSize: '13px', fontWeight: '700', marginLeft: 'auto'
+                }}
+              >
+                <Plus size={14} /> Nuevo Servicio
+              </button>
+            </div>
+            
+            {/* Stat Cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px' }}>
+              {/* Servicios activos */}
+              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c48b9f' }}>
+                    <LayoutGrid size={18} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>Servicios activos</div>
+                    <div style={{ fontSize: '24px', fontWeight: '800', color: 'var(--text-primary)' }}>{activeServicesCount}</div>
+                  </div>
+                </div>
+                <div style={{ fontSize: '11px', color: '#22c55e', fontWeight: '600' }}>→‘ 12% vs mes anterior</div>
+              </div>
+              
+              {/* Categorías */}
+              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(99,102,241,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6366f1' }}>
+                    <Settings size={18} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>Categorías</div>
+                    <div style={{ fontSize: '24px', fontWeight: '800', color: 'var(--text-primary)' }}>{categoriesCount}</div>
+                  </div>
+                </div>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>Sin cambios</div>
+              </div>
+              
+              {/* Más reservado */}
+              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(239,68,68,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444' }}>
+                    <Heart size={18} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>Más reservado</div>
+                    <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '150px' }}>{mostBookedService?.name || '-'}</div>
+                  </div>
+                </div>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>{mostBookedService?.total_bookings || 0} reservas este mes</div>
+              </div>
+              
+              {/* Ticket promedio */}
+              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(245,158,11,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f59e0b' }}>
+                    <DollarSign size={18} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>Ticket promedio</div>
+                    <div style={{ fontSize: '20px', fontWeight: '800', color: 'var(--text-primary)' }}>{formatBs(avgTicket)}</div>
+                  </div>
+                </div>
+                <div style={{ fontSize: '11px', color: '#22c55e', fontWeight: '600' }}>→‘ 8% vs mes anterior</div>
+              </div>
+            </div>
+            
+            {/* Filter Bar */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+              {/* Search */}
+              <div style={{ position: 'relative', flex: '1 1 200px', minWidth: '200px' }}>
+                <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                <input 
+                  className="form-input"
+                  placeholder="Buscar servicio..."
+                  value={searchQuery}
+                  onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                  style={{ width: '100%', paddingLeft: '38px', height: '40px', borderRadius: '12px', fontSize: '13px', background: 'white', border: '1px solid var(--border-color)' }}
+                />
+              </div>
+              
+              {/* Category Chips */}
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                {allCategories.slice(0, 6).map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => { setCategoryFilter(cat); setCurrentPage(1); }}
+                    style={{
+                      padding: '6px 14px', borderRadius: '20px', cursor: 'pointer',
+                      fontSize: '12px', fontWeight: '700', transition: 'all 0.2s',
+                      backgroundColor: categoryFilter === cat ? 'var(--pink-primary)' : '#faf5f5',
+                      color: categoryFilter === cat ? 'white' : 'var(--text-muted)',
+                      border: categoryFilter === cat ? 'none' : '1px solid var(--border-color)'
+                    }}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+              
+              {/* Sort Dropdown */}
+              <div style={{ position: 'relative' }}>
+                <button
+                  onClick={() => setSortByOpen(!sortByOpen)}
+                  style={{
+                    padding: '8px 14px', borderRadius: '12px', border: '1px solid var(--border-color)',
+                    backgroundColor: 'white', color: 'var(--text-secondary)', cursor: 'pointer',
+                    fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px'
+                  }}
+                >
+                  {sortOptions.find(o => o.value === sortBy)?.label || 'Más reservados'}
+                  <ChevronDown size={14} />
+                </button>
+                {sortByOpen && (
+                  <div style={{
+                    position: 'absolute', top: '100%', right: 0, marginTop: '4px',
+                    background: 'white', borderRadius: '12px', border: '1px solid var(--border-color)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 100, overflow: 'hidden', minWidth: '180px'
+                  }}>
+                    {sortOptions.map(opt => (
+                      <button
+                        key={opt.value}
+                        onClick={() => { setSortBy(opt.value); setSortByOpen(false); setCurrentPage(1); }}
+                        style={{
+                          display: 'block', width: '100%', padding: '10px 16px', border: 'none',
+                          background: sortBy === opt.value ? 'rgba(196,139,159,0.1)' : 'transparent',
+                          color: sortBy === opt.value ? 'var(--pink-primary)' : 'var(--text-secondary)',
+                          fontSize: '13px', fontWeight: sortBy === opt.value ? '700' : '500',
+                          textAlign: 'left', cursor: 'pointer'
                         }}
                       >
-                        {/* Top: Icon + Name & Actions */}
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0, flex: 1 }}>
-                            <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: 'rgba(196, 139, 159, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'var(--pink-primary)' }}>
-                              {service.icon ? getIconComponent(service.icon, 20) : getCategoryIcon(service.category)}
-                            </div>
-                            <div style={{ minWidth: 0, flex: 1 }}>
-                              <div style={{ fontSize: '9px', fontWeight: '900', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{service.category}</div>
-                              <h4 style={{ fontSize: '15px', fontWeight: '800', color: 'white', margin: '2px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{service.name}</h4>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                                <Clock size={12} /> {service.duration || 30} min
-                              </div>
-                            </div>
-                          </div>
-
-                          <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }} onClick={e => e.stopPropagation()}>
-                            <button 
-                              className="action-btn" 
-                              onClick={(e) => { e.stopPropagation(); handleEditClick(service); }} 
-                              style={{ width: '36px', height: '36px', borderRadius: '10px' }}
-                            >
-                              <Edit2 size={14} />
-                            </button>
-                            <button 
-                              onClick={(e) => { e.stopPropagation(); handleDeleteService(service.id, service.name); }} 
-                              className="action-btn" 
-                              style={{ width: '36px', height: '36px', borderRadius: '10px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.1)' }}
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Description */}
-                        {service.description && (
-                          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.55)', margin: '0', lineHeight: '1.4', fontStyle: 'italic', borderLeft: '2px solid rgba(196, 139, 159, 0.3)', paddingLeft: '10px' }}>
-                            {service.description}
-                          </p>
-                        )}
-
-                        {/* Included Checklist Items */}
-                        {(service.included_items || []).length > 0 && (
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                            {(service.included_items || []).map((item, idx) => (
-                              <span key={idx} style={{ fontSize: '10px', padding: '4px 10px', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.03)', color: 'var(--text-muted)', border: '1px solid rgba(255,255,255,0.05)', whiteSpace: 'nowrap' }}>
-                                {item}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Bottom Info: Strategy Tag & Price */}
-                        <div style={{ 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          justifyContent: 'space-between',
-                          gap: '16px',
-                          borderTop: '1px solid rgba(255,255,255,0.06)',
-                          paddingTop: '12px',
-                          marginTop: '4px'
-                        }}>
-                          <div>
-                            {service.strategy_type ? (
-                              <div style={{ padding: '4px 12px', borderRadius: '20px', border: '1px solid rgba(196, 139, 159, 0.3)', fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)', backgroundColor: 'rgba(196, 139, 159, 0.05)' }}>
-                                {service.strategy_type}
-                              </div>
-                            ) : <div />}
-                          </div>
-
-                          <div style={{ textAlign: 'right' }}>
-                            <div style={{ fontSize: '9px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>PRECIO</div>
-                            <div style={{ fontSize: '18px', fontWeight: '900', color: 'white', display: 'flex', alignItems: 'baseline', gap: '6px', justifyContent: 'flex-end' }}>
-                              <span>${service.price}</span>
-                              {rates?.usd > 0 && (
-                                <span style={{ fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '700' }}>
-                                  ≈ {Math.round(service.price * rates.usd).toLocaleString()} Bs.
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-
-                    </React.Fragment>
-                  );
-                }
-
-                // Desktop / non-mobile card
-                return (
-                  <React.Fragment key={service.id}>
-                    <div className="glass-card" style={{ 
-                      borderRadius: '20px',
-                      padding: '16px 24px',
-                      border: '1px solid rgba(255,255,255,0.05)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '24px'
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', minWidth: '200px' }}>
-                        <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: 'rgba(196, 139, 159, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            {/* │││ SERVICE CARDS GRID │││ */}
+            {viewMode === 'grid' || isMobile ? (
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+                {paginatedServices.map(service => {
+                  const badge = getBadge(service);
+                  return (
+                    <div 
+                      key={service.id}
+                      className="glass-card"
+                      style={{ 
+                        background: 'white', borderRadius: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+                        border: '1px solid var(--border-color)', padding: '20px',
+                        display: 'flex', flexDirection: 'column', gap: '12px', cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }}
+                      onClick={() => setSelectedServiceDetail(service)}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                        <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c48b9f' }}>
                           {service.icon ? getIconComponent(service.icon, 20) : getCategoryIcon(service.category)}
                         </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '1px' }}>{service.category}</div>
-                          <h4 style={{ fontSize: '16px', fontWeight: '800', color: 'white', margin: '2px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{service.name}</h4>
-                          {service.description && (
-                            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', margin: '4px 0', maxWidth: '250px', lineHeight: '1.4', fontStyle: 'italic' }}>{service.description}</p>
-                          )}
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
-                            <Clock size={12} /> {service.duration || 30} min
-                          </div>
-                        </div>
-                      </div>
-
-                      <div style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                        {(service.included_items || []).map((item, idx) => (
-                          <span key={idx} style={{ fontSize: '10px', padding: '4px 10px', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.03)', color: 'var(--text-muted)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                            {item}
+                        {badge && (
+                          <span style={{ 
+                            padding: '4px 10px', borderRadius: '12px', fontSize: '10px', fontWeight: '800',
+                            backgroundColor: badge.bg, color: badge.color, textTransform: 'uppercase', letterSpacing: '0.5px'
+                          }}>
+                            {badge.label}
                           </span>
-                        ))}
-                      </div>
-
-                      <div style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: '32px'
-                      }}>
-                        {service.strategy_type && (
-                          <div style={{ padding: '4px 12px', borderRadius: '20px', border: '1px solid rgba(196, 139, 159, 0.3)', fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)', backgroundColor: 'rgba(196, 139, 159, 0.05)' }}>
-                            {service.strategy_type}
-                          </div>
                         )}
-                        
-                        <div style={{ textAlign: 'right', minWidth: '100px' }}>
-                          <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)' }}>PRECIO</div>
-                          <div style={{ fontSize: '18px', fontWeight: '900', color: 'white' }}>${service.price}</div>
-                          {rates?.usd > 0 && (
-                            <div style={{ fontSize: '11px', color: 'var(--pink-primary)', fontWeight: '700' }}>
-                              ≈ {Math.round(service.price * rates.usd).toLocaleString()} Bs.
-                            </div>
-                          )}
+                      </div>
+                      <h4 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {service.name}
+                      </h4>
+                      <span style={{ fontSize: '11px', fontWeight: '700', color: '#c48b9f' }}>
+                        {service.category}
+                      </span>
+                      {service.description && (
+                        <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: 0, lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                          {service.description}
+                        </p>
+                      )}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--text-muted)' }}>
+                          <Clock size={14} /> {service.duration || 30} min
                         </div>
-
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <button className="action-btn" onClick={() => handleEditClick(service)} style={{ width: '36px', height: '36px' }}>
-                            <Edit2 size={16} />
+                        <div style={{ fontWeight: '800', color: 'var(--text-primary)', fontSize: '15px' }}>
+                          {formatBs(service.price)}
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '12px', marginTop: '4px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#c48b9f', fontWeight: '600' }}>
+                          <Heart size={14} fill="currentColor" /> {service.total_bookings || 0} reservas este mes
+                        </div>
+                        <div style={{ display: 'flex', gap: '4px' }} onClick={e => e.stopPropagation()}>
+                          <button 
+                            className="action-btn" 
+                            onClick={() => handleEditClick(service)} 
+                            style={{ width: '32px', height: '32px', borderRadius: '8px' }}
+                          >
+                            <Edit2 size={14} />
                           </button>
-                          <button onClick={() => handleDeleteService(service.id, service.name)} className="action-btn" style={{ width: '36px', height: '36px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.1)' }}>
-                            <Trash2 size={16} />
+                          <button 
+                            className="action-btn" 
+                            style={{ width: '32px', height: '32px', borderRadius: '8px' }}
+                          >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                          </button>
+                          <button 
+                            onClick={() => handleDeleteService(service.id, service.name)} 
+                            className="action-btn" 
+                            style={{ width: '32px', height: '32px', borderRadius: '8px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.1)' }}
+                          >
+                            <Trash2 size={14} />
                           </button>
                         </div>
                       </div>
                     </div>
-
-
-                  </React.Fragment>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="animate-slide-up" style={{ background: 'white', padding: '0', borderRadius: '24px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                <thead>
-                  <tr style={{ backgroundColor: '#faf5f5', borderBottom: '1px solid var(--border-color)' }}>
-                    <th style={{ padding: '16px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Servicio</th>
-                    <th style={{ padding: '16px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Categoría</th>
-                    <th style={{ padding: '16px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Duración</th>
-                    <th style={{ padding: '16px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Precio</th>
-                    <th style={{ padding: '16px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Comisiones (%)</th>
-                    <th style={{ padding: '16px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', textAlign: 'right' }}>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {services.map((service) => (
-                    <tr key={service.id} style={{ borderBottom: '1px solid var(--border-color)', transition: 'background-color 0.2s' }} className="table-row-hover">
-                      <td style={{ padding: '16px 24px' }}>
-                        <div style={{ fontWeight: '700', color: 'var(--text-primary)', marginBottom: '4px' }}>{service.name}</div>
-                        {service.description && <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic', maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{service.description}</div>}
-                      </td>
-                      <td style={{ padding: '16px 24px' }}>
-                        <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--pink-primary)', backgroundColor: 'rgba(196,139,159,0.1)', padding: '4px 10px', borderRadius: '8px' }}>
-                          {service.category}
-                        </span>
-                      </td>
-                      <td style={{ padding: '16px 24px', fontSize: '13px', color: 'var(--text-secondary)' }}>
-                        {service.duration} min
-                      </td>
-                      <td style={{ padding: '16px 24px' }}>
-                        <div style={{ fontWeight: '800', color: 'var(--text-primary)' }}>${service.price}</div>
-                        {rates?.usd > 0 && <div style={{ fontSize: '11px', color: 'var(--pink-primary)' }}>{Math.round(service.price * rates.usd).toLocaleString()} Bs.</div>}
-                      </td>
-                      <td style={{ padding: '16px 24px' }}>
-                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                          <span title="Comisión del Estilista" style={{ fontSize: '11px', color: '#32d74b', fontWeight: '700' }}>
-                            Estilista: {service.commission_stylist}%
-                          </span>
-                        </div>
-                      </td>
-                      <td style={{ padding: '16px 24px', textAlign: 'right' }}>
-                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                          <button className="action-btn" onClick={() => handleEditClick(service)} style={{ width: '32px', height: '32px' }}>
-                            <Edit2 size={14} />
-                          </button>
-                          <button onClick={() => handleDeleteService(service.id, service.name)} className="action-btn" style={{ width: '32px', height: '32px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.1)' }}>
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      </td>
+                  );
+                })}
+              </div>
+            ) : (
+              /* │││ TABLE VIEW │││ */
+              <div style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                  <thead>
+                    <tr style={{ backgroundColor: '#faf5f5', borderBottom: '1px solid var(--border-color)' }}>
+                      <th style={{ padding: '14px 20px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Servicio</th>
+                      <th style={{ padding: '14px 20px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Categoría</th>
+                      <th style={{ padding: '14px 20px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Duración</th>
+                      <th style={{ padding: '14px 20px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Precio</th>
+                      <th style={{ padding: '14px 20px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Reservas</th>
+                      <th style={{ padding: '14px 20px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', textAlign: 'right' }}>Acciones</th>
                     </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedServices.map(service => (
+                      <tr key={service.id} style={{ borderBottom: '1px solid var(--border-color)' }} className="table-row-hover">
+                        <td style={{ padding: '14px 20px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c48b9f', flexShrink: 0 }}>
+                              {service.icon ? getIconComponent(service.icon, 16) : getCategoryIcon(service.category)}
+                            </div>
+                            <div>
+                              <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '13px' }}>{service.name}</div>
+                              {service.description && <div style={{ fontSize: '11px', color: 'var(--text-muted)', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{service.description}</div>}
+                            </div>
+                          </div>
+                        </td>
+                        <td style={{ padding: '14px 20px' }}>
+                          <span style={{ fontSize: '11px', fontWeight: '700', color: '#c48b9f', backgroundColor: 'rgba(196,139,159,0.1)', padding: '4px 10px', borderRadius: '8px' }}>
+                            {service.category}
+                          </span>
+                        </td>
+                        <td style={{ padding: '14px 20px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <Clock size={12} /> {service.duration || 30} min
+                          </div>
+                        </td>
+                        <td style={{ padding: '14px 20px', fontWeight: '800', color: 'var(--text-primary)' }}>{formatBs(service.price)}</td>
+                        <td style={{ padding: '14px 20px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                          {service.total_bookings || 0}
+                        </td>
+                        <td style={{ padding: '14px 20px', textAlign: 'right' }}>
+                          <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                            <button className="action-btn" onClick={() => handleEditClick(service)} style={{ width: '32px', height: '32px' }}>
+                              <Edit2 size={14} />
+                            </button>
+                            <button onClick={() => handleDeleteService(service.id, service.name)} className="action-btn" style={{ width: '32px', height: '32px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.1)' }}>
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            
+            {/* Pagination */}
+            {filteredServices.length > itemsPerPage && (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', paddingTop: '8px' }}>
+                <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+                  Mostrando {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredServices.length)} de {filteredServices.length} servicios
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <button
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    style={{ width: '36px', height: '36px', borderRadius: '10px', border: '1px solid var(--border-color)', background: 'white', cursor: currentPage === 1 ? 'default' : 'pointer', color: currentPage === 1 ? 'var(--text-muted)' : 'var(--text-primary)', fontSize: '14px', fontWeight: '700', opacity: currentPage === 1 ? 0.5 : 1 }}
+                  >
+                    &laquo;
+                  </button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      style={{
+                        width: '36px', height: '36px', borderRadius: '10px', border: 'none', cursor: 'pointer',
+                        fontSize: '13px', fontWeight: '700',
+                        backgroundColor: currentPage === page ? 'var(--pink-primary)' : 'white',
+                        color: currentPage === page ? 'white' : 'var(--text-secondary)',
+                        boxShadow: currentPage === page ? '0 2px 6px rgba(196,139,159,0.3)' : 'none'
+                      }}
+                    >
+                      {page}
+                    </button>
                   ))}
-                </tbody>
-              </table>
+                  <button
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    style={{ width: '36px', height: '36px', borderRadius: '10px', border: '1px solid var(--border-color)', background: 'white', cursor: currentPage === totalPages ? 'default' : 'pointer', color: currentPage === totalPages ? 'var(--text-muted)' : 'var(--text-primary)', fontSize: '14px', fontWeight: '700', opacity: currentPage === totalPages ? 0.5 : 1 }}
+                  >
+                    &raquo;
+                  </button>
+                </div>
+                <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+                  {itemsPerPage} por página
+                </div>
+              </div>
+            )}
+            
+          </div>
+          
+          {/* │││ RIGHT SIDEBAR │││ */}
+          {!isMobile && (
+            <div style={{ width: '300px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              
+              {/* CATEGORÁAS MÁS VENDIDAS */}
+              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px' }}>Categorías más vendidas</h4>
+                {[
+                  { name: 'Cabello', pct: 54, color: '#c48b9f' },
+                  { name: 'Uñas', pct: 21, color: '#6366f1' },
+                  { name: 'Pestañas', pct: 12, color: '#ef4444' },
+                  { name: 'Facial', pct: 8, color: '#f59e0b' },
+                  { name: 'Combos', pct: 5, color: '#22c55e' },
+                ].map(cat => (
+                  <div key={cat.name} style={{ marginBottom: '12px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)' }}>{cat.name}</span>
+                      <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{cat.pct}%</span>
+                    </div>
+                    <div style={{ height: '6px', backgroundColor: '#f5f5f5', borderRadius: '3px', overflow: 'hidden' }}>
+                      <div style={{ height: '100%', width: `${cat.pct}%`, backgroundColor: cat.color, borderRadius: '3px', transition: 'width 0.5s ease' }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* SERVICIO DESTACADO DEL MES */}
+              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px' }}>Servicio destacado del mes</h4>
+                <div style={{ width: '100%', height: '100px', borderRadius: '12px', backgroundColor: 'rgba(196,139,159,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
+                  <Sparkles size={32} color="#c48b9f" />
+                </div>
+                <h5 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', margin: '0 0 4px' }}>Corte Suprema</h5>
+                <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '0 0 12px', lineHeight: '1.4' }}>El servicio estrella del mes con la mejor valoración por parte de nuestras clientas.</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px', fontSize: '12px', color: '#c48b9f', fontWeight: '600' }}>
+                  <Heart size={14} fill="currentColor" /> 142 reservas
+                </div>
+                <button 
+                  style={{ width: '100%', padding: '10px', borderRadius: '10px', border: 'none', backgroundColor: 'rgba(196,139,159,0.1)', color: 'var(--pink-primary)', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}
+                >
+                  Ver detalles
+                </button>
+              </div>
+              
+              {/* EXTRAS MÁS AÁ‘ADIDOS */}
+              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px' }}>Extras más añadidos</h4>
+                {[
+                  { name: 'Ampolla de Keratina', count: 88 },
+                  { name: 'Diseño de Cejas', count: 72 },
+                  { name: 'Tratamiento de Manos', count: 64 },
+                  { name: 'Retiro de Acrílico', count: 52 },
+                ].map((extra, idx) => (
+                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: idx < 3 ? '1px solid var(--border-color)' : 'none' }}>
+                    <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)' }}>{extra.name}</span>
+                    <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--pink-primary)', backgroundColor: 'rgba(196,139,159,0.1)', padding: '3px 8px', borderRadius: '8px' }}>{extra.count}</span>
+                  </div>
+                ))}
+              </div>
+              
+              {/* PAQUETES RECOMENDADOS */}
+              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px' }}>Paquetes recomendados</h4>
+                {[
+                  { name: 'Pack Cabello Premium', desc: 'Corte + Keratina + Secado', price: '$45' },
+                  { name: 'Combo Manicura & Pestañas', desc: 'Manicura gel + Extensiones', price: '$38' },
+                ].map((pkg, idx) => (
+                  <div key={idx} style={{ display: 'flex', gap: '12px', padding: '12px', borderRadius: '12px', backgroundColor: 'rgba(196,139,159,0.04)', marginBottom: idx === 0 ? '10px' : 0, border: '1px solid var(--border-color)' }}>
+                    <div style={{ width: '48px', height: '48px', borderRadius: '10px', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <Star size={20} color="#c48b9f" />
+                    </div>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)' }}>{pkg.name}</div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{pkg.desc}</div>
+                      <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--pink-primary)', marginTop: '2px' }}>{pkg.price}</div>
+                    </div>
+                  </div>
+                ))}
+                <button style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-color)', backgroundColor: 'transparent', color: 'var(--text-secondary)', fontWeight: '700', fontSize: '13px', cursor: 'pointer', marginTop: '12px' }}>
+                  Ver todos los paquetes →’
+                </button>
+              </div>
+              
             </div>
           )}
+          
         </div>
       )}
 
@@ -1066,7 +1267,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                 <div className="details-price-row">
                   <div>
                     <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Precio Base</div>
-                    <div style={{ fontSize: '24px', fontWeight: '900', color: 'white' }}>${selectedServiceDetail.price}</div>
+                    <div style={{ fontSize: '24px', fontWeight: '900', color: 'white' }}>{formatBs(selectedServiceDetail.price)}</div>
                   </div>
                   {rates?.usd > 0 && (
                     <div style={{ textAlign: 'right' }}>
@@ -1135,7 +1336,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               {/* Agregar Categoría */}
               <div style={{ marginBottom: '24px', backgroundColor: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
                 <label style={{ display: 'block', fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '0.5px' }}>
-                  {editingCategory ? 'EDITAR CATEGORÍA' : 'NUEVA CATEGORÍA'}
+                  {editingCategory ? 'EDITAR CATEGORÁA' : 'NUEVA CATEGORÁA'}
                 </label>
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
                   <input 
@@ -1383,7 +1584,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
 
                     {/* Icon Picker */}
                     <div className="form-group">
-                      <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '10px', letterSpacing: '1px' }}>ÍCONO ASOCIADO</label>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '10px', letterSpacing: '1px' }}>ÁCONO ASOCIADO</label>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                         {AVAILABLE_ICONS.map(ic => (
                           <button
@@ -1416,7 +1617,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                     </div>
 
                     <div className="form-group">
-                      <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>DESCRIPCIÓN DEL SERVICIO</label>
+                      <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>DESCRIPCIÁ“N DEL SERVICIO</label>
                       <textarea 
                         className="form-input" 
                         placeholder="Describe los beneficios premium del servicio..." 
@@ -1442,20 +1643,20 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                           />
                           {rates?.usd > 0 && (
                             <div className="price-bs-equivalent">
-                              ≈ {Math.round((Number(newService.price) || 0) * rates.usd).toLocaleString()} Bs.
+                              â‰ˆ {Math.round((Number(newService.price) || 0) * rates.usd).toLocaleString()} Bs.
                             </div>
                           )}
                         </div>
                       </div>
                       <div className="form-group">
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '8px' }}>DURACIÓN (MIN)</label>
+                        <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '8px' }}>DURACIÁ“N (MIN)</label>
                         <input className="form-input" type="number" placeholder="45" value={newService.duration === 0 ? '' : newService.duration} onChange={e => setNewService({...newService, duration: e.target.value === '' ? '' : Number(e.target.value)})} style={{ width: '100%' }} />
                       </div>
                     </div>
 
                     <div className="modal-grid-2col">
                       <AstroSelect 
-                        label="CATEGORÍA"
+                        label="CATEGORÁA"
                         value={newService.category}
                         onChange={val => setNewService({...newService, category: val})}
                         options={categories.map(c => ({ label: c.name, value: c.name }))}
@@ -1471,12 +1672,12 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                     {/* Commissions Distribution */}
                     <div className="modal-commissions">
                       <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', marginBottom: '16px', letterSpacing: '1px' }}>
-                        <DollarSign size={14} /> DISTRIBUCIÓN DE INGRESOS (%)
+                        <DollarSign size={14} /> DISTRIBUCIÁ“N DE INGRESOS (%)
                       </label>
                       
                       <div className="commissions-fields-grid" style={{ marginBottom: '16px' }}>
                         <div className="form-group">
-                          <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '8px' }}>COMISIÓN ESTILISTA (%)</label>
+                          <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '8px' }}>COMISIÁ“N ESTILISTA (%)</label>
                           <input 
                             className="form-input" 
                             type="number" 
@@ -1488,7 +1689,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                         </div>
 
                         <div className="form-group">
-                          <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '8px' }}>GANANCIA SALÓN (%)</label>
+                          <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '8px' }}>GANANCIA SALÁ“N (%)</label>
                           <input 
                             className="form-input" 
                             type="number" 
