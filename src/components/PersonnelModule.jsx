@@ -401,7 +401,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
   const activeStaff = staff.filter(s => s.active !== false);
   const activeCount = activeStaff.length;
   const availableToday = Math.ceil(activeCount * 0.66);
-  const rolesCount = [...new Set(activeStaff.map(s => (s.role || '').split('|')[0].split(',')[0].trim())).filter(Boolean)].length;
+  const rolesCount = [...new Set(activeStaff.map(s => (s.role || '').split('|')[0].split(',')[0].trim()))].filter(Boolean).length;
   const avgPerformance = activeStaff.length > 0 ? Math.round(activeStaff.reduce((sum, s) => sum + (s.performance || 88), 0) / activeStaff.length) : 0;
 
   const filteredStaff = activeStaff.filter(s => {
