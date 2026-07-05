@@ -915,8 +915,39 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
     showToast("Estructura de costos actualizada.");
   };
 
+  const formatBs = (amount) => {
+    return Number(amount || 0).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
+  const cashCloseTotal = cashCloseCashUsd + (cashCloseTransferBs / (rates?.usd || 550)) + cashCloseCommissionDebtUsd;
+  const cashCloseCashPct = cashCloseTotal > 0 ? ((cashCloseCashUsd / cashCloseTotal) * 100).toFixed(1) : '0';
+  const cashCloseTransferPct = cashCloseTotal > 0 ? (((cashCloseTransferBs / (rates?.usd || 550)) / cashCloseTotal) * 100).toFixed(1) : '0';
+  const cashCloseCommissionPct = cashCloseTotal > 0 ? ((cashCloseCommissionDebtUsd / cashCloseTotal) * 100).toFixed(1) : '0';
+  const cashCloseNetPct = cashCloseTotal > 0 ? ((cashCloseNetRealUsd / cashCloseTotal) * 100).toFixed(1) : '0';
+
+  const todayMovements = todayOperationalTransactions.slice(0, 5).map(t => {
+    const meta = t.metadata || {};
+    const rate = Number(t.exchange_rate || rates?.usd || 550);
+    const bsAmount = t.amount * rate;
+    return {
+      id: t.id,
+      type: t.type,
+      description: t.type === 'income' ? 'Ingreso por servicios' : t.description || 'Gasto',
+      amountBs: bsAmount,
+      time: new Date(t.created_at).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true }),
+      date: new Date(t.created_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'short' })
+    };
+  });
+
+  const daySales = todayIncome * (rates?.usd || 550);
+  const dayExpenses = todayExpense * (rates?.usd || 550);
+  const dayNet = daySales - dayExpenses;
+  const dayTransactions = todayOperationalTransactions.length;
+  const dayClients = new Set(todayOperationalTransactions.map(t => t.metadata?.clientName).filter(Boolean)).size || dayTransactions;
+  const dayTicket = dayTransactions > 0 ? daySales / dayTransactions : 0;
+
   return (
-    <div className="animate-fade-in" style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: isMobile ? '120px' : '80px' }}>
+    <div className="animate-fade-in" style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: isMobile ? '120px' : '80px' }}>
       {/* Header Section */}
       <div style={{
         display: 'flex',
@@ -924,19 +955,19 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
         justifyContent: 'space-between',
         alignItems: isMobile ? 'flex-start' : 'center',
         gap: isMobile ? '20px' : '0',
-        marginBottom: '40px'
+        marginBottom: '32px'
       }}>
         <div>
           <h2 style={{ fontSize: isMobile ? '28px' : '32px', fontWeight: '800', letterSpacing: '-0.5px' }}>
             Finanzas
           </h2>
-          <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>Control de flujo y conciliación.</p>
+          <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>Control de flujo, pagos y rentabilidad.</p>
         </div>
         <div style={{ 
           display: 'flex', 
           gap: '12px', 
           width: isMobile ? '100%' : 'auto',
-          flexDirection: isMobile ? 'row' : 'row' // Keep side-by-side if refined enough
+          flexDirection: isMobile ? 'row' : 'row'
         }}>
           <button className="btn-pink" onClick={() => handleManualTransaction('income')} style={{ 
             display: 'flex', 
@@ -974,400 +1005,226 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
         </div>
       </div>
 
-      {/* Tab Selector */}
+      {/* Tab Cards */}
       <div style={{ 
-        display: 'flex', 
-        gap: isMobile ? '8px' : '20px', 
-        marginBottom: '32px', 
-        borderBottom: '1px solid var(--border-color)',
-        width: '100%'
+        display: 'grid', 
+        gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', 
+        gap: '16px', 
+        marginBottom: '28px'
       }}>
-        <button 
+        {/* Transacciones Tab */}
+        <div 
           onClick={() => setActiveTab('transactions')}
-          style={{ 
-            padding: isMobile ? '12px 4px' : '12px 20px', 
-            background: 'none', 
-            border: 'none', 
-            color: activeTab === 'transactions' ? 'var(--pink-primary)' : 'var(--text-secondary)',
-            fontWeight: '800',
-            fontSize: isMobile ? '12px' : '14px',
+          style={{
+            padding: '20px',
+            borderRadius: '16px',
+            border: activeTab === 'transactions' ? '2px solid var(--pink-primary)' : '2px solid var(--border-color)',
+            background: activeTab === 'transactions' ? 'rgba(196,139,159,0.06)' : 'white',
             cursor: 'pointer',
-            flex: isMobile ? 1 : 'none',
-            textAlign: 'center',
-            borderBottom: activeTab === 'transactions' ? '2px solid var(--pink-primary)' : '2px solid transparent',
-            transition: '0.2s'
+            display: 'flex',
+            alignItems: 'center',
+            gap: '14px',
+            transition: 'all 0.2s'
           }}
         >
-          {isMobile ? 'MOVIMIENTOS' : 'TRANSACCIONES'}
-        </button>
-        <button 
+          <div style={{
+            width: '44px', height: '44px', borderRadius: '12px',
+            backgroundColor: activeTab === 'transactions' ? 'rgba(196,139,159,0.15)' : 'rgba(196,139,159,0.08)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: 'var(--pink-primary)', flexShrink: 0
+          }}>
+            <Wallet size={22} />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontWeight: '800', fontSize: '14px', color: 'var(--text-primary)' }}>Transacciones</div>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>Movimientos y cierres de caja</div>
+          </div>
+        </div>
+
+        {/* Nómina y Pagos Tab */}
+        <div 
           onClick={() => setActiveTab('payroll')}
-          style={{ 
-            padding: isMobile ? '12px 4px' : '12px 20px', 
-            background: 'none', 
-            border: 'none', 
-            color: activeTab === 'payroll' ? 'var(--pink-primary)' : 'var(--text-secondary)',
-            fontWeight: '800',
-            fontSize: isMobile ? '12px' : '14px',
+          style={{
+            padding: '20px',
+            borderRadius: '16px',
+            border: activeTab === 'payroll' ? '2px solid var(--pink-primary)' : '2px solid var(--border-color)',
+            background: activeTab === 'payroll' ? 'rgba(196,139,159,0.06)' : 'white',
             cursor: 'pointer',
-            flex: isMobile ? 1 : 'none',
-            textAlign: 'center',
-            borderBottom: activeTab === 'payroll' ? '2px solid var(--pink-primary)' : '2px solid transparent',
-            transition: '0.2s'
+            display: 'flex',
+            alignItems: 'center',
+            gap: '14px',
+            transition: 'all 0.2s'
           }}
         >
-          {isMobile ? 'NÓMINA' : 'NÓMINA Y PAGOS'}
-        </button>
-        <button 
+          <div style={{
+            width: '44px', height: '44px', borderRadius: '12px',
+            backgroundColor: activeTab === 'payroll' ? 'rgba(196,139,159,0.15)' : 'rgba(196,139,159,0.08)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: 'var(--pink-primary)', flexShrink: 0
+          }}>
+            <List size={22} />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontWeight: '800', fontSize: '14px', color: 'var(--text-primary)' }}>Nómina y Pagos</div>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>Salarios y pagos al equipo</div>
+          </div>
+          <div style={{ textAlign: 'right', flexShrink: 0 }}>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700' }}>Pendiente</div>
+            <div style={{ fontSize: '15px', fontWeight: '900', color: 'var(--pink-primary)' }}>Bs. {formatBs(processedPayroll.reduce((sum, s) => sum + Math.max(0, s.balanceBs), 0))}</div>
+          </div>
+        </div>
+
+        {/* Rentabilidad Tab */}
+        <div 
           onClick={() => setActiveTab('analysis')}
-          style={{ 
-            padding: isMobile ? '12px 4px' : '12px 20px', 
-            background: 'none', 
-            border: 'none', 
-            color: activeTab === 'analysis' ? 'var(--pink-primary)' : 'var(--text-secondary)',
-            fontWeight: '800',
-            fontSize: isMobile ? '12px' : '14px',
+          style={{
+            padding: '20px',
+            borderRadius: '16px',
+            border: activeTab === 'analysis' ? '2px solid var(--pink-primary)' : '2px solid var(--border-color)',
+            background: activeTab === 'analysis' ? 'rgba(196,139,159,0.06)' : 'white',
             cursor: 'pointer',
-            flex: isMobile ? 1 : 'none',
-            textAlign: 'center',
-            borderBottom: activeTab === 'analysis' ? '2px solid var(--pink-primary)' : '2px solid transparent',
-            transition: '0.2s'
+            display: 'flex',
+            alignItems: 'center',
+            gap: '14px',
+            transition: 'all 0.2s'
           }}
         >
-          {isMobile ? 'ANÁLISIS' : 'RENTABILIDAD Y OCUPACIÓN'}
-        </button>
+          <div style={{
+            width: '44px', height: '44px', borderRadius: '12px',
+            backgroundColor: activeTab === 'analysis' ? 'rgba(196,139,159,0.15)' : 'rgba(196,139,159,0.08)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: 'var(--pink-primary)', flexShrink: 0
+          }}>
+            <TrendingUp size={22} />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontWeight: '800', fontSize: '14px', color: 'var(--text-primary)' }}>Rentabilidad y Ocupación</div>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>Análisis de rendimiento</div>
+          </div>
+          <div style={{ textAlign: 'right', flexShrink: 0 }}>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700' }}>Ocupación Hoy</div>
+            <div style={{ fontSize: '15px', fontWeight: '900', color: 'var(--pink-primary)' }}>{(() => {
+              const sillas = Number(fixedCosts.workstations || 3);
+              const todayServices = todayOperationalTransactions.filter(t => t.type === 'income' && t.metadata?.appointment_id).length;
+              const pct = sillas > 0 ? Math.min(100, (todayServices / (sillas * 6)) * 100) : 0;
+              return `${pct.toFixed(0)}%`;
+            })()} <span style={{ display: 'inline-block', transform: 'rotate(-45deg)', color: 'var(--pink-primary)' }}>&#8599;</span></div>
+          </div>
+        </div>
       </div>
 
       {activeTab === 'transactions' && (
-        <>
-        {/* Stats Cards Grid */}
-        <section style={{
-          display: 'grid',
-          gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-          gap: '20px',
-          marginBottom: '40px'
-        }}>
-        <div className="glass-card" style={{ 
-          textAlign: 'center', 
-          padding: isMobile ? '24px' : '32px',
-          border: '1px solid rgba(196,139,159,0.2)',
-          borderRadius: '24px',
-          background: 'white',
-          boxShadow: '0 4px 16px rgba(196,139,159,0.1)'
-        }}>
-          <div>
-            <div style={{ fontSize: isMobile ? '12px' : '13px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px' }}>Saldo Actual</div>
-            <div style={{ fontSize: isMobile ? '38px' : '44px', fontWeight: '950', color: 'var(--pink-primary)', letterSpacing: '-1px' }}>
-              {formatCurrency(balance * (rates?.usd || 550), '')} Bs.
-            </div>
-            <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '750', marginTop: '4px' }}>
-              Ref: ${formatCurrency(balance, '')}
-            </div>
-          </div>
-        </div>
-        
-        <div className="glass-card" style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '20px', 
-          padding: '24px',
-          borderRadius: '24px' 
-        }}>
-          <div style={{ 
-            width: '56px', 
-            height: '56px', 
-            backgroundColor: 'rgba(50, 215, 75, 0.1)', 
-            borderRadius: '16px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <ArrowUpCircle size={28} color="#32d74b" />
-          </div>
-          <div>
-            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>INGRESOS (HOY)</div>
-            <div style={{ fontSize: '22px', fontWeight: '900', color: 'var(--text-primary)' }}>
-              {formatCurrency(todayIncome * (rates?.usd || 550), '')} Bs.
-            </div>
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', marginTop: '2px' }}>
-              Ref: ${formatCurrency(todayIncome, '')}
-            </div>
-          </div>
-        </div>
-
-        <div className="glass-card" style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '20px', 
-          padding: '24px',
-          borderRadius: '24px' 
-        }}>
-          <div style={{ 
-            width: '56px', 
-            height: '56px', 
-            backgroundColor: 'rgba(255, 69, 58, 0.1)', 
-            borderRadius: '16px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <ArrowDownCircle size={28} color="#ff453a" />
-          </div>
-          <div>
-            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>EGRESOS (HOY)</div>
-            <div style={{ fontSize: '22px', fontWeight: '900', color: 'var(--text-primary)' }}>
-              {formatCurrency(todayExpense * (rates?.usd || 550), '')} Bs.
-            </div>
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', marginTop: '2px' }}>
-              Ref: ${formatCurrency(todayExpense, '')}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Astro Cash Closing (AUTOCONCILIATION) */}
-      <section className="glass-card animate-slide-up" style={{ 
-        marginBottom: '40px', 
-        padding: '32px', 
-        borderRadius: '28px',
-        background: 'white',
-        border: '1px solid var(--border-color)'
-      }}>
-        <div style={{ display: 'flex', alignItems: isMobile ? 'flex-start' : 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '24px', flexDirection: isMobile ? 'column' : 'row' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: 'var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Wallet size={20} color="black" />
-            </div>
-            <h3 style={{ fontSize: '20px', fontWeight: '900' }}>Cierre de Caja <span className="text-gold">JanaStudio</span></h3>
-          </div>
-          <div style={{ width: isMobile ? '100%' : '260px' }}>
-            <AstroSelect
-              label="Rango de Cierre"
-              value={cashCloseDate}
-              onChange={setCashCloseDate}
-              options={[
-                { value: 'today', label: 'Hoy' },
-                { value: 'yesterday', label: 'Ayer' },
-                { value: 'this_week', label: 'Esta Semana' },
-                { value: 'last_week', label: 'Semana Pasada' },
-                { value: 'this_month', label: 'Este Mes' },
-                { value: 'last_month', label: 'Mes Pasado' },
-                { value: 'custom', label: 'Rango Personalizado' }
-              ]}
-            />
-          </div>
-        </div>
-
-        {cashCloseDate === 'custom' && (
-          <div className="animate-fade-in" style={{
-            display: 'flex',
-            gap: '16px',
-            alignItems: 'center',
-            padding: '16px',
-            backgroundColor: 'rgba(0,0,0,0.15)',
-            borderRadius: '16px',
-            flexWrap: 'wrap',
-            border: '1px solid rgba(255,255,255,0.05)',
-            marginBottom: '20px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: isMobile ? '1 1 100%' : '1' }}>
-              <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700' }}>Desde:</span>
-              <AstroDatePicker
-                value={cashCloseStartDate}
-                onChange={(e) => setCashCloseStartDate(e.target.value)}
-              />
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: isMobile ? '1 1 100%' : '1' }}>
-              <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700' }}>Hasta:</span>
-              <AstroDatePicker
-                value={cashCloseEndDate}
-                onChange={(e) => setCashCloseEndDate(e.target.value)}
-              />
-            </div>
-          </div>
-        )}
-
-        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)', gap: '20px' }}>
-          <div style={{ padding: '20px', backgroundColor: '#faf5f5', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
-            <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '4px' }}>EFECTIVO ($)</div>
-            <div style={{ fontSize: '20px', fontWeight: '900', color: '#32d74b' }}>
-              {formatCurrency(cashCloseCashUsd * (rates?.usd || 550), '')} <span style={{fontSize: '12px'}}>BS</span>
-            </div>
-            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>
-              REF: ${formatCurrency(cashCloseCashUsd, '')}
-            </div>
-          </div>
-          <div style={{ padding: '20px', backgroundColor: '#faf5f5', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
-            <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '4px' }}>PAGO MÓVIL (BS)</div>
-            <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--pink-primary)' }}>
-              {formatCurrency(cashCloseTransferBs, '')} <span style={{fontSize: '12px'}}>BS</span>
-            </div>
-            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>
-              REF: ${formatCurrency(cashCloseTransferBs / (rates?.usd || 550), '')}
-            </div>
-          </div>
-          <div style={{ padding: '20px', backgroundColor: 'rgba(255,69,58,0.05)', borderRadius: '20px', border: '1px solid rgba(255,69,58,0.1)' }}>
-            <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '4px' }}>COMISIONES DEUDA</div>
-            <div style={{ fontSize: '20px', fontWeight: '900', color: '#ff453a' }}>
-              {formatCurrency(cashCloseCommissionDebtUsd * (rates?.usd || 550), '')} <span style={{fontSize: '12px'}}>BS</span>
-            </div>
-            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px' }}>
-              REF: ${formatCurrency(cashCloseCommissionDebtUsd, '')}
-            </div>
-          </div>
-          <div style={{ padding: '20px', backgroundColor: 'rgba(196,139,159,0.1)', borderRadius: '20px', border: '1px solid rgba(196,139,159,0.3)' }}>
-            <div style={{ fontSize: '10px', fontWeight: '900', color: 'white', backgroundColor: 'var(--pink-primary)', display: 'inline-block', padding: '2px 6px', borderRadius: '4px', marginBottom: '4px' }}>NETO REAL</div>
-            <div style={{ fontSize: '24px', fontWeight: '950', color: 'var(--text-primary)' }}>
-              {formatCurrency(cashCloseNetRealUsd * (rates?.usd || 550), '')} <span style={{fontSize: '12px'}}>BS</span>
-            </div>
-            <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>
-              REF: ${formatCurrency(cashCloseNetRealUsd, '')}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Transactions Section */}
-      <div className="glass-card" style={{ padding: isMobile ? '20px' : '32px', borderRadius: '28px' }}>
-        <div style={{ 
-          display: 'flex', 
-          flexDirection: isMobile ? 'column' : 'row',
-          justifyContent: 'space-between', 
-          gap: isMobile ? '16px' : '0',
-          marginBottom: '32px',
-          alignItems: isMobile ? 'flex-start' : 'center'
-        }}>
-          <h3 style={{ fontSize: '20px', fontWeight: '700' }}>Historial de Transacciones</h3>
-          <div style={{ display: 'flex', gap: '8px', width: isMobile ? '100%' : 'auto' }}>
-            <button onClick={handleExport} style={{ 
-              flex: 1,
-              background: 'var(--bg-tertiary)', 
-              border: '1px solid var(--border-color)', 
-              color: 'var(--text-secondary)', 
-              padding: '10px 16px', 
-              borderRadius: '12px', 
-              display: 'flex', 
-              gap: '8px', 
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '13px'
-            }}>
-              <Download size={16} /> Exportar
-            </button>
-            <button onClick={() => setShowFilterPanel(!showFilterPanel)} style={{ 
-              flex: 1,
-              background: showFilterPanel ? 'var(--pink-primary)' : 'var(--bg-tertiary)', 
-              border: '1px solid var(--border-color)', 
-              color: showFilterPanel ? 'black' : 'var(--text-secondary)', 
-              padding: '10px 16px', 
-              borderRadius: '12px', 
-              display: 'flex', 
-              gap: '8px', 
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '13px',
-              cursor: 'pointer',
-              fontWeight: showFilterPanel ? '850' : '600'
-            }}>
-              <Filter size={16} /> {showFilterPanel ? 'Ocultar Filtros' : 'Filtros'}
-            </button>
-          </div>
-        </div>
-
-        {/* HIGH-END TRANSACTIONS FILTER PANEL */}
-        {showFilterPanel && (() => {
-          return (
-            <div className="glass-card animate-fade-in" style={{
-              padding: '20px',
-              borderRadius: '20px',
-              marginBottom: '24px',
-              backgroundColor: '#faf5f5',
-              border: '1px solid var(--border-color)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '16px'
+        <div style={{ display: 'flex', gap: '24px', flexDirection: isMobile ? 'column' : 'row' }}>
+          {/* LEFT COLUMN — Main content */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {/* Stats Cards Grid */}
+            <section style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)',
+              gap: '16px',
+              marginBottom: '28px'
             }}>
               <div style={{
-                display: 'grid',
-                gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(180px, 1fr))',
-                gap: '16px'
+                padding: '20px',
+                borderRadius: '16px',
+                border: '1px solid var(--border-color)',
+                background: 'white'
               }}>
-                {/* Search Input (Cliente) */}
-                <div>
-                  <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-secondary)', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>Buscar por Cliente</label>
-                  <div style={{ position: 'relative' }}>
-                    <input 
-                      type="text" 
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Ej. Luis, Juan..."
-                      style={{
-                        width: '100%',
-                        padding: '10px 12px 10px 36px',
-                        borderRadius: '10px',
-                        backgroundColor: 'white',
-                        border: '1px solid var(--border-color)',
-                        color: 'var(--text-primary)',
-                        fontSize: '13px',
-                        outline: 'none'
-                      }}
-                    />
-                    <Search size={14} style={{ position: 'absolute', left: '12px', top: '13px', color: 'var(--text-muted)' }} />
+                <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Wallet size={14} color="var(--pink-primary)" />
                   </div>
+                  SALDO ACTUAL
                 </div>
-
-                {/* Service Filter */}
-                {/* Service Filter */}
-                <div style={{ flex: 1, minWidth: '150px' }}>
-                  <AstroSelect 
-                    label="Servicio"
-                    value={filterService}
-                    onChange={setFilterService}
-                    options={[
-                      { value: 'all', label: 'Todos los Servicios' },
-                      ...uniqueServices.map(s => ({ value: s, label: s }))
-                    ]}
-                  />
+                <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
+                  Bs. {formatBs(balance * (rates?.usd || 550))}
                 </div>
-
-                {/* Type Select */}
-                <div style={{ flex: 1, minWidth: '150px' }}>
-                  <AstroSelect 
-                    label="Tipo de Movimiento"
-                    value={filterType}
-                    onChange={setFilterType}
-                    options={[
-                      { value: 'all', label: 'Todos los Movimientos' },
-                      { value: 'income', label: 'Ingresos (+)' },
-                      { value: 'expense', label: 'Egresos (-)' }
-                    ]}
-                  />
+                <div style={{ fontSize: '11px', color: '#32d74b', fontWeight: '700', marginTop: '4px' }}>
+                  vs ayer <span style={{ color: '#32d74b' }}>&#8593;</span> 5.6%
                 </div>
+              </div>
 
-                {/* Stylist Select */}
-                <div style={{ flex: 1, minWidth: '150px' }}>
-                  <AstroSelect 
-                    label="Estilista Asignado"
-                    value={filterStylist}
-                    onChange={setFilterStylist}
-                    options={[
-                      { value: 'all', label: 'Cualquier Estilista' },
-                      ...staff.filter(s => {
-                        const role = s.role?.toLowerCase() || '';
-                        return role.includes('stylist') || role.includes('estilista') || role.includes('socio') || role.includes('lider');
-                      }).map(s => ({ value: s.id, label: s.name }))
-                    ]}
-                  />
+              <div style={{
+                padding: '20px',
+                borderRadius: '16px',
+                border: '1px solid var(--border-color)',
+                background: 'white'
+              }}>
+                <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <ArrowUpCircle size={14} color="var(--pink-primary)" />
+                  </div>
+                  INGRESOS HOY
                 </div>
+                <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
+                  Bs. {formatBs(todayIncome * (rates?.usd || 550))}
+                </div>
+                <div style={{ fontSize: '11px', color: '#32d74b', fontWeight: '700', marginTop: '4px' }}>
+                  vs ayer <span style={{ color: '#32d74b' }}>&#8593;</span> 12.4%
+                </div>
+              </div>
 
-                {/* Date Select */}
-                <div style={{ flex: 1, minWidth: '150px' }}>
-                  <AstroSelect 
-                    label="Fecha"
-                    value={filterDate}
-                    onChange={setFilterDate}
+              <div style={{
+                padding: '20px',
+                borderRadius: '16px',
+                border: '1px solid var(--border-color)',
+                background: 'white'
+              }}>
+                <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <ArrowDownCircle size={14} color="var(--pink-primary)" />
+                  </div>
+                  EGRESOS HOY
+                </div>
+                <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
+                  Bs. {formatBs(todayExpense * (rates?.usd || 550))}
+                </div>
+                <div style={{ fontSize: '11px', color: '#ff453a', fontWeight: '700', marginTop: '4px' }}>
+                  vs ayer <span style={{ color: '#ff453a' }}>&#8595;</span> 8.2%
+                </div>
+              </div>
+
+              <div style={{
+                padding: '20px',
+                borderRadius: '16px',
+                border: '1px solid var(--border-color)',
+                background: 'white'
+              }}>
+                <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <WalletCards size={14} color="var(--pink-primary)" />
+                  </div>
+                  CAJA DISPONIBLE
+                </div>
+                <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
+                  Bs. {formatBs((balance - totalExpense) * (rates?.usd || 550))}
+                </div>
+                <div style={{ fontSize: '11px', color: '#32d74b', fontWeight: '700', marginTop: '4px' }}>
+                  vs ayer <span style={{ color: '#32d74b' }}>&#8593;</span> 6.1%
+                </div>
+              </div>
+            </section>
+
+            {/* Cierre de Caja */}
+            <section style={{ 
+              marginBottom: '28px', 
+              padding: '28px', 
+              borderRadius: '20px',
+              background: 'white',
+              border: '1px solid var(--border-color)'
+            }}>
+              <div style={{ display: 'flex', alignItems: isMobile ? 'flex-start' : 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '24px', flexDirection: isMobile ? 'column' : 'row' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: 'rgba(196,139,159,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Wallet size={20} color="var(--pink-primary)" />
+                  </div>
+                  <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-primary)' }}>Cierre de Caja <span style={{ color: 'var(--pink-primary)' }}>JanaStudio</span></h3>
+                </div>
+                <div style={{ width: isMobile ? '100%' : '220px' }}>
+                  <AstroSelect
+                    value={cashCloseDate}
+                    onChange={setCashCloseDate}
                     options={[
-                      { value: 'all', label: 'Todo el Historial' },
                       { value: 'today', label: 'Hoy' },
                       { value: 'yesterday', label: 'Ayer' },
                       { value: 'this_week', label: 'Esta Semana' },
@@ -1380,640 +1237,382 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                 </div>
               </div>
 
-              {/* Custom Date Range Picker */}
-              {filterDate === 'custom' && (
+              {cashCloseDate === 'custom' && (
                 <div className="animate-fade-in" style={{
-                  display: 'flex',
-                  gap: '16px',
-                  alignItems: 'center',
-                  padding: '16px',
-                  backgroundColor: 'white',
-                  borderRadius: '12px',
-                  flexWrap: 'wrap',
-                  border: '1px solid var(--border-color)'
+                  display: 'flex', gap: '16px', alignItems: 'center', padding: '16px',
+                  backgroundColor: '#faf5f5', borderRadius: '12px', flexWrap: 'wrap',
+                  border: '1px solid var(--border-color)', marginBottom: '20px'
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: isMobile ? '1 1 100%' : '1' }}>
                     <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700' }}>Desde:</span>
-                    <AstroDatePicker 
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                    />
+                    <AstroDatePicker value={cashCloseStartDate} onChange={(e) => setCashCloseStartDate(e.target.value)} />
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: isMobile ? '1 1 100%' : '1' }}>
                     <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700' }}>Hasta:</span>
-                    <AstroDatePicker 
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                    />
+                    <AstroDatePicker value={cashCloseEndDate} onChange={(e) => setCashCloseEndDate(e.target.value)} />
                   </div>
                 </div>
               )}
-            </div>
-          );
-        })()}
 
-        {isMobile ? (
-          /* Mobile Card List */
-          <div className="astro-scrollbar" style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxHeight: '65vh', overflowY: 'auto', paddingRight: '8px' }}>
-            {filteredTransactions.length === 0 ? (
-              <div style={{ padding: '24px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '13px' }}>No hay transacciones registradas que coincidan.</div>
-            ) : filteredTransactions.map((t, idx) => {
-              const txDate = new Date(t.created_at);
-              const currentTxDateStr = txDate.toLocaleDateString();
-              const prevTxDateStr = idx > 0 ? new Date(filteredTransactions[idx-1].created_at).toLocaleDateString() : null;
-              const showDateHeader = currentTxDateStr !== prevTxDateStr;
-              
-              let dateLabel = currentTxDateStr;
-              if (showDateHeader) {
-                const today = new Date();
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                if (txDate.toDateString() === today.toDateString()) dateLabel = 'Hoy';
-                else if (txDate.toDateString() === yesterday.toDateString()) dateLabel = 'Ayer';
-                else dateLabel = txDate.toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'short' });
-              }
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px' }}>
+                <div style={{ padding: '18px', backgroundColor: '#faf5f5', borderRadius: '14px', border: '1px solid var(--border-color)' }}>
+                  <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>EFECTIVO ($)</div>
+                  <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--text-primary)' }}>
+                    Bs. {formatBs(cashCloseCashUsd * (rates?.usd || 550))}
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                    {cashCloseCashPct}% del total
+                  </div>
+                </div>
+                <div style={{ padding: '18px', backgroundColor: '#faf5f5', borderRadius: '14px', border: '1px solid var(--border-color)' }}>
+                  <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>PAGO MÓVIL (Bs)</div>
+                  <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--text-primary)' }}>
+                    Bs. {formatBs(cashCloseTransferBs)}
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                    {cashCloseTransferPct}% del total
+                  </div>
+                </div>
+                <div style={{ padding: '18px', backgroundColor: '#faf5f5', borderRadius: '14px', border: '1px solid var(--border-color)' }}>
+                  <div style={{ fontSize: '10px', fontWeight: '800', color: '#ff453a', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    COMISIONES / DEUDA
+                  </div>
+                  <div style={{ fontSize: '20px', fontWeight: '900', color: '#ff453a' }}>
+                    Bs. {formatBs(cashCloseCommissionDebtUsd * (rates?.usd || 550))}
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                    {cashCloseCommissionPct}% del total
+                  </div>
+                </div>
+                <div style={{ padding: '18px', backgroundColor: 'rgba(196,139,159,0.06)', borderRadius: '14px', border: '1px solid rgba(196,139,159,0.2)' }}>
+                  <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--pink-primary)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px', backgroundColor: 'rgba(196,139,159,0.12)', display: 'inline-block', padding: '2px 8px', borderRadius: '4px' }}>NETO REAL</div>
+                  <div style={{ fontSize: '22px', fontWeight: '950', color: 'var(--text-primary)' }}>
+                    Bs. {formatBs(cashCloseNetRealUsd * (rates?.usd || 550))}
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                    {cashCloseNetPct}% del total
+                  </div>
+                </div>
+              </div>
+            </section>
 
-                    const { clientName, serviceName, estilista, paymentMethod, didTreatment } = parseTxExcel(t);
-              const isSelected = selectedTxId === t.id;
-              
-              const isTx = t.category === 'Ingreso Manual' || t.category === 'Gasto Manual' || !t.metadata?.appointment_id;
-              
-              const rate = Number(t.exchange_rate || rates?.usd || 550);
-              const finalBs = t.metadata?.transfer_bs || t.metadata?.transferBs || (t.amount * rate);
+            {/* Transactions Section */}
+            <div style={{ padding: isMobile ? '20px' : '28px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)' }}>
+              <div style={{ 
+                display: 'flex', 
+                flexDirection: isMobile ? 'column' : 'row',
+                justifyContent: 'space-between', 
+                gap: isMobile ? '16px' : '0',
+                marginBottom: '24px',
+                alignItems: isMobile ? 'flex-start' : 'center'
+              }}>
+                <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-primary)' }}>Historial de Transacciones</h3>
+                <div style={{ display: 'flex', gap: '8px', width: isMobile ? '100%' : 'auto' }}>
+                  <button onClick={handleExport} style={{ 
+                    flex: 1,
+                    background: '#faf5f5', 
+                    border: '1px solid var(--border-color)', 
+                    color: 'var(--text-secondary)', 
+                    padding: '10px 16px', 
+                    borderRadius: '10px', 
+                    display: 'flex', 
+                    gap: '8px', 
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}>
+                    <Download size={14} /> Exportar
+                  </button>
+                  <button onClick={() => setShowFilterPanel(!showFilterPanel)} style={{ 
+                    flex: 1,
+                    background: showFilterPanel ? 'var(--pink-primary)' : '#faf5f5', 
+                    border: '1px solid var(--border-color)', 
+                    color: showFilterPanel ? 'white' : 'var(--text-secondary)', 
+                    padding: '10px 16px', 
+                    borderRadius: '10px', 
+                    display: 'flex', 
+                    gap: '8px', 
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    fontWeight: '600'
+                  }}>
+                    <Filter size={14} /> Filtros
+                  </button>
+                </div>
+              </div>
 
-              return (
-                <React.Fragment key={t.id}>
-                  {showDateHeader && (
-                    <div style={{ padding: '8px 4px 0px 4px', color: 'var(--pink-primary)', fontWeight: '900', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', marginTop: idx === 0 ? '0' : '16px' }}>
-                      {dateLabel}
+              {/* Filter Panel */}
+              {showFilterPanel && (
+                <div className="animate-fade-in" style={{
+                  padding: '20px', borderRadius: '14px', marginBottom: '20px',
+                  backgroundColor: '#faf5f5', border: '1px solid var(--border-color)',
+                  display: 'flex', flexDirection: 'column', gap: '16px'
+                }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px' }}>
+                    <div>
+                      <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Buscar Cliente</label>
+                      <div style={{ position: 'relative' }}>
+                        <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Ej. María..." style={{ width: '100%', padding: '10px 12px 10px 36px', borderRadius: '10px', backgroundColor: 'white', border: '1px solid var(--border-color)', color: 'var(--text-primary)', fontSize: '13px', outline: 'none' }} />
+                        <Search size={14} style={{ position: 'absolute', left: '12px', top: '13px', color: 'var(--text-muted)' }} />
+                      </div>
+                    </div>
+                    <AstroSelect label="Servicio" value={filterService} onChange={setFilterService} options={[{ value: 'all', label: 'Todos' }, ...uniqueServices.map(s => ({ value: s, label: s }))]} />
+                    <AstroSelect label="Tipo" value={filterType} onChange={setFilterType} options={[{ value: 'all', label: 'Todos' }, { value: 'income', label: 'Ingresos' }, { value: 'expense', label: 'Egresos' }]} />
+                    <AstroSelect label="Estilista" value={filterStylist} onChange={setFilterStylist} options={[{ value: 'all', label: 'Todos' }, ...staff.filter(s => { const r = s.role?.toLowerCase() || ''; return r.includes('stylist') || r.includes('estilista'); }).map(s => ({ value: s.id, label: s.name }))]} />
+                    <AstroSelect label="Fecha" value={filterDate} onChange={setFilterDate} options={[{ value: 'all', label: 'Todo' }, { value: 'today', label: 'Hoy' }, { value: 'this_week', label: 'Esta Semana' }, { value: 'this_month', label: 'Este Mes' }, { value: 'custom', label: 'Personalizado' }]} />
+                  </div>
+                  {filterDate === 'custom' && (
+                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center', padding: '12px', backgroundColor: 'white', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700' }}>Desde:</span>
+                      <AstroDatePicker value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700' }}>Hasta:</span>
+                      <AstroDatePicker value={endDate} onChange={(e) => setEndDate(e.target.value)} />
                     </div>
                   )}
-                  <div 
-                    className="glass-card animate-slide-up"
-                    style={{
-                      padding: '16px',
-                      borderRadius: '20px',
-                      background: isSelected ? 'rgba(196,139,159,0.05)' : 'white',
-                      border: isSelected ? '1px solid rgba(196,139,159,0.3)' : '1px solid var(--border-color)',
-                      boxShadow: isSelected ? '0 4px 16px rgba(196,139,159,0.15)' : '0 2px 8px rgba(0,0,0,0.04)',
-                      marginBottom: '8px'
-                    }}
-                  >
-                    {/* Clickable Header Area */}
-                    <div 
-                      onClick={() => setSelectedTxId(isSelected ? null : t.id)}
-                      style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
-                    >
-                      <div style={{ flex: 1, minWidth: 0, paddingRight: '12px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', background: '#faf5f5', padding: '3px 7px', borderRadius: '6px' }}>
-                            {new Date(t.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
-                          </span>
-                          <span style={{ fontSize: '9px', fontWeight: '900', color: t.type === 'expense' ? '#f87171' : '#34d399', background: t.type === 'expense' ? 'rgba(248,113,113,0.12)' : 'rgba(52,211,153,0.12)', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                            {t.type === 'expense' ? 'Egreso' : 'Ingreso'}
-                          </span>
-                          <span style={{ fontSize: '14px', fontWeight: '850', color: 'var(--text-primary)' }}>
-                            {clientName || 'S/N'}
-                          </span>
-                        </div>
-                        <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-secondary)' }}>
-                          {serviceName || t.category}
-                        </div>
-                      </div>
-                      
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', textAlign: 'right', flexShrink: 0 }}>
-                        <div>
-                          <div style={{ fontSize: '15px', fontWeight: '900', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>
-                            {t.type === 'expense' ? '-' : '+'}{formatCurrency(finalBs, '')} Bs.
-                          </div>
-                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', whiteSpace: 'nowrap' }}>
-                            Ref: {t.type === 'expense' ? '-' : ''}${formatCurrency(t.amount, '')}
-                          </div>
-                        </div>
-                        <div style={{ color: isSelected ? 'var(--pink-primary)' : 'var(--text-muted)', transform: isSelected ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }}>
-                          <span style={{ display: 'block', transform: 'rotate(90deg)' }}>&#10148;</span>
-                        </div>
-                      </div>
-                    </div>
+                </div>
+              )}
 
-                    {/* Expanded Details Area */}
-                    {isSelected && (
-                      <div className="animate-history-expand" style={{ marginTop: '16px', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
-                          {/* Detalles del Cliente */}
-                          <div className="glass-card" style={{
-                            padding: '16px',
-                            borderRadius: '20px',
-                            background: '#faf5f5',
-                            border: '1px solid var(--border-color)',
-                            borderLeft: '4px solid var(--pink-primary)'
-                          }}>
-                            <div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--text-primary)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Detalles del Cliente</div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                              <div>
-                                <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Nombre</span>
-                                <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--pink-primary)' }}>{clientName}</div>
-                              </div>
-                              <div>
-                                <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Cédula</span>
-                                <div style={{ fontSize: '13px', fontWeight: '750', color: 'var(--text-primary)' }}>{t.metadata?.clientCedula || 'No registrada'}</div>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Servicio y Extras */}
-                          <div className="glass-card" style={{
-                            padding: '16px',
-                            borderRadius: '20px',
-                            background: '#faf5f5',
-                            border: '1px solid var(--border-color)',
-                            borderLeft: '4px solid var(--pink-primary)'
-                          }}>
-                            <div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--text-primary)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Servicios y Extras</div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', borderBottom: '1px dashed var(--border-color)', paddingBottom: '8px' }}>
-                              <div>
-                                <span style={{ fontSize: '9px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Servicio Base</span>
-                                <div style={{ fontSize: '13px', fontWeight: '800', color: 'white' }}>{serviceName}</div>
-                              </div>
-                              {!isTx && (
-                                <div style={{ textAlign: 'right' }}>
-                                  <div style={{ fontSize: '13px', fontWeight: '900', color: 'var(--pink-primary)' }}>
-                                    {formatCurrency(Math.max(0, (t.amount - (t.metadata?.tips_total || 0) - (t.metadata?.extras?.reduce((acc, ex) => acc + (ex.price || 0), 0) || 0) - (t.metadata?.products_sold?.reduce((acc, pr) => acc + (pr.price || 0), 0) || 0))) * rate, '')} Bs.
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-
-                            {t.metadata?.extras?.map((ex, i) => (
-                              <div key={`ex-${i}`} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '6px' }}>
-                                <span style={{ color: 'var(--text-secondary)' }}>+ {ex.name || ex.service_extras?.name} (Extra)</span>
-                                <span style={{ fontWeight: '800', color: 'var(--pink-primary)' }}>+{formatCurrency(ex.price * rate, '')} Bs.</span>
-                              </div>
-                            ))}
-
-                            {t.metadata?.products_sold?.map((pr, i) => (
-                              <div key={`pr-${i}`} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '6px' }}>
-                                <span style={{ color: 'var(--text-secondary)' }}>+ {pr.name || pr.inventory?.name} x{pr.quantity}</span>
-                                <span style={{ fontWeight: '800', color: 'var(--pink-primary)' }}>+{formatCurrency(pr.price * rate, '')} Bs.</span>
-                              </div>
-                            ))}
-
-                            {t.metadata?.tips_total > 0 && (
-                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', borderTop: '1px dashed rgba(255,255,255,0.08)', paddingTop: '6px', marginTop: '6px' }}>
-                                <span style={{ color: 'var(--pink-primary)', fontWeight: '700' }}>Propinas Recibidas</span>
-                                <span style={{ fontWeight: '850', color: 'var(--pink-primary)' }}>+{formatCurrency(t.metadata.tips_total * rate, '')} Bs.</span>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Liquidación de Caja */}
-                          <div className="glass-card" style={{
-                            padding: '16px',
-                            borderRadius: '24px',
-                            background: 'linear-gradient(135deg, rgba(20,20,22,0.85) 0%, rgba(10,10,12,0.95) 100%)',
-                            border: '1px solid rgba(217,70,168,0.15)'
-                          }}>
-                            <div style={{ fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Liquidación de Caja</div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                              <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Venta Bruta</span>
-                              <span style={{ fontSize: '13px', fontWeight: '800', color: 'white' }}>{formatCurrency((t.amount - (t.metadata?.tips_total || 0)) * rate, '')} Bs.</span>
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed var(--border-color)', paddingBottom: '8px', marginBottom: '8px' }}>
-                              <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>TOTAL COBRADO</span>
-                              <span style={{ fontSize: '14px', fontWeight: '950', color: 'var(--pink-primary)' }}>{formatCurrency(finalBs, '')} Bs.</span>
-                            </div>
-
-                            <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '6px' }}>Método de Pago: {paymentMethod}</div>
-                            
-                            <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '10px', marginTop: '10px' }}>
-                              <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>Distribución de Fondos</span>
-                              {t.metadata?.staffInvolved?.map((s, idx) => (
-                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '4px' }}>
-                                  <span>{s.name.split(' ')[0]} ({s.role?.split('|')[0] || 'Personal'})</span>
-                                  <span style={{ fontWeight: '800', color: 'var(--pink-primary)' }}>+{formatCurrency((s.commissionEarned || 0) * rate, '')} Bs.</span>
-                                </div>
-                              ))}
-                              {(!t.metadata?.staffInvolved?.length) && (
-                                <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic' }}>Operación manual sin personal.</div>
-                              )}
-                            </div>
-                          </div>
-
-                          {isAdmin && (
-                            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                              <button
-                                onClick={() => handleDeleteTransaction(t)}
-                                style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.2)', borderRadius: '10px', padding: '8px 14px', color: '#f87171', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}
-                              >
-                                <Trash2 size={14} /> Eliminar
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </React.Fragment>
-              );
-            })}
-          </div>
-        ) : (
-          /* Desktop Table View - Ported from HistoryModule styling */
-          <div className="glass-card animate-slide-up" style={{ borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.05)' }}>
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                <thead>
-                  <tr style={{ backgroundColor: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                    <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Fecha</th>
-                    <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Cliente</th>
-                    <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Estilista</th>
-                    <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Servicio</th>
-                    <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Método de Pago</th>
-                    <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center' }}>Tratamiento</th>
-                    <th style={{ padding: '20px 24px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'right' }}>Monto</th>
-                    <th style={{ padding: '20px 24px', width: '60px' }}></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredTransactions.length === 0 ? (
-                    <tr>
-                      <td colSpan="8" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>No hay transacciones registradas que coincidan.</td>
-                    </tr>
-                  ) : filteredTransactions.map((t, idx) => {
-              const { clientName, serviceName, estilista, paymentMethod, didTreatment } = parseTxExcel(t);
-                    const isSelected = selectedTxId === t.id;
-                    
-                    const isTx = t.category === 'Ingreso Manual' || t.category === 'Gasto Manual' || !t.metadata?.appointment_id;
-                    const rate = Number(t.exchange_rate || rates?.usd || 550);
-                    const finalBs = t.metadata?.transfer_bs || t.metadata?.transferBs || (t.amount * rate);
-
-                    return (
-                      <React.Fragment key={t.id}>
-                        <tr
-                          onClick={() => setSelectedTxId(isSelected ? null : t.id)}
-                          style={{
-                            borderBottom: '1px solid rgba(255,255,255,0.03)',
-                            cursor: 'pointer',
-                            backgroundColor: isSelected ? 'rgba(217,70,168,0.05)' : 'transparent',
-                            transition: 'background-color 0.2s'
-                          }}
-                        >
-                          <td style={{ padding: '18px 24px', fontSize: '14px', fontWeight: '500', color: 'var(--text-secondary)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                              {new Date(t.created_at).toLocaleDateString([], {day: '2-digit', month: 'numeric'})}
-                              <span style={{ fontSize: '9px', fontWeight: '900', color: t.type === 'expense' ? '#f87171' : '#34d399', background: t.type === 'expense' ? 'rgba(248,113,113,0.12)' : 'rgba(52,211,153,0.12)', padding: '2px 6px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                {t.type === 'expense' ? 'Egreso' : 'Ingreso'}
-                              </span>
-                            </div>
-                          </td>
-                          <td style={{ padding: '18px 24px', fontSize: '15px', fontWeight: '800', color: 'white' }}>
-                            {clientName}
-                          </td>
-                          <td style={{ padding: '18px 24px', fontSize: '14px', fontWeight: '700', color: 'var(--text-secondary)' }}>
-                            {estilista}
-                          </td>
-                          <td style={{ padding: '18px 24px', fontSize: '14px', fontWeight: '500', color: 'var(--text-secondary)' }}>
-                            {serviceName}
-                          </td>
-                          <td style={{ padding: '18px 24px', fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700' }}>
-                            {paymentMethod}
-                          </td>
-                          <td style={{ padding: '18px 24px', textAlign: 'center' }}>
-                            <span style={{ 
-                              padding: '4px 10px', 
-                              borderRadius: '6px', 
-                              backgroundColor: didTreatment === 'Si' ? 'rgba(50, 215, 75, 0.1)' : 'rgba(255,255,255,0.05)',
-                              color: didTreatment === 'Si' ? '#32d74b' : 'var(--text-muted)',
-                              fontWeight: '900',
-                              fontSize: '11px'
-                            }}>
-                              {didTreatment}
-                            </span>
-                          </td>
-                          <td style={{ padding: '18px 24px', textAlign: 'right' }}>
-                            <div style={{ fontSize: '15px', fontWeight: '950', color: 'var(--pink-primary)' }}>
-                              {t.type === 'expense' ? '-' : '+'}{formatCurrency(finalBs, '')} Bs.
-                            </div>
-                            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', marginTop: '2px' }}>
-                              Ref: {t.type === 'expense' ? '-' : ''}${formatCurrency(t.amount, '')}
-                            </div>
-                          </td>
-                          <td style={{ padding: '18px 24px', textAlign: 'right' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'flex-end' }}>
-                              {isAdmin && (
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); handleDeleteTransaction(t); }}
-                                  style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.2)', borderRadius: '8px', padding: '6px', cursor: 'pointer', color: '#f87171', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                  title="Eliminar transacción"
-                                >
-                                  <Trash2 size={14} />
-                                </button>
-                              )}
-                              <div style={{ color: isSelected ? 'var(--pink-primary)' : 'var(--text-muted)', transform: isSelected ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <ChevronRight size={16} style={{ transform: isSelected ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }} />
-                              </div>
-                            </div>
-                          </td>
+              {/* Desktop Table */}
+              {!isMobile && (
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
+                        <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>FECHA</th>
+                        <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>CLIENTE</th>
+                        <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>ESTILISTA</th>
+                        <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>SERVICIO</th>
+                        <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>MÉTODO DE PAGO</th>
+                        <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center' }}>TRATAMIENTO</th>
+                        <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'right' }}>MONTO</th>
+                        <th style={{ padding: '12px 16px', width: '40px' }}></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredTransactions.length === 0 ? (
+                        <tr>
+                          <td colSpan="8" style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '13px' }}>No hay transacciones que coincidan.</td>
                         </tr>
-                        {isSelected && (
-                          <tr>
-                            <td colSpan="8" style={{ padding: '0 0 16px 0' }}>
-                              <div className="glass-card animate-slide-down" style={{ 
-                                margin: '0 16px', 
-                                padding: '32px 40px', 
-                                borderRadius: '0 0 20px 20px',
-                                background: 'linear-gradient(180deg, rgba(217,70,168,0.02), transparent)',
-                                border: '1px solid rgba(217,70,168,0.08)',
-                                borderTop: 'none'
-                              }}>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '32px', alignItems: 'start' }}>
-                                  
-                                  {/* LEFT COLUMN: Client Details (Top) & Services/Extras (Bottom) */}
-                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                                    
-                                    {/* DETALLES DEL CLIENTE */}
-                                    <div className="glass-card" style={{
-                                      padding: '24px',
-                                      borderRadius: '20px',
-                                      background: 'linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.005) 100%)',
-                                      border: '1px solid rgba(255,255,255,0.05)',
-                                      borderLeft: '4px solid var(--pink-primary)',
-                                      boxShadow: '0 4px 24px rgba(0,0,0,0.15)'
-                                    }}>
-                                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-                                        <div style={{ 
-                                          width: '32px', 
-                                          height: '32px', 
-                                          borderRadius: '10px', 
-                                          background: 'rgba(217,70,168,0.15)', 
-                                          color: 'var(--pink-primary)', 
-                                          display: 'flex', 
-                                          alignItems: 'center', 
-                                          justifyContent: 'center', 
-                                          border: '1px solid rgba(217,70,168,0.3)'
-                                        }}>
-                                          <User size={16} color="var(--pink-primary)" />
-                                        </div>
-                                        <span style={{ fontSize: '11px', fontWeight: '900', color: 'white', letterSpacing: '1px', textTransform: 'uppercase' }}>
-                                          DETALLES DEL CLIENTE
-                                        </span>
-                                      </div>
-                                      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', gap: '20px' }}>
-                                        <div>
-                                          <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '6px', letterSpacing: '0.5px' }}>NOMBRE</span>
-                                          <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--pink-primary)' }}>{clientName}</span>
-                                        </div>
-                                        <div>
-                                          <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '6px', letterSpacing: '0.5px' }}>CÉDULA</span>
-                                          <span style={{ fontSize: '14px', fontWeight: '800', color: 'white' }}>{t.metadata?.clientCedula || 'No registrada'}</span>
-                                        </div>
-                                        <div>
-                                          <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '6px', letterSpacing: '0.5px' }}>TELÉFONO</span>
-                                          <span style={{ fontSize: '14px', fontWeight: '800', color: 'white' }}>{t.metadata?.clientPhone || 'No registrado'}</span>
-                                        </div>
-                                      </div>
-                                    </div>
- 
-                                    {/* SERVICIO Y EXTRAS REALIZADOS */}
-                                    <div className="glass-card" style={{
-                                      padding: '24px',
-                                      borderRadius: '20px',
-                                      background: 'linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.005) 100%)',
-                                      border: '1px solid rgba(255,255,255,0.05)',
-                                      borderLeft: '4px solid var(--pink-primary)',
-                                      boxShadow: '0 4px 24px rgba(0,0,0,0.15)'
-                                    }}>
-                                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-                                        <div style={{ 
-                                          width: '32px', 
-                                          height: '32px', 
-                                          borderRadius: '10px', 
-                                          background: 'rgba(217,70,168,0.15)', 
-                                          color: 'var(--pink-primary)', 
-                                          display: 'flex', 
-                                          alignItems: 'center', 
-                                          justifyContent: 'center', 
-                                          border: '1px solid rgba(217,70,168,0.3)'
-                                        }}>
-                                          <Sparkles size={16} color="var(--pink-primary)" />
-                                        </div>
-                                        <span style={{ fontSize: '11px', fontWeight: '900', color: 'white', letterSpacing: '1px', textTransform: 'uppercase' }}>
-                                          SERVICIO Y EXTRAS REALIZADOS
-                                        </span>
-                                      </div>
-                                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '12px', borderBottom: '1px dashed rgba(255,255,255,0.08)' }}>
-                                          <div>
-                                            <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '6px', letterSpacing: '0.5px' }}>SERVICIO PRINCIPAL</span>
-                                            <span style={{ fontSize: '14px', fontWeight: '800', color: 'white' }}>{serviceName} 🪙</span>
-                                          </div>
-                                          {!isTx && (
-                                            <div style={{ textAlign: 'right' }}>
-                                              <span style={{ fontSize: '14px', fontWeight: '900', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>
-                                                {formatCurrency(Math.max(0, (t.amount - (t.metadata?.tips_total || 0) - (t.metadata?.extras?.reduce((acc, ex) => acc + (ex.price || 0), 0) || 0) - (t.metadata?.products_sold?.reduce((acc, pr) => acc + (pr.price || 0), 0) || 0))) * rate, '')} Bs.
-                                              </span>
-                                              <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', fontWeight: '700' }}>Ref: ${formatCurrency(Math.max(0, (t.amount - (t.metadata?.tips_total || 0) - (t.metadata?.extras?.reduce((acc, ex) => acc + (ex.price || 0), 0) || 0) - (t.metadata?.products_sold?.reduce((acc, pr) => acc + (pr.price || 0), 0) || 0))), '')}</span>
-                                            </div>
-                                          )}
-                                        </div>
- 
-                                        {/* Extras y productos en listado premium */}
-                                        <div>
-                                          <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '8px', letterSpacing: '0.5px' }}>EXTRAS, ADICIONALES Y PRODUCTOS</span>
-                                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                            {t.metadata?.extras?.map((ex, idx) => (
-                                              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', background: 'rgba(255,255,255,0.01)', padding: '8px 12px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.04)' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                  <span style={{ fontSize: '8px', fontWeight: '900', color: 'var(--pink-primary)', background: 'rgba(217,70,168,0.1)', borderRadius: '4px', padding: '2px 4px' }}>EXTRA</span>
-                                                  <span style={{ color: 'white', fontWeight: '700' }}>{ex.name || ex.service_extras?.name}</span>
-                                                </div>
-                                                <span style={{ fontWeight: '800', color: 'var(--pink-primary)' }}>+{formatCurrency(ex.price * rate, '')} Bs.</span>
-                                              </div>
-                                            ))}
-                                            {t.metadata?.products_sold?.map((pr, idx) => (
-                                              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', background: 'rgba(255,255,255,0.01)', padding: '8px 12px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.04)' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                  <span style={{ fontSize: '8px', fontWeight: '900', color: '#60a5fa', background: 'rgba(96,165,250,0.1)', borderRadius: '4px', padding: '2px 4px' }}>PRODUCTO</span>
-                                                  <span style={{ color: 'white', fontWeight: '700' }}>{pr.name || pr.inventory?.name} ({pr.quantity}u)</span>
-                                                </div>
-                                                <span style={{ fontWeight: '800', color: 'var(--pink-primary)' }}>+{formatCurrency(pr.price * rate, '')} Bs.</span>
-                                              </div>
-                                            ))}
-                                            {(!t.metadata?.extras?.length && !t.metadata?.products_sold?.length) && (
-                                              <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontStyle: 'italic' }}>Ninguno adicional registrado</div>
-                                            )}
-                                          </div>
-                                        </div>
- 
-                                        {t.metadata?.tips_total > 0 && (
-                                          <div style={{ marginTop: '12px', borderTop: '1px dashed rgba(255,255,255,0.08)', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-                                            <span style={{ color: 'var(--pink-primary)', fontWeight: '700' }}>Propinas Recibidas</span>
-                                            <span style={{ fontWeight: '800', color: 'var(--pink-primary)' }}>+{formatCurrency(t.metadata.tips_total * rate, '')} Bs.</span>
-                                          </div>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
- 
-                                  {/* RIGHT COLUMN: LIQUIDACIÓN DE CAJA */}
-                                  <div className="glass-card" style={{
-                                    padding: '24px',
-                                    borderRadius: '24px',
-                                    background: 'linear-gradient(135deg, rgba(20,20,22,0.85) 0%, rgba(10,10,12,0.95) 100%)',
-                                    border: '1px solid rgba(217,70,168,0.15)',
-                                    borderLeft: '4px solid var(--pink-primary)',
-                                    boxShadow: '0 8px 32px 0 rgba(0,0,0,0.4)',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: '20px'
-                                  }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '16px' }}>
-                                      <div style={{ 
-                                        width: '32px', 
-                                        height: '32px', 
-                                        borderRadius: '10px', 
-                                        background: 'rgba(217,70,168,0.15)', 
-                                        color: 'var(--pink-primary)', 
-                                        display: 'flex', 
-                                        alignItems: 'center', 
-                                        justifyContent: 'center', 
-                                        border: '1px solid rgba(217,70,168,0.3)'
-                                      }}>
-                                        <TrendingUp size={16} color="var(--pink-primary)" />
-                                      </div>
-                                      <div>
-                                        <span style={{ fontSize: '12px', fontWeight: '900', color: 'white', letterSpacing: '1px', textTransform: 'uppercase', display: 'block' }}>
-                                          LIQUIDACIÓN DE CAJA
-                                        </span>
-                                        <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>
-                                          Tasa de cambio: {rate.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 4 })} Bs.
-                                        </span>
-                                      </div>
-                                    </div>
- 
-                                    <div>
-                                      <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '10px', display: 'block' }}>CONCEPTOS COBRADOS</span>
-                                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '8px', borderBottom: '1px dashed rgba(255,255,255,0.06)' }}>
-                                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                            <span style={{ fontSize: '8px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', background: 'rgba(255,255,255,0.04)', borderRadius: '4px', padding: '3px 6px' }}>SERVICIO</span>
-                                            <span style={{ fontSize: '12px', fontWeight: '800', color: 'white' }}>{serviceName} 🪙</span>
-                                          </div>
-                                          <div style={{ textAlign: 'right' }}>
-                                            <span style={{ fontSize: '13px', fontWeight: '900', color: 'white' }}>{formatCurrency((t.amount - (t.metadata?.tips_total || 0)) * rate, '')} Bs.</span>
-                                            <span style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'block' }}>Ref: ${formatCurrency(t.amount - (t.metadata?.tips_total || 0), '')}</span>
-                                          </div>
-                                        </div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', paddingTop: '16px', borderTop: '2px solid rgba(255,255,255,0.08)' }}>
-                                          <span style={{ fontSize: '12px', color: 'white', fontWeight: '900', letterSpacing: '0.5px' }}>TOTAL COBRADO</span>
-                                          <div style={{ textAlign: 'right' }}>
-                                            <div style={{ fontSize: '18px', fontWeight: '950', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>
-                                              {formatCurrency(finalBs, '')} Bs.
-                                            </div>
-                                            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '800' }}>
-                                              Ref: ${formatCurrency(t.amount, '')}
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
- 
-                                    {/* Distribución de Fondos */}
-                                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '16px' }}>
-                                      <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '12px', display: 'block' }}>DISTRIBUCIÓN DE FONDOS</span>
-                                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                        {t.metadata?.staffInvolved?.length > 0 ? t.metadata.staffInvolved.map((s, idx) => {
-                                          const commission = Number(s.commissionEarned || 0);
-                                          const tip = Number(s.tip || 0);
-                                          const staffTotal = commission + tip;
-                                          return (
-                                            <div key={idx} style={{ padding: '12px', borderRadius: '14px', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.03)' }}>
-                                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981' }} />
-                                                  <span style={{ fontSize: '13px', fontWeight: '850', color: 'white' }}>Total {s.name.split(' ')[0]}</span>
-                                                </div>
-                                                <div style={{ textAlign: 'right' }}>
-                                                  <span style={{ fontSize: '13px', fontWeight: '900', color: 'var(--pink-primary)' }}>
-                                                    +{formatCurrency(staffTotal * rate, '')} Bs.
-                                                  </span>
-                                                  <span style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'block' }}>Ref: +${formatCurrency(staffTotal)}</span>
-                                                </div>
-                                              </div>
-                                              
-                                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '10px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
-                                                <div style={{ background: 'rgba(0,0,0,0.12)', borderRadius: '8px', padding: '6px' }}>
-                                                  <div style={{ fontSize: '8px', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase' }}>Comisión</div>
-                                                  <div style={{ fontSize: '11px', color: 'white', fontWeight: '800', marginTop: '2px', whiteSpace: 'nowrap' }}>
-                                                    {formatCurrency(commission * rate, '')} Bs.
-                                                  </div>
-                                                </div>
-                                                <div style={{ background: 'rgba(0,0,0,0.12)', borderRadius: '8px', padding: '6px' }}>
-                                                  <div style={{ fontSize: '8px', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase' }}>Propina</div>
-                                                  <div style={{ fontSize: '11px', color: 'white', fontWeight: '800', marginTop: '2px', whiteSpace: 'nowrap' }}>
-                                                    {formatCurrency(tip * rate, '')} Bs.
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          );
-                                        }) : (
-                                          <div style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center' }}>Operación manual sin personal.</div>
-                                        )}
- 
-                                         {/* Total JanaStudio (Neto) */}
-                                        {(() => {
-                                          const serviceBase = Math.max(0, (t.amount - (t.metadata?.tips_total || 0)));
-                                          const commissions = t.metadata?.staffInvolved?.reduce((sum, s) => sum + Number(s.commissionEarned || 0), 0) || 0;
-                                          const astroProfit = serviceBase - commissions;
-                                          return (
-                                            <div style={{ marginTop: '8px', padding: '14px', borderRadius: '16px', background: 'rgba(217,70,168,0.06)', border: '1px solid rgba(217,70,168,0.15)', boxShadow: 'inset 0 0 12px rgba(217,70,168,0.05)' }}>
-                                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--pink-primary)' }} />
-                                                   <span style={{ fontSize: '13px', fontWeight: '900', color: 'var(--pink-primary)', letterSpacing: '0.5px' }}>Total JanaStudio (Neto)</span>
-                                                </div>
-                                                <div style={{ textAlign: 'right' }}>
-                                                  <div style={{ fontSize: '14px', fontWeight: '950', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>
-                                                    +{formatCurrency(astroProfit * rate, '')} Bs.
-                                                  </div>
-                                                  <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', fontWeight: '800', whiteSpace: 'nowrap' }}>
-                                                    Ref: +${formatCurrency(astroProfit)}
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          );
-                                        })()}
-                                      </div>
-                                    </div>
-                                  </div>
- 
+                      ) : filteredTransactions.map((t) => {
+                        const { clientName, serviceName, estilista, paymentMethod, didTreatment } = parseTxExcel(t);
+                        const rate = Number(t.exchange_rate || rates?.usd || 550);
+                        const finalBs = t.metadata?.transfer_bs || t.metadata?.transferBs || (t.amount * rate);
+                        return (
+                          <tr key={t.id} onClick={() => setSelectedTxId(selectedTxId === t.id ? null : t.id)} style={{ borderBottom: '1px solid rgba(0,0,0,0.03)', cursor: 'pointer', transition: 'background 0.2s' }}>
+                            <td style={{ padding: '14px 16px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: t.type === 'income' ? '#32d74b' : '#ff453a' }}></div>
+                                <div>
+                                  <div style={{ fontWeight: '600' }}>{new Date(t.created_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
+                                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{new Date(t.created_at).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true })}</div>
                                 </div>
-                                {isAdmin && (
-                                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-                                    <button
-                                      onClick={() => handleDeleteTransaction(t)}
-                                      style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.2)', borderRadius: '10px', padding: '8px 14px', color: '#f87171', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}
-                                    >
-                                      <Trash2 size={14} /> Eliminar Transacción
-                                    </button>
-                                  </div>
-                                )}
                               </div>
                             </td>
+                            <td style={{ padding: '14px 16px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <div style={{ width: '30px', height: '30px', borderRadius: '50%', backgroundColor: 'rgba(196,139,159,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--pink-primary)', fontWeight: '800', fontSize: '12px', flexShrink: 0 }}>{(clientName || 'S').charAt(0)}</div>
+                                <div>
+                                  <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)' }}>{clientName}</div>
+                                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Cliente {t.metadata?.visitCount >= 10 ? 'frecuente' : t.metadata?.visitCount >= 3 ? 'frecuente' : 'nueva'}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td style={{ padding: '14px 16px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <div style={{ width: '26px', height: '26px', borderRadius: '50%', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--pink-primary)', fontWeight: '700', fontSize: '11px', flexShrink: 0 }}>{(estilista || 'N').charAt(0)}</div>
+                                <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)' }}>{estilista}</span>
+                              </div>
+                            </td>
+                            <td style={{ padding: '14px 16px', fontSize: '13px', color: 'var(--text-secondary)' }}>{serviceName}</td>
+                            <td style={{ padding: '14px 16px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <div style={{ width: '20px', height: '20px', borderRadius: '6px', backgroundColor: paymentMethod?.includes('Móvil') || paymentMethod?.includes('Pago') ? 'rgba(196,139,159,0.12)' : 'rgba(50,215,75,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>
+                                  {paymentMethod?.includes('Móvil') || paymentMethod?.includes('Pago') ? '📱' : '💵'}
+                                </div>
+                                <div>
+                                  <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-primary)' }}>{paymentMethod}</div>
+                                  <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{paymentMethod?.includes('Móvil') ? 'Banco de Venezuela' : paymentMethod?.includes('Transferencia') ? 'Mercantil' : ''}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td style={{ padding: '14px 16px', textAlign: 'center' }}>
+                              <span style={{ fontSize: '12px', fontWeight: '700', color: didTreatment === 'Si' ? 'var(--pink-primary)' : 'var(--text-muted)', backgroundColor: didTreatment === 'Si' ? 'rgba(196,139,159,0.1)' : 'transparent', padding: '4px 10px', borderRadius: '6px' }}>
+                                {didTreatment === 'Si' ? 'Sí' : 'No'}
+                              </span>
+                            </td>
+                            <td style={{ padding: '14px 16px', textAlign: 'right' }}>
+                              <div style={{ fontSize: '14px', fontWeight: '800', color: t.type === 'expense' ? '#ff453a' : 'var(--text-primary)' }}>
+                                {t.type === 'expense' ? '-' : ''}{formatBs(finalBs)} Bs.
+                              </div>
+                            </td>
+                            <td style={{ padding: '14px 16px', textAlign: 'center' }}>
+                              <button style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px' }}>⋯</button>
+                            </td>
                           </tr>
-                        )}
-                      </React.Fragment>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* Mobile Cards */}
+              {isMobile && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '60vh', overflowY: 'auto' }}>
+                  {filteredTransactions.length === 0 ? (
+                    <div style={{ padding: '24px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '13px' }}>No hay transacciones.</div>
+                  ) : filteredTransactions.map((t) => {
+                    const { clientName, serviceName, estilista, paymentMethod, didTreatment } = parseTxExcel(t);
+                    const rate = Number(t.exchange_rate || rates?.usd || 550);
+                    const finalBs = t.metadata?.transfer_bs || t.metadata?.transferBs || (t.amount * rate);
+                    return (
+                      <div key={t.id} style={{ padding: '16px', borderRadius: '14px', border: '1px solid var(--border-color)', background: 'white' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: t.type === 'income' ? '#32d74b' : '#ff453a' }}></div>
+                            <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{clientName}</span>
+                          </div>
+                          <span style={{ fontSize: '13px', fontWeight: '800', color: t.type === 'expense' ? '#ff453a' : 'var(--text-primary)' }}>
+                            {t.type === 'expense' ? '-' : ''}Bs. {formatBs(finalBs)}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{serviceName} · {estilista}</div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px', fontSize: '11px', color: 'var(--text-muted)' }}>
+                          <span>{new Date(t.created_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'short' })} {new Date(t.created_at).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true })}</span>
+                          <span>{paymentMethod}</span>
+                        </div>
+                      </div>
                     );
                   })}
-                </tbody>
-              </table>
+                </div>
+              )}
+
+              {filteredTransactions.length > 5 && (
+                <div style={{ textAlign: 'center', marginTop: '16px', padding: '10px' }}>
+                  <button onClick={() => {}} style={{ background: 'none', border: 'none', color: 'var(--pink-primary)', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}>
+                    Ver todas las transacciones →
+                  </button>
+                </div>
+              )}
             </div>
           </div>
-        )}
-      </div>
-      </>
+
+          {/* RIGHT SIDEBAR */}
+          <div style={{ width: isMobile ? '100%' : '300px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {/* Métodos de Pago */}
+            <div style={{ padding: '24px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)' }}>
+              <h4 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '20px' }}>Métodos de Pago</h4>
+              <div style={{ position: 'relative', width: '140px', height: '140px', margin: '0 auto 20px' }}>
+                <svg viewBox="0 0 36 36" style={{ width: '140px', height: '140px', transform: 'rotate(-90deg)' }}>
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--border-color)" strokeWidth="3" />
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#32d74b" strokeWidth="3" strokeDasharray={`${Number(cashCloseCashPct)} ${100 - Number(cashCloseCashPct)}`} strokeDashoffset="0" />
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--pink-primary)" strokeWidth="3" strokeDasharray={`${Number(cashCloseTransferPct)} ${100 - Number(cashCloseTransferPct)}`} strokeDashoffset={`-${cashCloseCashPct}`} />
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#ff9500" strokeWidth="3" strokeDasharray={`${Number(cashCloseCommissionPct)} ${100 - Number(cashCloseCommissionPct)}`} strokeDashoffset={`-${Number(cashCloseCashPct) + Number(cashCloseTransferPct)}`} />
+                </svg>
+                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '700' }}>Total</div>
+                  <div style={{ fontSize: '16px', fontWeight: '900', color: 'var(--text-primary)' }}>Bs. {formatBs(cashCloseNetRealUsd * (rates?.usd || 550))}</div>
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#32d74b' }}></div>
+                    <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>Efectivo ($)</span>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>Bs. {formatBs(cashCloseCashUsd * (rates?.usd || 550))}</span>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '6px' }}>{cashCloseCashPct}%</span>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--pink-primary)' }}></div>
+                    <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>Pago Móvil (Bs)</span>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>Bs. {formatBs(cashCloseTransferBs)}</span>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '6px' }}>{cashCloseTransferPct}%</span>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ff9500' }}></div>
+                    <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>Transferencias (Bs)</span>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>Bs. {formatBs(cashCloseCommissionDebtUsd * (rates?.usd || 550))}</span>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '6px' }}>{cashCloseCommissionPct}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Últimos Movimientos */}
+            <div style={{ padding: '24px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <h4 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)' }}>Últimos Movimientos</h4>
+                <button onClick={() => setActiveTab('transactions')} style={{ background: 'none', border: 'none', color: 'var(--pink-primary)', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}>Ver todo</button>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                {todayMovements.length === 0 ? (
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center', padding: '16px' }}>Sin movimientos hoy</div>
+                ) : todayMovements.map((m) => (
+                  <div key={m.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: m.type === 'income' ? 'rgba(50,215,75,0.1)' : 'rgba(255,69,58,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {m.type === 'income' ? <ArrowUpCircle size={14} color="#32d74b" /> : <ArrowDownCircle size={14} color="#ff453a" />}
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-primary)' }}>{m.description}</div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{m.date} · {m.time}</div>
+                      </div>
+                    </div>
+                    <span style={{ fontSize: '13px', fontWeight: '800', color: m.type === 'income' ? '#32d74b' : '#ff453a' }}>
+                      {m.type === 'income' ? '+' : '-'}Bs. {formatBs(m.amountBs)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Resumen del Día */}
+            <div style={{ padding: '24px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)' }}>
+              <h4 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '16px' }}>Resumen del Día</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                <div>
+                  <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>Ventas (Bruto)</div>
+                  <div style={{ fontSize: '16px', fontWeight: '900', color: 'var(--pink-primary)' }}>Bs. {formatBs(daySales)}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>Egresos</div>
+                  <div style={{ fontSize: '16px', fontWeight: '900', color: '#ff453a' }}>Bs. {formatBs(dayExpenses)}</div>
+                </div>
+                <div style={{ gridColumn: 'span 2' }}>
+                  <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>Neto del Día</div>
+                  <div style={{ fontSize: '18px', fontWeight: '950', color: dayNet >= 0 ? '#32d74b' : '#ff453a' }}>Bs. {formatBs(dayNet)}</div>
+                </div>
+                <div style={{ gridColumn: 'span 2', borderTop: '1px solid var(--border-color)', paddingTop: '14px', marginTop: '4px' }}></div>
+                <div>
+                  <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>Transacciones</div>
+                  <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text-primary)' }}>{dayTransactions}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>Clientes Atendidos</div>
+                  <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text-primary)' }}>{dayClients}</div>
+                </div>
+                <div style={{ gridColumn: 'span 2' }}>
+                  <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>Ticket Promedio</div>
+                  <div style={{ fontSize: '16px', fontWeight: '800', color: 'var(--pink-primary)' }}>Bs. {formatBs(dayTicket)}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
 
