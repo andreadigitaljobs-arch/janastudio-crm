@@ -394,12 +394,12 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
                 <div key={h} style={{ fontSize: '8px', color: 'var(--text-muted)', textAlign: 'center', fontWeight: '600' }}>{h}</div>
               ))}
               {heatMapData.map((row, ri) => (
-                <>
-                  <div key={`day-${ri}`} style={{ fontSize: '10px', color: 'var(--text-secondary)', fontWeight: '600', display: 'flex', alignItems: 'center' }}>{row.day}</div>
+                <div key={ri} style={{ display: 'contents' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--text-secondary)', fontWeight: '600', display: 'flex', alignItems: 'center' }}>{row.day}</div>
                   {row.hours.map((intensity, hi) => (
                     <HeatMapCell key={`${ri}-${hi}`} intensity={intensity} />
                   ))}
-                </>
+                </div>
               ))}
             </div>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', marginTop: '12px' }}>
