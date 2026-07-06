@@ -8,7 +8,7 @@ import {
   Chart as ChartJS, CategoryScale, LinearScale, PointElement,
   LineElement, Title, Tooltip, Legend, Filler, ArcElement
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
+import { Line, Doughnut } from 'react-chartjs-2';
 import { useAuth } from '../context/AuthContext';
 
 ChartJS.register(
@@ -22,6 +22,14 @@ const FALLBACK_APPOINTMENTS = [
   { time: '1:00 PM', client: 'Mariana S.', service: 'Lifting de Pestañas', status: 'Pendiente', initial: 'M' },
   { time: '3:30 PM', client: 'Andrea L.', service: 'Efecto Híbrido', status: 'Confirmada', initial: 'A' },
 ];
+
+const TOP_SPECIALISTS = [
+  { name: 'Isabella R.', role: 'Estilista Senior', earnings: 2450, initial: 'I' },
+  { name: 'Valeria M.', role: 'Nail Artist', earnings: 1980, initial: 'V' },
+  { name: 'Camila P.', role: 'Lash Expert', earnings: 1560, initial: 'C' },
+  { name: 'Sofía A.', role: 'Esteticista', earnings: 1250, initial: 'S' },
+];
+
 
 const DashboardModule = ({
   isMobile, isTablet, onOpenSale, stats, chartData,
@@ -49,11 +57,11 @@ const DashboardModule = ({
 
   // Extract upcoming appointments from dynamic data or fallback to mockup list
   const upcomingAppointments = useMemo(() => {
+    let list = [];
     if (dbData?.appointments && dbData.appointments.length > 0) {
       // Map and sort upcoming appointments
-      return dbData.appointments
+      list = dbData.appointments
         .filter(apt => apt.status !== 'Completado' && apt.status !== 'Cancelado')
-        .slice(0, 5)
         .map(apt => {
           const clientName = apt.clients?.name || 'Cliente';
           const timeString = apt.scheduled_at
@@ -67,8 +75,10 @@ const DashboardModule = ({
             initial: clientName.charAt(0).toUpperCase()
           };
         });
+    } else {
+      list = FALLBACK_APPOINTMENTS;
     }
-    return FALLBACK_APPOINTMENTS;
+    return list.slice(0, 3);
   }, [dbData]);
 
   // Chart configuration to look like mockup (pink minimalist line chart)
@@ -136,6 +146,27 @@ const DashboardModule = ({
       }
     }
   };
+
+  const servicesDonutData = {
+    labels: ['Extensiones', 'Coloración', 'Uñas Acrílicas', 'Trat. Faciales', 'Otros'],
+    datasets: [{
+      data: [35, 25, 20, 12, 8],
+      backgroundColor: ['#c48b9f', '#a0506a', '#d4a09a', '#e8c4be', '#fbcada'],
+      borderWidth: 0, borderRadius: 3, spacing: 2
+    }]
+  };
+
+  const donutOptions = {
+    responsive: true, maintainAspectRatio: false, cutout: '72%',
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#4a3036', titleColor: '#fff', bodyColor: '#fff',
+        padding: 10, cornerRadius: 8,
+      }
+    }
+  };
+
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.35s ease' }}>
@@ -305,36 +336,41 @@ const DashboardModule = ({
             gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', 
             gap: '16px' 
           }}>
-            {/* Loyalty Gold Club card */}
-            <div className="glass-card" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '14px', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Lealtad</span>
-                <span style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}>Ver todo</span>
+            {/* Top Especialistas Card */}
+            <div className="glass-card" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '12px', minHeight: '190px', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Top Especialistas</span>
+                <span onClick={() => onNavigate('personnel')} style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}>Ver todo</span>
               </div>
               
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                  <span style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--pink-primary)' }}>Club Oro</span>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: '500' }}>128 miembros activos</span>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>320 pts. de saldo prom.</span>
-                </div>
-                
-                {/* Visual mini VIP card */}
-                <div style={{
-                  width: '95px', height: '62px', borderRadius: '8px',
-                  background: 'linear-gradient(135deg, #e8c4be 0%, #d4a09a 50%, #b8708a 100%)',
-                  boxShadow: '0 4px 10px rgba(184, 112, 138, 0.25)',
-                  padding: '6px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-                  color: '#ffffff', position: 'relative', overflow: 'hidden'
-                }}>
-                  <div style={{ fontSize: '0.45rem', fontWeight: '800', letterSpacing: '0.5px' }}>JANA STUDIO</div>
-                  <div style={{ fontSize: '0.55rem', fontWeight: '700', alignSelf: 'flex-end', color: 'rgba(255,255,255,0.9)' }}>GOLD CLUB</div>
-                </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {TOP_SPECIALISTS.slice(0, 3).map((spec, idx) => (
+                  <div key={idx} style={{
+                    display: 'flex', alignItems: 'center', gap: '10px',
+                    padding: '4px 6px', borderRadius: '10px',
+                    background: idx === 0 ? 'rgba(212, 160, 154, 0.08)' : 'transparent'
+                  }}>
+                    <div style={{
+                      width: '30px', height: '30px', borderRadius: '50%',
+                      background: 'var(--pink-gradient)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: 'white', fontWeight: 600, fontSize: '0.72rem', flexShrink: 0
+                    }}>{spec.initial}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.75rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{spec.name}</div>
+                      <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{spec.role}</div>
+                    </div>
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.75rem' }}>Bs. {formatBs(spec.earnings)}</div>
+                      <div style={{ fontSize: '0.58rem', color: 'var(--text-muted)' }}>Ingresos</div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
             {/* Reports Revenue card */}
-            <div className="glass-card" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div className="glass-card" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '10px', minHeight: '190px', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Reportes</span>
                 <span style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}>Ver todo</span>
@@ -355,51 +391,42 @@ const DashboardModule = ({
               </div>
             </div>
 
-            {/* Grow your studio promo card */}
-            <div className="glass-card" style={{ 
-              padding: '20px', 
-              backgroundColor: '#ffffff', 
-              display: 'flex', 
-              flexDirection: 'column', 
-              justifyContent: 'space-between',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
-              <div>
-                <span style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif" }}>Crece tu negocio</span>
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '4px 0 0 0', lineHeight: '1.3' }}>
-                  Descubre métricas y herramientas para impulsar tu negocio.
-                </p>
+            {/* Servicios Más Populares Card */}
+            <div className="glass-card" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '10px', minHeight: '190px', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Servicios Populares</span>
+                <span onClick={() => onNavigate('services')} style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}>Ver todo</span>
               </div>
-
-              <button 
-                onClick={() => onNavigate('reports')}
-                style={{
-                  alignSelf: 'flex-start',
-                  padding: '8px 16px',
-                  borderRadius: '100px',
-                  background: '#eae1dd',
-                  color: 'var(--text-primary)',
-                  fontSize: '0.75rem',
-                  fontWeight: '600',
-                  border: 'none',
-                  cursor: 'pointer',
-                  zIndex: 2,
-                  marginTop: '12px',
-                  transition: 'all 0.2s'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.background = '#e2d5cf'}
-                onMouseLeave={(e) => e.currentTarget.style.background = '#eae1dd'}
-              >
-                Ver reportes
-              </button>
-
-              {/* Styled flower icon overlapping background */}
-              <div style={{
-                position: 'absolute', bottom: '-15px', right: '-15px',
-                opacity: 0.15, color: 'var(--magenta-primary)', zIndex: 1
-              }}>
-                <Flower2 size={95} />
+              
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flex: 1, minHeight: 0 }}>
+                {/* Donut chart */}
+                <div style={{ height: '90px', width: '90px', position: 'relative', flexShrink: 0 }}>
+                  <Doughnut data={servicesDonutData} options={donutOptions} />
+                  <div style={{
+                    position: 'absolute', top: '50%', left: '50%',
+                    transform: 'translate(-50%, -50%)', textAlign: 'center',
+                    lineHeight: 1.1
+                  }}>
+                    <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-primary)' }}>156</div>
+                    <div style={{ fontSize: '0.55rem', color: 'var(--text-muted)', fontWeight: 500 }}>Reservas</div>
+                  </div>
+                </div>
+                
+                {/* Legend list */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1, overflow: 'hidden' }}>
+                  {servicesDonutData.labels.slice(0, 3).map((label, idx) => (
+                    <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.68rem' }}>
+                      <div style={{
+                        width: '6px', height: '6px', borderRadius: '2px',
+                        background: servicesDonutData.datasets[0].backgroundColor[idx], flexShrink: 0
+                      }} />
+                      <span style={{ flex: 1, color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
+                      <span style={{ fontWeight: 600, color: 'var(--text-primary)', flexShrink: 0 }}>
+                        {servicesDonutData.datasets[0].data[idx]}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -409,12 +436,14 @@ const DashboardModule = ({
         <div className="glass-card" style={{
           width: isMobile ? '100%' : '320px',
           backgroundColor: '#ffffff',
-          padding: '24px',
+          padding: '20px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          gap: '20px',
-          minHeight: '450px'
+          gap: '16px',
+          borderRadius: '20px',
+          border: '1px solid rgba(212, 160, 154, 0.15)',
+          boxShadow: 'var(--shadow-card)'
         }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
