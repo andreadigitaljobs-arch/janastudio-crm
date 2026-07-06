@@ -1081,7 +1081,7 @@ const BarberPanel = ({ isMobile, rates }) => {
                       animation: 'shadow-scale-small 6s infinite ease-in-out'
                     }} />
                     <img 
-                      src="/salon.png" 
+                      src="/hero_banner.webp" 
                       alt="Salon" 
                       style={{ 
                         width: '80px', 
@@ -1128,7 +1128,7 @@ const BarberPanel = ({ isMobile, rates }) => {
                               {app.status} 
                               {app.status === 'En Tratamiento' ? '💧' : app.status === 'Agendado' ? '📅' : (
                                 <img 
-                                  src="/salon.png" 
+                                  src="/hero_banner.webp" 
                                   alt="Silla" 
                                   style={{ 
                                     width: '16px', 

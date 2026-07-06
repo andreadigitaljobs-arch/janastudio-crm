@@ -44,7 +44,8 @@ const TopBar = ({
     <div style={{
       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       marginBottom: '16px', flexWrap: 'wrap', gap: '12px',
-      paddingLeft: isMobile ? '42px' : '0'
+      paddingLeft: isMobile ? '42px' : '0',
+      paddingTop: isMobile ? 'env(safe-area-inset-top, 0px)' : '0'
     }}>
       {/* Left: Greeting */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

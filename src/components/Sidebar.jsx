@@ -129,7 +129,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
             marginTop: '8px', padding: '8px 0'
           }}>
             <img
-              src="/logo.png"
+              src="/logo.webp"
               alt="JanaStudio"
               style={{
                 height: '42px', marginBottom: '4px',
@@ -140,7 +140,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
         )}
         {effectiveCollapsed && (
           <img
-            src="/logo.png"
+            src="/logo.webp"
             alt="JS"
             style={{
               height: '36px', marginTop: '4px',

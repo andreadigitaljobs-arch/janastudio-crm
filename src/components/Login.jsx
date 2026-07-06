@@ -21,9 +21,9 @@ export default function Login() {
   const formRef = useRef(null);
 
   const images = [
-    '/login_bg2.jpeg',
-    '/login_bg1.jpeg',
-    '/login_bg3.jpeg'
+    '/login_bg2.webp',
+    '/login_bg1.webp',
+    '/login_bg3.webp'
   ];
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -156,7 +156,7 @@ export default function Login() {
             {/* Logo */}
             <div className="salon-logo-header salon-stagger-1" onClick={handleLogoTap} style={{ cursor: 'pointer' }}>
               <img
-                src="/logo.png"
+                src="/logo.webp"
                 alt="Jana Studio Eyelashes & Brows"
                 className="salon-logo-image"
               />

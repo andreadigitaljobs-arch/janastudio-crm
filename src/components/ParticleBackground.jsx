@@ -32,7 +32,7 @@ const ParticleBackground = () => {
     window.addEventListener('mouseleave', handleMouseLeave);
 
     const particles = [];
-    const particleCount = 50;
+    const particleCount = 20;
 
     for (let i = 0; i < particleCount; i++) {
       const isSparkle = Math.random() > 0.7;
@@ -69,23 +69,6 @@ const ParticleBackground = () => {
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      ctx.strokeStyle = 'rgba(196, 139, 159, 0.04)';
-      ctx.lineWidth = 1;
-      const gridSize = 60;
-
-      for (let x = 0; x < canvas.width; x += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, canvas.height);
-        ctx.stroke();
-      }
-      for (let y = 0; y < canvas.height; y += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(canvas.width, y);
-        ctx.stroke();
-      }
 
       const mouse = mouseRef.current;
       mouse.x += (mouse.targetX - mouse.x) * 0.08;

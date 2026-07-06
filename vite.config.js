@@ -11,5 +11,19 @@ export default defineConfig({
   },
   build: {
     target: 'es2020',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          supabase: ['@supabase/supabase-js'],
+          charts: ['chart.js', 'react-chartjs-2'],
+          utils: ['xlsx', 'papaparse'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 600,
+  },
+  css: {
+    devSourcemap: false,
   },
 });

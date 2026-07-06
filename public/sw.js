@@ -11,16 +11,16 @@ self.addEventListener('push', function(event) {
 
   const options = {
     body: data.body,
-    icon: '/pwa-icon.png',
-    badge: '/favicon.svg',
+    icon: '/pwa-icon.webp',
+    badge: '/favicon.webp',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
       primaryKey: '1'
     },
     actions: [
-      { action: 'explore', title: 'Ver CRM', icon: '/favicon.svg' },
-      { action: 'close', title: 'Cerrar', icon: '/favicon.svg' }
+      { action: 'explore', title: 'Ver CRM', icon: '/favicon.webp' },
+      { action: 'close', title: 'Cerrar', icon: '/favicon.webp' }
     ]
   };
 

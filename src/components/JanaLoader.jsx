@@ -9,7 +9,7 @@ const motivationalTexts = [
   "Un momento para ti, con amor 🌷",
 ];
 
-const LOADER_MIN_DURATION_MS = 2500;
+const LOADER_MIN_DURATION_MS = 1200;
 const PROGRESS_INTERVAL_MS = 30;
 const FADE_OUT_MS = 500;
 
@@ -47,14 +47,7 @@ const JanaLoader = ({ visible }) => {
   const startTimeRef = useRef(null);
   const audioRef = useRef(null);
 
-  // Load Google Fonts
-  useEffect(() => {
-    const link = document.createElement('link');
-    link.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Great+Vibes&family=Montserrat:wght@200;400;700&display=swap';
-    link.rel = 'stylesheet';
-    document.head.appendChild(link);
-    return () => { try { document.head.removeChild(link); } catch (e) {} };
-  }, []);
+  // Fonts are preloaded in index.html
 
   // Play subtle chime on mount
   useEffect(() => {
@@ -215,7 +208,7 @@ const JanaLoader = ({ visible }) => {
 
       <style>{`
         .loader-container {
-          background-image: url(/fondo_carga.jpeg);
+          background-image: url(/fondo_carga.webp);
           background-size: cover;
           background-position: center;
           background-repeat: no-repeat;
@@ -223,7 +216,7 @@ const JanaLoader = ({ visible }) => {
 
         @media (max-width: 768px) {
           .loader-container {
-            background-image: url(/fondo_carga_mobile.jpeg);
+            background-image: url(/fondo_carga_mobile.webp);
           }
         }
 

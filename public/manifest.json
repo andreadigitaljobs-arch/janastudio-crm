@@ -4,15 +4,15 @@
   "description": "Sistema de gestión para salón de belleza",
   "icons": [
     {
-      "src": "/favicon.svg",
-      "type": "image/svg+xml",
-      "sizes": "any",
+      "src": "/pwa-icon.webp",
+      "type": "image/webp",
+      "sizes": "192x192",
       "purpose": "any"
     },
     {
-      "src": "/favicon.svg",
-      "type": "image/svg+xml",
-      "sizes": "any",
+      "src": "/pwa-icon.webp",
+      "type": "image/webp",
+      "sizes": "512x512",
       "purpose": "maskable"
     }
   ],

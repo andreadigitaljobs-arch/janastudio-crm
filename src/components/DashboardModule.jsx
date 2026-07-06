@@ -200,7 +200,7 @@ const DashboardModule = ({
               }}
             >
               <img 
-                src="/hero_banner.jpeg" 
+                src="/hero_banner.webp" 
                 alt="Banner"
                 style={{
                   width: '100%',

@@ -368,6 +368,8 @@ function App() {
         <div style={{
           position: 'fixed', left: 0, top: 0, bottom: 0,
           width: '260px', zIndex: 999,
+          paddingTop: 'env(safe-area-inset-top, 0px)',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
           transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
           transition: 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
           overflowY: 'auto', overflowX: 'hidden',
@@ -402,7 +404,7 @@ function App() {
 
       <main className="main-content no-scrollbar" style={{ 
         flex: 1, 
-        paddingTop: isMobile ? 'var(--spacing-sm)' : 'var(--spacing-xl)', 
+        paddingTop: isMobile ? 'calc(var(--spacing-sm) + env(safe-area-inset-top, 0px))' : 'var(--spacing-xl)', 
         paddingLeft: isMobile ? 'var(--spacing-sm)' : 'var(--spacing-xl)', 
         paddingRight: isMobile ? 'var(--spacing-sm)' : 'var(--spacing-xl)', 
         paddingBottom: isMobile ? 'var(--spacing-sm)' : 'var(--spacing-xl)',
@@ -416,7 +418,7 @@ function App() {
           <button
             onClick={() => setIsSidebarOpen(true)}
             style={{
-              position: 'fixed', left: '12px', top: '12px', zIndex: 100,
+              position: 'fixed', left: '12px', top: 'calc(12px + env(safe-area-inset-top, 0px))', zIndex: 100,
               background: 'rgba(255,255,255,0.9)', border: '1px solid rgba(196,139,159,0.2)',
               borderRadius: '12px', width: '42px', height: '42px',
               display: 'flex', alignItems: 'center', justifyContent: 'center',

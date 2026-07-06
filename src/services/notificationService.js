@@ -49,8 +49,8 @@ class NotificationService {
         const registration = await navigator.serviceWorker.ready;
         registration.showNotification(title, {
           body: body,
-          icon: '/pwa-icon.png',
-          badge: '/favicon.svg',
+          icon: '/pwa-icon.webp',
+          badge: '/favicon.webp',
           vibrate: [200, 100, 200],
           tag: 'astro-crm-alert',
           renotify: true
