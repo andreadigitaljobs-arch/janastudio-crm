@@ -56,19 +56,39 @@ const TopBar = ({
             fontFamily: "'Playfair Display', Georgia, serif",
             margin: 0
           }}>
-            {getGreeting().replace('¡', '').replace('!', '')}, {user?.name?.split(' ')[0] || 'Carolina'} ✨
+            {getGreeting().replace('¡', '').replace('!', '')}, {user?.name?.split(' ')[0] || 'Jana'} ✨
           </h1>
           <p style={{
             fontSize: '0.8rem', 
             color: 'var(--text-secondary)', 
             margin: '4px 0 0 0',
             fontWeight: '500'
-          }}>Here's what's happening at Jana Studio.</p>
+          }}>Aquí tienes un resumen de hoy en Jana Studio.</p>
         </div>
       </div>
 
       {/* Right: Notification Bell & Date Selector */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        {/* Rates pill: BCV / USDT */}
+        {rates && rates.usdt > 0 && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '10px',
+            padding: '8px 14px', borderRadius: '12px',
+            background: '#ffffff', border: '1px solid var(--border-color)',
+            boxShadow: 'var(--shadow-card)', fontSize: '0.78rem',
+          }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1.3 }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: '0.65rem', fontWeight: 500 }}>BCV</span>
+              <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>Bs. {rates.bcv?.toFixed(2)}</span>
+            </div>
+            <div style={{ width: '1px', height: '28px', background: 'var(--border-color)' }} />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1.3 }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: '0.65rem', fontWeight: 500 }}>USDT</span>
+              <span style={{ color: 'var(--magenta-primary)', fontWeight: 700 }}>Bs. {rates.usdt?.toFixed(2)}</span>
+            </div>
+          </div>
+        )}
+
         <button
           onClick={onOpenNotifications}
           style={{
@@ -97,9 +117,10 @@ const TopBar = ({
           display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer',
           fontSize: '0.82rem', fontWeight: '600', color: 'var(--text-secondary)'
         }}>
-          <span>{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+          <span>{new Date().toLocaleDateString('es-VE', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
           <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>▼</span>
         </div>
+
       </div>
     </div>
   );

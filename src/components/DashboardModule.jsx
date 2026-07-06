@@ -17,10 +17,10 @@ ChartJS.register(
 );
 
 const FALLBACK_APPOINTMENTS = [
-  { time: '9:00 AM', client: 'Isabella R.', service: 'Classic Lashes', status: 'Confirmada', initial: 'I' },
-  { time: '11:00 AM', client: 'Valentina G.', service: 'Brow Design', status: 'Confirmada', initial: 'V' },
-  { time: '1:00 PM', client: 'Mariana S.', service: 'Lash Lift', status: 'Pendiente', initial: 'M' },
-  { time: '3:30 PM', client: 'Andrea L.', service: 'Hybrid Set', status: 'Confirmada', initial: 'A' },
+  { time: '9:00 AM', client: 'Isabella R.', service: 'Pestañas Clásicas', status: 'Confirmada', initial: 'I' },
+  { time: '11:00 AM', client: 'Valentina G.', service: 'Diseño de Cejas', status: 'Confirmada', initial: 'V' },
+  { time: '1:00 PM', client: 'Mariana S.', service: 'Lifting de Pestañas', status: 'Pendiente', initial: 'M' },
+  { time: '3:30 PM', client: 'Andrea L.', service: 'Efecto Híbrido', status: 'Confirmada', initial: 'A' },
 ];
 
 const DashboardModule = ({
@@ -77,9 +77,9 @@ const DashboardModule = ({
     const dataPoints = hasData ? chartData.datasets[0].data : [700, 1200, 950, 1500, 1254, 1800, 2100];
     
     return {
-      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
       datasets: [{
-        label: 'Revenue',
+        label: 'Ingresos',
         data: dataPoints,
         borderColor: '#a0506a',
         borderWidth: 2,
@@ -114,7 +114,7 @@ const DashboardModule = ({
         borderRadius: 8,
         displayColors: false,
         callbacks: {
-          label: (context) => `Revenue: $${context.parsed.y}`
+          label: (context) => `Ingresos: Bs. ${formatBs(context.parsed.y)}`
         }
       }
     },
@@ -129,7 +129,7 @@ const DashboardModule = ({
         ticks: {
           color: '#a0506a',
           font: { size: 9, weight: '500' },
-          callback: (value) => `$${value}`
+          callback: (value) => `Bs. ${value}`
         },
         border: { display: false },
         min: 0
@@ -146,92 +146,69 @@ const DashboardModule = ({
         {/* Left Column: Banner, Stats grid, Bottom row */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
-          {/* Main Hero Banner: Elevate beauty. Empower confidence. */}
+          {/* Main Hero Banner: full background image */}
           <div style={{
-            background: 'linear-gradient(135deg, #eae1dd 0%, #f6ebe8 100%)',
+            backgroundImage: 'url(/hero_banner.jpeg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center 30%',
             borderRadius: '24px',
-            padding: isMobile ? '24px' : '32px',
+            padding: isMobile ? '28px 24px' : '40px 44px',
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
+            alignItems: 'flex-end',
+            justifyContent: 'flex-start',
             position: 'relative',
             overflow: 'hidden',
-            border: '1px solid rgba(212, 160, 154, 0.15)',
-            minHeight: '220px'
+            minHeight: isMobile ? '180px' : '240px',
           }}>
-            <div style={{ flex: 1, zIndex: 2, display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '55%' }}>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {/* Dark gradient overlay so text is readable */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: 'linear-gradient(to right, rgba(30,15,20,0.52) 0%, rgba(30,15,20,0.18) 60%, rgba(30,15,20,0.0) 100%)',
+              borderRadius: '24px',
+              zIndex: 1
+            }} />
+
+            <div style={{ zIndex: 2, display: 'flex', flexDirection: 'column', gap: '14px', maxWidth: isMobile ? '100%' : '52%' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                 <span style={{ 
                   fontFamily: "'Playfair Display', Georgia, serif", 
-                  fontSize: isMobile ? '1.5rem' : '2rem', 
+                  fontSize: isMobile ? '1.4rem' : '2rem', 
                   fontStyle: 'italic', 
-                  color: 'var(--plum-light)',
-                  lineHeight: '1.2'
-                }}>Elevate beauty.</span>
+                  color: '#ffffff',
+                  lineHeight: '1.25',
+                  textShadow: '0 2px 8px rgba(0,0,0,0.25)'
+                }}>Eleva la belleza.</span>
                 <span style={{ 
                   fontFamily: "'Playfair Display', Georgia, serif", 
-                  fontSize: isMobile ? '2rem' : '2.5rem', 
-                  fontWeight: '700', 
-                  color: 'var(--text-primary)',
-                  lineHeight: '1.2'
-                }}>Empower confidence.</span>
+                  fontSize: isMobile ? '1.4rem' : '2rem', 
+                  fontStyle: 'italic',
+                  color: '#f4d0d5',
+                  lineHeight: '1.25',
+                  textShadow: '0 2px 8px rgba(0,0,0,0.25)'
+                }}>Empodera la confianza.</span>
               </div>
               <button 
                 onClick={() => onNavigate('scheduling')}
                 style={{
                   alignSelf: 'flex-start',
-                  padding: '10px 20px',
+                  padding: '10px 22px',
                   borderRadius: '100px',
-                  background: 'var(--magenta-secondary)',
+                  background: 'rgba(212, 140, 154, 0.85)',
+                  backdropFilter: 'blur(6px)',
                   color: '#ffffff',
                   fontSize: '0.8rem',
                   fontWeight: '600',
-                  border: 'none',
+                  border: '1px solid rgba(255,255,255,0.25)',
                   cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(160, 80, 106, 0.2)',
+                  boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
                   transition: 'all 0.3s ease'
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(160, 80, 106, 0.3)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(160, 80, 106, 0.2)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(190, 100, 125, 0.95)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(212, 140, 154, 0.85)'; e.currentTarget.style.transform = 'none' }}
               >
-                View today's agenda
+                Ver agenda de hoy
               </button>
             </div>
-
-            {/* Collage Section: Elegant oval cutouts */}
-            {!isMobile && (
-              <div style={{ 
-                position: 'relative', 
-                width: '38%', 
-                height: '180px', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'flex-end',
-                gap: '12px'
-              }}>
-                <div style={{
-                  width: '90px',
-                  height: '130px',
-                  borderRadius: '50px',
-                  overflow: 'hidden',
-                  transform: 'translateY(-15px)',
-                  boxShadow: '0 8px 20px rgba(74, 48, 54, 0.1)',
-                  border: '3px solid #ffffff'
-                }}>
-                  <img src="/fondo_carga_mobile.jpeg" alt="Lashes" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-                <div style={{
-                  width: '130px',
-                  height: '160px',
-                  borderRadius: '100px',
-                  overflow: 'hidden',
-                  boxShadow: '0 8px 25px rgba(74, 48, 54, 0.15)',
-                  border: '3px solid #ffffff'
-                }}>
-                  <img src="/fondo_carga.jpeg" alt="Salon" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Stats grid row */}
@@ -249,11 +226,11 @@ const DashboardModule = ({
               backgroundColor: '#ffffff'
             }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Clients</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Clientes</span>
                 <span style={{ fontSize: '1.75rem', fontWeight: '700', color: 'var(--text-primary)' }}>
                   {stats?.clients || dbData?.clients?.length || 248}
                 </span>
-                <span style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600' }}>+18 New this month</span>
+                <span style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600' }}>+18 nuevos este mes</span>
               </div>
               <div style={{
                 width: '60px', height: '60px', borderRadius: '50%',
@@ -276,11 +253,11 @@ const DashboardModule = ({
               backgroundColor: '#ffffff'
             }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Service Catalog</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Catálogo de Servicios</span>
                 <span style={{ fontSize: '1.75rem', fontWeight: '700', color: 'var(--text-primary)' }}>
                   {dbData?.services?.length || 24}
                 </span>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: '500' }}>Most booked: Classic Lashes</span>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: '500' }}>Más solicitado: Pestañas Clásicas</span>
               </div>
               <div style={{
                 width: '60px', height: '60px', borderRadius: '50%',
@@ -303,11 +280,11 @@ const DashboardModule = ({
               backgroundColor: '#ffffff'
             }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Team</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Equipo</span>
                 <span style={{ fontSize: '1.75rem', fontWeight: '700', color: 'var(--text-primary)' }}>
                   {dbData?.staff?.length || 6}
                 </span>
-                <span style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600' }}>2 On shift today</span>
+                <span style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600' }}>2 en turno hoy</span>
               </div>
               <div style={{
                 width: '60px', height: '60px', borderRadius: '50%',
@@ -331,15 +308,15 @@ const DashboardModule = ({
             {/* Loyalty Gold Club card */}
             <div className="glass-card" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '14px', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Loyalty</span>
-                <span style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}>View all</span>
+                <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Lealtad</span>
+                <span style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}>Ver todo</span>
               </div>
               
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                  <span style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--pink-primary)' }}>Gold Club</span>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: '500' }}>128 Active members</span>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>320 pts Avg. balance</span>
+                  <span style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--pink-primary)' }}>Club Oro</span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: '500' }}>128 miembros activos</span>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>320 pts. de saldo prom.</span>
                 </div>
                 
                 {/* Visual mini VIP card */}
@@ -359,16 +336,16 @@ const DashboardModule = ({
             {/* Reports Revenue card */}
             <div className="glass-card" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Reports</span>
-                <span style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}>View all</span>
+                <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Reportes</span>
+                <span style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}>Ver todo</span>
               </div>
               
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <span style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--text-primary)' }}>
-                  ${stats?.monthlyIncome ? formatBs(stats.monthlyIncome) : '12,840'}
+                  Bs. {stats?.monthlyIncome ? formatBs(stats.monthlyIncome) : '12.840'}
                 </span>
                 <span style={{ fontSize: '0.72rem', color: '#22c55e', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '2px' }}>
-                  ↑ 18% <span style={{ color: 'var(--text-muted)', fontWeight: '500' }}>vs Apr 22</span>
+                  ↑ 18% <span style={{ color: 'var(--text-muted)', fontWeight: '500' }}>vs mes anterior</span>
                 </span>
               </div>
               
@@ -389,9 +366,9 @@ const DashboardModule = ({
               overflow: 'hidden'
             }}>
               <div>
-                <span style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif" }}>Grow your studio</span>
+                <span style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif" }}>Crece tu negocio</span>
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '4px 0 0 0', lineHeight: '1.3' }}>
-                  Discover insights and tools to grow your business.
+                  Descubre métricas y herramientas para impulsar tu negocio.
                 </p>
               </div>
 
@@ -414,7 +391,7 @@ const DashboardModule = ({
                 onMouseEnter={(e) => e.currentTarget.style.background = '#e2d5cf'}
                 onMouseLeave={(e) => e.currentTarget.style.background = '#eae1dd'}
               >
-                See reports
+                Ver reportes
               </button>
 
               {/* Styled flower icon overlapping background */}
@@ -447,12 +424,12 @@ const DashboardModule = ({
                 color: 'var(--text-primary)', 
                 fontFamily: "'Playfair Display', Georgia, serif",
                 margin: 0
-              }}>Upcoming Appointments</h3>
+              }}>Próximas Citas</h3>
               <span 
                 onClick={() => onNavigate('scheduling')}
                 style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}
               >
-                View all
+                Ver todo
               </span>
             </div>
 
@@ -538,7 +515,7 @@ const DashboardModule = ({
             onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(160, 80, 106, 0.35)' }}
             onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(160, 80, 106, 0.25)' }}
           >
-            <Plus size={16} /> New Appointment
+            <Plus size={16} /> Nueva Cita
           </button>
         </div>
       </div>

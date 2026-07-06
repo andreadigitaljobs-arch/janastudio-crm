@@ -195,23 +195,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
       </nav>
 
       <div style={{ marginTop: 'auto', paddingTop: '16px' }}>
-        {!effectiveCollapsed && rates && rates.usdt > 0 && (
-          <div style={{
-            padding: '10px 12px', borderRadius: '12px',
-            backgroundColor: 'var(--bg-tertiary)',
-            marginBottom: '12px', fontSize: '0.78rem',
-            border: '1px solid rgba(212, 160, 154, 0.1)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>BCV</span>
-              <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Bs. {rates.bcv?.toFixed(2)}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>USDT</span>
-              <span style={{ color: 'var(--magenta-primary)', fontWeight: 600 }}>Bs. {rates.usdt?.toFixed(2)}</span>
-            </div>
-          </div>
-        )}
+
 
         <div style={{
           display: 'flex', alignItems: 'center', gap: '10px',
@@ -239,7 +223,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
                 fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.75rem',
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
               }}>
-                {user?.name || 'Carolina M.'}
+                {user?.name || 'Jana'}
               </div>
               <div style={{
                 fontSize: '0.62rem', color: 'var(--text-muted)',

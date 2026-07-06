@@ -16,7 +16,7 @@ import { supabase } from '../lib/supabase';
 
 const DEMO_WAITING = [
   { name: 'Sofía M.', arrived: '10:20 AM', status: 'En espera', initial: 'S' },
-  { name: 'Carolina V.', arrived: '10:35 AM', status: 'Lista', initial: 'C' },
+  { name: 'Jana V.', arrived: '10:35 AM', status: 'Lista', initial: 'J' },
   { name: 'Laura G.', arrived: '10:40 AM', status: 'Pasando', initial: 'L' },
   { name: 'Diana R.', arrived: '10:45 AM', status: 'En espera', initial: 'D' },
 ];

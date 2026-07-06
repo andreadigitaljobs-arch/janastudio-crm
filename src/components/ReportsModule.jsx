@@ -192,7 +192,7 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
     { num: 2, name: 'Andrea Valentina Ruiz', visits: 7, lastService: 'Extensiones de Pestañas', total: 3760, avatar: 'AR' },
     { num: 3, name: 'Daniela Sofia Mendoza', visits: 6, lastService: 'Botox Capilar', total: 3240, avatar: 'DM' },
     { num: 4, name: 'Valentina Herrera', visits: 5, lastService: 'Uñas Acrílicas', total: 2890, avatar: 'VH' },
-    { num: 5, name: 'Alejandra Carolina Pérez', visits: 5, lastService: 'Limpieza Facial Premium', total: 2610, avatar: 'AP' },
+    { num: 5, name: 'Alejandra Jana Pérez', visits: 5, lastService: 'Limpieza Facial Premium', total: 2610, avatar: 'AP' },
   ];
 
   return (
