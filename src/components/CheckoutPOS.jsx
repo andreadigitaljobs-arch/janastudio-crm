@@ -27,9 +27,9 @@ import {
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
-import AstroSelect from './AstroSelect';
+import JanaSelect from './JanaSelect';
 import { notificationService } from '../services/notificationService';
-import AstroDialog from './AstroDialog';
+import JanaDialog from './JanaDialog';
 import NewClientModal from './NewClientModal';
 import { UserPlus, ChevronDown, VenetianMask, Ear, ScanFace, ShowerHead, Waves } from 'lucide-react';
 import { ModalShield, useModal } from '../context/ModalContext';
@@ -447,12 +447,12 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
       if (document.visibilityState === 'visible') refreshOperationalData();
     };
 
-    window.addEventListener('astro:data-changed', refreshOperationalData);
+    window.addEventListener('jana:data-changed', refreshOperationalData);
     window.addEventListener('focus', refreshOperationalData);
     document.addEventListener('visibilitychange', refreshWhenVisible);
     return () => {
       clearTimeout(refreshTimer);
-      window.removeEventListener('astro:data-changed', refreshOperationalData);
+      window.removeEventListener('jana:data-changed', refreshOperationalData);
       window.removeEventListener('focus', refreshOperationalData);
       document.removeEventListener('visibilitychange', refreshWhenVisible);
     };
@@ -2480,7 +2480,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
         </div>
       </div>
 
-      <AstroDialog 
+      <JanaDialog 
         isOpen={dialog.isOpen}
         title={dialog.title}
         message={dialog.message}
@@ -2817,7 +2817,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                 Selecciona los clientes que están en silla o pendientes de cobro para cargarlos a la cuenta de <strong>{selectedApp?.clients?.name}</strong>.
               </p>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '350px', overflowY: 'auto', paddingRight: '8px' }} className="astro-scrollbar">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '350px', overflowY: 'auto', paddingRight: '8px' }} className="jana-scrollbar">
                 {groupedActiveServices.filter(g => g.client_id !== selectedApp?.client_id && !linkedApps.some(la => la.client_id === g.client_id)).length === 0 ? (
                   <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '13px' }}>
                     No hay otros clientes pendientes en silla o por pagar.

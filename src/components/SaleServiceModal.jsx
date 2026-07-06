@@ -19,8 +19,8 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
-import AstroSelect from './AstroSelect';
-import AstroDatePicker from './AstroDatePicker';
+import JanaSelect from './JanaSelect';
+import JanaDatePicker from './JanaDatePicker';
 import { normalizeForSearch } from '../utils/stringUtils';
 import NewClientModal from './NewClientModal';
 import AnimatedModal from './AnimatedModal';
@@ -249,7 +249,7 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
         </div>
 
         {/* Content Area - Scrollable */}
-        <div style={{ flex: 1, overflowY: 'auto', paddingRight: '4px', marginBottom: '24px' }} className="astro-scrollbar">
+        <div style={{ flex: 1, overflowY: 'auto', paddingRight: '4px', marginBottom: '24px' }} className="jana-scrollbar">
           
           {step === 1 && (
             <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -308,14 +308,14 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
 
               {/* Service & Staff */}
               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '16px' }}>
-                <AstroSelect 
+                <JanaSelect 
                   label="Servicio"
                   value={selectedService?.id || ''}
                   onChange={val => setSelectedService((services || []).find(s => s.id == val))}
                   options={(services || []).map(s => ({ label: `${s.name} — $${s.price}`, value: s.id }))}
                   icon={<Rocket size={18} color="var(--pink-primary)" />}
                 />
-                <AstroSelect 
+                <JanaSelect 
                   label="Atendido por"
                   value={involvedStaff[0].staffId}
                   onChange={val => setInvolvedStaff([{ ...involvedStaff[0], staffId: val }])}
@@ -468,9 +468,9 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
             .client-search-item:hover {
               background-color: rgba(196,139,159,0.05) !important;
             }
-            .astro-scrollbar::-webkit-scrollbar { width: 4px; }
-            .astro-scrollbar::-webkit-scrollbar-track { background: transparent; }
-            .astro-scrollbar::-webkit-scrollbar-thumb { background: rgba(196,139,159,0.2); borderRadius: 10px; }
+            .jana-scrollbar::-webkit-scrollbar { width: 4px; }
+            .jana-scrollbar::-webkit-scrollbar-track { background: transparent; }
+            .jana-scrollbar::-webkit-scrollbar-thumb { background: rgba(196,139,159,0.2); borderRadius: 10px; }
           `}</style>
         </div>
       </div>

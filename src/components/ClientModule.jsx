@@ -40,10 +40,10 @@ import {
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { supabase } from '../lib/supabase';
-import AstroSelect from './AstroSelect';
-import AstroCamera from './AstroCamera';
+import JanaSelect from './JanaSelect';
+import JanaCamera from './JanaCamera';
 import BirthdayTextInput from './BirthdayTextInput';
-import AstroDialog from './AstroDialog';
+import JanaDialog from './JanaDialog';
 import AnimatedModal from './AnimatedModal';
 import { formatName, normalizeForSearch } from '../utils/stringUtils';
 import {
@@ -1298,7 +1298,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
             {showAddDiagnosis && (
               <div style={{ backgroundColor: '#faf5f5', padding: '16px', borderRadius: '14px', border: '1px solid rgba(196,139,159,0.2)', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }} className="animate-fade-in">
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '12px' }}>
-                  <AstroSelect 
+                  <JanaSelect 
                     label="Grosor de Hebra"
                     value={newDiagnosis.hair_type}
                     onChange={(val) => setNewDiagnosis({ ...newDiagnosis, hair_type: val })}
@@ -1309,7 +1309,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                       { label: 'Quebradizo', value: 'Quebradizo' }
                     ]}
                   />
-                  <AstroSelect 
+                  <JanaSelect 
                     label="Porosidad"
                     value={newDiagnosis.porosity}
                     onChange={(val) => setNewDiagnosis({ ...newDiagnosis, porosity: val })}
@@ -1319,7 +1319,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                       { label: 'Alta', value: 'Alta' }
                     ]}
                   />
-                  <AstroSelect 
+                  <JanaSelect 
                     label="Condición del Cuero"
                     value={newDiagnosis.scalp_condition}
                     onChange={(val) => setNewDiagnosis({ ...newDiagnosis, scalp_condition: val })}
@@ -1652,7 +1652,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
               <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <input className="form-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="Cédula" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
                 <BirthdayTextInput value={editData.birth_date} onChange={e => setEditData({...editData, birth_date: e.target.value})} style={{ width: '100%' }} />
-                <AstroSelect 
+                <JanaSelect 
                   label="Tipo de Cabello"
                   value={editData.hair_type}
                   onChange={(val) => setEditData({...editData, hair_type: val})}
@@ -1663,7 +1663,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                     { label: 'Mixto', value: 'Mixto' }
                   ]}
                 />
-                <AstroSelect 
+                <JanaSelect 
                   label="Cuero Cabelludo"
                   value={editData.scalp_type}
                   onChange={(val) => setEditData({...editData, scalp_type: val})}
@@ -1725,7 +1725,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase' }}>Cumpleaños</label>
                   <BirthdayTextInput value={editData.birth_date} onChange={e => setEditData({...editData, birth_date: e.target.value})} style={{ width: '100%' }} />
                 </div>
-                <AstroSelect 
+                <JanaSelect 
                   label="Tipo de Cabello"
                   value={editData.hair_type}
                   onChange={(val) => setEditData({...editData, hair_type: val})}
@@ -1737,7 +1737,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   ]}
                   style={{ marginBottom: '12px' }}
                 />
-                <AstroSelect 
+                <JanaSelect 
                   label="Cuero Cabelludo"
                   value={editData.scalp_type}
                   onChange={(val) => setEditData({...editData, scalp_type: val})}
@@ -1821,7 +1821,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
 
       <AnimatedModal isOpen={showCamera}>
         {(overlayClass, cardClass) => (
-          <AstroCamera 
+          <JanaCamera 
             onCapture={handlePhotoCaptured} 
             onClose={() => setShowCamera(false)} 
             overlayClass={overlayClass}
@@ -1857,7 +1857,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <AstroSelect 
+                <JanaSelect 
                   label="TIPO DE FOTO"
                   value={photoMeta.type}
                   onChange={(val) => setPhotoMeta({ ...photoMeta, type: val })}
@@ -1868,7 +1868,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   ]}
                 />
 
-                <AstroSelect 
+                <JanaSelect 
                   label="ASOCIAR A VISITA (OPCIONAL)"
                   value={photoMeta.serviceId}
                   onChange={(val) => setPhotoMeta({ ...photoMeta, serviceId: val })}

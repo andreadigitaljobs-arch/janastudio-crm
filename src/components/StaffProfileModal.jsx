@@ -16,7 +16,7 @@ import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
 import { useDialog } from '../context/DialogContext';
 import { useAuth } from '../context/AuthContext';
-import AstroSelect from './AstroSelect';
+import JanaSelect from './JanaSelect';
 import { useScrollLock } from '../hooks/useScrollLock';
 import AnimatedModal from './AnimatedModal';
 import { createPortal } from 'react-dom';
@@ -469,7 +469,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                       </>
                     ) : (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', gridColumn: 'span 2' }}>
-                        <AstroSelect 
+                        <JanaSelect 
                           label="Seleccionar del almacén (herramientas libres)"
                           value={newTool.inventory_id} 
                           onChange={(val) => setNewTool({...newTool, inventory_id: val})} 
@@ -482,7 +482,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                     )}
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <AstroSelect 
+                      <JanaSelect 
                         label="Pertenencia"
                         value={newTool.ownership} 
                         onChange={(val) => setNewTool({...newTool, ownership: val})} 
@@ -494,7 +494,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                       />
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <AstroSelect 
+                      <JanaSelect 
                         label="Estado"
                         value={newTool.status} 
                         onChange={(val) => setNewTool({...newTool, status: val})} 

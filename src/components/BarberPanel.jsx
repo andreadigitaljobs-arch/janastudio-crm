@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
-import AstroCamera from './AstroCamera';
+import JanaCamera from './JanaCamera';
 import { Plus, ShoppingBag, Loader2 } from 'lucide-react';
 
 import { useAuth } from '../context/AuthContext';
@@ -218,12 +218,12 @@ const BarberPanel = ({ isMobile, rates }) => {
       if (document.visibilityState === 'visible') refreshOperationalData();
     };
 
-    window.addEventListener('astro:data-changed', refreshOperationalData);
+    window.addEventListener('jana:data-changed', refreshOperationalData);
     window.addEventListener('focus', refreshOperationalData);
     document.addEventListener('visibilitychange', refreshWhenVisible);
     return () => {
       clearTimeout(refreshTimer);
-      window.removeEventListener('astro:data-changed', refreshOperationalData);
+      window.removeEventListener('jana:data-changed', refreshOperationalData);
       window.removeEventListener('focus', refreshOperationalData);
       document.removeEventListener('visibilitychange', refreshWhenVisible);
     };
@@ -1793,7 +1793,7 @@ const BarberPanel = ({ isMobile, rates }) => {
 
       <AnimatedModal isOpen={showCamera}>
         {(overlayClass, cardClass) => (
-          <AstroCamera
+          <JanaCamera
             onCapture={handlePhotoCaptured}
             onClose={() => setShowCamera(false)}
             overlayClass={overlayClass}

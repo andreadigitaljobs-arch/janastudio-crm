@@ -341,7 +341,7 @@ export const dataService = {
         *,
         clients (id, name, phone),
         services (id, name, price, duration_minutes),
-        staff (id, name, role),
+        staff!appointments_staff_id_fkey (id, name, role),
         appointment_staff (id, staff_id, commission_earned, tip_amount)
       `)
       .gte('scheduled_at', startDate)
@@ -369,7 +369,7 @@ export const dataService = {
         *,
         clients (id, name, phone),
         services (id, name, price, duration_minutes),
-        staff (id, name, role),
+        staff!appointments_staff_id_fkey (id, name, role),
         appointment_staff (id, staff_id, commission_earned, tip_amount)
       `)
       .in('status', states);

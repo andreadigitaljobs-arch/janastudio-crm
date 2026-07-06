@@ -16,7 +16,7 @@ import {
 import { dataService } from './services/dataService';
 
 import ParticleBackground from './components/ParticleBackground';
-import AstroLoader from './components/AstroLoader';
+import JanaLoader from './components/JanaLoader';
 import Login from './components/Login';
 import { useAuth } from './context/AuthContext';
 import TopBar from './components/TopBar';
@@ -342,15 +342,15 @@ function App() {
   const hasSessionKey = Object.keys(localStorage).some(key => key.startsWith('sb-') && key.endsWith('-auth-token'));
   if (authLoading && !user) {
     if (!hasSessionKey) return <Login />;
-    return <AstroLoader visible={true} />;
+    return <JanaLoader visible={true} />;
   }
   if (!user) return <Login />;
 
   const sidebarWidth = isMobile ? 0 : (isCollapsed ? 70 : 220);
 
   return (
-    <div className="app-container no-scrollbar" style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'transparent', position: 'relative', overflowX: 'hidden' }}>
-      <AstroLoader visible={isAppLoading} />
+    <div className="app-container no-scrollbar" style={{ display: 'flex', alignItems: 'stretch', minHeight: '100vh', height: '100vh', overflow: 'hidden', backgroundColor: 'var(--bg-primary)', position: 'relative' }}>
+      <JanaLoader visible={isAppLoading} />
 
       {isMobile && isSidebarOpen && (
         <div
@@ -363,26 +363,28 @@ function App() {
         />
       )}
 
-      <div style={isMobile ? {
-        position: 'fixed', left: 0, top: 0, bottom: 0,
-        width: '260px', zIndex: 999,
-        transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
-        transition: 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
-        overflowY: 'auto', overflowX: 'hidden',
-      } : {}}>
-        <Sidebar
-          activeTab={activeTab}
-          setActiveTab={(id) => handleTabChange(id, {})}
-          rates={effectiveRates}
-          isMobile={isMobile}
-          isCollapsed={isMobile ? false : isCollapsed}
-          setIsCollapsed={setIsCollapsed}
-          activeRateType={activeRateType}
-          onToggleRateType={handleSetActiveRateType}
-          isOpen={isSidebarOpen}
-          onClose={() => setIsSidebarOpen(false)}
-        />
-      </div>
+      {isMobile && (
+        <div style={{
+          position: 'fixed', left: 0, top: 0, bottom: 0,
+          width: '260px', zIndex: 999,
+          transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
+          transition: 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
+          overflowY: 'auto', overflowX: 'hidden',
+        }}>
+          <Sidebar
+            activeTab={activeTab}
+            setActiveTab={(id) => handleTabChange(id, {})}
+            rates={effectiveRates}
+            isMobile={true}
+            isCollapsed={false}
+            setIsCollapsed={setIsCollapsed}
+            activeRateType={activeRateType}
+            onToggleRateType={handleSetActiveRateType}
+            isOpen={isSidebarOpen}
+            onClose={() => setIsSidebarOpen(false)}
+          />
+        </div>
+      )}
 
       {!isMobile && (
         <Sidebar
@@ -399,15 +401,14 @@ function App() {
 
       <main className="main-content no-scrollbar" style={{ 
         flex: 1, 
-        width: isMobile ? '100%' : (isCollapsed ? 'calc(100% - 70px)' : 'calc(100% - 220px)'),
-        maxWidth: isMobile ? '100%' : (isCollapsed ? 'calc(100% - 70px)' : 'calc(100% - 220px)'),
-        marginLeft: isMobile ? '0' : (isCollapsed ? '70px' : '220px'), 
-        padding: isMobile ? 'var(--spacing-sm)' : 'var(--spacing-xl)', 
+        paddingTop: isMobile ? 'var(--spacing-sm)' : 'var(--spacing-xl)', 
+        paddingLeft: isMobile ? 'var(--spacing-sm)' : 'var(--spacing-xl)', 
+        paddingRight: isMobile ? 'var(--spacing-sm)' : 'var(--spacing-xl)', 
         paddingBottom: '80px',
         height: '100vh',
         overflowY: 'auto',
         overflowX: 'hidden',
-        backgroundColor: '#faf5f5',
+        backgroundColor: 'var(--bg-primary)',
         transition: 'all 0.3s ease'
       }}>
         {isMobile && (

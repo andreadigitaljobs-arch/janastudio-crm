@@ -2,10 +2,10 @@ import React, { useRef, useState } from 'react';
 import { Camera, X, Check, RefreshCw, Upload, Image as ImageIcon } from 'lucide-react';
 
 /**
- * AstroCamera - Un componente premium para capturar o subir fotos.
+ * JanaCamera - Un componente premium para capturar o subir fotos.
  * Diseñado para permitir ambas opciones desde el primer momento.
  */
-const AstroCamera = ({ onCapture, onClose, overlayClass, cardClass }) => {
+const JanaCamera = ({ onCapture, onClose, overlayClass, cardClass }) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -297,4 +297,4 @@ const AstroCamera = ({ onCapture, onClose, overlayClass, cardClass }) => {
   );
 };
 
-export default AstroCamera;
+export default JanaCamera;

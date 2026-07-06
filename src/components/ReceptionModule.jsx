@@ -10,7 +10,7 @@ import { useNotifs } from '../context/NotificationContext';
 import { normalizeForSearch } from '../utils/stringUtils';
 import NewClientModal from './NewClientModal';
 import ScheduleModal from './ScheduleModal';
-import AstroDialog from './AstroDialog';
+import JanaDialog from './JanaDialog';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { supabase } from '../lib/supabase';
 
@@ -530,7 +530,7 @@ const ReceptionModule = ({ isMobile }) => {
       {/* Modals */}
       <NewClientModal isOpen={isNewClientModalOpen} onClose={() => setIsNewClientModalOpen(false)} onSuccess={(c) => { setClients([...clients, c]); setSelectedClient(c); setIsNewClientModalOpen(false); }} />
       <ScheduleModal isOpen={isScheduleModalOpen} onClose={() => setIsScheduleModalOpen(false)} client={selectedClient} staff={staff.find(s => s.id === formData.staffId)} service={selectedServices[0]} onSchedule={(date) => handleSubmit('Agendado', date)} />
-      <AstroDialog isOpen={dialog.isOpen} title={dialog.title} message={dialog.message} type={dialog.type} onConfirm={dialog.onConfirm} onCancel={() => setDialog({ ...dialog, isOpen: false })} confirmText="Confirmar" cancelText="Cancelar" />
+      <JanaDialog isOpen={dialog.isOpen} title={dialog.title} message={dialog.message} type={dialog.type} onConfirm={dialog.onConfirm} onCancel={() => setDialog({ ...dialog, isOpen: false })} confirmText="Confirmar" cancelText="Cancelar" />
       {isServiceModalOpen && <SelectionModal isOpen={isServiceModalOpen} onClose={() => setIsServiceModalOpen(false)} title="Seleccionar Servicios" items={services} selectedItems={selectedServices} onToggle={(s) => toggleService(s.id)} exchangeRate={exchangeRate} type="service" />}
       {isExtraModalOpen && <SelectionModal isOpen={isExtraModalOpen} onClose={() => setIsExtraModalOpen(false)} title="Añadir Extras" items={allExtras} selectedItems={selectedExtras} onToggle={toggleExtra} exchangeRate={exchangeRate} type="extra" />}
       {isProductModalOpen && <SelectionModal isOpen={isProductModalOpen} onClose={() => setIsProductModalOpen(false)} title="Venta de Productos" items={inventory} selectedItems={selectedProducts} onToggle={toggleProduct} exchangeRate={exchangeRate} type="product" />}

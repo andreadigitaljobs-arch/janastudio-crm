@@ -3,10 +3,10 @@ import { createPortal } from 'react-dom';
 import { ChevronDown } from 'lucide-react';
 
 /**
- * AstroSelect - Un componente de selección premium que evita los estilos nativos de Windows.
+ * JanaSelect - Un componente de selección premium que evita los estilos nativos de Windows.
  * El dropdown usa position:fixed para siempre renderizarse por encima de todo.
  */
-const AstroSelect = ({ 
+const JanaSelect = ({ 
   options = [], 
   value, 
   onChange, 
@@ -59,7 +59,7 @@ const AstroSelect = ({
     const handleClickOutside = (event) => {
       if (
         containerRef.current && !containerRef.current.contains(event.target) &&
-        !event.target.closest('.astro-select-dropdown')
+        !event.target.closest('.jana-select-dropdown')
       ) {
         setIsOpen(false);
       }
@@ -74,7 +74,7 @@ const AstroSelect = ({
     if (!isOpen) return;
     const close = (e) => {
       // Ignore scroll events that happen inside the dropdown
-      if (e.target && e.target.closest && e.target.closest('.astro-select-dropdown')) return;
+      if (e.target && e.target.closest && e.target.closest('.jana-select-dropdown')) return;
       setIsOpen(false);
     };
     window.addEventListener('scroll', close, true);
@@ -92,7 +92,7 @@ const AstroSelect = ({
 
   const dropdown = isOpen ? (
     <div
-      className="astro-select-dropdown astro-scrollbar"
+      className="jana-select-dropdown jana-scrollbar"
       style={{
         ...dropdownStyle,
         backgroundColor: '#1c1c1e',
@@ -124,7 +124,7 @@ const AstroSelect = ({
               fontWeight: value === opt.value ? '700' : '500',
               marginBottom: '2px'
             }}
-            className="astro-option"
+            className="jana-option"
           >
             {opt.label}
           </div>
@@ -175,15 +175,15 @@ const AstroSelect = ({
         <>
           {dropdown}
           <style>{`
-            .astro-option:hover {
+            .jana-option:hover {
               background-color: rgba(255, 255, 255, 0.05) !important;
               transform: translateX(4px);
             }
-            .astro-select-dropdown.astro-scrollbar::-webkit-scrollbar {
+            .jana-select-dropdown.jana-scrollbar::-webkit-scrollbar {
               width: 6px;
               display: block !important;
             }
-            .astro-select-dropdown.astro-scrollbar::-webkit-scrollbar-thumb {
+            .jana-select-dropdown.jana-scrollbar::-webkit-scrollbar-thumb {
               background: rgba(196, 139, 159, 0.2);
               border-radius: 10px;
             }
@@ -195,4 +195,4 @@ const AstroSelect = ({
   );
 };
 
-export default AstroSelect;
+export default JanaSelect;

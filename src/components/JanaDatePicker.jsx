@@ -56,7 +56,7 @@ function getFirstDayOfMonth(month, year) {
   return new Date(year, month, 1).getDay();
 }
 
-export const AstroDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA" }) => {
+export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA" }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [textInput, setTextInput] = useState(isoToDisplay(value));
   const [calendarPos, setCalendarPos] = useState({ top: 0, left: 0, width: 300 });
@@ -106,7 +106,7 @@ export const AstroDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA" })
   // Close when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      const calEl = document.getElementById('astro-datepicker-calendar');
+      const calEl = document.getElementById('jana-datepicker-calendar');
       if (
         containerRef.current && !containerRef.current.contains(event.target) &&
         calEl && !calEl.contains(event.target)
@@ -174,7 +174,7 @@ export const AstroDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA" })
 
   const calendarJSX = isOpen ? createPortal(
     <div
-      id="astro-datepicker-calendar"
+      id="jana-datepicker-calendar"
       className="animate-scale-in"
       style={{
         position: 'fixed',
@@ -344,4 +344,4 @@ export const AstroDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA" })
   );
 };
 
-export default AstroDatePicker;
+export default JanaDatePicker;

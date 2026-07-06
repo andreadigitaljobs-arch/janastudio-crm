@@ -4,7 +4,7 @@ import { X, User, Phone, CreditCard, Loader2, Calendar } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
 import { ModalShield } from '../context/ModalContext';
-import AstroDatePicker from './AstroDatePicker';
+import JanaDatePicker from './JanaDatePicker';
 import AnimatedModal from './AnimatedModal';
 import { formatName } from '../utils/stringUtils';
 import { useScrollLock } from '../hooks/useScrollLock';
@@ -175,7 +175,7 @@ const NewClientModal = ({ isOpen, onClose, onSuccess }) => {
                   <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
                     Fecha de Nacimiento
                   </label>
-                  <AstroDatePicker
+                  <JanaDatePicker
                     value={formData.birth_date}
                     onChange={(e) => setFormData({...formData, birth_date: e.target.value})}
                   />

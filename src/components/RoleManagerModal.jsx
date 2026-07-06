@@ -130,7 +130,7 @@ const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, av
             </div>
 
             {/* Content */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: '24px 28px' }} className="astro-scrollbar">
+            <div style={{ flex: 1, overflowY: 'auto', padding: '24px 28px' }} className="jana-scrollbar">
               {!editingRole ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>

@@ -2,9 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Clock, ChevronUp, ChevronDown } from 'lucide-react';
 
 /**
- * AstroTimePicker - Un selector de hora ultra-premium que elimina el input nativo.
+ * JanaTimePicker - Un selector de hora ultra-premium que elimina el input nativo.
  */
-const AstroTimePicker = ({ value, onChange, label = "HORA" }) => {
+const JanaTimePicker = ({ value, onChange, label = "HORA" }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
 
@@ -167,4 +167,4 @@ const timeValueStyle = {
   lineHeight: 1
 };
 
-export default AstroTimePicker;
+export default JanaTimePicker;

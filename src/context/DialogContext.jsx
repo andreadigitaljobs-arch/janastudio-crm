@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import AstroDialog from '../components/AstroDialog';
+import JanaDialog from '../components/JanaDialog';
 
 const DialogContext = createContext();
 
@@ -59,7 +59,7 @@ export const DialogProvider = ({ children }) => {
   return (
     <DialogContext.Provider value={{ confirm, alert }}>
       {children}
-      <AstroDialog
+      <JanaDialog
         isOpen={dialogState.isOpen}
         title={dialogState.title}
         message={dialogState.message}

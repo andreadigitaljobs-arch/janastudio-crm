@@ -26,9 +26,9 @@ import {
 } from 'lucide-react';
 
 import { dataService } from '../services/dataService';
-import AstroDialog from './AstroDialog';
-import AstroDatePicker from './AstroDatePicker';
-import AstroSelect from './AstroSelect';
+import JanaDialog from './JanaDialog';
+import JanaDatePicker from './JanaDatePicker';
+import JanaSelect from './JanaSelect';
 import AnimatedModal from './AnimatedModal';
 const isTreatment = (val) => String(val).toLowerCase().includes('tratamiento') || String(val).toLowerCase().includes('si');
 
@@ -1278,7 +1278,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                   <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-primary)' }}>Cierre de Caja <span style={{ color: 'var(--pink-primary)' }}>JanaStudio</span></h3>
                 </div>
                 <div style={{ width: isMobile ? '100%' : '220px' }}>
-                  <AstroSelect
+                  <JanaSelect
                     value={cashCloseDate}
                     onChange={setCashCloseDate}
                     options={[
@@ -1302,11 +1302,11 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: isMobile ? '1 1 100%' : '1' }}>
                     <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700' }}>Desde:</span>
-                    <AstroDatePicker value={cashCloseStartDate} onChange={(e) => setCashCloseStartDate(e.target.value)} />
+                    <JanaDatePicker value={cashCloseStartDate} onChange={(e) => setCashCloseStartDate(e.target.value)} />
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: isMobile ? '1 1 100%' : '1' }}>
                     <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700' }}>Hasta:</span>
-                    <AstroDatePicker value={cashCloseEndDate} onChange={(e) => setCashCloseEndDate(e.target.value)} />
+                    <JanaDatePicker value={cashCloseEndDate} onChange={(e) => setCashCloseEndDate(e.target.value)} />
                   </div>
                 </div>
               )}
@@ -1417,17 +1417,17 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                         <Search size={14} style={{ position: 'absolute', left: '12px', top: '13px', color: 'var(--text-muted)' }} />
                       </div>
                     </div>
-                    <AstroSelect label="Servicio" value={filterService} onChange={setFilterService} options={[{ value: 'all', label: 'Todos' }, ...uniqueServices.map(s => ({ value: s, label: s }))]} />
-                    <AstroSelect label="Tipo" value={filterType} onChange={setFilterType} options={[{ value: 'all', label: 'Todos' }, { value: 'income', label: 'Ingresos' }, { value: 'expense', label: 'Egresos' }]} />
-                    <AstroSelect label="Estilista" value={filterStylist} onChange={setFilterStylist} options={[{ value: 'all', label: 'Todos' }, ...staff.filter(s => { const r = s.role?.toLowerCase() || ''; return r.includes('stylist') || r.includes('estilista'); }).map(s => ({ value: s.id, label: s.name }))]} />
-                    <AstroSelect label="Fecha" value={filterDate} onChange={setFilterDate} options={[{ value: 'all', label: 'Todo' }, { value: 'today', label: 'Hoy' }, { value: 'this_week', label: 'Esta Semana' }, { value: 'this_month', label: 'Este Mes' }, { value: 'custom', label: 'Personalizado' }]} />
+                    <JanaSelect label="Servicio" value={filterService} onChange={setFilterService} options={[{ value: 'all', label: 'Todos' }, ...uniqueServices.map(s => ({ value: s, label: s }))]} />
+                    <JanaSelect label="Tipo" value={filterType} onChange={setFilterType} options={[{ value: 'all', label: 'Todos' }, { value: 'income', label: 'Ingresos' }, { value: 'expense', label: 'Egresos' }]} />
+                    <JanaSelect label="Estilista" value={filterStylist} onChange={setFilterStylist} options={[{ value: 'all', label: 'Todos' }, ...staff.filter(s => { const r = s.role?.toLowerCase() || ''; return r.includes('stylist') || r.includes('estilista'); }).map(s => ({ value: s.id, label: s.name }))]} />
+                    <JanaSelect label="Fecha" value={filterDate} onChange={setFilterDate} options={[{ value: 'all', label: 'Todo' }, { value: 'today', label: 'Hoy' }, { value: 'this_week', label: 'Esta Semana' }, { value: 'this_month', label: 'Este Mes' }, { value: 'custom', label: 'Personalizado' }]} />
                   </div>
                   {filterDate === 'custom' && (
                     <div style={{ display: 'flex', gap: '16px', alignItems: 'center', padding: '12px', backgroundColor: 'white', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
                       <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700' }}>Desde:</span>
-                      <AstroDatePicker value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                      <JanaDatePicker value={startDate} onChange={(e) => setStartDate(e.target.value)} />
                       <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700' }}>Hasta:</span>
-                      <AstroDatePicker value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                      <JanaDatePicker value={endDate} onChange={(e) => setEndDate(e.target.value)} />
                     </div>
                   )}
                 </div>
@@ -1701,7 +1701,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                   <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-muted)', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>NÓMINA Y CORTE SEMANAL</div>
                   <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                     <div style={{ width: isMobile ? '100%' : '220px' }}>
-                      <AstroSelect value={payrollFilterDate} onChange={setPayrollFilterDate} options={[
+                      <JanaSelect value={payrollFilterDate} onChange={setPayrollFilterDate} options={[
                         { value: 'this_week', label: 'Esta Semana (Actual)' },
                         { value: 'last_week', label: 'Semana Pasada' },
                         { value: 'custom', label: 'Rango Personalizado' }
@@ -1715,9 +1715,9 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                   {payrollFilterDate === 'custom' && (
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '8px' }}>
                       <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Desde:</span>
-                      <AstroDatePicker value={payrollStartDate} onChange={(e) => setPayrollStartDate(e.target.value)} />
+                      <JanaDatePicker value={payrollStartDate} onChange={(e) => setPayrollStartDate(e.target.value)} />
                       <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Hasta:</span>
-                      <AstroDatePicker value={payrollEndDate} onChange={(e) => setPayrollEndDate(e.target.value)} />
+                      <JanaDatePicker value={payrollEndDate} onChange={(e) => setPayrollEndDate(e.target.value)} />
                     </div>
                   )}
                 </div>
@@ -2680,7 +2680,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                   </div>
 
                   <div>
-                    <AstroSelect 
+                    <JanaSelect 
                       label="Método de Pago"
                       value={payrollModal.paymentMethod} 
                       onChange={(val) => setPayrollModal({...payrollModal, paymentMethod: val})} 
@@ -2758,7 +2758,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                   </div>
 
                   <div>
-                    <AstroSelect 
+                    <JanaSelect 
                       label="Método de Pago"
                       value={valeModal.paymentMethod} 
                       onChange={(val) => setValeModal({...valeModal, paymentMethod: val})} 
@@ -3168,7 +3168,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
       </AnimatedModal>
         
 
-      <AstroDialog 
+      <JanaDialog 
         isOpen={dialog.isOpen}
         title={dialog.title}
         message={dialog.message}

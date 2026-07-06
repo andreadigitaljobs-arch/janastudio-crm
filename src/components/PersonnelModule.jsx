@@ -37,8 +37,8 @@ import {
   Table
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
-import AstroSelect from './AstroSelect';
-import AstroCamera from './AstroCamera';
+import JanaSelect from './JanaSelect';
+import JanaCamera from './JanaCamera';
 import StaffProfileModal from './StaffProfileModal';
 import BirthdayTextInput from './BirthdayTextInput';
 import { formatName } from '../utils/stringUtils';
@@ -810,7 +810,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                 <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '4px', letterSpacing: '1px' }}>ROL EN EL EQUIPO</label>
                   
-                  <AstroSelect 
+                  <JanaSelect 
                     options={[
                       ...Object.entries(allRolePresets)
                         .filter(([_, v]) => v !== '__DELETED__')
@@ -1357,7 +1357,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                         <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                           <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '4px', letterSpacing: '1px' }}>ROL EN EL EQUIPO</label>
                           
-                          <AstroSelect 
+                          <JanaSelect 
                             options={[
                               ...Object.entries(allRolePresets)
                                 .filter(([_, v]) => v !== '__DELETED__')
@@ -1576,7 +1576,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
 
       <AnimatedModal isOpen={showCamera}>
         {(overlayClass, cardClass) => (
-          <AstroCamera 
+          <JanaCamera 
             onClose={() => setShowCamera(false)}
             onCapture={(image) => {
               setFormData({ ...formData, image_url: image });

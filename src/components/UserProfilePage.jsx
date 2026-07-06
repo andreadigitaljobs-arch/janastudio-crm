@@ -355,12 +355,12 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
       if (document.visibilityState === 'visible') refreshProfile();
     };
 
-    window.addEventListener('astro:data-changed', refreshProfile);
+    window.addEventListener('jana:data-changed', refreshProfile);
     window.addEventListener('focus', refreshProfile);
     document.addEventListener('visibilitychange', refreshWhenVisible);
     return () => {
       clearTimeout(refreshTimer);
-      window.removeEventListener('astro:data-changed', refreshProfile);
+      window.removeEventListener('jana:data-changed', refreshProfile);
       window.removeEventListener('focus', refreshProfile);
       document.removeEventListener('visibilitychange', refreshWhenVisible);
     };

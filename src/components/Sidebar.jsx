@@ -22,8 +22,8 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
     { id: 'inventory', label: 'Inventario', icon: Package, roles: ['Admin', 'Caja'] },
     { id: 'finance', label: 'Finanzas', icon: Wallet, roles: ['Admin', 'Caja'] },
     { id: 'reports', label: 'Reportes', icon: FileText, roles: ['Admin'] },
-    { id: 'finance', label: 'Promociones', icon: Percent, roles: ['Admin'], id: 'promotions' },
-    { id: 'finance', label: 'Configuración', icon: Sliders, roles: ['Admin'], id: 'settings' },
+    { id: 'promotions', label: 'Promociones', icon: Percent, roles: ['Admin'] },
+    { id: 'settings', label: 'Configuración', icon: Sliders, roles: ['Admin'] },
   ];
 
   const menuItems = allMenuItems
@@ -62,15 +62,18 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
 
   const sidebarStyle = {
     width: effectiveCollapsed ? '70px' : '220px',
-    height: '100%',
-    background: 'linear-gradient(180deg, #2d1f2d 0%, #3d2a3a 40%, #4a3040 70%, #5a3d50 100%)',
+    minWidth: effectiveCollapsed ? '70px' : '220px',
+    flexShrink: 0,
+    height: '100vh',
+    position: 'sticky',
+    top: 0,
+    background: '#fbf8f7',
+    borderRight: '1px solid rgba(212, 160, 154, 0.2)',
     display: 'flex', flexDirection: 'column',
     padding: effectiveCollapsed ? '12px 8px' : '16px 12px',
     overflowY: 'auto', overflowX: 'hidden',
     transition: 'all 0.3s ease',
-    transform: isModalOpen && !isMobile ? 'translateX(-100%)' : 'translateX(0)',
-    opacity: isModalOpen && !isMobile ? 0 : 1,
-    pointerEvents: isModalOpen && !isMobile ? 'none' : 'auto',
+    zIndex: 10,
   };
 
   const handleItemClick = (id) => {
@@ -97,7 +100,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
             style={{
               position: 'absolute', right: '0', top: '0',
               background: 'transparent', border: 'none',
-              color: 'rgba(255,255,255,0.5)', cursor: 'pointer',
+              color: 'var(--text-muted)', cursor: 'pointer',
               padding: '4px',
             }}
           >
@@ -112,7 +115,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
               position: effectiveCollapsed ? 'static' : 'absolute',
               right: effectiveCollapsed ? 'auto' : '0', top: '0',
               background: 'transparent', border: 'none',
-              color: 'rgba(255,255,255,0.3)', cursor: 'pointer',
+              color: 'var(--text-muted)', cursor: 'pointer',
               marginBottom: effectiveCollapsed ? '12px' : '0'
             }}
           >
@@ -130,15 +133,9 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
               alt="JanaStudio"
               style={{
                 height: '42px', marginBottom: '4px',
-                filter: 'brightness(1.1) drop-shadow(0 0 12px rgba(196, 139, 159, 0.2))'
+                filter: 'brightness(1.0) drop-shadow(0 2px 8px rgba(212, 160, 154, 0.15))'
               }}
             />
-            <p style={{
-              fontSize: '0.55rem', color: 'rgba(255,255,255,0.35)',
-              letterSpacing: '1.5px', textTransform: 'uppercase', fontWeight: '600'
-            }}>
-              PREMIUM BEAUTY SALON
-            </p>
           </div>
         )}
         {effectiveCollapsed && (
@@ -147,7 +144,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
             alt="JS"
             style={{
               height: '36px', marginTop: '4px',
-              filter: 'brightness(1.1) drop-shadow(0 0 8px rgba(196, 139, 159, 0.25))'
+              filter: 'brightness(1.0) drop-shadow(0 2px 6px rgba(212, 160, 154, 0.15))'
             }}
           />
         )}
@@ -160,7 +157,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
         <div
           style={{
             position: 'absolute', left: 0, width: '100%',
-            backgroundColor: 'rgba(196, 139, 159, 0.2)',
+            backgroundColor: 'var(--pink-secondary)',
             borderRadius: '12px',
             transition: 'transform 0.22s cubic-bezier(0.25, 1, 0.5, 1), height 0.22s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s ease',
             pointerEvents: 'none', zIndex: 0,
@@ -178,19 +175,19 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
               onMouseEnter={() => setHoveredTab(item.id)}
               style={{
                 display: 'flex', alignItems: 'center', gap: '10px',
-                padding: effectiveCollapsed ? '9px' : '9px 12px',
-                borderRadius: '10px', border: 'none',
-                background: isActive ? 'rgba(255, 255, 255, 0.12)' : 'transparent',
-                color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.5)',
-                cursor: 'pointer', fontSize: '0.8rem',
-                fontWeight: isActive ? 600 : 400,
+                padding: effectiveCollapsed ? '10px' : '10px 14px',
+                borderRadius: '12px', border: 'none',
+                background: isActive ? 'var(--pink-secondary)' : 'transparent',
+                color: isActive ? 'var(--magenta-primary)' : 'var(--text-secondary)',
+                cursor: 'pointer', fontSize: '0.82rem',
+                fontWeight: isActive ? 600 : 500,
                 transition: 'all 0.2s ease', width: '100%',
                 textAlign: 'left',
                 justifyContent: effectiveCollapsed ? 'center' : 'flex-start',
                 position: 'relative', zIndex: 1
               }}
             >
-              <Icon size={17} style={{ color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.35)' }} />
+              <Icon size={17} style={{ color: isActive ? 'var(--magenta-primary)' : 'var(--text-muted)' }} />
               {!effectiveCollapsed && <span>{item.label}</span>}
             </button>
           );
@@ -198,77 +195,63 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
       </nav>
 
       <div style={{ marginTop: 'auto', paddingTop: '16px' }}>
-        {!effectiveCollapsed && (
-          <div style={{
-            padding: '12px', borderRadius: '12px',
-            background: 'rgba(255, 255, 255, 0.06)',
-            marginBottom: '12px', position: 'relative', overflow: 'hidden'
-          }}>
-            <div style={{
-              width: '100%', height: '60px', borderRadius: '8px',
-              background: 'linear-gradient(135deg, rgba(196, 139, 159, 0.12) 0%, rgba(160, 80, 106, 0.08) 100%)',
-              marginBottom: '8px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center'
-            }}>
-              <Sparkles size={22} color="rgba(196, 139, 159, 0.35)" />
-            </div>
-            <div style={{
-              fontFamily: 'Georgia, serif', fontSize: '0.88rem',
-              color: '#ffffff', fontWeight: '500', marginBottom: '2px'
-            }}>Jana Studio</div>
-            <div style={{
-              fontSize: '0.62rem', color: 'rgba(255,255,255,0.35)',
-              lineHeight: '1.3'
-            }}>Belleza que inspira confianza.</div>
-          </div>
-        )}
-
         {!effectiveCollapsed && rates && rates.usdt > 0 && (
           <div style={{
-            padding: '10px 12px', borderRadius: '10px',
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            marginBottom: '12px', fontSize: '0.78rem'
+            padding: '10px 12px', borderRadius: '12px',
+            backgroundColor: 'var(--bg-tertiary)',
+            marginBottom: '12px', fontSize: '0.78rem',
+            border: '1px solid rgba(212, 160, 154, 0.1)'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
-              <span style={{ color: 'rgba(255,255,255,0.4)' }}>BCV</span>
-              <span style={{ color: 'rgba(255,255,255,0.8)' }}>Bs. {rates.bcv?.toFixed(2)}</span>
+              <span style={{ color: 'var(--text-secondary)' }}>BCV</span>
+              <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Bs. {rates.bcv?.toFixed(2)}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'rgba(255,255,255,0.4)' }}>USDT</span>
-              <span style={{ color: '#ffffff', fontWeight: 600 }}>Bs. {rates.usdt?.toFixed(2)}</span>
+              <span style={{ color: 'var(--text-secondary)' }}>USDT</span>
+              <span style={{ color: 'var(--magenta-primary)', fontWeight: 600 }}>Bs. {rates.usdt?.toFixed(2)}</span>
             </div>
           </div>
         )}
 
         <div style={{
-          display: 'flex', alignItems: 'center', gap: '8px',
-          padding: '8px 10px', borderRadius: '10px',
-          backgroundColor: 'rgba(255, 255, 255, 0.04)',
-          marginBottom: '6px'
+          display: 'flex', alignItems: 'center', gap: '10px',
+          padding: '10px 12px', borderRadius: '14px',
+          backgroundColor: 'var(--bg-tertiary)',
+          marginBottom: '8px',
+          border: '1px solid rgba(212, 160, 154, 0.1)',
+          cursor: 'pointer'
         }}>
-          <div style={{
-            width: '30px', height: '30px', borderRadius: '50%',
-            background: 'linear-gradient(135deg, #c48b9f 0%, #a0506a 100%)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: 'white', fontWeight: 600, fontSize: '0.72rem', flexShrink: 0
-          }}>
-            {user?.name?.charAt(0) || 'A'}
-          </div>
+          {user?.image_url ? (
+            <img src={user.image_url} alt="" style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+          ) : (
+            <div style={{
+              width: '32px', height: '32px', borderRadius: '50%',
+              background: 'var(--pink-gradient)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: 'white', fontWeight: 600, fontSize: '0.8rem', flexShrink: 0
+            }}>
+              {user?.name?.charAt(0) || 'A'}
+            </div>
+          )}
           {!effectiveCollapsed && (
-            <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
               <div style={{
-                fontWeight: 600, color: '#ffffff', fontSize: '0.72rem',
+                fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.75rem',
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
               }}>
-                {user?.name || 'Administrador'}
+                {user?.name || 'Carolina M.'}
               </div>
               <div style={{
-                fontSize: '0.6rem', color: 'rgba(255,255,255,0.35)',
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+                fontSize: '0.62rem', color: 'var(--text-muted)',
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                fontWeight: 500
               }}>
-                {user?.email || 'admin@janastudio.com'}
+                {user?.role || 'Admin'}
               </div>
             </div>
+          )}
+          {!effectiveCollapsed && (
+            <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginLeft: 'auto' }}>▼</span>
           )}
         </div>
 
@@ -278,16 +261,16 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
             display: 'flex', alignItems: 'center', gap: '12px',
             padding: effectiveCollapsed ? '10px' : '10px 14px',
             borderRadius: '12px', border: 'none', background: 'transparent',
-            color: 'rgba(255, 255, 255, 0.4)', cursor: 'pointer',
-            fontSize: '0.85rem', width: '100%',
+            color: 'var(--text-secondary)', cursor: 'pointer',
+            fontSize: '0.82rem', width: '100%',
             textAlign: 'left',
             justifyContent: effectiveCollapsed ? 'center' : 'flex-start',
             transition: 'all 0.2s ease'
           }}
           onMouseEnter={(e) => e.currentTarget.style.color = '#ff6b6b'}
-          onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.4)'}
+          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
         >
-          <LogOut size={18} />
+          <LogOut size={18} style={{ color: 'var(--text-muted)' }} />
           {!effectiveCollapsed && <span>Cerrar Sesión</span>}
         </button>
       </div>

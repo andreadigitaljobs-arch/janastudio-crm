@@ -3,9 +3,9 @@ import { X } from 'lucide-react';
 import AnimatedModal from './AnimatedModal';
 
 /**
- * AstroDialog - Un modal premium para reemplazar alerts, prompts y confirms nativos.
+ * JanaDialog - Un modal premium para reemplazar alerts, prompts y confirms nativos.
  */
-const AstroDialog = ({ 
+const JanaDialog = ({ 
   isOpen, 
   title, 
   message, 
@@ -141,4 +141,4 @@ const AstroDialog = ({
   );
 };
 
-export default AstroDialog;
+export default JanaDialog;

@@ -1,30 +1,30 @@
 :root {
-  /* Core Palette — Premium Beauty Salon */
-  --bg-primary: #faf5f5;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #f5eded;
+  /* Core Palette — Premium Warm Blush & Cream */
+  --bg-primary: #fcf9f8;      /* Cream background */
+  --bg-secondary: #ffffff;    /* White cards */
+  --bg-tertiary: #f6eee9;     /* Light warm beige */
 
-  --pink-primary: #c48b9f;
-  --pink-secondary: #e0b4c0;
-  --pink-gradient: linear-gradient(135deg, #d4a09a 0%, #c48b9f 50%, #b8708a 100%);
-  --pink-glow: 0 0 20px rgba(196, 139, 159, 0.4);
+  --pink-primary: #d4a09a;    /* Rose Gold */
+  --pink-secondary: #f6e6e2;  /* Soft blush active pill */
+  --pink-gradient: linear-gradient(135deg, #fbcada 0%, #d4a09a 50%, #a0506a 100%);
+  --pink-glow: 0 4px 15px rgba(212, 160, 154, 0.2);
 
-  --magenta-primary: #a0506a;
-  --magenta-secondary: #c06880;
-  --magenta-gradient: linear-gradient(135deg, #a0506a 0%, #c06880 50%, #a0506a 100%);
+  --magenta-primary: #a0506a; /* Deep rose */
+  --magenta-secondary: #c97282;
+  --magenta-gradient: linear-gradient(135deg, #c97282 0%, #a0506a 100%);
 
   --rose-gold: #d4a09a;
-  --blush: #e8c4be;
-  --dark-plum: #2d1f2d;
-  --plum-mid: #4a3040;
-  --plum-light: #6b4a5a;
+  --blush: #f4ece9;
+  --dark-plum: #4a3036;       /* Deep warm plum text/accent */
+  --plum-mid: #6b4d53;
+  --plum-light: #8a6a70;
 
-  --text-primary: #2d2d2d;
-  --text-secondary: #6b6b6b;
-  --text-muted: #9e9e9e;
+  --text-primary: #4a3036;    /* Dark plum instead of charcoal */
+  --text-secondary: #7a6065;  /* Soft brown-plum */
+  --text-muted: #b0999e;
 
-  --border-color: rgba(0, 0, 0, 0.06);
-  --accent-color: #c48b9f;
+  --border-color: rgba(212, 160, 154, 0.2);
+  --accent-color: #d4a09a;
 
   --spacing-xs: 3px;
   --spacing-sm: 6px;
@@ -36,10 +36,10 @@
   --radius-xl: 16px;
   --radius-pill: 100px;
 
-  --glass-bg: rgba(255, 255, 255, 0.92);
-  --glass-border: 1px solid rgba(0, 0, 0, 0.05);
-  --shadow-apple: 0 2px 12px rgba(0, 0, 0, 0.04);
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.03);
+  --glass-bg: rgba(255, 255, 255, 0.95);
+  --glass-border: 1px solid rgba(212, 160, 154, 0.15);
+  --shadow-apple: 0 4px 20px rgba(74, 48, 54, 0.04);
+  --shadow-card: 0 4px 24px rgba(74, 48, 54, 0.03), 0 1px 3px rgba(74, 48, 54, 0.02);
 
   --transition-fast: 0.2s ease;
   --transition-slow: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -200,24 +200,9 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 /* Dashboard Premium Styles */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 16px;
   margin-bottom: 24px;
-}
-@media (max-width: 1200px) {
-  .dashboard-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-@media (max-width: 768px) {
-  .dashboard-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (max-width: 480px) {
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* Luxury Pink Salon Styles */
@@ -306,14 +291,9 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 
 .db-main-row {
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 20px;
   margin-bottom: 24px;
-}
-@media (max-width: 992px) {
-  .db-main-row {
-    grid-template-columns: 1fr;
-  }
 }
 
 .db-bottom-row {

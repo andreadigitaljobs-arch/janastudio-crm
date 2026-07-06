@@ -11,7 +11,7 @@ import {
 import { dataService } from '../services/dataService';
 import { useDialog } from '../context/DialogContext';
 import { useNotifs } from '../context/NotificationContext';
-import AstroSelect from './AstroSelect';
+import JanaSelect from './JanaSelect';
 import AnimatedModal from './AnimatedModal';
 
 // Custom SVG: nail polish bottle
@@ -1121,7 +1121,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             zIndex: 99999, padding: isMobile ? '12px' : '20px'
           }}>
-            <div className={`${cardClass} glass-card astro-scrollbar`} style={{
+            <div className={`${cardClass} glass-card jana-scrollbar`} style={{
               width: '100%', maxWidth: '420px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden',
               display: 'flex', flexDirection: 'column', padding: isMobile ? '20px 16px' : '24px',
               borderRadius: '28px', border: '1px solid var(--border-color)',
@@ -1203,7 +1203,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
       <AnimatedModal isOpen={isBillableExtrasModalOpen}>
         {(overlayClass, cardClass) => (
           <div className={overlayClass} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px' : '20px' }}>
-            <div className={`${cardClass} glass-card astro-scrollbar`} style={{ width: '100%', maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden', padding: isMobile ? '20px 16px' : '32px', borderRadius: '32px', border: '1px solid var(--border-color)', backgroundColor: 'white' }}>
+            <div className={`${cardClass} glass-card jana-scrollbar`} style={{ width: '100%', maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden', padding: isMobile ? '20px 16px' : '32px', borderRadius: '32px', border: '1px solid var(--border-color)', backgroundColor: 'white' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px' }}>
                 <div>
                   <h3 style={{ fontSize: '20px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -1216,7 +1216,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                 </button>
               </div>
 
-              <div className="astro-scrollbar" style={{ maxHeight: '350px', overflowY: 'auto', paddingRight: '8px', marginBottom: '24px' }}>
+              <div className="jana-scrollbar" style={{ maxHeight: '350px', overflowY: 'auto', paddingRight: '8px', marginBottom: '24px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {billableExtras.map(extra => (
                     <div key={extra.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px', backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -1317,7 +1317,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               zIndex: 99999, padding: isMobile ? '12px' : '20px'
             }}>
-              <div className={`${cardClass} glass-card astro-scrollbar`} style={{
+              <div className={`${cardClass} glass-card jana-scrollbar`} style={{
                 width: '100%', maxWidth: '440px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden',
                 padding: isMobile ? '20px 16px' : '24px', borderRadius: '28px',
                 border: '1px solid var(--border-color)',
@@ -1508,7 +1508,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             zIndex: 99999, padding: isMobile ? '12px' : '20px'
           }}>
-            <div className={`${cardClass} glass-card astro-scrollbar`} style={{
+            <div className={`${cardClass} glass-card jana-scrollbar`} style={{
               width: '100%', maxWidth: '480px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden',
               padding: isMobile ? '20px 16px' : '28px', borderRadius: '28px',
               border: '1px solid rgba(212,160,154,0.2)',
@@ -1647,7 +1647,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             zIndex: 99999, padding: isMobile ? '12px' : '20px'
           }}>
-            <div className={`${cardClass} glass-card astro-scrollbar`} style={{
+            <div className={`${cardClass} glass-card jana-scrollbar`} style={{
               width: '100%', maxWidth: '520px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden',
               padding: isMobile ? '20px 16px' : '28px', borderRadius: '28px',
               border: '1px solid rgba(212,160,154,0.2)',
@@ -1741,7 +1741,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               zIndex: 99999, padding: isMobile ? '12px' : '20px'
             }}>
-              <div className={`${cardClass} glass-card astro-scrollbar`} style={{
+              <div className={`${cardClass} glass-card jana-scrollbar`} style={{
                 width: '100%', maxWidth: '900px',
                 maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column',
                 padding: isMobile ? '20px 16px' : '32px', borderRadius: '28px',
@@ -1756,7 +1756,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                   <X size={20} />
                 </button>
 
-                <div className="astro-scrollbar" style={{ overflowY: 'auto', overflowX: 'hidden', flex: 1, paddingRight: '8px' }}><h3 style={{ fontSize: '22px', fontWeight: '800', marginBottom: '24px', paddingRight: '40px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div className="jana-scrollbar" style={{ overflowY: 'auto', overflowX: 'hidden', flex: 1, paddingRight: '8px' }}><h3 style={{ fontSize: '22px', fontWeight: '800', marginBottom: '24px', paddingRight: '40px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ color: 'var(--pink-primary)', display: 'flex', alignItems: 'center' }}>
                     {getIconComponent(newService.icon || 'Scissors', 22)}
                   </span>
@@ -1849,13 +1849,13 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                     </div>
 
                     <div className="modal-grid-2col">
-                      <AstroSelect 
+                      <JanaSelect 
                         label="CATEGORÁA"
                         value={newService.category}
                         onChange={val => setNewService({...newService, category: val})}
                         options={categories.map(c => ({ label: c.name, value: c.name }))}
                       />
-                      <AstroSelect 
+                      <JanaSelect 
                         label="ESTRATEGIA"
                         value={newService.strategy_type}
                         onChange={val => setNewService({...newService, strategy_type: val})}
@@ -2047,7 +2047,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                     {isEditing ? 'Guardar Cambios' : 'Lanzar Servicio al Catálogo'}
                   </button>
                 </div>
-              </div> {/* Closing astro-scrollbar */}
+              </div> {/* Closing jana-scrollbar */}
               </div>
             </div>
           )
