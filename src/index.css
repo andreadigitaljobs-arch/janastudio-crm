@@ -113,7 +113,67 @@ html, body {
 .animate-page-fade-in { animation: pageFadeIn 0.3s ease; }
 .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
 
-/* Luxury Arch Salon Login Design */
+/* ═══════════════════════════════════════════════════════════
+   LUXURY LOGIN — Premium Design System
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Stagger Entrance Animations ── */
+@keyframes salonSlideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes salonFadeScale {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes salonHeartPulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+@keyframes salonShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
+@keyframes salonShimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes salonKenBurns {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+
+@keyframes salonSpinPremium {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes salonBorderShimmer {
+  0% { border-color: rgba(212, 160, 154, 0.35); }
+  50% { border-color: rgba(212, 160, 154, 0.7); }
+  100% { border-color: rgba(212, 160, 154, 0.35); }
+}
+
+@keyframes salonGradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes salonIconFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* ── Outer Container ── */
 .salon-login-outer {
   width: 100vw;
   height: 100vh;
@@ -125,18 +185,17 @@ html, body {
   top: 0;
   left: 0;
   z-index: 99999;
-  padding: 32px; /* Margen uniforme y elegante en todos los lados */
+  padding: 32px;
   box-sizing: border-box;
 }
 
-/* El marco general con un fino borde rosa/rose gold */
 .salon-login-container {
   width: 100%;
   height: 100%;
-  max-width: 100%; /* Permite expandirse para mantener el mismo margen lateral que arriba/abajo */
+  max-width: 100%;
   max-height: 100%;
   background: linear-gradient(135deg, #fffcfd 0%, #fff7f8 100%);
-  border: 1px solid rgba(223, 178, 140, 0.35); /* Borde rose gold sutil */
+  border: none;
   border-radius: 36px;
   display: flex;
   overflow: hidden;
@@ -144,18 +203,18 @@ html, body {
   position: relative;
 }
 
-/* ── SECCIÓN IZQUIERDA: Semicírculo gigante ── */
+/* ── LEFT: Photo Section ── */
 .salon-login-left {
   flex: 1.1;
   display: flex;
   align-items: center;
-  justify-content: flex-end; /* Alineado al borde derecho */
+  justify-content: flex-end;
   position: relative;
   height: 100%;
 }
 
 .salon-semicircle-border {
-  width: 130%; /* Sobresale hacia la izquierda para formar el medio círculo */
+  width: 130%;
   height: 130%;
   border-radius: 50%;
   position: absolute;
@@ -163,7 +222,7 @@ html, body {
   top: -15%;
   padding: 3px;
   background: linear-gradient(180deg, rgba(223, 178, 140, 0.6) 0%, rgba(201, 114, 130, 0.4) 100%);
-  box-shadow: 10px 0 30px rgba(167, 102, 115, 0.08);
+  box-shadow: 10px 0 30px rgba(167, 102, 115, 0.08), 0 0 15px rgba(212, 160, 154, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -175,17 +234,68 @@ html, body {
   border-radius: 50%;
   overflow: hidden;
   position: relative;
+  box-shadow: inset 0 0 40px rgba(74, 48, 54, 0.12);
 }
 
 .salon-semicircle-image {
   width: 100%;
   height: 100%;
-  background: url('/login_bg.jpeg') no-repeat;
-  background-position: 84% center; /* Desplaza la foto para que se vea el mueble (sofá verde) que está a la derecha */
   background-size: cover;
+  will-change: transform;
 }
 
-/* ── SECCIÓN DERECHA: Formulario ── */
+.salon-semicircle-image.ken-burns-active {
+  animation: salonKenBurns 5s ease-in-out forwards;
+}
+
+/* Overlay rosa sutil en las fotos */
+.salon-photo-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(201, 114, 130, 0.06) 0%, rgba(212, 160, 154, 0.1) 100%);
+  z-index: 3;
+  pointer-events: none;
+  animation: salonFadeIn 0.8s ease both;
+}
+
+@keyframes salonFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Desktop carousel indicators */
+.salon-carousel-indicators {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.salon-carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.4);
+  border: none;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
+}
+
+.salon-carousel-dot.active {
+  width: 24px;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(255,255,255,0.5);
+}
+
+.salon-carousel-dot:hover:not(.active) {
+  background: rgba(255,255,255,0.7);
+}
+
+/* ── RIGHT: Form Section ── */
 .salon-login-right {
   flex: 1;
   display: flex;
@@ -194,6 +304,7 @@ html, body {
   padding: 40px 60px;
   box-sizing: border-box;
   background: transparent;
+  position: relative;
 }
 
 .salon-login-form-wrapper {
@@ -201,12 +312,34 @@ html, body {
   max-width: 420px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 24px;
   position: relative;
   z-index: 5;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Encabezado del Logo en la Derecha */
+.salon-login-form-wrapper.salon-form-mounted {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger children */
+.salon-form-mounted .salon-stagger-1 {
+  animation: salonSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+.salon-form-mounted .salon-stagger-2 {
+  animation: salonSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+}
+.salon-form-mounted .salon-stagger-3 {
+  animation: salonSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+}
+.salon-form-mounted .salon-stagger-4 {
+  animation: salonSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+}
+
+/* Logo */
 .salon-logo-header {
   display: flex;
   flex-direction: column;
@@ -220,9 +353,14 @@ html, body {
   width: 75%;
   object-fit: contain;
   filter: drop-shadow(0 2px 8px rgba(167, 102, 115, 0.08));
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Form Title y subtítulo */
+.salon-logo-image:hover {
+  transform: scale(1.03);
+}
+
+/* Form Title */
 .salon-form-header {
   text-align: center;
   display: flex;
@@ -239,10 +377,15 @@ html, body {
 }
 
 .salon-heart-icon {
-  color: #c97282;
   font-size: 1.3rem;
   margin-left: 2px;
   font-weight: 300;
+  display: inline-block;
+  animation: salonHeartPulse 2.5s ease-in-out infinite;
+  background: linear-gradient(135deg, #c97282 0%, #d4a09a 50%, #dfb28c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .salon-form-subtitle {
@@ -253,7 +396,7 @@ html, body {
   font-weight: 400;
 }
 
-/* Formulario Inputs */
+/* ── INPUTS: Floating Label + Micro-interactions ── */
 .salon-main-form {
   display: flex;
   flex-direction: column;
@@ -269,6 +412,20 @@ html, body {
   position: relative;
   display: flex;
   align-items: center;
+  border-radius: 14px;
+  border: 1.5px solid rgba(212, 160, 154, 0.3);
+  background: #ffffff;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.salon-field-container:focus-within {
+  border-color: #c97282;
+  box-shadow: 0 0 0 4px rgba(201, 114, 130, 0.12), 0 4px 20px rgba(201, 114, 130, 0.15);
+}
+
+.salon-field-hover:not(:focus-within):hover {
+  border-color: rgba(212, 160, 154, 0.5);
+  box-shadow: 0 2px 8px rgba(167, 102, 115, 0.06);
 }
 
 .salon-field-icon {
@@ -277,82 +434,104 @@ html, body {
   color: #a78d93;
   display: flex;
   align-items: center;
+  transition: color 0.3s ease;
+  z-index: 2;
+}
+
+.salon-field-container:focus-within .salon-field-icon {
+  color: #c97282;
 }
 
 .salon-field-input {
   width: 100%;
-  padding: 14px 16px 14px 48px;
+  padding: 18px 16px 18px 48px;
   border-radius: 14px;
-  border: 1px solid rgba(212, 160, 154, 0.35);
-  background: #ffffff;
+  border: none;
+  background: transparent;
   color: #4a3036;
   font-size: 0.92rem;
   transition: all 0.2s ease;
+  position: relative;
+  z-index: 1;
 }
 
 .salon-field-input:focus {
   outline: none;
-  border-color: #c97282;
-  box-shadow: 0 0 0 4px rgba(201, 114, 130, 0.06);
 }
 
 .salon-field-input::placeholder {
-  color: #c8b7bb;
+  color: transparent;
+}
+
+/* Floating Label - Fuera del container */
+.salon-input-group {
+  position: relative;
+  margin-bottom: 0;
+  padding: 0 4px;
+}
+
+.salon-floating-label {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #a78d93;
+  font-size: 0.92rem;
+  pointer-events: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 6;
+  background: #ffffff;
+  padding: 0 4px;
+  white-space: nowrap;
+}
+
+.salon-floating-label.is-up,
+.salon-field-input:focus ~ .salon-floating-label {
+  top: 0;
+  transform: translateY(-50%);
+  left: 14px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #c97282;
+  padding: 0 5px;
+  letter-spacing: 0.3px;
+}
+
+.salon-eye-toggle[style*="hidden"] {
+  visibility: hidden;
 }
 
 .salon-eye-toggle {
   position: absolute;
-  right: 16px;
+  right: 14px;
   background: none;
   border: none;
   color: #a78d93;
   cursor: pointer;
-  padding: 4px;
+  padding: 6px;
   display: flex;
   align-items: center;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+  z-index: 2;
 }
 
-/* Form Options */
-.salon-form-options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.82rem;
-  margin-top: 4px;
-}
-
-.salon-remember-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #6b5559;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.salon-custom-checkbox {
-  width: 16px;
-  height: 16px;
-  accent-color: #c97282;
-  cursor: pointer;
-}
-
-.salon-forgot-link {
+.salon-eye-toggle:hover {
   color: #c97282;
-  text-decoration: none;
-  font-weight: 500;
+  background: rgba(201, 114, 130, 0.06);
 }
 
-.salon-forgot-link:hover {
-  color: #a0506a;
+.salon-eye-toggle:active {
+  transform: scale(0.9);
 }
 
-/* Botón Iniciar sesión */
+/* ── SUBMIT BUTTON: Premium with Ripple ── */
 .salon-submit-button {
-  padding: 14px;
+  padding: 15px;
   border-radius: 14px;
   border: none;
-  background: linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%);
+  background: linear-gradient(135deg, #e8a2a9 0%, #db8c95 50%, #c97282 100%);
+  background-size: 200% 200%;
   color: white;
   font-size: 0.95rem;
   font-weight: 600;
@@ -361,96 +540,304 @@ html, body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: all 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 4px 15px rgba(219, 140, 149, 0.25);
   margin-top: 8px;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.3px;
 }
 
-.salon-submit-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(219, 140, 149, 0.38);
+.salon-submit-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(219, 140, 149, 0.45), 0 0 20px rgba(201, 114, 130, 0.2);
+  animation: salonGradientFlow 3s ease infinite;
+}
+
+.salon-submit-button:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 8px rgba(219, 140, 149, 0.25);
+}
+
+.salon-submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .salon-submit-arrow {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.salon-submit-button:hover:not(:disabled) .salon-submit-arrow {
+  transform: translateX(4px);
+}
+
+/* Ripple effect */
+.salon-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(0);
+  animation: salonRippleExpand 0.6s ease-out;
+  pointer-events: none;
+}
+
+@keyframes salonRippleExpand {
+  to { transform: scale(4); opacity: 0; }
+}
+
+/* Loading spinner premium */
+.salon-loading-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.salon-spinner-premium {
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: salonSpinPremium 0.7s linear infinite;
+}
+
+/* ── ERROR ── */
+.salon-error-banner {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #dc2626;
+  font-size: 0.85rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.salon-shake {
+  animation: salonShake 0.5s ease;
+}
+
+/* ── DECORATIVE ICONS ── */
+.salon-decorative-section {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(223, 178, 140, 0.2);
+  display: flex;
+  justify-content: space-around;
+  gap: 8px;
+}
+
+.salon-decorative-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  cursor: default;
+}
+
+.salon-decorative-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(232,162,169,0.08) 0%, rgba(223,178,140,0.08) 100%);
+  border: 1px solid rgba(223, 178, 140, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #c97282;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.salon-decorative-item:hover .salon-decorative-icon-wrapper {
+  transform: translateY(-4px) scale(1.05);
+  background: linear-gradient(135deg, rgba(232,162,169,0.18) 0%, rgba(223,178,140,0.18) 100%);
+  border-color: rgba(223, 178, 140, 0.45);
+  box-shadow: 0 8px 20px rgba(167, 102, 115, 0.12);
+  animation: salonIconFloat 2s ease-in-out infinite;
+}
+
+.salon-decorative-text {
+  text-align: center;
+  line-height: 1.2;
+}
+
+.salon-decorative-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b4a52;
+}
+
+.salon-decorative-sub {
+  font-size: 10px;
+  color: #a07880;
+  font-weight: 400;
+}
+
+/* ── SETTINGS PANEL: Toca el logo 5 veces ── */
+.salon-settings-panel {
+  width: 100%;
+  background: linear-gradient(135deg, rgba(212,160,154,0.06) 0%, rgba(201,114,130,0.06) 100%);
+  border: 1px solid rgba(212, 160, 154, 0.25);
+  border-radius: 12px;
+  padding: 12px 14px;
+  animation: salonSlideUp 0.3s ease both;
+}
+
+.salon-settings-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b4d53;
+  margin-bottom: 10px;
+}
+
+.salon-settings-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #a78d93;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+  display: flex;
+  transition: all 0.2s ease;
+}
+
+.salon-settings-close:hover {
+  color: #c97282;
+  background: rgba(201, 114, 130, 0.08);
+}
+
+.salon-settings-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.salon-settings-label {
+  font-size: 0.72rem;
+  color: #8c767b;
+  font-weight: 500;
+}
+
+.salon-settings-slider {
+  width: 100%;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(212, 160, 154, 0.25);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.salon-settings-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e8a2a9, #c97282);
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(201, 114, 130, 0.3);
+  cursor: pointer;
   transition: transform 0.2s ease;
 }
 
-.salon-submit-button:hover .salon-submit-arrow {
-  transform: translateX(3px);
+.salon-settings-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
 }
 
-/* Separador */
-.salon-divider {
-  display: flex;
-  align-items: center;
-  margin: 4px 0;
-}
-
-.salon-divider-line {
-  flex: 1;
-  height: 1px;
-  background: rgba(212, 160, 154, 0.22);
-}
-
-.salon-divider-text {
-  padding: 0 16px;
-  color: #a0848a;
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-
-/* Botones Redes Sociales circulares */
-.salon-social-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-}
-
-.salon-social-btn {
-  width: 52px;
-  height: 52px;
+.salon-settings-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  border: 1px solid rgba(212, 160, 154, 0.35);
-  background: #ffffff;
+  background: linear-gradient(135deg, #e8a2a9, #c97282);
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(201, 114, 130, 0.3);
+  cursor: pointer;
+}
+
+.salon-settings-presets {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  gap: 6px;
+}
+
+.salon-settings-presets button {
+  flex: 1;
+  padding: 5px;
+  border: 1px solid rgba(212, 160, 154, 0.25);
+  border-radius: 6px;
+  background: #fff;
+  color: #6b4d53;
+  font-size: 0.7rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 10px rgba(167, 102, 115, 0.03);
 }
 
-.salon-social-btn:hover {
-  background: #fffbfb;
+.salon-settings-presets button:hover {
   border-color: #c97282;
-  transform: translateY(-1px);
-}
-
-/* Registro footer */
-.salon-register-footer {
-  text-align: center;
-  font-size: 0.88rem;
-  color: #6b5559;
-  font-weight: 500;
-}
-
-.salon-register-link {
   color: #c97282;
-  text-decoration: none;
-  font-weight: 600;
 }
 
-.salon-register-link:hover {
-  text-decoration: underline;
+.salon-settings-presets button.active {
+  background: linear-gradient(135deg, #e8a2a9, #c97282);
+  color: #fff;
+  border-color: transparent;
 }
 
-/* ── DISEÑO MOBILE: Foto arriba, tarjeta blanca abajo ── */
+/* ── TABLET: Layout optimizado ── */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .salon-login-outer {
+    padding: 20px;
+  }
+
+  .salon-login-left {
+    flex: 0.8;
+  }
+
+  .salon-semicircle-border {
+    width: 140%;
+    height: 140%;
+  }
+
+  .salon-login-right {
+    padding: 40px 40px;
+  }
+
+  .salon-login-form-wrapper {
+    max-width: 360px;
+    gap: 20px;
+  }
+
+  .salon-logo-image {
+    max-width: 140px;
+    width: 65%;
+  }
+
+  .salon-form-title {
+    font-size: 1.3rem;
+  }
+
+  .salon-decorative-section {
+    margin-top: 20px;
+    padding-top: 16px;
+  }
+}
+
+/* ── DISEÑO MOBILE: Foto arriba con arco, tarjeta blanca abajo ── */
 @media (max-width: 768px) {
 
   .salon-login-outer {
     padding: 0;
     background: #f5eff1;
     align-items: flex-start;
+    overflow: hidden;
   }
 
   .salon-login-container {
@@ -466,16 +853,17 @@ html, body {
     overflow: hidden;
   }
 
-  /* ── FOTO: Ocupa el 35% superior ── */
+  /* ── FOTO: Cubre bien arriba ── */
   .salon-login-left {
     flex: none;
     width: 100%;
-    height: 35vh;
-    height: 35dvh;
+    height: 36vh;
+    height: 36dvh;
     justify-content: center;
     overflow: hidden;
     position: relative;
     flex-shrink: 0;
+    z-index: 1;
   }
 
   .salon-semicircle-border {
@@ -488,79 +876,150 @@ html, body {
     position: relative !important;
     top: 0 !important;
     right: 0 !important;
+    overflow: hidden;
   }
 
   .salon-semicircle-content {
     border-radius: 0 !important;
     width: 100% !important;
     height: 100% !important;
+    overflow: hidden;
   }
 
   .salon-semicircle-image {
     border-radius: 0 !important;
+    transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* ── TARJETA BLANCA: Sube encima de la foto, con borde rose gold ── */
+  /* ── TARJETA BLANCA: Gradiente sutil rosa + curva rose gold ── */
   .salon-login-right {
     flex: 1;
     width: 100%;
-    background: #ffffff;
-    border-radius: 36px 36px 0 0;
-    margin-top: -44px;
+    background: linear-gradient(180deg, #ffffff 0%, #fff8f9 50%, #fff5f6 100%);
+    border-radius: var(--login-radius, 24px) var(--login-radius, 24px) 0 0;
+    margin-top: calc(var(--login-radius, 24px) * -1);
     z-index: 10;
     position: relative;
-    padding: 28px 28px 24px;
-    /* Borde rose gold en la curva superior */
-    box-shadow:
-      0 -3px 0 0 rgba(223, 178, 140, 0.55),
-      0 -16px 40px rgba(167, 102, 115, 0.12);
-    overflow: hidden;
+    padding: 0 30px 20px;
+    outline: none;
+    overflow-y: auto;
+    overflow-x: hidden;
     display: flex;
     align-items: flex-start;
     justify-content: center;
     box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Borde rose gold */
+  .salon-login-right::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--login-radius, 24px) var(--login-radius, 24px) 0 0;
+    border: 2px solid rgba(212, 160, 154, 0.5);
+    border-bottom: none;
+    pointer-events: none;
+    z-index: 20;
+    animation: salonBorderShimmer 4s ease-in-out infinite;
   }
 
   .salon-login-form-wrapper {
     width: 100%;
     max-width: 100%;
-    gap: 16px;
+    gap: 14px;
+    padding-top: 24px;
   }
 
+  /* Logo más pequeño */
   .salon-logo-header {
-    margin-bottom: 0;
+    margin-bottom: 4px;
+    margin-top: 0;
+    position: relative;
+    z-index: 15;
   }
 
   .salon-logo-image {
-    max-width: 150px;
-    width: 60%;
+    max-width: 90px;
+    width: 38%;
   }
 
   .salon-form-header {
-    gap: 4px;
+    gap: 6px;
+    margin-bottom: 6px;
   }
 
   .salon-form-title {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #4a3036;
   }
 
   .salon-form-subtitle {
     font-size: 0.8rem;
+    line-height: 1.35;
+    color: #8c767b;
   }
 
   .salon-main-form {
-    gap: 12px;
+    gap: 14px;
   }
 
-  .salon-submit-button {
-    padding: 15px;
-    font-size: 0.95rem;
-    margin-top: 4px;
+  .salon-field-container {
+    border-radius: 12px;
   }
 
   .salon-field-input {
-    padding: 13px 16px 13px 48px;
+    padding: 14px 14px 14px 46px;
     font-size: 0.92rem;
+  }
+
+  .salon-field-icon {
+    left: 16px;
+  }
+
+  .salon-eye-toggle {
+    right: 14px;
+    padding: 8px;
+  }
+
+  .salon-submit-button {
+    padding: 14px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    margin-top: 4px;
+    border-radius: 12px;
+  }
+
+  .salon-submit-button:active {
+    transform: scale(0.98);
+  }
+
+  .salon-error-banner {
+    padding: 10px 12px;
+    font-size: 0.82rem;
+    border-radius: 10px;
+  }
+
+  /* Decorative icons más compactos */
+  .salon-decorative-section {
+    margin-top: 8px;
+    padding-top: 8px;
+    gap: 4px;
+  }
+
+  .salon-decorative-icon-wrapper {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
+
+  .salon-decorative-label {
+    font-size: 10px;
+  }
+
+  .salon-decorative-sub {
+    font-size: 9px;
   }
 }
 
