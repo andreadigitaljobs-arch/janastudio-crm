@@ -9,7 +9,7 @@ const motivationalTexts = [
   "Un momento para ti, con amor 🌷",
 ];
 
-const LOADER_MIN_DURATION_MS = 1200;
+const LOADER_MIN_DURATION_MS = 800;
 const PROGRESS_INTERVAL_MS = 30;
 const FADE_OUT_MS = 500;
 
