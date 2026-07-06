@@ -350,6 +350,7 @@ function App() {
 
   return (
     <div className="app-container no-scrollbar" style={{ display: 'flex', alignItems: 'stretch', minHeight: '100vh', height: '100vh', overflow: 'hidden', backgroundColor: 'var(--bg-primary)', position: 'relative' }}>
+      <ParticleBackground />
       <JanaLoader visible={isAppLoading} />
 
       {isMobile && isSidebarOpen && (

@@ -178,7 +178,7 @@ const DashboardModule = ({
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px', minHeight: 0 }}>
           
           {/* Main Hero Banner: draggable & zoomable background image */}
-          <div style={{
+          <div className="wow-card wow-animate-1" style={{
             borderRadius: '24px',
             position: 'relative',
             overflow: 'hidden',
@@ -284,7 +284,7 @@ const DashboardModule = ({
             gap: '10px'
           }}>
             {/* Stats Card: Clients */}
-            <div className="glass-card" style={{ 
+            <div className="glass-card wow-card wow-animate-2" style={{ 
               padding: '0',
               display: 'flex',
               flexDirection: 'row',
@@ -312,26 +312,26 @@ const DashboardModule = ({
                 justifyContent: 'center',
                 padding: '10px 12px 10px 0'
               }}>
-                <div style={{
+                <div className="wow-oval" style={{
                   width: '80px',
                   height: '110px',
                   borderRadius: '60px 60px 60px 60px',
                   overflow: 'hidden',
-                  boxShadow: '0 4px 16px rgba(160,80,106,0.15)',
-                  background: 'linear-gradient(160deg, #fae1e6 0%, #f0c4cf 100%)',
+                  boxShadow: '0 4px 16px rgba(160,80,106,0.12)',
+                  background: 'linear-gradient(135deg, #fbcada 0%, #d4a09a 100%)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  border: '2px solid rgba(212,160,154,0.2)'
+                  border: '2px solid rgba(212,160,154,0.3)'
                 }}>
                   {/* Placeholder icon until user provides image */}
-                  <Users size={32} color="rgba(160,80,106,0.4)" />
+                  <Users size={32} color="rgba(255,255,255,0.9)" />
                 </div>
               </div>
             </div>
 
             {/* Stats Card: Service Catalog */}
-            <div className="glass-card" style={{ 
+            <div className="glass-card wow-card wow-animate-2" style={{ 
               padding: '0',
               display: 'flex',
               flexDirection: 'row',
@@ -359,25 +359,25 @@ const DashboardModule = ({
                 justifyContent: 'center',
                 padding: '10px 12px 10px 0'
               }}>
-                <div style={{
+                <div className="wow-oval" style={{
                   width: '80px',
                   height: '110px',
                   borderRadius: '60px 60px 60px 60px',
                   overflow: 'hidden',
-                  boxShadow: '0 4px 16px rgba(160,80,106,0.15)',
-                  background: 'linear-gradient(160deg, #f6eee9 0%, #eadcd5 100%)',
+                  boxShadow: '0 4px 16px rgba(160,80,106,0.12)',
+                  background: 'linear-gradient(135deg, #dfb28c 0%, #d4a09a 100%)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  border: '2px solid rgba(212,160,154,0.2)'
+                  border: '2px solid rgba(212,160,154,0.3)'
                 }}>
-                  <Scissors size={32} color="rgba(160,80,106,0.4)" />
+                  <Scissors size={32} color="rgba(255,255,255,0.9)" />
                 </div>
               </div>
             </div>
 
             {/* Stats Card: Team */}
-            <div className="glass-card" style={{ 
+            <div className="glass-card wow-card wow-animate-2" style={{ 
               padding: '0',
               display: 'flex',
               flexDirection: 'row',
@@ -405,19 +405,19 @@ const DashboardModule = ({
                 justifyContent: 'center',
                 padding: '10px 12px 10px 0'
               }}>
-                <div style={{
+                <div className="wow-oval" style={{
                   width: '80px',
                   height: '110px',
                   borderRadius: '60px 60px 60px 60px',
                   overflow: 'hidden',
-                  boxShadow: '0 4px 16px rgba(160,80,106,0.15)',
-                  background: 'linear-gradient(160deg, #fff2f4 0%, #fae1e6 100%)',
+                  boxShadow: '0 4px 16px rgba(160,80,106,0.12)',
+                  background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  border: '2px solid rgba(212,160,154,0.2)'
+                  border: '2px solid rgba(212,160,154,0.3)'
                 }}>
-                  <Sparkles size={32} color="rgba(160,80,106,0.4)" />
+                  <Sparkles size={32} color="rgba(255,255,255,0.9)" />
                 </div>
               </div>
             </div>
@@ -432,7 +432,7 @@ const DashboardModule = ({
             minHeight: 0
           }}>
             {/* Top Especialistas Card */}
-            <div className="glass-card" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '12px', minHeight: '0', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)' }}>
+            <div className="glass-card wow-card wow-animate-3" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '12px', minHeight: '0', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                 <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Top Especialistas</span>
                 <span onClick={() => onNavigate('personnel')} style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}>Ver todo</span>
@@ -465,7 +465,7 @@ const DashboardModule = ({
             </div>
 
             {/* Reports Revenue card */}
-            <div className="glass-card" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '10px', minHeight: '0', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)' }}>
+            <div className="glass-card wow-card wow-animate-4" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '10px', minHeight: '0', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Reportes</span>
                 <span style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}>Ver todo</span>
@@ -487,7 +487,7 @@ const DashboardModule = ({
             </div>
 
             {/* Servicios Más Populares Card */}
-            <div className="glass-card" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '10px', minHeight: '0', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)' }}>
+            <div className="glass-card wow-card wow-animate-5" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '10px', minHeight: '0', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Servicios Populares</span>
                 <span onClick={() => onNavigate('services')} style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}>Ver todo</span>
@@ -528,7 +528,7 @@ const DashboardModule = ({
         </div>
 
         {/* Right Sidebar Panel: Upcoming Appointments */}
-        <div className="glass-card" style={{
+        <div className="glass-card wow-card wow-animate-3" style={{
           width: isMobile ? '100%' : '300px',
           flexShrink: 0,
           backgroundColor: '#ffffff',
