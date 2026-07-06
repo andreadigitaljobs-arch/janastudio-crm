@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  User, Plus, Bell, MapPin, Calendar, Clock
+  User, Plus, Bell, MapPin, Calendar, Clock, Sparkles
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { notificationService } from '../services/notificationService';
@@ -54,9 +54,19 @@ const TopBar = ({
             fontWeight: '700', 
             color: 'var(--text-primary)',
             fontFamily: "'Playfair Display', Georgia, serif",
-            margin: 0
+            margin: 0,
+            display: 'flex',
+            alignItems: 'center'
           }}>
-            {getGreeting().replace('¡', '').replace('!', '')}, {user?.name?.split(' ')[0] || 'Jana'} ✨
+            {getGreeting().replace('¡', '').replace('!', '')}, {(!user || user.role?.startsWith('Admin')) ? 'Jana' : (user.name?.split(' ')[0] || 'Jana')}
+            <Sparkles 
+              size={isMobile ? 18 : 22} 
+              style={{ 
+                color: 'var(--magenta-secondary)', 
+                marginLeft: '8px', 
+                animation: 'pulse 2s infinite ease-in-out'
+              }} 
+            />
           </h1>
           <p style={{
             fontSize: '0.8rem', 
