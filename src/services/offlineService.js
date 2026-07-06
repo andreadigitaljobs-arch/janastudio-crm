@@ -3,7 +3,7 @@ import { dataService } from './dataService';
 import { supabase } from '../lib/supabase';
 
 // Inicialización de la base de datos local en IndexedDB
-export const db = new Dexie('AstroBarberOfflineDB');
+export const db = new Dexie('JanaStudioOfflineDB');
 db.version(1).stores({
   checkout_queue: '++id, status, createdAt'
 });

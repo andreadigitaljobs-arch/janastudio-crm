@@ -173,7 +173,7 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
       
       triggerRocket();
       showToast(`¡Operación registrada! ${selectedClient?.name || 'Cliente'} enviado a caja.`);
-      sendPushNotification('🚀 Operación Astro', `${selectedClient?.name || 'Cliente'} — ${selectedService?.name || 'Venta'}`);
+      sendPushNotification('🚀 Operación JanaStudio', `${selectedClient?.name || 'Cliente'} — ${selectedService?.name || 'Venta'}`);
       
       onClose();
     } catch (error) {

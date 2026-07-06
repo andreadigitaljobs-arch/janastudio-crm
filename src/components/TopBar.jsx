@@ -7,7 +7,7 @@ import { notificationService } from '../services/notificationService';
 
 const TopBar = ({
   activeTab, rates, onOpenSale, isStoreOpen = true,
-  activeRateType, onToggleRateType, onOpenNotifications
+  activeRateType, onToggleRateType, onOpenNotifications, isMobile
 }) => {
   const { user } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
@@ -43,89 +43,95 @@ const TopBar = ({
   return (
     <div style={{
       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      marginBottom: '18px', flexWrap: 'wrap', gap: '12px'
+      marginBottom: '18px', flexWrap: 'wrap', gap: '12px',
+      paddingLeft: isMobile ? '42px' : '0'
     }}>
       {/* Left: Greeting */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <div style={{ position: 'relative' }}>
-          <div style={{
-            width: '42px', height: '42px', borderRadius: '50%',
-            background: 'linear-gradient(135deg, #c48b9f 0%, #a0506a 100%)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 3px 10px rgba(196, 139, 159, 0.25)'
-          }}>
-            {user?.image_url ? (
-              <img src={user.image_url} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
-            ) : (
-              <User color="white" size={18} />
-            )}
+      <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '12px' }}>
+        {!isMobile && (
+          <div style={{ position: 'relative' }}>
+            <div style={{
+              width: '42px', height: '42px', borderRadius: '50%',
+              background: 'linear-gradient(135deg, #c48b9f 0%, #a0506a 100%)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: '0 3px 10px rgba(196, 139, 159, 0.25)'
+            }}>
+              {user?.image_url ? (
+                <img src={user.image_url} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+              ) : (
+                <User color="white" size={18} />
+              )}
+            </div>
+            <div style={{
+              position: 'absolute', bottom: '0', right: '0',
+              width: '12px', height: '12px', borderRadius: '50%',
+              backgroundColor: isStoreOpen ? '#22c55e' : '#ef4444',
+              border: '2.5px solid #faf5f5'
+            }} />
           </div>
-          <div style={{
-            position: 'absolute', bottom: '0', right: '0',
-            width: '12px', height: '12px', borderRadius: '50%',
-            backgroundColor: isStoreOpen ? '#22c55e' : '#ef4444',
-            border: '2.5px solid #faf5f5'
-          }} />
-        </div>
+        )}
         <div>
           <h1 style={{
-            fontSize: '18px', fontWeight: '700', color: '#2d2d2d',
+            fontSize: isMobile ? '15px' : '18px', fontWeight: '700', color: '#2d2d2d',
             letterSpacing: '-0.3px', margin: 0
           }}>
             {getGreeting()}, <span className="text-gradient">
               {user?.role === 'Admin' ? 'Administradora' : user?.name?.split(' ')[0] || 'Belleza'}!
-            </span> ✨
+            </span> {isMobile ? '' : '✨'}
           </h1>
-          <p style={{
-            fontSize: '0.72rem', color: '#9e9e9e', margin: '2px 0 0 0',
-            fontStyle: 'italic'
-          }}>Tu pasión hace brillar cada detalle.</p>
+          {!isMobile && (
+            <p style={{
+              fontSize: '0.72rem', color: '#9e9e9e', margin: '2px 0 0 0',
+              fontStyle: 'italic'
+            }}>Tu pasión hace brillar cada detalle.</p>
+          )}
         </div>
       </div>
 
       {/* Right: Chips + Actions */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-        {/* Location Chip */}
-        <div style={{
-          padding: '6px 12px', borderRadius: '10px', background: '#ffffff',
-          border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-          display: 'flex', alignItems: 'center', gap: '7px'
-        }}>
+        {!isMobile && (
           <div style={{
-            width: '24px', height: '24px', borderRadius: '7px',
-            background: 'rgba(196, 139, 159, 0.1)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
+            padding: '6px 12px', borderRadius: '10px', background: '#ffffff',
+            border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+            display: 'flex', alignItems: 'center', gap: '7px'
           }}>
-            <MapPin size={12} color="#c48b9f" />
-          </div>
-          <div>
-            <div style={{ fontSize: '0.65rem', fontWeight: '600', color: '#2d2d2d' }}>Sucursal Principal</div>
-            <div style={{ fontSize: '0.6rem', color: '#9e9e9e' }}>Maracay, Venezuela</div>
-          </div>
-        </div>
-
-        {/* Date/Time Chip */}
-        <div style={{
-          padding: '6px 12px', borderRadius: '10px', background: '#ffffff',
-          border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-          display: 'flex', alignItems: 'center', gap: '7px'
-        }}>
-          <div style={{
-            width: '24px', height: '24px', borderRadius: '7px',
-            background: 'rgba(196, 139, 159, 0.1)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}>
-            <Calendar size={12} color="#c48b9f" />
-          </div>
-          <div>
-            <div style={{ fontSize: '0.65rem', fontWeight: '600', color: '#2d2d2d', textTransform: 'capitalize' }}>
-              {formatDay(today.split(',')[0])}, {today.split(',').slice(1).join(',').trim()}
+            <div style={{
+              width: '24px', height: '24px', borderRadius: '7px',
+              background: 'rgba(196, 139, 159, 0.1)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}>
+              <MapPin size={12} color="#c48b9f" />
             </div>
-            <div style={{ fontSize: '0.6rem', color: '#9e9e9e' }}>{currentTime}</div>
+            <div>
+              <div style={{ fontSize: '0.65rem', fontWeight: '600', color: '#2d2d2d' }}>Sucursal Principal</div>
+              <div style={{ fontSize: '0.6rem', color: '#9e9e9e' }}>Maracay, Venezuela</div>
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Notification Bell */}
+        {!isMobile && (
+          <div style={{
+            padding: '6px 12px', borderRadius: '10px', background: '#ffffff',
+            border: '1px solid rgba(0,0,0,0.04)', boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+            display: 'flex', alignItems: 'center', gap: '7px'
+          }}>
+            <div style={{
+              width: '24px', height: '24px', borderRadius: '7px',
+              background: 'rgba(196, 139, 159, 0.1)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}>
+              <Calendar size={12} color="#c48b9f" />
+            </div>
+            <div>
+              <div style={{ fontSize: '0.65rem', fontWeight: '600', color: '#2d2d2d', textTransform: 'capitalize' }}>
+                {formatDay(today.split(',')[0])}, {today.split(',').slice(1).join(',').trim()}
+              </div>
+              <div style={{ fontSize: '0.6rem', color: '#9e9e9e' }}>{currentTime}</div>
+            </div>
+          </div>
+        )}
+
         <button
           onClick={onOpenNotifications}
           style={{
@@ -151,20 +157,19 @@ const TopBar = ({
           )}
         </button>
 
-        {/* Nueva Cita Button */}
         <button
           onClick={onOpenSale}
           style={{
-            height: '36px', padding: '0 16px', borderRadius: '10px',
+            height: '36px', padding: isMobile ? '0 12px' : '0 16px', borderRadius: '10px',
             fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px',
-            fontSize: '0.78rem', border: 'none',
+            fontSize: isMobile ? '0.72rem' : '0.78rem', border: 'none',
             background: 'linear-gradient(135deg, #d4a09a 0%, #c48b9f 50%, #a0506a 100%)',
             color: 'white', cursor: 'pointer',
             boxShadow: '0 3px 12px rgba(196, 139, 159, 0.25)',
-            transition: 'all 0.3s ease'
+            transition: 'all 0.3s ease', whiteSpace: 'nowrap'
           }}
         >
-          <Calendar size={15} /> Nueva Cita
+          <Calendar size={15} /> {isMobile ? 'Nueva Cita' : 'Nueva Cita'}
         </button>
       </div>
     </div>
