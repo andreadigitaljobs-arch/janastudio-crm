@@ -9,10 +9,12 @@ export default function Login() {
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState('');
   
-  // Lista de 2 fotos del carrusel (removidas 3 y 4)
+  // Lista de fotos del carrusel
   const images = [
+    '/login_bg2.jpeg',
     '/login_bg1.jpeg',
-    '/login_bg2.jpeg'
+    '/login_bg3.jpeg',
+    '/login_bg4.webp'
   ];
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -20,16 +22,18 @@ export default function Login() {
   // Configuraciones individuales por foto para ajustarlas (x, y, zoom)
   const [config, setConfig] = useState({
     0: { x: 84, y: 50, z: 100 },
-    1: { x: 50, y: 50, z: 100 }
+    1: { x: 84, y: 50, z: 100 },
+    2: { x: 0, y: 40, z: 120 },
+    3: { x: 50, y: 50, z: 100 }
   });
 
   const { login } = useAuth();
 
-  // Rotar imágenes automáticamente cada 4.5 segundos
+  // Rotar imágenes automáticamente cada 7 segundos
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % images.length);
-    }, 4500);
+    }, 7000);
     return () => clearInterval(interval);
   }, []);
 
@@ -65,101 +69,6 @@ export default function Login() {
         
         {/* ── SECCIÓN IZQUIERDA: Medio círculo gigante con el carrusel de fotos ── */}
         <div className="salon-login-left">
-          {/* Panel de Ajuste individual para la foto visible */}
-          <div style={{
-            position: 'absolute',
-            top: '24px',
-            left: '24px',
-            zIndex: 99,
-            background: 'rgba(255, 255, 255, 0.92)',
-            padding: '16px',
-            borderRadius: '16px',
-            boxShadow: '0 8px 32px rgba(167, 102, 115, 0.15)',
-            border: '1px solid rgba(223, 178, 140, 0.4)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '12px',
-            width: '260px',
-            fontFamily: 'sans-serif',
-            fontSize: '12px',
-            color: '#4a3036'
-          }}>
-            <strong style={{ fontSize: '13px', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: '6px', display: 'flex', justifyContent: 'space-between' }}>
-              <span>⚙️ Ajustando Foto {activeIndex + 1} de 4</span>
-              <span style={{ fontSize: '10px', color: '#c97282' }}>Carrusel activo</span>
-            </strong>
-
-            {/* Selectores rápidos de fotos para ajustarlas manualmente sin esperar */}
-            <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', marginBottom: '4px' }}>
-              {images.map((_, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setActiveIndex(idx)}
-                  style={{
-                    padding: '4px 8px',
-                    borderRadius: '6px',
-                    border: '1px solid rgba(201, 114, 130, 0.3)',
-                    background: activeIndex === idx ? '#c97282' : '#ffffff',
-                    color: activeIndex === idx ? '#ffffff' : '#6b5559',
-                    fontSize: '10px',
-                    cursor: 'pointer',
-                    fontWeight: 'bold'
-                  }}
-                >
-                  Foto {idx + 1}
-                </button>
-              ))}
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
-                <span>Horizontal (X):</span>
-                <span>{currentConf.x}%</span>
-              </label>
-              <input 
-                type="range" 
-                min="0" 
-                max="100" 
-                value={currentConf.x} 
-                onChange={(e) => handleSliderChange('x', Number(e.target.value))} 
-                style={{ width: '100%', accentColor: '#c97282' }}
-              />
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
-                <span>Vertical (Y):</span>
-                <span>{currentConf.y}%</span>
-              </label>
-              <input 
-                type="range" 
-                min="0" 
-                max="100" 
-                value={currentConf.y} 
-                onChange={(e) => handleSliderChange('y', Number(e.target.value))} 
-                style={{ width: '100%', accentColor: '#c97282' }}
-              />
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
-                <span>Zoom:</span>
-                <span>{currentConf.z}%</span>
-              </label>
-              <input 
-                type="range" 
-                min="100" 
-                max="250" 
-                value={currentConf.z} 
-                onChange={(e) => handleSliderChange('z', Number(e.target.value))} 
-                style={{ width: '100%', accentColor: '#c97282' }}
-              />
-            </div>
-            <div style={{ fontSize: '10px', color: '#a0848a', borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: '6px', lineHeight: '1.4' }}>
-              Valores configurados:<br/>
-              <code>F1: {config[0].x}%, {config[0].y}%, {config[0].z}%</code><br/>
-              <code>F2: {config[1].x}%, {config[1].y}%, {config[1].z}%</code>
-            </div>
-          </div>
 
           <div className="salon-semicircle-border">
             <div className="salon-semicircle-content" style={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -172,11 +81,11 @@ export default function Login() {
                     style={{
                       backgroundImage: `url(${imgUrl})`,
                       backgroundPosition: `${imgConf.x}% ${imgConf.y}%`,
-                      transform: `scale(${imgConf.z / 100})`,
+                      backgroundSize: `${imgConf.z}%`,
                       position: 'absolute',
                       inset: 0,
                       opacity: activeIndex === idx ? 1 : 0,
-                      transition: 'opacity 1s ease-in-out', /* Suave disolvencia cruzada */
+                      transition: 'opacity 1s ease-in-out',
                       zIndex: activeIndex === idx ? 2 : 1
                     }}
                   />
