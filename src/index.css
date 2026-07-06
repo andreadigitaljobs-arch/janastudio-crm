@@ -1,30 +1,29 @@
-:root {
-  /* Core Palette — Premium Warm Blush & Cream */
-  --bg-primary: #fcf9f8;      /* Cream background */
-  --bg-secondary: #ffffff;    /* White cards */
-  --bg-tertiary: #f6eee9;     /* Light warm beige */
+  /* Core Palette — Soft Pink Pastel Theme */
+  --bg-primary: #fff5f7;      /* Very soft pink pastel background */
+  --bg-secondary: #fffbfb;    /* Clean warm white for cards */
+  --bg-tertiary: #ffeef2;     /* Warm pink pastel container background */
 
-  --pink-primary: #d4a09a;    /* Rose Gold */
-  --pink-secondary: #f6e6e2;  /* Soft blush active pill */
-  --pink-gradient: linear-gradient(135deg, #fbcada 0%, #d4a09a 50%, #a0506a 100%);
-  --pink-glow: 0 4px 15px rgba(212, 160, 154, 0.2);
+  --pink-primary: #f2bec8;    /* Pastel blush pink */
+  --pink-secondary: #fbe6eb;  /* Very soft light pink active states */
+  --pink-gradient: linear-gradient(135deg, #fbcada 0%, #f4c2cc 50%, #dca4b0 100%);
+  --pink-glow: 0 4px 15px rgba(244, 194, 204, 0.25);
 
-  --magenta-primary: #a0506a; /* Deep rose */
-  --magenta-secondary: #c97282;
-  --magenta-gradient: linear-gradient(135deg, #c97282 0%, #a0506a 100%);
+  --magenta-primary: #c27d8e; /* Muted pastel magenta */
+  --magenta-secondary: #dca4b0;
+  --magenta-gradient: linear-gradient(135deg, #dca4b0 0%, #c27d8e 100%);
 
-  --rose-gold: #d4a09a;
-  --blush: #f4ece9;
-  --dark-plum: #4a3036;       /* Deep warm plum text/accent */
-  --plum-mid: #6b4d53;
-  --plum-light: #8a6a70;
+  --rose-gold: #f2bec8;
+  --blush: #ffeef2;
+  --dark-plum: #52353b;       /* Dark plum text for warm accessibility */
+  --plum-mid: #785a60;
+  --plum-light: #a48288;
 
-  --text-primary: #4a3036;    /* Dark plum instead of charcoal */
-  --text-secondary: #7a6065;  /* Soft brown-plum */
-  --text-muted: #b0999e;
+  --text-primary: #52353b;    
+  --text-secondary: #84656a;  
+  --text-muted: #b89c9f;
 
-  --border-color: rgba(212, 160, 154, 0.2);
-  --accent-color: #d4a09a;
+  --border-color: rgba(242, 190, 200, 0.45); /* Soft pink pastel border line */
+  --accent-color: #f2bec8;
 
   --spacing-xs: 3px;
   --spacing-sm: 6px;
@@ -36,10 +35,10 @@
   --radius-xl: 16px;
   --radius-pill: 100px;
 
-  --glass-bg: rgba(255, 255, 255, 0.95);
-  --glass-border: 1px solid rgba(212, 160, 154, 0.15);
-  --shadow-apple: 0 4px 20px rgba(74, 48, 54, 0.04);
-  --shadow-card: 0 4px 24px rgba(74, 48, 54, 0.03), 0 1px 3px rgba(74, 48, 54, 0.02);
+  --glass-bg: #fffbfb;
+  --glass-border: 1px solid rgba(242, 190, 200, 0.45); /* Soft pink pastel card borders */
+  --shadow-apple: 0 4px 20px rgba(82, 53, 59, 0.03);
+  --shadow-card: 0 4px 24px rgba(242, 190, 200, 0.12), 0 1px 3px rgba(242, 190, 200, 0.05);
 
   --transition-fast: 0.2s ease;
   --transition-slow: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
