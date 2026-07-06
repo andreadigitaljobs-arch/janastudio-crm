@@ -43,7 +43,7 @@ const TopBar = ({
   return (
     <div style={{
       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      marginBottom: '24px', flexWrap: 'wrap', gap: '12px',
+      marginBottom: '16px', flexWrap: 'wrap', gap: '12px',
       paddingLeft: isMobile ? '42px' : '0'
     }}>
       {/* Left: Greeting */}
@@ -118,7 +118,6 @@ const TopBar = ({
           fontSize: '0.82rem', fontWeight: '600', color: 'var(--text-secondary)'
         }}>
           <span>{new Date().toLocaleDateString('es-VE', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-          <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>▼</span>
         </div>
 
       </div>

@@ -312,7 +312,7 @@ function App() {
     const authorizedTab = canAccessModule(user?.role, activeTab) ? activeTab : 'dashboard';
     switch (authorizedTab) {
       case 'dashboard':
-        return <DashboardModule
+        return <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}><DashboardModule
           isMobile={isMobile}
           isTablet={isTablet}
           isCollapsed={isCollapsed}
@@ -324,7 +324,7 @@ function App() {
           rates={effectiveRates}
           onNavigate={handleTabChange}
           onRefresh={fetchInitialData}
-        />;
+        /></div>;
       case 'scheduling': return <div className="p-container"><SchedulingModule isMobile={isMobile} rates={effectiveRates} /></div>;
       case 'reception': return <div className="p-container"><ReceptionModule isMobile={isMobile} /></div>;
       case 'checkout': return <div className="p-container"><CheckoutPOS isMobile={isMobile} rates={effectiveRates} onOpenSale={() => setIsSaleModalOpen(true)} onNavigate={handleTabChange} /></div>;
@@ -404,9 +404,9 @@ function App() {
         paddingTop: isMobile ? 'var(--spacing-sm)' : 'var(--spacing-xl)', 
         paddingLeft: isMobile ? 'var(--spacing-sm)' : 'var(--spacing-xl)', 
         paddingRight: isMobile ? 'var(--spacing-sm)' : 'var(--spacing-xl)', 
-        paddingBottom: '80px',
+        paddingBottom: isMobile ? 'var(--spacing-sm)' : 'var(--spacing-xl)',
         height: '100vh',
-        overflowY: 'auto',
+        overflowY: activeTab === 'dashboard' ? 'hidden' : 'auto',
         overflowX: 'hidden',
         backgroundColor: 'var(--bg-primary)',
         transition: 'all 0.3s ease'
@@ -426,7 +426,11 @@ function App() {
           </button>
         )}
 
-        <div key={activeTab} className={isAppLoading ? "opacity-0" : "animate-page-fade-in"} style={{ height: '100%' }}>
+        <div key={activeTab} className={isAppLoading ? "opacity-0" : "animate-page-fade-in"} style={{ 
+          height: activeTab === 'dashboard' ? 'calc(100% - 0px)' : 'auto',
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
           <TopBar
             activeTab={activeTab}
             rates={effectiveRates}

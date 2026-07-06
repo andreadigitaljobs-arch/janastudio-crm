@@ -169,20 +169,21 @@ const DashboardModule = ({
 
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.35s ease' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', animation: 'fadeIn 0.35s ease', height: '100%' }}>
       
       {/* Asymmetric Desktop Layout: Left main column, Right sidebar panel */}
-      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '24px', alignItems: 'stretch' }}>
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '12px', alignItems: 'stretch', flex: 1, minHeight: 0 }}>
         
         {/* Left Column: Banner, Stats grid, Bottom row */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px', minHeight: 0 }}>
           
           {/* Main Hero Banner: draggable & zoomable background image */}
           <div style={{
             borderRadius: '24px',
             position: 'relative',
             overflow: 'hidden',
-            minHeight: isMobile ? '200px' : '260px',
+            flex: isMobile ? 'none' : '1',
+            minHeight: isMobile ? '180px' : '0',
             border: '1px solid rgba(212, 160, 154, 0.15)',
             boxShadow: 'var(--shadow-card)',
             userSelect: 'none'
@@ -232,8 +233,7 @@ const DashboardModule = ({
               padding: isMobile ? '28px 24px' : '40px 44px',
               position: 'relative',
               height: '100%',
-              justifyContent: 'flex-end',
-              marginTop: isMobile ? '80px' : '100px'
+              justifyContent: 'center'
             }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                 <span style={{ 
@@ -378,86 +378,144 @@ const DashboardModule = ({
           <div style={{ 
             display: 'grid', 
             gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', 
-            gap: '16px' 
+            gap: '10px'
           }}>
             {/* Stats Card: Clients */}
             <div className="glass-card" style={{ 
-              padding: '20px', 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center',
-              backgroundColor: '#ffffff'
+              padding: '0',
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'stretch',
+              backgroundColor: '#ffffff',
+              overflow: 'hidden',
+              minHeight: '0',
+              position: 'relative'
             }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Clientes</span>
-                <span style={{ fontSize: '1.75rem', fontWeight: '700', color: 'var(--text-primary)' }}>
+              {/* Text side */}
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '18px 16px 18px 20px', gap: '4px' }}>
+                <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Clientes</span>
+                <span style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--text-primary)', lineHeight: 1.1 }}>
                   {stats?.clients || dbData?.clients?.length || 248}
                 </span>
-                <span style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600' }}>+18 nuevos este mes</span>
+                <span style={{ fontSize: '0.7rem', color: 'var(--magenta-secondary)', fontWeight: '600' }}>+18 nuevos este mes</span>
               </div>
+              {/* Oval image placeholder — replace src when ready */}
               <div style={{
-                width: '60px', height: '60px', borderRadius: '50%',
-                background: 'linear-gradient(135deg, #fff2f4 0%, #fae1e6 100%)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: 'inset 0 2px 6px rgba(160, 80, 106, 0.05)',
-                border: '1px solid rgba(160, 80, 106, 0.05)',
-                color: 'var(--magenta-primary)'
+                width: '100px',
+                flexShrink: 0,
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '10px 12px 10px 0'
               }}>
-                <Users size={24} />
+                <div style={{
+                  width: '80px',
+                  height: '110px',
+                  borderRadius: '60px 60px 60px 60px',
+                  overflow: 'hidden',
+                  boxShadow: '0 4px 16px rgba(160,80,106,0.15)',
+                  background: 'linear-gradient(160deg, #fae1e6 0%, #f0c4cf 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '2px solid rgba(212,160,154,0.2)'
+                }}>
+                  {/* Placeholder icon until user provides image */}
+                  <Users size={32} color="rgba(160,80,106,0.4)" />
+                </div>
               </div>
             </div>
 
             {/* Stats Card: Service Catalog */}
             <div className="glass-card" style={{ 
-              padding: '20px', 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center',
-              backgroundColor: '#ffffff'
+              padding: '0',
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'stretch',
+              backgroundColor: '#ffffff',
+              overflow: 'hidden',
+              minHeight: '0',
+              position: 'relative'
             }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Catálogo de Servicios</span>
-                <span style={{ fontSize: '1.75rem', fontWeight: '700', color: 'var(--text-primary)' }}>
+              {/* Text side */}
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '18px 16px 18px 20px', gap: '4px' }}>
+                <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Catálogo de Servicios</span>
+                <span style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--text-primary)', lineHeight: 1.1 }}>
                   {dbData?.services?.length || 24}
                 </span>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: '500' }}>Más solicitado: Pestañas Clásicas</span>
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: '500' }}>Más solicitado: Pestañas Clásicas</span>
               </div>
+              {/* Oval image placeholder */}
               <div style={{
-                width: '60px', height: '60px', borderRadius: '50%',
-                background: 'linear-gradient(135deg, #f6eee9 0%, #eadcd5 100%)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: 'inset 0 2px 6px rgba(212, 160, 154, 0.05)',
-                border: '1px solid rgba(212, 160, 154, 0.05)',
-                color: 'var(--pink-primary)'
+                width: '100px',
+                flexShrink: 0,
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '10px 12px 10px 0'
               }}>
-                <Scissors size={24} />
+                <div style={{
+                  width: '80px',
+                  height: '110px',
+                  borderRadius: '60px 60px 60px 60px',
+                  overflow: 'hidden',
+                  boxShadow: '0 4px 16px rgba(160,80,106,0.15)',
+                  background: 'linear-gradient(160deg, #f6eee9 0%, #eadcd5 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '2px solid rgba(212,160,154,0.2)'
+                }}>
+                  <Scissors size={32} color="rgba(160,80,106,0.4)" />
+                </div>
               </div>
             </div>
 
             {/* Stats Card: Team */}
             <div className="glass-card" style={{ 
-              padding: '20px', 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center',
-              backgroundColor: '#ffffff'
+              padding: '0',
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'stretch',
+              backgroundColor: '#ffffff',
+              overflow: 'hidden',
+              minHeight: '0',
+              position: 'relative'
             }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Equipo</span>
-                <span style={{ fontSize: '1.75rem', fontWeight: '700', color: 'var(--text-primary)' }}>
+              {/* Text side */}
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '18px 16px 18px 20px', gap: '4px' }}>
+                <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Equipo</span>
+                <span style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--text-primary)', lineHeight: 1.1 }}>
                   {dbData?.staff?.length || 6}
                 </span>
-                <span style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600' }}>2 en turno hoy</span>
+                <span style={{ fontSize: '0.7rem', color: 'var(--magenta-secondary)', fontWeight: '600' }}>2 en turno hoy</span>
               </div>
+              {/* Oval image placeholder */}
               <div style={{
-                width: '60px', height: '60px', borderRadius: '50%',
-                background: 'linear-gradient(135deg, #fff2f4 0%, #fae1e6 100%)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: 'inset 0 2px 6px rgba(160, 80, 106, 0.05)',
-                border: '1px solid rgba(160, 80, 106, 0.05)',
-                color: 'var(--magenta-primary)'
+                width: '100px',
+                flexShrink: 0,
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '10px 12px 10px 0'
               }}>
-                <Sparkles size={24} />
+                <div style={{
+                  width: '80px',
+                  height: '110px',
+                  borderRadius: '60px 60px 60px 60px',
+                  overflow: 'hidden',
+                  boxShadow: '0 4px 16px rgba(160,80,106,0.15)',
+                  background: 'linear-gradient(160deg, #fff2f4 0%, #fae1e6 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '2px solid rgba(212,160,154,0.2)'
+                }}>
+                  <Sparkles size={32} color="rgba(160,80,106,0.4)" />
+                </div>
               </div>
             </div>
           </div>
@@ -466,10 +524,12 @@ const DashboardModule = ({
           <div style={{ 
             display: 'grid', 
             gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', 
-            gap: '16px' 
+            gap: '10px',
+            flex: '1',
+            minHeight: 0
           }}>
             {/* Top Especialistas Card */}
-            <div className="glass-card" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '12px', minHeight: '190px', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)' }}>
+            <div className="glass-card" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '12px', minHeight: '0', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                 <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Top Especialistas</span>
                 <span onClick={() => onNavigate('personnel')} style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}>Ver todo</span>
@@ -502,7 +562,7 @@ const DashboardModule = ({
             </div>
 
             {/* Reports Revenue card */}
-            <div className="glass-card" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '10px', minHeight: '190px', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)' }}>
+            <div className="glass-card" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '10px', minHeight: '0', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Reportes</span>
                 <span style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}>Ver todo</span>
@@ -524,7 +584,7 @@ const DashboardModule = ({
             </div>
 
             {/* Servicios Más Populares Card */}
-            <div className="glass-card" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '10px', minHeight: '190px', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)' }}>
+            <div className="glass-card" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '10px', minHeight: '0', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Servicios Populares</span>
                 <span onClick={() => onNavigate('services')} style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}>Ver todo</span>
@@ -566,16 +626,18 @@ const DashboardModule = ({
 
         {/* Right Sidebar Panel: Upcoming Appointments */}
         <div className="glass-card" style={{
-          width: isMobile ? '100%' : '320px',
+          width: isMobile ? '100%' : '300px',
+          flexShrink: 0,
           backgroundColor: '#ffffff',
-          padding: '20px',
+          padding: '16px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          gap: '16px',
+          gap: '10px',
           borderRadius: '20px',
           border: '1px solid rgba(212, 160, 154, 0.15)',
-          boxShadow: 'var(--shadow-card)'
+          boxShadow: 'var(--shadow-card)',
+          overflow: 'hidden'
         }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -595,16 +657,17 @@ const DashboardModule = ({
             </div>
 
             {/* Appointments List */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', flex: 1 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, overflow: 'hidden' }}>
               {upcomingAppointments.map((apt, idx) => {
                 const sStyle = getStatusStyle(apt.status);
                 return (
                   <div key={idx} style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '12px',
-                    padding: '8px 0',
-                    borderBottom: idx < upcomingAppointments.length - 1 ? '1px solid rgba(212, 160, 154, 0.1)' : 'none'
+                    gap: '10px',
+                    padding: '6px 0',
+                    borderBottom: idx < upcomingAppointments.length - 1 ? '1px solid rgba(212, 160, 154, 0.1)' : 'none',
+                    flexShrink: 0
                   }}>
                     {/* User profile circular letter initials */}
                     <div style={{
