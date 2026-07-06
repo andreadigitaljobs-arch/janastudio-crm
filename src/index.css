@@ -444,18 +444,123 @@ html, body {
   text-decoration: underline;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .salon-login-left {
-    display: none;
+/* ── DISEÑO MOBILE: Foto arriba, tarjeta blanca abajo ── */
+@media (max-width: 768px) {
+
+  .salon-login-outer {
+    padding: 0;
+    background: #f5eff1;
+    align-items: flex-start;
   }
+
   .salon-login-container {
-    max-width: 500px;
-    height: auto;
-    border-radius: 28px;
+    flex-direction: column;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    height: 100vh;
+    height: 100dvh;
+    max-width: 100%;
+    max-height: 100%;
+    overflow: hidden;
   }
+
+  /* ── FOTO: Ocupa el 35% superior ── */
+  .salon-login-left {
+    flex: none;
+    width: 100%;
+    height: 35vh;
+    height: 35dvh;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .salon-semicircle-border {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+    position: relative !important;
+    top: 0 !important;
+    right: 0 !important;
+  }
+
+  .salon-semicircle-content {
+    border-radius: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .salon-semicircle-image {
+    border-radius: 0 !important;
+  }
+
+  /* ── TARJETA BLANCA: Sube encima de la foto, con borde rose gold ── */
   .salon-login-right {
-    padding: 40px 30px;
+    flex: 1;
+    width: 100%;
+    background: #ffffff;
+    border-radius: 36px 36px 0 0;
+    margin-top: -44px;
+    z-index: 10;
+    position: relative;
+    padding: 28px 28px 24px;
+    /* Borde rose gold en la curva superior */
+    box-shadow:
+      0 -3px 0 0 rgba(223, 178, 140, 0.55),
+      0 -16px 40px rgba(167, 102, 115, 0.12);
+    overflow: hidden;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .salon-login-form-wrapper {
+    width: 100%;
+    max-width: 100%;
+    gap: 16px;
+  }
+
+  .salon-logo-header {
+    margin-bottom: 0;
+  }
+
+  .salon-logo-image {
+    max-width: 150px;
+    width: 60%;
+  }
+
+  .salon-form-header {
+    gap: 4px;
+  }
+
+  .salon-form-title {
+    font-size: 1.25rem;
+  }
+
+  .salon-form-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .salon-main-form {
+    gap: 12px;
+  }
+
+  .salon-submit-button {
+    padding: 15px;
+    font-size: 0.95rem;
+    margin-top: 4px;
+  }
+
+  .salon-field-input {
+    padding: 13px 16px 13px 48px;
+    font-size: 0.92rem;
   }
 }
 

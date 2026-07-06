@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Eye, EyeOff, User, Lock, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, User, Lock, ArrowRight, CalendarHeart, Sparkles, Scissors } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail]       = useState('');
@@ -173,6 +173,49 @@ export default function Login() {
               </button>
 
             </form>
+
+            {/* ── Íconos decorativos rose gold ── */}
+            <div style={{
+              marginTop: '28px',
+              paddingTop: '24px',
+              borderTop: '1px solid rgba(223, 178, 140, 0.25)',
+              display: 'flex',
+              justifyContent: 'space-around',
+              gap: '8px'
+            }}>
+              {[
+                { icon: <CalendarHeart size={22} strokeWidth={1.4} />, label: 'Agenda', sub: 'tus citas' },
+                { icon: <Sparkles size={22} strokeWidth={1.4} />, label: 'Servicios', sub: 'exclusivos' },
+                { icon: <Scissors size={22} strokeWidth={1.4} />, label: 'Extensiones', sub: '& Brows' },
+              ].map((item, i) => (
+                <div key={i} style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '6px',
+                  flex: 1
+                }}>
+                  <div style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '14px',
+                    background: 'linear-gradient(135deg, rgba(232,162,169,0.12) 0%, rgba(223,178,140,0.12) 100%)',
+                    border: '1px solid rgba(223, 178, 140, 0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#c97282'
+                  }}>
+                    {item.icon}
+                  </div>
+                  <div style={{ textAlign: 'center', lineHeight: '1.2' }}>
+                    <div style={{ fontSize: '11px', fontWeight: '600', color: '#6b4a52' }}>{item.label}</div>
+                    <div style={{ fontSize: '10px', color: '#a07880', fontWeight: '400' }}>{item.sub}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
           </div>
         </div>
 
