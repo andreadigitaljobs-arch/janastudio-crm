@@ -409,7 +409,7 @@ function App() {
         paddingRight: isMobile ? 'var(--spacing-sm)' : 'var(--spacing-xl)', 
         paddingBottom: isMobile ? 'var(--spacing-sm)' : 'var(--spacing-xl)',
         height: '100vh',
-        overflowY: activeTab === 'dashboard' ? 'hidden' : 'auto',
+        overflowY: 'auto',
         overflowX: 'hidden',
         backgroundColor: 'var(--bg-primary)',
         transition: 'all 0.3s ease'

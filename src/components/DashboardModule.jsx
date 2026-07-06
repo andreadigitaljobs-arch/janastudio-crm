@@ -169,7 +169,7 @@ const DashboardModule = ({
 
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', animation: 'fadeIn 0.35s ease', height: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', animation: 'fadeIn 0.35s ease', minHeight: isMobile ? 'auto' : '100%', paddingBottom: isMobile ? '20px' : '0' }}>
       
       {/* Asymmetric Desktop Layout: Left main column, Right sidebar panel */}
       <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '12px', alignItems: 'stretch', flex: 1, minHeight: 0 }}>
@@ -279,9 +279,15 @@ const DashboardModule = ({
 
           {/* Stats grid row */}
           <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', 
-            gap: '10px'
+            display: 'flex',
+            gridTemplateColumns: isMobile ? 'none' : 'repeat(3, 1fr)', 
+            gap: '10px',
+            overflowX: isMobile ? 'auto' : 'visible',
+            WebkitOverflowScrolling: 'touch',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            paddingBottom: isMobile ? '4px' : '0',
+            ...(isMobile ? {} : { display: 'grid' })
           }}>
             {/* Stats Card: Clients */}
             <div className="glass-card wow-card wow-animate-2" style={{ 
@@ -292,7 +298,9 @@ const DashboardModule = ({
               backgroundColor: '#ffffff',
               overflow: 'hidden',
               minHeight: '0',
-              position: 'relative'
+              position: 'relative',
+              minWidth: isMobile ? '200px' : '0',
+              flexShrink: isMobile ? '0' : '1'
             }}>
               {/* Text side */}
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '18px 16px 18px 20px', gap: '4px' }}>
@@ -339,7 +347,9 @@ const DashboardModule = ({
               backgroundColor: '#ffffff',
               overflow: 'hidden',
               minHeight: '0',
-              position: 'relative'
+              position: 'relative',
+              minWidth: isMobile ? '200px' : '0',
+              flexShrink: isMobile ? '0' : '1'
             }}>
               {/* Text side */}
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '18px 16px 18px 20px', gap: '4px' }}>
@@ -385,7 +395,9 @@ const DashboardModule = ({
               backgroundColor: '#ffffff',
               overflow: 'hidden',
               minHeight: '0',
-              position: 'relative'
+              position: 'relative',
+              minWidth: isMobile ? '200px' : '0',
+              flexShrink: isMobile ? '0' : '1'
             }}>
               {/* Text side */}
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '18px 16px 18px 20px', gap: '4px' }}>
@@ -425,14 +437,18 @@ const DashboardModule = ({
 
           {/* Bottom Grid: Loyalty, Reports, Grow your studio */}
           <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', 
+            display: 'flex',
+            gridTemplateColumns: isMobile ? 'none' : 'repeat(3, 1fr)', 
             gap: '10px',
-            flex: '1',
-            minHeight: 0
+            overflowX: isMobile ? 'auto' : 'visible',
+            WebkitOverflowScrolling: 'touch',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            paddingBottom: isMobile ? '4px' : '0',
+            ...(isMobile ? {} : { display: 'grid' })
           }}>
             {/* Top Especialistas Card */}
-            <div className="glass-card wow-card wow-animate-3" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '12px', minHeight: '0', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)' }}>
+            <div className="glass-card wow-card wow-animate-3" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '12px', minHeight: '0', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)', minWidth: isMobile ? '260px' : '0', flexShrink: isMobile ? '0' : '1' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                 <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Top Especialistas</span>
                 <span onClick={() => onNavigate('personnel')} style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}>Ver todo</span>
@@ -465,7 +481,7 @@ const DashboardModule = ({
             </div>
 
             {/* Reports Revenue card */}
-            <div className="glass-card wow-card wow-animate-4" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '10px', minHeight: '0', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)' }}>
+            <div className="glass-card wow-card wow-animate-4" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '10px', minHeight: '0', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)', minWidth: isMobile ? '260px' : '0', flexShrink: isMobile ? '0' : '1' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Reportes</span>
                 <span style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}>Ver todo</span>
@@ -487,7 +503,7 @@ const DashboardModule = ({
             </div>
 
             {/* Servicios Más Populares Card */}
-            <div className="glass-card wow-card wow-animate-5" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '10px', minHeight: '0', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)' }}>
+            <div className="glass-card wow-card wow-animate-5" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '10px', minHeight: '0', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)', minWidth: isMobile ? '260px' : '0', flexShrink: isMobile ? '0' : '1' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Servicios Populares</span>
                 <span onClick={() => onNavigate('services')} style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}>Ver todo</span>

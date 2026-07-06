@@ -112,6 +112,7 @@ html, body {
 
 .animate-page-fade-in { animation: pageFadeIn 0.3s ease; }
 .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
 
 /* ═══════════════════════════════════════════════════════════
    LUXURY LOGIN — Premium Design System
@@ -1254,5 +1255,197 @@ input:focus { outline: none; }
 .wow-animate-3 { animation: fadeInUpWow 0.5s cubic-bezier(0.25, 1, 0.5, 1) both; animation-delay: 0.18s; }
 .wow-animate-4 { animation: fadeInUpWow 0.5s cubic-bezier(0.25, 1, 0.5, 1) both; animation-delay: 0.25s; }
 .wow-animate-5 { animation: fadeInUpWow 0.5s cubic-bezier(0.25, 1, 0.5, 1) both; animation-delay: 0.32s; }
+
+/* ── ESTILOS PREMIUM PARA LA AGENDA (SchedulingModule) ── */
+
+.agenda-main-container {
+  display: grid;
+  grid-template-columns: 260px 1fr 260px;
+  gap: 20px;
+  align-items: start;
+  width: 100%;
+}
+
+@media (max-width: 1300px) {
+  .agenda-main-container {
+    grid-template-columns: 240px 1fr;
+  }
+  .agenda-sidebar-right {
+    grid-column: span 2;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (max-width: 850px) {
+  .agenda-main-container {
+    grid-template-columns: 1fr;
+  }
+  .agenda-sidebar-right {
+    grid-column: span 1;
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tarjetas base con estética Glassmorphism pulida */
+.agenda-glass-card {
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  border: 1px solid rgba(223, 178, 140, 0.25) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 8px 24px rgba(167, 102, 115, 0.03) !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden;
+}
+
+.agenda-glass-card:hover {
+  border-color: rgba(196, 139, 159, 0.4) !important;
+  box-shadow: 0 12px 30px rgba(167, 102, 115, 0.06) !important;
+}
+
+/* Timeline visual mejorado */
+.agenda-timeline-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.agenda-time-row {
+  display: flex;
+  gap: 16px;
+  min-height: 80px;
+  position: relative;
+}
+
+.agenda-time-indicator {
+  width: 70px;
+  flex-shrink: 0;
+  padding-top: 14px;
+  font-size: 0.72rem;
+  color: #8c767b;
+  font-weight: 600;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.agenda-timeline-connector-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #db8c95;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px rgba(219, 140, 149, 0.2);
+  position: absolute;
+  left: 89px;
+  top: 18px;
+  z-index: 2;
+}
+
+.agenda-time-row::before {
+  content: '';
+  position: absolute;
+  left: 93px;
+  top: 24px;
+  bottom: -24px;
+  width: 1px;
+  background: rgba(223, 178, 140, 0.35);
+  z-index: 1;
+}
+
+.agenda-time-row:last-child::before {
+  display: none;
+}
+
+.agenda-appointment-wrapper {
+  flex: 1;
+  padding: 6px 0 6px 12px;
+  display: flex;
+  align-items: center;
+}
+
+/* Tarjetas de citas súper pro */
+.agenda-appointment-card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(223, 178, 140, 0.2);
+  border-left-width: 5px; /* Indicador del estado */
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 4px 12px rgba(167, 102, 115, 0.02);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  cursor: pointer;
+}
+
+.agenda-appointment-card:hover {
+  transform: translateX(4px);
+  box-shadow: 0 8px 20px rgba(167, 102, 115, 0.05);
+  border-color: rgba(196, 139, 159, 0.3);
+}
+
+/* Píldora de estado elegante */
+.agenda-status-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+}
+
+/* Botón discreto para agendar en horas libres */
+.agenda-free-slot-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: 14px;
+  border: 1px dashed rgba(223, 178, 140, 0.35);
+  background: rgba(255, 255, 255, 0.3);
+  color: #a0848a;
+  font-size: 0.72rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.agenda-free-slot-btn:hover {
+  background: rgba(232, 162, 169, 0.04);
+  border-color: rgba(196, 139, 159, 0.6);
+  color: #c97282;
+}
+
+/* Barra de pestañas (Tabs) */
+.agenda-view-tab {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #8c767b;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.agenda-view-tab.active {
+  background: linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(219, 140, 149, 0.2);
+}
+
 
 
