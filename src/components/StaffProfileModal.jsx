@@ -489,7 +489,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                         disabled={!isAdmin}
                         options={[
                           { value: 'Propia', label: 'Propia del Estilista' },
-                          ...(isAdmin ? [{ value: 'Asignada', label: 'Asignada (Astro)' }] : [])
+                          ...(isAdmin ? [{ value: 'Asignada', label: 'Asignada (JanaStudio)' }] : [])
                         ]}
                       />
                     </div>

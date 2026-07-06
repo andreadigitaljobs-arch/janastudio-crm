@@ -1,8 +1,8 @@
-// Servicio de Gestión de Notificaciones para Astro Barber CRM
+// Servicio de Gestión de Notificaciones para JanaStudio CRM
 
 class NotificationService {
   constructor() {
-    this.notificationsKey = 'astro_notifications_list';
+    this.notificationsKey = 'jana_notifications_list';
     this.swRegistered = false;
     this.initServiceWorker();
   }
@@ -79,7 +79,7 @@ class NotificationService {
     localStorage.setItem(this.notificationsKey, JSON.stringify(list.slice(0, 50))); // Límite de 50 en historial
     
     // Disparar un evento personalizado de ventana para que React se entere al instante de la actualización
-    window.dispatchEvent(new Event('astro_new_notification'));
+    window.dispatchEvent(new Event('jana_new_notification'));
   }
 
   // Obtener historial
@@ -97,13 +97,13 @@ class NotificationService {
     const list = this.getHistory();
     list.forEach(n => n.read = true);
     localStorage.setItem(this.notificationsKey, JSON.stringify(list));
-    window.dispatchEvent(new Event('astro_new_notification'));
+    window.dispatchEvent(new Event('jana_new_notification'));
   }
 
   // Eliminar historial
   clearHistory() {
     localStorage.setItem(this.notificationsKey, JSON.stringify([]));
-    window.dispatchEvent(new Event('astro_new_notification'));
+    window.dispatchEvent(new Event('jana_new_notification'));
   }
 
   // Enviar una notificación broadcast a través de Supabase Realtime
@@ -131,7 +131,7 @@ class NotificationService {
     return [
       {
         id: 'default-1',
-        title: '¡Bienvenido al CRM Astro Barber!',
+        title: '¡Bienvenido al CRM JanaStudio!',
         body: 'El sistema de notificaciones push está listo. Actívalo para enterarte de citas y cierres semanales.',
         date: new Date().toISOString(),
         read: false

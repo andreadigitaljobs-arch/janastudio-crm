@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useState, useEffect, useMemo } from 'react';
+import React, { lazy, Suspense, useState, useEffect, useMemo, useCallback } from 'react';
 import Sidebar from './components/Sidebar';
 import {
   BarChart3,
@@ -11,12 +11,10 @@ import {
   Calendar,
   X,
   Receipt,
-  Heart
+  Menu
 } from 'lucide-react';
 import { dataService } from './services/dataService';
 
-// Mobile Components
-import MobileLayout from './components/mobile/MobileLayout';
 import ParticleBackground from './components/ParticleBackground';
 import AstroLoader from './components/AstroLoader';
 import Login from './components/Login';
@@ -29,9 +27,7 @@ import { useScrollLock } from './hooks/useScrollLock';
 import { useModal } from './context/ModalContext';
 import { canAccessModule } from './utils/roles';
 
-// Lazy-loaded modules
 const DashboardModule = lazy(() => import('./components/DashboardModule'));
-const MobileDashboard = lazy(() => import('./components/mobile/MobileDashboard'));
 const ClientModule = lazy(() => import('./components/ClientModule'));
 const PersonnelModule = lazy(() => import('./components/PersonnelModule'));
 const FinanceModule = lazy(() => import('./components/FinanceModule'));
@@ -62,6 +58,7 @@ function App() {
   const [isTabLoading, setIsTabLoading] = useState(false);
   const [tabParams, setTabParams] = useState({});
   const [isReceptionModalOpen, setIsReceptionModalOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { isModalOpen } = useModal();
 
   useScrollLock(isReceptionModalOpen);
@@ -85,7 +82,6 @@ function App() {
 
   const handleRefresh = () => setRefreshKey(prev => prev + 1);
 
-  // Auto-Sync Exchange Rates
   useEffect(() => {
     const syncRates = async () => {
       const ratesData = await dataService.getExchangeRates();
@@ -96,7 +92,6 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Real-time Notifications
   useEffect(() => {
     if (!user) return;
     const channel = dataService.supabase.channel('jana-notifications-v2')
@@ -112,7 +107,6 @@ function App() {
     return () => { dataService.supabase.removeChannel(channel); };
   }, [user]);
 
-  // Real-time Data Sync
   useEffect(() => {
     if (!user) return;
     let refreshTimer;
@@ -135,12 +129,11 @@ function App() {
     return () => { clearTimeout(refreshTimer); dataService.supabase.removeChannel(channel); };
   }, [user]);
 
-  const handleSetActiveRateType = (type) => {
+  const handleSetActiveRateType = useCallback((type) => {
     setActiveRateType(type);
     localStorage.setItem('jana_active_rate', type);
-  };
+  }, []);
 
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSaleModalOpen, setIsSaleModalOpen] = useState(false);
   const [stats, setStats] = useState({ income: 0, clients: 0, expenses: 0, appointments: 0 });
   const [dbData, setDbData] = useState({ clients: [], services: [], staff: [], inventory: [] });
@@ -156,26 +149,20 @@ function App() {
     }]
   });
 
-  const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-    { id: 'scheduling', label: 'Agenda', icon: Calendar },
-    { id: 'reception', label: 'Recepción', icon: UserCircle },
-    { id: 'clients', label: 'Clientes', icon: Users },
-    { id: 'services', label: 'Servicios', icon: Star },
-    { id: 'costing', label: 'Costeo', icon: Receipt, roles: ['Admin'] },
-    { id: 'personnel', label: 'Equipo', icon: Sparkles },
-    { id: 'inventory', label: 'Inventario', icon: Package, roles: ['Admin', 'Caja'] },
-    { id: 'finance', label: 'Finanzas', icon: Wallet, roles: ['Admin', 'Caja'] },
-  ];
-
   useEffect(() => {
     if (!user) return;
     const handleResize = () => {
       const width = window.innerWidth;
       setIsMobile(width < 768);
       setIsTablet(width >= 768 && width < 1024);
-      if (width < 1024 && width >= 768) setIsCollapsed(true);
-      else if (width >= 1024) setIsCollapsed(false);
+      if (width >= 1024) {
+        setIsCollapsed(false);
+        setIsSidebarOpen(false);
+      } else if (width < 768) {
+        setIsSidebarOpen(false);
+      } else {
+        setIsCollapsed(true);
+      }
     };
     window.addEventListener('resize', handleResize);
 
@@ -298,14 +285,14 @@ function App() {
     await fetchSecondaryData();
   }
 
-  const handleTabChange = (tabId, params = {}) => {
+  const handleTabChange = useCallback((tabId, params = {}) => {
     if (!canAccessModule(user?.role, tabId)) return;
     setTabParams(params);
     if (tabId === activeTab) return;
     setActiveTab(tabId);
     localStorage.setItem('jana_active_tab', tabId);
     if (isMobile) setIsSidebarOpen(false);
-  };
+  }, [user?.role, activeTab, isMobile]);
 
   const handleSeedData = async () => {
     if (!await confirm('¿Quieres cargar datos de prueba para ver el CRM funcionando?')) return;
@@ -325,31 +312,19 @@ function App() {
     const authorizedTab = canAccessModule(user?.role, activeTab) ? activeTab : 'dashboard';
     switch (authorizedTab) {
       case 'dashboard':
-        return isMobile ? (
-          <MobileDashboard
-            onOpenSale={() => setIsSaleModalOpen(true)}
-            stats={stats}
-            chartData={chartData}
-            dbData={dbData}
-            rates={effectiveRates}
-            onNavigate={handleTabChange}
-            onOpenNotifications={() => setIsNotificationsOpen(true)}
-          />
-        ) : (
-          <DashboardModule
-            isMobile={isMobile}
-            isTablet={isTablet}
-            isCollapsed={isCollapsed}
-            onOpenSale={() => setIsSaleModalOpen(true)}
-            stats={stats}
-            chartData={chartData}
-            dbData={dbData}
-            handleSeedData={handleSeedData}
-            rates={effectiveRates}
-            onNavigate={handleTabChange}
-            onRefresh={fetchInitialData}
-          />
-        );
+        return <DashboardModule
+          isMobile={isMobile}
+          isTablet={isTablet}
+          isCollapsed={isCollapsed}
+          onOpenSale={() => setIsSaleModalOpen(true)}
+          stats={stats}
+          chartData={chartData}
+          dbData={dbData}
+          handleSeedData={handleSeedData}
+          rates={effectiveRates}
+          onNavigate={handleTabChange}
+          onRefresh={fetchInitialData}
+        />;
       case 'scheduling': return <div className="p-container"><SchedulingModule isMobile={isMobile} rates={effectiveRates} /></div>;
       case 'reception': return <div className="p-container"><ReceptionModule isMobile={isMobile} /></div>;
       case 'checkout': return <div className="p-container"><CheckoutPOS isMobile={isMobile} rates={effectiveRates} onOpenSale={() => setIsSaleModalOpen(true)} onNavigate={handleTabChange} /></div>;
@@ -371,63 +346,63 @@ function App() {
   }
   if (!user) return <Login />;
 
-  if (isMobile) {
-    return (
-      <MobileLayout 
-        activeTab={activeTab} 
-        setActiveTab={handleTabChange} 
-        onOpenSale={() => setIsSaleModalOpen(true)}
-        rates={effectiveRates}
-        activeRateType={activeRateType}
-        onToggleRateType={handleSetActiveRateType}
-      >
-        <AstroLoader visible={isAppLoading} />
-        <div key={activeTab} className={isAppLoading ? "opacity-0" : "animate-page-fade-in"} style={{ minHeight: '100%' }}>
-          <Suspense fallback={<ModuleFallback />}>
-            {renderContent()}
-          </Suspense>
-        </div>
-        {isSaleModalOpen && (
-          <Suspense fallback={null}>
-            <CheckoutPOS 
-              isOpen={isSaleModalOpen} 
-              onClose={() => setIsSaleModalOpen(false)} 
-              clients={dbData.clients}
-              services={dbData.services}
-              staff={dbData.staff}
-              inventory={dbData.inventory || []}
-              onRefresh={fetchInitialData}
-              rates={rates}
-              currency={currency}
-            />
-          </Suspense>
-        )}
-        <NotificationsDrawer 
-          isOpen={isNotificationsOpen} 
-          onClose={() => setIsNotificationsOpen(false)} 
-        />
-      </MobileLayout>
-    );
-  }
+  const sidebarWidth = isMobile ? 0 : (isCollapsed ? 70 : 220);
 
   return (
     <div className="app-container no-scrollbar" style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'transparent', position: 'relative', overflowX: 'hidden' }}>
       <AstroLoader visible={isAppLoading} />
-      <Sidebar 
-        activeTab={activeTab} 
-        setActiveTab={(id) => handleTabChange(id, {})} 
-        rates={effectiveRates} 
-        isCollapsed={isCollapsed}
-        setIsCollapsed={setIsCollapsed}
-        activeRateType={activeRateType}
-        onToggleRateType={handleSetActiveRateType}
-      />
+
+      {isMobile && isSidebarOpen && (
+        <div
+          onClick={() => setIsSidebarOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 998,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            backdropFilter: 'blur(4px)',
+          }}
+        />
+      )}
+
+      <div style={isMobile ? {
+        position: 'fixed', left: 0, top: 0, bottom: 0,
+        width: '260px', zIndex: 999,
+        transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
+        transition: 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
+        overflowY: 'auto', overflowX: 'hidden',
+      } : {}}>
+        <Sidebar
+          activeTab={activeTab}
+          setActiveTab={(id) => handleTabChange(id, {})}
+          rates={effectiveRates}
+          isMobile={isMobile}
+          isCollapsed={isMobile ? false : isCollapsed}
+          setIsCollapsed={setIsCollapsed}
+          activeRateType={activeRateType}
+          onToggleRateType={handleSetActiveRateType}
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+        />
+      </div>
+
+      {!isMobile && (
+        <Sidebar
+          activeTab={activeTab}
+          setActiveTab={(id) => handleTabChange(id, {})}
+          rates={effectiveRates}
+          isMobile={false}
+          isCollapsed={isCollapsed}
+          setIsCollapsed={setIsCollapsed}
+          activeRateType={activeRateType}
+          onToggleRateType={handleSetActiveRateType}
+        />
+      )}
+
       <main className="main-content no-scrollbar" style={{ 
         flex: 1, 
         width: isMobile ? '100%' : (isCollapsed ? 'calc(100% - 70px)' : 'calc(100% - 220px)'),
         maxWidth: isMobile ? '100%' : (isCollapsed ? 'calc(100% - 70px)' : 'calc(100% - 220px)'),
         marginLeft: isMobile ? '0' : (isCollapsed ? '70px' : '220px'), 
-        padding: 'var(--spacing-xl)', 
+        padding: isMobile ? 'var(--spacing-sm)' : 'var(--spacing-xl)', 
         paddingBottom: '80px',
         height: '100vh',
         overflowY: 'auto',
@@ -435,6 +410,21 @@ function App() {
         backgroundColor: '#faf5f5',
         transition: 'all 0.3s ease'
       }}>
+        {isMobile && (
+          <button
+            onClick={() => setIsSidebarOpen(true)}
+            style={{
+              position: 'fixed', left: '12px', top: '12px', zIndex: 100,
+              background: 'rgba(255,255,255,0.9)', border: '1px solid rgba(196,139,159,0.2)',
+              borderRadius: '12px', width: '42px', height: '42px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+            }}
+          >
+            <Menu size={20} color="var(--pink-primary)" />
+          </button>
+        )}
+
         <div key={activeTab} className={isAppLoading ? "opacity-0" : "animate-page-fade-in"} style={{ height: '100%' }}>
           <TopBar
             activeTab={activeTab}
@@ -443,6 +433,7 @@ function App() {
             activeRateType={activeRateType}
             onToggleRateType={handleSetActiveRateType}
             onOpenNotifications={() => setIsNotificationsOpen(true)}
+            isMobile={isMobile}
           />
           <Suspense fallback={<ModuleFallback />}>
             {renderContent()}
@@ -518,7 +509,6 @@ function App() {
   );
 }
 
-// Helper functions
 function getStartOfCurrentWeek() {
   const now = new Date();
   const day = now.getDay();

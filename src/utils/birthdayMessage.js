@@ -1,9 +1,9 @@
-const STORAGE_KEY = 'astro_default_bday_message';
+const STORAGE_KEY = 'jana_default_bday_message';
 
 export const DEFAULT_BIRTHDAY_MESSAGE = [
   `¡Hola {name}!`,
   String.fromCodePoint(0x1F389),
-  'Te deseamos un muy feliz cumpleaños de parte de todo el equipo de Astro Barbershop.',
+  'Te deseamos un muy feliz cumpleaños de parte de todo el equipo de JanaStudio.',
   String.fromCodePoint(0x1F488),
   '¡Que tengas un día excelente!'
 ].join(' ');
