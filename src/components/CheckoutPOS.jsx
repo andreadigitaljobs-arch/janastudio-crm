@@ -157,7 +157,11 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
   const [tips, setTips] = useState([]); // Array of { id, staffId, amount }
   const [cart, setCart] = useState([]); // Sold products
   const [itemSalesAssociations, setItemSalesAssociations] = useState({}); // { itemId: staffId }
-  const [paymentMode, setPaymentMode] = useState('full_bs'); // or 'mixed'
+  const [paymentMode, setPaymentMode] = useState('full_bs'); // or 'mixed', 'financed'
+  const [packageSales, setPackageSales] = useState({}); // { appointmentId: boolean }
+  const [initialPaymentUsd, setInitialPaymentUsd] = useState(0);
+  const [installmentsCount, setInstallmentsCount] = useState(3);
+  const [initialPaymentMethod, setInitialPaymentMethod] = useState('Efectivo');
   const [cashUsd, setCashUsd] = useState(0);
   const [methodUsd, setMethodUsd] = useState('Efectivo');
   const [methodBs, setMethodBs] = useState('Pago Móvil');
@@ -170,7 +174,20 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
   const [bundledApps, setBundledApps] = useState([]);
   const [linkedApps, setLinkedApps] = useState([]);
   const [totalAppsInCheckout, setTotalAppsInCheckout] = useState([]);
-  const [activeAppForStylistChange, setActiveAppForStylistChange] = useState(null);
+  const [activePackages, setActivePackages] = useState([]);
+  const [packageConsumptions, setPackageConsumptions] = useState({});
+
+  useEffect(() => {
+    const currentClientId = selectedApp?.client_id || selectedClient?.id;
+    if (currentClientId) {
+      dataService.getClientPackages(currentClientId).then(pkgs => {
+        setActivePackages((pkgs || []).filter(p => p.status === 'active' && (p.total_sessions - p.used_sessions) > 0));
+      }).catch(err => console.error("Error loading packages for POS client:", err));
+    } else {
+      setActivePackages([]);
+    }
+    setPackageConsumptions({});
+  }, [selectedApp?.client_id, selectedClient?.id]);
 
   // Modal State
   const [showLinkModal, setShowLinkModal] = useState(false);
@@ -469,7 +486,10 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
     }
   };
 
-  const servicePrice = totalAppsInCheckout.reduce((acc, app) => acc + (app.total_price !== undefined && app.total_price !== null && Number(app.total_price) > 0 ? Number(app.total_price) : (app.services?.price || 0)), 0);
+  const servicePrice = totalAppsInCheckout.reduce((acc, app) => {
+    if (packageConsumptions[app.id]) return acc;
+    return acc + (app.total_price !== undefined && app.total_price !== null && Number(app.total_price) > 0 ? Number(app.total_price) : (app.services?.price || 0));
+  }, 0);
   const productsTotal = cart.reduce((acc, p) => acc + (p.price * p.quantity), 0);
   const extrasTotal = totalAppsInCheckout.reduce((acc, app) => acc + (app.appointment_extras?.reduce((subAcc, e) => subAcc + (e.price || 0), 0) || 0), 0);
   const totalTips = tips.reduce((acc, t) => {
@@ -740,6 +760,14 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
         || Number(app.total_price || 0) > 0
       );
 
+      let finalCashUsd = Number(cashUsd);
+      let finalTransferBs = Number(remainingBs);
+
+      if (paymentMode === 'financed') {
+        finalCashUsd = Number(initialPaymentUsd);
+        finalTransferBs = 0;
+      }
+
       const paymentData = {
         appointmentId: checkoutAppointments[0]?.id || null,
         appointmentIds: checkoutAppointments.map(a => a.id),
@@ -749,13 +777,30 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
         serviceName: totalAppsInCheckout.map(a => a.services?.name).filter(Boolean).join(' + ') || 'Venta de Productos',
         totalUsd: totalUsd,
         fixedRate: fixedRate,
-        isMixed: paymentMode === 'mixed',
-        cashUsd: Number(cashUsd),
-        transferBs: Number(remainingBs),
+        isMixed: paymentMode === 'mixed' || paymentMode === 'financed',
+        cashUsd: finalCashUsd,
+        transferBs: finalTransferBs,
         totalTips: totalTips,
         didTreatment: treatmentCount > 0,
         treatmentCount: treatmentCount,
         extras: totalAppsInCheckout.flatMap(a => a.appointment_extras || []),
+        soldPackages: checkoutAppointments
+          .filter(app => packageSales[app.id] && app.service_id)
+          .map(app => ({
+            serviceId: app.service_id,
+            totalSessions: 8
+          })),
+        packageConsumptions: Object.entries(packageConsumptions)
+          .filter(([appId, pkgId]) => pkgId && checkoutAppointments.some(a => a.id === appId))
+          .map(([appId, pkgId]) => ({
+            clientPackageId: pkgId,
+            appointmentId: appId
+          })),
+        isFinanced: paymentMode === 'financed',
+        totalInstallments: paymentMode === 'financed' ? Number(installmentsCount) : 0,
+        remainingBalance: paymentMode === 'financed' ? (totalUsd - Number(initialPaymentUsd)) : 0,
+        initialPaymentAmount: paymentMode === 'financed' ? Number(initialPaymentUsd) : 0,
+        initialPaymentMethod: paymentMode === 'financed' ? initialPaymentMethod : null,
         appointments: totalAppsInCheckout
           .filter(app => app.service_id !== null && app.service_id !== undefined)
           .map(app => {
@@ -1569,47 +1614,86 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                   const isLinked = app.client_id !== selectedApp?.client_id;
                   return (
                     <div key={app.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', borderBottom: '1px solid rgba(255,255,255,0.03)', paddingBottom: '8px' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: isMobile ? '11px' : '13px', flex: 1, minWidth: 0 }}>
-                        {isLinked ? (
-                          <button 
-                            onClick={() => handleUnlinkApp(app.id)} 
-                            style={{ background: 'none', border: 'none', color: '#ff9500', cursor: 'pointer', padding: '2px', display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}
-                            title="Desenlazar cita"
+                      <span style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: isMobile ? '11px' : '13px' }}>
+                          {isLinked ? (
+                            <button 
+                              onClick={() => handleUnlinkApp(app.id)} 
+                              style={{ background: 'none', border: 'none', color: '#ff9500', cursor: 'pointer', padding: '2px', display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}
+                              title="Desenlazar cita"
+                            >
+                              <XCircle size={isMobile ? 12 : 14} style={{ opacity: 0.8 }} />
+                            </button>
+                          ) : (
+                            <button 
+                              onClick={() => handleRemoveBundledService(app)} 
+                              style={{ background: 'none', border: 'none', color: '#ff453a', cursor: 'pointer', padding: '2px', display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}
+                              title={app.services ? "Eliminar servicio" : "Eliminar extras"}
+                            >
+                              <XCircle size={isMobile ? 12 : 14} style={{ opacity: 0.8 }} />
+                            </button>
+                          )}
+                          {isLinked && <span style={{ color: 'var(--pink-primary)', fontWeight: '800', fontSize: '10px', flexShrink: 0 }}>({app.clients?.name?.split(' ')[0]}):</span>}
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'rgba(255,255,255,0.9)' }}>
+                            {app.services ? `Servicio: ${app.services.name}` : 'Extras'}
+                          </span>
+                          {' • '}
+                          <span 
+                            onClick={() => handleOpenChangeBundledStylist(app)}
+                            style={{ 
+                              color: 'var(--pink-primary)', 
+                              fontWeight: '700', 
+                              cursor: 'pointer',
+                              textDecoration: 'underline',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '1px',
+                              fontSize: '10px',
+                              flexShrink: 0
+                            }}
+                            title="Click para cambiar estilista"
                           >
-                            <XCircle size={isMobile ? 12 : 14} style={{ opacity: 0.8 }} />
-                          </button>
-                        ) : (
-                          <button 
-                            onClick={() => handleRemoveBundledService(app)} 
-                            style={{ background: 'none', border: 'none', color: '#ff453a', cursor: 'pointer', padding: '2px', display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}
-                            title={app.services ? "Eliminar servicio" : "Eliminar extras"}
-                          >
-                            <XCircle size={isMobile ? 12 : 14} style={{ opacity: 0.8 }} />
-                          </button>
-                        )}
-                        {isLinked && <span style={{ color: 'var(--pink-primary)', fontWeight: '800', fontSize: '10px', flexShrink: 0 }}>({app.clients?.name?.split(' ')[0]}):</span>}
-                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'rgba(255,255,255,0.9)' }}>
-                          {app.services ? `Servicio: ${app.services.name}` : 'Extras'}
-                        </span>
-                        {' • '}
-                        <span 
-                          onClick={() => handleOpenChangeBundledStylist(app)}
-                          style={{ 
-                            color: 'var(--pink-primary)', 
-                            fontWeight: '700', 
-                            cursor: 'pointer',
-                            textDecoration: 'underline',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '1px',
-                            fontSize: '10px',
-                            flexShrink: 0
-                          }}
-                          title="Click para cambiar estilista"
-                        >
-                          {app.staff?.name?.split(' ')[0] || 'Caja'}
-                          <Edit3 size={8} />
-                        </span>
+                            {app.staff?.name?.split(' ')[0] || 'Caja'}
+                            <Edit3 size={8} />
+                          </span>
+                        </div>
+                        {app.services && (() => {
+                          const matchingPkg = activePackages.find(pkg => pkg.service_id === app.service_id);
+                          return (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingLeft: '20px', marginTop: '2px' }}>
+                              <label style={{ fontSize: '10px', color: 'var(--pink-primary)', display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'pointer', userSelect: 'none' }}>
+                                <input 
+                                  type="checkbox" 
+                                  checked={!!packageSales[app.id]} 
+                                  disabled={!!packageConsumptions[app.id]}
+                                  onChange={(e) => setPackageSales({ ...packageSales, [app.id]: e.target.checked })}
+                                  style={{ accentColor: 'var(--pink-primary)' }}
+                                />
+                                <span>Vender como Paquete (8 Sesiones)</span>
+                              </label>
+                              {matchingPkg && (
+                                <label style={{ fontSize: '10px', color: '#34c759', display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'pointer', userSelect: 'none' }}>
+                                  <input 
+                                    type="checkbox" 
+                                    checked={!!packageConsumptions[app.id]} 
+                                    disabled={!!packageSales[app.id]}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setPackageConsumptions({ ...packageConsumptions, [app.id]: matchingPkg.id });
+                                      } else {
+                                        const copy = { ...packageConsumptions };
+                                        delete copy[app.id];
+                                        setPackageConsumptions(copy);
+                                      }
+                                    }}
+                                    style={{ accentColor: '#34c759' }}
+                                  />
+                                  <span>Consumir sesión de paquete ({matchingPkg.total_sessions - matchingPkg.used_sessions} disp.)</span>
+                                </label>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </span>
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0px', flexShrink: 0 }}>
                         {app.services ? (
@@ -2154,19 +2238,27 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
               </div>
 
               <div style={{ marginBottom: '24px' }}>
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', gap: '6px', marginBottom: '16px', flexWrap: 'wrap' }}>
                   <button 
+                    type="button"
                     onClick={() => { setPaymentMode('full_usd'); setCashUsd(totalUsd); }}
-                    style={{ flex: 1, height: '38px', borderRadius: '10px', border: paymentMode === 'full_usd' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.1)', background: paymentMode === 'full_usd' ? 'rgba(212,160,154,0.1)' : 'none', color: paymentMode === 'full_usd' ? 'var(--pink-primary)' : 'white', fontWeight: '800', cursor: 'pointer', fontSize: '9px' }}
+                    style={{ flex: '1 0 45%', height: '38px', borderRadius: '10px', border: paymentMode === 'full_usd' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.1)', background: paymentMode === 'full_usd' ? 'rgba(212,160,154,0.1)' : 'none', color: paymentMode === 'full_usd' ? 'var(--pink-primary)' : 'white', fontWeight: '800', cursor: 'pointer', fontSize: '9px' }}
                   >TODO EN $</button>
                   <button 
+                    type="button"
                     onClick={() => { setPaymentMode('full_bs'); setCashUsd(0); }}
-                    style={{ flex: 1, height: '38px', borderRadius: '10px', border: paymentMode === 'full_bs' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.1)', background: paymentMode === 'full_bs' ? 'rgba(212,160,154,0.1)' : 'none', color: paymentMode === 'full_bs' ? 'var(--pink-primary)' : 'white', fontWeight: '800', cursor: 'pointer', fontSize: '9px' }}
+                    style={{ flex: '1 0 45%', height: '38px', borderRadius: '10px', border: paymentMode === 'full_bs' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.1)', background: paymentMode === 'full_bs' ? 'rgba(212,160,154,0.1)' : 'none', color: paymentMode === 'full_bs' ? 'var(--pink-primary)' : 'white', fontWeight: '800', cursor: 'pointer', fontSize: '9px' }}
                   >TODO EN BS</button>
                   <button 
+                    type="button"
                     onClick={() => setPaymentMode('mixed')}
-                    style={{ flex: 1, height: '38px', borderRadius: '10px', border: paymentMode === 'mixed' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.1)', background: paymentMode === 'mixed' ? 'rgba(212,160,154,0.1)' : 'none', color: paymentMode === 'mixed' ? 'var(--pink-primary)' : 'white', fontWeight: '800', cursor: 'pointer', fontSize: '9px' }}
+                    style={{ flex: '1 0 45%', height: '38px', borderRadius: '10px', border: paymentMode === 'mixed' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.1)', background: paymentMode === 'mixed' ? 'rgba(212,160,154,0.1)' : 'none', color: paymentMode === 'mixed' ? 'var(--pink-primary)' : 'white', fontWeight: '800', cursor: 'pointer', fontSize: '9px' }}
                   >PAGO MIXTO</button>
+                  <button 
+                    type="button"
+                    onClick={() => { setPaymentMode('financed'); setInitialPaymentUsd(Math.round(totalUsd / 3)); }}
+                    style={{ flex: '1 0 45%', height: '38px', borderRadius: '10px', border: paymentMode === 'financed' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.1)', background: paymentMode === 'financed' ? 'rgba(212,160,154,0.1)' : 'none', color: paymentMode === 'financed' ? 'var(--pink-primary)' : 'white', fontWeight: '800', cursor: 'pointer', fontSize: '9px' }}
+                  >FINANCIADO</button>
                 </div>
 
                 {paymentMode === 'full_usd' && (
@@ -2240,6 +2332,54 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                           ))}
                         </div>
                       </div>
+                    </div>
+                  </div>
+                )}
+
+                {paymentMode === 'financed' && (
+                  <div className="animate-slide-up" style={{ padding: '16px', backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '12px' }}>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ fontSize: '9px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '4px', display: 'block' }}>CUOTAS TOTALES</label>
+                        <select 
+                          value={installmentsCount}
+                          onChange={(e) => setInstallmentsCount(parseInt(e.target.value))}
+                          style={{ width: '100%', height: '36px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white', padding: '0 8px', fontSize: '12px', fontWeight: '800' }}
+                        >
+                          <option value="2" style={{ backgroundColor: 'black' }}>2 Cuotas</option>
+                          <option value="3" style={{ backgroundColor: 'black' }}>3 Cuotas (Estándar)</option>
+                          <option value="4" style={{ backgroundColor: 'black' }}>4 Cuotas</option>
+                          <option value="6" style={{ backgroundColor: 'black' }}>6 Cuotas</option>
+                        </select>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ fontSize: '9px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '4px', display: 'block' }}>PAGO INICIAL ($)</label>
+                        <input 
+                          type="number" 
+                          value={initialPaymentUsd} 
+                          onChange={(e) => setInitialPaymentUsd(parseFloat(e.target.value) || 0)}
+                          style={{ width: '100%', height: '36px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', textAlign: 'right', paddingRight: '10px', fontSize: '12px', color: 'white', fontWeight: '800' }} 
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '9px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', display: 'block' }}>MÉTODO PAGO INICIAL</label>
+                      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                        {['Efectivo', 'Zelle', 'Binance', 'Pago Móvil'].map(m => (
+                          <button 
+                            key={m}
+                            type="button"
+                            onClick={() => setInitialPaymentMethod(m)}
+                            style={{ flex: 1, padding: '8px', borderRadius: '10px', border: initialPaymentMethod === m ? '1.5px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)', background: initialPaymentMethod === m ? 'rgba(212,160,154,0.1)' : 'rgba(255,255,255,0.02)', color: initialPaymentMethod === m ? 'var(--pink-primary)' : 'white', fontSize: '10px', fontWeight: '700', cursor: 'pointer' }}
+                          >{m}</button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: '700' }}>
+                      <span style={{ color: 'var(--text-muted)' }}>Saldo Financiado:</span>
+                      <span style={{ color: 'var(--pink-primary)' }}>${(totalUsd - initialPaymentUsd).toFixed(2)} USD</span>
                     </div>
                   </div>
                 )}

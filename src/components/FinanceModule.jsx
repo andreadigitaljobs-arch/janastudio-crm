@@ -110,7 +110,14 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  const [activeTab, setActiveTab] = useState('transactions'); // 'transactions' or 'analysis'
+  const [activeTab, setActiveTab] = useState('transactions'); // 'transactions', 'payroll', 'analysis', 'receivables'
+
+  // Accounts Receivable States
+  const [paymentPlans, setPaymentPlans] = useState([]);
+  const [loadingPlans, setLoadingPlans] = useState(false);
+  const [selectedPlanForPayment, setSelectedPlanForPayment] = useState(null);
+  const [installmentAmount, setInstallmentAmount] = useState(0);
+  const [installmentMethod, setInstallmentMethod] = useState('Efectivo');
 
   // Transaction Filter States
   const [searchQuery, setSearchQuery] = useState('');
@@ -363,9 +370,24 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
     });
   };
 
+  const loadPaymentPlans = async () => {
+    try {
+      setLoadingPlans(true);
+      const plans = await dataService.getPendingPaymentPlans();
+      setPaymentPlans(plans || []);
+    } catch (err) {
+      console.error("Error loading payment plans:", err);
+    } finally {
+      setLoadingPlans(false);
+    }
+  };
+
   useEffect(() => {
     fetchTransactions();
-  }, [filterDate, startDate, endDate, payrollFilterDate, payrollStartDate, payrollEndDate]);
+    if (activeTab === 'receivables') {
+      loadPaymentPlans();
+    }
+  }, [filterDate, startDate, endDate, payrollFilterDate, payrollStartDate, payrollEndDate, activeTab]);
 
   const handleSaveAssistantConfig = (e) => {
     e.preventDefault();
@@ -1008,7 +1030,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
       {/* Tab Cards */}
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', 
+        gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)', 
         gap: '16px', 
         marginBottom: '28px'
       }}>
@@ -1098,8 +1120,8 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
             <TrendingUp size={22} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontWeight: '800', fontSize: '14px', color: 'var(--text-primary)' }}>Rentabilidad y Ocupación</div>
-            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>Análisis de rendimiento</div>
+            <div style={{ fontWeight: '800', fontSize: '14px', color: 'var(--text-primary)' }}>Rentabilidad</div>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>Rendimiento general</div>
           </div>
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
             <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700' }}>Ocupación Hoy</div>
@@ -1108,7 +1130,42 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
               const todayServices = todayOperationalTransactions.filter(t => t.type === 'income' && t.metadata?.appointment_id).length;
               const pct = sillas > 0 ? Math.min(100, (todayServices / (sillas * 6)) * 100) : 0;
               return `${pct.toFixed(0)}%`;
-            })()} <span style={{ display: 'inline-block', transform: 'rotate(-45deg)', color: 'var(--pink-primary)' }}>&#8599;</span></div>
+            })()}</div>
+          </div>
+        </div>
+
+        {/* Cuentas por Cobrar Tab */}
+        <div 
+          onClick={() => setActiveTab('receivables')}
+          style={{
+            padding: '20px',
+            borderRadius: '16px',
+            border: activeTab === 'receivables' ? '2px solid var(--pink-primary)' : '2px solid var(--border-color)',
+            background: activeTab === 'receivables' ? 'rgba(196,139,159,0.06)' : 'white',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '14px',
+            transition: 'all 0.2s'
+          }}
+        >
+          <div style={{
+            width: '44px', height: '44px', borderRadius: '12px',
+            backgroundColor: activeTab === 'receivables' ? 'rgba(196,139,159,0.15)' : 'rgba(196,139,159,0.08)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: 'var(--pink-primary)', flexShrink: 0
+          }}>
+            <WalletCards size={22} />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontWeight: '800', fontSize: '14px', color: 'var(--text-primary)' }}>Por Cobrar</div>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>Cuotas y financiamientos</div>
+          </div>
+          <div style={{ textAlign: 'right', flexShrink: 0 }}>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700' }}>Pendiente</div>
+            <div style={{ fontSize: '15px', fontWeight: '900', color: '#ff453a' }}>
+              ${paymentPlans.reduce((sum, p) => sum + Number(p.remaining_balance || 0), 0).toFixed(2)}
+            </div>
           </div>
         </div>
       </div>
@@ -2922,6 +2979,193 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
             </div>
             )}
           </AnimatedModal>
+
+      {activeTab === 'receivables' && (
+        <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Header Summary card */}
+          <div className="glass-card" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px', padding: '24px' }}>
+            <div>
+              <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: '900', color: 'var(--text-primary)' }}>Financiamiento y Cuentas por Cobrar</h3>
+              <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-muted)' }}>Realiza el seguimiento de saldos pendientes, financiamiento de cuotas y abonos de clientes.</p>
+            </div>
+            <div style={{ display: 'flex', gap: '16px', justifyContent: isMobile ? 'flex-start' : 'flex-end', alignItems: 'center' }}>
+              <div style={{ padding: '12px 20px', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', minWidth: '150px' }}>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700' }}>TOTAL POR COBRAR</div>
+                <div style={{ fontSize: '20px', fontWeight: '950', color: '#ff453a', marginTop: '4px' }}>
+                  ${paymentPlans.reduce((sum, p) => sum + Number(p.remaining_balance || 0), 0).toFixed(2)} USD
+                </div>
+              </div>
+              <div style={{ padding: '12px 20px', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)', minWidth: '150px' }}>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700' }}>PLANES ACTIVOS</div>
+                <div style={{ fontSize: '20px', fontWeight: '950', color: 'var(--pink-primary)', marginTop: '4px' }}>
+                  {paymentPlans.length} planes
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* List of plans */}
+          <div className="glass-card" style={{ padding: '24px' }}>
+            <h4 style={{ margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <WalletCards size={18} color="var(--pink-primary)" />
+              <span>Planes de Pago Activos</span>
+            </h4>
+            {loadingPlans ? (
+              <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>Cargando planes de pago...</div>
+            ) : paymentPlans.length === 0 ? (
+              <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '14px' }}>No hay cuentas por cobrar pendientes.</div>
+            ) : (
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '11px', fontWeight: '900' }}>
+                      <th style={{ padding: '12px 8px' }}>CLIENTE</th>
+                      <th style={{ padding: '12px 8px' }}>MONTO TOTAL</th>
+                      <th style={{ padding: '12px 8px' }}>SALDO PENDIENTE</th>
+                      <th style={{ padding: '12px 8px' }}>CUOTAS</th>
+                      <th style={{ padding: '12px 8px' }}>ESTADO</th>
+                      <th style={{ padding: '12px 8px', textAlign: 'right' }}>ACCIONES</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paymentPlans.map(plan => {
+                      const clientName = plan.clients?.name || 'Cliente';
+                      const clientCedula = plan.clients?.id_card || 'S/C';
+                      const pctPaid = (plan.paid_installments / plan.total_installments) * 100;
+                      return (
+                        <tr key={plan.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', fontSize: '13px' }} className="table-row-hover">
+                          <td style={{ padding: '12px 8px' }}>
+                            <div style={{ fontWeight: '800' }}>{clientName}</div>
+                            <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>V-{clientCedula}</div>
+                          </td>
+                          <td style={{ padding: '12px 8px', fontWeight: '700' }}>${Number(plan.total_amount).toFixed(2)} USD</td>
+                          <td style={{ padding: '12px 8px', fontWeight: '800', color: '#ff453a' }}>${Number(plan.remaining_balance).toFixed(2)} USD</td>
+                          <td style={{ padding: '12px 8px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <span style={{ fontWeight: '800', minWidth: '35px' }}>{plan.paid_installments}/{plan.total_installments}</span>
+                              <div style={{ width: '80px', height: '6px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '3px', overflow: 'hidden' }}>
+                                <div style={{ width: `${pctPaid}%`, height: '100%', backgroundColor: 'var(--pink-primary)' }} />
+                              </div>
+                            </div>
+                          </td>
+                          <td style={{ padding: '12px 8px' }}>
+                            <span style={{ 
+                              padding: '2px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: '900',
+                              backgroundColor: plan.status === 'completed' ? 'rgba(52,199,89,0.15)' : 'rgba(255,149,0,0.15)',
+                              color: plan.status === 'completed' ? '#34c759' : '#ff9500'
+                            }}>
+                              {plan.status === 'completed' ? 'PAGADO' : 'PENDIENTE'}
+                            </span>
+                          </td>
+                          <td style={{ padding: '12px 8px', textAlign: 'right' }}>
+                            {plan.remaining_balance > 0 && (
+                              <button 
+                                onClick={() => {
+                                  setSelectedPlanForPayment(plan);
+                                  const remainingInstallments = plan.total_installments - plan.paid_installments;
+                                  const defaultAmt = remainingInstallments > 0 ? (plan.remaining_balance / remainingInstallments) : plan.remaining_balance;
+                                  setInstallmentAmount(Number(defaultAmt.toFixed(2)));
+                                }}
+                                className="btn-pink"
+                                style={{ padding: '6px 12px', fontSize: '11px', borderRadius: '8px', fontWeight: '800' }}
+                              >
+                                Registrar Pago
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Record installment modal */}
+      <AnimatedModal isOpen={!!selectedPlanForPayment}>
+        {(overlayClass, cardClass) => (
+          <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)', zIndex: 10000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+            <div className={`glass-card ${cardClass}`} style={{ maxWidth: '480px', width: '100%', padding: '28px', borderRadius: '24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', alignItems: 'center' }}>
+                <h3 style={{ fontWeight: '950', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <WalletCards size={20} color="var(--pink-primary)" />
+                  <span>Registrar Cuota</span>
+                </h3>
+                <button onClick={() => setSelectedPlanForPayment(null)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><X size={20} /></button>
+              </div>
+
+              {selectedPlanForPayment && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ padding: '14px', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-secondary)' }}>Cliente: {selectedPlanForPayment.clients?.name}</div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px', fontSize: '13px' }}>
+                      <span>Saldo Pendiente:</span>
+                      <span style={{ fontWeight: '900', color: '#ff453a' }}>${Number(selectedPlanForPayment.remaining_balance).toFixed(2)} USD</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px', fontSize: '12px', color: 'var(--text-muted)' }}>
+                      <span>Cuotas pagadas:</span>
+                      <span>{selectedPlanForPayment.paid_installments} de {selectedPlanForPayment.total_installments}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '6px', display: 'block' }}>MONTO A ABONAR ($)</label>
+                    <input 
+                      type="number" 
+                      value={installmentAmount} 
+                      onChange={(e) => setInstallmentAmount(parseFloat(e.target.value) || 0)}
+                      style={{ width: '100%', height: '38px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '0 10px', fontSize: '14px', color: 'white', fontWeight: '800', outline: 'none' }} 
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '6px', display: 'block' }}>MÉTODO DE PAGO</label>
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      {['Efectivo', 'Zelle', 'Binance', 'Pago Móvil'].map(m => (
+                        <button 
+                          key={m}
+                          type="button"
+                          onClick={() => setInstallmentMethod(m)}
+                          style={{ flex: 1, padding: '8px 4px', borderRadius: '8px', border: installmentMethod === m ? '1.5px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)', background: installmentMethod === m ? 'rgba(212,160,154,0.1)' : 'rgba(255,255,255,0.02)', color: installmentMethod === m ? 'var(--pink-primary)' : 'white', fontSize: '10px', fontWeight: '700', cursor: 'pointer' }}
+                        >{m}</button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={async () => {
+                      if (installmentAmount <= 0) {
+                        showToast("El monto a abonar debe ser mayor a 0", "warning");
+                        return;
+                      }
+                      try {
+                        setLoadingPlans(true);
+                        await dataService.recordInstallmentPayment(selectedPlanForPayment.id, installmentAmount, installmentMethod);
+                        showToast("¡Cuota registrada correctamente!", "success");
+                        setSelectedPlanForPayment(null);
+                        loadPaymentPlans();
+                        fetchTransactions(); // Reload transactions lists too!
+                      } catch (err) {
+                        console.error(err);
+                        showToast("Error al registrar cuota", "error");
+                      } finally {
+                        setLoadingPlans(false);
+                      }
+                    }}
+                    className="btn-pink"
+                    style={{ width: '100%', height: '46px', borderRadius: '12px', fontWeight: '900', fontSize: '14px', marginTop: '8px' }}
+                  >
+                    Confirmar Pago de Cuota
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </AnimatedModal>
         
 
       <AstroDialog 

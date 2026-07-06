@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Plus, Search, Edit2, Trash2, Clock, Rocket,
   Droplets, Zap, Check, X, Loader2,
@@ -481,11 +481,97 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
     return 0;
   });
 
-  const totalPages = Math.ceil(filteredServices.length / itemsPerPage);
+  const getBaseName = (name) => {
+    if (name.includes('(')) {
+      return name.split('(')[0].trim();
+    }
+    return name;
+  };
+
+  const getSubServiceName = (name) => {
+    if (name.includes('(')) {
+      return name.split('(')[1].replace(')', '').trim();
+    }
+    return null;
+  };
+
+  const getGroupedServices = () => {
+    const grouped = [];
+    const groupsMap = {};
+
+    filteredServices.forEach(s => {
+      const baseName = getBaseName(s.name);
+      const subName = getSubServiceName(s.name);
+      
+      if (subName) {
+        if (!groupsMap[baseName]) {
+          groupsMap[baseName] = {
+            id: `group-${baseName}`,
+            name: baseName,
+            category: s.category,
+            description: s.description || `Variedades de ${baseName}`,
+            icon: s.icon,
+            isGroup: true,
+            variations: [],
+            total_bookings: 0,
+            created_at: s.created_at,
+            active: true,
+            commission_pct: s.commission_pct,
+            commission_stylist: s.commission_stylist || s.commission_pct || 40,
+            strategy_type: s.strategy_type
+          };
+          grouped.push(groupsMap[baseName]);
+        }
+        groupsMap[baseName].variations.push({
+          ...s,
+          subName
+        });
+        groupsMap[baseName].total_bookings += (s.total_bookings || 0);
+        if (groupsMap[baseName].price === undefined) {
+          groupsMap[baseName].minPrice = Number(s.price);
+          groupsMap[baseName].maxPrice = Number(s.price);
+        } else {
+          groupsMap[baseName].minPrice = Math.min(groupsMap[baseName].minPrice, Number(s.price));
+          groupsMap[baseName].maxPrice = Math.max(groupsMap[baseName].maxPrice, Number(s.price));
+        }
+        groupsMap[baseName].price = groupsMap[baseName].minPrice;
+        
+        const dur = s.duration_minutes || s.duration || 30;
+        if (groupsMap[baseName].minDuration === undefined) {
+          groupsMap[baseName].minDuration = dur;
+          groupsMap[baseName].maxDuration = dur;
+        } else {
+          groupsMap[baseName].minDuration = Math.min(groupsMap[baseName].minDuration, dur);
+          groupsMap[baseName].maxDuration = Math.max(groupsMap[baseName].maxDuration, dur);
+        }
+        groupsMap[baseName].duration = groupsMap[baseName].minDuration;
+      } else {
+        grouped.push({
+          ...s,
+          isGroup: false
+        });
+      }
+    });
+    return grouped;
+  };
+
+  const groupedServices = getGroupedServices();
+  const totalPages = Math.ceil(groupedServices.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedServices = filteredServices.slice(startIndex, startIndex + itemsPerPage);
+  const paginatedServices = groupedServices.slice(startIndex, startIndex + itemsPerPage);
+
+  const formatServicePrice = (s) => {
+    if (s.isGroup) {
+      if (s.minPrice === s.maxPrice) return formatBs(s.minPrice);
+      return `Desde ${formatBs(s.minPrice)}`;
+    }
+    return formatBs(s.price);
+  };
 
   const getBadge = (service) => {
+    if (service.isGroup) {
+      return { label: `${service.variations.length} opciones`, color: 'var(--pink-primary)', bg: 'rgba(196,139,159,0.1)' };
+    }
     if ((service.total_bookings || 0) >= 100) return { label: 'Top', color: '#22c55e', bg: 'rgba(34,197,94,0.1)' };
     if ((service.total_bookings || 0) >= 50) return { label: 'Popular', color: '#22c55e', bg: 'rgba(34,197,94,0.1)' };
     if ((service.total_bookings || 0) >= 10) return { label: 'Nuevo', color: '#a855f7', bg: 'rgba(168,85,247,0.1)' };
@@ -765,10 +851,10 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                       )}
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--text-muted)' }}>
-                          <Clock size={14} /> {service.duration || 30} min
+                          <Clock size={14} /> {service.isGroup ? (service.minDuration === service.maxDuration ? `${service.minDuration} min` : `${service.minDuration}-${service.maxDuration} min`) : `${service.duration || 30} min`}
                         </div>
                         <div style={{ fontWeight: '800', color: 'var(--text-primary)', fontSize: '15px' }}>
-                          {formatBs(service.price)}
+                          {formatServicePrice(service)}
                         </div>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '12px', marginTop: '4px' }}>
@@ -776,26 +862,38 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                           <Heart size={14} fill="currentColor" /> {service.total_bookings || 0} reservas este mes
                         </div>
                         <div style={{ display: 'flex', gap: '4px' }} onClick={e => e.stopPropagation()}>
-                          <button 
-                            className="action-btn" 
-                            onClick={() => handleEditClick(service)} 
-                            style={{ width: '32px', height: '32px', borderRadius: '8px' }}
-                          >
-                            <Edit2 size={14} />
-                          </button>
-                          <button 
-                            className="action-btn" 
-                            style={{ width: '32px', height: '32px', borderRadius: '8px' }}
-                          >
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-                          </button>
-                          <button 
-                            onClick={() => handleDeleteService(service.id, service.name)} 
-                            className="action-btn" 
-                            style={{ width: '32px', height: '32px', borderRadius: '8px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.1)' }}
-                          >
-                            <Trash2 size={14} />
-                          </button>
+                          {service.isGroup ? (
+                            <button 
+                              onClick={() => setSelectedServiceDetail(service)}
+                              className="action-btn"
+                              style={{ width: 'auto', height: '32px', padding: '0 12px', fontSize: '11px', fontWeight: '700', borderRadius: '8px', color: 'var(--pink-primary)', display: 'flex', alignItems: 'center', gap: '4px' }}
+                            >
+                              Ver opciones
+                            </button>
+                          ) : (
+                            <>
+                              <button 
+                                className="action-btn" 
+                                onClick={() => handleEditClick(service)} 
+                                style={{ width: '32px', height: '32px', borderRadius: '8px' }}
+                              >
+                                <Edit2 size={14} />
+                              </button>
+                              <button 
+                                className="action-btn" 
+                                style={{ width: '32px', height: '32px', borderRadius: '8px' }}
+                              >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                              </button>
+                              <button 
+                                onClick={() => handleDeleteService(service.id, service.name)} 
+                                className="action-btn" 
+                                style={{ width: '32px', height: '32px', borderRadius: '8px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.1)' }}
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -825,7 +923,14 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                               {service.icon ? getIconComponent(service.icon, 16) : getCategoryIcon(service.category)}
                             </div>
                             <div>
-                              <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '13px' }}>{service.name}</div>
+                              <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '13px' }}>
+                                {service.name}
+                                {service.isGroup && (
+                                  <span style={{ marginLeft: '6px', fontSize: '9px', fontWeight: '800', backgroundColor: 'rgba(196,139,159,0.1)', color: 'var(--pink-primary)', padding: '2px 6px', borderRadius: '6px', textTransform: 'uppercase' }}>
+                                    {service.variations.length} opciones
+                                  </span>
+                                )}
+                              </div>
                               {service.description && <div style={{ fontSize: '11px', color: 'var(--text-muted)', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{service.description}</div>}
                             </div>
                           </div>
@@ -837,21 +942,33 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                         </td>
                         <td style={{ padding: '14px 20px', fontSize: '13px', color: 'var(--text-secondary)' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <Clock size={12} /> {service.duration || 30} min
+                            <Clock size={12} /> {service.isGroup ? (service.minDuration === service.maxDuration ? `${service.minDuration} min` : `${service.minDuration}-${service.maxDuration} min`) : `${service.duration || 30} min`}
                           </div>
                         </td>
-                        <td style={{ padding: '14px 20px', fontWeight: '800', color: 'var(--text-primary)' }}>{formatBs(service.price)}</td>
+                        <td style={{ padding: '14px 20px', fontWeight: '800', color: 'var(--text-primary)' }}>{formatServicePrice(service)}</td>
                         <td style={{ padding: '14px 20px', fontSize: '13px', color: 'var(--text-secondary)' }}>
                           {service.total_bookings || 0}
                         </td>
                         <td style={{ padding: '14px 20px', textAlign: 'right' }}>
                           <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
-                            <button className="action-btn" onClick={() => handleEditClick(service)} style={{ width: '32px', height: '32px' }}>
-                              <Edit2 size={14} />
-                            </button>
-                            <button onClick={() => handleDeleteService(service.id, service.name)} className="action-btn" style={{ width: '32px', height: '32px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.1)' }}>
-                              <Trash2 size={14} />
-                            </button>
+                            {service.isGroup ? (
+                              <button 
+                                onClick={() => setSelectedServiceDetail(service)}
+                                className="action-btn"
+                                style={{ width: 'auto', height: '32px', padding: '0 12px', fontSize: '11px', fontWeight: '700', borderRadius: '8px', color: 'var(--pink-primary)' }}
+                              >
+                                Ver Opciones
+                              </button>
+                            ) : (
+                              <>
+                                <button className="action-btn" onClick={() => handleEditClick(service)} style={{ width: '32px', height: '32px' }}>
+                                  <Edit2 size={14} />
+                                </button>
+                                <button onClick={() => handleDeleteService(service.id, service.name)} className="action-btn" style={{ width: '32px', height: '32px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.1)' }}>
+                                  <Trash2 size={14} />
+                                </button>
+                              </>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -862,10 +979,10 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
             )}
             
             {/* Pagination */}
-            {filteredServices.length > itemsPerPage && (
+            {groupedServices.length > itemsPerPage && (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', paddingTop: '8px' }}>
                 <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-                  Mostrando {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredServices.length)} de {filteredServices.length} servicios
+                  Mostrando {startIndex + 1}-{Math.min(startIndex + itemsPerPage, groupedServices.length)} de {groupedServices.length} servicios
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <button
@@ -1229,76 +1346,153 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                   </div>
                 </div>
 
-                <h3 style={{ fontSize: '22px', fontWeight: '800', color: 'white', marginBottom: '16px', paddingRight: '40px' }}>{selectedServiceDetail.name}</h3>
+                 <h3 style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '16px', paddingRight: '40px' }}>{selectedServiceDetail.name}</h3>
 
-                <div style={{ display: 'flex', gap: '16px', marginBottom: '20px', fontSize: '13px', color: 'var(--text-secondary)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: 'rgba(255,255,255,0.03)', padding: '6px 12px', borderRadius: '10px' }}>
-                    <Clock size={14} color="var(--pink-primary)" />
-                    <strong>Duración:</strong> {selectedServiceDetail.duration || 30} min
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: 'rgba(255,255,255,0.03)', padding: '6px 12px', borderRadius: '10px' }}>
-                    <Sparkles size={14} color="var(--pink-primary)" />
-                    <strong>Comisión:</strong> {selectedServiceDetail.commission_stylist}%
-                  </div>
-                </div>
-
-                {selectedServiceDetail.description && (
-                  <div style={{ marginBottom: '20px' }}>
-                    <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '6px', textTransform: 'uppercase' }}>Guión de Venta / Descripción</div>
-                    <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', lineHeight: '1.5', margin: 0, padding: '12px', borderRadius: '12px', backgroundColor: 'rgba(0,0,0,0.2)', fontStyle: 'italic', border: '1px solid rgba(255,255,255,0.03)' }}>
-                      "{selectedServiceDetail.description}"
-                    </p>
-                  </div>
-                )}
-
-                {selectedServiceDetail.included_items && selectedServiceDetail.included_items.length > 0 && (
-                  <div style={{ marginBottom: '24px' }}>
-                    <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Checklist Incluido ({selectedServiceDetail.included_items.length})</div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                      {selectedServiceDetail.included_items.map((item, idx) => (
-                        <span key={idx} style={{ fontSize: '11px', padding: '6px 12px', borderRadius: '8px', backgroundColor: 'rgba(196,139,159,0.05)', color: 'white', border: '1px solid rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Check size={12} color="var(--pink-primary)" strokeWidth={3} /> {item}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="details-price-row">
-                  <div>
-                    <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Precio Base</div>
-                    <div style={{ fontSize: '24px', fontWeight: '900', color: 'white' }}>{formatBs(selectedServiceDetail.price)}</div>
-                  </div>
-                  {rates?.usd > 0 && (
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Precio en Bolívares</div>
-                      <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--pink-primary)' }}>
-                        {Math.round(selectedServiceDetail.price * rates.usd).toLocaleString()} Bs.
+                {!selectedServiceDetail.isGroup ? (
+                  <>
+                    <div style={{ display: 'flex', gap: '16px', marginBottom: '20px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: 'rgba(196,139,159,0.05)', padding: '6px 12px', borderRadius: '10px' }}>
+                        <Clock size={14} color="var(--pink-primary)" />
+                        <strong>Duración:</strong> {selectedServiceDetail.duration || 30} min
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: 'rgba(196,139,159,0.05)', padding: '6px 12px', borderRadius: '10px' }}>
+                        <Sparkles size={14} color="var(--pink-primary)" />
+                        <strong>Comisión:</strong> {selectedServiceDetail.commission_stylist || selectedServiceDetail.commission_pct}%
                       </div>
                     </div>
-                  )}
-                </div>
 
-                <div style={{ display: 'flex', gap: '12px' }}>
-                  <button 
-                    onClick={() => {
-                      setSelectedServiceDetail(null);
-                      handleEditClick(selectedServiceDetail);
-                    }} 
-                    className="btn-pink" 
-                    style={{ flex: 1, height: '44px', borderRadius: '12px' }}
-                  >
-                    Editar Servicio
-                  </button>
-                  <button 
-                    onClick={() => setSelectedServiceDetail(null)} 
-                    style={{ flex: 1, height: '44px', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.05)', border: 'none', color: 'white', cursor: 'pointer', fontWeight: '700', transition: 'background-color 0.2s' }}
-                    onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
-                    onMouseLeave={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
-                  >
-                    Cerrar
-                  </button>
-                </div>
+                    {selectedServiceDetail.description && (
+                      <div style={{ marginBottom: '20px' }}>
+                        <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '6px', textTransform: 'uppercase' }}>Descripción</div>
+                        <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: '1.5', margin: 0, padding: '12px', borderRadius: '12px', backgroundColor: '#faf5f5', fontStyle: 'italic', border: '1px solid rgba(196,139,159,0.1)' }}>
+                          "{selectedServiceDetail.description}"
+                        </p>
+                      </div>
+                    )}
+
+                    {selectedServiceDetail.included_items && selectedServiceDetail.included_items.length > 0 && (
+                      <div style={{ marginBottom: '24px' }}>
+                        <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' }}>Checklist Incluido ({selectedServiceDetail.included_items.length})</div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                          {selectedServiceDetail.included_items.map((item, idx) => (
+                            <span key={idx} style={{ fontSize: '11px', padding: '6px 12px', borderRadius: '8px', backgroundColor: 'rgba(196,139,159,0.05)', color: 'var(--text-primary)', border: '1px solid rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <Check size={12} color="var(--pink-primary)" strokeWidth={3} /> {item}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="details-price-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '16px', backgroundColor: '#faf5f5', borderRadius: '16px', marginBottom: '20px', border: '1px solid rgba(196,139,159,0.1)' }}>
+                      <div>
+                        <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Precio Base</div>
+                        <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text-primary)' }}>{formatBs(selectedServiceDetail.price)}</div>
+                      </div>
+                      {rates?.usd > 0 && (
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Precio en Bolívares</div>
+                          <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--pink-primary)' }}>
+                            {Math.round(selectedServiceDetail.price * rates.usd).toLocaleString()} Bs.
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                      <button 
+                        onClick={() => {
+                          setSelectedServiceDetail(null);
+                          handleEditClick(selectedServiceDetail);
+                        }} 
+                        className="btn-pink" 
+                        style={{ flex: 1, height: '44px', borderRadius: '12px' }}
+                      >
+                        Editar Servicio
+                      </button>
+                      <button 
+                        onClick={() => setSelectedServiceDetail(null)} 
+                        style={{ flex: 1, height: '44px', borderRadius: '12px', backgroundColor: '#e5e5e5', border: 'none', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: '700' }}
+                      >
+                        Cerrar
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '10px', textTransform: 'uppercase' }}>
+                      Opciones y Subservicios ({selectedServiceDetail.variations.length})
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px', maxHeight: '320px', overflowY: 'auto', paddingRight: '4px' }}>
+                      {selectedServiceDetail.variations.map(variation => (
+                        <div 
+                          key={variation.id}
+                          style={{
+                            padding: '12px 14px', borderRadius: '14px', backgroundColor: '#faf5f5',
+                            border: '1px solid rgba(196,139,159,0.1)', display: 'flex',
+                            alignItems: 'center', justifyContent: 'space-between', gap: '12px'
+                          }}
+                        >
+                          <div style={{ minWidth: 0, flex: 1 }}>
+                            <div style={{ fontWeight: '800', color: 'var(--text-primary)', fontSize: '13px' }}>
+                              {variation.subName}
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                              <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}><Clock size={11} /> {variation.duration_minutes || variation.duration || 30} min</span>
+                              <span>•</span>
+                              <span>Comisión: {variation.commission_stylist || variation.commission_pct || 40}%</span>
+                            </div>
+                          </div>
+                          
+                          <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                            <div style={{ fontWeight: '800', color: 'var(--pink-primary)', fontSize: '13px' }}>
+                              {formatBs(variation.price)}
+                            </div>
+                            {rates?.usd > 0 && (
+                              <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '1px' }}>
+                                {Math.round(variation.price * rates.usd).toLocaleString()} Bs.
+                              </div>
+                            )}
+                          </div>
+
+                          <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
+                            <button 
+                              className="action-btn"
+                              onClick={() => {
+                                setSelectedServiceDetail(null);
+                                handleEditClick(variation);
+                              }}
+                              style={{ width: '28px', height: '28px', borderRadius: '6px' }}
+                              title="Editar"
+                            >
+                              <Edit2 size={12} />
+                            </button>
+                            <button 
+                              onClick={() => {
+                                setSelectedServiceDetail(null);
+                                handleDeleteService(variation.id, variation.name);
+                              }} 
+                              className="action-btn" 
+                              style={{ width: '28px', height: '28px', borderRadius: '6px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.1)' }}
+                              title="Eliminar"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                      <button 
+                        onClick={() => setSelectedServiceDetail(null)} 
+                        className="btn-pink" 
+                        style={{ flex: 1, height: '44px', borderRadius: '12px' }}
+                      >
+                        Cerrar
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           )

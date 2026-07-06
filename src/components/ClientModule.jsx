@@ -34,7 +34,9 @@ import {
   ArrowUpRight,
   FileText,
   UserPlus,
-  Bell
+  Bell,
+  Activity,
+  Package
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { supabase } from '../lib/supabase';
@@ -871,6 +873,52 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
   const [selectedVisit, setSelectedVisit] = useState(null);
   const [pendingPhoto, setPendingPhoto] = useState(null);
   const [photoMeta, setPhotoMeta] = useState({ type: 'Normal', serviceId: null });
+  const [activeSubTab, setActiveSubTab] = useState('gallery'); // 'gallery', 'diagnoses', 'packages', 'history'
+  const [diagnoses, setDiagnoses] = useState([]);
+  const [loadingDiagnoses, setLoadingDiagnoses] = useState(true);
+  const [packages, setPackages] = useState([]);
+  const [loadingPackages, setLoadingPackages] = useState(true);
+  const [showAddDiagnosis, setShowAddDiagnosis] = useState(false);
+  const [newDiagnosis, setNewDiagnosis] = useState({
+    hair_type: 'Normal',
+    porosity: 'Media',
+    scalp_condition: 'Sano',
+    chemical_history: '',
+    recommended_treatment: '',
+    notes: '',
+    images: []
+  });
+
+  const fetchDiagnoses = async () => {
+    try {
+      setLoadingDiagnoses(true);
+      const data = await dataService.getCapillaryDiagnoses(client.id);
+      setDiagnoses(data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingDiagnoses(false);
+    }
+  };
+
+  const fetchPackages = async () => {
+    try {
+      setLoadingPackages(true);
+      const data = await dataService.getClientPackages(client.id);
+      setPackages(data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingPackages(false);
+    }
+  };
+
+  useEffect(() => {
+    if (client?.id) {
+      fetchDiagnoses();
+      fetchPackages();
+    }
+  }, [client?.id]);
 
   useEffect(() => {
     const fetchGallery = async () => {
@@ -1049,6 +1097,485 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
     }
   };
 
+  const renderSubTabContent = () => {
+    switch (activeSubTab) {
+      case 'gallery':
+        return (
+          <div className="glass-card" style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>
+                <ImageIcon size={18} color="var(--pink-primary)" /> Galería de Trabajos
+              </h4>
+              <button 
+                onClick={() => setShowCollage(!showCollage)}
+                style={{ 
+                  background: showCollage ? 'var(--pink-primary)' : 'rgba(217,70,168,0.1)', 
+                  border: '1px solid var(--pink-primary)', 
+                  color: showCollage ? 'black' : 'var(--pink-primary)',
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  fontSize: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: 'pointer',
+                  fontWeight: '800'
+                }}
+              >
+                <ColumnsIcon size={14} /> {showCollage ? 'Ver Galería' : 'Crear Comparativa'}
+              </button>
+            </div>
+
+            {showCollage ? (
+              <div className="animate-scale-in">
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+                  <div 
+                    onClick={() => setSelectingFor('A')}
+                    style={{ 
+                      aspectRatio: '1/1', 
+                      borderRadius: '16px', 
+                      overflow: 'hidden', 
+                      backgroundColor: 'var(--bg-tertiary)',
+                      border: selectingFor === 'A' ? '2px solid var(--pink-primary)' : '1px solid var(--border-color)',
+                      position: 'relative',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {photoA ? (
+                      <img src={photoA} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                        <ImageIcon size={32} color="var(--text-muted)" />
+                        <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)' }}>FOTO ANTES</span>
+                      </div>
+                    )}
+                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', backgroundColor: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)' }}>ANTES</div>
+                  </div>
+
+                  <div 
+                    onClick={() => setSelectingFor('B')}
+                    style={{ 
+                      aspectRatio: '1/1', 
+                      borderRadius: '16px', 
+                      overflow: 'hidden', 
+                      backgroundColor: 'var(--bg-tertiary)',
+                      border: selectingFor === 'B' ? '2px solid var(--pink-primary)' : '1px solid var(--border-color)',
+                      position: 'relative',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {photoB ? (
+                      <img src={photoB} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                        <ImageIcon size={32} color="var(--text-muted)" />
+                        <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)' }}>FOTO DESPUÉS</span>
+                      </div>
+                    )}
+                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', backgroundColor: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)' }}>DESPUÉS</div>
+                  </div>
+                </div>
+
+                {photoA && photoB ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <BeforeAfterSlider 
+                      photoA={photoA} 
+                      photoB={photoB} 
+                      sliderPos={sliderPos} 
+                      setSliderPos={setSliderPos} 
+                    />
+                    <button 
+                      onClick={handleDownloadComparison}
+                      className="btn-pink" 
+                      style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                    >
+                      <Download size={18} /> Descargar Comparativa
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ padding: '12px', borderRadius: '12px', backgroundColor: '#faf5f5', textAlign: 'center', fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>
+                    Selecciona dos fotos para generar el collage
+                  </div>
+                )}
+
+                <AnimatedModal isOpen={!!selectingFor}>
+                  {(overlayClass, cardClass) => (
+                    <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 99999, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+                      <div className={`glass-card ${cardClass}`} style={{ maxWidth: '600px', width: '100%', padding: '24px', backgroundColor: 'white' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', alignItems: 'center' }}>
+                          <h4 style={{ fontWeight: '900', color: 'var(--text-primary)', margin: 0 }}>Elegir Foto {selectingFor}</h4>
+                          <button onClick={() => setSelectingFor(null)} style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}><X size={20} /></button>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '12px', maxHeight: '400px', overflowY: 'auto' }}>
+                          {gallery
+                            .filter(img => selectingFor === 'A' ? img.type === 'Antes' : img.type === 'Después')
+                            .map((img, i) => (
+                            <div 
+                              key={i} 
+                              onClick={() => {
+                                if (selectingFor === 'A') setPhotoA(img.url);
+                                if (selectingFor === 'B') setPhotoB(img.url);
+                                setSelectingFor(null);
+                              }}
+                              style={{ 
+                                aspectRatio: '1/1', 
+                                borderRadius: '8px', 
+                                overflow: 'hidden', 
+                                cursor: 'pointer',
+                                border: (selectingFor === 'A' ? photoA === img.url : photoB === img.url) ? '3px solid var(--pink-primary)' : 'none'
+                              }}
+                            >
+                              <img src={img.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </AnimatedModal>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '12px' }}>
+                {gallery.map((img, i) => (
+                  <div key={i} style={{ aspectRatio: '1/1', backgroundColor: 'var(--bg-tertiary)', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-color)', position: 'relative' }} className="group">
+                    <img src={img.url || img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', padding: '8px', fontSize: '9px', fontWeight: '800', color: 'var(--pink-primary)' }}>
+                      {img.type || 'FOTO'}
+                    </div>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); handlePhotoDelete(i); }}
+                      style={{ 
+                        position: 'absolute', top: '8px', right: '8px', 
+                        backgroundColor: 'rgba(255, 69, 58, 0.8)', 
+                        border: 'none', borderRadius: '8px', color: 'white', 
+                        padding: '6px', cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+                        transition: '0.2s'
+                      }}
+                      onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#ff453a'}
+                      onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 69, 58, 0.8)'}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))}
+                <div 
+                  onClick={() => setShowCamera(true)}
+                  style={{ aspectRatio: '1/1', backgroundColor: 'rgba(217,70,168,0.02)', borderRadius: '12px', border: '2px dashed var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: '0.2s' }}
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(217,70,168,0.05)'}
+                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(217,70,168,0.02)'}
+                >
+                  <Camera size={24} color="var(--pink-primary)" />
+                </div>
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  onChange={handleFileSelect} 
+                  accept="image/*" 
+                  style={{ display: 'none' }} 
+                />
+              </div>
+            )}
+          </div>
+        );
+      case 'diagnoses':
+        return (
+          <div className="glass-card" style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>
+                <Activity size={18} color="var(--pink-primary)" /> Historial de Diagnósticos Capilares
+              </h4>
+              <button 
+                onClick={() => setShowAddDiagnosis(!showAddDiagnosis)}
+                className="btn-pink"
+                style={{ height: '32px', padding: '0 12px', fontSize: '12px' }}
+              >
+                {showAddDiagnosis ? 'Cancelar' : 'Nuevo Diagnóstico'}
+              </button>
+            </div>
+
+            {showAddDiagnosis && (
+              <div style={{ backgroundColor: '#faf5f5', padding: '16px', borderRadius: '14px', border: '1px solid rgba(196,139,159,0.2)', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }} className="animate-fade-in">
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '12px' }}>
+                  <AstroSelect 
+                    label="Grosor de Hebra"
+                    value={newDiagnosis.hair_type}
+                    onChange={(val) => setNewDiagnosis({ ...newDiagnosis, hair_type: val })}
+                    options={[
+                      { label: 'Normal', value: 'Normal' },
+                      { label: 'Fino', value: 'Fino' },
+                      { label: 'Grueso', value: 'Grueso' },
+                      { label: 'Quebradizo', value: 'Quebradizo' }
+                    ]}
+                  />
+                  <AstroSelect 
+                    label="Porosidad"
+                    value={newDiagnosis.porosity}
+                    onChange={(val) => setNewDiagnosis({ ...newDiagnosis, porosity: val })}
+                    options={[
+                      { label: 'Baja', value: 'Baja' },
+                      { label: 'Media', value: 'Media' },
+                      { label: 'Alta', value: 'Alta' }
+                    ]}
+                  />
+                  <AstroSelect 
+                    label="Condición del Cuero"
+                    value={newDiagnosis.scalp_condition}
+                    onChange={(val) => setNewDiagnosis({ ...newDiagnosis, scalp_condition: val })}
+                    options={[
+                      { label: 'Sano', value: 'Sano' },
+                      { label: 'Seborrea', value: 'Seborrea' },
+                      { label: 'Descamación', value: 'Descamación' },
+                      { label: 'Caída', value: 'Caída' },
+                      { label: 'Sensible', value: 'Sensible' }
+                    ]}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Historial Químico</label>
+                  <textarea 
+                    className="form-input" 
+                    value={newDiagnosis.chemical_history} 
+                    onChange={e => setNewDiagnosis({ ...newDiagnosis, chemical_history: e.target.value })} 
+                    placeholder="Decoloraciones previas, alisados, tintes..." 
+                    style={{ width: '100%', height: '60px', padding: '10px', fontSize: '13px' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Tratamiento Recomendado</label>
+                  <textarea 
+                    className="form-input" 
+                    value={newDiagnosis.recommended_treatment} 
+                    onChange={e => setNewDiagnosis({ ...newDiagnosis, recommended_treatment: e.target.value })} 
+                    placeholder="Tratamiento molecular, fototerapia, etc..." 
+                    style={{ width: '100%', height: '60px', padding: '10px', fontSize: '13px' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Notas de Diagnóstico</label>
+                  <textarea 
+                    className="form-input" 
+                    value={newDiagnosis.notes} 
+                    onChange={e => setNewDiagnosis({ ...newDiagnosis, notes: e.target.value })} 
+                    placeholder="Observaciones adicionales..." 
+                    style={{ width: '100%', height: '60px', padding: '10px', fontSize: '13px' }}
+                  />
+                </div>
+
+                <button 
+                  onClick={async () => {
+                    try {
+                      if (!newDiagnosis.chemical_history && !newDiagnosis.recommended_treatment) {
+                        showToast('Por favor introduce detalles del diagnóstico', 'warning');
+                        return;
+                      }
+                      const saved = await dataService.addCapillaryDiagnosis({
+                        client_id: client.id,
+                        ...newDiagnosis
+                      });
+                      setDiagnoses([saved, ...diagnoses]);
+                      setShowAddDiagnosis(false);
+                      setNewDiagnosis({
+                        hair_type: 'Normal',
+                        porosity: 'Media',
+                        scalp_condition: 'Sano',
+                        chemical_history: '',
+                        recommended_treatment: '',
+                        notes: '',
+                        images: []
+                      });
+                      showToast('Diagnóstico registrado con éxito', 'success');
+                    } catch (err) {
+                      showToast('Error al registrar diagnóstico', 'error');
+                    }
+                  }}
+                  className="btn-pink"
+                  style={{ width: '100%', height: '40px' }}
+                >
+                  Guardar Diagnóstico
+                </button>
+              </div>
+            )}
+
+            {loadingDiagnoses ? (
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
+                <Loader2 className="animate-spin" size={20} /> Cargando diagnósticos...
+              </div>
+            ) : diagnoses.length === 0 ? (
+              <p style={{ color: 'var(--text-muted)', fontSize: '13px', textAlign: 'center', padding: '30px' }}>No hay diagnósticos capilares registrados para esta clienta.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {diagnoses.map(diag => (
+                  <div 
+                    key={diag.id}
+                    style={{
+                      padding: '16px', borderRadius: '14px', backgroundColor: '#faf5f5',
+                      border: '1px solid rgba(196,139,159,0.1)'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--pink-primary)' }}>
+                        🩺 Diagnóstico del {new Date(diag.created_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </span>
+                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                        {new Date(diag.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '12px', padding: '8px', backgroundColor: 'white', borderRadius: '8px', border: '1px solid var(--border-color)', fontSize: '12px' }}>
+                      <div><strong style={{ color: 'var(--text-muted)' }}>Hebra:</strong> {diag.hair_type}</div>
+                      <div><strong style={{ color: 'var(--text-muted)' }}>Porosidad:</strong> {diag.porosity}</div>
+                      <div><strong style={{ color: 'var(--text-muted)' }}>Cuero:</strong> {diag.scalp_condition}</div>
+                    </div>
+
+                    {diag.chemical_history && (
+                      <div style={{ fontSize: '12px', marginBottom: '8px' }}>
+                        <strong>Historial Químico:</strong>
+                        <p style={{ margin: '2px 0 0', color: 'var(--text-secondary)' }}>{diag.chemical_history}</p>
+                      </div>
+                    )}
+
+                    {diag.recommended_treatment && (
+                      <div style={{ fontSize: '12px', marginBottom: '8px' }}>
+                        <strong>Tratamiento Molecular Recomendado:</strong>
+                        <p style={{ margin: '2px 0 0', color: 'var(--text-secondary)', fontWeight: '700' }}>{diag.recommended_treatment}</p>
+                      </div>
+                    )}
+
+                    {diag.notes && (
+                      <div style={{ fontSize: '12px' }}>
+                        <strong>Notas:</strong>
+                        <p style={{ margin: '2px 0 0', color: 'var(--text-muted)', fontStyle: 'italic' }}>{diag.notes}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      case 'packages':
+        return (
+          <div className="glass-card" style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+            <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '800', marginBottom: '20px', margin: 0, color: 'var(--text-primary)' }}>
+              <Package size={18} color="var(--pink-primary)" /> Paquetes y Sesiones Activas
+            </h4>
+
+            {loadingPackages ? (
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
+                <Loader2 className="animate-spin" size={20} /> Cargando paquetes...
+              </div>
+            ) : packages.length === 0 ? (
+              <p style={{ color: 'var(--text-muted)', fontSize: '13px', textAlign: 'center', padding: '30px' }}>No hay paquetes registrados o activos para esta clienta.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {packages.map(pkg => {
+                  const pct = Math.round((pkg.used_sessions / pkg.total_sessions) * 100);
+                  return (
+                    <div 
+                      key={pkg.id}
+                      style={{
+                        padding: '16px', borderRadius: '14px', backgroundColor: '#faf5f5',
+                        border: '1px solid rgba(196,139,159,0.1)'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                        <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)' }}>
+                          {pkg.services?.name || 'Paquete de Servicio'}
+                        </span>
+                        <span style={{
+                          padding: '4px 8px', borderRadius: '8px', fontSize: '10px', fontWeight: '800',
+                          backgroundColor: pkg.status === 'active' ? 'rgba(34,197,94,0.1)' : 'rgba(196,139,159,0.1)',
+                          color: pkg.status === 'active' ? '#22c55e' : 'var(--text-muted)',
+                          textTransform: 'uppercase'
+                        }}>
+                          {pkg.status === 'active' ? 'Activo' : 'Completado'}
+                        </span>
+                      </div>
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+                        <span>Sesiones consumidas</span>
+                        <strong style={{ color: 'var(--pink-primary)' }}>{pkg.used_sessions} de {pkg.total_sessions}</strong>
+                      </div>
+
+                      <div style={{ width: '100%', height: '8px', backgroundColor: '#e5e5e5', borderRadius: '4px', overflow: 'hidden', marginBottom: '12px' }}>
+                        <div style={{ width: `${pct}%`, height: '100%', backgroundColor: 'var(--pink-primary)', borderRadius: '4px', transition: 'width 0.3s' }}></div>
+                      </div>
+
+                      <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                        Adquirido el {new Date(pkg.created_at).toLocaleDateString()}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      case 'history':
+        return (
+          <div className="glass-card" style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+            <h4 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>
+              <Calendar size={18} color="var(--pink-primary)" /> {isMobile ? 'Historial de Servicios' : 'Historial de Visitas'}
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {loadingHistory ? (
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+                  <Loader2 className="animate-spin" size={16} /> Cargando historial...
+                </div>
+              ) : history.length === 0 ? (
+                <p style={{ color: 'var(--text-muted)', fontSize: '13px', textAlign: 'center', padding: '20px' }}>No hay visitas registradas.</p>
+              ) : (
+                <>
+                  {(showAllHistory ? history : history.slice(0, 5)).map(h => (
+                    <HistoryItem 
+                      key={h.id} 
+                      date={h.created_at ? new Date(h.created_at).toLocaleString('es-VE', { 
+                        day: 'numeric', 
+                        month: 'numeric', 
+                        year: 'numeric', 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        hour12: true 
+                      }) : 'Fecha no registrada'} 
+                      service={h.service_name || h.description.split(' - ')[0].replace('Servicio: ', '')} 
+                      price={h.amount} 
+                      onClick={() => setSelectedVisit(h)}
+                    />
+                  ))}
+                  {history.length > 5 && (
+                    <button 
+                      onClick={() => setShowAllHistory(!showAllHistory)}
+                      style={{ 
+                        width: '100%', 
+                        padding: '12px', 
+                        background: showAllHistory ? 'rgba(255,255,255,0.03)' : 'rgba(217,70,168,0.08)', 
+                        border: '1px solid var(--pink-primary)', 
+                        color: 'var(--pink-primary)', 
+                        borderRadius: '10px', 
+                        cursor: 'pointer',
+                        fontWeight: '700',
+                        fontSize: '13px',
+                        marginTop: '4px'
+                      }}
+                    >
+                      {showAllHistory ? '↑ Ver menos' : `↓ Ver más visitas (${history.length - 5})`}
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="animate-fade-in" style={{ paddingBottom: '60px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
@@ -1151,245 +1678,34 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
             )}
           </div>
 
-          {/* Mobile: History (last 5 + show more) */}
-          <div className="glass-card">
-            <h4 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Calendar size={18} color="var(--pink-primary)" /> Historial de Servicios
-            </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {loadingHistory ? (
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <Loader2 className="animate-spin" size={16} /> Cargando...
-                </div>
-              ) : history.length === 0 ? (
-                <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>No hay historial registrado.</p>
-              ) : (
-                <>
-                  {(showAllHistory ? history : history.slice(0, 5)).map(h => (
-                    <HistoryItem 
-                      key={h.id} 
-                      date={new Date(h.created_at).toLocaleString('es-VE', { 
-                        day: 'numeric', 
-                        month: 'numeric', 
-                        year: 'numeric', 
-                        hour: '2-digit', 
-                        minute: '2-digit', 
-                        hour12: true 
-                      })} 
-                      service={h.service_name || h.description.split(' - ')[0].replace('Servicio: ', '')} 
-                      price={h.amount} 
-                      onClick={() => setSelectedVisit(h)}
-                    />
-                  ))}
-                  {history.length > 5 && (
-                    <button 
-                      onClick={() => setShowAllHistory(!showAllHistory)}
-                      style={{ 
-                        width: '100%', 
-                        padding: '12px', 
-                        background: showAllHistory ? 'rgba(255,255,255,0.03)' : 'rgba(217,70,168,0.08)', 
-                        border: '1px solid var(--pink-primary)', 
-                        color: 'var(--pink-primary)', 
-                        borderRadius: '10px', 
-                        cursor: 'pointer',
-                        fontWeight: '700',
-                        fontSize: '13px',
-                        marginTop: '4px'
-                      }}
-                    >
-                      {showAllHistory ? '↑ Ver menos' : `↓ Ver más servicios (${history.length - 5})`}
-                    </button>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Mobile: Gallery */}
-          <div className="glass-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <ImageIcon size={18} color="var(--pink-primary)" /> Galería de Trabajos
-              </h4>
-              <button 
-                onClick={() => setShowCollage(!showCollage)}
-                style={{ 
-                  background: showCollage ? 'var(--pink-primary)' : 'rgba(217,70,168,0.1)', 
-                  border: '1px solid var(--pink-primary)', 
-                  color: showCollage ? 'black' : 'var(--pink-primary)',
-                  padding: '6px 12px',
-                  borderRadius: '6px',
-                  fontSize: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  cursor: 'pointer',
-                  fontWeight: '800'
+          {/* Mobile Tabs */}
+          <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px', marginBottom: '16px' }}>
+            {[
+              { id: 'gallery', label: 'Galería', icon: <ImageIcon size={14} /> },
+              { id: 'diagnoses', label: 'Salud Capilar', icon: <Activity size={14} /> },
+              { id: 'packages', label: 'Paquetes', icon: <Package size={14} /> },
+              { id: 'history', label: 'Visitas', icon: <Calendar size={14} /> }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => { setActiveSubTab(tab.id); setShowCollage(false); }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '4px',
+                  padding: '6px 12px', borderRadius: '8px', border: 'none',
+                  background: activeSubTab === tab.id ? 'rgba(196,139,159,0.1)' : 'transparent',
+                  color: activeSubTab === tab.id ? 'var(--pink-primary)' : 'var(--text-secondary)',
+                  fontWeight: activeSubTab === tab.id ? '700' : '500',
+                  fontSize: '12px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0
                 }}
               >
-                <ColumnsIcon size={14} /> {showCollage ? 'Ver Galería' : 'Crear Comparativa'}
+                {tab.icon}
+                {tab.label}
               </button>
-            </div>
+            ))}
+          </div>
 
-            {showCollage ? (
-              <div className="animate-scale-in">
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-                  <div 
-                    onClick={() => setSelectingFor('A')}
-                    style={{ 
-                      aspectRatio: '1/1', 
-                      borderRadius: '16px', 
-                      overflow: 'hidden', 
-                      backgroundColor: 'rgba(255,255,255,0.02)',
-                      border: selectingFor === 'A' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)',
-                      position: 'relative',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    {photoA ? (
-                      <img src={photoA} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (
-                      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                        <ImageIcon size={32} color="rgba(255,255,255,0.05)" />
-                        <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)' }}>FOTO ANTES</span>
-                      </div>
-                    )}
-                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', backgroundColor: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)' }}>ANTES</div>
-                  </div>
-
-                  <div 
-                    onClick={() => setSelectingFor('B')}
-                    style={{ 
-                      aspectRatio: '1/1', 
-                      borderRadius: '16px', 
-                      overflow: 'hidden', 
-                      backgroundColor: 'rgba(255,255,255,0.02)',
-                      border: selectingFor === 'B' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)',
-                      position: 'relative',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    {photoB ? (
-                      <img src={photoB} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (
-                      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                        <ImageIcon size={32} color="rgba(255,255,255,0.05)" />
-                        <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)' }}>FOTO DESPUÉS</span>
-                      </div>
-                    )}
-                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', backgroundColor: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)' }}>DESPUÉS</div>
-                  </div>
-                </div>
-
-                {photoA && photoB ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                    <BeforeAfterSlider 
-                      photoA={photoA} 
-                      photoB={photoB} 
-                      sliderPos={sliderPos} 
-                      setSliderPos={setSliderPos} 
-                    />
-                    <button 
-                      onClick={handleDownloadComparison}
-                      className="btn-pink" 
-                      style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
-                    >
-                      <Download size={18} /> Descargar Comparativa
-                    </button>
-                  </div>
-                ) : (
-                  <div style={{ padding: '12px', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.02)', textAlign: 'center', fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>
-                    Selecciona dos fotos para generar el collage
-                  </div>
-                )}
-
-                <AnimatedModal isOpen={!!selectingFor}>
-                  {(overlayClass, cardClass) => (
-                    <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.9)', zIndex: 3000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-                      <div className={`glass-card ${cardClass}`} style={{ maxWidth: '600px', width: '100%', padding: '24px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', alignItems: 'center' }}>
-                          <h4 style={{ 
-                            fontWeight: '900',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px'
-                          }}>
-                            <ImageIcon size={20} color="var(--pink-primary)" />
-                            <span>Elegir Foto {selectingFor}</span>
-                          </h4>
-                          <button onClick={() => setSelectingFor(null)} style={{ background: 'none', border: 'none', color: 'white' }}><X size={20} /></button>
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '12px', maxHeight: '400px', overflowY: 'auto' }}>
-                          {gallery
-                            .filter(img => selectingFor === 'A' ? img.type === 'Antes' : img.type === 'Después')
-                            .map((img, i) => (
-                            <div 
-                              key={i} 
-                              onClick={() => {
-                                if (selectingFor === 'A') setPhotoA(img.url);
-                                if (selectingFor === 'B') setPhotoB(img.url);
-                                setSelectingFor(null);
-                              }}
-                              style={{ 
-                                aspectRatio: '1/1', 
-                                borderRadius: '8px', 
-                                overflow: 'hidden', 
-                                cursor: 'pointer',
-                                border: (selectingFor === 'A' ? photoA === img.url : photoB === img.url) ? '3px solid var(--pink-primary)' : 'none'
-                              }}
-                            >
-                              <img src={img.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </AnimatedModal>
-              </div>
-            ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '12px' }}>
-                {gallery.map((img, i) => (
-                  <div key={i} style={{ aspectRatio: '1/1', backgroundColor: 'var(--bg-tertiary)', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-color)', position: 'relative' }} className="group">
-                    <img src={img.url || img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', padding: '8px', fontSize: '9px', fontWeight: '800', color: 'var(--pink-primary)' }}>
-                      {img.type || 'FOTO'}
-                    </div>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); handlePhotoDelete(i); }}
-                      style={{ 
-                        position: 'absolute', top: '8px', right: '8px', 
-                        backgroundColor: 'rgba(255, 69, 58, 0.8)', 
-                        border: 'none', borderRadius: '8px', color: 'white', 
-                        padding: '6px', cursor: 'pointer',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
-                        transition: '0.2s'
-                      }}
-                      onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#ff453a'}
-                      onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 69, 58, 0.8)'}
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                ))}
-                <div 
-                  onClick={() => setShowCamera(true)}
-                  style={{ aspectRatio: '1/1', backgroundColor: 'rgba(217,70,168,0.02)', borderRadius: '12px', border: '2px dashed var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: '0.2s' }}
-                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(217,70,168,0.05)'}
-                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(217,70,168,0.02)'}
-                >
-                  <Camera size={24} color="var(--pink-primary)" />
-                </div>
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  onChange={handleFileSelect} 
-                  accept="image/*" 
-                  style={{ display: 'none' }} 
-                />
-              </div>
-            )}
+          <div style={{ marginBottom: '20px' }}>
+            {renderSubTabContent()}
           </div>
         </div>
       ) : (
@@ -1469,237 +1785,35 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
           </div>
         </div>
         
-        {/* Right Content: History & Gallery */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-          <div className="glass-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <ImageIcon size={18} color="var(--pink-primary)" /> Galería de Trabajos
-              </h4>
-              <button 
-                onClick={() => setShowCollage(!showCollage)}
-                style={{ 
-                  background: showCollage ? 'var(--pink-primary)' : 'rgba(217,70,168,0.1)', 
-                  border: '1px solid var(--pink-primary)', 
-                  color: showCollage ? 'black' : 'var(--pink-primary)',
-                  padding: '6px 12px',
-                  borderRadius: '6px',
-                  fontSize: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  cursor: 'pointer',
-                  fontWeight: '800'
+        {/* Right Content: Tabs */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px' }}>
+            {[
+              { id: 'gallery', label: 'Galería de Trabajos', icon: <ImageIcon size={16} /> },
+              { id: 'diagnoses', label: 'Diagnóstico Capilar', icon: <Activity size={16} /> },
+              { id: 'packages', label: 'Paquetes y Sesiones', icon: <Package size={16} /> },
+              { id: 'history', label: 'Historial de Visitas', icon: <Calendar size={16} /> }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => { setActiveSubTab(tab.id); setShowCollage(false); }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                  padding: '8px 16px', borderRadius: '10px', border: 'none',
+                  background: activeSubTab === tab.id ? 'rgba(196,139,159,0.1)' : 'transparent',
+                  color: activeSubTab === tab.id ? 'var(--pink-primary)' : 'var(--text-secondary)',
+                  fontWeight: activeSubTab === tab.id ? '700' : '500',
+                  fontSize: '13px', cursor: 'pointer', transition: '0.2s'
                 }}
               >
-                <ColumnsIcon size={14} /> {showCollage ? 'Ver Galería' : 'Crear Comparativa'}
+                {tab.icon}
+                {tab.label}
               </button>
-            </div>
-
-            {showCollage ? (
-              <div className="animate-scale-in">
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-                  <div 
-                    onClick={() => setSelectingFor('A')}
-                    style={{ 
-                      aspectRatio: '1/1', 
-                      borderRadius: '16px', 
-                      overflow: 'hidden', 
-                      backgroundColor: 'rgba(255,255,255,0.02)',
-                      border: selectingFor === 'A' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)',
-                      position: 'relative',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    {photoA ? (
-                      <img src={photoA} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (
-                      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                        <ImageIcon size={32} color="rgba(255,255,255,0.05)" />
-                        <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)' }}>FOTO ANTES</span>
-                      </div>
-                    )}
-                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', backgroundColor: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)' }}>ANTES</div>
-                  </div>
-
-                  <div 
-                    onClick={() => setSelectingFor('B')}
-                    style={{ 
-                      aspectRatio: '1/1', 
-                      borderRadius: '16px', 
-                      overflow: 'hidden', 
-                      backgroundColor: 'rgba(255,255,255,0.02)',
-                      border: selectingFor === 'B' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)',
-                      position: 'relative',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    {photoB ? (
-                      <img src={photoB} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (
-                      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                        <ImageIcon size={32} color="rgba(255,255,255,0.05)" />
-                        <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)' }}>FOTO DESPUÉS</span>
-                      </div>
-                    )}
-                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', backgroundColor: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)' }}>DESPUÉS</div>
-                  </div>
-                </div>
-
-                {photoA && photoB ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                    <BeforeAfterSlider 
-                      photoA={photoA} 
-                      photoB={photoB} 
-                      sliderPos={sliderPos} 
-                      setSliderPos={setSliderPos} 
-                    />
-                    <button 
-                      onClick={handleDownloadComparison}
-                      className="btn-pink" 
-                      style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
-                    >
-                      <Download size={18} /> Descargar Comparativa
-                    </button>
-                  </div>
-                ) : (
-                  <div style={{ padding: '12px', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.02)', textAlign: 'center', fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>
-                    Selecciona dos fotos para generar el collage
-                  </div>
-                )}
-
-                <AnimatedModal isOpen={!!selectingFor}>
-                  {(overlayClass, cardClass) => (
-                    <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.9)', zIndex: 3000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-                      <div className={`glass-card ${cardClass}`} style={{ maxWidth: '600px', width: '100%', padding: '24px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', alignItems: 'center' }}>
-                          <h4 style={{ fontWeight: '900' }}>Elegir Foto {selectingFor}</h4>
-                          <button onClick={() => setSelectingFor(null)} style={{ background: 'none', border: 'none', color: 'white' }}><X size={20} /></button>
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '12px', maxHeight: '400px', overflowY: 'auto' }}>
-                          {gallery
-                            .filter(img => selectingFor === 'A' ? img.type === 'Antes' : img.type === 'Después')
-                            .map((img, i) => (
-                            <div 
-                              key={i} 
-                              onClick={() => {
-                                if (selectingFor === 'A') setPhotoA(img.url);
-                                if (selectingFor === 'B') setPhotoB(img.url);
-                                setSelectingFor(null);
-                              }}
-                              style={{ 
-                                aspectRatio: '1/1', 
-                                borderRadius: '8px', 
-                                overflow: 'hidden', 
-                                cursor: 'pointer',
-                                border: (selectingFor === 'A' ? photoA === img.url : photoB === img.url) ? '3px solid var(--pink-primary)' : 'none'
-                              }}
-                            >
-                              <img src={img.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </AnimatedModal>
-              </div>
-            ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '12px' }}>
-                {gallery.map((img, i) => (
-                  <div key={i} style={{ aspectRatio: '1/1', backgroundColor: 'var(--bg-tertiary)', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-color)', position: 'relative' }} className="group">
-                    <img src={img.url || img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', padding: '8px', fontSize: '9px', fontWeight: '800', color: 'var(--pink-primary)' }}>
-                      {img.type || 'FOTO'}
-                    </div>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); handlePhotoDelete(i); }}
-                      style={{ 
-                        position: 'absolute', top: '8px', right: '8px', 
-                        backgroundColor: 'rgba(255, 69, 58, 0.8)', 
-                        border: 'none', borderRadius: '8px', color: 'white', 
-                        padding: '6px', cursor: 'pointer',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
-                        transition: '0.2s'
-                      }}
-                      onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#ff453a'}
-                      onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 69, 58, 0.8)'}
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                ))}
-                <div 
-                  onClick={() => setShowCamera(true)}
-                  style={{ aspectRatio: '1/1', backgroundColor: 'rgba(217,70,168,0.02)', borderRadius: '12px', border: '2px dashed var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: '0.2s' }}
-                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(217,70,168,0.05)'}
-                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(217,70,168,0.02)'}
-                >
-                  <Camera size={24} color="var(--pink-primary)" />
-                </div>
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  onChange={handleFileSelect} 
-                  accept="image/*" 
-                  style={{ display: 'none' }} 
-                />
-              </div>
-            )}
+            ))}
           </div>
 
-          <div className="glass-card">
-            <h4 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Calendar size={18} color="var(--pink-primary)" /> {isMobile ? 'Historial de Servicios' : 'Historial de Visitas'}
-            </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {loadingHistory ? (
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <Loader2 className="animate-spin" size={16} /> Cargando...
-                </div>
-              ) : history.length === 0 ? (
-                <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>No hay historial registrado.</p>
-              ) : (
-                <>
-                  {(showAllHistory ? history : history.slice(0, 5)).map(h => (
-                    <HistoryItem 
-                      key={h.id} 
-                      date={h.created_at ? new Date(h.created_at).toLocaleString('es-VE', { 
-                        day: 'numeric', 
-                        month: 'numeric', 
-                        year: 'numeric', 
-                        hour: '2-digit', 
-                        minute: '2-digit', 
-                        hour12: true 
-                      }) : 'Fecha no registrada'} 
-                      service={h.service_name || h.description.split(' - ')[0].replace('Servicio: ', '')} 
-                      price={h.amount} 
-                      onClick={() => setSelectedVisit(h)}
-                    />
-                  ))}
-                  {history.length > 5 && (
-                    <button 
-                      onClick={() => setShowAllHistory(!showAllHistory)}
-                      style={{ 
-                        width: '100%', 
-                        padding: '12px', 
-                        background: showAllHistory ? 'rgba(255,255,255,0.03)' : 'rgba(217,70,168,0.08)', 
-                        border: '1px solid var(--pink-primary)', 
-                        color: 'var(--pink-primary)', 
-                        borderRadius: '10px', 
-                        cursor: 'pointer',
-                        fontWeight: '700',
-                        fontSize: '13px',
-                        marginTop: '4px'
-                      }}
-                    >
-                      {showAllHistory ? '↑ Ver menos' : `↓ Ver más servicios (${history.length - 5})`}
-                    </button>
-                  )}
-                </>
-              )}
-            </div>
+          <div>
+            {renderSubTabContent()}
           </div>
         </div>
       </div>

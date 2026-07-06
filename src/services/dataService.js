@@ -400,6 +400,10 @@ export const dataService = {
     return data;
   },
 
+  async createAppointment(appointment) {
+    return this.addAppointment(appointment);
+  },
+
   async updateAppointment(id, updates) {
     _cacheInvalidateAppts();
     const { data, error } = await supabase
@@ -591,6 +595,246 @@ export const dataService = {
       .single();
     if (error) throw error;
     return data.value;
+  },
+
+  // ─── Capillary Diagnoses ───────────────────────────────────────────────────
+  async getCapillaryDiagnoses(clientId) {
+    const { data, error } = await supabase
+      .from('capillary_diagnoses')
+      .select('*')
+      .eq('client_id', clientId)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  },
+
+  async addCapillaryDiagnosis(diagnosis) {
+    const { data, error } = await supabase
+      .from('capillary_diagnoses')
+      .insert([diagnosis])
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  // ─── Client Packages ───────────────────────────────────────────────────────
+  async getClientPackages(clientId) {
+    const { data, error } = await supabase
+      .from('client_packages')
+      .select('*, services(name)')
+      .eq('client_id', clientId)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  },
+
+  async addClientPackage(pkg) {
+    const { data, error } = await supabase
+      .from('client_packages')
+      .insert([pkg])
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async usePackageSession(clientPackageId, appointmentId = null, notes = '') {
+    const { data: pkg, error: getErr } = await supabase
+      .from('client_packages')
+      .select('used_sessions, total_sessions')
+      .eq('id', clientPackageId)
+      .single();
+    if (getErr) throw getErr;
+
+    if (pkg.used_sessions >= pkg.total_sessions) {
+      throw new Error('Todas las sesiones de este paquete ya han sido consumidas.');
+    }
+
+    const newUsed = pkg.used_sessions + 1;
+    const status = newUsed >= pkg.total_sessions ? 'completed' : 'active';
+
+    const { error: updErr } = await supabase
+      .from('client_packages')
+      .update({ used_sessions: newUsed, status })
+      .eq('id', clientPackageId);
+    if (updErr) throw updErr;
+
+    const { data: sessionLog, error: logErr } = await supabase
+      .from('package_sessions')
+      .insert([{
+        client_package_id: clientPackageId,
+        appointment_id: appointmentId,
+        notes
+      }])
+      .select()
+      .single();
+    if (logErr) throw logErr;
+
+    return sessionLog;
+  },
+
+  // ─── Payment Plans & Installments ──────────────────────────────────────────
+  async getClientPaymentPlans(clientId) {
+    const { data, error } = await supabase
+      .from('payment_plans')
+      .select('*')
+      .eq('client_id', clientId)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  },
+
+  async getPendingPaymentPlans() {
+    const { data, error } = await supabase
+      .from('payment_plans')
+      .select('*, clients(name, phone)')
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  },
+
+  async addPaymentPlan(plan) {
+    const { data, error } = await supabase
+      .from('payment_plans')
+      .insert([plan])
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async recordInstallmentPayment(paymentPlanId, amountPaid, paymentMethod) {
+    const { data: plan, error: getErr } = await supabase
+      .from('payment_plans')
+      .select('remaining_balance, total_installments, paid_installments')
+      .eq('id', paymentPlanId)
+      .single();
+    if (getErr) throw getErr;
+
+    const remaining = Number(plan.remaining_balance) - Number(amountPaid);
+    const newPaidInstallments = plan.paid_installments + 1;
+    const status = remaining <= 0 ? 'paid' : 'pending';
+
+    const { error: updErr } = await supabase
+      .from('payment_plans')
+      .update({
+        remaining_balance: Math.max(0, remaining),
+        paid_installments: newPaidInstallments,
+        status
+      })
+      .eq('id', paymentPlanId);
+    if (updErr) throw updErr;
+
+    const { data: log, error: logErr } = await supabase
+      .from('installment_payments')
+      .insert([{
+        payment_plan_id: paymentPlanId,
+        amount_paid: amountPaid,
+        payment_method: paymentMethod
+      }])
+      .select()
+      .single();
+    if (logErr) throw logErr;
+
+    return log;
+  },
+
+  async updateAppointmentStatus(id, status) {
+    return this.updateAppointment(id, { status });
+  },
+
+  async processFinalPayment(paymentData) {
+    // 1. Update appointment statuses to 'Finalizado'
+    if (paymentData.appointmentIds && paymentData.appointmentIds.length > 0) {
+      for (const appId of paymentData.appointmentIds) {
+        await this.updateAppointmentStatus(appId, 'Finalizado');
+      }
+    }
+
+    // 2. Process products in cart and deduct inventory quantities
+    if (paymentData.products && paymentData.products.length > 0) {
+      for (const p of paymentData.products) {
+        // Log inventory movement (Egreso for sale)
+        await supabase.from('inventory_movements').insert([{
+          product_id: p.id,
+          quantity: p.quantity,
+          type: 'Egreso',
+          description: `Venta POS - Cliente: ${paymentData.clientName || 'S/N'}`
+        }]);
+
+        // Deduct from inventory
+        const { data: invItem } = await supabase.from('inventory').select('quantity').eq('id', p.id).single();
+        if (invItem) {
+          const newQty = Math.max(0, (invItem.quantity || 0) - p.quantity);
+          await supabase.from('inventory').update({ quantity: newQty }).eq('id', p.id);
+        }
+      }
+    }
+
+    // 3. Create a transaction row for the sale income
+    const description = `Pago de ${paymentData.serviceName || 'Servicio/Productos'} - Cliente: ${paymentData.clientName || 'S/N'}`;
+    let finalPaymentMethod = paymentData.isMixed ? 'Mixto' : (paymentData.methodUsd ? 'USD' : 'Bs.');
+    if (paymentData.isFinanced) {
+      finalPaymentMethod = `Financiado (${paymentData.initialPaymentMethod})`;
+    }
+    
+    const transaction = {
+      client_id: paymentData.clientId || null,
+      amount: paymentData.isFinanced ? paymentData.initialPaymentAmount : paymentData.totalUsd,
+      type: 'Ingreso',
+      description: paymentData.isFinanced ? `${description} (Cuota Inicial)` : description,
+      payment_method: finalPaymentMethod,
+      usd_rate: paymentData.fixedRate,
+      metadata: {
+        paymentData
+      }
+    };
+    await this.addTransaction(transaction);
+
+    // 4. Update or create client packages if packages were sold
+    if (paymentData.soldPackages && paymentData.soldPackages.length > 0) {
+      for (const soldPkg of paymentData.soldPackages) {
+        await this.addClientPackage({
+          client_id: paymentData.clientId,
+          service_id: soldPkg.serviceId,
+          total_sessions: soldPkg.totalSessions || 8,
+          used_sessions: 0,
+          status: 'active'
+        });
+      }
+    }
+
+    // 5. If it was financed in installments, create a payment plan and record initial payment
+    if (paymentData.isFinanced && paymentData.clientId) {
+      const plan = await this.addPaymentPlan({
+        client_id: paymentData.clientId,
+        appointment_id: paymentData.appointmentId,
+        total_amount: paymentData.totalUsd,
+        total_installments: paymentData.totalInstallments || 3,
+        paid_installments: 1, // First installment counts as paid
+        remaining_balance: paymentData.remainingBalance,
+        status: 'pending'
+      });
+
+      if (plan && plan.id) {
+        await supabase.from('installment_payments').insert([{
+          payment_plan_id: plan.id,
+          amount_paid: paymentData.initialPaymentAmount,
+          payment_method: paymentData.initialPaymentMethod
+        }]);
+      }
+    }
+
+    // 6. Record package consumption sessions
+    if (paymentData.packageConsumptions && paymentData.packageConsumptions.length > 0) {
+      for (const consumption of paymentData.packageConsumptions) {
+        await this.usePackageSession(consumption.clientPackageId, consumption.appointmentId, 'Consumo en checkout POS');
+      }
+    }
+
+    return { success: true };
   },
 
   // ─── Auth ───────────────────────────────────────────────────────────────────

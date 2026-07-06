@@ -196,3 +196,153 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   background: linear-gradient(135deg, #d4a09a 0%, #a0506a 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
+
+/* Dashboard Premium Styles */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+@media (max-width: 1200px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Luxury Pink Salon Styles */
+:root {
+  --blush-bg: #fff5f6;
+  --luxury-pink: #fbcada;
+  --gold-accent: #dfb28c;
+  --gold-gradient: linear-gradient(135deg, #f7d6c1 0%, #dfb28c 50%, #c4966e 100%);
+  --rose-gradient-premium: linear-gradient(135deg, #fbcada 0%, #e099ae 50%, #a0506a 100%);
+  --luxury-card-shadow: 0 10px 30px rgba(160, 80, 106, 0.05), 0 1px 3px rgba(160, 80, 106, 0.02);
+  --luxury-card-shadow-hover: 0 20px 40px rgba(160, 80, 106, 0.12), 0 0 25px rgba(251, 202, 218, 0.35);
+}
+
+.luxury-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(251, 202, 218, 0.45);
+  border-radius: 22px;
+  padding: 22px;
+  box-shadow: var(--luxury-card-shadow);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.luxury-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--luxury-card-shadow-hover);
+  border-color: rgba(224, 153, 174, 0.7);
+}
+
+.luxury-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 4px;
+  background: var(--rose-gradient-premium);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.luxury-card:hover::before {
+  opacity: 1;
+}
+
+.db-stat-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #7c3f53 0%, #a0506a 50%, #c48b9f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+  margin: 6px 0 2px 0;
+  font-family: 'Outfit', sans-serif;
+}
+
+.db-stat-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #a0506a;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.db-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(251, 202, 218, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.luxury-card:hover .db-icon-wrapper {
+  background: var(--rose-gradient-premium);
+  transform: rotate(8deg) scale(1.05);
+  box-shadow: 0 4px 15px rgba(224, 153, 174, 0.4);
+}
+
+.luxury-card:hover .db-icon-wrapper svg {
+  color: white !important;
+}
+
+.db-main-row {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+@media (max-width: 992px) {
+  .db-main-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.db-bottom-row {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+@media (max-width: 992px) {
+  .db-bottom-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.text-luxury-gradient {
+  background: linear-gradient(135deg, #a0506a 0%, #c48b9f 50%, #dfb28c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.timeline-connector {
+  position: absolute;
+  left: 28px;
+  top: 36px;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, rgba(251, 202, 218, 0.8) 0%, rgba(251, 202, 218, 0.15) 100%);
+  z-index: 0;
+}
+

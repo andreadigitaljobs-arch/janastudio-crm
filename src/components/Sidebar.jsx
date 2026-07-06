@@ -175,31 +175,6 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
       </nav>
 
       <div style={{ marginTop: 'auto', paddingTop: '16px' }}>
-        {/* Salon Brand Card */}
-        {!isCollapsed && (
-          <div style={{
-            padding: '12px', borderRadius: '12px',
-            background: 'rgba(255, 255, 255, 0.06)',
-            marginBottom: '12px', position: 'relative', overflow: 'hidden'
-          }}>
-            <div style={{
-              width: '100%', height: '60px', borderRadius: '8px',
-              background: 'linear-gradient(135deg, rgba(196, 139, 159, 0.12) 0%, rgba(160, 80, 106, 0.08) 100%)',
-              marginBottom: '8px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center'
-            }}>
-              <Sparkles size={22} color="rgba(196, 139, 159, 0.35)" />
-            </div>
-            <div style={{
-              fontFamily: 'Georgia, serif', fontSize: '0.88rem',
-              color: '#ffffff', fontWeight: '500', marginBottom: '2px'
-            }}>Jana Studio</div>
-            <div style={{
-              fontSize: '0.62rem', color: 'rgba(255,255,255,0.35)',
-              lineHeight: '1.3'
-            }}>Belleza que inspira confianza.</div>
-          </div>
-        )}
 
         {/* Exchange Rates */}
         {!isCollapsed && rates && rates.usdt > 0 && (
