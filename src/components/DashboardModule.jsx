@@ -177,29 +177,64 @@ const DashboardModule = ({
         {/* Left Column: Banner, Stats grid, Bottom row */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
-          {/* Main Hero Banner: full background image */}
+          {/* Main Hero Banner: draggable & zoomable background image */}
           <div style={{
-            backgroundImage: 'url(/hero_banner.jpeg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center 30%',
             borderRadius: '24px',
-            padding: isMobile ? '28px 24px' : '40px 44px',
-            display: 'flex',
-            alignItems: 'flex-end',
-            justifyContent: 'flex-start',
             position: 'relative',
             overflow: 'hidden',
-            minHeight: isMobile ? '180px' : '240px',
+            minHeight: isMobile ? '200px' : '260px',
+            border: '1px solid rgba(212, 160, 154, 0.15)',
+            boxShadow: 'var(--shadow-card)',
+            userSelect: 'none'
           }}>
+            {/* Real background image with zoom and position controls */}
+            <div 
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                overflow: 'hidden',
+                zIndex: 0
+              }}
+            >
+              <img 
+                src="/hero_banner.jpeg" 
+                alt="Banner"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: `center ${window.__janaBannerPosY || 30}%`,
+                  transform: `scale(${window.__janaBannerZoom || 1.0})`,
+                  transition: 'transform 0.2s ease, object-position 0.2s ease',
+                  pointerEvents: 'none'
+                }}
+                id="jana-hero-img"
+              />
+            </div>
+
             {/* Dark gradient overlay so text is readable */}
             <div style={{
               position: 'absolute', inset: 0,
-              background: 'linear-gradient(to right, rgba(30,15,20,0.52) 0%, rgba(30,15,20,0.18) 60%, rgba(30,15,20,0.0) 100%)',
+              background: 'linear-gradient(to right, rgba(30,15,20,0.65) 0%, rgba(30,15,20,0.3) 60%, rgba(30,15,20,0.0) 100%)',
               borderRadius: '24px',
               zIndex: 1
             }} />
 
-            <div style={{ zIndex: 2, display: 'flex', flexDirection: 'column', gap: '14px', maxWidth: isMobile ? '100%' : '52%' }}>
+            {/* Left aligned text content */}
+            <div style={{ 
+              zIndex: 2, 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: '14px', 
+              maxWidth: isMobile ? '100%' : '52%',
+              padding: isMobile ? '28px 24px' : '40px 44px',
+              position: 'relative',
+              height: '100%',
+              justifyContent: 'flex-end',
+              marginTop: isMobile ? '80px' : '100px'
+            }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                 <span style={{ 
                   fontFamily: "'Playfair Display', Georgia, serif", 
@@ -240,7 +275,104 @@ const DashboardModule = ({
                 Ver agenda de hoy
               </button>
             </div>
+
+            {/* Position and Zoom adjustment UI Overlay */}
+            <div style={{
+              position: 'absolute',
+              top: '16px',
+              right: '16px',
+              zIndex: 3,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+              background: 'rgba(255, 255, 255, 0.25)',
+              backdropFilter: 'blur(10px)',
+              padding: '6px',
+              borderRadius: '14px',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+            }}>
+              {/* Move Up */}
+              <button 
+                onClick={() => {
+                  window.__janaBannerPosY = Math.max(0, (window.__janaBannerPosY || 30) - 5);
+                  const img = document.getElementById('jana-hero-img');
+                  if (img) img.style.objectPosition = `center ${window.__janaBannerPosY}%`;
+                }}
+                title="Mover arriba"
+                style={{
+                  width: '28px', height: '28px', borderRadius: '8px', border: 'none',
+                  background: 'rgba(255,255,255,0.85)', color: 'var(--text-primary)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = '#ffffff'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.85)'}
+              >
+                ▲
+              </button>
+              {/* Move Down */}
+              <button 
+                onClick={() => {
+                  window.__janaBannerPosY = Math.min(100, (window.__janaBannerPosY || 30) + 5);
+                  const img = document.getElementById('jana-hero-img');
+                  if (img) img.style.objectPosition = `center ${window.__janaBannerPosY}%`;
+                }}
+                title="Mover abajo"
+                style={{
+                  width: '28px', height: '28px', borderRadius: '8px', border: 'none',
+                  background: 'rgba(255,255,255,0.85)', color: 'var(--text-primary)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = '#ffffff'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.85)'}
+              >
+                ▼
+              </button>
+              {/* Divider */}
+              <div style={{ height: '1px', background: 'rgba(255,255,255,0.3)', margin: '2px 0' }} />
+              {/* Zoom In */}
+              <button 
+                onClick={() => {
+                  window.__janaBannerZoom = Math.min(2.5, (window.__janaBannerZoom || 1.0) + 0.1);
+                  const img = document.getElementById('jana-hero-img');
+                  if (img) img.style.transform = `scale(${window.__janaBannerZoom})`;
+                }}
+                title="Aumentar Zoom"
+                style={{
+                  width: '28px', height: '28px', borderRadius: '8px', border: 'none',
+                  background: 'rgba(255,255,255,0.85)', color: 'var(--text-primary)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '14px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = '#ffffff'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.85)'}
+              >
+                +
+              </button>
+              {/* Zoom Out */}
+              <button 
+                onClick={() => {
+                  window.__janaBannerZoom = Math.max(1.0, (window.__janaBannerZoom || 1.0) - 0.1);
+                  const img = document.getElementById('jana-hero-img');
+                  if (img) img.style.transform = `scale(${window.__janaBannerZoom})`;
+                }}
+                title="Disminuir Zoom"
+                style={{
+                  width: '28px', height: '28px', borderRadius: '8px', border: 'none',
+                  background: 'rgba(255,255,255,0.85)', color: 'var(--text-primary)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '14px', fontWeight: 'bold', cursor: 'pointer', transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = '#ffffff'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.85)'}
+              >
+                −
+              </button>
+            </div>
           </div>
+
 
           {/* Stats grid row */}
           <div style={{ 
