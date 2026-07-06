@@ -58,7 +58,7 @@ const TopBar = ({
             display: 'flex',
             alignItems: 'center'
           }}>
-            {getGreeting().replace('¡', '').replace('!', '')}, {(!user || user.role?.startsWith('Admin')) ? 'Jana' : (user.name?.split(' ')[0] || 'Jana')}
+            {getGreeting().replace('¡', '').replace('!', '')}, {(!user || user.role?.toLowerCase().includes('admin') || user.name?.toLowerCase().includes('administrador')) ? 'Jana' : (user.name?.split(' ')[0] || 'Jana')}
             <Sparkles 
               size={isMobile ? 18 : 22} 
               style={{ 
