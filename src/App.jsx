@@ -379,13 +379,6 @@ function App() {
     }
   };
 
-  const hasSessionKey = Object.keys(localStorage).some(key => key.startsWith('sb-') && key.endsWith('-auth-token'));
-  if (authLoading && !user) {
-    if (!hasSessionKey) return <Login />;
-    return <JanaLoader visible={true} />;
-  }
-  if (!user) return <Login />;
-
   const totalMobileButtons = allowedMenuItems.length > 5 ? 5 : allowedMenuItems.length;
   const activeMobileIndex = useMemo(() => {
     if (isMoreOpen) {
@@ -398,6 +391,13 @@ function App() {
     }
     return -1;
   }, [activeTab, mobileVisibleItems, isMoreOpen, totalMobileButtons, allowedMenuItems.length]);
+
+  const hasSessionKey = Object.keys(localStorage).some(key => key.startsWith('sb-') && key.endsWith('-auth-token'));
+  if (authLoading && !user) {
+    if (!hasSessionKey) return <Login />;
+    return <JanaLoader visible={true} />;
+  }
+  if (!user) return <Login />;
 
   return (
     <div className="app-container no-scrollbar" style={{ display: 'flex', alignItems: 'stretch', minHeight: '100vh', height: '100vh', overflow: 'hidden', backgroundColor: 'var(--bg-primary)', position: 'relative' }}>
