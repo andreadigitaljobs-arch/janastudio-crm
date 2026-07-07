@@ -1,6 +1,6 @@
 {
-  "short_name": "Jana Studio",
-  "name": "Jana Studio",
+  "short_name": "Jana Spa",
+  "name": "Jana Spa",
   "description": "Sistema de gestión para salón de belleza",
   "icons": [
     {
@@ -10,7 +10,7 @@
       "purpose": "any"
     },
     {
-      "src": "/pwa-icon.webp",
+      "src": "/pwa-icon-512.webp",
       "type": "image/webp",
       "sizes": "512x512",
       "purpose": "maskable"
