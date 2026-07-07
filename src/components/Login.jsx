@@ -52,6 +52,11 @@ export default function Login() {
   }, []);
 
   useEffect(() => {
+    const nextImage = new Image();
+    nextImage.src = images[(activeIndex + 1) % images.length];
+  }, [activeIndex]);
+
+  useEffect(() => {
     if (isMobile && emailRef.current) {
       const handleFocus = () => {
         setTimeout(() => {
@@ -116,6 +121,9 @@ export default function Login() {
     { icon: <Scissors size={isMobile ? 18 : 20} strokeWidth={1.4} />, label: 'Más clientes', sub: 'Fideliza y crece' },
   ];
 
+  const activeImage = images[activeIndex];
+  const activeImageConfig = config[activeIndex] || { x: 50, y: 50, z: 100 };
+
   return (
     <div className="salon-login-outer">
       <div className="salon-login-container">
@@ -124,27 +132,21 @@ export default function Login() {
         <div className="salon-login-left">
           <div className="salon-semicircle-border">
             <div className="salon-semicircle-content" style={{ position: 'relative', width: '100%', height: '100%' }}>
-              {images.map((imgUrl, idx) => {
-                const imgConf = config[idx] || { x: 50, y: 50, z: 100 };
-                return (
-                  <React.Fragment key={idx}>
-                    <div
-                      className={`salon-semicircle-image ${activeIndex === idx ? 'ken-burns-active' : ''}`}
-                      style={{
-                        backgroundImage: `url(${imgUrl})`,
-                        backgroundPosition: `${imgConf.x}% ${imgConf.y}%`,
-                        backgroundSize: `${imgConf.z}%`,
-                        position: 'absolute',
-                        inset: 0,
-                        opacity: activeIndex === idx ? 1 : 0,
-                        transition: 'opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                        zIndex: activeIndex === idx ? 2 : 1
-                      }}
-                    />
-                    {activeIndex === idx && <div className="salon-photo-overlay" />}
-                  </React.Fragment>
-                );
-              })}
+              <div
+                key={activeImage}
+                className="salon-semicircle-image ken-burns-active"
+                style={{
+                  backgroundImage: `url(${activeImage})`,
+                  backgroundPosition: `${activeImageConfig.x}% ${activeImageConfig.y}%`,
+                  backgroundSize: `${activeImageConfig.z}%`,
+                  position: 'absolute',
+                  inset: 0,
+                  opacity: 1,
+                  transition: 'opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                  zIndex: 2
+                }}
+              />
+              <div className="salon-photo-overlay" />
             </div>
           </div>
         </div>
