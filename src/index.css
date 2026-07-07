@@ -207,7 +207,7 @@ html, body {
   border-radius: 36px;
   display: flex;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(167, 102, 115, 0.05);
+  box-shadow: 0 8px 40px rgba(167, 102, 115, 0.18), 0 2px 8px rgba(167, 102, 115, 0.1), 0 20px 60px rgba(167, 102, 115, 0.12);
   position: relative;
 }
 
