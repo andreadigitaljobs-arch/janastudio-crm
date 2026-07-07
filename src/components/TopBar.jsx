@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  User, Plus, Bell, MapPin, Calendar, Clock, Sparkles
+  User, Plus, Bell, MapPin, Calendar, Clock, Sparkles, Search
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { notificationService } from '../services/notificationService';
@@ -96,35 +96,67 @@ const TopBar = ({
           </button>
         </div>
 
-        {/* Second Line: Greeting exactly like Picture 2 */}
-        {activeTab !== 'dashboard' && (
-          <div style={{ padding: '0 4px' }}>
-            <h1 style={{
-              fontSize: '18px',
-              fontWeight: '700',
-              color: 'var(--text-primary)',
-              fontFamily: "'Playfair Display', Georgia, serif",
-              margin: 0,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}>
-              {getGreeting().replace('¡', '').replace('!', '')}, {(!user || user.role?.toLowerCase().includes('admin') || user.name?.toLowerCase().includes('administrador')) ? 'Jana' : (user.name?.split(' ')[0] || 'Jana')}
-              <Sparkles 
-                size={16} 
-                style={{ 
-                  color: 'var(--magenta-secondary)', 
-                  animation: 'pulse 2s infinite ease-in-out'
-                }} 
-              />
-            </h1>
-            <p style={{
-              fontSize: '0.75rem',
-              color: 'var(--text-secondary)',
-              margin: '2px 0 0 0',
-              fontWeight: '500'
-            }}>Aquí tienes un resumen de hoy en Jana Studio.</p>
+        {/* Second Line: Search Bar (Dashboard) or Greeting (Other Tabs) */}
+        {activeTab === 'dashboard' ? (
+          <div style={{ position: 'relative', width: '100%', padding: '0 4px' }}>
+            <input 
+              type="text" 
+              placeholder="Search clients, appointments, services..." 
+              style={{
+                width: '100%',
+                padding: '10px 40px 10px 14px',
+                borderRadius: '10px',
+                border: '1px solid var(--border-color)',
+                background: '#ffffff',
+                color: 'var(--text-primary)',
+                fontSize: '0.78rem',
+                fontWeight: '500',
+                outline: 'none',
+                boxShadow: 'var(--shadow-card)'
+              }}
+            />
+            <Search 
+              size={15} 
+              style={{ 
+                position: 'absolute', 
+                right: '16px', 
+                top: '50%', 
+                transform: 'translateY(-50%)',
+                color: 'var(--text-muted)',
+                pointerEvents: 'none'
+              }} 
+            />
           </div>
+        ) : (
+          activeTab !== 'dashboard' && (
+            <div style={{ padding: '0 4px' }}>
+              <h1 style={{
+                fontSize: '18px',
+                fontWeight: '700',
+                color: 'var(--text-primary)',
+                fontFamily: "'Playfair Display', Georgia, serif",
+                margin: 0,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}>
+                {getGreeting().replace('¡', '').replace('!', '')}, {(!user || user.role?.toLowerCase().includes('admin') || user.name?.toLowerCase().includes('administrador')) ? 'Jana' : (user.name?.split(' ')[0] || 'Jana')}
+                <Sparkles 
+                  size={16} 
+                  style={{ 
+                    color: 'var(--magenta-secondary)', 
+                    animation: 'pulse 2s infinite ease-in-out'
+                  }} 
+                />
+              </h1>
+              <p style={{
+                fontSize: '0.75rem',
+                color: 'var(--text-secondary)',
+                margin: '2px 0 0 0',
+                fontWeight: '500'
+              }}>Aquí tienes un resumen de hoy en Jana Studio.</p>
+            </div>
+          )
         )}
 
         {/* Third Line: BCV/USDT and Date styled horizontally scrolling & super neat */}
@@ -177,9 +209,42 @@ const TopBar = ({
       paddingLeft: '0',
       paddingTop: '0'
     }}>
-      {/* Left: Greeting */}
+      {/* Left: Greeting (or Search Bar in Dashboard) */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        {activeTab !== 'dashboard' && (
+        {activeTab === 'dashboard' ? (
+          <div style={{ position: 'relative', width: '350px' }}>
+            <input 
+              type="text" 
+              placeholder="Search clients, appointments, services..." 
+              style={{
+                width: '100%',
+                padding: '10px 40px 10px 16px',
+                borderRadius: '12px',
+                border: '1px solid var(--border-color)',
+                background: '#ffffff',
+                color: 'var(--text-primary)',
+                fontSize: '0.82rem',
+                fontWeight: '500',
+                outline: 'none',
+                boxShadow: 'var(--shadow-card)',
+                transition: 'all 0.2s'
+              }}
+              onFocus={(e) => e.target.style.borderColor = 'var(--pink-primary)'}
+              onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
+            />
+            <Search 
+              size={16} 
+              style={{ 
+                position: 'absolute', 
+                right: '14px', 
+                top: '50%', 
+                transform: 'translateY(-50%)',
+                color: 'var(--text-muted)',
+                pointerEvents: 'none'
+              }} 
+            />
+          </div>
+        ) : (
           <div>
             <h1 style={{
               fontSize: '26px', 
