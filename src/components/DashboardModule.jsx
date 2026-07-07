@@ -1706,101 +1706,74 @@ const DashboardModule = ({
           </div>
         </div>
 
-        {/* TOP ESPECIALISTAS */}
-        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '22px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
-              Top Especialistas
-            </h3>
+        {/* TOP ESPECIALISTAS + REPORTES */}
+        <div style={{ background: '#ffffff', borderRadius: '20px', border: '1px solid rgba(201, 114, 130, 0.1)', padding: '22px', boxShadow: '0 2px 12px rgba(201, 114, 130, 0.04)', display: 'flex', flexDirection: 'column', gap: '0' }}>
+          {/* Top Especialistas header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>Top especialistas</h3>
             <span onClick={() => onNavigate('personnel')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              Ver todo <ChevronRight size={14} />
+              Ver todo <ChevronRight size={13} />
             </span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {/* Specialists list */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
             {TOP_SPECIALISTS.slice(0, 3).map((spec, idx) => {
-              const medals = ['🥇', '🥈', '🥉'];
               const maxEarnings = TOP_SPECIALISTS[0]?.earnings || 1;
-              const barPct = Math.round((spec.earnings / maxEarnings) * 100);
-              const isFirst = idx === 0;
               return (
                 <div key={idx} style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  padding: '12px 14px',
-                  borderRadius: '16px',
-                  background: isFirst
-                    ? 'linear-gradient(135deg, rgba(201,114,130,0.1) 0%, rgba(160,80,106,0.06) 100%)'
-                    : 'rgba(250, 243, 242, 0.6)',
-                  border: isFirst
-                    ? '1px solid rgba(201, 114, 130, 0.2)'
-                    : '1px solid rgba(212, 160, 154, 0.1)',
-                  transition: 'all 0.2s',
-                  position: 'relative',
-                  overflow: 'hidden'
+                  display: 'flex', alignItems: 'center', gap: '10px',
+                  padding: '10px 0',
+                  borderBottom: idx < 2 ? '1px solid rgba(201,114,130,0.08)' : 'none'
                 }}>
-                  {/* Rank medal */}
+                  {/* Rank badge */}
                   <div style={{
-                    width: '28px', height: '28px', borderRadius: '50%',
-                    background: isFirst ? 'linear-gradient(135deg, #c97282, #a0506a)' : '#f5e9e7',
+                    width: '26px', height: '26px', borderRadius: '50%',
+                    background: idx === 0 ? 'linear-gradient(135deg, #c97282, #a0506a)' : 'transparent',
+                    border: idx === 0 ? 'none' : '2px solid rgba(201,114,130,0.25)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: isFirst ? '11px' : '14px',
-                    flexShrink: 0, boxShadow: isFirst ? '0 3px 8px rgba(160,80,106,0.3)' : 'none'
+                    flexShrink: 0
                   }}>
-                    {isFirst
-                      ? <span style={{ color: '#fff', fontWeight: 800, fontSize: '10px' }}>#{idx + 1}</span>
-                      : <span>{medals[idx]}</span>
-                    }
+                    <span style={{ fontSize: '0.65rem', fontWeight: '800', color: idx === 0 ? '#fff' : '#a0506a' }}>#{idx + 1}</span>
                   </div>
 
                   {/* Avatar */}
                   <div style={{
-                    width: '36px', height: '36px', borderRadius: '50%',
+                    width: '34px', height: '34px', borderRadius: '50%',
                     background: 'linear-gradient(135deg, #c97282, #a0506a)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: 'white', fontWeight: 800, fontSize: '0.82rem', flexShrink: 0,
-                    boxShadow: '0 2px 6px rgba(160,80,106,0.25)'
+                    color: '#fff', fontWeight: 700, fontSize: '0.75rem', flexShrink: 0
                   }}>{spec.initial}</div>
 
-                  {/* Name + role + bar */}
+                  {/* Name + role */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.82rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{spec.name}</div>
-                    <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', marginBottom: '5px' }}>{spec.role}</div>
-                    <div style={{ height: '4px', borderRadius: '3px', background: 'rgba(212,160,154,0.2)', overflow: 'hidden' }}>
-                      <div style={{
-                        width: `${barPct}%`, height: '100%', borderRadius: '3px',
-                        background: isFirst ? 'linear-gradient(90deg, #c97282, #a0506a)' : 'rgba(201,114,130,0.45)',
-                        transition: 'width 0.6s ease'
-                      }} />
-                    </div>
+                    <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>{spec.role}</div>
                   </div>
 
                   {/* Earnings */}
                   <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <div style={{ fontWeight: 800, color: isFirst ? '#a0506a' : 'var(--text-primary)', fontSize: '0.8rem' }}>Bs. {formatBs(spec.earnings)}</div>
-                    <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', marginTop: '1px' }}>ingresos</div>
+                    <div style={{ fontWeight: 800, color: '#a0506a', fontSize: '0.82rem' }}>Bs. {formatBs(spec.earnings)}</div>
+                    <div style={{ fontSize: '0.58rem', color: 'var(--text-muted)' }}>ingresos</div>
                   </div>
                 </div>
               );
             })}
           </div>
 
-          {/* Divider + Mini Reportes */}
-          <div style={{ borderTop: '1px solid rgba(212, 160, 154, 0.15)', paddingTop: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {/* Divider + Reportes */}
+          <div style={{ borderTop: '1px solid rgba(201, 114, 130, 0.1)', paddingTop: '16px', marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h4 style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
-                Reportes
-              </h4>
-              <span onClick={() => onNavigate('reports')} style={{ fontSize: '0.7rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                Ver todo <ChevronRight size={12} />
+              <h4 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>Reportes</h4>
+              <span onClick={() => onNavigate('reports')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                Ver todo <ChevronRight size={13} />
               </span>
             </div>
-            <span style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--text-primary)' }}>Bs. 12.840</span>
-            <span style={{ fontSize: '0.65rem', color: '#22c55e', fontWeight: '600' }}>
+            <span style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--text-primary)' }}>Bs. 12.840</span>
+            <span style={{ fontSize: '0.68rem', color: '#22c55e', fontWeight: '600' }}>
               ↑ 18% <span style={{ color: 'var(--text-muted)', fontWeight: '400' }}>vs mes anterior</span>
             </span>
-            <div style={{ height: '70px', width: '100%', position: 'relative' }}>
+            <div style={{ height: '60px', width: '100%', position: 'relative', marginTop: '4px' }}>
               <Line
                 data={{
                   labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
@@ -1814,7 +1787,7 @@ const DashboardModule = ({
                     pointRadius: 3,
                     pointHoverRadius: 5,
                     fill: true,
-                    backgroundColor: 'rgba(160, 80, 106, 0.08)',
+                    backgroundColor: 'rgba(160, 80, 106, 0.06)',
                     tension: 0.4
                   }]
                 }}
