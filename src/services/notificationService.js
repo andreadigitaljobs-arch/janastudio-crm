@@ -4,11 +4,31 @@ class NotificationService {
   constructor() {
     this.notificationsKey = 'jana_notifications_list';
     this.swRegistered = false;
-    this.initServiceWorker();
+    this.scheduleServiceWorkerRegistration();
   }
 
-  // Inicializar Service Worker
+  scheduleServiceWorkerRegistration() {
+    if (!('serviceWorker' in navigator)) return;
+
+    const register = () => {
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(() => this.initServiceWorker(), { timeout: 3000 });
+      } else {
+        setTimeout(() => this.initServiceWorker(), 1500);
+      }
+    };
+
+    if (document.readyState === 'complete') {
+      register();
+    } else {
+      window.addEventListener('load', register, { once: true });
+    }
+  }
+
+  // Inicializar Service Worker sin bloquear el primer render
   async initServiceWorker() {
+    if (this.swRegistered) return;
+
     if ('serviceWorker' in navigator) {
       try {
         const registration = await navigator.serviceWorker.register('/sw.js');

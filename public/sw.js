@@ -1,16 +1,11 @@
 // Service Worker para la PWA de Jana Studio CRM
-const CACHE_NAME = 'jana-studio-assets-v1';
+const CACHE_NAME = 'jana-studio-assets-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/favicon.webp',
   '/logo.webp',
-  '/logo.png',
   '/fondo_carga.png',
   '/fondo_carga_mobile.png',
-  '/login_bg1.webp',
-  '/login_bg2.webp',
-  '/login_bg3.webp',
-  '/login_bg4.webp',
   '/pwa-icon.webp',
   '/icons.svg'
 ];
