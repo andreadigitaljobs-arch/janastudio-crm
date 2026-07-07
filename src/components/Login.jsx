@@ -126,15 +126,7 @@ export default function Login() {
 
   return (
     <div className="salon-login-outer">
-      {/* Decorative leaf top-right */}
-      <svg className="salon-login-leaf" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M180 10 C160 30, 140 20, 120 50 C100 80, 110 90, 90 120 C80 135, 70 140, 60 155" stroke="rgba(196,139,159,0.35)" strokeWidth="1.5" fill="none"/>
-        <path d="M175 5 C155 25, 150 15, 130 40 C115 60, 125 75, 105 105 C95 120, 85 130, 75 145" stroke="rgba(196,139,159,0.25)" strokeWidth="1.2" fill="none"/>
-        <path d="M190 15 C170 35, 145 25, 125 55 C110 75, 115 95, 95 125 C85 140, 75 150, 65 165" stroke="rgba(196,139,159,0.3)" strokeWidth="1" fill="none"/>
-        <ellipse cx="90" cy="120" rx="20" ry="9" transform="rotate(-35 90 120)" fill="rgba(196,139,159,0.08)"/>
-        <ellipse cx="110" cy="90" rx="17" ry="7" transform="rotate(-40 110 90)" fill="rgba(196,139,159,0.06)"/>
-        <ellipse cx="130" cy="60" rx="14" ry="6" transform="rotate(-45 130 60)" fill="rgba(196,139,159,0.06)"/>
-      </svg>
+      <img src="/flor_arriba.png" alt="" className="salon-login-flor-top" />
       <div className="salon-login-container">
 
         {/* ── SECCIÓN IZQUIERDA: Carrusel de fotos ── */}
@@ -162,21 +154,6 @@ export default function Login() {
 
         {/* ── SECCIÓN DERECHA: Formulario flotante ── */}
         <div className="salon-login-right">
-          {/* Decorative flower bottom-right */}
-          <svg className="salon-login-flower" viewBox="0 0 180 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M150 220 C140 190, 120 200, 110 170 C100 140, 80 150, 70 120 C65 105, 55 95, 45 80" stroke="rgba(196,139,159,0.35)" strokeWidth="1.5" fill="none"/>
-            <path d="M140 210 C130 185, 115 195, 105 165 C95 135, 75 145, 65 115 C60 100, 50 90, 40 75" stroke="rgba(196,139,159,0.25)" strokeWidth="1.2" fill="none"/>
-            <path d="M160 215 C150 195, 125 205, 115 175 C105 145, 85 155, 75 125 C70 110, 60 100, 50 85" stroke="rgba(196,139,159,0.2)" strokeWidth="1" fill="none"/>
-            {/* Flower petals */}
-            <ellipse cx="45" cy="80" rx="16" ry="26" transform="rotate(-15 45 80)" fill="rgba(196,139,159,0.06)" stroke="rgba(196,139,159,0.2)" strokeWidth="0.8"/>
-            <ellipse cx="36" cy="72" rx="14" ry="22" transform="rotate(-40 36 72)" fill="rgba(196,139,159,0.05)" stroke="rgba(196,139,159,0.18)" strokeWidth="0.7"/>
-            <ellipse cx="54" cy="74" rx="13" ry="20" transform="rotate(15 54 74)" fill="rgba(196,139,159,0.05)" stroke="rgba(196,139,159,0.18)" strokeWidth="0.7"/>
-            <ellipse cx="42" cy="65" rx="12" ry="18" transform="rotate(-55 42 65)" fill="rgba(196,139,159,0.04)" stroke="rgba(196,139,159,0.15)" strokeWidth="0.6"/>
-            <ellipse cx="50" cy="66" rx="11" ry="16" transform="rotate(30 50 66)" fill="rgba(196,139,159,0.04)" stroke="rgba(196,139,159,0.15)" strokeWidth="0.6"/>
-            {/* Small leaves along stem */}
-            <ellipse cx="85" cy="130" rx="10" ry="16" transform="rotate(-30 85 130)" fill="rgba(196,139,159,0.05)" stroke="rgba(196,139,159,0.15)" strokeWidth="0.6"/>
-            <ellipse cx="105" cy="165" rx="9" ry="14" transform="rotate(-25 105 165)" fill="rgba(196,139,159,0.05)" stroke="rgba(196,139,159,0.15)" strokeWidth="0.6"/>
-          </svg>
           <div className={`salon-login-form-wrapper ${mounted ? 'salon-form-mounted' : ''}`}>
 
             {/* Logo */}
