@@ -18,17 +18,17 @@ ChartJS.register(
 );
 
 const FALLBACK_APPOINTMENTS = [
-  { time: '9:00 AM', client: 'Isabella R.', service: 'Pestañas Clásicas', status: 'Confirmada', initial: 'I' },
-  { time: '11:00 AM', client: 'Valentina G.', service: 'Diseño de Cejas', status: 'Confirmada', initial: 'V' },
-  { time: '1:00 PM', client: 'Mariana S.', service: 'Lifting de Pestañas', status: 'Pendiente', initial: 'M' },
-  { time: '3:30 PM', client: 'Andrea L.', service: 'Efecto Híbrido', status: 'Confirmada', initial: 'A' },
+  { time: '9:00 AM', client: 'Isabella Rodríguez', service: 'Pestañas Clásicas', status: 'Confirmada', initial: 'I' },
+  { time: '11:00 AM', client: 'Valentina García', service: 'Diseño de Cejas', status: 'Confirmada', initial: 'V' },
+  { time: '1:00 PM', client: 'Mariana Sánchez', service: 'Lifting de Pestañas', status: 'Pendiente', initial: 'M' },
+  { time: '3:30 PM', client: 'Andrea López', service: 'Efecto Híbrido', status: 'Confirmada', initial: 'A' },
 ];
 
 const TOP_SPECIALISTS = [
-  { name: 'Isabella R.', role: 'Estilista Senior', earnings: 2450, initial: 'I' },
-  { name: 'Valeria M.', role: 'Nail Artist', earnings: 1980, initial: 'V' },
-  { name: 'Camila P.', role: 'Lash Expert', earnings: 1560, initial: 'C' },
-  { name: 'Sofía A.', role: 'Esteticista', earnings: 1250, initial: 'S' },
+  { name: 'Isabella Rodríguez', role: 'Estilista Senior', earnings: 2450, initial: 'I' },
+  { name: 'Valeria Martínez', role: 'Nail Artist', earnings: 1980, initial: 'V' },
+  { name: 'Camila Pérez', role: 'Lash Expert', earnings: 1560, initial: 'C' },
+  { name: 'Sofía Alonso', role: 'Esteticista', earnings: 1250, initial: 'S' },
 ];
 
 
@@ -71,12 +71,12 @@ const DashboardModule = ({
   const getStatusStyle = (status) => {
     const s = status?.toLowerCase() || '';
     if (s.includes('confirm') || s.includes('completado')) {
-      return { bg: '#fbf0f2', text: '#a0506a', border: 'rgba(160, 80, 106, 0.15)' };
+      return { bg: '#dcf5e7', text: '#1a7a4c', border: '#1a7a4c', icon: '✓' };
     }
     if (s.includes('pend') || s.includes('espera')) {
-      return { bg: '#fdf6ed', text: '#c4935e', border: 'rgba(196, 147, 94, 0.15)' };
+      return { bg: '#fff3cd', text: '#b8860b', border: '#b8860b', icon: '◷' };
     }
-    return { bg: '#f4f4f6', text: '#7a7a8a', border: 'rgba(122, 122, 138, 0.15)' };
+    return { bg: '#e8e8ec', text: '#555', border: '#999', icon: '•' };
   };
 
   // Extract upcoming appointments from dynamic data or fallback to mockup list
@@ -774,15 +774,28 @@ const DashboardModule = ({
                       <span style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: '500' }}>
                         {apt.client}
                       </span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '2px' }}>
                       <span style={{
-                        padding: '1px 7px',
+                        padding: '3px 10px',
                         borderRadius: '20px',
-                        fontSize: '0.55rem',
+                        fontSize: '0.65rem',
                         fontWeight: '700',
                         background: getStatusStyle(apt.status).bg,
                         color: getStatusStyle(apt.status).text,
-                        border: `1px solid ${getStatusStyle(apt.status).border}`
+                        border: `1.5px solid ${getStatusStyle(apt.status).border}`,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px'
                       }}>
+                        <span style={{
+                          width: '6px',
+                          height: '6px',
+                          borderRadius: '50%',
+                          background: getStatusStyle(apt.status).text,
+                          display: 'inline-block',
+                          flexShrink: 0
+                        }} />
                         {apt.status}
                       </span>
                     </div>
