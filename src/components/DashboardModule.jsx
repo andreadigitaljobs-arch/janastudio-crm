@@ -1113,7 +1113,7 @@ const DashboardModule = ({
       </div>
 
       {/* ── WIDGETS OPERATIVOS 2x2 ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '16px' }}>
         {/* Card 1: Citas del día */}
         <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)' }}>
           <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: '#fdf3f4', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
@@ -1169,23 +1169,19 @@ const DashboardModule = ({
             <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: '500', whiteSpace: 'nowrap' }}>{dynamicStats.mostReservedCount} citas hoy</span>
           </div>
         </div>
-      </div>
-
-      {/* ── OCUPACIÓN DEL EQUIPO ── */}
-      <div style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '10px 20px', boxShadow: '0 2px 8px rgba(74, 48, 54, 0.04)', display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-          <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: '#fdf3f4', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a' }}>
-            <Activity size={15} />
+        {/* Card 5: Ocupación del equipo */}
+        <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)' }}>
+          <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: '#fdf3f4', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
+            <Activity size={22} />
           </div>
-          <div>
-            <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Ocupación del equipo</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#c97282', lineHeight: 1 }}>{dynamicStats.occupancy}%</div>
+          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1, gap: '4px' }}>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>Ocupación</span>
+            <span style={{ fontSize: '1.6rem', fontWeight: '800', color: '#c97282', lineHeight: 1 }}>{dynamicStats.occupancy}%</span>
+            <div style={{ height: '4px', borderRadius: '3px', background: '#f5e9e7', overflow: 'hidden' }}>
+              <div style={{ width: `${dynamicStats.occupancy}%`, height: '100%', borderRadius: '3px', background: 'linear-gradient(90deg, #c97282, #a0506a)', transition: 'width 0.6s ease' }} />
+            </div>
           </div>
         </div>
-        <div style={{ flex: 1, height: '6px', borderRadius: '4px', background: '#f5e9e7', overflow: 'hidden' }}>
-          <div style={{ width: `${dynamicStats.occupancy}%`, height: '100%', borderRadius: '4px', background: 'linear-gradient(90deg, #c97282, #a0506a)', transition: 'width 0.6s ease' }} />
-        </div>
-        <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: '500', flexShrink: 0 }}>{dynamicStats.activeStaff} estilistas activas hoy</span>
       </div>
 
       {/* ── MAIN CONTENT ROW: Agenda + Top Servicios + Top Especialistas (ALINEACIÓN STRETCH) ── */}
