@@ -40,18 +40,146 @@ const TopBar = ({
 
   const formatDay = (d) => d.charAt(0).toUpperCase() + d.slice(1);
 
+  if (isMobile) {
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '12px',
+        marginBottom: '16px',
+        paddingTop: 'calc(8px + env(safe-area-inset-top, 0px))',
+        width: '100%'
+      }}>
+        {/* Top Line: Logo (centered) and Bell (right) */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          position: 'relative',
+          width: '100%',
+          height: '44px'
+        }}>
+          {/* Empty spacer on left to balance the Bell on right */}
+          <div style={{ width: '40px' }} />
+
+          {/* Centered Brand Logo matching Sidebar */}
+          <img
+            src="/logo.webp"
+            alt="Jana Studio"
+            style={{
+              height: '36px',
+              objectFit: 'contain',
+              filter: 'brightness(1.0) drop-shadow(0 2px 6px rgba(212, 160, 154, 0.15))'
+            }}
+          />
+
+          {/* Bell Icon on Right */}
+          <button
+            onClick={onOpenNotifications}
+            style={{
+              width: '40px', height: '40px', borderRadius: '12px',
+              background: '#ffffff', border: '1px solid var(--border-color)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', position: 'relative',
+              color: 'var(--text-primary)',
+              boxShadow: 'var(--shadow-card)', transition: 'all 0.2s'
+            }}
+          >
+            <Bell size={18} />
+            {unreadCount > 0 && (
+              <div style={{
+                position: 'absolute', top: '10px', right: '10px',
+                backgroundColor: 'var(--magenta-secondary)', width: '7px', height: '7px',
+                borderRadius: '50%',
+              }} />
+            )}
+          </button>
+        </div>
+
+        {/* Second Line: Greeting exactly like Picture 2 */}
+        <div style={{ padding: '0 4px' }}>
+          <h1 style={{
+            fontSize: '18px',
+            fontWeight: '700',
+            color: 'var(--text-primary)',
+            fontFamily: "'Playfair Display', Georgia, serif",
+            margin: 0,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}>
+            {getGreeting().replace('¡', '').replace('!', '')}, {(!user || user.role?.toLowerCase().includes('admin') || user.name?.toLowerCase().includes('administrador')) ? 'Jana' : (user.name?.split(' ')[0] || 'Jana')}
+            <Sparkles 
+              size={16} 
+              style={{ 
+                color: 'var(--magenta-secondary)', 
+                animation: 'pulse 2s infinite ease-in-out'
+              }} 
+            />
+          </h1>
+          <p style={{
+            fontSize: '0.75rem',
+            color: 'var(--text-secondary)',
+            margin: '2px 0 0 0',
+            fontWeight: '500'
+          }}>Aquí tienes un resumen de hoy en Jana Studio.</p>
+        </div>
+
+        {/* Third Line: BCV/USDT and Date styled horizontally scrolling & super neat */}
+        <div className="no-scrollbar" style={{
+          display: 'flex',
+          gap: '8px',
+          overflowX: 'auto',
+          padding: '2px 4px',
+          width: '100%',
+          WebkitOverflowScrolling: 'touch'
+        }}>
+          {rates && rates.usdt > 0 && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '10px',
+              padding: '6px 12px', borderRadius: '10px',
+              background: '#ffffff', border: '1px solid var(--border-color)',
+              boxShadow: 'var(--shadow-card)', fontSize: '0.72rem',
+              flexShrink: 0
+            }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1.2 }}>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.58rem', fontWeight: 500 }}>BCV</span>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>Bs. {rates.bcv?.toFixed(2)}</span>
+              </div>
+              <div style={{ width: '1px', height: '22px', background: 'var(--border-color)' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1.2 }}>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.58rem', fontWeight: 500 }}>USDT</span>
+                <span style={{ color: 'var(--magenta-primary)', fontWeight: 700 }}>Bs. {rates.usdt?.toFixed(2)}</span>
+              </div>
+            </div>
+          )}
+
+          <div style={{
+            padding: '6px 12px', borderRadius: '10px', background: '#ffffff',
+            border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)',
+            display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer',
+            fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)',
+            flexShrink: 0
+          }}>
+            <span>{new Date().toLocaleDateString('es-VE', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{
       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       marginBottom: '16px', flexWrap: 'wrap', gap: '12px',
-      paddingLeft: isMobile ? '42px' : '0',
-      paddingTop: isMobile ? 'env(safe-area-inset-top, 0px)' : '0'
+      paddingLeft: '0',
+      paddingTop: '0'
     }}>
       {/* Left: Greeting */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         <div>
           <h1 style={{
-            fontSize: isMobile ? '20px' : '26px', 
+            fontSize: '26px', 
             fontWeight: '700', 
             color: 'var(--text-primary)',
             fontFamily: "'Playfair Display', Georgia, serif",
@@ -61,7 +189,7 @@ const TopBar = ({
           }}>
             {getGreeting().replace('¡', '').replace('!', '')}, {(!user || user.role?.toLowerCase().includes('admin') || user.name?.toLowerCase().includes('administrador')) ? 'Jana' : (user.name?.split(' ')[0] || 'Jana')}
             <Sparkles 
-              size={isMobile ? 18 : 22} 
+              size={22} 
               style={{ 
                 color: 'var(--magenta-secondary)', 
                 marginLeft: '8px', 

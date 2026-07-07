@@ -1469,5 +1469,58 @@ input:focus { outline: none; }
   box-shadow: 0 4px 12px rgba(219, 140, 149, 0.2);
 }
 
+/* Luxury Mobile Bottom Nav Redesign */
+.mobile-nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  outline: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  padding: 6px 0;
+  transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.mobile-nav-btn:active {
+  transform: scale(0.92);
+}
+
+.mobile-nav-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1.1);
+}
+
+.mobile-nav-btn.active .mobile-nav-icon-container {
+  transform: translateY(-2px) scale(1.15);
+  color: var(--magenta-primary);
+}
+
+.mobile-nav-btn span {
+  font-size: 0.62rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: all 0.25s ease;
+  letter-spacing: 0.01em;
+}
+
+.mobile-nav-btn.active span {
+  color: var(--magenta-primary);
+  font-weight: 600 !important;
+}
+
+
+
 
 

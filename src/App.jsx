@@ -11,7 +11,12 @@ import {
   Calendar,
   X,
   Receipt,
-  Menu
+  Menu,
+  MoreHorizontal,
+  LogOut,
+  Sliders,
+  Percent,
+  FileText
 } from 'lucide-react';
 import { dataService } from './services/dataService';
 
@@ -46,7 +51,7 @@ const ModuleFallback = () => (
 );
 
 function App() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, logout } = useAuth();
   const { alert, confirm } = useDialog();
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(() => localStorage.getItem('jana_active_tab') || 'dashboard');
@@ -59,7 +64,40 @@ function App() {
   const [tabParams, setTabParams] = useState({});
   const [isReceptionModalOpen, setIsReceptionModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
   const { isModalOpen } = useModal();
+
+  const allMenuItems = useMemo(() => [
+    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
+    { id: 'scheduling', label: 'Agenda', icon: Calendar },
+    { id: 'reception', label: 'Recepción', icon: UserCircle },
+    { id: 'clients', label: 'Clientes', icon: Users },
+    { id: 'services', label: 'Servicios', icon: Star },
+    { id: 'personnel', label: 'Equipo', icon: Sparkles },
+    { id: 'inventory', label: 'Inventario', icon: Package },
+    { id: 'finance', label: 'Finanzas', icon: Wallet },
+    { id: 'reports', label: 'Reportes', icon: FileText },
+    { id: 'promotions', label: 'Promociones', icon: Percent },
+    { id: 'settings', label: 'Configuración', icon: Sliders },
+  ], []);
+
+  const allowedMenuItems = useMemo(() => {
+    return allMenuItems.filter(item => canAccessModule(user?.role, item.id));
+  }, [user?.role, allMenuItems]);
+
+  const mobileVisibleItems = useMemo(() => {
+    if (allowedMenuItems.length <= 5) {
+      return allowedMenuItems;
+    }
+    return allowedMenuItems.slice(0, 4);
+  }, [allowedMenuItems]);
+
+  const mobileHiddenItems = useMemo(() => {
+    if (allowedMenuItems.length <= 5) {
+      return [];
+    }
+    return allowedMenuItems.slice(4);
+  }, [allowedMenuItems]);
 
   useScrollLock(isReceptionModalOpen);
 
@@ -346,48 +384,23 @@ function App() {
   }
   if (!user) return <Login />;
 
-  const sidebarWidth = isMobile ? 0 : (isCollapsed ? 70 : 220);
+  const totalMobileButtons = allowedMenuItems.length > 5 ? 5 : allowedMenuItems.length;
+  const activeMobileIndex = useMemo(() => {
+    if (isMoreOpen) {
+      return totalMobileButtons - 1;
+    }
+    const idx = mobileVisibleItems.findIndex(item => item.id === activeTab);
+    if (idx !== -1) return idx;
+    if (allowedMenuItems.length > 5) {
+      return totalMobileButtons - 1;
+    }
+    return -1;
+  }, [activeTab, mobileVisibleItems, isMoreOpen, totalMobileButtons, allowedMenuItems.length]);
 
   return (
     <div className="app-container no-scrollbar" style={{ display: 'flex', alignItems: 'stretch', minHeight: '100vh', height: '100vh', overflow: 'hidden', backgroundColor: 'var(--bg-primary)', position: 'relative' }}>
       <ParticleBackground />
       <JanaLoader visible={isAppLoading} />
-
-      {isMobile && isSidebarOpen && (
-        <div
-          onClick={() => setIsSidebarOpen(false)}
-          style={{
-            position: 'fixed', inset: 0, zIndex: 998,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            backdropFilter: 'blur(4px)',
-          }}
-        />
-      )}
-
-      {isMobile && (
-        <div style={{
-          position: 'fixed', left: 0, top: 0, bottom: 0,
-          width: '260px', zIndex: 999,
-          paddingTop: 'env(safe-area-inset-top, 0px)',
-          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-          transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
-          transition: 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
-          overflowY: 'auto', overflowX: 'hidden',
-        }}>
-          <Sidebar
-            activeTab={activeTab}
-            setActiveTab={(id) => handleTabChange(id, {})}
-            rates={effectiveRates}
-            isMobile={true}
-            isCollapsed={false}
-            setIsCollapsed={setIsCollapsed}
-            activeRateType={activeRateType}
-            onToggleRateType={handleSetActiveRateType}
-            isOpen={isSidebarOpen}
-            onClose={() => setIsSidebarOpen(false)}
-          />
-        </div>
-      )}
 
       {!isMobile && (
         <Sidebar
@@ -407,27 +420,13 @@ function App() {
         paddingTop: isMobile ? 'calc(var(--spacing-sm) + env(safe-area-inset-top, 0px))' : 'var(--spacing-xl)', 
         paddingLeft: isMobile ? 'var(--spacing-sm)' : 'var(--spacing-xl)', 
         paddingRight: isMobile ? 'var(--spacing-sm)' : 'var(--spacing-xl)', 
-        paddingBottom: isMobile ? 'var(--spacing-sm)' : 'var(--spacing-xl)',
+        paddingBottom: isMobile ? 'calc(80px + env(safe-area-inset-bottom, 12px))' : 'var(--spacing-xl)',
         height: '100vh',
         overflowY: 'auto',
         overflowX: 'hidden',
         backgroundColor: 'var(--bg-primary)',
         transition: 'all 0.3s ease'
       }}>
-        {isMobile && (
-          <button
-            onClick={() => setIsSidebarOpen(true)}
-            style={{
-              position: 'fixed', left: '12px', top: 'calc(12px + env(safe-area-inset-top, 0px))', zIndex: 100,
-              background: 'rgba(255,255,255,0.9)', border: '1px solid rgba(196,139,159,0.2)',
-              borderRadius: '12px', width: '42px', height: '42px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
-            }}
-          >
-            <Menu size={20} color="var(--pink-primary)" />
-          </button>
-        )}
 
         <div key={activeTab} className={isAppLoading ? "opacity-0" : "animate-page-fade-in"} style={{ 
           height: activeTab === 'dashboard' ? 'calc(100% - 0px)' : 'auto',
@@ -471,7 +470,7 @@ function App() {
           height: isMobile ? '100%' : '90vh', 
           overflowY: isModalOpen ? 'hidden' : 'auto', 
           borderRadius: isMobile ? '0' : '32px', 
-          border: '1px solid rgba(217,70,168,0.3)', 
+          border: '1px solid rgba(212,160,154,0.35)', 
           position: 'relative', 
           background: 'var(--bg-primary)',
           transform: isReceptionModalOpen ? 'scale(1) translateY(0)' : 'scale(0.96) translateY(20px)',
@@ -513,6 +512,161 @@ function App() {
         isOpen={isNotificationsOpen} 
         onClose={() => setIsNotificationsOpen(false)} 
       />
+
+      {/* Mobile Bottom Navigation Bar */}
+      {isMobile && user && (
+        <div style={{
+          position: 'fixed', left: 0, right: 0, bottom: 0,
+          height: 'calc(64px + env(safe-area-inset-bottom, 12px))',
+          background: 'rgba(255, 255, 255, 0.85)',
+          backdropFilter: 'blur(20px)',
+          borderTop: '1px solid rgba(212, 160, 154, 0.15)',
+          boxShadow: '0 -4px 20px rgba(74, 48, 54, 0.05)',
+          zIndex: 997,
+          display: 'flex', justifyItems: 'stretch', alignItems: 'stretch',
+          paddingBottom: 'env(safe-area-inset-bottom, 12px)',
+        }}>
+          {mobileVisibleItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.id && !isMoreOpen;
+            return (
+              <button
+                key={item.id}
+                onClick={() => {
+                  handleTabChange(item.id, {});
+                  setIsMoreOpen(false);
+                }}
+                className={`mobile-nav-btn ${isActive ? 'active' : ''}`}
+              >
+                <div className="mobile-nav-icon-container">
+                  <Icon size={20} style={{ color: isActive ? 'var(--magenta-primary)' : 'var(--text-muted)' }} />
+                </div>
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
+
+          {allowedMenuItems.length > 5 && (
+            <button
+              onClick={() => setIsMoreOpen(prev => !prev)}
+              className={`mobile-nav-btn ${isMoreOpen || mobileHiddenItems.some(item => item.id === activeTab) ? 'active' : ''}`}
+            >
+              <div className="mobile-nav-icon-container">
+                <MoreHorizontal size={20} style={{ color: (isMoreOpen || mobileHiddenItems.some(item => item.id === activeTab)) ? 'var(--magenta-primary)' : 'var(--text-muted)' }} />
+              </div>
+              <span>Más</span>
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Mobile More Bottom Drawer */}
+      {isMobile && isMoreOpen && (
+        <div
+          onClick={() => setIsMoreOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 1999,
+            backgroundColor: 'rgba(74, 48, 54, 0.4)',
+            backdropFilter: 'blur(8px)',
+            animation: 'fadeIn 0.25s ease'
+          }}
+        />
+      )}
+
+      {isMobile && (
+        <div style={{
+          position: 'fixed', left: 0, right: 0, bottom: 0,
+          background: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(20px)',
+          borderTopLeftRadius: '32px', borderTopRightRadius: '32px',
+          borderTop: '1px solid rgba(212, 160, 154, 0.25)',
+          boxShadow: '0 -10px 40px rgba(74, 48, 54, 0.1)',
+          zIndex: 2000,
+          padding: '24px 20px calc(24px + env(safe-area-inset-bottom, 12px)) 20px',
+          transform: isMoreOpen ? 'translateY(0)' : 'translateY(100%)',
+          transition: 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
+          display: 'flex', flexDirection: 'column', gap: '20px',
+          maxHeight: '75vh', overflowY: 'auto'
+        }}>
+          {/* Header indicator bar */}
+          <div style={{
+            width: '40px', height: '4px', background: 'rgba(74, 48, 54, 0.15)',
+            borderRadius: '10px', alignSelf: 'center', marginBottom: '8px'
+          }} onClick={() => setIsMoreOpen(false)} />
+
+          {/* User profile */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '12px',
+            padding: '12px 16px', borderRadius: '18px',
+            backgroundColor: 'var(--bg-tertiary)',
+            border: '1px solid rgba(212, 160, 154, 0.15)',
+          }}>
+            {user?.image_url ? (
+              <img src={user.image_url} alt="" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover' }} />
+            ) : (
+              <div style={{
+                width: '44px', height: '44px', borderRadius: '50%',
+                background: 'var(--pink-gradient)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: 'white', fontWeight: 700, fontSize: '1rem'
+              }}>
+                {user?.name?.charAt(0) || 'A'}
+              </div>
+            )}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.9rem' }}>{user?.name || 'Jana'}</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>{user?.role || 'Admin'}</div>
+            </div>
+          </div>
+
+          {/* Remaining menu items */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+            {mobileHiddenItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    handleTabChange(item.id, {});
+                    setIsMoreOpen(false);
+                  }}
+                  style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                    gap: '8px', padding: '14px', borderRadius: '16px',
+                    background: isActive ? 'var(--pink-secondary)' : '#ffffff',
+                    color: isActive ? 'var(--magenta-primary)' : 'var(--text-secondary)',
+                    boxShadow: '0 2px 8px rgba(74, 48, 54, 0.03)',
+                    cursor: 'pointer', transition: 'all 0.2s',
+                    border: '1px solid rgba(212, 160, 154, 0.1)'
+                  }}
+                >
+                  <Icon size={20} style={{ color: isActive ? 'var(--magenta-primary)' : 'var(--text-muted)' }} />
+                  <span style={{ fontSize: '0.75rem', fontWeight: isActive ? 700 : 600 }}>{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Logout button */}
+          <button
+            onClick={() => {
+              setIsMoreOpen(false);
+              logout();
+            }}
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+              padding: '14px', borderRadius: '16px', border: 'none',
+              background: 'rgba(255, 107, 107, 0.08)', color: '#ff6b6b',
+              cursor: 'pointer', fontSize: '0.85rem', fontWeight: 700,
+              transition: 'all 0.2s', marginTop: '8px'
+            }}
+          >
+            <LogOut size={18} />
+            <span>Cerrar Sesión</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
