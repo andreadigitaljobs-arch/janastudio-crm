@@ -1,4 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 64 64" width="64" height="64">
-  <rect width="64" height="64" fill="#f2c4ce"/>
-  <image href="/favicon.png" x="0" y="0" width="64" height="64"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Fondo rosa sólido sin transparencia -->
+  <rect width="64" height="64" rx="14" fill="#f2c4ce"/>
+  <!-- Monograma JS en estilo script elegante -->
+  <text
+    x="32"
+    y="44"
+    text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="30"
+    font-style="italic"
+    font-weight="bold"
+    fill="#7a3a4e"
+    letter-spacing="-2"
+  >JS</text>
 </svg>
