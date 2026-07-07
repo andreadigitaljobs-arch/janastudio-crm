@@ -5,8 +5,8 @@ const ASSETS_TO_CACHE = [
   '/favicon.webp',
   '/logo.webp',
   '/logo.png',
-  '/fondo_carga.webp',
-  '/fondo_carga_mobile.webp',
+  '/fondo_carga.png',
+  '/fondo_carga_mobile.png',
   '/login_bg1.webp',
   '/login_bg2.webp',
   '/login_bg3.webp',
@@ -43,6 +43,11 @@ self.addEventListener('activate', (event) => {
 
 // Interceptar peticiones con estrategia Cache-First para imágenes/assets
 self.addEventListener('fetch', (event) => {
+  // Ignorar esquemas no soportados por la Cache API (como chrome-extension://)
+  if (!event.request.url.startsWith('http')) {
+    return;
+  }
+
   const url = new URL(event.request.url);
   
   // Solo interceptar peticiones del mismo origen para imágenes y recursos estáticos

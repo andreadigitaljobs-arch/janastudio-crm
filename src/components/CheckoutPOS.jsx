@@ -1523,7 +1523,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
               <h3>Selecciona un cliente de la lista para cobrar</h3>
             </div>
           ) : (
-            <div className="glass-card animate-scale-in" style={{ borderRadius: isMobile ? '20px' : '32px', padding: isMobile ? '16px' : '32px', border: '1.5px solid rgba(212,160,154,0.3)', background: 'linear-gradient(135deg, var(--bg-secondary) 0%, rgba(28,28,30,1) 100%)' }}>
+            <div className="glass-card animate-scale-in" style={{ borderRadius: isMobile ? '20px' : '32px', padding: isMobile ? '16px' : '32px', border: '1.5px solid rgba(212,160,154,0.3)', background: 'linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%)' }}>
               <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', gap: isMobile ? '12px' : '0', marginBottom: isMobile ? '16px' : '32px' }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <h3 style={{ fontSize: isMobile ? '18px' : '24px', fontWeight: '900' }}>{selectedApp ? 'Resumen de Cobro' : 'Venta Directa'}</h3>
@@ -2493,7 +2493,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
       <AnimatedModal isOpen={showProductModal}>
         {(overlayClass, cardClass) => (
           <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-            <div className={`${cardClass}`} style={{ maxWidth: '680px', width: '100%', borderRadius: '32px', border: '1px solid rgba(212,160,154,0.25)', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'linear-gradient(160deg, rgba(30,30,32,0.98) 0%, rgba(20,20,22,0.99) 100%)', boxShadow: '0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset' }}>
+            <div className={`${cardClass}`} style={{ maxWidth: '680px', width: '100%', borderRadius: '32px', border: '1.5px solid rgba(212,160,154,0.25)', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'linear-gradient(160deg, var(--bg-secondary, #ffffff) 0%, var(--bg-tertiary, #f6eee9) 100%)', boxShadow: '0 40px 80px rgba(74, 48, 54, 0.15)', color: 'var(--text-primary, #4a3036)' }}>
               
               {/* Header */}
               <div style={{ padding: '28px 28px 0', flexShrink: 0 }}>
@@ -2503,25 +2503,25 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                       <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg, rgba(212,160,154,0.2), rgba(212,160,154,0.05))', border: '1px solid rgba(212,160,154,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <ShoppingBag size={18} color="var(--pink-primary)" />
                       </div>
-                      <h2 style={{ fontWeight: '900', fontSize: '22px', letterSpacing: '-0.3px', color: 'white' }}>Seleccionar Producto</h2>
+                      <h2 style={{ fontWeight: '900', fontSize: '22px', letterSpacing: '-0.3px', color: 'var(--text-primary)' }}>Seleccionar Producto</h2>
                     </div>
                     <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginLeft: '46px' }}>
                       {inventory.filter(i => i.name.toLowerCase().includes(searchTerm.toLowerCase())).length} productos disponibles
                     </p>
                   </div>
-                  <button onClick={() => {setShowProductModal(false); setSearchTerm('');}} style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)', fontSize: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', flexShrink: 0 }}>×</button>
+                  <button onClick={() => {setShowProductModal(false); setSearchTerm('');}} style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(74,48,54,0.06)', border: 'none', color: 'var(--text-primary)', fontSize: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', flexShrink: 0 }}>×</button>
                 </div>
 
                 {/* Search */}
                 <div style={{ position: 'relative', marginBottom: '20px' }}>
-                  <Search style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }} size={16} color="rgba(212,160,154,0.7)" />
+                  <Search style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }} size={16} color="var(--pink-primary)" />
                   <input
                     autoFocus
                     type="text"
                     placeholder="Buscar por nombre..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    style={{ width: '100%', height: '44px', padding: '0 44px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', color: 'white', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }}
+                    style={{ width: '100%', height: '44px', padding: '0 44px', background: 'rgba(212,160,154,0.03)', border: '1px solid rgba(212,160,154,0.2)', borderRadius: '14px', color: 'var(--text-primary)', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }}
                   />
                 </div>
               </div>
@@ -2545,23 +2545,23 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                           style={{
                             padding: '0',
                             borderRadius: '20px',
-                            border: isOutOfStock ? '1px solid rgba(255,59,48,0.2)' : '1px solid rgba(255,255,255,0.07)',
-                            background: isOutOfStock ? 'rgba(255,59,48,0.03)' : 'rgba(255,255,255,0.03)',
+                            border: isOutOfStock ? '1px solid rgba(255,59,48,0.2)' : '1px solid rgba(212,160,154,0.15)',
+                            background: isOutOfStock ? 'rgba(255,59,48,0.03)' : 'rgba(212,160,154,0.02)',
                             textAlign: 'left',
                             cursor: isOutOfStock ? 'not-allowed' : 'pointer',
                             opacity: isOutOfStock ? 0.55 : 1,
                             overflow: 'hidden',
                             transition: 'all 0.22s cubic-bezier(0.4,0,0.2,1)',
                           }}
-                          onMouseEnter={e => { if (!isOutOfStock) { e.currentTarget.style.border = '1px solid rgba(212,160,154,0.5)'; e.currentTarget.style.background = 'rgba(212,160,154,0.06)'; e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(0,0,0,0.3)'; }}}
-                          onMouseLeave={e => { e.currentTarget.style.border = isOutOfStock ? '1px solid rgba(255,59,48,0.2)' : '1px solid rgba(255,255,255,0.07)'; e.currentTarget.style.background = isOutOfStock ? 'rgba(255,59,48,0.03)' : 'rgba(255,255,255,0.03)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+                          onMouseEnter={e => { if (!isOutOfStock) { e.currentTarget.style.border = '1px solid rgba(212,160,154,0.5)'; e.currentTarget.style.background = 'rgba(212,160,154,0.06)'; e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(74,48,54,0.08)'; }}}
+                          onMouseLeave={e => { e.currentTarget.style.border = isOutOfStock ? '1px solid rgba(255,59,48,0.2)' : '1px solid rgba(212,160,154,0.15)'; e.currentTarget.style.background = isOutOfStock ? 'rgba(255,59,48,0.03)' : 'rgba(212,160,154,0.02)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
                         >
                           {/* Image area */}
-                          <div style={{ width: '100%', height: '110px', background: 'rgba(255,255,255,0.03)', overflow: 'hidden', position: 'relative' }}>
+                          <div style={{ width: '100%', height: '110px', background: 'rgba(212,160,154,0.03)', overflow: 'hidden', position: 'relative' }}>
                             {item.image_url
                               ? <img src={item.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: isOutOfStock ? 'grayscale(80%)' : 'none', transition: 'transform 0.3s' }} alt="" />
                               : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                  <ShoppingBag size={32} color="rgba(255,255,255,0.12)" />
+                                  <ShoppingBag size={32} color="rgba(212,160,154,0.2)" />
                                 </div>
                             }
                             {/* Stock badge */}
@@ -2572,7 +2572,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
 
                           {/* Info area */}
                           <div style={{ padding: '12px 14px 14px' }}>
-                            <div style={{ fontWeight: '800', fontSize: '13px', color: 'white', marginBottom: '8px', lineHeight: '1.3' }}>{item.name}</div>
+                            <div style={{ fontWeight: '800', fontSize: '13px', color: 'var(--text-primary)', marginBottom: '8px', lineHeight: '1.3' }}>{item.name}</div>
                             <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
                               <span style={{ color: 'var(--pink-primary)', fontWeight: '900', fontSize: '18px' }}>${item.price}</span>
                             </div>
@@ -2592,21 +2592,21 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
       {/* Extras Selection Modal */}
       <AnimatedModal isOpen={showExtraModal}>
         {(overlayClass, cardClass) => (
-          <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-            <div className={`${cardClass}`} style={{ maxWidth: '520px', width: '100%', borderRadius: '32px', border: '1px solid rgba(212,160,154,0.25)', overflow: 'hidden', background: 'linear-gradient(160deg, rgba(30,30,32,0.98) 0%, rgba(20,20,22,0.99) 100%)', boxShadow: '0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset' }}>
+          <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+            <div className={`${cardClass}`} style={{ maxWidth: '520px', width: '100%', borderRadius: '32px', border: '1.5px solid rgba(212,160,154,0.25)', overflow: 'hidden', background: 'linear-gradient(160deg, var(--bg-secondary, #ffffff) 0%, var(--bg-tertiary, #f6eee9) 100%)', boxShadow: '0 40px 80px rgba(74, 48, 54, 0.15)', color: 'var(--text-primary, #4a3036)' }}>
               {/* Header */}
-              <div style={{ padding: '28px 28px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+              <div style={{ padding: '28px 28px 20px', borderBottom: '1px solid rgba(212,160,154,0.15)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'linear-gradient(135deg, rgba(212,160,154,0.2), rgba(212,160,154,0.05))', border: '1px solid rgba(212,160,154,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Zap size={20} color="var(--pink-primary)" />
                     </div>
                     <div>
-                      <h2 style={{ fontWeight: '900', fontSize: '20px', color: 'white', marginBottom: '2px' }}>Servicios Extras</h2>
+                      <h2 style={{ fontWeight: '900', fontSize: '20px', color: 'var(--text-primary)', marginBottom: '2px' }}>Servicios Extras</h2>
                       <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{allExtras.length} extras disponibles</p>
                     </div>
-</div>
-                  <button onClick={() => setShowExtraModal(false)} style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+                  </div>
+                  <button onClick={() => setShowExtraModal(false)} style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'rgba(74,48,54,0.06)', border: 'none', color: 'var(--text-primary)', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
                 </div>
               </div>
               {/* Items in a 2-column grid */}
@@ -2658,25 +2658,25 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                         alignItems: 'flex-start', 
                         padding: '16px', 
                         borderRadius: '20px', 
-                        border: '1px solid rgba(255,255,255,0.08)', 
-                        background: 'linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))', 
+                        border: '1px solid rgba(212,160,154,0.15)', 
+                        background: 'linear-gradient(145deg, rgba(212,160,154,0.02), rgba(212,160,154,0.01))', 
                         cursor: 'pointer', 
                         textAlign: 'left', 
                         transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
                         position: 'relative',
-                        boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
+                        boxShadow: '0 4px 15px rgba(74,48,54,0.04)'
                       }}
                       onMouseEnter={e => { 
-                        e.currentTarget.style.background = 'linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))'; 
+                        e.currentTarget.style.background = 'rgba(212,160,154,0.06)'; 
                         e.currentTarget.style.border = '1px solid rgba(212,160,154,0.6)'; 
                         e.currentTarget.style.transform = 'translateY(-4px)'; 
-                        e.currentTarget.style.boxShadow = '0 12px 24px rgba(212,160,154,0.15)';
+                        e.currentTarget.style.boxShadow = '0 12px 24px rgba(212,160,154,0.1)';
                       }}
                       onMouseLeave={e => { 
-                        e.currentTarget.style.background = 'linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))'; 
-                        e.currentTarget.style.border = '1px solid rgba(255,255,255,0.08)'; 
+                        e.currentTarget.style.background = 'linear-gradient(145deg, rgba(212,160,154,0.02), rgba(212,160,154,0.01))'; 
+                        e.currentTarget.style.border = '1px solid rgba(212,160,154,0.15)'; 
                         e.currentTarget.style.transform = 'translateY(0)'; 
-                        e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
+                        e.currentTarget.style.boxShadow = '0 4px 15px rgba(74,48,54,0.04)';
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: '14px' }}>
@@ -2687,10 +2687,10 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                       </div>
                       
                       <div style={{ width: '100%' }}>
-                        <div style={{ fontWeight: '800', fontSize: '15px', color: 'white', marginBottom: '6px', lineHeight: '1.3', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{extra.name}</div>
+                        <div style={{ fontWeight: '800', fontSize: '15px', color: 'var(--text-primary)', marginBottom: '6px', lineHeight: '1.3', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{extra.name}</div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                           {rates?.usd > 0 ? (
-                            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.65)', fontWeight: '600' }}>~ {Math.round(extra.price * rates.usd).toLocaleString()} Bs.</div>
+                            <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>~ {Math.round(extra.price * rates.usd).toLocaleString()} Bs.</div>
                           ) : (
                             <div />
                           )}
@@ -2709,21 +2709,21 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
       {/* Service Modal */}
       <AnimatedModal isOpen={showServiceModal}>
         {(overlayClass, cardClass) => (
-          <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-            <div className={`${cardClass}`} style={{ maxWidth: '600px', width: '100%', borderRadius: '32px', border: '1px solid rgba(212,160,154,0.25)', overflow: 'hidden', background: 'linear-gradient(160deg, rgba(30,30,32,0.98) 0%, rgba(20,20,22,0.99) 100%)', boxShadow: '0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset' }}>
+          <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(74, 48, 54, 0.4)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+            <div className={`${cardClass}`} style={{ maxWidth: '600px', width: '100%', borderRadius: '32px', border: '1.5px solid rgba(212,160,154,0.25)', overflow: 'hidden', background: 'linear-gradient(160deg, var(--bg-secondary, #ffffff) 0%, var(--bg-tertiary, #f6eee9) 100%)', boxShadow: '0 40px 80px rgba(74, 48, 54, 0.15)', color: 'var(--text-primary, #4a3036)' }}>
               {/* Header */}
-              <div style={{ padding: '28px 28px 20px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+              <div style={{ padding: '28px 28px 20px', borderBottom: '1px solid rgba(212,160,154,0.15)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'linear-gradient(135deg, rgba(212,160,154,0.25), rgba(212,160,154,0.05))', border: '1px solid rgba(212,160,154,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Sparkles size={20} color="var(--pink-primary)" />
                     </div>
                     <div>
-                      <h2 style={{ fontWeight: '900', fontSize: '20px', color: 'white', marginBottom: '2px' }}>Catálogo de Servicios</h2>
+                      <h2 style={{ fontWeight: '900', fontSize: '20px', color: 'var(--text-primary)', marginBottom: '2px' }}>Catálogo de Servicios</h2>
                       <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{allServices.length} servicios disponibles</p>
                     </div>
                   </div>
-                  <button onClick={() => setShowServiceModal(false)} style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+                  <button onClick={() => setShowServiceModal(false)} style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'rgba(74,48,54,0.06)', border: 'none', color: 'var(--text-primary)', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
                 </div>
               </div>
               {/* Items grid */}
@@ -2732,16 +2732,16 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                   <button
                     key={service.id}
                     onClick={() => handleAddService(service)}
-                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '18px', borderRadius: '18px', border: '1px solid rgba(212,160,154,0.12)', background: 'rgba(212,160,154,0.03)', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s cubic-bezier(0.4,0,0.2,1)', position: 'relative', overflow: 'hidden' }}
+                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '18px', borderRadius: '18px', border: '1px solid rgba(212,160,154,0.15)', background: 'rgba(212,160,154,0.03)', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s cubic-bezier(0.4,0,0.2,1)', position: 'relative', overflow: 'hidden' }}
                     onMouseEnter={e => { e.currentTarget.style.background = 'rgba(212,160,154,0.09)'; e.currentTarget.style.border = '1px solid rgba(212,160,154,0.45)'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(212,160,154,0.12)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(212,160,154,0.03)'; e.currentTarget.style.border = '1px solid rgba(212,160,154,0.12)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(212,160,154,0.03)'; e.currentTarget.style.border = '1px solid rgba(212,160,154,0.15)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
                   >
                     {/* Accent stripe */}
                     <div style={{ position: 'absolute', top: 0, left: 0, width: '3px', height: '100%', background: `linear-gradient(to bottom, hsl(${45 + i * 15}, 80%, 55%), hsl(${45 + i * 15}, 60%, 30%))`, borderRadius: '0 0 0 0' }} />
                     <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(212,160,154,0.12)', border: '1px solid rgba(212,160,154,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
                       <Sparkles size={15} color="var(--pink-primary)" />
                     </div>
-                    <div style={{ fontWeight: '800', fontSize: '14px', color: 'white', marginBottom: '6px', lineHeight: '1.3' }}>{service.name}</div>
+                    <div style={{ fontWeight: '800', fontSize: '14px', color: 'var(--text-primary)', marginBottom: '6px', lineHeight: '1.3' }}>{service.name}</div>
                     <div style={{ fontWeight: '900', fontSize: '20px', color: 'var(--pink-primary)' }}>${service.price}</div>
                     {rates?.usd > 0 && <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>≈ {Math.round(service.price * rates.usd).toLocaleString()} Bs.</div>}
                   </button>

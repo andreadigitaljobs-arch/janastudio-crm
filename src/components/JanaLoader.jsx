@@ -1,55 +1,27 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
-const motivationalTexts = [
-  "Tu belleza merece lo mejor ✨",
-  "Hoy te mereces brillar 🌸",
-  "Cada detalle, perfectamente cuidado 💅",
-  "Bienvenida a tu espacio de lujo 🌺",
-  "La belleza empieza aquí 💖",
-  "Un momento para ti, con amor 🌷",
-];
+const LOADER_MIN_DURATION_MS = 1500; // slightly longer to appreciate the luxury load
+const PROGRESS_INTERVAL_MS = 25;
+const FADE_OUT_MS = 600;
 
-const LOADER_MIN_DURATION_MS = 800;
-const PROGRESS_INTERVAL_MS = 30;
-const FADE_OUT_MS = 500;
-
-// Pre-compute random values to avoid re-renders
-const GLITTER_PARTICLES = Array.from({ length: 30 }, (_, i) => ({
+// Pre-compute random values for background glitter particles
+const GLITTER_PARTICLES = Array.from({ length: 20 }, (_, i) => ({
   id: i,
-  top: `${10 + (i * 37 % 80)}%`,
+  top: `${15 + (i * 37 % 70)}%`,
   left: `${5 + (i * 53 % 90)}%`,
   delay: `${(i * 0.3) % 4}s`,
-  duration: `${2 + (i * 0.4) % 3}s`,
-  size: `${3 + (i % 3)}px`,
-  color: i % 3 === 0 ? '#ffd700' : i % 3 === 1 ? '#ffb3c1' : '#e8a0a8',
+  duration: `${3 + (i * 0.4) % 3}s`,
+  size: `${2 + (i % 3)}px`,
+  color: i % 2 === 0 ? '#e8a0a8' : '#d4a39b',
 }));
-
-const PETALS = Array.from({ length: 18 }, (_, i) => {
-  const sizeGroup = i % 3; // 0 = small, 1 = medium, 2 = large
-  const w = sizeGroup === 0 ? (14 + (i % 4) * 2) : sizeGroup === 1 ? (26 + (i % 3) * 4) : (40 + (i % 3) * 8);
-  const h = Math.round(w * 0.65);
-  return {
-    id: i,
-    left: `${(i * 5.6) % 100}%`,
-    delay: `${(i * 0.3) % 4}s`,
-    duration: `${3.5 + (i * 0.25) % 3}s`,
-    width: `${w}px`,
-    height: `${h}px`,
-  };
-});
 
 const JanaLoader = ({ visible }) => {
   const [showLoader, setShowLoader] = useState(visible);
   const [progress, setProgress] = useState(0);
-  const [textIndex, setTextIndex] = useState(0);
-  const [fadeText, setFadeText] = useState(true);
   const containerRef = useRef(null);
   const startTimeRef = useRef(null);
-  const audioRef = useRef(null);
 
-  // Fonts are preloaded in index.html
-
-  // Play subtle chime on mount
+  // Play subtle luxury chime on mount
   useEffect(() => {
     if (visible) {
       try {
@@ -64,7 +36,7 @@ const JanaLoader = ({ visible }) => {
             osc.type = 'sine';
             osc.frequency.setValueAtTime(freq, startTime);
             gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(0.06, startTime + 0.05);
+            gain.gain.linearRampToValueAtTime(0.04, startTime + 0.05);
             gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
             osc.start(startTime);
             osc.stop(startTime + duration);
@@ -77,12 +49,11 @@ const JanaLoader = ({ visible }) => {
     }
   }, [visible]);
 
-  // Progress bar & text rotation
+  // Progress bar management
   useEffect(() => {
     if (visible) {
       setShowLoader(true);
       setProgress(0);
-      setTextIndex(0);
       startTimeRef.current = Date.now();
 
       const prevBodyOverflow = document.body.style.overflow;
@@ -98,19 +69,10 @@ const JanaLoader = ({ visible }) => {
         setProgress(() => Math.min((currentStep / steps) * 100, 99));
       }, PROGRESS_INTERVAL_MS);
 
-      const textInterval = setInterval(() => {
-        setFadeText(false);
-        setTimeout(() => {
-          setTextIndex(i => (i + 1) % motivationalTexts.length);
-          setFadeText(true);
-        }, 400);
-      }, 2800);
-
       return () => {
         document.body.style.overflow = prevBodyOverflow || '';
         document.documentElement.style.overflow = prevHtmlOverflow || '';
         clearInterval(progressInterval);
-        clearInterval(textInterval);
       };
     }
   }, [visible]);
@@ -133,6 +95,14 @@ const JanaLoader = ({ visible }) => {
     }
   }, [visible, showLoader]);
 
+  // Texto secundario dinámico según el progreso para un toque premium
+  const getSubtitle = () => {
+    if (progress < 30) return "Cargando citas, clientes y servicios...";
+    if (progress < 60) return "Conectando con la base de datos segura...";
+    if (progress < 85) return "Configurando diseño y elementos personalizados...";
+    return "Preparando tu espacio de lujo...";
+  };
+
   if (!showLoader) return null;
 
   return (
@@ -146,15 +116,14 @@ const JanaLoader = ({ visible }) => {
         inset: 0,
         zIndex: 99999,
         transition: `opacity ${FADE_OUT_MS}ms cubic-bezier(0.4, 0, 0.2, 1)`,
-        fontFamily: "'Montserrat', sans-serif",
         overflow: 'hidden',
-        backgroundColor: '#fff0f2',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
       }}
     >
-
-
-
-      {/* Glitter particles */}
+      {/* Glitter background particles */}
       <div className="glitter-container">
         {GLITTER_PARTICLES.map(p => (
           <div
@@ -171,59 +140,59 @@ const JanaLoader = ({ visible }) => {
         ))}
       </div>
 
-      {/* Large falling petals */}
-      <div className="petals-container">
-        {PETALS.map(p => (
-          <div
-            key={p.id}
-            className="falling-petal-wrapper"
-            style={{
-              left: p.left,
-              animationDelay: p.delay,
-              animationDuration: p.duration,
-            }}
-          >
-            <div
-              className="falling-petal"
-              style={{
-                width: p.width,
-                height: p.height,
-              }}
-            />
+      {/* Main loading content block */}
+      <div className="loader-content">
+        {/* Rose Gold Logo */}
+        <div className="loader-logo-wrapper">
+          <img src="/logo.png" alt="Jana Studio" className="loader-logo" />
+        </div>
+
+        {/* Custom Rose Gold Spinner */}
+        <div className="loader-spinner-wrapper">
+          <div className="rose-gold-spinner"></div>
+        </div>
+
+        {/* Elegant typography */}
+        <div className="loader-info-wrapper">
+          <h2 className="loader-title">Preparando tu experiencia en el estudio...</h2>
+          <p className="loader-subtitle">{getSubtitle()}</p>
+        </div>
+
+        {/* Progress row (track + percentage) */}
+        <div className="loader-progress-row">
+          <div className="custom-progress-track">
+            <div className="custom-progress-bar" style={{ width: `${progress}%` }} />
           </div>
-        ))}
-      </div>
+          <span className="loader-percent">{Math.round(progress)}%</span>
+        </div>
 
-      {/* Spinner */}
-      <div className="spinner-container">
-        <div className="chic-spinner"></div>
-      </div>
-
-
-
-      {/* Luxury progress line at the very bottom */}
-      <div className="luxury-progress-track">
-        <div className="luxury-progress-bar" style={{ width: `${progress}%` }} />
+        {/* Luxury Footer */}
+        <div className="loader-footer">
+          <div className="loader-heart-icon">♡</div>
+          <p className="loader-slogan">Empodera tu confianza. Eleva tu belleza.</p>
+        </div>
       </div>
 
       <style>{`
+        /* Container background & responsive backgrounds */
         .loader-container {
-          background-image: url(/fondo_carga.webp);
+          background-image: url(/fondo_carga.png);
           background-size: cover;
           background-position: center;
           background-repeat: no-repeat;
+          background-color: #f7ebe6; /* Fallback luxury color */
         }
 
         @media (max-width: 768px) {
           .loader-container {
-            background-image: url(/fondo_carga_mobile.webp);
+            background-image: url(/fondo_carga_mobile.png);
           }
         }
 
-        /* --- Glitter --- */
+        /* --- Glitter Background --- */
         .glitter-container {
           position: absolute; inset: 0;
-          pointer-events: none; z-index: 2; overflow: hidden;
+          pointer-events: none; z-index: 1; overflow: hidden;
         }
         .glitter-particle {
           position: absolute;
@@ -234,87 +203,172 @@ const JanaLoader = ({ visible }) => {
         }
         @keyframes glitterFloat {
           0%, 100% { transform: translateY(0) scale(0) rotate(0deg); opacity: 0; }
-          30% { opacity: 0.9; }
-          50% { transform: translateY(-18px) scale(1.2) rotate(180deg); opacity: 0.7; }
-          70% { opacity: 0.4; }
+          30% { opacity: 0.6; }
+          50% { transform: translateY(-12px) scale(1.1) rotate(180deg); opacity: 0.4; }
+          70% { opacity: 0.2; }
         }
 
-        /* --- Petals --- */
-        .petals-container {
-          position: absolute; inset: 0;
-          pointer-events: none; z-index: 5; overflow: hidden;
-        }
-        .falling-petal-wrapper {
-          position: absolute;
-          top: -12%;
-          transform-origin: center center;
-          animation: fallPetal linear infinite;
-        }
-        .falling-petal {
-          background: radial-gradient(ellipse at 30% 30%, rgba(255,180,200,1) 0%, rgba(226,132,149,0.9) 60%, rgba(180,80,106,0.8) 100%);
-          border-radius: 60% 10% 60% 40%;
-          transform-origin: center center;
-          box-shadow: inset 2px -2px 4px rgba(255,255,255,0.5), 0 2px 8px rgba(226,132,149,0.4);
-          transition: transform 0.3s ease;
-        }
-        @keyframes fallPetal {
-          0%   { top: -12%; transform: translateX(0) rotate(0deg); opacity: 0; }
-          5%   { opacity: 1; }
-          90%  { opacity: 0.8; }
-          100% { top: 105%; transform: translateX(60px) rotate(360deg); opacity: 0; }
+        /* --- Content Layout --- */
+        .loader-content {
+          position: relative;
+          z-index: 10;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          width: 90%;
+          max-width: 600px;
+          text-align: center;
+          padding: 20px;
         }
 
-        @media (max-width: 768px) {
-          .falling-petal {
-            transform: scale(0.45); /* Scale down petals by ~55% on mobile */
+        /* --- Logo Styling --- */
+        .loader-logo-wrapper {
+          margin-bottom: 25px;
+          animation: fadeInScale 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .loader-logo {
+          width: 100%;
+          max-width: 320px;
+          height: auto;
+          object-fit: contain;
+          filter: drop-shadow(0 4px 10px rgba(122, 88, 83, 0.08));
+        }
+        @media (max-width: 480px) {
+          .loader-logo {
+            max-width: 250px;
           }
         }
 
         /* --- Spinner --- */
-        .spinner-container {
-          position: absolute; bottom: 8%; left: 0; right: 0;
-          display: flex; flex-direction: column; align-items: center;
-          z-index: 10;
+        .loader-spinner-wrapper {
+          margin-bottom: 30px;
+          display: flex;
+          justify-content: center;
         }
-        @media (max-width: 768px) {
-          .spinner-container { bottom: 22% !important; }
+        .rose-gold-spinner {
+          width: 46px;
+          height: 46px;
+          border-radius: 50%;
+          border: 3.5px solid rgba(179, 130, 121, 0.15);
+          border-top: 3.5px solid #b38279;
+          animation: luxurySpin 1.2s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+          box-shadow: 0 0 15px rgba(179, 130, 121, 0.2);
         }
-
-        .chic-spinner {
-          width: 52px; height: 52px; border-radius: 50%;
-          border: 3px solid rgba(255, 182, 193, 0.25);
-          border-top: 3px solid #c97282;
-          border-right: 3px solid #e8a0a8;
-          animation: chicSpin 1.4s ease-in-out infinite;
-          box-shadow: 0 0 22px rgba(201,114,130,0.4), inset 0 0 12px rgba(255,182,193,0.1);
-        }
-        @keyframes chicSpin {
-          0%   { transform: rotate(0deg); }
+        @keyframes luxurySpin {
+          0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
         }
 
+        /* --- Typography --- */
+        .loader-info-wrapper {
+          margin-bottom: 25px;
+        }
+        .loader-title {
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: 21px;
+          font-weight: 500;
+          color: #7a5853;
+          margin: 0 0 8px 0;
+          letter-spacing: 0.02em;
+          text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+        }
+        .loader-subtitle {
+          font-family: 'Inter', sans-serif;
+          font-size: 13px;
+          font-weight: 400;
+          color: #9e7f7b;
+          margin: 0;
+          letter-spacing: 0.03em;
+        }
+        @media (max-width: 480px) {
+          .loader-title {
+            font-size: 18px;
+          }
+          .loader-subtitle {
+            font-size: 12px;
+          }
+        }
 
-
-        /* --- Luxury progress line --- */
-        .luxury-progress-track {
-          position: absolute; bottom: 0; left: 0; right: 0;
+        /* --- Progress Row --- */
+        .loader-progress-row {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 15px;
+          width: 100%;
+          max-width: 320px;
+          margin-bottom: 70px;
+        }
+        .custom-progress-track {
+          flex: 1;
           height: 3px;
-          background: rgba(255, 182, 193, 0.12);
-          z-index: 15;
-          overflow: visible;
+          background: rgba(122, 88, 83, 0.12);
+          border-radius: 10px;
+          overflow: hidden;
         }
-        .luxury-progress-bar {
+        .custom-progress-bar {
           height: 100%;
-          background: linear-gradient(90deg, #fbcada 0%, #e8a0a8 40%, #c97282 70%, #e8a0a8 100%);
+          background: linear-gradient(90deg, #d4a39b, #b38279, #d4a39b);
           background-size: 200% 100%;
-          transition: width 0.12s cubic-bezier(0.4, 0, 0.2, 1);
-          animation: progressShimmer 2s linear infinite;
-          border-radius: 0 2px 2px 0;
-          box-shadow: 0 0 8px rgba(201,114,130,0.5), 0 0 2px rgba(255,182,193,0.8);
+          border-radius: 10px;
+          transition: width 0.1s linear;
+          animation: shimmerGlow 2.5s linear infinite;
         }
-        @keyframes progressShimmer {
-          0%   { background-position: 200% 0; }
+        .loader-percent {
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: 13px;
+          font-style: italic;
+          color: #7a5853;
+          min-width: 32px;
+          text-align: right;
+        }
+        @keyframes shimmerGlow {
+          0% { background-position: 200% 0; }
           100% { background-position: -200% 0; }
+        }
+
+        /* --- Footer --- */
+        .loader-footer {
+          position: absolute;
+          bottom: -40px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 6px;
+        }
+        @media (max-height: 600px) {
+          .loader-footer {
+            position: relative;
+            bottom: auto;
+            margin-top: 20px;
+          }
+          .loader-progress-row {
+            margin-bottom: 30px;
+          }
+        }
+        .loader-heart-icon {
+          color: #b38279;
+          font-size: 16px;
+          animation: heartbeat 2s ease-in-out infinite;
+        }
+        .loader-slogan {
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: 13px;
+          font-style: italic;
+          color: #9e7f7b;
+          margin: 0;
+          letter-spacing: 0.05em;
+        }
+
+        @keyframes heartbeat {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.15); }
+        }
+
+        @keyframes fadeInScale {
+          0% { opacity: 0; transform: scale(0.96); }
+          100% { opacity: 1; transform: scale(1); }
         }
       `}</style>
     </div>

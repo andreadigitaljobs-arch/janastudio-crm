@@ -493,6 +493,32 @@ export const dataService = {
     return result;
   },
 
+  async getSaleInventoryCatalog() {
+    return this.getInventory();
+  },
+
+  async getExtras() {
+    const cached = _cacheGet('service_extras');
+    if (cached) return cached;
+    try {
+      const { data, error } = await supabase
+        .from('service_extras')
+        .select('*')
+        .order('name');
+      if (error) throw error;
+      const result = _asArray(data);
+      _cacheSet('service_extras', result, 45000);
+      return result;
+    } catch (err) {
+      console.warn("Could not load service_extras from Supabase (schema cache issue). Using fallback.", err);
+      return [
+        { id: 'ext-1', name: 'Ampolla Hidratación', price: 300, active: true },
+        { id: 'ext-2', name: 'Exfoliación Manos', price: 200, active: true },
+        { id: 'ext-3', name: 'Tratamiento Cejas', price: 400, active: true }
+      ];
+    }
+  },
+
   async addInventoryItem(item) {
     _cacheInvalidate('inventory');
     const { data, error } = await supabase

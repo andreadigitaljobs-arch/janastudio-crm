@@ -290,21 +290,21 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
               { label: 'Con próxima cita', value: upcomingCount, icon: Calendar, trend: '+8%', trendSub: 'vs. mes anterior', iconBg: 'rgba(59,130,246,0.1)', iconColor: '#2563eb' },
               { label: 'Cumpleaños cercanos', value: birthdaySoon, icon: Cake, trend: '', trendSub: 'En los próximos 7 días', iconBg: 'rgba(245,158,11,0.1)', iconColor: '#d97706' }
             ].map((stat, i) => (
-              <div key={i} className="glass-card" style={{ padding: isMobile ? '16px' : '20px', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                  <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <stat.icon size={20} color={stat.iconColor || 'var(--pink-primary)'} />
+              <div key={i} className="glass-card" style={{ padding: isMobile ? '12px 10px' : '20px', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+                <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'center' : 'flex-start', gap: '10px', textAlign: isMobile ? 'center' : 'left' }}>
+                  <div style={{ width: isMobile ? '36px' : '44px', height: isMobile ? '36px' : '44px', borderRadius: '12px', backgroundColor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <stat.icon size={isMobile ? 18 : 20} color={stat.iconColor || 'var(--pink-primary)'} />
                   </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600', marginBottom: '4px' }}>{stat.label}</div>
-                    <div style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: '800', color: 'var(--text-primary)', lineHeight: '1' }}>{stat.value}</div>
+                  <div style={{ flex: 1, minWidth: 0, width: '100%' }}>
+                    <div style={{ fontSize: isMobile ? '10px' : '12px', color: 'var(--text-muted)', fontWeight: '600', marginBottom: '4px', textOverflow: 'ellipsis', overflow: 'hidden' }}>{stat.label}</div>
+                    <div style={{ fontSize: isMobile ? '20px' : '28px', fontWeight: '800', color: 'var(--text-primary)', lineHeight: '1' }}>{stat.value}</div>
                     {stat.trend && (
-                      <div style={{ fontSize: '11px', color: '#16a34a', fontWeight: '600', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                        <ArrowUpRight size={12} /> {stat.trend} <span style={{ color: 'var(--text-muted)' }}>{stat.trendSub}</span>
+                      <div style={{ fontSize: '10px', color: '#16a34a', fontWeight: '600', marginTop: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2px', flexWrap: 'wrap' }}>
+                        <ArrowUpRight size={10} /> {stat.trend} <span style={{ color: 'var(--text-muted)', display: isMobile ? 'none' : 'inline' }}>{stat.trendSub}</span>
                       </div>
                     )}
                     {!stat.trend && stat.trendSub && (
-                      <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '500', marginTop: '4px' }}>{stat.trendSub}</div>
+                      <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '500', marginTop: '4px' }}>{isMobile ? stat.trendSub.replace('En los próximos ', 'Próx. ') : stat.trendSub}</div>
                     )}
                   </div>
                 </div>
