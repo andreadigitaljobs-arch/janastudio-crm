@@ -197,6 +197,22 @@ html, body {
   box-sizing: border-box;
 }
 
+.salon-login-leaf {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 160px;
+  height: 160px;
+  z-index: 0;
+  pointer-events: none;
+  animation: leafFadeIn 1.5s ease 0.3s both;
+}
+
+@keyframes leafFadeIn {
+  0% { opacity: 0; transform: translate(10px, -10px); }
+  100% { opacity: 1; transform: translate(0, 0); }
+}
+
 .salon-login-container {
   width: 100%;
   height: 100%;
@@ -342,6 +358,23 @@ html, body {
   box-sizing: border-box;
   background: transparent;
   position: relative;
+  overflow: hidden;
+}
+
+.salon-login-flower {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 140px;
+  height: 180px;
+  z-index: 1;
+  pointer-events: none;
+  animation: flowerFadeIn 1.5s ease 0.5s both;
+}
+
+@keyframes flowerFadeIn {
+  0% { opacity: 0; transform: translate(5px, 10px); }
+  100% { opacity: 1; transform: translate(0, 0); }
 }
 
 .salon-login-form-wrapper {
@@ -939,8 +972,8 @@ html, body {
     margin-top: calc(var(--login-radius, 24px) * -1);
     z-index: 10;
     position: relative;
-    padding: calc(var(--login-radius, 24px) + 12px) 28px calc(var(--login-radius, 24px) + 12px);
-    padding-bottom: calc(var(--login-radius, 24px) + 12px + env(safe-area-inset-bottom, 0px));
+    padding: calc(var(--login-radius, 24px) + 24px) 28px calc(var(--login-radius, 24px) + 24px);
+    padding-bottom: calc(var(--login-radius, 24px) + 24px + env(safe-area-inset-bottom, 0px));
     outline: none;
     overflow: hidden;
     display: flex;
