@@ -495,21 +495,66 @@ function App() {
         </div>
       </div>
 
-      {isSaleModalOpen && (
-        <Suspense fallback={null}>
-          <CheckoutPOS 
-            isOpen={isSaleModalOpen} 
-            onClose={() => setIsSaleModalOpen(false)} 
-            clients={dbData.clients}
-            services={dbData.services}
-            staff={dbData.staff}
-            inventory={dbData.inventory || []}
-            onRefresh={fetchInitialData}
-            rates={rates}
-            currency={currency}
-          />
-        </Suspense>
-      )}
+      {/* Checkout POS Modal */}
+      <div style={{ 
+        position: 'fixed', 
+        inset: 0, 
+        zIndex: 3000, 
+        backgroundColor: 'rgba(253, 248, 247, 0.99)', 
+        display: 'flex', 
+        alignItems: 'stretch', 
+        justifyContent: 'center', 
+        opacity: isSaleModalOpen ? 1 : 0,
+        visibility: isSaleModalOpen ? 'visible' : 'hidden',
+        pointerEvents: isSaleModalOpen ? 'auto' : 'none',
+        transition: 'opacity 0.25s ease, visibility 0.25s'
+      }}>
+        <div style={{ 
+          width: '100%', 
+          height: '100%', 
+          overflowY: 'auto', 
+          position: 'relative', 
+          background: '#fdf8f7',
+          padding: isMobile ? '20px' : '40px',
+        }}>
+          {/* Close Button */}
+          <button 
+            onClick={() => setIsSaleModalOpen(false)}
+            style={{ 
+              position: 'fixed', 
+              right: '20px', 
+              top: '20px', 
+              zIndex: 3001, 
+              background: 'rgba(74, 48, 54, 0.08)', 
+              border: 'none', 
+              borderRadius: '50%', 
+              width: '40px', 
+              height: '40px', 
+              color: 'var(--text-primary)', 
+              cursor: 'pointer', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              boxShadow: '0 4px 12px rgba(74, 48, 54, 0.05)'
+            }}
+          >
+            <X size={20} />
+          </button>
+          
+          {isSaleModalOpen && (
+            <Suspense fallback={<ModuleFallback />}>
+              <CheckoutPOS 
+                isMobile={isMobile} 
+                rates={effectiveRates} 
+                onNavigate={(tab, params) => {
+                  handleTabChange(tab, params);
+                  setIsSaleModalOpen(false);
+                }} 
+              />
+            </Suspense>
+          )}
+        </div>
+      </div>
       <NotificationsDrawer 
         isOpen={isNotificationsOpen} 
         onClose={() => setIsNotificationsOpen(false)} 
