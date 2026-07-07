@@ -199,10 +199,10 @@ html, body {
 
 .salon-login-leaf {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 160px;
-  height: 160px;
+  top: 10px;
+  right: 10px;
+  width: 220px;
+  height: 220px;
   z-index: 0;
   pointer-events: none;
   animation: leafFadeIn 1.5s ease 0.3s both;
@@ -363,10 +363,10 @@ html, body {
 
 .salon-login-flower {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
-  width: 140px;
-  height: 180px;
+  bottom: 0;
+  right: 0;
+  width: 200px;
+  height: 260px;
   z-index: 1;
   pointer-events: none;
   animation: flowerFadeIn 1.5s ease 0.5s both;
