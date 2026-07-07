@@ -153,8 +153,43 @@ class NotificationService {
         id: 'default-1',
         title: '¡Bienvenido al CRM JanaStudio!',
         body: 'El sistema de notificaciones push está listo. Actívalo para enterarte de citas y cierres semanales.',
-        date: new Date().toISOString(),
+        date: new Date(Date.now() - 300000).toISOString(),
         read: false
+      },
+      {
+        id: 'default-2',
+        title: 'Nueva cita programada',
+        body: 'Isabella Rodríguez agendó una cita de Pestañas Clásicas para mañana a las 10:00 AM.',
+        date: new Date(Date.now() - 600000).toISOString(),
+        read: false
+      },
+      {
+        id: 'default-3',
+        title: 'Cita completada',
+        body: 'Valentina García finalizó su tratamiento de Diseño de Cejas. Ingreso registrado: Bs. 35.000.',
+        date: new Date(Date.now() - 1200000).toISOString(),
+        read: true
+      },
+      {
+        id: 'default-4',
+        title: 'Recordatorio semanal',
+        body: 'Tienes 12 citas pendientes esta semana. Revisa tu agenda para preparar los materiales.',
+        date: new Date(Date.now() - 3600000).toISOString(),
+        read: true
+      },
+      {
+        id: 'default-5',
+        title: 'Stock bajo en inventario',
+        body: 'El producto "Adhesivo Premium Lash" tiene solo 3 unidades restantes. Considera reabastecer.',
+        date: new Date(Date.now() - 7200000).toISOString(),
+        read: false
+      },
+      {
+        id: 'default-6',
+        title: 'Resumen del día',
+        body: 'Hoy se completaron 8 citas con un ingreso total de Bs. 127.500. ¡Buen trabajo, Jana!',
+        date: new Date(Date.now() - 14400000).toISOString(),
+        read: true
       }
     ];
   }

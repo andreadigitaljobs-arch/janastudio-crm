@@ -346,8 +346,8 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
       <style>{`
         @keyframes ntfDesktopFadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes ntfDesktopFadeOut { from { opacity: 1; } to { opacity: 0; } }
-        @keyframes ntfDesktopPopIn { from { opacity: 0; transform: translateY(-50%) scale(0.92) translateX(20px); } to { opacity: 1; transform: translateY(-50%) scale(1) translateX(0); } }
-        @keyframes ntfDesktopPopOut { from { opacity: 1; transform: translateY(-50%) scale(1) translateX(0); } to { opacity: 0; transform: translateY(-50%) scale(0.92) translateX(30px); } }
+        @keyframes ntfDesktopPopIn { from { opacity: 0; transform: translateY(-50%) translateX(-50%) scale(0.9); } to { opacity: 1; transform: translateY(-50%) translateX(-50%) scale(1); } }
+        @keyframes ntfDesktopPopOut { from { opacity: 1; transform: translateY(-50%) translateX(-50%) scale(1); } to { opacity: 0; transform: translateY(-50%) translateX(-50%) scale(0.9); } }
         @keyframes ntfItemIn { from { opacity: 0; transform: translateY(16px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes ntfPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
         @keyframes ntfGradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
@@ -367,8 +367,8 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
         <div onClick={handleClose} style={{ position: 'absolute', inset: 0 }} />
 
         <div className="ntf-desktop-panel" style={{
-          position: 'absolute', top: '50%', right: '80px',
-          width: '420px', maxHeight: '78vh',
+          position: 'absolute', top: '50%', left: '50%',
+          width: '440px', maxHeight: '80vh',
           background: 'linear-gradient(165deg, #fffafb 0%, #ffffff 25%, #fef8fa 55%, #fdf5f7 100%)',
           borderRadius: '28px', overflow: 'hidden',
           display: 'flex', flexDirection: 'column',
@@ -376,7 +376,8 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
             ? 'ntfDesktopPopIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards'
             : 'ntfDesktopPopOut 0.3s cubic-bezier(0.55, 0, 1, 0.45) forwards',
           boxShadow: '0 20px 64px rgba(244, 63, 94, 0.12), 0 6px 20px rgba(160, 80, 106, 0.06), 0 0 0 1px rgba(244, 114, 146, 0.08)',
-          transformOrigin: 'top right'
+          transform: 'translateY(-50%) translateX(-50%)',
+          transformOrigin: 'center center'
         }}>
           {/* Gradient top accent */}
           <div style={{
