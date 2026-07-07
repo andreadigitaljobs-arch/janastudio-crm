@@ -1323,79 +1323,69 @@ const DashboardModule = ({
 
       {/* Notification Activation Banner - Desktop */}
       {ntfPerm !== 'granted' && (
-        <div
-          onClick={() => {
-            if (!('Notification' in window)) {
-              alert('Tu navegador no soporta notificaciones.');
-              return;
-            }
-            Notification.requestPermission().then(res => {
-              setNtfPerm(res);
-            });
-          }}
-          style={{
-            width: '100%',
-            borderRadius: '20px',
-            position: 'relative',
-            overflow: 'hidden',
-            cursor: 'pointer',
-            boxShadow: '0 6px 24px rgba(201, 114, 130, 0.15)',
-            background: 'linear-gradient(135deg, #c97282, #a0506a, #8a4560)',
-            backgroundSize: '200% 200%',
-            animation: 'ntfBannerPulse 3s ease-in-out infinite',
-            transition: 'all 0.3s ease'
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px) scale(1.005)'; e.currentTarget.style.boxShadow = '0 10px 32px rgba(201, 114, 130, 0.25)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(201, 114, 130, 0.15)'; }}
-        >
-          <style>{`
-            @keyframes ntfBannerPulse { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-            @keyframes ntfBellRing { 0%, 100% { transform: rotate(0deg); } 15% { transform: rotate(14deg); } 30% { transform: rotate(-12deg); } 45% { transform: rotate(8deg); } 60% { transform: rotate(-6deg); } 75% { transform: rotate(2deg); } }
-          `}</style>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '18px 28px', position: 'relative', zIndex: 1 }}>
-            <div style={{
-              width: '50px', height: '50px', borderRadius: '16px',
-              background: 'rgba(255,255,255,0.2)',
-              backdropFilter: 'blur(8px)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              flexShrink: 0,
-              animation: 'ntfBellRing 2s ease-in-out infinite'
-            }}>
-              <BellRing size={24} style={{ color: '#fff' }} />
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <span style={{ fontSize: '0.9rem', fontWeight: '800', color: '#ffffff', display: 'block', lineHeight: '1.2', fontFamily: "'Playfair Display', Georgia, serif" }}>
-                Activa las alertas de tu CRM
-              </span>
-              <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.75)', display: 'block', marginTop: '4px', lineHeight: '1.3' }}>
-                Recibe notificaciones al instante cuando haya nuevas citas y actualizaciones
-              </span>
-            </div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (!('Notification' in window)) {
-                  alert('Tu navegador no soporta notificaciones.');
-                  return;
-                }
-                Notification.requestPermission().then(res => {
-                  setNtfPerm(res);
-                }).catch(() => {});
-              }}
-              style={{
-              padding: '10px 20px', borderRadius: '12px', border: '2px solid rgba(255,255,255,0.3)',
-              background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(4px)',
-              color: '#ffffff', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer',
-              flexShrink: 0, transition: 'all 0.25s ease', whiteSpace: 'nowrap'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.3)'; e.currentTarget.style.transform = 'scale(1.05)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; e.currentTarget.style.transform = 'none'; }}
-            >
-              Activar
-            </button>
+        <div style={{
+          width: '100%',
+          borderRadius: '16px',
+          padding: '14px 18px',
+          background: 'rgba(253, 237, 240, 0.8)',
+          border: '1px solid rgba(201, 114, 130, 0.12)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '14px'
+        }}>
+          <div style={{
+            width: '40px', height: '40px', borderRadius: '12px',
+            background: 'rgba(201, 114, 130, 0.1)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0
+          }}>
+            <BellRing size={20} style={{ color: '#c97282' }} />
           </div>
-          <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
-          <div style={{ position: 'absolute', bottom: '-30px', left: '-15px', width: '70px', height: '70px', borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <span style={{ fontSize: '0.85rem', fontWeight: '700', color: '#c97282', display: 'block', lineHeight: '1.2' }}>
+              Activa las alertas de tu CRM
+            </span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block', marginTop: '2px', lineHeight: '1.3' }}>
+              Recibe notificaciones al instante cuando haya nuevas citas y actualizaciones.
+            </span>
+          </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!('Notification' in window)) {
+                alert('Tu navegador no soporta notificaciones.');
+                return;
+              }
+              Notification.requestPermission().then(res => {
+                setNtfPerm(res);
+              }).catch(() => {});
+            }}
+            style={{
+              padding: '8px 18px', borderRadius: '10px',
+              border: '1.5px solid #c97282',
+              background: 'transparent',
+              color: '#c97282', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer',
+              flexShrink: 0, transition: 'all 0.2s ease', whiteSpace: 'nowrap'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#c97282'; e.currentTarget.style.color = '#fff'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#c97282'; }}
+          >
+            Activar
+          </button>
+          <button
+            onClick={() => setNtfPerm('granted')}
+            style={{
+              width: '28px', height: '28px', borderRadius: '8px',
+              border: 'none', background: 'transparent',
+              color: 'var(--text-muted)', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0, transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+          >
+            <X size={16} />
+          </button>
         </div>
       )}
 
