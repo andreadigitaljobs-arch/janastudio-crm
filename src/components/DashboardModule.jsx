@@ -664,7 +664,6 @@ const DashboardModule = ({
               />
             </div>
           </div>
-        </div>
 
         {/* Agenda de hoy Timeline Card */}
         <div style={{
