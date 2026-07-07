@@ -1285,14 +1285,93 @@ const DashboardModule = ({
           {/* Photo banner directly below progress bars */}
           <div
             onClick={() => onNavigate('services')}
-            style={{ width: '100%', height: '110px', borderRadius: '16px', overflow: 'hidden', position: 'relative', border: '1px solid rgba(212, 160, 154, 0.15)', cursor: 'pointer', transition: 'all 0.2s' }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.01)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'none' }}
+            style={{
+              width: '100%',
+              height: '130px',
+              borderRadius: '18px',
+              overflow: 'hidden',
+              position: 'relative',
+              cursor: 'pointer',
+              background: 'linear-gradient(135deg, #a0506a 0%, #7a3a4e 100%)',
+              boxShadow: '0 8px 20px rgba(160, 80, 106, 0.15)',
+              transition: 'all 0.25s ease',
+              display: 'flex'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(160, 80, 106, 0.25)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(160, 80, 106, 0.15)' }}
           >
-            <img src="/foto_pestanas.png" alt="Extensiones de pestañas" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 60%' }} />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(74, 48, 54, 0.85) 0%, rgba(74, 48, 54, 0.1) 80%)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '12px 14px' }}>
-              <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#ffffff', textShadow: '0 1px 3px rgba(0, 0, 0, 0.2)' }}>Servicio del mes: Ext. de pestañas</span>
-              <span style={{ fontSize: '0.7rem', fontWeight: '600', color: '#fae8e5', textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>Desde $50</span>
+            {/* Peinado y maquillaje photo placed on the right */}
+            <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '55%', zIndex: 1 }}>
+              <img 
+                src="/peinado_maquillaje.png" 
+                alt="Adicional de Ondas" 
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%' }} 
+              />
+              {/* Fade gradient from left (deep rose) to right (transparent) over the image */}
+              <div style={{ 
+                position: 'absolute', 
+                inset: 0, 
+                background: 'linear-gradient(to right, #a0506a 10%, rgba(160, 80, 106, 0.6) 50%, rgba(160, 80, 106, 0.1) 100%)' 
+              }} />
+            </div>
+
+            {/* Content area on the left */}
+            <div style={{ 
+              position: 'relative', 
+              zIndex: 2, 
+              display: 'flex', 
+              flexDirection: 'column', 
+              justifyContent: 'center', 
+              padding: '16px 20px', 
+              width: '60%', 
+              color: '#ffffff' 
+            }}>
+              <div style={{ 
+                display: 'inline-flex', 
+                alignItems: 'center', 
+                gap: '4px', 
+                backgroundColor: 'rgba(255, 255, 255, 0.15)', 
+                padding: '3px 8px', 
+                borderRadius: '20px', 
+                fontSize: '9px', 
+                fontWeight: '800', 
+                textTransform: 'uppercase', 
+                letterSpacing: '0.5px',
+                width: 'fit-content',
+                marginBottom: '8px'
+              }}>
+                <span>🔥 Más reservado</span>
+              </div>
+              <h4 style={{ 
+                fontSize: '13.5px', 
+                fontWeight: '800', 
+                margin: 0, 
+                color: '#ffffff', 
+                fontFamily: "'Playfair Display', Georgia, serif",
+                lineHeight: '1.2'
+              }}>
+                Adicional de Ondas
+              </h4>
+              <span style={{ 
+                fontSize: '11px', 
+                color: '#fbcada', 
+                fontWeight: '600',
+                marginTop: '1px'
+              }}>
+                (Sirena o Sueltas)
+              </span>
+              <span style={{ 
+                fontSize: '11px', 
+                color: '#ffffff', 
+                fontWeight: '700',
+                marginTop: '8px',
+                opacity: 0.9,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}>
+                5 citas hoy
+              </span>
             </div>
           </div>
         </div>
