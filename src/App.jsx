@@ -558,7 +558,8 @@ function App() {
       </div>
       <NotificationsDrawer 
         isOpen={isNotificationsOpen} 
-        onClose={() => setIsNotificationsOpen(false)} 
+        onClose={() => setIsNotificationsOpen(false)}
+        isMobile={isMobile}
       />
 
       {/* Mobile Bottom Navigation Bar */}
