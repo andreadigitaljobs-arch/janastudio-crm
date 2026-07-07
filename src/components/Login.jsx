@@ -47,7 +47,7 @@ export default function Login() {
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % images.length);
-    }, 5000);
+    }, 3800);
     return () => clearInterval(interval);
   }, []);
 
@@ -137,7 +137,7 @@ export default function Login() {
                         position: 'absolute',
                         inset: 0,
                         opacity: activeIndex === idx ? 1 : 0,
-                        transition: 'opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                        transition: 'opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
                         zIndex: activeIndex === idx ? 2 : 1
                       }}
                     />
@@ -212,8 +212,9 @@ export default function Login() {
             {/* Formulario */}
             <form ref={formRef} onSubmit={handleSubmit} className="salon-main-form salon-stagger-3" autoComplete="on">
 
-              {/* Correo Electrónico - Floating Label */}
+              {/* Correo Electrónico */}
               <div className="salon-input-group">
+                <label htmlFor="login-email" className="salon-field-label">Correo electrónico</label>
                 <div className={`salon-field-container ${email ? 'has-value' : ''} ${isMobile ? '' : 'salon-field-hover'}`}>
                   <span className="salon-field-icon"><User size={18} strokeWidth={1.5} /></span>
                   <input
@@ -222,17 +223,17 @@ export default function Login() {
                     className="salon-field-input"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder=" "
+                    placeholder="ejemplo@correo.com"
                     autoComplete="email"
                     required
                     id="login-email"
                   />
                 </div>
-                <label htmlFor="login-email" className={`salon-floating-label ${email ? 'is-up' : ''}`}>Correo electrónico</label>
               </div>
 
-              {/* Contraseña - Floating Label */}
+              {/* Contraseña */}
               <div className="salon-input-group">
+                <label htmlFor="login-password" className="salon-field-label">Contraseña</label>
                 <div className={`salon-field-container ${password ? 'has-value' : ''} ${isMobile ? '' : 'salon-field-hover'}`}>
                   <span className="salon-field-icon"><Lock size={18} strokeWidth={1.5} /></span>
                   <input
@@ -241,7 +242,7 @@ export default function Login() {
                     className="salon-field-input"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder=" "
+                    placeholder="Ingresa tu contraseña"
                     autoComplete="current-password"
                     required
                     id="login-password"
@@ -255,7 +256,6 @@ export default function Login() {
                     {showPassword ? <EyeOff size={18} strokeWidth={1.5} /> : <Eye size={18} strokeWidth={1.5} />}
                   </button>
                 </div>
-                <label htmlFor="login-password" className={`salon-floating-label ${password ? 'is-up' : ''}`}>Contraseña</label>
               </div>
 
               {/* Botón de envío con ripple */}
