@@ -203,11 +203,11 @@ html, body {
   max-width: 100%;
   max-height: 100%;
   background: linear-gradient(135deg, #fffcfd 0%, #fff7f8 100%);
-  border: 1.5px solid rgba(212, 160, 154, 0.45);
+  border: 6px solid rgba(255, 255, 255, 0.9);
   border-radius: 36px;
   display: flex;
   overflow: hidden;
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.85), 0 20px 60px rgba(167, 102, 115, 0.05);
+  box-shadow: 0 20px 60px rgba(167, 102, 115, 0.05);
   position: relative;
 }
 
