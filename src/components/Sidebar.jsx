@@ -299,9 +299,6 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
               <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.82rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user?.name || 'Jana Rodríguez'}
               </div>
-              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 500 }}>
-                {user?.role === 'Admin' ? 'Administradora' : user?.role || 'Administradora'}
-              </div>
             </div>
             <ChevronDown size={14} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
           </div>
