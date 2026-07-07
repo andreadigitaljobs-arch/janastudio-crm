@@ -353,36 +353,54 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
 
         <div style={sectionCard}>
           <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '16px' }}>Rendimiento del Equipo</h3>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ fontSize: '10px', textTransform: 'uppercase', color: 'var(--text-muted)', borderBottom: '1px solid var(--border-color)' }}>
-                  <th style={{ padding: '6px 8px', textAlign: 'left', fontWeight: '700' }}>Especialista</th>
-                  <th style={{ padding: '6px 8px', textAlign: 'right', fontWeight: '700' }}>Ingresos</th>
-                  <th style={{ padding: '6px 8px', textAlign: 'center', fontWeight: '700' }}>Citas</th>
-                  <th style={{ padding: '6px 8px', textAlign: 'center', fontWeight: '700' }}>Rendimiento</th>
-                </tr>
-              </thead>
-              <tbody>
-                {teamPerformance.map((t, i) => (
-                  <tr key={i} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                    <td style={{ padding: '8px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '11px', fontWeight: '800', color: t.rank <= 3 ? t.color : 'var(--text-muted)', minWidth: '16px' }}>{t.rank <= 3 ? `#${t.rank}` : t.rank}</span>
-                        <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: `rgba(196,139,159,0.1)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '800', color: t.color }}>{t.avatar}</div>
-                        <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{t.name}</span>
-                      </div>
-                    </td>
-                    <td style={{ padding: '8px', textAlign: 'right', fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>Bs. {formatBs(t.ingresos)}</td>
-                    <td style={{ padding: '8px', textAlign: 'center', fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{t.citas}</td>
-                    <td style={{ padding: '8px', textAlign: 'center' }}>
-                      <span style={{ fontSize: '12px', fontWeight: '800', color: t.rendimiento >= 85 ? '#32d74b' : t.rendimiento >= 75 ? '#ff9f0a' : '#ff453a' }}>{t.rendimiento}%</span>
-                    </td>
+          {isMobile ? (
+            /* MOBILE: tarjetas de especialista */
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {teamPerformance.map((t, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', borderRadius: '10px', background: '#faf5f5', border: '1px solid var(--border-color)' }}>
+                  <span style={{ fontSize: '11px', fontWeight: '800', color: t.rank <= 3 ? t.color : 'var(--text-muted)', minWidth: '18px' }}>{t.rank <= 3 ? `#${t.rank}` : t.rank}</span>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '800', color: t.color, flexShrink: 0 }}>{t.avatar}</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.name}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Bs. {formatBs(t.ingresos)} · {t.citas} citas</div>
+                  </div>
+                  <span style={{ fontSize: '13px', fontWeight: '800', color: t.rendimiento >= 85 ? '#32d74b' : t.rendimiento >= 75 ? '#ff9f0a' : '#ff453a', flexShrink: 0 }}>{t.rendimiento}%</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            /* DESKTOP: tabla */
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ fontSize: '10px', textTransform: 'uppercase', color: 'var(--text-muted)', borderBottom: '1px solid var(--border-color)' }}>
+                    <th style={{ padding: '6px 8px', textAlign: 'left', fontWeight: '700' }}>Especialista</th>
+                    <th style={{ padding: '6px 8px', textAlign: 'right', fontWeight: '700' }}>Ingresos</th>
+                    <th style={{ padding: '6px 8px', textAlign: 'center', fontWeight: '700' }}>Citas</th>
+                    <th style={{ padding: '6px 8px', textAlign: 'center', fontWeight: '700' }}>Rendimiento</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {teamPerformance.map((t, i) => (
+                    <tr key={i} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                      <td style={{ padding: '8px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '11px', fontWeight: '800', color: t.rank <= 3 ? t.color : 'var(--text-muted)', minWidth: '16px' }}>{t.rank <= 3 ? `#${t.rank}` : t.rank}</span>
+                          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: `rgba(196,139,159,0.1)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '800', color: t.color }}>{t.avatar}</div>
+                          <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{t.name}</span>
+                        </div>
+                      </td>
+                      <td style={{ padding: '8px', textAlign: 'right', fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>Bs. {formatBs(t.ingresos)}</td>
+                      <td style={{ padding: '8px', textAlign: 'center', fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{t.citas}</td>
+                      <td style={{ padding: '8px', textAlign: 'center' }}>
+                        <span style={{ fontSize: '12px', fontWeight: '800', color: t.rendimiento >= 85 ? '#32d74b' : t.rendimiento >= 75 ? '#ff9f0a' : '#ff453a' }}>{t.rendimiento}%</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
         <div style={sectionCard}>
@@ -416,35 +434,53 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '24px', marginBottom: '28px' }}>
         <div style={sectionCard}>
           <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '16px' }}>Clientes Recurrentes</h3>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ fontSize: '10px', textTransform: 'uppercase', color: 'var(--text-muted)', borderBottom: '1px solid var(--border-color)' }}>
-                  <th style={{ padding: '6px 8px', textAlign: 'left', fontWeight: '700' }}>#</th>
-                  <th style={{ padding: '6px 8px', textAlign: 'left', fontWeight: '700' }}>Cliente</th>
-                  <th style={{ padding: '6px 8px', textAlign: 'center', fontWeight: '700' }}>Visitas</th>
-                  <th style={{ padding: '6px 8px', textAlign: 'left', fontWeight: '700' }}>Último Servicio</th>
-                  <th style={{ padding: '6px 8px', textAlign: 'right', fontWeight: '700' }}>Total Gastado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {clientesRecurrentes.map((c, i) => (
-                  <tr key={i} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                    <td style={{ padding: '8px', fontSize: '12px', fontWeight: '700', color: 'var(--text-muted)' }}>{c.num}</td>
-                    <td style={{ padding: '8px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: '800', color: 'var(--pink-primary)' }}>{c.avatar}</div>
-                        <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{c.name}</span>
-                      </div>
-                    </td>
-                    <td style={{ padding: '8px', textAlign: 'center', fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{c.visits}</td>
-                    <td style={{ padding: '8px', fontSize: '11px', color: 'var(--text-secondary)' }}>{c.lastService}</td>
-                    <td style={{ padding: '8px', textAlign: 'right', fontSize: '12px', fontWeight: '800', color: 'var(--pink-primary)' }}>Bs. {formatBs(c.total)}</td>
+          {isMobile ? (
+            /* MOBILE: tarjetas de clientes */
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {clientesRecurrentes.map((c, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', borderRadius: '10px', background: '#faf5f5' }}>
+                  <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', minWidth: '16px' }}>{c.num}</span>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '800', color: 'var(--pink-primary)', flexShrink: 0 }}>{c.avatar}</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{c.visits} visitas</div>
+                  </div>
+                  <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--pink-primary)', flexShrink: 0 }}>Bs. {formatBs(c.total)}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            /* DESKTOP: tabla */
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ fontSize: '10px', textTransform: 'uppercase', color: 'var(--text-muted)', borderBottom: '1px solid var(--border-color)' }}>
+                    <th style={{ padding: '6px 8px', textAlign: 'left', fontWeight: '700' }}>#</th>
+                    <th style={{ padding: '6px 8px', textAlign: 'left', fontWeight: '700' }}>Cliente</th>
+                    <th style={{ padding: '6px 8px', textAlign: 'center', fontWeight: '700' }}>Visitas</th>
+                    <th style={{ padding: '6px 8px', textAlign: 'left', fontWeight: '700' }}>Último Servicio</th>
+                    <th style={{ padding: '6px 8px', textAlign: 'right', fontWeight: '700' }}>Total Gastado</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {clientesRecurrentes.map((c, i) => (
+                    <tr key={i} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                      <td style={{ padding: '8px', fontSize: '12px', fontWeight: '700', color: 'var(--text-muted)' }}>{c.num}</td>
+                      <td style={{ padding: '8px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: '800', color: 'var(--pink-primary)' }}>{c.avatar}</div>
+                          <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{c.name}</span>
+                        </div>
+                      </td>
+                      <td style={{ padding: '8px', textAlign: 'center', fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{c.visits}</td>
+                      <td style={{ padding: '8px', fontSize: '11px', color: 'var(--text-secondary)' }}>{c.lastService}</td>
+                      <td style={{ padding: '8px', textAlign: 'right', fontSize: '12px', fontWeight: '800', color: 'var(--pink-primary)' }}>Bs. {formatBs(c.total)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
         <div style={sectionCard}>

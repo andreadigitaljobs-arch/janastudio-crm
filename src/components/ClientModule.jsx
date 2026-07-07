@@ -1426,7 +1426,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                       </span>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', marginBottom: '12px', padding: '8px', backgroundColor: 'white', borderRadius: '8px', border: '1px solid var(--border-color)', fontSize: '12px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '8px', marginBottom: '12px', padding: '8px', backgroundColor: 'white', borderRadius: '8px', border: '1px solid var(--border-color)', fontSize: '12px' }}>
                       <div><strong style={{ color: 'var(--text-muted)' }}>Hebra:</strong> {diag.hair_type}</div>
                       <div><strong style={{ color: 'var(--text-muted)' }}>Porosidad:</strong> {diag.porosity}</div>
                       <div><strong style={{ color: 'var(--text-muted)' }}>Cuero:</strong> {diag.scalp_condition}</div>

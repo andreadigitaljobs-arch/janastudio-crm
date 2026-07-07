@@ -345,86 +345,72 @@ const CostingModule = ({ isMobile, services = [], inventory = [] }) => {
                       <div
                         key={item.id}
                         style={{
-                          display: 'grid',
-                          gridTemplateColumns: '1fr auto auto auto auto',
-                          gap: '12px',
-                          alignItems: 'center',
                           padding: '12px',
                           borderRadius: '10px',
                           background: 'var(--bg-primary)',
                           border: '1px solid var(--border-color)'
                         }}
                       >
-                        <div>
-                          <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
-                            {item.item_name}
+                        {/* Cabecera: nombre + botón borrar */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+                          <div>
+                            <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: isMobile ? '0.85rem' : '0.9rem' }}>
+                              {item.item_name}
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                              por {item.unit}
+                            </div>
                           </div>
-                          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                            por {item.unit}
+                          <button
+                            onClick={() => handleDeleteItem(item.id)}
+                            style={{
+                              padding: '6px',
+                              borderRadius: '6px',
+                              border: 'none',
+                              background: 'rgba(239, 68, 68, 0.1)',
+                              color: '#ef4444',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
+                            }}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                        {/* Fila de inputs: Cant. × $Costo = Total */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <label style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Cant.</label>
+                            <input
+                              type="number"
+                              value={item.quantity_per_service}
+                              onChange={(e) => handleUpdateQuantity(item.id, parseFloat(e.target.value) || 0)}
+                              style={{
+                                width: '56px', padding: '6px 8px', borderRadius: '6px',
+                                border: '1px solid var(--border-color)', background: 'var(--bg-secondary)',
+                                color: 'var(--text-primary)', textAlign: 'center', fontSize: '0.85rem'
+                              }}
+                            />
+                            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>×</span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>$</span>
+                            <input
+                              type="number"
+                              value={item.unit_cost}
+                              onChange={(e) => handleUpdateCost(item.id, parseFloat(e.target.value) || 0)}
+                              style={{
+                                width: '70px', padding: '6px 8px', borderRadius: '6px',
+                                border: '1px solid var(--border-color)', background: 'var(--bg-secondary)',
+                                color: 'var(--text-primary)', textAlign: 'right', fontSize: '0.85rem'
+                              }}
+                            />
+                          </div>
+                          <div style={{ marginLeft: 'auto', fontWeight: 700, color: 'var(--pink-primary)', fontSize: '0.9rem' }}>
+                            = ${item.total_cost?.toFixed(2) || '0.00'}
                           </div>
                         </div>
-                        
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <input
-                            type="number"
-                            value={item.quantity_per_service}
-                            onChange={(e) => handleUpdateQuantity(item.id, parseFloat(e.target.value) || 0)}
-                            style={{
-                              width: '60px',
-                              padding: '6px 8px',
-                              borderRadius: '6px',
-                              border: '1px solid var(--border-color)',
-                              background: 'var(--bg-secondary)',
-                              color: 'var(--text-primary)',
-                              textAlign: 'center'
-                            }}
-                          />
-                          <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>x</span>
-                        </div>
-                        
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <span style={{ color: 'var(--text-muted)' }}>$</span>
-                          <input
-                            type="number"
-                            value={item.unit_cost}
-                            onChange={(e) => handleUpdateCost(item.id, parseFloat(e.target.value) || 0)}
-                            style={{
-                              width: '70px',
-                              padding: '6px 8px',
-                              borderRadius: '6px',
-                              border: '1px solid var(--border-color)',
-                              background: 'var(--bg-secondary)',
-                              color: 'var(--text-primary)',
-                              textAlign: 'right'
-                            }}
-                          />
-                        </div>
-                        
-                        <div style={{ 
-                          fontWeight: 600, 
-                          color: 'var(--pink-primary)',
-                          textAlign: 'right',
-                          minWidth: '70px'
-                        }}>
-                          ${item.total_cost?.toFixed(2) || '0.00'}
-                        </div>
-                        
-                        <button
-                          onClick={() => handleDeleteItem(item.id)}
-                          style={{
-                            padding: '6px',
-                            borderRadius: '6px',
-                            border: 'none',
-                            background: 'rgba(239, 68, 68, 0.1)',
-                            color: '#ef4444',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                          }}
-                        >
-                          <Trash2 size={14} />
-                        </button>
                       </div>
                     ))}
                   </div>

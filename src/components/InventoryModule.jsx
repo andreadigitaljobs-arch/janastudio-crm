@@ -344,61 +344,109 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
               </div>
             </div>
 
-            {/* Product Table */}
+            {/* Product Table / Cards */}
             <div style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
-              <div style={{ width: '100%', overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                  <thead>
-                    <tr style={{ backgroundColor: '#faf5f5', borderBottom: '1px solid var(--border-color)' }}>
-                      {['PRODUCTO', 'CATEGORÍA', 'PROVEEDOR', 'STOCK ACTUAL', 'STOCK MÍNIMO', 'PRECIO UNITARIO', 'ÚLTIMO MOVIMIENTO', 'ESTADO', 'ACCIONES'].map(h => (
-                        <th key={h} style={{ padding: '12px 14px', fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {activeProducts.map(item => {
-                      const stockColor = item.stock === 0 ? '#ef4444' : item.stock <= (item.min_stock || 5) ? '#f59e0b' : '#22c55e';
-                      const statusLabel = item.stock === 0 ? 'Agotado' : item.stock <= (item.min_stock || 5) ? 'Bajo stock' : 'Óptimo';
-                      const statusBg = item.stock === 0 ? 'rgba(239,68,68,0.1)' : item.stock <= (item.min_stock || 5) ? 'rgba(245,158,11,0.1)' : 'rgba(34,197,94,0.1)';
-                      const statusColor = item.stock === 0 ? '#ef4444' : item.stock <= (item.min_stock || 5) ? '#f59e0b' : '#22c55e';
-                      return (
-                        <tr key={item.id} style={{ borderBottom: '1px solid var(--border-color)' }} className="table-row-hover">
-                          <td style={{ padding: '12px 14px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                              <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: item.image_url ? 'transparent' : 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
-                                {item.image_url ? <img src={item.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} /> : <Package size={16} color="#c48b9f" />}
+              {isMobile ? (
+                /* ── MOBILE: tarjetas de producto ── */
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+                  {activeProducts.map((item, idx) => {
+                    const stockColor = item.stock === 0 ? '#ef4444' : item.stock <= (item.min_stock || 5) ? '#f59e0b' : '#22c55e';
+                    const statusLabel = item.stock === 0 ? 'Agotado' : item.stock <= (item.min_stock || 5) ? 'Bajo stock' : 'Óptimo';
+                    const statusBg = item.stock === 0 ? 'rgba(239,68,68,0.1)' : item.stock <= (item.min_stock || 5) ? 'rgba(245,158,11,0.1)' : 'rgba(34,197,94,0.1)';
+                    return (
+                      <div key={item.id} style={{
+                        padding: '14px 16px',
+                        borderBottom: idx < activeProducts.length - 1 ? '1px solid var(--border-color)' : 'none',
+                        display: 'flex', alignItems: 'center', gap: '12px'
+                      }}>
+                        {/* Imagen */}
+                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: item.image_url ? 'transparent' : 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
+                          {item.image_url ? <img src={item.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '10px' }} /> : <Package size={18} color="#c48b9f" />}
+                        </div>
+                        {/* Info */}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '13px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3px' }}>
+                            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{item.category}</span>
+                            <span style={{ padding: '2px 8px', borderRadius: '20px', fontSize: '10px', fontWeight: 700, background: statusBg, color: stockColor }}>{statusLabel}</span>
+                          </div>
+                        </div>
+                        {/* Stock grande */}
+                        <div style={{ textAlign: 'center', flexShrink: 0 }}>
+                          <div style={{ fontSize: '18px', fontWeight: 800, color: stockColor, lineHeight: 1 }}>{item.stock}</div>
+                          <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 600 }}>unid.</div>
+                        </div>
+                        {/* Acciones compactas */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flexShrink: 0 }}>
+                          <div style={{ display: 'flex', gap: '4px' }}>
+                            <button className="action-btn" onClick={() => handeAdjustStock(item.id, item.stock, -1)} style={{ width: '30px', height: '30px', fontSize: '14px' }}><Minus size={12} /></button>
+                            <button className="action-btn" onClick={() => handeAdjustStock(item.id, item.stock, 1)} style={{ width: '30px', height: '30px', fontSize: '14px' }}><Plus size={12} /></button>
+                          </div>
+                          <div style={{ display: 'flex', gap: '4px' }}>
+                            <button className="action-btn" onClick={() => setEditingItem(item)} style={{ width: '30px', height: '30px' }}><Edit3 size={12} /></button>
+                            <button className="action-btn" onClick={() => handleDeleteItem(item.id, item.name)} style={{ width: '30px', height: '30px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.05)' }}><Trash2 size={12} /></button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                /* ── DESKTOP: tabla completa ── */
+                <div style={{ width: '100%', overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                    <thead>
+                      <tr style={{ backgroundColor: '#faf5f5', borderBottom: '1px solid var(--border-color)' }}>
+                        {['PRODUCTO', 'CATEGORÍA', 'PROVEEDOR', 'STOCK ACTUAL', 'STOCK MÍNIMO', 'PRECIO UNITARIO', 'ÚLTIMO MOVIMIENTO', 'ESTADO', 'ACCIONES'].map(h => (
+                          <th key={h} style={{ padding: '12px 14px', fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {activeProducts.map(item => {
+                        const stockColor = item.stock === 0 ? '#ef4444' : item.stock <= (item.min_stock || 5) ? '#f59e0b' : '#22c55e';
+                        const statusLabel = item.stock === 0 ? 'Agotado' : item.stock <= (item.min_stock || 5) ? 'Bajo stock' : 'Óptimo';
+                        const statusBg = item.stock === 0 ? 'rgba(239,68,68,0.1)' : item.stock <= (item.min_stock || 5) ? 'rgba(245,158,11,0.1)' : 'rgba(34,197,94,0.1)';
+                        const statusColor = item.stock === 0 ? '#ef4444' : item.stock <= (item.min_stock || 5) ? '#f59e0b' : '#22c55e';
+                        return (
+                          <tr key={item.id} style={{ borderBottom: '1px solid var(--border-color)' }} className="table-row-hover">
+                            <td style={{ padding: '12px 14px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: item.image_url ? 'transparent' : 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
+                                  {item.image_url ? <img src={item.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} /> : <Package size={16} color="#c48b9f" />}
+                                </div>
+                                <span style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '13px' }}>{item.name}</span>
                               </div>
-                              <span style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '13px' }}>{item.name}</span>
-                            </div>
-                          </td>
-                          <td style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--text-secondary)' }}>{item.category}</td>
-                          <td style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--text-secondary)' }}>{item.supplier || '—'}</td>
-                          <td style={{ padding: '12px 14px' }}>
-                            <span style={{ fontWeight: '800', color: stockColor, fontSize: '14px' }}>{item.stock}</span>
-                          </td>
-                          <td style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--text-secondary)' }}>{item.min_stock || '—'}</td>
-                          <td style={{ padding: '12px 14px', fontWeight: '700', color: 'var(--text-primary)', fontSize: '13px' }}>{formatBs((Number(item.price) || 0) * (rates?.usd || 550))}</td>
-                          <td style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--text-secondary)' }}>{item.last_movement || '—'}</td>
-                          <td style={{ padding: '12px 14px' }}>
-                            <span style={{ padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', background: statusBg, color: statusColor, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: statusColor }} />{statusLabel}
-                            </span>
-                          </td>
-                          <td style={{ padding: '12px 14px' }}>
-                            <div style={{ display: 'flex', gap: '4px' }}>
-                              <button className="action-btn" onClick={() => setEditingItem(item)} style={{ width: '28px', height: '28px' }}><Eye size={12} /></button>
-                              <button className="action-btn" onClick={() => handeAdjustStock(item.id, item.stock, -1)} style={{ width: '28px', height: '28px' }}><Minus size={12} /></button>
-                              <button className="action-btn" onClick={() => handeAdjustStock(item.id, item.stock, 1)} style={{ width: '28px', height: '28px' }}><Plus size={12} /></button>
-                              <button className="action-btn" onClick={() => setEditingItem(item)} style={{ width: '28px', height: '28px' }}><Edit3 size={12} /></button>
-                              <button className="action-btn" onClick={() => handleDeleteItem(item.id, item.name)} style={{ width: '28px', height: '28px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.05)' }}><Trash2 size={12} /></button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                            </td>
+                            <td style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--text-secondary)' }}>{item.category}</td>
+                            <td style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--text-secondary)' }}>{item.supplier || '—'}</td>
+                            <td style={{ padding: '12px 14px' }}>
+                              <span style={{ fontWeight: '800', color: stockColor, fontSize: '14px' }}>{item.stock}</span>
+                            </td>
+                            <td style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--text-secondary)' }}>{item.min_stock || '—'}</td>
+                            <td style={{ padding: '12px 14px', fontWeight: '700', color: 'var(--text-primary)', fontSize: '13px' }}>{formatBs((Number(item.price) || 0) * (rates?.usd || 550))}</td>
+                            <td style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--text-secondary)' }}>{item.last_movement || '—'}</td>
+                            <td style={{ padding: '12px 14px' }}>
+                              <span style={{ padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', background: statusBg, color: statusColor, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: statusColor }} />{statusLabel}
+                              </span>
+                            </td>
+                            <td style={{ padding: '12px 14px' }}>
+                              <div style={{ display: 'flex', gap: '4px' }}>
+                                <button className="action-btn" onClick={() => setEditingItem(item)} style={{ width: '28px', height: '28px' }}><Eye size={12} /></button>
+                                <button className="action-btn" onClick={() => handeAdjustStock(item.id, item.stock, -1)} style={{ width: '28px', height: '28px' }}><Minus size={12} /></button>
+                                <button className="action-btn" onClick={() => handeAdjustStock(item.id, item.stock, 1)} style={{ width: '28px', height: '28px' }}><Plus size={12} /></button>
+                                <button className="action-btn" onClick={() => setEditingItem(item)} style={{ width: '28px', height: '28px' }}><Edit3 size={12} /></button>
+                                <button className="action-btn" onClick={() => handleDeleteItem(item.id, item.name)} style={{ width: '28px', height: '28px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.05)' }}><Trash2 size={12} /></button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
 
             {/* Próximas reposiciones */}

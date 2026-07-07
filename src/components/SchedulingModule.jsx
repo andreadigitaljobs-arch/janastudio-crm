@@ -282,54 +282,60 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
   const monthName = selectedDate.toLocaleDateString('es-VE', { month: 'long' });
 
   return (
-    <div className="animate-fade-in" style={{ paddingBottom: '40px' }}>
+    <div className="animate-fade-in" style={{ paddingBottom: isMobile ? 'calc(100px + env(safe-area-inset-bottom, 12px))' : '40px' }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', gap: '12px' }}>
         <div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#4a3036', margin: 0, fontFamily: 'Playfair Display, serif' }}>
+          <h1 style={{ fontSize: isMobile ? '1.25rem' : '1.5rem', fontWeight: 700, color: '#4a3036', margin: 0, fontFamily: 'Playfair Display, serif' }}>
             Agenda <span className="text-gradient">Jana</span>
           </h1>
-          <p style={{ fontSize: '0.8rem', color: '#a07880', margin: '4px 0 0 0', fontWeight: 500 }}>
+          {!isMobile && <p style={{ fontSize: '0.8rem', color: '#a07880', margin: '4px 0 0 0', fontWeight: 500 }}>
             Gestión inteligente de citas y disponibilidad.
-          </p>
+          </p>}
         </div>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button onClick={() => setShowNewClientModal(true)} style={{
+        <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+          {!isMobile && <button onClick={() => setShowNewClientModal(true)} style={{
             padding: '10px 18px', borderRadius: '12px', border: '1px solid rgba(223,178,140,0.4)',
             background: '#fff', color: '#6b4a52', fontSize: '0.8rem', fontWeight: 600,
             cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s'
-          }} className="btn-hover-scale"><User size={16} /> Nuevo Cliente</button>
+          }} className="btn-hover-scale"><User size={16} /> Nuevo Cliente</button>}
           <button onClick={() => setShowScheduleModal(true)} style={{
-            padding: '10px 18px', borderRadius: '12px', border: 'none',
+            padding: isMobile ? '10px 14px' : '10px 18px', borderRadius: '12px', border: 'none',
             background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
-            color: '#fff', fontSize: '0.8rem', fontWeight: 600,
-            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
-            boxShadow: '0 4px 15px rgba(219,140,149,0.25)', transition: 'all 0.2s'
-          }} className="btn-hover-scale"><Plus size={16} /> Agendar Cita</button>
+            color: '#fff', fontSize: isMobile ? '0.75rem' : '0.8rem', fontWeight: 600,
+            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
+            boxShadow: '0 4px 15px rgba(219,140,149,0.25)', transition: 'all 0.2s', whiteSpace: 'nowrap'
+          }} className="btn-hover-scale"><Plus size={16} /> Agendar</button>
         </div>
       </div>
 
       {/* Stats Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'repeat(3, 1fr)', gap: isMobile ? '8px' : '16px', marginBottom: '20px' }}>
         {[
-          { icon: CalendarDays, label: 'Citas Hoy', value: totalCitas, sub: nextAppointment ? `Próxima: ${nextAppointment.time}` : 'Sin citas agendadas' },
-          { icon: Clock, label: 'Disponibles', value: availableSlots, sub: 'Horas libres hoy' },
-          { icon: CheckCircle2, label: 'Confirmadas', value: confirmadas, sub: `${confirmedPercent}% del total` },
+          { icon: CalendarDays, label: 'Citas', value: totalCitas, sub: nextAppointment ? `Sig: ${nextAppointment.time}` : 'Sin citas' },
+          { icon: Clock, label: 'Libres', value: availableSlots, sub: 'horas hoy' },
+          { icon: CheckCircle2, label: 'OK', value: confirmadas, sub: `${confirmedPercent}%` },
         ].map((stat, idx) => (
           <div key={idx} className="agenda-glass-card" style={{
-            padding: '18px', display: 'flex', alignItems: 'center', gap: '16px'
+            padding: isMobile ? '12px 8px' : '18px',
+            display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+            alignItems: isMobile ? 'center' : 'center',
+            gap: isMobile ? '4px' : '16px',
+            textAlign: isMobile ? 'center' : 'left'
           }}>
-            <div style={{
+            {!isMobile && <div style={{
               width: '44px', height: '44px', borderRadius: '12px',
               background: 'linear-gradient(135deg, rgba(232,162,169,0.15) 0%, rgba(223,178,140,0.15) 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
             }}>
               <stat.icon size={20} color="#db8c95" />
-            </div>
+            </div>}
+            {isMobile && <stat.icon size={16} color="#db8c95" />}
             <div>
-              <div style={{ fontSize: '0.72rem', color: '#a07880', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{stat.label}</div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#4a3036', lineHeight: 1.1, marginTop: '2px' }}>{stat.value}</div>
-              <div style={{ fontSize: '0.68rem', color: '#8c767b', marginTop: '4px' }}>{stat.sub}</div>
+              <div style={{ fontSize: isMobile ? '0.58rem' : '0.72rem', color: '#a07880', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{stat.label}</div>
+              <div style={{ fontSize: isMobile ? '1.1rem' : '1.4rem', fontWeight: 700, color: '#4a3036', lineHeight: 1.1, marginTop: '2px' }}>{stat.value}</div>
+              {!isMobile && <div style={{ fontSize: '0.68rem', color: '#8c767b', marginTop: '4px' }}>{stat.sub}</div>}
             </div>
           </div>
         ))}
