@@ -43,15 +43,15 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
   const visible = isOpen && !closing;
   const unreadCount = notifications.filter(n => !n.read).length;
 
-  const unreadDot = { position: 'absolute', top: '-2px', right: '-2px', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #f43f5e, #fb7185)', boxShadow: '0 0 10px rgba(244, 63, 94, 0.6)', border: '2px solid #fff' };
+  const unreadDot = { position: 'absolute', top: '-2px', right: '-2px', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #c97282, #d4a0ae)', boxShadow: '0 0 10px rgba(201, 114, 130, 0.6)', border: '2px solid #fff' };
 
   // ─── Shared Permission Banner ──────────────────────────────
   const permissionBanner = permission !== 'granted' && (
     <div className="ntf-banner" style={{
       margin: isMobile ? '0 20px 14px' : '0 0 16px',
       padding: '18px', borderRadius: '20px',
-      background: 'linear-gradient(135deg, #fef1f3 0%, #fde8ec 50%, #fdf2f8 100%)',
-      border: '1px solid rgba(244, 114, 146, 0.2)',
+              background: 'linear-gradient(135deg, #fdf2f4 0%, #f8e8ec 50%, #f5e1e7 100%)',
+              border: '1px solid rgba(201, 114, 130, 0.2)',
       display: 'flex', flexDirection: 'column', gap: '12px',
       position: 'relative', overflow: 'hidden',
       animation: 'ntfItemIn 0.4s ease 0.1s both',
@@ -68,17 +68,17 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
       <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', position: 'relative' }}>
         <div style={{
           width: '40px', height: '40px', borderRadius: '14px',
-          background: 'linear-gradient(135deg, #f43f5e, #e11d48)',
+          background: 'linear-gradient(135deg, #c97282, #a0506a)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', flexShrink: 0,
-          boxShadow: '0 4px 16px rgba(244, 63, 94, 0.3)',
+          boxShadow: '0 4px 16px rgba(201, 114, 130, 0.3)',
           transition: 'all 0.3s ease'
         }}><Smartphone size={18} /></div>
         <div style={{ flex: 1 }}>
           <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#1f1215', display: 'block' }}>Activa las notificaciones</span>
           {!isSecure ? (
-            <span style={{ fontSize: '0.68rem', color: '#e11d48', display: 'block', marginTop: '3px', fontWeight: '600' }}>Requiere HTTPS para funcionar.</span>
+            <span style={{ fontSize: '0.68rem', color: '#a0506a', display: 'block', marginTop: '3px', fontWeight: '600' }}>Requiere HTTPS para funcionar.</span>
           ) : isIOS && !isStandalone ? (
-            <span style={{ fontSize: '0.68rem', color: '#be123c', display: 'block', marginTop: '3px', fontWeight: '600' }}>iPhone: Compartir → Agregar a pantalla de inicio.</span>
+            <span style={{ fontSize: '0.68rem', color: '#8a4560', display: 'block', marginTop: '3px', fontWeight: '600' }}>iPhone: Compartir → Agregar a pantalla de inicio.</span>
           ) : (
             <span style={{ fontSize: '0.68rem', color: '#6b5b6b', display: 'block', marginTop: '3px', lineHeight: 1.4 }}>Recibe alertas instantáneas como un WhatsApp.</span>
           )}
@@ -86,8 +86,8 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
       </div>
       <button onClick={handleRequestPermission} style={{
         padding: '11px 0', borderRadius: '14px', fontSize: '0.78rem', fontWeight: '700',
-        background: 'linear-gradient(135deg, #f43f5e, #e11d48, #be123c)', color: 'white',
-        border: 'none', cursor: 'pointer', boxShadow: '0 4px 16px rgba(244, 63, 94, 0.3)',
+        background: 'linear-gradient(135deg, #c97282, #a0506a, #8a4560)', color: 'white',
+        border: 'none', cursor: 'pointer', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.3)',
         transition: 'all 0.3s ease', letterSpacing: '0.03em', position: 'relative'
       }}
       onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(244, 63, 94, 0.4)'; }}
@@ -101,57 +101,61 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
     <div style={{ display: 'flex', gap: '8px', padding: isMobile ? '0 20px 14px' : '0 0 14px', animation: 'ntfItemIn 0.4s ease 0.15s both' }}>
       <button onClick={handleMarkAllRead} style={{
         flex: 1, padding: '9px 0', borderRadius: '12px',
-        background: 'linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.04))',
-        border: '1px solid rgba(34,197,94,0.2)',
-        color: '#16a34a', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer',
+        background: 'linear-gradient(135deg, #ecfdf5, #d1fae5)',
+        border: '1px solid rgba(16, 185, 129, 0.2)',
+        color: '#059669', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer',
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
         transition: 'all 0.25s ease'
       }}
-      onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.08))'; e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(34,197,94,0.15)'; }}
-      onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.04))'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
+      onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #d1fae5, #a7f3d0)'; e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.15)'; }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #ecfdf5, #d1fae5)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
       ><CheckCheck size={14} /> Marcar leídas</button>
       <button onClick={handleClearHistory} style={{
         flex: 1, padding: '9px 0', borderRadius: '12px',
-        background: 'linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.04))',
-        border: '1px solid rgba(239,68,68,0.2)',
-        color: '#dc2626', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer',
+        background: 'linear-gradient(135deg, #fff7ed, #ffedd5)',
+        border: '1px solid rgba(249, 115, 22, 0.2)',
+        color: '#ea580c', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer',
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
         transition: 'all 0.25s ease'
       }}
-      onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.08))'; e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,68,68,0.15)'; }}
-      onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.04))'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
+      onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #ffedd5, #fed7aa)'; e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(249, 115, 22, 0.15)'; }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #fff7ed, #ffedd5)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
       ><Trash2 size={14} /> Limpiar</button>
     </div>
   );
 
   // ─── Shared Notification List ──────────────────────────────
   const listContent = (
-    <div className="no-scrollbar" style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '0 20px 24px' : '0 24px 20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+    <div className="no-scrollbar" style={{
+      flex: 1, overflowY: 'auto',
+      padding: isMobile ? '4px 16px 20px' : '4px 20px 20px',
+      display: 'flex', flexDirection: 'column', gap: '10px'
+    }}>
       {permission === 'granted' && (
         <button onClick={handleSendTestNotification} style={{
-          width: '100%', padding: '13px', borderRadius: '16px',
-          background: 'linear-gradient(135deg, #fdf2f8, #fce7f3, #f5d0fe)',
-          border: '1.5px dashed rgba(217, 70, 239, 0.3)',
-          color: '#a855f7', fontSize: '0.76rem', fontWeight: '700', cursor: 'pointer',
+          width: '100%', padding: '12px', borderRadius: '14px',
+          background: 'linear-gradient(135deg, #f5f3ff, #ede9fe)',
+          border: '1.5px dashed rgba(139, 92, 246, 0.3)',
+          color: '#7c3aed', fontSize: '0.74rem', fontWeight: '700', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
           transition: 'all 0.3s ease', animation: 'ntfItemIn 0.4s ease 0.2s both',
           position: 'relative', overflow: 'hidden'
         }}
-        onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #f5d0fe, #e9d5ff, #ddd6fe)'; e.currentTarget.style.transform = 'translateY(-2px) scale(1.01)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(168, 85, 247, 0.15)'; e.currentTarget.style.borderColor = 'rgba(168, 85, 247, 0.4)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #fdf2f8, #fce7f3, #f5d0fe)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = 'rgba(217, 70, 239, 0.3)'; }}
-        ><Sparkles size={14} /> Probar notificación push ✨</button>
+        onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #ede9fe, #ddd6fe)'; e.currentTarget.style.transform = 'translateY(-2px) scale(1.01)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(139, 92, 246, 0.15)'; e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.4)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #f5f3ff, #ede9fe)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.3)'; }}
+        ><Sparkles size={14} /> Probar notificación push</button>
       )}
       {notifications.length === 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 20px', gap: '16px' }}>
           <div style={{
             width: '80px', height: '80px', borderRadius: '24px',
-            background: 'linear-gradient(135deg, #fdf2f8 0%, #fce7f3 30%, #f5d0fe 60%, #e9d5ff 100%)',
+            background: 'linear-gradient(135deg, #fdf2f4 0%, #f8e8ec 30%, #f5e1e7 60%, #f0d9e1 100%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             animation: 'ntfPulse 3s ease-in-out infinite',
-            boxShadow: '0 8px 32px rgba(217, 70, 239, 0.12)',
+            boxShadow: '0 8px 32px rgba(201, 114, 130, 0.12)',
             position: 'relative'
           }}>
-            <Inbox size={32} style={{ color: '#a855f7' }} />
+            <Inbox size={32} style={{ color: '#c97282' }} />
             <div style={{
               position: 'absolute', bottom: '-4px', right: '-4px',
               width: '28px', height: '28px', borderRadius: '50%',
@@ -168,22 +172,22 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
       ) : (
         notifications.map((n, idx) => (
           <div key={n.id} className="ntf-card" style={{
-            padding: '16px', borderRadius: '18px',
+            padding: '14px 16px', borderRadius: '16px',
             background: n.read
               ? 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)'
-              : 'linear-gradient(135deg, #fff1f3 0%, #fef2f4 40%, #fff5f7 100%)',
+              : 'linear-gradient(135deg, #fdf2f4 0%, #f8e8ec 40%, #f5e1e7 100%)',
             border: n.read
               ? '1px solid rgba(212, 160, 154, 0.1)'
-              : '1.5px solid rgba(244, 114, 146, 0.2)',
+              : '1.5px solid rgba(201, 114, 130, 0.25)',
             position: 'relative', transition: 'all 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
             animation: `ntfItemIn 0.4s ease ${0.1 + idx * 0.06}s both`,
-            cursor: 'default', overflow: 'hidden'
+            cursor: 'default'
           }}
           onMouseEnter={(e) => {
             if (!n.read) {
-              e.currentTarget.style.background = 'linear-gradient(135deg, #ffe4e9 0%, #ffebef 40%, #fff0f3 100%)';
+              e.currentTarget.style.background = 'linear-gradient(135deg, #f5e1e7 0%, #edcdd6 40%, #f0d9e1 100%)';
               e.currentTarget.style.transform = 'translateY(-2px) scale(1.01)';
-              e.currentTarget.style.boxShadow = '0 8px 24px rgba(244, 114, 146, 0.12)';
+              e.currentTarget.style.boxShadow = '0 8px 24px rgba(201, 114, 130, 0.12)';
             } else {
               e.currentTarget.style.transform = 'translateY(-1px)';
               e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.04)';
@@ -192,36 +196,36 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
           onMouseLeave={(e) => {
             e.currentTarget.style.background = n.read
               ? 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)'
-              : 'linear-gradient(135deg, #fff1f3 0%, #fef2f4 40%, #fff5f7 100%)';
+              : 'linear-gradient(135deg, #fdf2f4 0%, #f8e8ec 40%, #f5e1e7 100%)';
             e.currentTarget.style.transform = 'none';
             e.currentTarget.style.boxShadow = 'none';
           }}
           >
             {/* Unread glow */}
-            {!n.read && <div style={{ position: 'absolute', top: 0, left: 0, width: '3px', height: '100%', background: 'linear-gradient(180deg, #f43f5e, #e879a0)', borderRadius: '0 4px 4px 0' }} />}
+            {!n.read && <div style={{ position: 'absolute', top: 0, left: 0, width: '3px', height: '100%', background: 'linear-gradient(180deg, #c97282, #d4a0ae)', borderRadius: '0 4px 4px 0' }} />}
             {!n.read && (
               <div style={{
                 position: 'absolute', top: '16px', right: '14px',
                 width: '8px', height: '8px', borderRadius: '50%',
-                background: 'linear-gradient(135deg, #f43f5e, #fb7185)',
-                boxShadow: '0 0 10px rgba(244, 63, 94, 0.5)',
+                background: 'linear-gradient(135deg, #c97282, #d4a0ae)',
+                  boxShadow: '0 0 10px rgba(201, 114, 130, 0.5)',
                 animation: 'ntfPulse 2s ease-in-out infinite'
               }} />
             )}
-            <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', position: 'relative' }}>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
               <div style={{
-                width: '38px', height: '38px', borderRadius: '12px',
+                width: '36px', height: '36px', borderRadius: '12px',
                 background: n.read
-                  ? 'linear-gradient(135deg, #fdf2f4, #fce8ec)'
-                  : 'linear-gradient(135deg, #f43f5e, #e11d48)',
+                  ? 'linear-gradient(135deg, #fdf2f4, #f8e8ec)'
+                  : 'linear-gradient(135deg, #c97282, #a0506a)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 color: n.read ? '#d4a0ae' : '#ffffff', flexShrink: 0,
-                boxShadow: n.read ? 'none' : '0 4px 14px rgba(244, 63, 94, 0.25)',
+                boxShadow: n.read ? 'none' : '0 4px 14px rgba(201, 114, 130, 0.25)',
                 transition: 'all 0.3s ease'
-              }}><Bell size={16} /></div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <h4 style={{ fontSize: '0.82rem', fontWeight: '700', color: '#1f1215', margin: '0 0 4px 0', paddingRight: '14px', lineHeight: '1.35' }}>{n.title}</h4>
-                <p style={{ fontSize: '0.72rem', color: '#6b5b6b', margin: '0 0 8px 0', lineHeight: '1.5' }}>{n.body}</p>
+              }}><Bell size={15} /></div>
+              <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+                <h4 style={{ fontSize: '0.8rem', fontWeight: '700', color: '#1f1215', margin: '0 0 4px 0', lineHeight: '1.3', wordBreak: 'break-word' }}>{n.title}</h4>
+                <p style={{ fontSize: '0.7rem', color: '#6b5b6b', margin: '0 0 6px 0', lineHeight: '1.5', wordBreak: 'break-word', overflowWrap: 'break-word' }}>{n.body}</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{
                     fontSize: '0.6rem', color: '#9ca3af', fontWeight: '600',
@@ -231,10 +235,10 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
                   </span>
                   {!n.read && (
                     <span style={{
-                      fontSize: '0.55rem', fontWeight: '700', color: '#f43f5e',
-                      background: 'linear-gradient(135deg, #fff1f2, #ffe4e6)',
+                      fontSize: '0.55rem', fontWeight: '700', color: '#c97282',
+                      background: 'linear-gradient(135deg, #fdf2f4, #f8e8ec)',
                       padding: '2px 7px', borderRadius: '6px',
-                      border: '1px solid rgba(244,114,146,0.15)'
+                      border: '1px solid rgba(201,114,130,0.15)'
                     }}>Nuevo</span>
                   )}
                 </div>
@@ -276,12 +280,12 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
             background: 'linear-gradient(165deg, #fffafb 0%, #ffffff 30%, #fef8fa 60%, #fdf5f7 100%)',
             borderRadius: '32px 32px 0 0', overflow: 'hidden', display: 'flex', flexDirection: 'column',
             animation: visible ? 'ntfSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards' : 'ntfSlideDown 0.4s cubic-bezier(0.55, 0, 1, 0.45) forwards',
-            boxShadow: '0 -12px 48px rgba(244, 63, 94, 0.1), 0 -4px 16px rgba(160, 80, 106, 0.06)'
+            boxShadow: '0 -12px 48px rgba(201, 114, 130, 0.1), 0 -4px 16px rgba(160, 80, 106, 0.06)'
           }}>
             {/* Gradient top accent */}
             <div style={{
               position: 'absolute', top: 0, left: 0, right: 0, height: '3px',
-              background: 'linear-gradient(90deg, #f43f5e, #c97282, #a855f7, #c97282, #f43f5e)',
+              background: 'linear-gradient(90deg, #a0506a, #c97282, #d4a0ae, #c97282, #a0506a)',
               backgroundSize: '200% 100%',
               animation: 'ntfGradientShift 4s ease infinite'
             }} />
@@ -293,9 +297,9 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                 <div style={{
                   width: '48px', height: '48px', borderRadius: '16px',
-                  background: 'linear-gradient(135deg, #f43f5e 0%, #e11d48 50%, #be123c 100%)',
+                  background: 'linear-gradient(135deg, #c97282 0%, #a0506a 50%, #8a4560 100%)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff',
-                  boxShadow: '0 6px 20px rgba(244, 63, 94, 0.35)',
+                  boxShadow: '0 6px 20px rgba(201, 114, 130, 0.35)',
                   transition: 'all 0.3s ease', position: 'relative',
                   backgroundSize: '200% 200%',
                   animation: 'ntfGradientShift 3s ease infinite'
@@ -305,11 +309,11 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
                     <div style={{
                       position: 'absolute', top: '-4px', right: '-4px',
                       width: '20px', height: '20px', borderRadius: '50%',
-                      background: 'linear-gradient(135deg, #f59e0b, #f97316)',
+                      background: 'linear-gradient(135deg, #c97282, #d4a0ae)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: '0.6rem', fontWeight: '800', color: '#fff',
                       border: '2px solid #fff',
-                      boxShadow: '0 2px 8px rgba(249, 115, 22, 0.4)',
+                      boxShadow: '0 2px 8px rgba(201, 114, 130, 0.4)',
                       animation: 'ntfPulse 2s ease-in-out infinite'
                     }}>{unreadCount}</div>
                   )}
@@ -324,11 +328,11 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
               <button onClick={handleClose} style={{
                 background: 'linear-gradient(135deg, rgba(244,63,94,0.06), rgba(244,63,94,0.03))',
                 border: '1.5px solid rgba(244, 63, 94, 0.1)',
-                borderRadius: '14px', width: '40px', height: '40px', color: '#f43f5e', cursor: 'pointer',
+                borderRadius: '14px', width: '40px', height: '40px', color: '#c97282', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s ease'
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #f43f5e, #e11d48)'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.transform = 'rotate(90deg) scale(1.1)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(244,63,94,0.3)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(244,63,94,0.06), rgba(244,63,94,0.03))'; e.currentTarget.style.color = '#f43f5e'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #c97282, #a0506a)'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.transform = 'rotate(90deg) scale(1.1)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(201,114,130,0.3)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(201,114,130,0.06), rgba(201,114,130,0.03))'; e.currentTarget.style.color = '#c97282'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
               ><X size={18} strokeWidth={2.5} /></button>
             </div>
             {permissionBanner}
@@ -353,7 +357,7 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
         @keyframes ntfGradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         @keyframes ntfFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
         .ntf-desktop-panel { transition: box-shadow 0.3s ease; }
-        .ntf-desktop-panel:hover { box-shadow: 0 24px 72px rgba(244, 63, 94, 0.15), 0 8px 24px rgba(160, 80, 106, 0.08), 0 0 0 1px rgba(244, 114, 146, 0.15) !important; }
+        .ntf-desktop-panel:hover { box-shadow: 0 24px 72px rgba(201, 114, 130, 0.15), 0 8px 24px rgba(160, 80, 106, 0.08), 0 0 0 1px rgba(201, 114, 130, 0.15) !important; }
       `}</style>
       <div style={{
         position: 'fixed', inset: 0,
@@ -375,14 +379,14 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
           animation: visible
             ? 'ntfDesktopPopIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards'
             : 'ntfDesktopPopOut 0.3s cubic-bezier(0.55, 0, 1, 0.45) forwards',
-          boxShadow: '0 20px 64px rgba(244, 63, 94, 0.12), 0 6px 20px rgba(160, 80, 106, 0.06), 0 0 0 1px rgba(244, 114, 146, 0.08)',
+          boxShadow: '0 20px 64px rgba(201, 114, 130, 0.12), 0 6px 20px rgba(160, 80, 106, 0.06), 0 0 0 1px rgba(201, 114, 130, 0.08)',
           transform: 'translateY(-50%) translateX(-50%)',
           transformOrigin: 'center center'
         }}>
           {/* Gradient top accent */}
           <div style={{
             height: '3px',
-            background: 'linear-gradient(90deg, #f43f5e, #c97282, #a855f7, #c97282, #f43f5e)',
+            background: 'linear-gradient(90deg, #a0506a, #c97282, #d4a0ae, #c97282, #a0506a)',
             backgroundSize: '200% 100%',
             animation: 'ntfGradientShift 4s ease infinite'
           }} />
@@ -392,9 +396,9 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
               <div style={{
                 width: '44px', height: '44px', borderRadius: '14px',
-                background: 'linear-gradient(135deg, #f43f5e 0%, #e11d48 50%, #be123c 100%)',
+                background: 'linear-gradient(135deg, #c97282 0%, #a0506a 50%, #8a4560 100%)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff',
-                boxShadow: '0 5px 18px rgba(244, 63, 94, 0.3)',
+                boxShadow: '0 5px 18px rgba(201, 114, 130, 0.3)',
                 position: 'relative', backgroundSize: '200% 200%',
                 animation: 'ntfGradientShift 3s ease infinite'
               }}>
@@ -407,7 +411,7 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: '0.55rem', fontWeight: '800', color: '#fff',
                     border: '2px solid #fff',
-                    boxShadow: '0 2px 8px rgba(249, 115, 22, 0.4)',
+                    boxShadow: '0 2px 8px rgba(201, 114, 130, 0.4)',
                     animation: 'ntfPulse 2s ease-in-out infinite'
                   }}>{unreadCount}</div>
                 )}
@@ -422,11 +426,11 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
             <button onClick={handleClose} style={{
               background: 'linear-gradient(135deg, rgba(244,63,94,0.06), rgba(244,63,94,0.03))',
               border: '1.5px solid rgba(244, 63, 94, 0.1)',
-              borderRadius: '12px', width: '38px', height: '38px', color: '#f43f5e', cursor: 'pointer',
+              borderRadius: '12px', width: '38px', height: '38px', color: '#c97282', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s ease'
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #f43f5e, #e11d48)'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.transform = 'rotate(90deg) scale(1.1)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(244,63,94,0.3)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(244,63,94,0.06), rgba(244,63,94,0.03))'; e.currentTarget.style.color = '#f43f5e'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #c97282, #a0506a)'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.transform = 'rotate(90deg) scale(1.1)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(201,114,130,0.3)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(201,114,130,0.06), rgba(201,114,130,0.03))'; e.currentTarget.style.color = '#c97282'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
             ><X size={17} strokeWidth={2.5} /></button>
           </div>
 
