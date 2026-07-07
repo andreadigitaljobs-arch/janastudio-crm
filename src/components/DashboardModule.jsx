@@ -720,9 +720,8 @@ const DashboardModule = ({
               upcomingAppointments.map((apt, idx) => (
                 <div key={idx} style={{
                   display: 'flex',
-                  alignItems: 'center',
-                  gap: '16px',
-                  marginBottom: idx < upcomingAppointments.length - 1 ? '16px' : '0',
+                  gap: '10px',
+                  marginBottom: idx < upcomingAppointments.length - 1 ? '14px' : '0',
                   position: 'relative'
                 }}>
                   {/* Custom dot */}
@@ -735,6 +734,7 @@ const DashboardModule = ({
                     boxShadow: '0 0 0 2px rgba(201, 114, 130, 0.25)',
                     zIndex: 2,
                     marginLeft: '-4px',
+                    marginTop: '6px',
                     flexShrink: 0
                   }} />
 
@@ -743,16 +743,17 @@ const DashboardModule = ({
                     fontSize: '0.72rem',
                     fontWeight: '700',
                     color: 'var(--text-primary)',
-                    width: '65px',
-                    flexShrink: 0
+                    width: '62px',
+                    flexShrink: 0,
+                    paddingTop: '2px'
                   }}>
                     {apt.time}
                   </span>
 
-                  {/* Circular Initial Avatar */}
+                  {/* Avatar */}
                   <div style={{
-                    width: '32px',
-                    height: '32px',
+                    width: '34px',
+                    height: '34px',
                     borderRadius: '50%',
                     background: 'var(--pink-gradient)',
                     display: 'flex',
@@ -766,29 +767,38 @@ const DashboardModule = ({
                     {apt.initial}
                   </div>
 
-                  {/* Service Details */}
+                  {/* Service + Client stacked, flex grows */}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <h4 style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {apt.service}
-                    </h4>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px' }}>
+                      <span style={{
+                        fontSize: '0.78rem',
+                        fontWeight: '700',
+                        color: 'var(--text-primary)',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        flex: 1,
+                        minWidth: 0
+                      }}>
+                        {apt.service}
+                      </span>
+                      <span style={{
+                        padding: '2px 8px',
+                        borderRadius: '20px',
+                        fontSize: '0.55rem',
+                        fontWeight: '700',
+                        background: getStatusStyle(apt.status).bg,
+                        color: getStatusStyle(apt.status).text,
+                        border: `1px solid ${getStatusStyle(apt.status).border}`,
+                        flexShrink: 0
+                      }}>
+                        {apt.status}
+                      </span>
+                    </div>
                     <span style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: '500' }}>
                       {apt.client}
                     </span>
                   </div>
-
-                  {/* Status Badge */}
-                  <span style={{
-                    padding: '4px 10px',
-                    borderRadius: '20px',
-                    fontSize: '0.6rem',
-                    fontWeight: '700',
-                    background: getStatusStyle(apt.status).bg,
-                    color: getStatusStyle(apt.status).text,
-                    border: `1px solid ${getStatusStyle(apt.status).border}`,
-                    flexShrink: 0
-                  }}>
-                    {apt.status}
-                  </span>
                 </div>
               ))
             )}
