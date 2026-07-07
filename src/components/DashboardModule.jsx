@@ -3,7 +3,7 @@ import {
   Users, Clock, Calendar, Sparkles, RefreshCw,
   Flower2, Plus, Star, ChevronRight,
   Percent, Scissors, DollarSign, Activity, Award,
-  Bell, ChevronDown, ShoppingBag, MessageSquare, UserPlus
+  Bell, ChevronDown, ShoppingBag, MessageSquare, UserPlus, BellRing
 } from 'lucide-react';
 import {
   Chart as ChartJS, CategoryScale, LinearScale, PointElement,
@@ -38,6 +38,16 @@ const DashboardModule = ({
 }) => {
   const { user } = useAuth();
   const carouselRef = useRef(null);
+  const [ntfPerm, setNtfPerm] = useState(() => {
+    try { return Notification?.permission || 'default'; } catch { return 'default'; }
+  });
+
+  const requestNtfPermission = async () => {
+    try {
+      const res = await Notification.requestPermission();
+      setNtfPerm(res);
+    } catch {}
+  };
 
   useEffect(() => {
     if (!isMobile) return;
@@ -358,6 +368,84 @@ const DashboardModule = ({
             )}
           </div>
         </div>
+
+        {/* Notification Activation Banner - only when needed */}
+        {isMobile && ntfPerm !== 'granted' && (
+          <div
+            onClick={requestNtfPermission}
+            style={{
+              width: '100%',
+              borderRadius: '20px',
+              padding: '0',
+              position: 'relative',
+              overflow: 'hidden',
+              cursor: 'pointer',
+              boxShadow: '0 6px 24px rgba(201, 114, 130, 0.15)',
+              background: 'linear-gradient(135deg, #c97282, #a0506a, #8a4560)',
+              backgroundSize: '200% 200%',
+              animation: 'ntfBannerPulse 3s ease-in-out infinite',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px) scale(1.01)'; e.currentTarget.style.boxShadow = '0 10px 32px rgba(201, 114, 130, 0.25)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(201, 114, 130, 0.15)'; }}
+          >
+            <style>{`
+              @keyframes ntfBannerPulse { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+              @keyframes ntfBellRing { 0%, 100% { transform: rotate(0deg); } 15% { transform: rotate(14deg); } 30% { transform: rotate(-12deg); } 45% { transform: rotate(8deg); } 60% { transform: rotate(-6deg); } 75% { transform: rotate(2deg); } }
+            `}</style>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '16px 20px', position: 'relative', zIndex: 1 }}>
+              {/* Animated bell icon */}
+              <div style={{
+                width: '48px', height: '48px', borderRadius: '16px',
+                background: 'rgba(255,255,255,0.2)',
+                backdropFilter: 'blur(8px)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0,
+                animation: 'ntfBellRing 2s ease-in-out infinite'
+              }}>
+                <BellRing size={24} style={{ color: '#fff' }} />
+              </div>
+
+              {/* Text */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <span style={{
+                  fontSize: '0.82rem', fontWeight: '800', color: '#ffffff',
+                  display: 'block', lineHeight: '1.2', fontFamily: "'Playfair Display', Georgia, serif"
+                }}>
+                  Activa las alertas
+                </span>
+                <span style={{
+                  fontSize: '0.65rem', color: 'rgba(255,255,255,0.75)',
+                  display: 'block', marginTop: '3px', lineHeight: '1.3'
+                }}>
+                  Recibe avisos al instante como un WhatsApp
+                </span>
+              </div>
+
+              {/* Arrow */}
+              <div style={{
+                width: '32px', height: '32px', borderRadius: '50%',
+                background: 'rgba(255,255,255,0.2)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <ChevronRight size={16} style={{ color: '#fff' }} />
+              </div>
+            </div>
+
+            {/* Decorative circles */}
+            <div style={{
+              position: 'absolute', top: '-20px', right: '-20px',
+              width: '80px', height: '80px', borderRadius: '50%',
+              background: 'rgba(255,255,255,0.08)',
+            }} />
+            <div style={{
+              position: 'absolute', bottom: '-30px', left: '-15px',
+              width: '60px', height: '60px', borderRadius: '50%',
+              background: 'rgba(255,255,255,0.06)',
+            }} />
+          </div>
+        )}
 
         {/* Welcome Back Card */}
         <div style={{
