@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
 import { useNotifs } from '../context/NotificationContext';
 import { 
   Sparkles, 
@@ -440,24 +439,6 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
               <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>Gestión de talento y desempeño.</p>
             </div>
             <div style={{ display: 'flex', gap: '12px', width: isMobile ? '100%' : 'auto', flexWrap: 'wrap' }}>
-              {/* Temporary Seed Button */}
-              <button 
-                onClick={async () => {
-                  const users = [
-                    { name: "Laura", roles: ["Peluquera"], email: "laura@janastudio.com", username: "laura123", phone: "+58 412 1234567", permissions: ['scheduling', 'clients', 'history'] },
-                    { name: "Sofia", roles: ["Manicurista"], email: "sofia@janastudio.com", username: "sofia123", phone: "+58 412 7654321", permissions: ['scheduling', 'clients', 'history', 'reception'] },
-                    { name: "Isabella", roles: ["Peluquera"], email: "isabella@janastudio.com", username: "isabella123", phone: "+58 412 9998888", permissions: ['scheduling', 'clients', 'history'] }
-                  ];
-                  for (const u of users) {
-                    try { await dataService.createStaffWithAuth(u); } catch (e) { console.error('Error:', e); }
-                  }
-                  fetchStaff();
-                  alert("Usuarios creados exitosamente");
-                }}
-                style={{ padding: '10px 20px', borderRadius: '14px', border: 'none', background: '#32d74b', color: 'white', fontWeight: '700', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
-              >
-                <Sparkles size={16} /> Seed
-              </button>
               <button 
                 onClick={() => setIsRoleModalOpen(true)}
                 style={{ padding: '10px 20px', borderRadius: '14px', border: '1px solid var(--border-color)', background: 'white', color: 'var(--text-secondary)', fontWeight: '700', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
@@ -466,11 +447,11 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
               </button>
               <button 
                 className="btn-pink"
-                onClick={() => showForm ? handleCloseForm() : setShowForm(true)}
+                onClick={() => setShowForm(true)}
                 style={{ padding: '10px 20px', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '700' }}
               >
-                {showForm ? <X size={16} /> : <UserPlus size={16} />}
-                {showForm ? 'Cancelar' : 'Nuevo miembro'}
+                <UserPlus size={16} />
+                Nuevo miembro
               </button>
             </div>
           </div>
@@ -774,19 +755,65 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
       </div>
 
       {(showForm || isFormExiting) && (
-        <div className={`glass-card ${isFormExiting ? 'animate-slide-down-fade' : 'animate-slide-up'}`} style={{ 
-          marginBottom: '32px', 
-          padding: '32px', 
-          borderRadius: '28px', 
-          position: 'relative', 
-          zIndex: 999,
-          overflow: 'visible' 
-        }}>
-          <h3 style={{ marginBottom: '24px', fontSize: '22px', fontWeight: '800' }}>
-            Nuevo integrante del equipo
-          </h3>
+        <AnimatedModal isOpen={showForm && !isFormExiting}>
+          {(overlayClass, cardClass) => (
+            <div
+              className={overlayClass}
+              style={{
+                position: 'fixed',
+                inset: 0,
+                backgroundColor: 'rgba(28, 26, 26, 0.72)',
+                backdropFilter: 'blur(8px)',
+                zIndex: 20000,
+                display: 'flex',
+                alignItems: isMobile ? 'flex-start' : 'center',
+                justifyContent: 'center',
+                padding: isMobile ? '14px' : '28px',
+                overflowY: 'auto'
+              }}
+            >
+              <div
+                className={`glass-card ${cardClass} jana-scrollbar`}
+                style={{
+                  width: '100%',
+                  maxWidth: '1120px',
+                  maxHeight: 'calc(100vh - 48px)',
+                  overflowY: 'auto',
+                  padding: isMobile ? '22px' : '32px',
+                  borderRadius: isMobile ? '24px' : '32px',
+                  position: 'relative',
+                  background: 'rgba(255, 253, 253, 0.97)',
+                  border: '1px solid rgba(196,139,159,0.18)',
+                  boxShadow: '0 28px 80px rgba(61, 36, 43, 0.28)'
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={handleCloseForm}
+                  style={{
+                    position: 'absolute',
+                    right: isMobile ? '18px' : '24px',
+                    top: isMobile ? '18px' : '24px',
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '50%',
+                    border: 'none',
+                    background: 'rgba(196,139,159,0.08)',
+                    color: 'var(--text-primary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    zIndex: 2
+                  }}
+                >
+                  <X size={20} />
+                </button>
+                <h3 style={{ marginBottom: '24px', paddingRight: '52px', fontSize: isMobile ? '24px' : '28px', fontWeight: '900', color: 'var(--text-primary)' }}>
+                  {isEditing ? 'Editar integrante del equipo' : 'Nuevo integrante del equipo'}
+                </h3>
           
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '32px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: isMobile ? '20px' : '32px' }}>
             {/* Photo Section */}
             <div style={{ position: 'relative', width: '120px' }}>
               <div 
@@ -794,9 +821,9 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                 style={{ 
                   width: '120px', 
                   height: '120px', 
-                  backgroundColor: 'rgba(255,255,255,0.05)', 
+                  background: 'linear-gradient(180deg, #fffafa 0%, #fff 100%)', 
                   borderRadius: '24px', 
-                  border: '2px dashed var(--border-color)',
+                  border: '2px dashed rgba(212,160,154,0.35)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -832,7 +859,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                   <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>NOMBRE COMPLETO</label>
                   <div style={{ position: 'relative' }}>
                     <User size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
-                    <input className="form-input" placeholder="Ej. Marco Silva" value={formData.name} onChange={e => setFormData({...formData, name: formatName(e.target.value)})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
+                    <input className="jana-client-input" placeholder="Ej. Marco Silva" value={formData.name} onChange={e => setFormData({...formData, name: formatName(e.target.value)})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
                   </div>
                 </div>
                 <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -869,6 +896,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                       }
                     }}
                     placeholder="Selecciona un rol..."
+                    variant="light"
                   />
 
                   {isCreatingNewRole && (
@@ -889,7 +917,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                       <div style={{ position: 'relative' }}>
                         <Rocket size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
                         <input 
-                          className="form-input" 
+                          className="jana-client-input" 
                           placeholder="Ej. Gerente de Piso" 
                           value={newRoleName} 
                           onChange={e => setNewRoleName(e.target.value)} 
@@ -913,7 +941,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                     <div style={{ position: 'relative' }}>
                       <Droplets size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
                       <input 
-                        className="form-input" 
+                          className="jana-client-input" 
                         type="number" 
                         step="0.01" 
                         placeholder="Ej. 2.00" 
@@ -927,10 +955,10 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
               </div>
 
               {/* Permissions Section */}
-              <div style={{ padding: '24px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
+              <div style={{ padding: '24px', backgroundColor: 'rgba(196,139,159,0.04)', borderRadius: '20px', border: '1px solid rgba(196,139,159,0.16)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
                   <Key size={18} color="var(--pink-primary)" />
-                  <label style={{ fontSize: '12px', fontWeight: '900', color: 'white', letterSpacing: '1px' }}>MÓDULOS ACCESIBLES</label>
+                  <label style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '1px' }}>MÓDULOS ACCESIBLES</label>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(3, 1fr)', gap: '12px' }}>
@@ -949,10 +977,11 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                         gap: '10px', 
                         padding: '12px', 
                         borderRadius: '12px', 
-                        backgroundColor: formData.permissions.includes(mod.id) ? 'rgba(196,139,159,0.1)' : 'rgba(255,255,255,0.03)',
-                        border: `1px solid ${formData.permissions.includes(mod.id) ? 'var(--pink-primary)' : 'rgba(255,255,255,0.05)'}`,
+                        backgroundColor: formData.permissions.includes(mod.id) ? 'rgba(196,139,159,0.12)' : '#fff',
+                        border: `1px solid ${formData.permissions.includes(mod.id) ? 'rgba(196,139,159,0.55)' : 'rgba(212,160,154,0.22)'}`,
                         cursor: 'pointer',
-                        transition: 'all 0.2s'
+                        transition: 'all 0.2s',
+                        boxShadow: formData.permissions.includes(mod.id) ? '0 10px 24px rgba(196,139,159,0.12)' : 'none'
                       }}
                     >
                       <div style={{ 
@@ -963,11 +992,11 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                         display: 'flex', 
                         alignItems: 'center', 
                         justifyContent: 'center',
-                        backgroundColor: formData.permissions.includes(mod.id) ? 'var(--pink-primary)' : 'transparent'
+                        backgroundColor: formData.permissions.includes(mod.id) ? 'var(--pink-primary)' : '#fff'
                       }}>
-                        {formData.permissions.includes(mod.id) && <Check size={14} color="black" strokeWidth={3} />}
+                        {formData.permissions.includes(mod.id) && <Check size={14} color="white" strokeWidth={3} />}
                       </div>
-                      <span style={{ fontSize: '13px', fontWeight: '600', color: formData.permissions.includes(mod.id) ? 'white' : 'var(--text-secondary)' }}>{mod.label}</span>
+                      <span style={{ fontSize: '13px', fontWeight: '700', color: formData.permissions.includes(mod.id) ? 'var(--text-primary)' : 'var(--text-secondary)' }}>{mod.label}</span>
                     </div>
                   ))}
                 </div>
@@ -979,21 +1008,21 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                   <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>TELÉFONO</label>
                   <div style={{ position: 'relative' }}>
                     <Phone size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
-                    <input className="form-input" placeholder="+58 412..." value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
+                    <input className="jana-client-input" placeholder="+58 412..." value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
                   </div>
                 </div>
                 <div className="form-group">
                   <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>CUMPLEAÑOS</label>
                   <div style={{ position: 'relative' }}>
                     <Cake size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
-                    <BirthdayTextInput value={formData.birth_date} onChange={e => setFormData({...formData, birth_date: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
+                    <BirthdayTextInput value={formData.birth_date} onChange={e => setFormData({...formData, birth_date: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid rgba(212,160,154,0.35)', borderRadius: '14px', background: 'linear-gradient(180deg, #fffafa 0%, #fff 100%)', color: 'var(--text-primary)', fontWeight: 650, boxShadow: '0 8px 22px rgba(196,139,159,0.08)' }} />
                   </div>
                 </div>
                 <div className="form-group">
                   <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>DIRECCIÓN DE HABITACIÓN</label>
                   <div style={{ position: 'relative' }}>
                     <MapPin size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
-                    <input className="form-input" placeholder="Av. Principal, Edif..." value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
+                    <input className="jana-client-input" placeholder="Av. Principal, Edif..." value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
                   </div>
                 </div>
               </div>
@@ -1004,7 +1033,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                   <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', marginBottom: '8px', letterSpacing: '1px' }}>EMAIL DE ACCESO</label>
                   <div style={{ position: 'relative' }}>
                     <Mail size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
-                    <input className="form-input" type="email" placeholder="persona@janastudio.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid rgba(196,139,159,0.2)' }} />
+                    <input className="jana-client-input" type="email" placeholder="persona@janastudio.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid rgba(196,139,159,0.2)' }} />
                   </div>
                 </div>
                 <div className="form-group">
@@ -1012,7 +1041,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                   <div style={{ position: 'relative' }}>
                     <Lock size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
                     <input 
-                      className="form-input" 
+                      className="jana-client-input" 
                       type={showPassword ? "text" : "password"} 
                       placeholder="Ingresar contraseña" 
                       value={formData.username} 
@@ -1046,561 +1075,14 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                 <Check size={20} style={{ marginRight: '10px' }} />
                 Confirmar y unir al equipo
               </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+          )}
+        </AnimatedModal>
       )}
 
-      {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
-          <Loader2 className="animate-spin" size={48} color="var(--pink-primary)" />
-        </div>
-      ) : staff.length === 0 ? (
-        <div className="glass-card" style={{ textAlign: 'center', padding: '80px', borderRadius: '32px' }}>
-          <User size={64} color="rgba(212, 175, 55, 0.1)" style={{ marginBottom: '24px' }} />
-          <h3 style={{ fontSize: '20px', color: 'var(--text-primary)' }}>El equipo está esperando</h3>
-          <p style={{ color: 'var(--text-muted)', marginTop: '8px' }}>Comienza agregando a los miembros que harán brillar tu marca.</p>
-        </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: isMobile ? '1fr auto' : '80px 1.5fr 1fr 1.5fr 1.2fr 140px', 
-            gap: '20px', 
-            padding: '0 24px',
-            color: 'var(--text-muted)',
-            fontSize: '11px',
-            fontWeight: '900',
-            letterSpacing: '1px',
-            textTransform: 'uppercase'
-          }}>
-            {!isMobile && (
-              <>
-                <div>MIEMBRO</div>
-                <div>NOMBRE / ROL</div>
-                <div>TELÉFONO</div>
-                <div>DIRECCIÓN</div>
-                <div>ACCESO</div>
-                <div style={{ textAlign: 'right' }}>ACCIONES</div>
-              </>
-            )}
-          </div>
- 
-          {staff.map(person => (
-            <React.Fragment key={person.id}>
-              {isMobile ? (
-                <div className="glass-card animate-slide-up" style={{ 
-                  padding: '16px', 
-                  borderRadius: '20px',
-                  border: '1px solid var(--border-color)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '14px',
-                  transition: 'all 0.3s'
-                }}>
-                  {/* Top section: Photo + Name/Role + Actions */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
-                      {/* Photo */}
-                      <div style={{ 
-                        width: '48px', 
-                        height: '48px', 
-                        borderRadius: '12px', 
-                    backgroundColor: 'rgba(255,255,255,0.02)',
-                    overflow: 'hidden',
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    border: '1px solid var(--border-color)',
-                    flexShrink: 0
-                      }}>
-                        {person.image_url ? (
-                          <img src={person.image_url} alt={person.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        ) : (
-                          <span style={{ fontSize: '18px', fontWeight: '900', color: 'var(--pink-primary)', opacity: 0.5 }}>
-                            {person.name.substring(0, 1).toUpperCase()}
-                          </span>
-                        )}
-                      </div>
-                      
-                      {/* Name and Role */}
-                      <div style={{ minWidth: 0 }}>
-                        <h4 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{person.name}</h4>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--pink-primary)', fontSize: '11px', fontWeight: '700', marginTop: '2px' }}>
-                          {getRoleIcon(person.role?.split('|')[0]?.split(', ')[0])}
-                          <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{person.role?.split('|')[0]}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
-                      <button className="action-btn" onClick={() => setProfileModalData(person)} title="Ver Perfil" style={{ color: 'var(--pink-primary)', backgroundColor: 'rgba(196,139,159,0.1)', width: '34px', height: '34px', borderRadius: '8px' }}>
-                        <User size={15} />
-                      </button>
-                      <button className="action-btn" onClick={() => handleEditClick(person)} title="Editar Miembro" style={{ width: '34px', height: '34px', borderRadius: '8px' }}>
-                        <Edit2 size={15} />
-                      </button>
-                      <button className="action-btn" onClick={() => handleDeleteStaff(person.id, person.name)} style={{ color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.05)', width: '34px', height: '34px', borderRadius: '8px' }} title="Dar de baja">
-                        <Trash2 size={15} />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Divider line */}
-                  <div style={{ height: '1px', background: 'var(--border-color)', width: '100%' }} />
-
-                  {/* Details Section */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px' }}>
-                    {/* Phone */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: person.phone ? 'var(--text-secondary)' : 'var(--text-muted)' }}>
-                      <Phone size={13} color={person.phone ? "var(--pink-primary)" : "rgba(255,255,255,0.2)"} style={{ flexShrink: 0 }} />
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{person.phone || 'Sin teléfono'}</span>
-                    </div>
-
-                    {/* Address */}
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', color: person.address ? 'var(--text-secondary)' : 'var(--text-muted)' }}>
-                      <MapPin size={13} color={person.address ? "var(--pink-primary)" : "rgba(255,255,255,0.2)"} style={{ marginTop: '2px', flexShrink: 0 }} />
-                      <span style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {person.address || 'Sin dirección'}
-                      </span>
-                    </div>
-
-                    {/* Access */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Mail size={13} color={person.email ? '#32d74b' : '#ff453a'} style={{ flexShrink: 0 }} />
-                      {person.email ? (
-                        <span style={{ color: '#32d74b', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{person.email}</span>
-                      ) : (
-                        <span style={{ color: '#ff453a', fontWeight: '700' }}>Sin email de acceso</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="glass-card animate-slide-up" style={{ 
-                  padding: '16px 24px', 
-                  borderRadius: '20px',
-                  border: '1px solid var(--border-color)',
-                  display: 'grid',
-                  gridTemplateColumns: '80px 1.5fr 1fr 1.5fr 1.2fr 140px',
-                  alignItems: 'center',
-                  gap: '20px',
-                  transition: 'all 0.3s'
-                }}>
-                  {/* Photo Column */}
-                  <div style={{ 
-                    width: '56px', 
-                    height: '56px', 
-                    borderRadius: '14px', 
-                    backgroundColor: 'rgba(255,255,255,0.02)',
-                    overflow: 'hidden',
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    border: '1px solid rgba(255,255,255,0.08)'
-                  }}>
-                    {person.image_url ? (
-                      <img src={person.image_url} alt={person.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (
-                      <span style={{ fontSize: '20px', fontWeight: '900', color: 'var(--pink-primary)', opacity: 0.5 }}>
-                        {person.name.substring(0, 1).toUpperCase()}
-                      </span>
-                    )}
-                  </div>
-                  
-                  {/* Name/Role Column */}
-                  <div style={{ minWidth: 0, overflow: 'hidden' }}>
-                    <h4 style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{person.name}</h4>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--pink-primary)', fontSize: '11px', fontWeight: '700', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {getRoleIcon(person.role?.split('|')[0]?.split(', ')[0])}
-                      <span>{person.role?.split('|')[0]}</span>
-                      {person.role?.split('|')[0]?.includes(', ') && (
-                        <span style={{ 
-                          padding: '2px 6px', 
-                          backgroundColor: 'rgba(196,139,159,0.1)', 
-                          borderRadius: '4px', 
-                          fontSize: '9px',
-                          marginLeft: '4px',
-                          border: '1px solid rgba(196,139,159,0.2)',
-                          flexShrink: 0
-                        }}>
-                          MULTI-ROL
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Phone Column */}
-                  <div style={{ color: person.phone ? 'var(--text-secondary)' : 'var(--text-muted)', fontSize: '14px', minWidth: 0, overflow: 'hidden' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Phone size={14} color={person.phone ? "var(--pink-primary)" : "rgba(255,255,255,0.2)"} style={{ flexShrink: 0 }} />
-                      <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{person.phone || 'Sin teléfono'}</span>
-                    </div>
-                    {person.birth_date && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px', fontSize: '11px', color: 'var(--pink-primary)' }}>
-                        <Cake size={12} fill="var(--pink-primary)" style={{ flexShrink: 0 }} />
-                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{new Date(person.birth_date + 'T00:00:00').toLocaleDateString([], { day: '2-digit', month: 'short' })}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Address Column */}
-                  <div style={{ color: person.address ? 'var(--text-secondary)' : 'var(--text-muted)', fontSize: '13px', minWidth: 0, overflow: 'hidden' }}>
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                      <MapPin size={14} color={person.address ? "var(--pink-primary)" : "rgba(255,255,255,0.2)"} style={{ marginTop: '2px', flexShrink: 0 }} />
-                      <span style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {person.address || 'Sin dirección'}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Access Column */}
-                  <div style={{ minWidth: 0, overflow: 'hidden' }}>
-                    {person.email ? (
-                      <div style={{ 
-                        display: 'inline-flex', 
-                        alignItems: 'center', 
-                        gap: '6px', 
-                        padding: '4px 10px', 
-                        backgroundColor: 'rgba(50, 215, 75, 0.08)', 
-                        color: '#32d74b', 
-                        borderRadius: '8px',
-                        fontSize: '11px',
-                        fontWeight: '800',
-                        maxWidth: '100%'
-                      }}>
-                        <Mail size={12} style={{ flexShrink: 0 }} />
-                        <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{person.email}</span>
-                      </div>
-                    ) : (
-                      <div style={{ 
-                        display: 'inline-flex', 
-                        alignItems: 'center', 
-                        gap: '6px', 
-                        padding: '4px 10px', 
-                        backgroundColor: 'rgba(255, 69, 58, 0.08)', 
-                        color: '#ff453a', 
-                        borderRadius: '8px',
-                        fontSize: '11px',
-                        fontWeight: '800',
-                        maxWidth: '100%'
-                      }}>
-                        <Lock size={12} style={{ flexShrink: 0 }} />
-                        <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>SIN EMAIL AUTH</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Actions Column */}
-                  <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                    <button className="action-btn" onClick={() => setProfileModalData(person)} title="Ver Perfil" style={{ color: 'var(--pink-primary)', backgroundColor: 'rgba(196,139,159,0.1)' }}>
-                      <User size={18} />
-                    </button>
-                    <button className="action-btn" onClick={() => handleEditClick(person)} title="Editar Miembro">
-                      <Edit2 size={18} />
-                    </button>
-                    <button className="action-btn" onClick={() => handleDeleteStaff(person.id, person.name)} style={{ color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.05)' }} title="Dar de baja">
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Inline Edit Form directly under the card being edited */}
-              {(showForm || isFormExiting) && isEditing && editingId === person.id && (
-                <div className={`glass-card ${isFormExiting ? 'animate-slide-down-fade' : 'animate-slide-up'}`} style={{ 
-                  marginTop: '-8px',
-                  marginBottom: '24px', 
-                  marginLeft: isMobile ? '0' : '20px',
-                  padding: '32px', 
-                  borderRadius: '28px', 
-                  position: 'relative', 
-                  zIndex: 998,
-                  overflow: 'visible',
-                  border: '1px solid rgba(196,139,159,0.3)',
-                  boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                    <h3 style={{ fontSize: '20px', fontWeight: '800', margin: 0 }}>
-                      Editar Perfil de <span className="text-gold">{formData.name}</span>
-                    </h3>
-                    <button 
-                      onClick={handleCloseForm}
-                      style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', color: 'white', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                  
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '32px' }}>
-                    {/* Photo Section */}
-                    <div style={{ position: 'relative', width: '120px' }}>
-                      <div 
-                        onClick={() => setShowCamera(true)}
-                        style={{ 
-                          width: '120px', 
-                          height: '120px', 
-                          backgroundColor: 'rgba(255,255,255,0.05)', 
-                          borderRadius: '24px', 
-                          border: '2px dashed var(--border-color)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          cursor: 'pointer',
-                          overflow: 'hidden',
-                          transition: 'all 0.3s'
-                        }}
-                      >
-                        {formData.image_url ? (
-                          <img src={formData.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        ) : (
-                          <div style={{ textAlign: 'center' }}>
-                            <Camera size={32} color="var(--text-muted)" />
-                            <div style={{ fontSize: '10px', marginTop: '4px', color: 'var(--text-muted)', fontWeight: '800' }}>FOTO</div>
-                          </div>
-                        )}
-                      </div>
-                      {formData.image_url && (
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); setFormData({ ...formData, image_url: '' }); }}
-                          style={{ position: 'absolute', top: '-10px', right: '-10px', backgroundColor: '#ff453a', border: 'none', borderRadius: '50%', color: 'white', width: '28px', height: '28px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.3)', zIndex: 10 }}
-                        >
-                          <X size={14} />
-                        </button>
-                      )}
-                    </div>
-
-                    {/* Fields Section */}
-                    <div style={{ flex: 1, minWidth: '300px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                      {/* Basic Info */}
-                      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '16px' }}>
-                        <div className="form-group">
-                          <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>NOMBRE COMPLETO</label>
-                          <div style={{ position: 'relative' }}>
-                    <User size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
-                            <input className="form-input" placeholder="Ej. Marco Silva" value={formData.name} onChange={e => setFormData({...formData, name: formatName(e.target.value)})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
-                          </div>
-                        </div>
-                        <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                          <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '4px', letterSpacing: '1px' }}>ROL EN EL EQUIPO</label>
-                          
-                          <JanaSelect 
-                            options={[
-                              ...Object.entries(allRolePresets)
-                                .filter(([_, v]) => v !== '__DELETED__')
-                                .map(([r]) => ({ value: r, label: r })),
-                              // Dynamic legacy multiple role support so old profiles don't break
-                              ...(formData.roles.length > 0 && !allRolePresets[formData.roles.join(', ')] ? [{ value: formData.roles.join(', '), label: formData.roles.join(', ') }] : []),
-                              { value: '__NEW_ROLE__', label: '+ CREAR NUEVO ROL...' }
-                            ]}
-                            value={isCreatingNewRole ? '__NEW_ROLE__' : formData.roles.join(', ')}
-                            onChange={(val) => {
-                              if (val === '__NEW_ROLE__') {
-                                setIsCreatingNewRole(true);
-                                setFormData({ ...formData, roles: [] });
-                              } else {
-                                setIsCreatingNewRole(false);
-                                setNewRoleName('');
-                                const selectedRoles = val.split(', ');
-                                let newPerms = [];
-                                if (selectedRoles.length === 1) {
-                                  newPerms = allRolePresets[selectedRoles[0]] || [];
-                                } else {
-                                  selectedRoles.forEach(r => {
-                                    const rolePerms = allRolePresets[r] || [];
-                                    newPerms = Array.from(new Set([...newPerms, ...rolePerms]));
-                                  });
-                                }
-                                setFormData({ ...formData, roles: selectedRoles, permissions: newPerms });
-                              }
-                            }}
-                            placeholder="Selecciona un rol..."
-                          />
-
-                          {isCreatingNewRole && (
-                            <div className="animate-slide-left" style={{ marginTop: '12px' }}>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                        <label style={{ fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', letterSpacing: '1px' }}>NOMBRE DEL NUEVO ROL</label>
-                                <button 
-                                  onClick={() => { 
-                                    setIsCreatingNewRole(false); 
-                                    setNewRoleName(''); 
-                        setFormData({ ...formData, roles: ['Estilista'], permissions: allRolePresets['Estilista'] || [] });
-                                  }}
-                                  style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', fontSize: '10px', cursor: 'pointer', fontWeight: '800' }}
-                                >
-                                  DESCARTAR
-                                </button>
-                              </div>
-                              <div style={{ position: 'relative' }}>
-                        <Rocket size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
-                                <input 
-                                  className="form-input" 
-                                  placeholder="Ej. Gerente de Piso" 
-                                  value={newRoleName} 
-                                  onChange={e => setNewRoleName(e.target.value)} 
-                          style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid var(--pink-primary)' }}
-                                />
-                              </div>
-                            </div>
-                          )}
-                        </div>
-
-                {formData.roles.includes('Asistente de Tratamiento') && (
-                          <div className="form-group animate-slide-right">
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <label style={{ fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', letterSpacing: '1px' }}>TARIFA POR TRATAMIENTO ($)</label>
-                              {formData.washing_rate > 0 && (
-                                <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700' }}>
-                                  ≈ {(formData.washing_rate * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs.
-                                </span>
-                              )}
-                            </div>
-                            <div style={{ position: 'relative' }}>
-                      <Droplets size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
-                              <input 
-                                className="form-input" 
-                                type="number" 
-                                step="0.01" 
-                                placeholder="Ej. 2.00" 
-                                value={formData.washing_rate} 
-                                onChange={e => setFormData({...formData, washing_rate: e.target.value})} 
-                                style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid rgba(196,139,159,0.3)' }} 
-                              />
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Permissions Section */}
-              <div style={{ padding: '24px', backgroundColor: '#faf5f5', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                          <Key size={18} color="var(--pink-primary)" />
-                          <label style={{ fontSize: '12px', fontWeight: '900', color: 'white', letterSpacing: '1px' }}>MÓDULOS ACCESIBLES</label>
-                        </div>
-
-                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(3, 1fr)', gap: '12px' }}>
-                          {availableModules.map(mod => (
-                            <div 
-                              key={mod.id} 
-                              onClick={() => {
-                                const newPerms = formData.permissions.includes(mod.id)
-                                  ? formData.permissions.filter(p => p !== mod.id)
-                                  : [...formData.permissions, mod.id];
-                                setFormData({ ...formData, permissions: newPerms });
-                              }}
-                              style={{ 
-                                display: 'flex', 
-                                alignItems: 'center', 
-                                gap: '10px', 
-                                padding: '12px', 
-                                borderRadius: '12px', 
-                                backgroundColor: formData.permissions.includes(mod.id) ? 'rgba(196,139,159,0.1)' : 'rgba(255,255,255,0.03)',
-                        border: `1px solid ${formData.permissions.includes(mod.id) ? 'var(--pink-primary)' : 'rgba(255,255,255,0.05)'}`,
-                                cursor: 'pointer',
-                                transition: 'all 0.2s'
-                              }}
-                            >
-                              <div style={{ 
-                                width: '18px', 
-                                height: '18px', 
-                                borderRadius: '4px', 
-                        border: '1px solid var(--pink-primary)', 
-                                display: 'flex', 
-                                alignItems: 'center', 
-                                justifyContent: 'center',
-                        backgroundColor: formData.permissions.includes(mod.id) ? 'var(--pink-primary)' : 'transparent'
-                              }}>
-                                {formData.permissions.includes(mod.id) && <Check size={14} color="black" strokeWidth={3} />}
-                              </div>
-                              <span style={{ fontSize: '13px', fontWeight: '600', color: formData.permissions.includes(mod.id) ? 'white' : 'var(--text-secondary)' }}>{mod.label}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Contact & Birthday Info */}
-                      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 2fr', gap: '16px' }}>
-                        <div className="form-group">
-                          <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>TELÉFONO</label>
-                          <div style={{ position: 'relative' }}>
-                            <Phone size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
-                            <input className="form-input" placeholder="+58 412..." value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
-                          </div>
-                        </div>
-                        <div className="form-group">
-                          <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>CUMPLEAÑOS</label>
-                          <div style={{ position: 'relative' }}>
-                            <Cake size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
-                            <BirthdayTextInput value={formData.birth_date} onChange={e => setFormData({...formData, birth_date: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
-                          </div>
-                        </div>
-                        <div className="form-group">
-                          <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>DIRECCIÓN DE HABITACIÓN</label>
-                          <div style={{ position: 'relative' }}>
-                            <MapPin size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
-                            <input className="form-input" placeholder="Av. Principal, Edif..." value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Login Credentials */}
-                      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '16px', padding: '20px', backgroundColor: 'rgba(196,139,159,0.03)', borderRadius: '16px', border: '1px solid rgba(196,139,159,0.1)' }}>
-                        <div className="form-group">
-                          <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', marginBottom: '8px', letterSpacing: '1px' }}>EMAIL DE ACCESO</label>
-                          <div style={{ position: 'relative' }}>
-                            <Mail size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
-                            <input className="form-input" type="email" placeholder="persona@janastudio.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px', border: '1px solid rgba(196,139,159,0.2)' }} />
-                          </div>
-                        </div>
-                        <div className="form-group">
-                          <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', marginBottom: '8px', letterSpacing: '1px' }}>CONTRASEÑA</label>
-                          <div style={{ position: 'relative' }}>
-                            <Lock size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
-                            <input 
-                              className="form-input" 
-                              type={showPassword ? "text" : "password"} 
-                              placeholder="Ingresar contraseña" 
-                              value={formData.username} 
-                              onChange={e => setFormData({...formData, username: e.target.value})} 
-                              style={{ width: '100%', height: '50px', paddingLeft: '48px', paddingRight: '48px', border: '1px solid rgba(196,139,159,0.2)' }} 
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setShowPassword(!showPassword)}
-                              style={{
-                                position: 'absolute',
-                                right: '16px',
-                                top: '16px',
-                                background: 'transparent',
-                                border: 'none',
-                                cursor: 'pointer',
-                        color: 'var(--pink-primary)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                padding: 0
-                              }}
-                            >
-                              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                      <button className="btn-pink" onClick={handleSubmit} style={{ height: '56px', width: '100%', borderRadius: '16px', fontSize: '16px', fontWeight: '800', marginTop: '10px' }}>
-                        <Check size={20} style={{ marginRight: '10px' }} />
-                        Actualizar Perfil de Miembro
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </React.Fragment>
-          ))}
-        </div>
-      )}
 
       <AnimatedModal isOpen={showCamera}>
         {(overlayClass, cardClass) => (

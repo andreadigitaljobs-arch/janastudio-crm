@@ -105,6 +105,11 @@ html, body {
   animation: pageFadeIn 0.3s ease;
 }
 
+.p-container-agenda {
+  padding-left: clamp(24px, 2.5vw, 40px);
+  padding-right: clamp(24px, 2.5vw, 40px);
+}
+
 @keyframes pageFadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -1100,6 +1105,65 @@ input:focus { outline: none; }
 }
 .btn-pink:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(196, 139, 159, 0.35); }
 .btn-pink:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.jana-client-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.jana-client-label {
+  color: var(--text-muted);
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.jana-client-input {
+  width: 100%;
+  height: 50px;
+  border: 1px solid rgba(212,160,154,0.35);
+  border-radius: 14px;
+  background: linear-gradient(135deg, #fff 0%, #fff8fa 100%);
+  box-shadow: 0 8px 22px rgba(93, 57, 67, 0.06);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 650;
+  padding: 0 16px 0 48px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.jana-client-input::placeholder {
+  color: rgba(93, 57, 67, 0.45);
+  font-weight: 600;
+}
+.jana-client-input:focus {
+  border-color: var(--pink-primary);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(196, 139, 159, 0.12), 0 12px 28px rgba(93, 57, 67, 0.10);
+}
+.jana-client-input-icon {
+  color: var(--pink-primary);
+  left: 16px;
+  pointer-events: none;
+  position: absolute;
+  top: 16px;
+  z-index: 1;
+}
+.jana-client-secondary-btn {
+  height: 56px;
+  border: 1px solid rgba(212,160,154,0.35);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(93, 57, 67, 0.05);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-weight: 800;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.jana-client-secondary-btn:hover {
+  border-color: rgba(196,139,159,0.55);
+  box-shadow: 0 12px 28px rgba(93, 57, 67, 0.09);
+  transform: translateY(-1px);
+}
 .text-pink {
   background: linear-gradient(135deg, #d4a09a 0%, #a0506a 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;

@@ -56,7 +56,7 @@ function getFirstDayOfMonth(month, year) {
   return new Date(year, month, 1).getDay();
 }
 
-export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA" }) => {
+export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", variant = "dark", inputClassName = "", inputStyle = {} }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [textInput, setTextInput] = useState(isoToDisplay(value));
   const [calendarPos, setCalendarPos] = useState({ top: 0, left: 0, width: 300 });
@@ -64,6 +64,7 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA" }) 
   const inputRef = useRef(null);
 
   const currentSystemYear = new Date().getFullYear();
+  const isLight = variant === 'light';
 
   // Calendar nav state
   const getInitialNav = () => {
@@ -181,14 +182,14 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA" }) 
         top: calendarPos.top,
         left: calendarPos.left,
         width: calendarPos.width,
-        background: 'rgba(20, 20, 24, 0.99)',
+        background: isLight ? 'rgba(255, 255, 255, 0.98)' : 'rgba(20, 20, 24, 0.99)',
         backdropFilter: 'blur(30px)',
         WebkitBackdropFilter: 'blur(30px)',
-        border: '1.5px solid rgba(196, 139, 159, 0.35)',
+        border: isLight ? '1px solid rgba(196, 139, 159, 0.22)' : '1.5px solid rgba(196, 139, 159, 0.35)',
         borderRadius: '20px',
         padding: '16px',
         zIndex: 999999,
-        boxShadow: '0 24px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(196,139,159,0.1)'
+        boxShadow: isLight ? '0 18px 45px rgba(93, 57, 67, 0.18)' : '0 24px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(196,139,159,0.1)'
       }}
     >
       {/* Month + Year selectors */}
@@ -199,10 +200,10 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA" }) 
           style={{
             flex: 1.3,
             height: '36px',
-            background: 'rgba(255,255,255,0.06)',
-            border: '1px solid rgba(255,255,255,0.1)',
+            background: isLight ? '#fff8fa' : 'rgba(255,255,255,0.06)',
+            border: isLight ? '1px solid rgba(212,160,154,0.35)' : '1px solid rgba(255,255,255,0.1)',
             borderRadius: '10px',
-            color: 'white',
+            color: isLight ? 'var(--text-primary)' : 'white',
             padding: '0 8px',
             fontSize: '13px',
             fontWeight: '600',
@@ -211,7 +212,7 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA" }) 
           }}
         >
           {MONTHS.map((m, idx) => (
-            <option key={m} value={idx} style={{ background: '#1c1c1e', color: 'white' }}>{m}</option>
+            <option key={m} value={idx} style={{ background: isLight ? 'white' : '#1c1c1e', color: isLight ? 'var(--text-primary)' : 'white' }}>{m}</option>
           ))}
         </select>
         <select
@@ -220,10 +221,10 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA" }) 
           style={{
             flex: 1,
             height: '36px',
-            background: 'rgba(255,255,255,0.06)',
-            border: '1px solid rgba(255,255,255,0.1)',
+            background: isLight ? '#fff8fa' : 'rgba(255,255,255,0.06)',
+            border: isLight ? '1px solid rgba(212,160,154,0.35)' : '1px solid rgba(255,255,255,0.1)',
             borderRadius: '10px',
-            color: 'white',
+            color: isLight ? 'var(--text-primary)' : 'white',
             padding: '0 8px',
             fontSize: '13px',
             fontWeight: '600',
@@ -232,7 +233,7 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA" }) 
           }}
         >
           {years.map(y => (
-            <option key={y} value={y} style={{ background: '#1c1c1e', color: 'white' }}>{y}</option>
+            <option key={y} value={y} style={{ background: isLight ? 'white' : '#1c1c1e', color: isLight ? 'var(--text-primary)' : 'white' }}>{y}</option>
           ))}
         </select>
       </div>
@@ -260,7 +261,7 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA" }) 
                 background: isSelected ? 'var(--pink-primary)' : 'none',
                 border: 'none',
                 borderRadius: '8px',
-                color: isSelected ? 'black' : (cell.isCurrentMonth ? 'white' : 'rgba(255,255,255,0.2)'),
+                color: isSelected ? 'white' : (cell.isCurrentMonth ? (isLight ? 'var(--text-primary)' : 'white') : (isLight ? 'rgba(93,57,67,0.22)' : 'rgba(255,255,255,0.2)')),
                 fontSize: '13px',
                 fontWeight: isSelected ? '900' : (cell.isCurrentMonth ? '600' : '400'),
                 cursor: cell.isCurrentMonth ? 'pointer' : 'default',
@@ -275,7 +276,7 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA" }) 
               onMouseLeave={e => {
                 if (cell.isCurrentMonth && !isSelected) {
                   e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.color = 'white';
+                  e.currentTarget.style.color = isLight ? 'var(--text-primary)' : 'white';
                 }
               }}
             >
@@ -298,6 +299,7 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA" }) 
         />
         <input
           ref={inputRef}
+          className={inputClassName}
           type="text"
           placeholder={placeholder}
           value={textInput}
@@ -312,11 +314,12 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA" }) 
             paddingLeft: '48px',
             paddingRight: value ? '40px' : '16px',
             cursor: 'text',
-            backgroundColor: 'rgba(255,255,255,0.05)',
-            border: isOpen ? '1.5px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.15)',
-            color: 'white',
+            background: isLight ? 'linear-gradient(135deg, #fff 0%, #fff8fa 100%)' : 'rgba(255,255,255,0.05)',
+            border: isOpen ? '1.5px solid var(--pink-primary)' : isLight ? '1px solid rgba(212,160,154,0.35)' : '1px solid rgba(255,255,255,0.15)',
+            color: isLight ? 'var(--text-primary)' : 'white',
             outline: 'none',
-            transition: 'border-color 0.2s'
+            transition: 'border-color 0.2s',
+            ...inputStyle
           }}
         />
         {value && (

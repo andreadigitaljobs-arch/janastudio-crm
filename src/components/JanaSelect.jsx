@@ -13,7 +13,8 @@ const JanaSelect = ({
   placeholder = "Seleccionar...", 
   label = "",
   style = {},
-  disabled = false
+  disabled = false,
+  variant = "dark"
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownStyle, setDropdownStyle] = useState({});
@@ -22,6 +23,7 @@ const JanaSelect = ({
   const safeOptions = Array.isArray(options) ? options : [];
 
   const selectedOption = safeOptions.find(opt => opt.value == value);
+  const isLight = variant === 'light';
 
   // Calculate fixed position whenever dropdown opens
   useEffect(() => {
@@ -92,13 +94,14 @@ const JanaSelect = ({
 
   const dropdown = isOpen ? (
     <div
-      className="jana-select-dropdown jana-scrollbar"
+      className={`jana-select-dropdown jana-scrollbar ${isLight ? 'jana-select-dropdown-light' : 'jana-select-dropdown-dark'}`}
       style={{
         ...dropdownStyle,
-        backgroundColor: '#1c1c1e',
-        borderRadius: '16px',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        boxShadow: '0 10px 40px rgba(0,0,0,0.8)',
+        backgroundColor: isLight ? 'rgba(255, 255, 255, 0.98)' : '#1c1c1e',
+        backdropFilter: 'blur(18px)',
+        borderRadius: '18px',
+        border: isLight ? '1px solid rgba(196, 139, 159, 0.22)' : '1px solid rgba(255, 255, 255, 0.1)',
+        boxShadow: isLight ? '0 18px 45px rgba(93, 57, 67, 0.18)' : '0 10px 40px rgba(0,0,0,0.8)',
         maxHeight: '250px',
         overflowY: 'auto',
         padding: '8px',
@@ -118,7 +121,7 @@ const JanaSelect = ({
               borderRadius: '10px',
               cursor: 'pointer',
               backgroundColor: value === opt.value ? 'rgba(196, 139, 159, 0.15)' : 'transparent',
-              color: value === opt.value ? 'var(--pink-primary)' : 'white',
+              color: value === opt.value ? 'var(--pink-primary)' : isLight ? 'var(--text-primary)' : 'white',
               transition: '0.2s',
               fontSize: '14px',
               fontWeight: value === opt.value ? '700' : '500',
@@ -151,21 +154,30 @@ const JanaSelect = ({
           onClick={() => !disabled && setIsOpen(!isOpen)}
           style={{
             background: 'rgba(255, 255, 255, 0.05)',
-            border: isOpen ? '1px solid var(--pink-primary)' : '1px solid rgba(255, 255, 255, 0.1)',
-            padding: '12px 16px',
-            borderRadius: '12px',
-            color: selectedOption ? 'white' : 'var(--text-muted)',
+            ...(isLight ? {
+              background: isOpen ? 'rgba(255, 255, 255, 1)' : 'linear-gradient(135deg, #fff 0%, #fff8fa 100%)',
+              border: isOpen ? '1px solid var(--pink-primary)' : '1px solid rgba(212,160,154,0.35)',
+              boxShadow: isOpen ? '0 0 0 4px rgba(196, 139, 159, 0.12), 0 12px 28px rgba(93, 57, 67, 0.10)' : '0 8px 22px rgba(93, 57, 67, 0.06)'
+            } : {
+              border: isOpen ? '1px solid var(--pink-primary)' : '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: isOpen ? '0 0 0 4px rgba(196, 139, 159, 0.1)' : 'none'
+            }),
+            padding: '13px 16px',
+            borderRadius: '14px',
+            color: selectedOption ? isLight ? 'var(--text-primary)' : 'white' : 'var(--text-muted)',
             cursor: disabled ? 'not-allowed' : 'pointer',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-            boxShadow: isOpen ? '0 0 0 4px rgba(196, 139, 159, 0.1)' : 'none',
             fontSize: '15px',
+            fontWeight: selectedOption ? '700' : '600',
             userSelect: 'none'
           }}
         >
-          <span>{selectedOption ? selectedOption.label : placeholder}</span>
+          <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingRight: '8px' }}>
+            {selectedOption ? selectedOption.label : placeholder}
+          </span>
           <ChevronDown size={18} color="var(--pink-primary)" style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: '0.3s', flexShrink: 0 }} />
         </div>
       </div>
@@ -178,6 +190,9 @@ const JanaSelect = ({
             .jana-option:hover {
               background-color: rgba(255, 255, 255, 0.05) !important;
               transform: translateX(4px);
+            }
+            .jana-select-dropdown-light .jana-option:hover {
+              background-color: rgba(196, 139, 159, 0.10) !important;
             }
             .jana-select-dropdown.jana-scrollbar::-webkit-scrollbar {
               width: 6px;

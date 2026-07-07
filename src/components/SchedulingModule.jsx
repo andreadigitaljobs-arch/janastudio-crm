@@ -90,7 +90,7 @@ const CalendarComponent = ({ selectedDate, onSelectDate, appointments }) => {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', textAlign: 'center' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: '5px', textAlign: 'center' }}>
         {['D', 'L', 'M', 'M', 'J', 'V', 'S'].map((d, i) => (
           <div key={i} style={{ fontSize: '0.68rem', fontWeight: 700, color: '#c97282', opacity: 0.8, padding: '4px 0' }}>{d}</div>
         ))}
@@ -103,8 +103,9 @@ const CalendarComponent = ({ selectedDate, onSelectDate, appointments }) => {
               onClick={() => d.currentMonth && onSelectDate(new Date(year, month, d.day))}
               disabled={!d.currentMonth}
               style={{
-                width: '32px',
-                height: '32px',
+                width: '100%',
+                maxWidth: '32px',
+                aspectRatio: '1 / 1',
                 borderRadius: '10px',
                 border: 'none',
                 background: selected
@@ -138,7 +139,7 @@ const CalendarComponent = ({ selectedDate, onSelectDate, appointments }) => {
   );
 };
 
-const SchedulingModule = ({ isMobile, rates }) => {
+const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey = null }) => {
   const { user } = useAuth();
   const { showToast } = useNotifs();
   const [appointments, setAppointments] = useState([]);
@@ -163,6 +164,22 @@ const SchedulingModule = ({ isMobile, rates }) => {
     loadFilteredAppointments();
   }, [selectedDate, filterType]);
 
+  useEffect(() => {
+    const refreshOnAppointmentChange = (event) => {
+      if (event.detail?.table === 'appointments') {
+        loadFilteredAppointments();
+      }
+    };
+    window.addEventListener('jana:data-changed', refreshOnAppointmentChange);
+    return () => window.removeEventListener('jana:data-changed', refreshOnAppointmentChange);
+  }, [selectedDate, filterType]);
+
+  useEffect(() => {
+    if (openScheduleModal) {
+      setShowScheduleModal(true);
+    }
+  }, [openScheduleModal, modalKey]);
+
   const loadData = async () => {
     try {
       const [st, cl, sv] = await Promise.all([
@@ -181,19 +198,15 @@ const SchedulingModule = ({ isMobile, rates }) => {
   const loadFilteredAppointments = async () => {
     try {
       setLoading(true);
-      let data = await dataService.getAppointmentsByState(['Agendado', 'En Silla', 'En Tratamiento', 'Por Pagar', 'Completado', 'Cancelada']);
       const start = new Date(selectedDate);
       start.setHours(0, 0, 0, 0);
       let end = new Date(start);
       if (filterType === 'day') end.setDate(start.getDate() + 1);
       else if (filterType === 'week') { end.setDate(start.getDate() + 7); }
       else if (filterType === 'month') { start.setDate(1); end = new Date(start.getFullYear(), start.getMonth() + 1, 0); end.setHours(23, 59, 59, 999); }
-
-      const filtered = data.filter(a => {
-        const appDate = new Date(a.scheduled_at || a.created_at);
-        return appDate >= start && appDate < end;
-      });
-      setAppointments(filtered);
+      const endQuery = new Date(end.getTime() - 1);
+      const data = await dataService.getAppointments(start.toISOString(), endQuery.toISOString());
+      setAppointments(data.filter(a => a.status !== 'Cancelada' && a.status !== 'Cancelado'));
     } catch (err) {
       console.error(err);
     } finally {
@@ -206,18 +219,63 @@ const SchedulingModule = ({ isMobile, rates }) => {
     return map[status] || status;
   };
 
+  const getAppointmentDate = (app) => new Date(app.scheduled_at || app.created_at);
+
+  const formatDuration = (minutes) => {
+    const safeMinutes = Number(minutes) || 60;
+    return `${safeMinutes} min`;
+  };
+
+  const slotToMinutes = (slot) => {
+    const match = slot.match(/^(\d{1,2}):(\d{2})\s(AM|PM)$/);
+    if (!match) return -1;
+    let hours = Number(match[1]);
+    const minutes = Number(match[2]);
+    const meridiem = match[3];
+    if (meridiem === 'PM' && hours !== 12) hours += 12;
+    if (meridiem === 'AM' && hours === 12) hours = 0;
+    return hours * 60 + minutes;
+  };
+
+  const appToMinutes = (app) => {
+    const date = getAppointmentDate(app);
+    return date.getHours() * 60 + date.getMinutes();
+  };
+
+  const toDisplayAppointment = (app) => {
+    const clientName = app.clients?.name || 'Cliente';
+    const status = getStatusLabel(app.status);
+    const appDate = getAppointmentDate(app);
+    return {
+      ...app,
+      time: appDate.toLocaleTimeString('es-VE', { hour: 'numeric', minute: '2-digit', hour12: true }).toUpperCase(),
+      client: clientName,
+      service: app.services?.name || 'Servicio',
+      duration: formatDuration(app.services?.duration_minutes || app.duration_minutes),
+      staff: app.staff?.name || 'Sin especialista',
+      status,
+      initial: clientName.charAt(0).toUpperCase()
+    };
+  };
+
   const filteredApps = (appointments.length > 0 ? appointments : []).filter(app => {
     if (!searchTerm) return true;
-    const term = searchTerm.toLowerCase();
-    return (app.clients?.name || '').toLowerCase().includes(term) || (app.clients?.phone || '').toLowerCase().includes(term);
-  }).sort((a, b) => new Date(a.scheduled_at || a.created_at) - new Date(b.scheduled_at || b.created_at));
+    const term = normalizeForSearch(searchTerm);
+    return normalizeForSearch(app.clients?.name || '').includes(term) || normalizeForSearch(app.clients?.phone || '').includes(term);
+  }).sort((a, b) => getAppointmentDate(a) - getAppointmentDate(b));
 
-  const displayApps = filteredApps.length > 0 ? filteredApps : DEMO_APPOINTMENTS;
+  const displayApps = filteredApps.map(toDisplayAppointment);
 
-  const totalCitas = filteredApps.length || 12;
-  const confirmadas = filteredApps.filter(a => a.status === 'Agendado' || a.status === 'Completado').length || 8;
-  const pendientes = filteredApps.filter(a => a.status === 'En Silla' || a.status === 'En Tratamiento').length || 2;
-  const enProceso = filteredApps.filter(a => a.status === 'Por Pagar').length || 1;
+  const totalCitas = filteredApps.length;
+  const confirmadas = filteredApps.filter(a => a.status === 'Agendado' || a.status === 'Completado').length;
+  const pendientes = filteredApps.filter(a => a.status === 'En Silla' || a.status === 'En Tratamiento').length;
+  const enProceso = filteredApps.filter(a => a.status === 'Por Pagar').length;
+  const nextAppointment = displayApps[0];
+  const availableSlots = TIME_SLOTS.length - TIME_SLOTS.filter(slot => {
+    const slotMinutes = slotToMinutes(slot);
+    return displayApps.some(app => appToMinutes(app) >= slotMinutes && appToMinutes(app) < slotMinutes + 60);
+  }).length;
+  const confirmedPercent = totalCitas ? Math.round(confirmadas / totalCitas * 100) : 0;
 
   const dayName = selectedDate.toLocaleDateString('es-VE', { weekday: 'long' });
   const dayNum = selectedDate.getDate();
@@ -254,9 +312,9 @@ const SchedulingModule = ({ isMobile, rates }) => {
       {/* Stats Row */}
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
         {[
-          { icon: CalendarDays, label: 'Citas Hoy', value: totalCitas, sub: 'Próxima: 11:00 AM' },
-          { icon: Clock, label: 'Disponibles', value: 5, sub: 'Horas libres hoy' },
-          { icon: CheckCircle2, label: 'Confirmadas', value: confirmadas, sub: `${Math.round(confirmadas / totalCitas * 100)}% del total` },
+          { icon: CalendarDays, label: 'Citas Hoy', value: totalCitas, sub: nextAppointment ? `Próxima: ${nextAppointment.time}` : 'Sin citas agendadas' },
+          { icon: Clock, label: 'Disponibles', value: availableSlots, sub: 'Horas libres hoy' },
+          { icon: CheckCircle2, label: 'Confirmadas', value: confirmadas, sub: `${confirmedPercent}% del total` },
         ].map((stat, idx) => (
           <div key={idx} className="agenda-glass-card" style={{
             padding: '18px', display: 'flex', alignItems: 'center', gap: '16px'
@@ -395,7 +453,8 @@ const SchedulingModule = ({ isMobile, rates }) => {
           {/* Timeline Wrapper */}
           <div className="agenda-timeline-container">
             {TIME_SLOTS.map((slot) => {
-              const slotApp = displayApps.find(a => a.time === slot);
+              const slotMinutes = slotToMinutes(slot);
+              const slotApp = displayApps.find(a => appToMinutes(a) >= slotMinutes && appToMinutes(a) < slotMinutes + 60);
               return (
                 <div key={slot} className="agenda-time-row">
                   {/* Indicador de la hora */}
@@ -484,9 +543,9 @@ const SchedulingModule = ({ isMobile, rates }) => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {[
                 { label: 'Total de citas', value: totalCitas },
-                { label: 'Confirmadas', value: confirmadas, pct: `${Math.round(confirmadas / totalCitas * 100)}%`, color: '#16a34a' },
-                { label: 'Pendientes', value: pendientes, pct: `${Math.round(pendientes / totalCitas * 100)}%`, color: '#d97706' },
-                { label: 'En proceso', value: enProceso, pct: `${Math.round(enProceso / totalCitas * 100)}%`, color: '#0284c7' },
+                { label: 'Confirmadas', value: confirmadas, pct: `${totalCitas ? Math.round(confirmadas / totalCitas * 100) : 0}%`, color: '#16a34a' },
+                { label: 'Pendientes', value: pendientes, pct: `${totalCitas ? Math.round(pendientes / totalCitas * 100) : 0}%`, color: '#d97706' },
+                { label: 'En proceso', value: enProceso, pct: `${totalCitas ? Math.round(enProceso / totalCitas * 100) : 0}%`, color: '#0284c7' },
               ].map((item, idx) => (
                 <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem' }}>
                   <span style={{ color: '#8c767b', fontWeight: 500 }}>{item.label}</span>
@@ -575,6 +634,7 @@ const SchedulingModule = ({ isMobile, rates }) => {
           services={services}
           staff={staff}
           rates={rates}
+          defaultDate={selectedDate}
           onSave={() => { setShowScheduleModal(false); loadFilteredAppointments(); }}
         />
       )}

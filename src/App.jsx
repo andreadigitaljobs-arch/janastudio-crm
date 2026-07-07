@@ -354,7 +354,7 @@ function App() {
           isMobile={isMobile}
           isTablet={isTablet}
           isCollapsed={isCollapsed}
-          onOpenSale={() => setIsSaleModalOpen(true)}
+          onOpenSale={() => handleTabChange('scheduling', { openScheduleModal: true, modalKey: Date.now() })}
           stats={stats}
           chartData={chartData}
           dbData={dbData}
@@ -363,7 +363,7 @@ function App() {
           onNavigate={handleTabChange}
           onRefresh={fetchInitialData}
         /></div>;
-      case 'scheduling': return <div className="p-container"><SchedulingModule isMobile={isMobile} rates={effectiveRates} /></div>;
+      case 'scheduling': return <div className="p-container p-container-agenda"><SchedulingModule isMobile={isMobile} rates={effectiveRates} openScheduleModal={tabParams.openScheduleModal} modalKey={tabParams.modalKey} /></div>;
       case 'reception': return <div className="p-container"><ReceptionModule isMobile={isMobile} /></div>;
       case 'checkout': return <div className="p-container"><CheckoutPOS isMobile={isMobile} rates={effectiveRates} onOpenSale={() => setIsSaleModalOpen(true)} onNavigate={handleTabChange} /></div>;
       case 'services': return <div className="p-container"><ServicesModule isMobile={isMobile} currency={currency} rates={effectiveRates} /></div>;

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import AnimatedModal from './AnimatedModal';
+import JanaSelect from './JanaSelect';
 
 const ScheduleModal = ({ 
   isOpen, 
@@ -145,17 +146,18 @@ const ScheduleModal = ({
   };
 
   const matchingPkg = localService && clientActivePackages.find(p => p.service_id === localService.id);
+  const getStaffDisplayName = (member) => String(member?.name || '').split('(')[0].trim();
 
   return createPortal(
     <AnimatedModal isOpen={isOpen}>
       {(overlayClass, cardClass) => (
-        <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)', zIndex: 20000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-          <div className={`glass-card ${cardClass}`} style={{ maxWidth: '600px', width: '100%', borderRadius: '32px', padding: '32px', border: '1px solid rgba(196,139,159,0.2)' }}>
+        <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)', zIndex: 20000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', overflowY: 'auto' }}>
+          <div className={`glass-card ${cardClass} jana-scrollbar`} style={{ maxWidth: '600px', width: '100%', maxHeight: 'calc(100vh - 40px)', overflowY: 'auto', borderRadius: '32px', padding: '32px', border: '1px solid rgba(196,139,159,0.2)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <div>
                 <h2 style={{ fontSize: '24px', fontWeight: '950' }}>Agendar <span className="text-gold">Turno</span></h2>
                 {localService && localStaff && (
-                  <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>{localService?.name} con {localStaff?.name}</p>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>{localService?.name} con {getStaffDisplayName(localStaff)}</p>
                 )}
               </div>
               <button onClick={onClose} style={{ background: 'rgba(212,160,154,0.1)', border: 'none', color: 'var(--text-primary)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X /></button>
@@ -164,34 +166,32 @@ const ScheduleModal = ({
             {/* Dynamic Selectors if not pre-specified */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
               {!client && clients.length > 0 && (
-                <div>
-                  <label style={{ fontSize: '9px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '4px', display: 'block', letterSpacing: '1px' }}>SELECCIONAR CLIENTE</label>
-                  <select 
-                    value={localClient?.id || ''} 
-                    onChange={(e) => setLocalClient(clients.find(c => c.id === e.target.value))}
-                    style={{ width: '100%', height: '38px', background: 'white', border: '1px solid rgba(212,160,154,0.3)', borderRadius: '8px', color: 'var(--text-primary)', padding: '0 8px', fontSize: '12px', outline: 'none' }}
-                  >
-                    <option value="" style={{ backgroundColor: 'white' }}>-- Selecciona un Cliente --</option>
-                    {clients.map(c => (
-                      <option key={c.id} value={c.id} style={{ backgroundColor: 'white' }}>{c.name} (V-{c.id_card})</option>
-                    ))}
-                  </select>
-                </div>
+                <JanaSelect
+                  variant="light"
+                  label="Seleccionar cliente"
+                  value={localClient?.id || ''}
+                  placeholder="Elige una clienta"
+                  onChange={(value) => setLocalClient(clients.find(c => c.id === value))}
+                  options={clients.map(c => ({
+                    value: c.id,
+                    label: `${c.name}${c.id_card ? ` (V-${c.id_card})` : ''}`
+                  }))}
+                />
               )}
 
               {!service && services.length > 0 && (
                 <div>
-                  <label style={{ fontSize: '9px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '4px', display: 'block', letterSpacing: '1px' }}>SELECCIONAR SERVICIO</label>
-                  <select 
-                    value={localService?.id || ''} 
-                    onChange={(e) => setLocalService(services.find(s => s.id === e.target.value))}
-                    style={{ width: '100%', height: '38px', background: 'white', border: '1px solid rgba(212,160,154,0.3)', borderRadius: '8px', color: 'var(--text-primary)', padding: '0 8px', fontSize: '12px', outline: 'none' }}
-                  >
-                    <option value="" style={{ backgroundColor: 'white' }}>-- Selecciona un Servicio --</option>
-                    {services.map(s => (
-                      <option key={s.id} value={s.id} style={{ backgroundColor: 'white' }}>{s.name} - ${s.price}</option>
-                    ))}
-                  </select>
+                  <JanaSelect
+                    variant="light"
+                    label="Seleccionar servicio"
+                    value={localService?.id || ''}
+                    placeholder="Elige un servicio"
+                    onChange={(value) => setLocalService(services.find(s => s.id === value))}
+                    options={services.map(s => ({
+                      value: s.id,
+                      label: `${s.name} - $${Number(s.price || 0).toFixed(2)}`
+                    }))}
+                  />
                   {matchingPkg && (
                     <div style={{ fontSize: '10px', color: '#34c759', fontWeight: '800', marginTop: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <span>✓ Cliente tiene paquete activo ({matchingPkg.total_sessions - matchingPkg.used_sessions} sesiones restantes)</span>
@@ -201,19 +201,17 @@ const ScheduleModal = ({
               )}
 
               {!isSingleStaff && staffArray.length > 0 && (
-                <div>
-                  <label style={{ fontSize: '9px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '4px', display: 'block', letterSpacing: '1px' }}>SELECCIONAR ESTILISTA</label>
-                  <select 
-                    value={localStaff?.id || ''} 
-                    onChange={(e) => setLocalStaff(staffArray.find(s => s.id === e.target.value))}
-                    style={{ width: '100%', height: '38px', background: 'white', border: '1px solid rgba(212,160,154,0.3)', borderRadius: '8px', color: 'var(--text-primary)', padding: '0 8px', fontSize: '12px', outline: 'none' }}
-                  >
-                    <option value="" style={{ backgroundColor: 'white' }}>-- Selecciona un Estilista --</option>
-                    {staffArray.map(s => (
-                      <option key={s.id} value={s.id} style={{ backgroundColor: 'white' }}>{s.name} ({s.role})</option>
-                    ))}
-                  </select>
-                </div>
+                <JanaSelect
+                  variant="light"
+                  label="Seleccionar estilista"
+                  value={localStaff?.id || ''}
+                  placeholder="Elige una estilista"
+                  onChange={(value) => setLocalStaff(staffArray.find(s => s.id === value))}
+                  options={staffArray.map(s => ({
+                    value: s.id,
+                    label: getStaffDisplayName(s)
+                  }))}
+                />
               )}
             </div>
 

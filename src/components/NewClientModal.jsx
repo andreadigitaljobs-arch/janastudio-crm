@@ -9,7 +9,7 @@ import AnimatedModal from './AnimatedModal';
 import { formatName } from '../utils/stringUtils';
 import { useScrollLock } from '../hooks/useScrollLock';
 
-const NewClientModal = ({ isOpen, onClose, onSuccess }) => {
+const NewClientModal = ({ isOpen, onClose, onSuccess, onClientCreated }) => {
   const { showToast } = useNotifs();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -44,6 +44,7 @@ const NewClientModal = ({ isOpen, onClose, onSuccess }) => {
       
       showToast(`Cliente ${newClient.name} registrado con éxito`);
       if (onSuccess) onSuccess(newClient);
+      if (onClientCreated) onClientCreated(newClient);
       onClose();
     } catch (error) {
       if (error.code === '23505') { // PostgreSQL unique violation code
@@ -75,11 +76,13 @@ const NewClientModal = ({ isOpen, onClose, onSuccess }) => {
             padding: '20px' 
           }}>
             <div className={`glass-card ${cardClass}`} style={{ 
-              maxWidth: '450px', 
+              maxWidth: '460px', 
               width: '100%', 
               borderRadius: '32px', 
               border: '1.5px solid rgba(196,139,159,0.3)',
               padding: '32px',
+              background: 'rgba(255, 255, 255, 0.96)',
+              boxShadow: '0 24px 70px rgba(38, 24, 28, 0.28)',
               position: 'relative'
             }}>
               <button 
@@ -91,8 +94,8 @@ const NewClientModal = ({ isOpen, onClose, onSuccess }) => {
                   background: 'rgba(212,160,154,0.1)', 
                   border: 'none', 
                   color: 'var(--text-primary)', 
-                  width: '36px', 
-                  height: '36px', 
+                  width: '40px', 
+                  height: '40px', 
                   borderRadius: '50%', 
                   display: 'flex', 
                   alignItems: 'center', 
@@ -103,7 +106,7 @@ const NewClientModal = ({ isOpen, onClose, onSuccess }) => {
                 <X size={18} />
               </button>
 
-              <header style={{ marginBottom: '32px' }}>
+              <header style={{ marginBottom: '26px', paddingRight: '46px' }}>
                 <h2 style={{ 
                   fontSize: '24px', 
                   fontWeight: '900', 
@@ -116,84 +119,81 @@ const NewClientModal = ({ isOpen, onClose, onSuccess }) => {
                   <User size={24} color="var(--pink-primary)" />
                   <span>Nuevo <span className="text-gold">Cliente</span></span>
                 </h2>
-                <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
+                <p style={{ fontSize: '14px', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.45 }}>
                   Completa los datos para registrarlo en el sistema.
                 </p>
               </header>
 
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div className="jana-client-field">
+                  <label className="jana-client-label">
                     Nombre y Apellido
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <User style={{ position: 'absolute', left: '16px', top: '14px' }} size={18} color="var(--pink-primary)" />
+                    <User className="jana-client-input-icon" size={18} />
                     <input 
                       autoFocus
+                      className="jana-client-input"
                       type="text" 
                       placeholder="Ej. Juan Pérez" 
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: formatName(e.target.value)})}
-                      style={{ width: '100%', paddingLeft: '48px' }}
                     />
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                <div className="jana-client-field">
+                  <label className="jana-client-label">
                     Teléfono
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <Phone style={{ position: 'absolute', left: '16px', top: '14px' }} size={18} color="var(--pink-primary)" />
+                    <Phone className="jana-client-input-icon" size={18} />
                     <input 
+                      className="jana-client-input"
                       type="tel" 
                       placeholder="Ej. 04121234567" 
                       value={formData.phone}
                       onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                      style={{ width: '100%', paddingLeft: '48px' }}
                     />
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                <div className="jana-client-field">
+                  <label className="jana-client-label">
                     Cédula de Identidad
                   </label>
                   <div style={{ position: 'relative' }}>
-                    <CreditCard style={{ position: 'absolute', left: '16px', top: '14px' }} size={18} color="var(--pink-primary)" />
+                    <CreditCard className="jana-client-input-icon" size={18} />
                     <input 
+                      className="jana-client-input"
                       type="text" 
                       placeholder="Ej. 25.123.456" 
                       value={formData.id_card}
                       onChange={(e) => setFormData({...formData, id_card: e.target.value})}
-                      style={{ width: '100%', paddingLeft: '48px' }}
                     />
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                <div className="jana-client-field">
+                  <label className="jana-client-label">
                     Fecha de Nacimiento
                   </label>
                   <JanaDatePicker
+                    variant="light"
+                    inputClassName="jana-client-input"
+                    inputStyle={{ paddingLeft: '48px' }}
                     value={formData.birth_date}
                     onChange={(e) => setFormData({...formData, birth_date: e.target.value})}
                   />
                 </div>
 
-                <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
+                <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
                   <button 
                     type="button"
                     onClick={onClose} 
+                    className="jana-client-secondary-btn"
                     style={{ 
                       flex: 1, 
-                      background: 'white', 
-                      border: '1px solid rgba(212,160,154,0.3)', 
-                      color: 'var(--text-primary)', 
-                      height: '56px',
-                      borderRadius: '16px', 
-                      fontWeight: '700', 
-                      cursor: 'pointer' 
                     }}
                   >
                     CANCELAR
@@ -202,7 +202,7 @@ const NewClientModal = ({ isOpen, onClose, onSuccess }) => {
                     type="submit"
                     disabled={loading}
                     className="btn-pink" 
-                    style={{ flex: 1.5, height: '56px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                    style={{ flex: 1.5, height: '56px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontWeight: 800 }}
                   >
                     {loading ? <Loader2 className="animate-spin" size={20} /> : 'REGISTRAR CLIENTE'}
                   </button>
