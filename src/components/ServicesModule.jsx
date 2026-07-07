@@ -582,24 +582,24 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
     <div className="animate-fade-in" style={{ paddingBottom: isMobile ? '120px' : '60px' }}>
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '100px' }}>
-          <Loader2 className="animate-spin" color="var(--pink-primary)" size={40} />
+          <Loader2 className="animate-spin" color="#c97282" size={40} />
         </div>
       ) : services.length === 0 ? (
-        <div className="glass-card" style={{ textAlign: 'center', padding: '80px', borderRadius: '32px' }}>
-          <Star size={64} color="rgba(212, 160, 154, 0.1)" style={{ marginBottom: '24px' }} />
-          <h3 style={{ fontSize: '20px', color: 'var(--text-primary)' }}>Tu catálogo está vacío</h3>
+        <div className="glass-card" style={{ textAlign: 'center', padding: '80px', borderRadius: '32px', border: '1px solid rgba(212, 160, 154, 0.2)', boxShadow: '0 8px 32px rgba(74, 48, 54, 0.05)' }}>
+          <Star size={64} color="rgba(212, 160, 154, 0.2)" style={{ marginBottom: '24px' }} />
+          <h3 style={{ fontSize: '20px', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif" }}>Tu catálogo está vacío</h3>
           <p style={{ color: 'var(--text-muted)', marginTop: '8px' }}>Comienza agregando los servicios que definirán tu marca.</p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '24px' }}>
           
-          {/* │││ LEFT COLUMN │││ */}
-          <div style={{ flex: isMobile ? 1 : 3, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* │ │ │  LEFT COLUMN │ │ │  */}
+          <div style={{ flex: isMobile ? 1 : 3, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '24px' }}>
             
             {/* Header */}
             <div>
-              <h2 style={{ fontSize: isMobile ? '28px' : '32px', fontWeight: '800', letterSpacing: '-0.5px', color: 'var(--text-primary)' }}>Servicios</h2>
-              <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>Define tu oferta y servicios adicionales.</p>
+              <h2 style={{ fontSize: isMobile ? '28px' : '34px', fontWeight: '800', letterSpacing: '-0.5px', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>Servicios</h2>
+              <p style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: '0.85rem' }}>Define tu oferta y servicios adicionales.</p>
             </div>
             
             {/* Action Buttons Row */}
@@ -607,10 +607,11 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               <button 
                 onClick={() => setViewMode('grid')}
                 style={{ 
-                  padding: '8px 16px', borderRadius: '20px', border: 'none',
-                  backgroundColor: viewMode === 'grid' ? 'var(--pink-primary)' : '#faf5f5',
-                  color: viewMode === 'grid' ? 'white' : 'var(--text-muted)',
-                  cursor: 'pointer', fontSize: '13px', fontWeight: '700', transition: 'all 0.2s'
+                  padding: '8px 18px', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)',
+                  backgroundColor: viewMode === 'grid' ? '#c97282' : '#ffffff',
+                  color: viewMode === 'grid' ? 'white' : 'var(--text-secondary)',
+                  cursor: 'pointer', fontSize: '13px', fontWeight: '700', transition: 'all 0.2s',
+                  boxShadow: viewMode === 'grid' ? '0 4px 12px rgba(201, 114, 130, 0.2)' : 'none'
                 }}
               >
                 <LayoutGrid size={14} style={{ marginRight: '6px', verticalAlign: 'middle' }} /> Tarjetas
@@ -618,10 +619,11 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               <button 
                 onClick={() => setViewMode('table')}
                 style={{ 
-                  padding: '8px 16px', borderRadius: '20px', border: 'none',
-                  backgroundColor: viewMode === 'table' ? 'var(--pink-primary)' : '#faf5f5',
-                  color: viewMode === 'table' ? 'white' : 'var(--text-muted)',
-                  cursor: 'pointer', fontSize: '13px', fontWeight: '700', transition: 'all 0.2s'
+                  padding: '8px 18px', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)',
+                  backgroundColor: viewMode === 'table' ? '#c97282' : '#ffffff',
+                  color: viewMode === 'table' ? 'white' : 'var(--text-secondary)',
+                  cursor: 'pointer', fontSize: '13px', fontWeight: '700', transition: 'all 0.2s',
+                  boxShadow: viewMode === 'table' ? '0 4px 12px rgba(201, 114, 130, 0.2)' : 'none'
                 }}
               >
                 <Table size={14} style={{ marginRight: '6px', verticalAlign: 'middle' }} /> Tabla
@@ -629,30 +631,36 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               <button 
                 onClick={() => setIsCategoriesModalOpen(true)}
                 style={{ 
-                  padding: '8px 16px', borderRadius: '20px', border: 'none',
-                  backgroundColor: '#faf5f5', color: 'var(--text-muted)',
+                  padding: '8px 18px', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)',
+                  backgroundColor: '#ffffff', color: 'var(--text-secondary)',
                   cursor: 'pointer', fontSize: '13px', fontWeight: '700', transition: 'all 0.2s'
                 }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#faf3f2'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = '#ffffff'; }}
               >
                 Categorías
               </button>
               <button 
                 onClick={() => setIsStrategiesModalOpen(true)}
                 style={{ 
-                  padding: '8px 16px', borderRadius: '20px', border: 'none',
-                  backgroundColor: '#faf5f5', color: 'var(--text-muted)',
+                  padding: '8px 18px', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)',
+                  backgroundColor: '#ffffff', color: 'var(--text-secondary)',
                   cursor: 'pointer', fontSize: '13px', fontWeight: '700', transition: 'all 0.2s'
                 }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#faf3f2'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = '#ffffff'; }}
               >
                 Estrategias
               </button>
               <button 
                 onClick={() => setIsBillableExtrasModalOpen(true)}
                 style={{ 
-                  padding: '8px 16px', borderRadius: '20px', border: 'none',
-                  backgroundColor: '#faf5f5', color: 'var(--text-muted)',
+                  padding: '8px 18px', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)',
+                  backgroundColor: '#ffffff', color: 'var(--text-secondary)',
                   cursor: 'pointer', fontSize: '13px', fontWeight: '700', transition: 'all 0.2s'
                 }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#faf3f2'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = '#ffffff'; }}
               >
                 Extras
               </button>
@@ -669,70 +677,71 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                   setShowAddForm(true);
                 }}
                 style={{ 
-                  padding: '8px 16px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '6px',
-                  fontSize: '13px', fontWeight: '700', marginLeft: 'auto'
+                  padding: '10px 22px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '6px',
+                  fontSize: '13px', fontWeight: '700', marginLeft: 'auto', border: 'none', background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)',
+                  boxShadow: '0 4px 14px rgba(201, 114, 130, 0.25)'
                 }}
               >
-                <Plus size={14} /> Nuevo Servicio
+                <Plus size={15} strokeWidth={2.5} /> Nuevo Servicio
               </button>
             </div>
             
             {/* Stat Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px' }}>
               {/* Servicios activos */}
-              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+              <div style={{ background: '#ffffff', borderRadius: '20px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.03)', border: '1px solid rgba(212, 160, 154, 0.15)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c48b9f' }}>
-                    <LayoutGrid size={18} />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: '#fdf3f4', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a' }}>
+                    <LayoutGrid size={20} />
                   </div>
                   <div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>Servicios activos</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Activos</div>
                     <div style={{ fontSize: '24px', fontWeight: '800', color: 'var(--text-primary)' }}>{activeServicesCount}</div>
                   </div>
                 </div>
-                <div style={{ fontSize: '11px', color: '#22c55e', fontWeight: '600' }}>→‘ 12% vs mes anterior</div>
+                <div style={{ fontSize: '11px', color: '#22c55e', fontWeight: '700' }}>↑ 12% <span style={{ color: 'var(--text-muted)', fontWeight: '500' }}>este mes</span></div>
               </div>
               
               {/* Categorías */}
-              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+              <div style={{ background: '#ffffff', borderRadius: '20px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.03)', border: '1px solid rgba(212, 160, 154, 0.15)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(99,102,241,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6366f1' }}>
-                    <Settings size={18} />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: '#f5f6fc', border: '1px solid rgba(99, 102, 241, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6366f1' }}>
+                    <Settings size={20} />
                   </div>
                   <div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>Categorías</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Categorías</div>
                     <div style={{ fontSize: '24px', fontWeight: '800', color: 'var(--text-primary)' }}>{categoriesCount}</div>
                   </div>
                 </div>
-                <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>Sin cambios</div>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '500' }}>Sin cambios recientes</div>
               </div>
               
               {/* Más reservado */}
-              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+              <div style={{ background: '#ffffff', borderRadius: '20px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.03)', border: '1px solid rgba(212, 160, 154, 0.15)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(239,68,68,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444' }}>
-                    <Heart size={18} />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: '#fff5f5', border: '1px solid rgba(239,68,68,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444' }}>
+                    <Heart size={20} />
                   </div>
-                  <div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>Más reservado</div>
-                    <div style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '150px' }}>{mostBookedService?.name || '-'}</div>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Destacado</div>
+                    <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{mostBookedService?.name || '-'}</div>
                   </div>
                 </div>
-                <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>{mostBookedService?.total_bookings || 0} reservas este mes</div>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '500' }}>{mostBookedService?.total_bookings || 0} reservas hoy</div>
               </div>
               
               {/* Ticket promedio */}
-              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+              <div style={{ background: '#ffffff', borderRadius: '20px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.03)', border: '1px solid rgba(212, 160, 154, 0.15)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(245,158,11,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f59e0b' }}>
-                    <DollarSign size={18} />
+                  <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: '#fff9ef', border: '1px solid rgba(245,158,11,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f59e0b' }}>
+                    <DollarSign size={20} />
                   </div>
                   <div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>Ticket promedio</div>
-                    <div style={{ fontSize: '20px', fontWeight: '800', color: 'var(--text-primary)' }}>{formatBs(avgTicket)}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Ticket Promedio</div>
+                    <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-primary)' }}>{formatBs(avgTicket)}</div>
                   </div>
                 </div>
-                <div style={{ fontSize: '11px', color: '#22c55e', fontWeight: '600' }}>→‘ 8% vs mes anterior</div>
+                <div style={{ fontSize: '11px', color: '#22c55e', fontWeight: '700' }}>↑ 8% <span style={{ color: 'var(--text-muted)', fontWeight: '500' }}>vs ayer</span></div>
               </div>
             </div>
             
@@ -740,64 +749,87 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
               {/* Search */}
               <div style={{ position: 'relative', flex: '1 1 200px', minWidth: '200px' }}>
-                <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#c48b9f' }} />
                 <input 
                   className="form-input"
                   placeholder="Buscar servicio..."
                   value={searchQuery}
                   onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                  style={{ width: '100%', paddingLeft: '38px', height: '40px', borderRadius: '12px', fontSize: '13px', background: 'white', border: '1px solid var(--border-color)' }}
+                  style={{ width: '100%', paddingLeft: '40px', height: '42px', borderRadius: '14px', fontSize: '13px', background: 'white', border: '1px solid rgba(212, 160, 154, 0.25)', boxShadow: 'inset 0 1px 3px rgba(74, 48, 54, 0.02)' }}
                 />
               </div>
               
-              {/* Category Chips */}
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                {allCategories.slice(0, 6).map(cat => (
+              {/* Category Filter */}
+              <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px', WebkitOverflowScrolling: 'touch' }}>
+                <button 
+                  onClick={() => { setSelectedCategory('all'); setCurrentPage(1); }}
+                  style={{
+                    padding: '8px 14px', borderRadius: '12px', cursor: 'pointer',
+                    fontSize: '12px', fontWeight: '700',
+                    backgroundColor: selectedCategory === 'all' ? '#faf3f2' : 'transparent',
+                    color: selectedCategory === 'all' ? '#a0506a' : 'var(--text-secondary)',
+                    transition: 'all 0.2s', border: selectedCategory === 'all' ? '1px solid rgba(160, 80, 106, 0.15)' : '1px solid transparent'
+                  }}
+                >
+                  Todos
+                </button>
+                {categories.map(cat => (
                   <button
-                    key={cat}
-                    onClick={() => { setCategoryFilter(cat); setCurrentPage(1); }}
+                    key={cat.id}
+                    onClick={() => { setSelectedCategory(cat.name); setCurrentPage(1); }}
                     style={{
-                      padding: '6px 14px', borderRadius: '20px', cursor: 'pointer',
-                      fontSize: '12px', fontWeight: '700', transition: 'all 0.2s',
-                      backgroundColor: categoryFilter === cat ? 'var(--pink-primary)' : '#faf5f5',
-                      color: categoryFilter === cat ? 'white' : 'var(--text-muted)',
-                      border: categoryFilter === cat ? 'none' : '1px solid var(--border-color)'
+                      padding: '8px 14px', borderRadius: '12px', cursor: 'pointer',
+                      fontSize: '12px', fontWeight: '700',
+                      backgroundColor: selectedCategory === cat.name ? '#faf3f2' : 'transparent',
+                      color: selectedCategory === cat.name ? '#a0506a' : 'var(--text-secondary)',
+                      transition: 'all 0.2s', border: selectedCategory === cat.name ? '1px solid rgba(160, 80, 106, 0.15)' : '1px solid transparent'
                     }}
                   >
-                    {cat}
+                    {cat.name}
                   </button>
                 ))}
               </div>
               
-              {/* Sort Dropdown */}
-              <div style={{ position: 'relative' }}>
-                <button
-                  onClick={() => setSortByOpen(!sortByOpen)}
+              {/* Sort selector */}
+              <div style={{ position: 'relative', marginLeft: isMobile ? '0' : 'auto' }}>
+                <button 
+                  onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
                   style={{
-                    padding: '8px 14px', borderRadius: '12px', border: '1px solid var(--border-color)',
-                    backgroundColor: 'white', color: 'var(--text-secondary)', cursor: 'pointer',
-                    fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px'
+                    height: '42px', padding: '0 16px', borderRadius: '14px', border: '1px solid rgba(212, 160, 154, 0.25)',
+                    background: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer',
+                    fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)'
                   }}
                 >
-                  {sortOptions.find(o => o.value === sortBy)?.label || 'Más reservados'}
+                  <ArrowUpDown size={14} color="#c48b9f" />
+                  <span>
+                    {sortBy === 'name' ? 'Por Nombre (A-Z)' : 
+                     sortBy === 'price_asc' ? 'Precio: Menor a Mayor' : 
+                     sortBy === 'price_desc' ? 'Precio: Mayor a Menor' : 
+                     sortBy === 'popular' ? 'Más Populares' : 'Más Recientes'}
+                  </span>
                   <ChevronDown size={14} />
                 </button>
-                {sortByOpen && (
+                {isSortDropdownOpen && (
                   <div style={{
-                    position: 'absolute', top: '100%', right: 0, marginTop: '4px',
-                    background: 'white', borderRadius: '12px', border: '1px solid var(--border-color)',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 100, overflow: 'hidden', minWidth: '180px'
+                    position: 'absolute', right: 0, top: '46px', width: '220px', background: 'white',
+                    borderRadius: '14px', border: '1px solid rgba(212, 160, 154, 0.2)', boxShadow: '0 8px 24px rgba(74, 48, 54, 0.08)',
+                    zIndex: 10, padding: '6px', display: 'flex', flexDirection: 'column', gap: '2px'
                   }}>
-                    {sortOptions.map(opt => (
+                    {[
+                      { value: 'name', label: 'Por Nombre (A-Z)' },
+                      { value: 'price_asc', label: 'Precio: Menor a Mayor' },
+                      { value: 'price_desc', label: 'Precio: Mayor a Menor' },
+                      { value: 'popular', label: 'Más Populares' },
+                      { value: 'newest', label: 'Más Recientes' }
+                    ].map(opt => (
                       <button
                         key={opt.value}
-                        onClick={() => { setSortBy(opt.value); setSortByOpen(false); setCurrentPage(1); }}
+                        onClick={() => { setSortBy(opt.value); setIsSortDropdownOpen(false); }}
                         style={{
-                          display: 'block', width: '100%', padding: '10px 16px', border: 'none',
-                          background: sortBy === opt.value ? 'rgba(196,139,159,0.1)' : 'transparent',
-                          color: sortBy === opt.value ? 'var(--pink-primary)' : 'var(--text-secondary)',
-                          fontSize: '13px', fontWeight: sortBy === opt.value ? '700' : '500',
-                          textAlign: 'left', cursor: 'pointer'
+                          width: '100%', padding: '10px 14px', border: 'none', borderRadius: '8px',
+                          background: sortBy === opt.value ? '#faf3f2' : 'transparent',
+                          color: sortBy === opt.value ? '#a0506a' : 'var(--text-secondary)',
+                          fontSize: '12px', fontWeight: '700', textAlign: 'left', cursor: 'pointer'
                         }}
                       >
                         {opt.label}
@@ -808,9 +840,9 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               </div>
             </div>
             
-            {/* │││ SERVICE CARDS GRID │││ */}
+            {/* │ │ │  SERVICE CARDS GRID │ │ │  */}
             {viewMode === 'grid' || isMobile ? (
-              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
                 {paginatedServices.map(service => {
                   const badge = getBadge(service);
                   return (
@@ -818,55 +850,69 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                       key={service.id}
                       className="glass-card"
                       style={{ 
-                        background: 'white', borderRadius: '16px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
-                        border: '1px solid var(--border-color)', padding: '20px',
-                        display: 'flex', flexDirection: 'column', gap: '12px', cursor: 'pointer',
-                        transition: 'all 0.2s'
+                        background: 'linear-gradient(135deg, #ffffff 0%, #fffbfb 100%)', borderRadius: '22px', boxShadow: '0 6px 20px rgba(74, 48, 54, 0.03)',
+                        border: '1px solid rgba(212, 160, 154, 0.2)', padding: '24px',
+                        display: 'flex', flexDirection: 'column', gap: '14px', cursor: 'pointer',
+                        transition: 'all 0.25s ease-in-out'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-4px)';
+                        e.currentTarget.style.boxShadow = '0 12px 30px rgba(74, 48, 54, 0.08)';
+                        e.currentTarget.style.borderColor = 'rgba(201, 114, 130, 0.35)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'none';
+                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(74, 48, 54, 0.03)';
+                        e.currentTarget.style.borderColor = 'rgba(212, 160, 154, 0.2)';
                       }}
                       onClick={() => setSelectedServiceDetail(service)}
                     >
-                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                        <div style={{ width: '44px', height: '44px', borderRadius: '12px', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c48b9f' }}>
-                          {service.icon ? getIconComponent(service.icon, 20) : getCategoryIcon(service.category)}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ width: '46px', height: '46px', borderRadius: '14px', backgroundColor: '#faf3f2', border: '1px solid rgba(201, 114, 130, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c97282' }}>
+                          {service.icon ? getIconComponent(service.icon, 22) : getCategoryIcon(service.category)}
                         </div>
                         {badge && (
                           <span style={{ 
-                            padding: '4px 10px', borderRadius: '12px', fontSize: '10px', fontWeight: '800',
+                            padding: '4px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: '800',
                             backgroundColor: badge.bg, color: badge.color, textTransform: 'uppercase', letterSpacing: '0.5px'
                           }}>
                             {badge.label}
                           </span>
                         )}
                       </div>
-                      <h4 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {service.name}
-                      </h4>
-                      <span style={{ fontSize: '11px', fontWeight: '700', color: '#c48b9f' }}>
-                        {service.category}
-                      </span>
+                      <div>
+                        <h4 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: "'Playfair Display', Georgia, serif" }}>
+                          {service.name}
+                        </h4>
+                        <span style={{ fontSize: '10px', fontWeight: '700', color: '#c97282', textTransform: 'uppercase', letterSpacing: '0.4px', marginTop: '2px', display: 'block' }}>
+                          {service.category}
+                        </span>
+                      </div>
                       {service.description && (
-                        <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: 0, lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                           {service.description}
                         </p>
                       )}
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--text-muted)' }}>
-                          <Clock size={14} /> {service.isGroup ? (service.minDuration === service.maxDuration ? `${service.minDuration} min` : `${service.minDuration}-${service.maxDuration} min`) : `${service.duration || 30} min`}
+                      
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '6px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>
+                          <Clock size={13} color="#c48b9f" /> {service.isGroup ? (service.minDuration === service.maxDuration ? `${service.minDuration} min` : `${service.minDuration}-${service.maxDuration} min`) : `${service.duration || 30} min`}
                         </div>
-                        <div style={{ fontWeight: '800', color: 'var(--text-primary)', fontSize: '15px' }}>
+                        <div style={{ fontWeight: '800', color: '#a0506a', fontSize: '15px' }}>
                           {formatServicePrice(service)}
                         </div>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '12px', marginTop: '4px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#c48b9f', fontWeight: '600' }}>
-                          <Heart size={14} fill="currentColor" /> {service.total_bookings || 0} reservas este mes
+                      
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(212, 160, 154, 0.12)', paddingTop: '14px', marginTop: '4px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#c97282', fontWeight: '700', backgroundColor: '#faf3f2', padding: '3px 8px', borderRadius: '8px' }}>
+                          <Heart size={12} fill="currentColor" /> {service.total_bookings || 0} reservas
                         </div>
-                        <div style={{ display: 'flex', gap: '4px' }} onClick={e => e.stopPropagation()}>
+                        <div style={{ display: 'flex', gap: '6px' }} onClick={e => e.stopPropagation()}>
                           {service.isGroup ? (
                             <button 
                               onClick={() => setSelectedServiceDetail(service)}
                               className="action-btn"
-                              style={{ width: 'auto', height: '32px', padding: '0 12px', fontSize: '11px', fontWeight: '700', borderRadius: '8px', color: 'var(--pink-primary)', display: 'flex', alignItems: 'center', gap: '4px' }}
+                              style={{ width: 'auto', height: '30px', padding: '0 12px', fontSize: '11px', fontWeight: '700', borderRadius: '10px', color: '#c97282', background: '#faf3f2', border: '1px solid rgba(201, 114, 130, 0.15)' }}
                             >
                               Ver opciones
                             </button>
@@ -875,22 +921,16 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                               <button 
                                 className="action-btn" 
                                 onClick={() => handleEditClick(service)} 
-                                style={{ width: '32px', height: '32px', borderRadius: '8px' }}
+                                style={{ width: '30px', height: '30px', borderRadius: '10px', color: 'var(--text-secondary)', background: '#faf3f2', border: '1px solid rgba(201, 114, 130, 0.15)' }}
                               >
-                                <Edit2 size={14} />
-                              </button>
-                              <button 
-                                className="action-btn" 
-                                style={{ width: '32px', height: '32px', borderRadius: '8px' }}
-                              >
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                                <Edit2 size={13} />
                               </button>
                               <button 
                                 onClick={() => handleDeleteService(service.id, service.name)} 
                                 className="action-btn" 
-                                style={{ width: '32px', height: '32px', borderRadius: '8px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.1)' }}
+                                style={{ width: '30px', height: '30px', borderRadius: '10px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.05)', border: '1px solid rgba(255,69,58,0.1)' }}
                               >
-                                <Trash2 size={14} />
+                                <Trash2 size={13} />
                               </button>
                             </>
                           )}
@@ -901,53 +941,55 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                 })}
               </div>
             ) : (
-              /* │││ TABLE VIEW │││ */
-              <div style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+              /* │ │ │  TABLE VIEW │ │ │  */
+              <div style={{ background: 'white', borderRadius: '22px', overflow: 'hidden', border: '1px solid rgba(212, 160, 154, 0.2)', boxShadow: '0 6px 20px rgba(74, 48, 54, 0.03)' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                   <thead>
-                    <tr style={{ backgroundColor: '#faf5f5', borderBottom: '1px solid var(--border-color)' }}>
-                      <th style={{ padding: '14px 20px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Servicio</th>
-                      <th style={{ padding: '14px 20px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Categoría</th>
-                      <th style={{ padding: '14px 20px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Duración</th>
-                      <th style={{ padding: '14px 20px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Precio</th>
-                      <th style={{ padding: '14px 20px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Reservas</th>
-                      <th style={{ padding: '14px 20px', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', textAlign: 'right' }}>Acciones</th>
+                    <tr style={{ backgroundColor: '#faf3f2', borderBottom: '1px solid rgba(212, 160, 154, 0.2)' }}>
+                      <th style={{ padding: '16px 20px', fontSize: '11px', fontWeight: '900', color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Servicio</th>
+                      <th style={{ padding: '16px 20px', fontSize: '11px', fontWeight: '900', color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Categoría</th>
+                      <th style={{ padding: '16px 20px', fontSize: '11px', fontWeight: '900', color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Duración</th>
+                      <th style={{ padding: '16px 20px', fontSize: '11px', fontWeight: '900', color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Precio</th>
+                      <th style={{ padding: '16px 20px', fontSize: '11px', fontWeight: '900', color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Reservas</th>
+                      <th style={{ padding: '16px 20px', fontSize: '11px', fontWeight: '900', color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
                     {paginatedServices.map(service => (
-                      <tr key={service.id} style={{ borderBottom: '1px solid var(--border-color)' }} className="table-row-hover">
+                      <tr key={service.id} style={{ borderBottom: '1px solid rgba(212, 160, 154, 0.12)' }} className="table-row-hover">
                         <td style={{ padding: '14px 20px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c48b9f', flexShrink: 0 }}>
+                            <div style={{ width: '34px', height: '34px', borderRadius: '10px', backgroundColor: '#faf3f2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c97282', border: '1px solid rgba(201, 114, 130, 0.1)', flexShrink: 0 }}>
                               {service.icon ? getIconComponent(service.icon, 16) : getCategoryIcon(service.category)}
                             </div>
                             <div>
-                              <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '13px' }}>
+                              <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '13.5px' }}>
                                 {service.name}
                                 {service.isGroup && (
-                                  <span style={{ marginLeft: '6px', fontSize: '9px', fontWeight: '800', backgroundColor: 'rgba(196,139,159,0.1)', color: 'var(--pink-primary)', padding: '2px 6px', borderRadius: '6px', textTransform: 'uppercase' }}>
+                                  <span style={{ marginLeft: '6px', fontSize: '9px', fontWeight: '800', backgroundColor: '#faf3f2', color: '#c97282', padding: '2px 6px', borderRadius: '6px', textTransform: 'uppercase', border: '1px solid rgba(201, 114, 130, 0.1)' }}>
                                     {service.variations.length} opciones
                                   </span>
                                 )}
                               </div>
-                              {service.description && <div style={{ fontSize: '11px', color: 'var(--text-muted)', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{service.description}</div>}
+                              {service.description && <div style={{ fontSize: '11px', color: 'var(--text-muted)', maxWidth: '220px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{service.description}</div>}
                             </div>
                           </div>
                         </td>
                         <td style={{ padding: '14px 20px' }}>
-                          <span style={{ fontSize: '11px', fontWeight: '700', color: '#c48b9f', backgroundColor: 'rgba(196,139,159,0.1)', padding: '4px 10px', borderRadius: '8px' }}>
+                          <span style={{ fontSize: '10px', fontWeight: '700', color: '#c97282', backgroundColor: '#faf3f2', padding: '4px 10px', borderRadius: '8px', border: '1px solid rgba(201, 114, 130, 0.1)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
                             {service.category}
                           </span>
                         </td>
-                        <td style={{ padding: '14px 20px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                        <td style={{ padding: '14px 20px', fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '600' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <Clock size={12} /> {service.isGroup ? (service.minDuration === service.maxDuration ? `${service.minDuration} min` : `${service.minDuration}-${service.maxDuration} min`) : `${service.duration || 30} min`}
+                            <Clock size={13} color="#c48b9f" /> {service.isGroup ? (service.minDuration === service.maxDuration ? `${service.minDuration} min` : `${service.minDuration}-${service.maxDuration} min`) : `${service.duration || 30} min`}
                           </div>
                         </td>
-                        <td style={{ padding: '14px 20px', fontWeight: '800', color: 'var(--text-primary)' }}>{formatServicePrice(service)}</td>
+                        <td style={{ padding: '14px 20px', fontWeight: '800', color: '#a0506a' }}>{formatServicePrice(service)}</td>
                         <td style={{ padding: '14px 20px', fontSize: '13px', color: 'var(--text-secondary)' }}>
-                          {service.total_bookings || 0}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '700', color: '#c97282' }}>
+                            <Heart size={12} fill="currentColor" /> {service.total_bookings || 0}
+                          </div>
                         </td>
                         <td style={{ padding: '14px 20px', textAlign: 'right' }}>
                           <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
@@ -955,17 +997,25 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                               <button 
                                 onClick={() => setSelectedServiceDetail(service)}
                                 className="action-btn"
-                                style={{ width: 'auto', height: '32px', padding: '0 12px', fontSize: '11px', fontWeight: '700', borderRadius: '8px', color: 'var(--pink-primary)' }}
+                                style={{ width: 'auto', height: '30px', padding: '0 12px', fontSize: '11px', fontWeight: '700', borderRadius: '10px', color: '#c97282', background: '#faf3f2', border: '1px solid rgba(201, 114, 130, 0.15)' }}
                               >
                                 Ver Opciones
                               </button>
                             ) : (
                               <>
-                                <button className="action-btn" onClick={() => handleEditClick(service)} style={{ width: '32px', height: '32px' }}>
-                                  <Edit2 size={14} />
+                                <button 
+                                  className="action-btn" 
+                                  onClick={() => handleEditClick(service)} 
+                                  style={{ width: '30px', height: '30px', borderRadius: '10px', color: 'var(--text-secondary)', background: '#faf3f2', border: '1px solid rgba(201, 114, 130, 0.15)' }}
+                                >
+                                  <Edit2 size={13} />
                                 </button>
-                                <button onClick={() => handleDeleteService(service.id, service.name)} className="action-btn" style={{ width: '32px', height: '32px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.1)' }}>
-                                  <Trash2 size={14} />
+                                <button 
+                                  onClick={() => handleDeleteService(service.id, service.name)} 
+                                  className="action-btn" 
+                                  style={{ width: '30px', height: '30px', borderRadius: '10px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.05)', border: '1px solid rgba(255,69,58,0.1)' }}
+                                >
+                                  <Trash2 size={13} />
                                 </button>
                               </>
                             )}
@@ -988,7 +1038,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                   <button
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    style={{ width: '36px', height: '36px', borderRadius: '10px', border: '1px solid var(--border-color)', background: 'white', cursor: currentPage === 1 ? 'default' : 'pointer', color: currentPage === 1 ? 'var(--text-muted)' : 'var(--text-primary)', fontSize: '14px', fontWeight: '700', opacity: currentPage === 1 ? 0.5 : 1 }}
+                    style={{ width: '36px', height: '36px', borderRadius: '10px', border: '1px solid rgba(212, 160, 154, 0.25)', background: 'white', cursor: currentPage === 1 ? 'default' : 'pointer', color: currentPage === 1 ? 'var(--text-muted)' : 'var(--text-primary)', fontSize: '14px', fontWeight: '700', opacity: currentPage === 1 ? 0.5 : 1 }}
                   >
                     &laquo;
                   </button>
@@ -997,11 +1047,12 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                       key={page}
                       onClick={() => setCurrentPage(page)}
                       style={{
-                        width: '36px', height: '36px', borderRadius: '10px', border: 'none', cursor: 'pointer',
+                        width: '36px', height: '36px', borderRadius: '10px', cursor: 'pointer',
                         fontSize: '13px', fontWeight: '700',
-                        backgroundColor: currentPage === page ? 'var(--pink-primary)' : 'white',
+                        backgroundColor: currentPage === page ? '#c97282' : 'white',
                         color: currentPage === page ? 'white' : 'var(--text-secondary)',
-                        boxShadow: currentPage === page ? '0 2px 6px rgba(196,139,159,0.3)' : 'none'
+                        boxShadow: currentPage === page ? '0 4px 10px rgba(201, 114, 130, 0.25)' : 'none',
+                        border: currentPage === page ? 'none' : '1px solid rgba(212, 160, 154, 0.25)'
                       }}
                     >
                       {page}
@@ -1010,7 +1061,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                   <button
                     onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
-                    style={{ width: '36px', height: '36px', borderRadius: '10px', border: '1px solid var(--border-color)', background: 'white', cursor: currentPage === totalPages ? 'default' : 'pointer', color: currentPage === totalPages ? 'var(--text-muted)' : 'var(--text-primary)', fontSize: '14px', fontWeight: '700', opacity: currentPage === totalPages ? 0.5 : 1 }}
+                    style={{ width: '36px', height: '36px', borderRadius: '10px', border: '1px solid rgba(212, 160, 154, 0.25)', background: 'white', cursor: currentPage === totalPages ? 'default' : 'pointer', color: currentPage === totalPages ? 'var(--text-muted)' : 'var(--text-primary)', fontSize: '14px', fontWeight: '700', opacity: currentPage === totalPages ? 0.5 : 1 }}
                   >
                     &raquo;
                   </button>
@@ -1023,26 +1074,26 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
             
           </div>
           
-          {/* │││ RIGHT SIDEBAR │││ */}
+          {/* │ │ │  RIGHT SIDEBAR │ │ │  */}
           {!isMobile && (
             <div style={{ width: '300px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
               
-              {/* CATEGORÁAS MÁS VENDIDAS */}
-              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
-                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px' }}>Categorías más vendidas</h4>
+              {/* CATEGORÍAS MÁS VENDIDAS */}
+              <div style={{ background: '#ffffff', borderRadius: '22px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.03)', border: '1px solid rgba(212, 160, 154, 0.15)' }}>
+                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '18px', fontFamily: "'Playfair Display', Georgia, serif" }}>Categorías más vendidas</h4>
                 {[
-                  { name: 'Cabello', pct: 54, color: '#c48b9f' },
-                  { name: 'Uñas', pct: 21, color: '#6366f1' },
-                  { name: 'Pestañas', pct: 12, color: '#ef4444' },
-                  { name: 'Facial', pct: 8, color: '#f59e0b' },
-                  { name: 'Combos', pct: 5, color: '#22c55e' },
+                  { name: 'Cabello', pct: 54, color: '#c97282' },
+                  { name: 'Uñas', pct: 21, color: '#a0506a' },
+                  { name: 'Pestañas', pct: 12, color: '#dfb28c' },
+                  { name: 'Facial', pct: 8, color: '#d4a09a' },
+                  { name: 'Combos', pct: 5, color: '#fbcada' },
                 ].map(cat => (
-                  <div key={cat.name} style={{ marginBottom: '12px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                      <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)' }}>{cat.name}</span>
-                      <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{cat.pct}%</span>
+                  <div key={cat.name} style={{ marginBottom: '14px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)' }}>{cat.name}</span>
+                      <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>{cat.pct}%</span>
                     </div>
-                    <div style={{ height: '6px', backgroundColor: '#f5f5f5', borderRadius: '3px', overflow: 'hidden' }}>
+                    <div style={{ height: '6px', backgroundColor: '#faf3f2', borderRadius: '3px', overflow: 'hidden' }}>
                       <div style={{ height: '100%', width: `${cat.pct}%`, backgroundColor: cat.color, borderRadius: '3px', transition: 'width 0.5s ease' }} />
                     </div>
                   </div>
@@ -1050,60 +1101,61 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               </div>
               
               {/* SERVICIO DESTACADO DEL MES */}
-              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
-                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px' }}>Servicio destacado del mes</h4>
-                <div style={{ width: '100%', height: '100px', borderRadius: '12px', backgroundColor: 'rgba(196,139,159,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
-                  <Sparkles size={32} color="#c48b9f" />
+              <div style={{ background: '#ffffff', borderRadius: '22px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.03)', border: '1px solid rgba(212, 160, 154, 0.15)' }}>
+                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '18px', fontFamily: "'Playfair Display', Georgia, serif" }}>Servicio destacado del mes</h4>
+                <div style={{ width: '100%', height: '110px', borderRadius: '16px', overflow: 'hidden', position: 'relative', marginBottom: '14px' }}>
+                  <img src="/corte_cabello_foto.jpg" alt="Corte Suprema" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(74, 48, 54, 0.7) 0%, rgba(74, 48, 54, 0) 70%)' }} />
                 </div>
-                <h5 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', margin: '0 0 4px' }}>Corte Suprema</h5>
-                <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '0 0 12px', lineHeight: '1.4' }}>El servicio estrella del mes con la mejor valoración por parte de nuestras clientas.</p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px', fontSize: '12px', color: '#c48b9f', fontWeight: '600' }}>
-                  <Heart size={14} fill="currentColor" /> 142 reservas
+                <h5 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: '0 0 6px', fontFamily: "'Playfair Display', Georgia, serif" }}>Corte Suprema</h5>
+                <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', margin: '0 0 14px', lineHeight: '1.45' }}>El servicio estrella del mes con la mejor valoración por parte de nuestras clientas.</p>
+                <div style={{ alignItems: 'center', gap: '6px', marginBottom: '14px', fontSize: '12px', color: '#c97282', fontWeight: '700', backgroundColor: '#faf3f2', padding: '4px 10px', borderRadius: '8px', alignSelf: 'flex-start', display: 'inline-flex' }}>
+                  <Heart size={13} fill="currentColor" /> 142 reservas
                 </div>
                 <button 
-                  style={{ width: '100%', padding: '10px', borderRadius: '10px', border: 'none', backgroundColor: 'rgba(196,139,159,0.1)', color: 'var(--pink-primary)', fontWeight: '700', fontSize: '13px', cursor: 'pointer' }}
+                  onClick={() => onNavigate('services')}
+                  style={{ width: '100%', padding: '11px', borderRadius: '12px', backgroundColor: '#faf3f2', color: '#a0506a', fontWeight: '700', fontSize: '13px', cursor: 'pointer', border: '1px solid rgba(160, 80, 106, 0.15)', transition: 'all 0.2s' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = '#f5e8e6'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = '#faf3f2'; }}
                 >
                   Ver detalles
                 </button>
               </div>
               
-              {/* EXTRAS MÁS AÁ‘ADIDOS */}
-              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
-                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px' }}>Extras más añadidos</h4>
+              {/* EXTRAS MÁS AÑADIDOS */}
+              <div style={{ background: '#ffffff', borderRadius: '22px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.03)', border: '1px solid rgba(212, 160, 154, 0.15)' }}>
+                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '18px', fontFamily: "'Playfair Display', Georgia, serif" }}>Extras más añadidos</h4>
                 {[
                   { name: 'Ampolla de Keratina', count: 88 },
                   { name: 'Diseño de Cejas', count: 72 },
                   { name: 'Tratamiento de Manos', count: 64 },
                   { name: 'Retiro de Acrílico', count: 52 },
                 ].map((extra, idx) => (
-                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: idx < 3 ? '1px solid var(--border-color)' : 'none' }}>
-                    <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)' }}>{extra.name}</span>
-                    <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--pink-primary)', backgroundColor: 'rgba(196,139,159,0.1)', padding: '3px 8px', borderRadius: '8px' }}>{extra.count}</span>
+                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: idx < 3 ? '1px solid rgba(212, 160, 154, 0.1)' : 'none' }}>
+                    <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-secondary)' }}>{extra.name}</span>
+                    <span style={{ fontSize: '11px', fontWeight: '800', color: '#a0506a', backgroundColor: '#faf3f2', padding: '3px 8px', borderRadius: '8px', border: '1px solid rgba(160, 80, 106, 0.1)' }}>{extra.count}</span>
                   </div>
                 ))}
               </div>
               
               {/* PAQUETES RECOMENDADOS */}
-              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
-                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px' }}>Paquetes recomendados</h4>
+              <div style={{ background: '#ffffff', borderRadius: '22px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.03)', border: '1px solid rgba(212, 160, 154, 0.15)' }}>
+                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '18px', fontFamily: "'Playfair Display', Georgia, serif" }}>Paquetes recomendados</h4>
                 {[
                   { name: 'Pack Cabello Premium', desc: 'Corte + Keratina + Secado', price: '$45' },
                   { name: 'Combo Manicura & Pestañas', desc: 'Manicura gel + Extensiones', price: '$38' },
                 ].map((pkg, idx) => (
-                  <div key={idx} style={{ display: 'flex', gap: '12px', padding: '12px', borderRadius: '12px', backgroundColor: 'rgba(196,139,159,0.04)', marginBottom: idx === 0 ? '10px' : 0, border: '1px solid var(--border-color)' }}>
-                    <div style={{ width: '48px', height: '48px', borderRadius: '10px', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <Star size={20} color="#c48b9f" />
+                  <div key={idx} style={{ display: 'flex', gap: '12px', padding: '14px', borderRadius: '16px', backgroundColor: '#faf3f2', marginBottom: idx === 0 ? '12px' : 0, border: '1px solid rgba(212, 160, 154, 0.12)', cursor: 'pointer', transition: 'transform 0.2s' }} onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; }} onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(212, 160, 154, 0.15)', color: '#c97282' }}>
+                      <Star size={18} color="#c97282" fill="currentColor" />
                     </div>
-                    <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)' }}>{pkg.name}</div>
-                      <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{pkg.desc}</div>
-                      <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--pink-primary)', marginTop: '2px' }}>{pkg.price}</div>
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-primary)' }}>{pkg.name}</div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '1px' }}>{pkg.desc}</div>
+                      <div style={{ fontSize: '13px', fontWeight: '800', color: '#a0506a', marginTop: '4px' }}>{pkg.price}</div>
                     </div>
                   </div>
                 ))}
-                <button style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-color)', backgroundColor: 'transparent', color: 'var(--text-secondary)', fontWeight: '700', fontSize: '13px', cursor: 'pointer', marginTop: '12px' }}>
-                  Ver todos los paquetes →’
-                </button>
               </div>
               
             </div>
