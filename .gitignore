@@ -42,3 +42,6 @@ supabase/.temp/
 
 # Vercel
 .vercel/
+
+# Local Project Handoff
+PROJECT_HANDOFF.md
