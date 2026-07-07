@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import {
   BarChart3, Users, UserCircle, Sparkles, Package, Wallet,
   Star, Calendar, LogOut, PanelLeftClose, PanelLeftOpen,
-  Receipt, Percent, Settings, Sliders, FileText, X
+  Receipt, Percent, Settings, Sliders, FileText, X, ChevronDown
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useModal } from '../context/ModalContext';
@@ -81,8 +81,8 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
     height: '100vh',
     position: 'sticky',
     top: 0,
-    background: 'linear-gradient(180deg, #fdf8f7 0%, #fceef0 40%, #fbe5e8 100%)',
-    borderRight: '1px solid rgba(201, 114, 130, 0.12)',
+    background: 'linear-gradient(180deg, #fefaf9 0%, #fdf6f5 40%, #fcf2f1 100%)',
+    borderRight: '1px solid rgba(201, 114, 130, 0.1)',
     display: 'flex', flexDirection: 'column',
     padding: effectiveCollapsed ? '10px 6px' : '12px 8px',
     overflowY: isMobile ? 'auto' : 'hidden', overflowX: 'hidden',
@@ -236,39 +236,76 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
         })}
       </nav>
 
-      <div style={{ marginTop: 'auto', paddingTop: '16px' }}>
-        <div style={{
-          height: '1px',
-          background: 'linear-gradient(90deg, transparent 0%, rgba(212, 160, 154, 0.3) 50%, transparent 100%)',
-          marginBottom: '12px'
-        }} />
-        <button
-          onClick={handleLogout}
-          style={{
-            display: 'flex', alignItems: 'center', gap: '12px',
-            padding: effectiveCollapsed ? '10px' : '10px 14px',
-            borderRadius: '14px', border: '1px solid rgba(220, 100, 100, 0.1)',
-            background: 'transparent',
-            color: 'var(--text-secondary)', cursor: 'pointer',
-            fontSize: '0.82rem', width: '100%',
-            textAlign: 'left',
-            justifyContent: effectiveCollapsed ? 'center' : 'flex-start',
-            transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-            transform: 'scale(1)'
-          }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(220, 100, 100, 0.08)'; e.currentTarget.style.color = '#dc6464'; e.currentTarget.style.borderColor = 'rgba(220, 100, 100, 0.2)'; e.currentTarget.style.transform = 'scale(1.02)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = 'rgba(220, 100, 100, 0.1)'; e.currentTarget.style.transform = 'scale(1)'; }}
-        >
+      <div style={{ marginTop: 'auto', paddingTop: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        {!effectiveCollapsed && (
+          <button
+            onClick={handleLogout}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '12px',
+              padding: '12px 14px',
+              borderRadius: '16px',
+              border: '1px solid rgba(201, 114, 130, 0.15)',
+              background: 'rgba(255,255,255,0.6)',
+              backdropFilter: 'blur(8px)',
+              color: 'var(--text-secondary)', cursor: 'pointer',
+              fontSize: '0.82rem', width: '100%',
+              textAlign: 'left',
+              transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.06)'; e.currentTarget.style.borderColor = 'rgba(201, 114, 130, 0.25)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.6)'; e.currentTarget.style.borderColor = 'rgba(201, 114, 130, 0.15)'; }}
+          >
+            <div style={{
+              width: '32px', height: '32px', borderRadius: '10px',
+              background: 'rgba(201, 114, 130, 0.08)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0
+            }}>
+              <LogOut size={16} style={{ color: '#a0506a' }} />
+            </div>
+            <span>Cerrar Sesión</span>
+          </button>
+        )}
+
+        {/* User Profile Card */}
+        {!effectiveCollapsed && (
           <div style={{
-            width: '32px', height: '32px', borderRadius: '10px',
-            background: 'rgba(220, 100, 100, 0.08)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            flexShrink: 0
-          }}>
-            <LogOut size={16} style={{ color: 'var(--text-muted)' }} />
+            display: 'flex', alignItems: 'center', gap: '10px',
+            padding: '10px 12px',
+            borderRadius: '16px',
+            background: 'rgba(255,255,255,0.7)',
+            border: '1px solid rgba(201, 114, 130, 0.1)',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease'
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.9)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.7)'; }}
+          >
+            <div style={{
+              width: '40px', height: '40px', borderRadius: '50%',
+              background: 'linear-gradient(135deg, #c97282, #a0506a)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: '#fff', fontWeight: 700, fontSize: '0.85rem',
+              flexShrink: 0, overflow: 'hidden',
+              boxShadow: '0 2px 8px rgba(201, 114, 130, 0.2)'
+            }}>
+              {user?.image_url ? (
+                <img src={user.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                user?.name?.charAt(0)?.toUpperCase() || 'J'
+              )}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.82rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {user?.name || 'Jana Rodríguez'}
+              </div>
+              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 500 }}>
+                {user?.role === 'Admin' ? 'Administradora' : user?.role || 'Administradora'}
+              </div>
+            </div>
+            <ChevronDown size={14} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
           </div>
-          {!effectiveCollapsed && <span>Cerrar Sesión</span>}
-        </button>
+        )}
       </div>
     </div>
   );
