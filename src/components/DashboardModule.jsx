@@ -1072,486 +1072,157 @@ const DashboardModule = ({
 
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', animation: 'fadeIn 0.35s ease', minHeight: isMobile ? 'auto' : '100%', paddingBottom: isMobile ? 'calc(100px + env(safe-area-inset-bottom, 12px))' : '0' }}>
-      
-      {/* Asymmetric Desktop Layout: Left main column, Right sidebar panel */}
-      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '12px', alignItems: 'stretch', flex: 1, minHeight: 0 }}>
-        
-        {/* Left Column: Banner, Stats grid, Bottom row */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px', minHeight: 0 }}>
-          
-          {/* Main Hero Banner: styled exactly like Photo 2 with real salon background */}
-          <div className="wow-card wow-animate-1" style={{
-            borderRadius: '24px',
-            position: 'relative',
-            overflow: 'hidden',
-            flex: 'none',
-            height: isMobile ? '185px' : '230px',
-            border: '1px solid rgba(212, 160, 154, 0.15)',
-            boxShadow: 'var(--shadow-card)',
-            userSelect: 'none'
-          }}>
-            {/* Real background image with zoom and position controls */}
-            <div 
-              style={{
-                position: 'absolute',
-                inset: 0,
-                width: '100%',
-                height: '100%',
-                overflow: 'hidden',
-                zIndex: 0
-              }}
-            >
-              <img 
-                src="/salon_banner_full.png" 
-                alt="Jana Studio Banner"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  objectPosition: 'center 50%',
-                  pointerEvents: 'none'
-                }}
-                id="jana-hero-img"
-              />
-            </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.35s ease', paddingBottom: '40px' }}>
 
-            {/* Soft cream-white gradient overlay on the left to make text highly readable */}
-            <div style={{
-              position: 'absolute', inset: 0,
-              background: isMobile 
-                ? 'linear-gradient(90deg, rgba(252,249,248,0.96) 0%, rgba(252,249,248,0.85) 60%, rgba(252,249,248,0.2) 100%)'
-                : 'linear-gradient(90deg, rgba(252,249,248,0.95) 0%, rgba(252,249,248,0.8) 40%, rgba(252,249,248,0.0) 80%)',
-              borderRadius: '24px',
-              zIndex: 1
-            }} />
+      {/* ── HERO BANNER ── */}
+      <div style={{
+        borderRadius: '28px',
+        position: 'relative',
+        overflow: 'hidden',
+        height: '220px',
+        border: '1px solid rgba(212, 160, 154, 0.15)',
+        boxShadow: '0 8px 32px rgba(74, 48, 54, 0.06)',
+        background: '#faf3f2'
+      }}>
+        <img
+          src="/salon_banner_full.png"
+          alt="Jana Studio"
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'left center' }}
+        />
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(90deg, rgba(252,249,248,0.97) 0%, rgba(252,249,248,0.82) 45%, rgba(252,249,248,0.0) 80%)',
+          borderRadius: '28px', zIndex: 1
+        }} />
+        <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '45%', padding: '36px 48px', height: '100%', justifyContent: 'center' }}>
+          <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.9rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0, lineHeight: '1.2' }}>
+            Bienvenida de nuevo, {(!user || user.role?.toLowerCase().includes('admin')) ? 'Jana' : (user.name?.split(' ')[0] || 'Jana')} <span style={{ color: '#c97282' }}>♡</span>
+          </h2>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '500', margin: 0, lineHeight: 1.5 }}>
+            Aquí tienes un resumen de tu estudio hoy.
+          </p>
+          <button
+            onClick={() => onNavigate('scheduling')}
+            style={{ alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 22px', borderRadius: '12px', background: '#c97282', color: '#ffffff', fontSize: '0.82rem', fontWeight: '600', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(201, 114, 130, 0.3)', transition: 'all 0.2s' }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(201, 114, 130, 0.4)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(201, 114, 130, 0.3)' }}
+          >
+            <Plus size={15} strokeWidth={2.5} /> Nueva Cita
+          </button>
+        </div>
+      </div>
 
-            {/* Left aligned text content matching mockup style */}
-            <div style={{ 
-              zIndex: 2, 
-              display: 'flex', 
-              flexDirection: 'column', 
-              gap: isMobile ? '8px' : '10px', 
-              maxWidth: isMobile ? '70%' : '50%',
-              padding: isMobile ? '20px 20px' : '30px 40px',
-              position: 'relative',
-              height: '100%',
-              justifyContent: 'center'
-            }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <h2 style={{ 
-                  fontFamily: "'Playfair Display', Georgia, serif", 
-                  fontSize: isMobile ? '1.3rem' : '1.9rem', 
-                  fontWeight: '700',
-                  color: 'var(--text-primary)',
-                  margin: 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px'
-                }}>
-                  Bienvenida de nuevo, {(!user || user.role?.toLowerCase().includes('admin') || user.name?.toLowerCase().includes('administrador')) ? 'Jana' : (user.name?.split(' ')[0] || 'Jana')}
-                  <span style={{ color: 'var(--magenta-secondary)', fontSize: isMobile ? '1.1rem' : '1.6rem' }}>♡</span>
-                </h2>
-                <p style={{
-                  fontSize: isMobile ? '0.72rem' : '0.8rem',
-                  color: 'var(--text-secondary)',
-                  fontWeight: '500',
-                  margin: 0
-                }}>
-                  Esto es lo que está pasando en tu salón hoy.
-                </p>
-              </div>
-
-              {/* Handwritten script text */}
-              <div style={{
-                fontFamily: "'Dancing Script', cursive",
-                fontSize: isMobile ? '1.2rem' : '1.6rem',
-                color: 'var(--magenta-secondary)',
-                fontWeight: '600',
-                margin: '2px 0'
-              }}>
-                ¡Brilla hoy, hermosa!
-              </div>
-
-              <button 
-                onClick={() => onNavigate('scheduling')}
-                style={{
-                  alignSelf: 'flex-start',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  padding: isMobile ? '8px 16px' : '10px 20px',
-                  borderRadius: '12px',
-                  background: 'var(--pink-primary)',
-                  color: '#ffffff',
-                  fontSize: isMobile ? '0.72rem' : '0.78rem',
-                  fontWeight: '600',
-                  border: 'none',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 10px rgba(212, 160, 154, 0.3)',
-                  transition: 'all 0.2s ease-in-out'
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--magenta-secondary)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--pink-primary)'; e.currentTarget.style.transform = 'none' }}
-              >
-                <Plus size={14} strokeWidth={2.5} />
-                Nueva Cita
-              </button>
-            </div>
+      {/* ── WIDGETS OPERATIVOS 2x2 ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+        {/* Card 1: Citas del día */}
+        <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)' }}>
+          <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: '#fdf3f4', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
+            <Calendar size={22} />
           </div>
-
-
-          {/* Stats grid row */}
-          <div style={{ 
-            display: 'flex',
-            gridTemplateColumns: isMobile ? 'none' : 'repeat(3, 1fr)', 
-            gap: '10px',
-            overflowX: isMobile ? 'auto' : 'visible',
-            WebkitOverflowScrolling: 'touch',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-            paddingBottom: isMobile ? '4px' : '0',
-            ...(isMobile ? {} : { display: 'grid' })
-          }}>
-            {/* Stats Card: Clients */}
-            <div className="glass-card wow-card wow-animate-2" style={{ 
-              padding: '0',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'stretch',
-              backgroundColor: '#ffffff',
-              overflow: 'hidden',
-              minHeight: '0',
-              position: 'relative',
-              minWidth: isMobile ? '200px' : '0',
-              flexShrink: isMobile ? '0' : '1'
-            }}>
-              {/* Text side */}
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '18px 16px 18px 20px', gap: '4px' }}>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Clientes</span>
-                <span style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--text-primary)', lineHeight: 1.1 }}>
-                  {stats?.clients || dbData?.clients?.length || 248}
-                </span>
-                <span style={{ fontSize: '0.7rem', color: 'var(--magenta-secondary)', fontWeight: '600' }}>+18 nuevos este mes</span>
-              </div>
-              {/* Oval image placeholder — replace src when ready */}
-              <div style={{
-                width: '100px',
-                flexShrink: 0,
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '10px 12px 10px 0'
-              }}>
-                <div className="wow-oval" style={{
-                  width: '80px',
-                  height: '110px',
-                  borderRadius: '60px 60px 60px 60px',
-                  overflow: 'hidden',
-                  boxShadow: '0 4px 16px rgba(160,80,106,0.12)',
-                  background: 'linear-gradient(135deg, #fbcada 0%, #d4a09a 100%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '2px solid rgba(212,160,154,0.3)'
-                }}>
-                  {/* Placeholder icon until user provides image */}
-                  <Users size={32} color="rgba(255,255,255,0.9)" />
-                </div>
-              </div>
-            </div>
-
-            {/* Stats Card: Service Catalog */}
-            <div className="glass-card wow-card wow-animate-2" style={{ 
-              padding: '0',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'stretch',
-              backgroundColor: '#ffffff',
-              overflow: 'hidden',
-              minHeight: '0',
-              position: 'relative',
-              minWidth: isMobile ? '200px' : '0',
-              flexShrink: isMobile ? '0' : '1'
-            }}>
-              {/* Text side */}
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '18px 16px 18px 20px', gap: '4px' }}>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Catálogo de Servicios</span>
-                <span style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--text-primary)', lineHeight: 1.1 }}>
-                  {dbData?.services?.length || 24}
-                </span>
-                <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: '500' }}>Más solicitado: Pestañas Clásicas</span>
-              </div>
-              {/* Oval image placeholder */}
-              <div style={{
-                width: '100px',
-                flexShrink: 0,
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '10px 12px 10px 0'
-              }}>
-                <div className="wow-oval" style={{
-                  width: '80px',
-                  height: '110px',
-                  borderRadius: '60px 60px 60px 60px',
-                  overflow: 'hidden',
-                  boxShadow: '0 4px 16px rgba(160,80,106,0.12)',
-                  background: 'linear-gradient(135deg, #dfb28c 0%, #d4a09a 100%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '2px solid rgba(212,160,154,0.3)'
-                }}>
-                  <Scissors size={32} color="rgba(255,255,255,0.9)" />
-                </div>
-              </div>
-            </div>
-
-            {/* Stats Card: Team */}
-            <div className="glass-card wow-card wow-animate-2" style={{ 
-              padding: '0',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'stretch',
-              backgroundColor: '#ffffff',
-              overflow: 'hidden',
-              minHeight: '0',
-              position: 'relative',
-              minWidth: isMobile ? '200px' : '0',
-              flexShrink: isMobile ? '0' : '1'
-            }}>
-              {/* Text side */}
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '18px 16px 18px 20px', gap: '4px' }}>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Equipo</span>
-                <span style={{ fontSize: '2rem', fontWeight: '800', color: 'var(--text-primary)', lineHeight: 1.1 }}>
-                  {dbData?.staff?.length || 6}
-                </span>
-                <span style={{ fontSize: '0.7rem', color: 'var(--magenta-secondary)', fontWeight: '600' }}>2 en turno hoy</span>
-              </div>
-              {/* Oval image placeholder */}
-              <div style={{
-                width: '100px',
-                flexShrink: 0,
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '10px 12px 10px 0'
-              }}>
-                <div className="wow-oval" style={{
-                  width: '80px',
-                  height: '110px',
-                  borderRadius: '60px 60px 60px 60px',
-                  overflow: 'hidden',
-                  boxShadow: '0 4px 16px rgba(160,80,106,0.12)',
-                  background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '2px solid rgba(212,160,154,0.3)'
-                }}>
-                  <Sparkles size={32} color="rgba(255,255,255,0.9)" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Grid: Loyalty, Reports, Grow your studio */}
-          <div style={{ 
-            display: 'flex',
-            gridTemplateColumns: isMobile ? 'none' : 'repeat(3, 1fr)', 
-            gap: '10px',
-            overflowX: isMobile ? 'auto' : 'visible',
-            WebkitOverflowScrolling: 'touch',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-            paddingBottom: isMobile ? '4px' : '0',
-            ...(isMobile ? {} : { display: 'grid' })
-          }}>
-            {/* Top Especialistas Card */}
-            <div className="glass-card wow-card wow-animate-3" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '12px', minHeight: '0', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)', minWidth: isMobile ? '260px' : '0', flexShrink: isMobile ? '0' : '1' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Top Especialistas</span>
-                <span onClick={() => onNavigate('personnel')} style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}>Ver todo</span>
-              </div>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {TOP_SPECIALISTS.slice(0, 3).map((spec, idx) => (
-                  <div key={idx} style={{
-                    display: 'flex', alignItems: 'center', gap: '10px',
-                    padding: '4px 6px', borderRadius: '10px',
-                    background: idx === 0 ? 'rgba(212, 160, 154, 0.08)' : 'transparent'
-                  }}>
-                    <div style={{
-                      width: '30px', height: '30px', borderRadius: '50%',
-                      background: 'var(--pink-gradient)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: 'white', fontWeight: 600, fontSize: '0.72rem', flexShrink: 0
-                    }}>{spec.initial}</div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.75rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{spec.name}</div>
-                      <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{spec.role}</div>
-                    </div>
-                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                      <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.75rem' }}>Bs. {formatBs(spec.earnings)}</div>
-                      <div style={{ fontSize: '0.58rem', color: 'var(--text-muted)' }}>Ingresos</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Reports Revenue card */}
-            <div className="glass-card wow-card wow-animate-4" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '10px', minHeight: '0', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)', minWidth: isMobile ? '260px' : '0', flexShrink: isMobile ? '0' : '1' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Reportes</span>
-                <span style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}>Ver todo</span>
-              </div>
-              
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--text-primary)' }}>
-                  Bs. {stats?.monthlyIncome ? formatBs(stats.monthlyIncome) : '12.840'}
-                </span>
-                <span style={{ fontSize: '0.72rem', color: '#22c55e', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '2px' }}>
-                  ↑ 18% <span style={{ color: 'var(--text-muted)', fontWeight: '500' }}>vs mes anterior</span>
-                </span>
-              </div>
-              
-              {/* Minimal Line chart */}
-              <div style={{ height: '55px', width: '100%', marginTop: 'auto' }}>
-                <Line data={mainChartData} options={chartOptions} />
-              </div>
-            </div>
-
-            {/* Servicios Más Populares Card */}
-            <div className="glass-card wow-card wow-animate-5" style={{ padding: '20px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', gap: '10px', minHeight: '0', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: 'var(--shadow-card)', minWidth: isMobile ? '260px' : '0', flexShrink: isMobile ? '0' : '1' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)' }}>Servicios Populares</span>
-                <span onClick={() => onNavigate('services')} style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}>Ver todo</span>
-              </div>
-              
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flex: 1, minHeight: 0 }}>
-                {/* Donut chart */}
-                <div style={{ height: '90px', width: '90px', position: 'relative', flexShrink: 0 }}>
-                  <Doughnut data={servicesDonutData} options={donutOptions} />
-                  <div style={{
-                    position: 'absolute', top: '50%', left: '50%',
-                    transform: 'translate(-50%, -50%)', textAlign: 'center',
-                    lineHeight: 1.1
-                  }}>
-                    <div style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--text-primary)' }}>156</div>
-                    <div style={{ fontSize: '0.55rem', color: 'var(--text-muted)', fontWeight: 500 }}>Reservas</div>
-                  </div>
-                </div>
-                
-                {/* Legend list */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1, overflow: 'hidden' }}>
-                  {servicesDonutData.labels.slice(0, 3).map((label, idx) => (
-                    <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.68rem' }}>
-                      <div style={{
-                        width: '6px', height: '6px', borderRadius: '2px',
-                        background: servicesDonutData.datasets[0].backgroundColor[idx], flexShrink: 0
-                      }} />
-                      <span style={{ flex: 1, color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
-                      <span style={{ fontWeight: 600, color: 'var(--text-primary)', flexShrink: 0 }}>
-                        {servicesDonutData.datasets[0].data[idx]}%
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>Citas del día</span>
+            <span style={{ fontSize: '1.6rem', fontWeight: '800', color: 'var(--text-primary)', lineHeight: 1.1 }}>{upcomingAppointments.length > 0 ? upcomingAppointments.length : (stats?.appointments || 12)}</span>
+            <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: '500', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {upcomingAppointments.length > 0 ? `Sig: ${upcomingAppointments[0].time}` : 'Sin citas próximas'}
+            </span>
           </div>
         </div>
 
-        {/* Right Sidebar Panel: Upcoming Appointments */}
-        <div className="glass-card wow-card wow-animate-3" style={{
-          width: isMobile ? '100%' : '300px',
-          flexShrink: 0,
-          backgroundColor: '#ffffff',
-          padding: '16px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          gap: '10px',
-          borderRadius: '20px',
-          border: '1px solid rgba(212, 160, 154, 0.15)',
-          boxShadow: 'var(--shadow-card)',
-          overflow: 'hidden'
-        }}>
+        {/* Card 2: Ingresos hoy */}
+        <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)' }}>
+          <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: '#fdf3f4', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
+            <DollarSign size={22} />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Ingresos hoy</span>
+            <span style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--text-primary)', lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {`Bs. ${formatBs(dynamicStats.todayIncome * (rates?.usd || 40)).split(',')[0]}`}
+            </span>
+            <span style={{ fontSize: '0.65rem', color: dynamicStats.incomeDiffPct >= 0 ? '#22c55e' : '#ef4444', fontWeight: '600', whiteSpace: 'nowrap' }}>
+              {dynamicStats.incomeDiffPct >= 0 ? '↑' : '↓'} {Math.abs(dynamicStats.incomeDiffPct)}% <span style={{ color: 'var(--text-muted)', fontWeight: '400' }}>vs ayer</span>
+            </span>
+          </div>
+        </div>
+
+        {/* Card 3: Nuevas clientes */}
+        <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)' }}>
+          <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: '#fdf3f4', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
+            <UserPlus size={22} />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>Nuevas clientes</span>
+            <span style={{ fontSize: '1.6rem', fontWeight: '800', color: 'var(--text-primary)', lineHeight: 1.1 }}>{dynamicStats.newClients}</span>
+            <span style={{ fontSize: '0.65rem', color: dynamicStats.clientsDiffPct >= 0 ? '#22c55e' : '#ef4444', fontWeight: '600', whiteSpace: 'nowrap' }}>
+              {dynamicStats.clientsDiffPct >= 0 ? '↑' : '↓'} {Math.abs(dynamicStats.clientsDiffPct)}% <span style={{ color: 'var(--text-muted)', fontWeight: '400' }}>vs ayer</span>
+            </span>
+          </div>
+        </div>
+
+        {/* Card 4: Más reservado */}
+        <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)' }}>
+          <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: '#fdf3f4', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
+            <Sparkles size={22} />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>Más reservado</span>
+            <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--text-primary)', lineHeight: 1.2, wordBreak: 'break-word' }}>{dynamicStats.mostReservedService}</span>
+            <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: '500', whiteSpace: 'nowrap' }}>{dynamicStats.mostReservedCount} citas hoy</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── OCUPACIÓN DEL EQUIPO ── */}
+      <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '20px 28px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)', display: 'flex', alignItems: 'center', gap: '24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+          <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: '#fdf3f4', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a' }}>
+            <Activity size={22} />
+          </div>
+          <div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Ocupación del equipo</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#c97282', lineHeight: 1 }}>{dynamicStats.occupancy}%</div>
+          </div>
+        </div>
+        <div style={{ flex: 1, height: '10px', borderRadius: '6px', background: '#f5e9e7', overflow: 'hidden' }}>
+          <div style={{ width: `${dynamicStats.occupancy}%`, height: '100%', borderRadius: '6px', background: 'linear-gradient(90deg, #c97282, #a0506a)', transition: 'width 0.6s ease' }} />
+        </div>
+        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '500', flexShrink: 0 }}>{dynamicStats.activeStaff} estilistas activas hoy</span>
+      </div>
+
+      {/* ── MAIN CONTENT ROW: Agenda + Top Servicios (ALINEACIÓN STRETCH) ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', alignItems: 'stretch' }}>
+
+        {/* AGENDA DE HOY */}
+        <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '24px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ 
-                fontSize: '1.15rem', 
-                fontWeight: '700', 
-                color: 'var(--text-primary)', 
-                fontFamily: "'Playfair Display', Georgia, serif",
-                margin: 0
-              }}>Próximas Citas</h3>
-              <span 
-                onClick={() => onNavigate('scheduling')}
-                style={{ fontSize: '0.72rem', color: 'var(--magenta-secondary)', fontWeight: '600', cursor: 'pointer' }}
-              >
-                Ver todo
+              <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
+                Agenda de hoy
+              </h3>
+              <span onClick={() => onNavigate('scheduling')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                Ver calendario <ChevronRight size={14} />
               </span>
             </div>
 
-            {/* Appointments List */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, overflow: 'hidden' }}>
-              {upcomingAppointments.map((apt, idx) => {
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              {upcomingAppointments.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-muted)', fontSize: '0.82rem' }}>
+                  <Clock size={28} style={{ marginBottom: '8px', opacity: 0.3 }} />
+                  <div>No hay citas programadas para hoy</div>
+                </div>
+              ) : upcomingAppointments.map((apt, idx) => {
                 const sStyle = getStatusStyle(apt.status);
                 return (
-                  <div key={idx} style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '6px 0',
-                    borderBottom: idx < upcomingAppointments.length - 1 ? '1px solid rgba(212, 160, 154, 0.1)' : 'none',
-                    flexShrink: 0
-                  }}>
-                    {/* User profile circular letter initials */}
-                    <div style={{
-                      width: '36px', height: '36px', borderRadius: '50%',
-                      background: 'var(--pink-gradient)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: '#ffffff', fontWeight: '700', fontSize: '0.8rem', flexShrink: 0
-                    }}>
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '10px 12px', borderRadius: '14px', background: idx % 2 === 0 ? '#faf3f2' : 'transparent', transition: 'background 0.2s' }}>
+                    <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'var(--pink-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontWeight: '700', fontSize: '0.9rem', flexShrink: 0 }}>
                       {apt.initial}
                     </div>
-
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: '600' }}>{apt.time}</span>
-                        <span style={{
-                          padding: '2px 8px', borderRadius: '20px', fontSize: '0.62rem',
-                          fontWeight: '700', background: sStyle.bg, color: sStyle.text,
-                          border: `1px solid ${sStyle.border}`, flexShrink: 0
-                        }}>{apt.status}</span>
-                      </div>
-                      <div style={{ 
-                        fontWeight: '700', 
-                        color: 'var(--text-primary)', 
-                        fontSize: '0.85rem', 
-                        marginTop: '2px', 
-                        overflow: 'hidden', 
-                        textOverflow: 'ellipsis', 
-                        whiteSpace: 'nowrap' 
-                      }}>
-                        {apt.client}
-                      </div>
-                      <div style={{ 
-                        fontSize: '0.72rem', 
-                        color: 'var(--text-secondary)', 
-                        marginTop: '1px', 
-                        overflow: 'hidden', 
-                        textOverflow: 'ellipsis', 
-                        whiteSpace: 'nowrap' 
-                      }}>
-                        {apt.service}
-                      </div>
+                      <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '0.88rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{apt.client}</div>
+                      <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '1px' }}>{apt.service}</div>
+                    </div>
+                    <div style={{ flexShrink: 0, textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: '600' }}>{apt.time}</span>
+                      <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '0.65rem', fontWeight: '700', background: sStyle.bg, color: sStyle.text, border: `1px solid ${sStyle.border}` }}>{apt.status}</span>
                     </div>
                   </div>
                 );
@@ -1559,33 +1230,108 @@ const DashboardModule = ({
             </div>
           </div>
 
-          {/* Action button inside card bottom */}
           <button
-            onClick={onOpenSale}
-            style={{
-              width: '100%',
-              padding: '12px 0',
-              borderRadius: '12px',
-              background: 'var(--magenta-secondary)',
-              color: '#ffffff',
-              border: 'none',
-              fontWeight: '700',
-              fontSize: '0.85rem',
-              cursor: 'pointer',
-              boxShadow: '0 4px 15px rgba(160, 80, 106, 0.25)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '6px',
-              transition: 'all 0.2s'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(160, 80, 106, 0.35)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(160, 80, 106, 0.25)' }}
+            onClick={() => onNavigate('scheduling')}
+            style={{ width: '100%', padding: '12px 0', borderRadius: '12px', background: '#c97282', color: '#ffffff', border: 'none', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', boxShadow: '0 4px 15px rgba(201, 114, 130, 0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s', marginTop: 'auto' }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(201, 114, 130, 0.35)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(201, 114, 130, 0.25)' }}
           >
-            <Plus size={16} /> Nueva Cita
+            <Plus size={16} /> Nueva cita
           </button>
         </div>
+
+        {/* TOP SERVICIOS */}
+        <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '24px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
+              Top servicios
+            </h3>
+            <span style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              Este mes <ChevronDown size={14} />
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'stretch', flex: 1 }}>
+            {/* Progress bars */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'center' }}>
+              {[
+                { name: 'Extensiones de pestañas', value: 42, icon: Sparkles },
+                { name: 'Laminado de cejas', value: 24, icon: Star },
+                { name: 'Set híbrido', value: 18, icon: Flower2 },
+                { name: 'Nail Art / Manicura', value: 16, icon: Scissors }
+              ].map((serv, idx) => {
+                const IconComp = serv.icon;
+                return (
+                  <div
+                    key={idx}
+                    onClick={() => onNavigate('services')}
+                    style={{ display: 'flex', flexDirection: 'column', gap: '5px', background: '#faf3f2', padding: '10px 14px', borderRadius: '14px', cursor: 'pointer', transition: 'all 0.2s', border: '1px solid rgba(212, 160, 154, 0.08)' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = '#f5e8e6'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = '#faf3f2'; e.currentTarget.style.transform = 'none' }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-primary)', fontWeight: '600' }}>
+                        <IconComp size={14} style={{ color: '#c97282' }} />
+                        <span>{serv.name}</span>
+                      </div>
+                      <span style={{ color: 'var(--text-secondary)', fontWeight: '700' }}>{serv.value}%</span>
+                    </div>
+                    <div style={{ width: '100%', height: '5px', borderRadius: '3px', background: '#f5e9e7', overflow: 'hidden' }}>
+                      <div style={{ width: `${serv.value}%`, height: '100%', background: 'linear-gradient(90deg, #c97282, #a0506a)', borderRadius: '3px' }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Right photo card */}
+            <div
+              onClick={() => onNavigate('services')}
+              style={{ width: '140px', borderRadius: '20px', overflow: 'hidden', position: 'relative', border: '1px solid rgba(212, 160, 154, 0.15)', cursor: 'pointer', transition: 'all 0.2s', flexShrink: 0 }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.02)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'none' }}
+            >
+              <img src="/foto_pestanas.png" alt="Extensiones de pestañas" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(74, 48, 54, 0.85) 0%, rgba(74, 48, 54, 0.1) 60%)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '10px 14px' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#ffffff' }}>Ext. de pestañas</span>
+                <span style={{ fontSize: '0.6rem', color: '#fae8e5' }}>Desde $50</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* ── SERVICIOS DESTACADOS ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
+          Servicios destacados
+        </h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '14px' }}>
+          {[
+            { name: 'Ext. de Pestañas', price: 'Desde $50', img: '/foto_pestanas.png' },
+            { name: 'Nail Art / Uñas', price: 'Desde $45', img: '/unas_foto.png' },
+            { name: 'Diseño de Cejas', price: 'Desde $35', img: '/cejas_foto.png' },
+            { name: 'Corte de Cabello', price: 'Desde $25', img: '/corte_cabello_foto.jpg' },
+            { name: 'Peinado y Maquillaje', price: 'Desde $60', img: '/peinado_maquillaje.png', position: 'top center' },
+            { name: 'Depilación Láser', price: 'Desde $40', img: '/depilacion_laser_foto.jpg' }
+          ].map((serv, idx) => (
+            <div
+              key={idx}
+              onClick={() => onNavigate('services')}
+              style={{ height: '160px', borderRadius: '22px', overflow: 'hidden', position: 'relative', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: '0 6px 20px rgba(74, 48, 54, 0.05)', cursor: 'pointer', transition: 'all 0.25s ease' }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(74, 48, 54, 0.1)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(74, 48, 54, 0.05)' }}
+            >
+              <img src={serv.img} alt={serv.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: serv.position || 'center' }} />
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(74, 48, 54, 0.85) 0%, rgba(74, 48, 54, 0.02) 65%)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '12px 14px' }}>
+                <span style={{ fontSize: '0.78rem', fontWeight: '700', color: '#ffffff' }}>{serv.name}</span>
+                <span style={{ fontSize: '0.65rem', color: '#fae8e5' }}>{serv.price}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
     </div>
   );
 };
