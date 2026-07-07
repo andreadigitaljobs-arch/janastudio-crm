@@ -364,6 +364,7 @@ function App() {
           rates={effectiveRates}
           onNavigate={handleTabChange}
           onRefresh={fetchInitialData}
+          onOpenNotifications={() => setIsNotificationsOpen(true)}
         /></div>;
       case 'scheduling': return <div className="p-container p-container-agenda"><SchedulingModule isMobile={isMobile} rates={effectiveRates} openScheduleModal={tabParams.openScheduleModal} modalKey={tabParams.modalKey} /></div>;
       case 'reception': return <div className="p-container"><ReceptionModule isMobile={isMobile} /></div>;

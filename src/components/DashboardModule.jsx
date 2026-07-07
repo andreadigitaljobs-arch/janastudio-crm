@@ -34,7 +34,7 @@ const TOP_SPECIALISTS = [
 
 const DashboardModule = ({
   isMobile, isTablet, onOpenSale, stats, chartData,
-  dbData, rates, onNavigate
+  dbData, rates, onNavigate, onOpenNotifications
 }) => {
   const { user } = useAuth();
   const carouselRef = useRef(null);
@@ -310,7 +310,7 @@ const DashboardModule = ({
             {/* Bell Icon with Red badge */}
             <div 
               style={{ position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-              onClick={() => onNavigate('reports')}
+              onClick={() => onOpenNotifications?.()}
             >
               <Bell size={24} style={{ color: '#4a3036' }} />
               <div style={{
