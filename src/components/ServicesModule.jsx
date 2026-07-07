@@ -2130,9 +2130,9 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                     {isEditing ? 'Guardar Cambios' : 'Lanzar Servicio al Catálogo'}
                   </button>
                 </div>
-                </div>
               </div>
             </div>
+          </div>
           )
         )}
       </AnimatedModal>
