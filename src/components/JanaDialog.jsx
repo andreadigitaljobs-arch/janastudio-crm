@@ -58,9 +58,9 @@ const JanaDialog = ({
                   position: 'absolute',
                   top: '20px',
                   right: '20px',
-                  background: 'rgba(255,255,255,0.04)', 
+                  background: 'rgba(212,160,154,0.1)', 
                   border: 'none', 
-                  color: 'rgba(255,255,255,0.5)', 
+                  color: 'var(--text-primary)', 
                   cursor: 'pointer', 
                   width: '32px', 
                   height: '32px', 
@@ -72,12 +72,12 @@ const JanaDialog = ({
                   zIndex: 10
                 }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,69,58,0.15)'; e.currentTarget.style.color = '#ff453a'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'rgba(255,255,255,0.5)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(212,160,154,0.1)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
               >
                 <X size={16} />
               </button>
             )}
-            {title && <h3 style={{ fontSize: '22px', fontWeight: '900', marginBottom: '12px', color: 'white' }}>{title}</h3>}
+            {title && <h3 style={{ fontSize: '22px', fontWeight: '900', marginBottom: '12px', color: 'var(--text-primary)' }}>{title}</h3>}
             {message && <p style={{ fontSize: '15px', color: 'var(--text-secondary)', marginBottom: '24px', lineHeight: '1.6' }}>{message}</p>}
 
             {type === 'prompt' && (
@@ -106,9 +106,9 @@ const JanaDialog = ({
                     onClick={onCancel}
                     style={{ 
                       flex: 1,
-                      background: 'rgba(255, 255, 255, 0.05)', 
-                      border: '1px solid rgba(255, 255, 255, 0.1)', 
-                      color: 'white', 
+                      background: 'white', 
+                      border: '1px solid rgba(212, 160, 154, 0.3)', 
+                      color: 'var(--text-primary)', 
                       padding: '14px', 
                       borderRadius: '14px', 
                       fontWeight: '700', 

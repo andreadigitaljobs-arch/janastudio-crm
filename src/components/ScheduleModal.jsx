@@ -158,7 +158,7 @@ const ScheduleModal = ({
                   <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>{localService?.name} con {localStaff?.name}</p>
                 )}
               </div>
-              <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: 'white', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X /></button>
+              <button onClick={onClose} style={{ background: 'rgba(212,160,154,0.1)', border: 'none', color: 'var(--text-primary)', width: '40px', height: '40px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X /></button>
             </div>
 
             {/* Dynamic Selectors if not pre-specified */}
@@ -169,11 +169,11 @@ const ScheduleModal = ({
                   <select 
                     value={localClient?.id || ''} 
                     onChange={(e) => setLocalClient(clients.find(c => c.id === e.target.value))}
-                    style={{ width: '100%', height: '38px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white', padding: '0 8px', fontSize: '12px', outline: 'none' }}
+                    style={{ width: '100%', height: '38px', background: 'white', border: '1px solid rgba(212,160,154,0.3)', borderRadius: '8px', color: 'var(--text-primary)', padding: '0 8px', fontSize: '12px', outline: 'none' }}
                   >
-                    <option value="" style={{ backgroundColor: 'black' }}>-- Selecciona un Cliente --</option>
+                    <option value="" style={{ backgroundColor: 'white' }}>-- Selecciona un Cliente --</option>
                     {clients.map(c => (
-                      <option key={c.id} value={c.id} style={{ backgroundColor: 'black' }}>{c.name} (V-{c.id_card})</option>
+                      <option key={c.id} value={c.id} style={{ backgroundColor: 'white' }}>{c.name} (V-{c.id_card})</option>
                     ))}
                   </select>
                 </div>
@@ -185,11 +185,11 @@ const ScheduleModal = ({
                   <select 
                     value={localService?.id || ''} 
                     onChange={(e) => setLocalService(services.find(s => s.id === e.target.value))}
-                    style={{ width: '100%', height: '38px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white', padding: '0 8px', fontSize: '12px', outline: 'none' }}
+                    style={{ width: '100%', height: '38px', background: 'white', border: '1px solid rgba(212,160,154,0.3)', borderRadius: '8px', color: 'var(--text-primary)', padding: '0 8px', fontSize: '12px', outline: 'none' }}
                   >
-                    <option value="" style={{ backgroundColor: 'black' }}>-- Selecciona un Servicio --</option>
+                    <option value="" style={{ backgroundColor: 'white' }}>-- Selecciona un Servicio --</option>
                     {services.map(s => (
-                      <option key={s.id} value={s.id} style={{ backgroundColor: 'black' }}>{s.name} - ${s.price}</option>
+                      <option key={s.id} value={s.id} style={{ backgroundColor: 'white' }}>{s.name} - ${s.price}</option>
                     ))}
                   </select>
                   {matchingPkg && (
@@ -206,11 +206,11 @@ const ScheduleModal = ({
                   <select 
                     value={localStaff?.id || ''} 
                     onChange={(e) => setLocalStaff(staffArray.find(s => s.id === e.target.value))}
-                    style={{ width: '100%', height: '38px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white', padding: '0 8px', fontSize: '12px', outline: 'none' }}
+                    style={{ width: '100%', height: '38px', background: 'white', border: '1px solid rgba(212,160,154,0.3)', borderRadius: '8px', color: 'var(--text-primary)', padding: '0 8px', fontSize: '12px', outline: 'none' }}
                   >
-                    <option value="" style={{ backgroundColor: 'black' }}>-- Selecciona un Estilista --</option>
+                    <option value="" style={{ backgroundColor: 'white' }}>-- Selecciona un Estilista --</option>
                     {staffArray.map(s => (
-                      <option key={s.id} value={s.id} style={{ backgroundColor: 'black' }}>{s.name} ({s.role})</option>
+                      <option key={s.id} value={s.id} style={{ backgroundColor: 'white' }}>{s.name} ({s.role})</option>
                     ))}
                   </select>
                 </div>
@@ -218,15 +218,15 @@ const ScheduleModal = ({
             </div>
 
             {/* Date Selector */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', backgroundColor: 'rgba(0,0,0,0.2)', padding: '12px 20px', borderRadius: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', backgroundColor: 'rgba(212,160,154,0.1)', padding: '12px 20px', borderRadius: '16px' }}>
               <button onClick={() => {
                 const prev = new Date(selectedDate);
                 prev.setDate(selectedDate.getDate() - 1);
                 setSelectedDate(prev);
-              }} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><ChevronLeft /></button>
+              }} style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}><ChevronLeft /></button>
               
               <div style={{ textAlign: 'center' }}>
-                <div style={{ fontWeight: '800', fontSize: '16px' }}>
+                <div style={{ fontWeight: '800', fontSize: '16px', color: 'var(--text-primary)' }}>
                   {selectedDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
                 </div>
               </div>
@@ -235,7 +235,7 @@ const ScheduleModal = ({
                 const next = new Date(selectedDate);
                 next.setDate(selectedDate.getDate() + 1);
                 setSelectedDate(next);
-              }} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><ChevronRight /></button>
+              }} style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}><ChevronRight /></button>
             </div>
 
             {/* Selection Mode Toggle */}
@@ -244,9 +244,9 @@ const ScheduleModal = ({
                 onClick={() => setIsCustomMode(false)}
                 style={{ 
                   flex: 1, height: '40px', borderRadius: '12px', fontSize: '12px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s',
-                  backgroundColor: !isCustomMode ? 'rgba(196,139,159,0.1)' : 'rgba(255,255,255,0.02)',
-                  border: !isCustomMode ? '1px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)',
-                  color: !isCustomMode ? 'var(--pink-primary)' : 'white'
+                  backgroundColor: !isCustomMode ? 'rgba(196,139,159,0.1)' : 'white',
+                  border: !isCustomMode ? '1px solid var(--pink-primary)' : '1px solid rgba(212,160,154,0.3)',
+                  color: !isCustomMode ? 'var(--pink-primary)' : 'var(--text-secondary)'
                 }}
               >
                 HORARIOS DISPONIBLES
@@ -255,9 +255,9 @@ const ScheduleModal = ({
                 onClick={() => setIsCustomMode(true)}
                 style={{ 
                   flex: 1, height: '40px', borderRadius: '12px', fontSize: '12px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s',
-                  backgroundColor: isCustomMode ? 'rgba(196,139,159,0.1)' : 'rgba(255,255,255,0.02)',
-                  border: isCustomMode ? '1px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)',
-                  color: isCustomMode ? 'var(--pink-primary)' : 'white'
+                  backgroundColor: isCustomMode ? 'rgba(196,139,159,0.1)' : 'white',
+                  border: isCustomMode ? '1px solid var(--pink-primary)' : '1px solid rgba(212,160,154,0.3)',
+                  color: isCustomMode ? 'var(--pink-primary)' : 'var(--text-secondary)'
                 }}
               >
                 PERSONALIZADO
@@ -276,10 +276,10 @@ const ScheduleModal = ({
                       value={customTime}
                       onChange={(e) => setCustomTime(e.target.value)}
                       style={{
-                        backgroundColor: 'rgba(255,255,255,0.03)',
+                        backgroundColor: 'white',
                         border: '1px solid rgba(196,139,159,0.3)',
                         borderRadius: '12px',
-                        color: 'white',
+                        color: 'var(--text-primary)',
                         fontSize: '22px',
                         fontWeight: '800',
                         padding: '10px 18px',
@@ -315,9 +315,9 @@ const ScheduleModal = ({
                               fontSize: '11px',
                               fontWeight: '800',
                               cursor: slot.isAvailable ? 'pointer' : 'not-allowed',
-                              backgroundColor: selectedSlot === slot.time ? 'var(--pink-primary)' : slot.isAvailable ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.01)',
-                              border: selectedSlot === slot.time ? 'none' : '1px solid rgba(255,255,255,0.05)',
-                              color: selectedSlot === slot.time ? 'black' : slot.isAvailable ? 'white' : 'rgba(255,255,255,0.1)',
+                              backgroundColor: selectedSlot === slot.time ? 'var(--pink-primary)' : slot.isAvailable ? 'white' : 'rgba(212,160,154,0.05)',
+                              border: selectedSlot === slot.time ? 'none' : '1px solid rgba(212,160,154,0.2)',
+                              color: selectedSlot === slot.time ? 'white' : slot.isAvailable ? 'var(--text-primary)' : 'var(--text-muted)',
                               transition: 'all 0.2s',
                               textDecoration: !slot.isAvailable ? 'line-through' : 'none'
                             }}

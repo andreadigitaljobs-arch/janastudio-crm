@@ -439,7 +439,25 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
               <h2 style={{ fontSize: isMobile ? '28px' : '32px', fontWeight: '800', letterSpacing: '-0.5px', color: 'var(--text-primary)' }}>Jana <span className="text-pink">Team</span></h2>
               <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>Gestión de talento y desempeño.</p>
             </div>
-            <div style={{ display: 'flex', gap: '12px', width: isMobile ? '100%' : 'auto' }}>
+            <div style={{ display: 'flex', gap: '12px', width: isMobile ? '100%' : 'auto', flexWrap: 'wrap' }}>
+              {/* Temporary Seed Button */}
+              <button 
+                onClick={async () => {
+                  const users = [
+                    { name: "Laura", roles: ["Peluquera"], email: "laura@janastudio.com", username: "laura123", phone: "+58 412 1234567", permissions: ['scheduling', 'clients', 'history'] },
+                    { name: "Sofia", roles: ["Manicurista"], email: "sofia@janastudio.com", username: "sofia123", phone: "+58 412 7654321", permissions: ['scheduling', 'clients', 'history', 'reception'] },
+                    { name: "Isabella", roles: ["Peluquera"], email: "isabella@janastudio.com", username: "isabella123", phone: "+58 412 9998888", permissions: ['scheduling', 'clients', 'history'] }
+                  ];
+                  for (const u of users) {
+                    try { await dataService.createStaffWithAuth(u); } catch (e) { console.error('Error:', e); }
+                  }
+                  fetchStaff();
+                  alert("Usuarios creados exitosamente");
+                }}
+                style={{ padding: '10px 20px', borderRadius: '14px', border: 'none', background: '#32d74b', color: 'white', fontWeight: '700', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
+              >
+                <Sparkles size={16} /> Seed
+              </button>
               <button 
                 onClick={() => setIsRoleModalOpen(true)}
                 style={{ padding: '10px 20px', borderRadius: '14px', border: '1px solid var(--border-color)', background: 'white', color: 'var(--text-secondary)', fontWeight: '700', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
@@ -545,7 +563,17 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
           </div>
 
           {/* TABLE VIEW */}
-          {viewMode === 'table' ? (
+          {loading ? (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '60px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)', margin: '0 24px' }}>
+              <Loader2 className="animate-spin" size={48} color="var(--pink-primary)" />
+            </div>
+          ) : staff.length === 0 ? (
+            <div style={{ background: 'white', textAlign: 'center', padding: '80px', borderRadius: '16px', border: '1px solid var(--border-color)', margin: '0 24px' }}>
+              <User size={64} color="var(--pink-primary)" style={{ marginBottom: '24px', opacity: 0.5 }} />
+              <h3 style={{ fontSize: '20px', color: 'var(--text-primary)', fontWeight: '800' }}>El equipo está esperando</h3>
+              <p style={{ color: 'var(--text-muted)', marginTop: '8px' }}>Comienza agregando a los miembros que harán brillar tu marca.</p>
+            </div>
+          ) : viewMode === 'table' ? (
             <div style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                 <thead>
@@ -745,7 +773,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
 
       </div>
 
-      {(showForm || isFormExiting) && !isEditing && (
+      {(showForm || isFormExiting) && (
         <div className={`glass-card ${isFormExiting ? 'animate-slide-down-fade' : 'animate-slide-up'}`} style={{ 
           marginBottom: '32px', 
           padding: '32px', 

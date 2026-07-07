@@ -88,9 +88,9 @@ const NewClientModal = ({ isOpen, onClose, onSuccess }) => {
                   position: 'absolute', 
                   top: '24px', 
                   right: '24px', 
-                  background: 'rgba(255,255,255,0.05)', 
+                  background: 'rgba(212,160,154,0.1)', 
                   border: 'none', 
-                  color: 'white', 
+                  color: 'var(--text-primary)', 
                   width: '36px', 
                   height: '36px', 
                   borderRadius: '50%', 
@@ -107,7 +107,7 @@ const NewClientModal = ({ isOpen, onClose, onSuccess }) => {
                 <h2 style={{ 
                   fontSize: '24px', 
                   fontWeight: '900', 
-                  color: 'white', 
+                  color: 'var(--text-primary)', 
                   marginBottom: '8px',
                   display: 'flex',
                   alignItems: 'center',
@@ -187,9 +187,9 @@ const NewClientModal = ({ isOpen, onClose, onSuccess }) => {
                     onClick={onClose} 
                     style={{ 
                       flex: 1, 
-                      background: 'none', 
-                      border: '1px solid rgba(255,255,255,0.1)', 
-                      color: 'white', 
+                      background: 'white', 
+                      border: '1px solid rgba(212,160,154,0.3)', 
+                      color: 'var(--text-primary)', 
                       height: '56px',
                       borderRadius: '16px', 
                       fontWeight: '700', 

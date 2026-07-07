@@ -193,7 +193,7 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
   const modalContainerStyle = isMobile ? {
     position: 'fixed',
     bottom: 0, left: 0, right: 0,
-    backgroundColor: '#161616',
+    backgroundColor: 'var(--bg-secondary)',
     borderTopLeftRadius: '32px',
     borderTopRightRadius: '32px',
     padding: '32px 24px 44px 24px',
@@ -205,13 +205,13 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
     width: '600px',
     maxWidth: '95vw',
     maxHeight: '90vh',
-    backgroundColor: '#161616',
+    backgroundColor: 'var(--bg-secondary)',
     borderRadius: '32px',
     padding: '40px',
     position: 'relative',
     zIndex: 1100,
     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-    border: '1px solid rgba(255,255,255,0.05)',
+    border: '1px solid rgba(212,160,154,0.3)',
     display: 'flex',
     flexDirection: 'column'
   };
@@ -238,12 +238,12 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
               Operación <span className="text-gold">Rápida</span>
             </h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: step === 1 ? 'var(--pink-primary)' : 'rgba(255,255,255,0.2)' }} />
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: step === 2 ? 'var(--pink-primary)' : 'rgba(255,255,255,0.2)' }} />
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: step === 1 ? 'var(--pink-primary)' : 'rgba(212,160,154,0.2)' }} />
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: step === 2 ? 'var(--pink-primary)' : 'rgba(212,160,154,0.2)' }} />
               <span style={{ fontSize: '12px', color: 'var(--text-secondary)', marginLeft: '4px' }}>Paso {step} de 2</span>
             </div>
           </div>
-          <button onClick={onClose} className="action-btn" style={{ background: 'rgba(255,255,255,0.05)' }}>
+          <button onClick={onClose} className="action-btn" style={{ background: 'rgba(212,160,154,0.1)', color: 'var(--text-primary)' }}>
             <X size={20} />
           </button>
         </div>
@@ -262,12 +262,12 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
                   onChange={(e) => setIdSearch(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleIdSearch()}
                   autoFocus
-                  style={{ width: '100%', paddingLeft: '52px', height: '52px', fontSize: '16px', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(196,139,159,0.2)' }}
+                  style={{ width: '100%', paddingLeft: '52px', height: '52px', fontSize: '16px', backgroundColor: 'white', border: '1px solid rgba(196,139,159,0.3)', borderRadius: '12px', color: 'var(--text-primary)' }}
                 />
               </div>
 
               {idSearch.length >= 1 && (
-                <div style={{ backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
+                <div style={{ backgroundColor: 'white', borderRadius: '16px', border: '1px solid rgba(212,160,154,0.3)', overflow: 'hidden' }}>
                   {(clients || []).filter(c => {
                     const term = normalizeForSearch(idSearch);
                     const normalizedName = normalizeForSearch(c.name || '');
@@ -275,7 +275,7 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
                     const idMatches = (c.id_card || '').toLowerCase().includes(term);
                     return nameMatches || idMatches;
                   }).slice(0, 5).map(c => (
-                    <div key={c.id} onClick={() => handleSelectClientFromList(c)} style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.03)', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="client-search-item">
+                    <div key={c.id} onClick={() => handleSelectClientFromList(c)} style={{ padding: '16px 20px', borderBottom: '1px solid rgba(212,160,154,0.2)', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="client-search-item">
                       <div>
                         <div style={{ fontWeight: '800', fontSize: '14px' }}>{c.name}</div>
                         <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>V-{c.id_card}</div>
@@ -334,7 +334,7 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
                     placeholder="Escribe para buscar extra..." 
                     value={extraSearch}
                     onChange={(e) => setExtraSearch(e.target.value)}
-                    style={{ width: '100%', paddingLeft: '36px', height: '40px', fontSize: '13px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '10px' }}
+                    style={{ width: '100%', paddingLeft: '36px', height: '40px', fontSize: '13px', backgroundColor: 'white', border: '1px solid rgba(212,160,154,0.3)', borderRadius: '10px', color: 'var(--text-primary)' }}
                   />
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -344,9 +344,9 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
                       onClick={() => toggleExtra(e)}
                       style={{ 
                         padding: '8px 12px', borderRadius: '10px', fontSize: '11px', fontWeight: '700', 
-                        backgroundColor: selectedExtras.find(se => se.id === e.id) ? 'rgba(196,139,159,0.2)' : 'rgba(255,255,255,0.03)',
-                        border: selectedExtras.find(se => se.id === e.id) ? '1px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)',
-                        color: selectedExtras.find(se => se.id === e.id) ? 'var(--pink-primary)' : 'white',
+                        backgroundColor: selectedExtras.find(se => se.id === e.id) ? 'rgba(196,139,159,0.2)' : 'white',
+                        border: selectedExtras.find(se => se.id === e.id) ? '1px solid var(--pink-primary)' : '1px solid rgba(212,160,154,0.3)',
+                        color: selectedExtras.find(se => se.id === e.id) ? 'var(--pink-primary)' : 'var(--text-primary)',
                         cursor: 'pointer', transition: 'all 0.2s'
                       }}
                     >
@@ -367,7 +367,7 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
                     placeholder="Escribe para buscar producto..." 
                     value={productSearch}
                     onChange={(e) => setProductSearch(e.target.value)}
-                    style={{ width: '100%', paddingLeft: '36px', height: '40px', fontSize: '13px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '10px' }}
+                    style={{ width: '100%', paddingLeft: '36px', height: '40px', fontSize: '13px', backgroundColor: 'white', border: '1px solid rgba(212,160,154,0.3)', borderRadius: '10px', color: 'var(--text-primary)' }}
                   />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -375,11 +375,11 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
                     const selected = selectedProducts.find(sp => sp.id === p.id);
                     const isOutOfStock = (p.stock || 0) <= 0;
                     return (
-                      <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.03)', opacity: isOutOfStock ? 0.6 : 1 }}>
+                      <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', backgroundColor: 'white', borderRadius: '14px', border: '1px solid rgba(212,160,154,0.2)', opacity: isOutOfStock ? 0.6 : 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                           <Package size={14} color={isOutOfStock ? "var(--text-muted)" : "var(--pink-primary)"} />
                           <div>
-                            <div style={{ fontSize: '13px', fontWeight: '700', color: isOutOfStock ? 'var(--text-muted)' : 'white' }}>{p.name}</div>
+                            <div style={{ fontSize: '13px', fontWeight: '700', color: isOutOfStock ? 'var(--text-muted)' : 'var(--text-primary)' }}>{p.name}</div>
                             <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>${p.price}</div>
                             <div style={{ fontSize: '10px', fontWeight: '800', color: isOutOfStock ? '#ff453a' : '#30d158', marginTop: '2px' }}>
                               {isOutOfStock ? 'Agotado (Sin Stock)' : `Stock: ${p.stock}`}
@@ -426,7 +426,7 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
         {step === 2 && (
           <div style={{ 
             paddingTop: '20px', 
-            borderTop: '1px solid rgba(255,255,255,0.05)',
+            borderTop: '1px solid rgba(212,160,154,0.2)',
             display: 'flex', 
             justifyContent: 'space-between', 
             alignItems: 'center',
@@ -435,7 +435,7 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
             <div>
               <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '800', textTransform: 'uppercase', marginBottom: '2px' }}>Total Estimado</div>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <div style={{ fontSize: '24px', fontWeight: '950', color: 'white' }}>${totalPrice}</div>
+                <div style={{ fontSize: '24px', fontWeight: '950', color: 'var(--text-primary)' }}>${totalPrice}</div>
                 {rates?.usd > 0 && (
                   <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)' }}>
                     ≈ {Math.round(totalPrice * rates.usd).toLocaleString()} BS

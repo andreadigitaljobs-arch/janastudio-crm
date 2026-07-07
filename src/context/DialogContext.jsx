@@ -4,7 +4,15 @@ import JanaDialog from '../components/JanaDialog';
 const DialogContext = createContext();
 
 export const useDialog = () => {
-  return useContext(DialogContext);
+  const context = useContext(DialogContext);
+  if (!context) {
+    console.warn("useDialog was called outside of DialogProvider");
+    return {
+      alert: (msg) => new Promise(resolve => { window.alert(msg); resolve(true); }),
+      confirm: (msg) => new Promise(resolve => resolve(window.confirm(msg)))
+    };
+  }
+  return context;
 };
 
 export const DialogProvider = ({ children }) => {
