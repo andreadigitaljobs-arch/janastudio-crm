@@ -1003,11 +1003,24 @@ html, body {
     position: absolute;
     inset: 0;
     border-radius: var(--login-radius, 24px) var(--login-radius, 24px) 0 0;
-    border: 1.5px solid rgba(212, 160, 154, 0.5);
+    border: 5px solid rgba(255, 255, 255, 0.92);
     border-bottom: none;
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9);
     pointer-events: none;
     z-index: 20;
+  }
+
+  .salon-login-right::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 0;
+    border-radius: calc(var(--login-radius, 24px) - 5px) calc(var(--login-radius, 24px) - 5px) 0 0;
+    border: 1.5px solid rgba(212, 160, 154, 0.45);
+    border-bottom: none;
+    pointer-events: none;
+    z-index: 21;
   }
 
   .salon-login-form-wrapper {
