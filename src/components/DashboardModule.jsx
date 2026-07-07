@@ -737,7 +737,7 @@ const DashboardModule = ({
                 Ver todo <ChevronRight size={12} />
               </span>
             </div>
-            <span style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--text-primary)' }}>Bs. 12.840</span>
+            <span style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--text-primary)' }}>$ 12.840</span>
             <span style={{ fontSize: '0.65rem', color: '#22c55e', fontWeight: '600' }}>
               ↑ 18% <span style={{ color: 'var(--text-muted)', fontWeight: '400' }}>vs mes anterior</span>
             </span>
@@ -1532,15 +1532,6 @@ const DashboardModule = ({
             })}
           </div>
 
-          <button
-            onClick={() => onNavigate('scheduling')}
-            style={{ width: '100%', padding: '10px 0', borderRadius: '12px', background: 'transparent', color: '#c97282', border: '1.5px dashed rgba(201,114,130,0.35)', fontWeight: '700', fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s' }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201,114,130,0.04)'; e.currentTarget.style.borderColor = 'rgba(201,114,130,0.5)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(201,114,130,0.35)'; }}
-          >
-            <Plus size={15} /> Nueva cita
-          </button>
-        </div>
 
         {/* TOP SERVICIOS */}
         <div style={{ background: '#ffffff', borderRadius: '20px', border: '1px solid rgba(201, 114, 130, 0.1)', padding: '22px', boxShadow: '0 2px 12px rgba(201, 114, 130, 0.04)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
