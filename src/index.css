@@ -228,9 +228,9 @@ html, body {
   position: absolute;
   right: 0;
   top: -15%;
-  padding: 3px;
-  background: linear-gradient(180deg, rgba(223, 178, 140, 0.6) 0%, rgba(201, 114, 130, 0.4) 100%);
-  box-shadow: 10px 0 30px rgba(167, 102, 115, 0.08), 0 0 15px rgba(212, 160, 154, 0.15);
+  padding: 0;
+  background: transparent;
+  box-shadow: 0 0 0 3px rgba(223, 178, 140, 0.5), 0 0 0 8px rgba(255, 255, 255, 0.9), 10px 0 30px rgba(167, 102, 115, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
