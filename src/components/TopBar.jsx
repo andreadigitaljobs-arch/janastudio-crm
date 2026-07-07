@@ -101,7 +101,7 @@ const TopBar = ({
           <div style={{ position: 'relative', width: '100%', padding: '0 4px' }}>
             <input 
               type="text" 
-              placeholder="Search clients, appointments, services..." 
+              placeholder="Buscar clientes, citas, servicios..." 
               style={{
                 width: '100%',
                 padding: '10px 40px 10px 14px',
@@ -215,7 +215,7 @@ const TopBar = ({
           <div style={{ position: 'relative', width: '350px' }}>
             <input 
               type="text" 
-              placeholder="Search clients, appointments, services..." 
+              placeholder="Buscar clientes, citas, servicios..." 
               style={{
                 width: '100%',
                 padding: '10px 40px 10px 16px',

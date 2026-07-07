@@ -544,7 +544,7 @@ const DashboardModule = ({
                   alignItems: 'center',
                   gap: '6px'
                 }}>
-                  Welcome back, {(!user || user.role?.toLowerCase().includes('admin') || user.name?.toLowerCase().includes('administrador')) ? 'Jana' : (user.name?.split(' ')[0] || 'Jana')}
+                  Bienvenida de nuevo, {(!user || user.role?.toLowerCase().includes('admin') || user.name?.toLowerCase().includes('administrador')) ? 'Jana' : (user.name?.split(' ')[0] || 'Jana')}
                   <span style={{ color: 'var(--magenta-secondary)', fontSize: isMobile ? '1.1rem' : '1.6rem' }}>♡</span>
                 </h2>
                 <p style={{
@@ -553,7 +553,7 @@ const DashboardModule = ({
                   fontWeight: '500',
                   margin: 0
                 }}>
-                  Here's what's happening in your studio today.
+                  Esto es lo que está pasando en tu salón hoy.
                 </p>
               </div>
 
@@ -565,7 +565,7 @@ const DashboardModule = ({
                 fontWeight: '600',
                 margin: '2px 0'
               }}>
-                You glow, girl.
+                ¡Brilla hoy, hermosa!
               </div>
 
               <button 
@@ -590,7 +590,7 @@ const DashboardModule = ({
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--pink-primary)'; e.currentTarget.style.transform = 'none' }}
               >
                 <Plus size={14} strokeWidth={2.5} />
-                New Appointment
+                Nueva Cita
               </button>
             </div>
           </div>
