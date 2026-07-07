@@ -1345,7 +1345,7 @@ const DashboardModule = ({
             <span style={{ fontSize: '0.85rem', fontWeight: '700', color: '#c97282', display: 'block', lineHeight: '1.2' }}>
               Activa las alertas de tu CRM
             </span>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block', marginTop: '2px', lineHeight: '1.3' }}>
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', display: 'block', marginTop: '2px', lineHeight: '1.3' }}>
               Recibe notificaciones al instante cuando haya nuevas citas y actualizaciones.
             </span>
           </div>
