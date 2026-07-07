@@ -762,13 +762,13 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               {/* Category Filter */}
               <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px', WebkitOverflowScrolling: 'touch' }}>
                 <button 
-                  onClick={() => { setSelectedCategory('all'); setCurrentPage(1); }}
+                  onClick={() => { setCategoryFilter('Todas'); setCurrentPage(1); }}
                   style={{
                     padding: '8px 14px', borderRadius: '12px', cursor: 'pointer',
                     fontSize: '12px', fontWeight: '700',
-                    backgroundColor: selectedCategory === 'all' ? '#faf3f2' : 'transparent',
-                    color: selectedCategory === 'all' ? '#a0506a' : 'var(--text-secondary)',
-                    transition: 'all 0.2s', border: selectedCategory === 'all' ? '1px solid rgba(160, 80, 106, 0.15)' : '1px solid transparent'
+                    backgroundColor: categoryFilter === 'Todas' ? '#faf3f2' : 'transparent',
+                    color: categoryFilter === 'Todas' ? '#a0506a' : 'var(--text-secondary)',
+                    transition: 'all 0.2s', border: categoryFilter === 'Todas' ? '1px solid rgba(160, 80, 106, 0.15)' : '1px solid transparent'
                   }}
                 >
                   Todos
@@ -776,13 +776,13 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                 {categories.map(cat => (
                   <button
                     key={cat.id}
-                    onClick={() => { setSelectedCategory(cat.name); setCurrentPage(1); }}
+                    onClick={() => { setCategoryFilter(cat.name); setCurrentPage(1); }}
                     style={{
                       padding: '8px 14px', borderRadius: '12px', cursor: 'pointer',
                       fontSize: '12px', fontWeight: '700',
-                      backgroundColor: selectedCategory === cat.name ? '#faf3f2' : 'transparent',
-                      color: selectedCategory === cat.name ? '#a0506a' : 'var(--text-secondary)',
-                      transition: 'all 0.2s', border: selectedCategory === cat.name ? '1px solid rgba(160, 80, 106, 0.15)' : '1px solid transparent'
+                      backgroundColor: categoryFilter === cat.name ? '#faf3f2' : 'transparent',
+                      color: categoryFilter === cat.name ? '#a0506a' : 'var(--text-secondary)',
+                      transition: 'all 0.2s', border: categoryFilter === cat.name ? '1px solid rgba(160, 80, 106, 0.15)' : '1px solid transparent'
                     }}
                   >
                     {cat.name}
@@ -793,7 +793,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               {/* Sort selector */}
               <div style={{ position: 'relative', marginLeft: isMobile ? '0' : 'auto' }}>
                 <button 
-                  onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
+                  onClick={() => setSortByOpen(!sortByOpen)}
                   style={{
                     height: '42px', padding: '0 16px', borderRadius: '14px', border: '1px solid rgba(212, 160, 154, 0.25)',
                     background: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer',
@@ -803,13 +803,13 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                   <ArrowUpDown size={14} color="#c48b9f" />
                   <span>
                     {sortBy === 'name' ? 'Por Nombre (A-Z)' : 
-                     sortBy === 'price_asc' ? 'Precio: Menor a Mayor' : 
-                     sortBy === 'price_desc' ? 'Precio: Mayor a Menor' : 
-                     sortBy === 'popular' ? 'Más Populares' : 'Más Recientes'}
+                     sortBy === 'priceAsc' ? 'Precio: Menor a Mayor' : 
+                     sortBy === 'priceDesc' ? 'Precio: Mayor a Menor' : 
+                     sortBy === 'mostBooked' ? 'Más Populares' : 'Más Recientes'}
                   </span>
                   <ChevronDown size={14} />
                 </button>
-                {isSortDropdownOpen && (
+                {sortByOpen && (
                   <div style={{
                     position: 'absolute', right: 0, top: '46px', width: '220px', background: 'white',
                     borderRadius: '14px', border: '1px solid rgba(212, 160, 154, 0.2)', boxShadow: '0 8px 24px rgba(74, 48, 54, 0.08)',
@@ -817,14 +817,14 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                   }}>
                     {[
                       { value: 'name', label: 'Por Nombre (A-Z)' },
-                      { value: 'price_asc', label: 'Precio: Menor a Mayor' },
-                      { value: 'price_desc', label: 'Precio: Mayor a Menor' },
-                      { value: 'popular', label: 'Más Populares' },
+                      { value: 'priceAsc', label: 'Precio: Menor a Mayor' },
+                      { value: 'priceDesc', label: 'Precio: Mayor a Menor' },
+                      { value: 'mostBooked', label: 'Más Populares' },
                       { value: 'newest', label: 'Más Recientes' }
                     ].map(opt => (
                       <button
                         key={opt.value}
-                        onClick={() => { setSortBy(opt.value); setIsSortDropdownOpen(false); }}
+                        onClick={() => { setSortBy(opt.value); setSortByOpen(false); }}
                         style={{
                           width: '100%', padding: '10px 14px', border: 'none', borderRadius: '8px',
                           background: sortBy === opt.value ? '#faf3f2' : 'transparent',

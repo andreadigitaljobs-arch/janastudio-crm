@@ -1188,8 +1188,8 @@ const DashboardModule = ({
         <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '500', flexShrink: 0 }}>{dynamicStats.activeStaff} estilistas activas hoy</span>
       </div>
 
-      {/* ── MAIN CONTENT ROW: Agenda + Top Servicios (ALINEACIÓN STRETCH) ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', alignItems: 'stretch' }}>
+      {/* ── MAIN CONTENT ROW: Agenda + Top Servicios + Top Especialistas (ALINEACIÓN STRETCH) ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', alignItems: 'stretch' }}>
 
         {/* AGENDA DE HOY */}
         <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '24px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
@@ -1251,54 +1251,90 @@ const DashboardModule = ({
             </span>
           </div>
 
-          <div style={{ display: 'flex', gap: '16px', alignItems: 'stretch', flex: 1 }}>
-            {/* Progress bars */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'center' }}>
-              {[
-                { name: 'Extensiones de pestañas', value: 42, icon: Sparkles },
-                { name: 'Laminado de cejas', value: 24, icon: Star },
-                { name: 'Set híbrido', value: 18, icon: Flower2 },
-                { name: 'Nail Art / Manicura', value: 16, icon: Scissors }
-              ].map((serv, idx) => {
-                const IconComp = serv.icon;
-                return (
-                  <div
-                    key={idx}
-                    onClick={() => onNavigate('services')}
-                    style={{ display: 'flex', flexDirection: 'column', gap: '5px', background: '#faf3f2', padding: '10px 14px', borderRadius: '14px', cursor: 'pointer', transition: 'all 0.2s', border: '1px solid rgba(212, 160, 154, 0.08)' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = '#f5e8e6'; e.currentTarget.style.transform = 'translateY(-1px)' }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = '#faf3f2'; e.currentTarget.style.transform = 'none' }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-primary)', fontWeight: '600' }}>
-                        <IconComp size={14} style={{ color: '#c97282' }} />
-                        <span>{serv.name}</span>
-                      </div>
-                      <span style={{ color: 'var(--text-secondary)', fontWeight: '700' }}>{serv.value}%</span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', flex: 1 }}>
+            {[
+              { name: 'Pestañas clásicas', value: 42, icon: Sparkles },
+              { name: 'Laminado cejas', value: 24, icon: Star },
+              { name: 'Set híbrido', value: 18, icon: Flower2 },
+              { name: 'Manicura', value: 16, icon: Scissors }
+            ].map((serv, idx) => {
+              const IconComp = serv.icon;
+              return (
+                <div
+                  key={idx}
+                  onClick={() => onNavigate('services')}
+                  style={{ display: 'flex', flexDirection: 'column', gap: '4px', background: '#faf3f2', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', border: '1px solid rgba(212, 160, 154, 0.08)' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = '#f5e8e6'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = '#faf3f2'; e.currentTarget.style.transform = 'none' }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-primary)', fontWeight: '600' }}>
+                      <IconComp size={13} style={{ color: '#c97282' }} />
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '120px' }}>{serv.name}</span>
                     </div>
-                    <div style={{ width: '100%', height: '5px', borderRadius: '3px', background: '#f5e9e7', overflow: 'hidden' }}>
-                      <div style={{ width: `${serv.value}%`, height: '100%', background: 'linear-gradient(90deg, #c97282, #a0506a)', borderRadius: '3px' }} />
-                    </div>
+                    <span style={{ color: 'var(--text-secondary)', fontWeight: '700' }}>{serv.value}%</span>
                   </div>
-                );
-              })}
-            </div>
+                  <div style={{ width: '100%', height: '4px', borderRadius: '2px', background: '#f5e9e7', overflow: 'hidden' }}>
+                    <div style={{ width: `${serv.value}%`, height: '100%', background: 'linear-gradient(90deg, #c97282, #a0506a)', borderRadius: '2px' }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
 
-            {/* Right photo card */}
-            <div
-              onClick={() => onNavigate('services')}
-              style={{ width: '140px', borderRadius: '20px', overflow: 'hidden', position: 'relative', border: '1px solid rgba(212, 160, 154, 0.15)', cursor: 'pointer', transition: 'all 0.2s', flexShrink: 0 }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.02)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'none' }}
-            >
-              <img src="/foto_pestanas.png" alt="Extensiones de pestañas" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(74, 48, 54, 0.85) 0%, rgba(74, 48, 54, 0.1) 60%)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '10px 14px' }}>
-                <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#ffffff' }}>Ext. de pestañas</span>
-                <span style={{ fontSize: '0.6rem', color: '#fae8e5' }}>Desde $50</span>
-              </div>
+          {/* Photo banner directly below progress bars */}
+          <div
+            onClick={() => onNavigate('services')}
+            style={{ width: '100%', height: '70px', borderRadius: '16px', overflow: 'hidden', position: 'relative', border: '1px solid rgba(212, 160, 154, 0.15)', cursor: 'pointer', transition: 'all 0.2s' }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.01)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'none' }}
+          >
+            <img src="/foto_pestanas.png" alt="Extensiones de pestañas" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 30%' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(74, 48, 54, 0.85) 0%, rgba(74, 48, 54, 0.15) 70%)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '8px 12px' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#ffffff' }}>Servicio del mes: Ext. de pestañas</span>
+              <span style={{ fontSize: '0.62rem', color: '#fae8e5' }}>Desde $50</span>
             </div>
           </div>
         </div>
+
+        {/* TOP ESPECIALISTAS */}
+        <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '24px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
+              Top Especialistas
+            </h3>
+            <span onClick={() => onNavigate('personnel')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              Ver todo <ChevronRight size={14} />
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, justifyContent: 'center' }}>
+            {TOP_SPECIALISTS.slice(0, 3).map((spec, idx) => (
+              <div key={idx} style={{
+                display: 'flex', alignItems: 'center', gap: '10px',
+                padding: '6px 10px', borderRadius: '12px',
+                background: idx === 0 ? 'rgba(212, 160, 154, 0.08)' : 'transparent',
+                border: idx === 0 ? '1px solid rgba(212, 160, 154, 0.15)' : '1px solid transparent'
+              }}>
+                <div style={{
+                  width: '32px', height: '32px', borderRadius: '50%',
+                  background: 'var(--pink-gradient)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: 'white', fontWeight: 700, fontSize: '0.75rem', flexShrink: 0
+                }}>{spec.initial}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.78rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{spec.name}</div>
+                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{spec.role}</div>
+                </div>
+                <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                  <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.78rem' }}>Bs. {formatBs(spec.earnings)}</div>
+                  <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)' }}>Ingresos</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
 
       {/* ── SERVICIOS DESTACADOS ── */}
