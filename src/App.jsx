@@ -420,8 +420,8 @@ function App() {
       <main className="main-content no-scrollbar" style={{ 
         flex: 1, 
         paddingTop: isMobile ? 'calc(var(--spacing-sm) + env(safe-area-inset-top, 0px))' : 'var(--spacing-xl)', 
-        paddingLeft: isMobile ? 'var(--spacing-sm)' : 'var(--spacing-xl)', 
-        paddingRight: isMobile ? 'var(--spacing-sm)' : 'var(--spacing-xl)', 
+        paddingLeft: isMobile ? '16px' : 'var(--spacing-xl)', 
+        paddingRight: isMobile ? '16px' : 'var(--spacing-xl)', 
         paddingBottom: isMobile ? 'calc(80px + env(safe-area-inset-bottom, 12px))' : 'var(--spacing-xl)',
         height: '100vh',
         overflowY: 'auto',
