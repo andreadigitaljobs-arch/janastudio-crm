@@ -8,6 +8,20 @@ import { useAuth } from '../context/AuthContext';
 import { useModal } from '../context/ModalContext';
 import { canAccessModule } from '../utils/roles';
 
+const MENU_COLORS = [
+  { bg: 'rgba(201, 114, 130, 0.12)', icon: '#c97282' },
+  { bg: 'rgba(160, 80, 106, 0.12)', icon: '#a0506a' },
+  { bg: 'rgba(186, 130, 160, 0.12)', icon: '#ba82a0' },
+  { bg: 'rgba(201, 148, 130, 0.12)', icon: '#c99482' },
+  { bg: 'rgba(160, 130, 80, 0.12)', icon: '#a08250' },
+  { bg: 'rgba(130, 160, 120, 0.12)', icon: '#82a078' },
+  { bg: 'rgba(120, 140, 180, 0.12)', icon: '#788cb4' },
+  { bg: 'rgba(160, 120, 180, 0.12)', icon: '#a078b4' },
+  { bg: 'rgba(180, 120, 140, 0.12)', icon: '#b4788c' },
+  { bg: 'rgba(201, 114, 130, 0.12)', icon: '#c97282' },
+  { bg: 'rgba(150, 150, 160, 0.12)', icon: '#9696a0' },
+];
+
 const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsCollapsed, activeRateType, onToggleRateType, isOpen, onClose }) => {
   const { user, logout } = useAuth();
   const { isModalOpen } = useModal();
@@ -61,17 +75,17 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
   const effectiveCollapsed = isMobile ? false : isCollapsed;
 
   const sidebarStyle = {
-    width: effectiveCollapsed ? '70px' : '220px',
-    minWidth: effectiveCollapsed ? '70px' : '220px',
+    width: effectiveCollapsed ? '70px' : '230px',
+    minWidth: effectiveCollapsed ? '70px' : '230px',
     flexShrink: 0,
     height: '100vh',
     position: 'sticky',
     top: 0,
-    background: '#fbf8f7',
+    background: 'linear-gradient(180deg, #fdf5f3 0%, #f9eae6 40%, #f5e2de 100%)',
     borderRight: '1px solid rgba(212, 160, 154, 0.2)',
     display: 'flex', flexDirection: 'column',
-    padding: effectiveCollapsed ? '12px 8px' : '16px 12px',
-    overflowY: 'auto', overflowX: 'hidden',
+    padding: effectiveCollapsed ? '10px 6px' : '12px 8px',
+    overflowY: isMobile ? 'auto' : 'hidden', overflowX: 'hidden',
     transition: 'all 0.3s ease',
     zIndex: 10,
   };
@@ -90,9 +104,9 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
     <div className="sidebar" ref={sidebarRef} style={sidebarStyle}>
       {/* Mobile close button + Logo header */}
       <div style={{
-        marginBottom: effectiveCollapsed ? '16px' : '20px',
+        gap: effectiveCollapsed ? '16px' : '28px',
         display: 'flex', flexDirection: 'column', alignItems: 'center',
-        gap: '4px', position: 'relative'
+        position: 'relative'
       }}>
         {isMobile && (
           <button
@@ -131,11 +145,11 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
             <img
               src="/logo.webp"
               alt="JanaStudio"
-              style={{
-                height: '42px', marginBottom: '4px',
-                filter: 'brightness(1.0) drop-shadow(0 2px 8px rgba(212, 160, 154, 0.15))'
-              }}
-            />
+            style={{
+              height: '42px', marginBottom: '4px',
+              filter: 'brightness(1.0) drop-shadow(0 2px 8px rgba(212, 160, 154, 0.15))'
+            }}
+          />
           </div>
         )}
         {effectiveCollapsed && (
@@ -152,13 +166,15 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
 
       <nav
         onMouseLeave={() => setHoveredTab(null)}
-        style={{ display: 'flex', flexDirection: 'column', gap: '2px', position: 'relative' }}
+        style={{ display: 'flex', flexDirection: 'column', gap: '3px', position: 'relative' }}
       >
         <div
           style={{
             position: 'absolute', left: 0, width: '100%',
-            backgroundColor: 'var(--pink-secondary)',
-            borderRadius: '12px',
+            background: 'linear-gradient(135deg, rgba(201, 114, 130, 0.15) 0%, rgba(160, 80, 106, 0.1) 100%)',
+            borderRadius: '14px',
+            border: '1px solid rgba(201, 114, 130, 0.15)',
+            boxShadow: '0 2px 8px rgba(201, 114, 130, 0.08)',
             transition: 'transform 0.22s cubic-bezier(0.25, 1, 0.5, 1), height 0.22s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s ease',
             pointerEvents: 'none', zIndex: 0,
             ...indicatorStyle
@@ -167,6 +183,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
         {menuItems.map((item, index) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
+          const colors = MENU_COLORS[index % MENU_COLORS.length];
           return (
             <button
               key={item.id + item.label}
@@ -174,87 +191,82 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
               onClick={() => handleItemClick(item.id)}
               onMouseEnter={() => setHoveredTab(item.id)}
               style={{
-                display: 'flex', alignItems: 'center', gap: '10px',
-                padding: effectiveCollapsed ? '10px' : '10px 14px',
-                borderRadius: '12px', border: 'none',
-                background: isActive ? 'var(--pink-secondary)' : 'transparent',
-                color: isActive ? 'var(--magenta-primary)' : 'var(--text-secondary)',
+                display: 'flex', alignItems: 'center', gap: effectiveCollapsed ? '0' : '12px',
+                padding: effectiveCollapsed ? '11px' : '10px 14px',
+                borderRadius: '14px', border: isActive ? '1px solid rgba(201, 114, 130, 0.12)' : '1px solid transparent',
+                background: 'transparent',
+                color: isActive ? '#a0506a' : 'var(--text-secondary)',
                 cursor: 'pointer', fontSize: '0.82rem',
-                fontWeight: isActive ? 600 : 500,
-                transition: 'all 0.2s ease', width: '100%',
+                fontWeight: isActive ? 700 : 500,
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)', width: '100%',
                 textAlign: 'left',
                 justifyContent: effectiveCollapsed ? 'center' : 'flex-start',
-                position: 'relative', zIndex: 1
+                position: 'relative', zIndex: 1,
+                transform: 'scale(1)'
+              }}
+              onMouseOver={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.transform = 'scale(1.02)';
+                  e.currentTarget.style.transformOrigin = 'left center';
+                }
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
               }}
             >
-              <Icon size={17} style={{ color: isActive ? 'var(--magenta-primary)' : 'var(--text-muted)' }} />
-              {!effectiveCollapsed && <span>{item.label}</span>}
+              <div style={{
+                width: '32px', height: '32px', borderRadius: '10px',
+                background: isActive ? colors.bg : 'rgba(212, 160, 154, 0.06)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                flexShrink: 0,
+                transform: isActive ? 'scale(1.05)' : 'scale(1)',
+                boxShadow: isActive ? `0 2px 8px ${colors.bg}` : 'none'
+              }}>
+                <Icon size={16} style={{ color: isActive ? colors.icon : 'var(--text-muted)' }} />
+              </div>
+              {!effectiveCollapsed && (
+                <span style={{
+                  transition: 'color 0.2s ease',
+                  letterSpacing: '0.2px'
+                }}>{item.label}</span>
+              )}
             </button>
           );
         })}
       </nav>
 
       <div style={{ marginTop: 'auto', paddingTop: '16px' }}>
-
-
         <div style={{
-          display: 'flex', alignItems: 'center', gap: '10px',
-          padding: '10px 12px', borderRadius: '14px',
-          backgroundColor: 'var(--bg-tertiary)',
-          marginBottom: '8px',
-          border: '1px solid rgba(212, 160, 154, 0.1)',
-          cursor: 'pointer'
-        }}>
-          {user?.image_url ? (
-            <img src={user.image_url} alt="" style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-          ) : (
-            <div style={{
-              width: '32px', height: '32px', borderRadius: '50%',
-              background: 'var(--pink-gradient)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: 'white', fontWeight: 600, fontSize: '0.8rem', flexShrink: 0
-            }}>
-              {user?.name?.charAt(0) || 'A'}
-            </div>
-          )}
-          {!effectiveCollapsed && (
-            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-              <div style={{
-                fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.75rem',
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
-              }}>
-                {user?.name || 'Jana'}
-              </div>
-              <div style={{
-                fontSize: '0.62rem', color: 'var(--text-muted)',
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                fontWeight: 500
-              }}>
-                {user?.role || 'Admin'}
-              </div>
-            </div>
-          )}
-          {!effectiveCollapsed && (
-            <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginLeft: 'auto' }}>▼</span>
-          )}
-        </div>
-
+          height: '1px',
+          background: 'linear-gradient(90deg, transparent 0%, rgba(212, 160, 154, 0.3) 50%, transparent 100%)',
+          marginBottom: '12px'
+        }} />
         <button
           onClick={handleLogout}
           style={{
             display: 'flex', alignItems: 'center', gap: '12px',
             padding: effectiveCollapsed ? '10px' : '10px 14px',
-            borderRadius: '12px', border: 'none', background: 'transparent',
+            borderRadius: '14px', border: '1px solid rgba(220, 100, 100, 0.1)',
+            background: 'transparent',
             color: 'var(--text-secondary)', cursor: 'pointer',
             fontSize: '0.82rem', width: '100%',
             textAlign: 'left',
             justifyContent: effectiveCollapsed ? 'center' : 'flex-start',
-            transition: 'all 0.2s ease'
+            transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+            transform: 'scale(1)'
           }}
-          onMouseEnter={(e) => e.currentTarget.style.color = '#ff6b6b'}
-          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(220, 100, 100, 0.08)'; e.currentTarget.style.color = '#dc6464'; e.currentTarget.style.borderColor = 'rgba(220, 100, 100, 0.2)'; e.currentTarget.style.transform = 'scale(1.02)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = 'rgba(220, 100, 100, 0.1)'; e.currentTarget.style.transform = 'scale(1)'; }}
         >
-          <LogOut size={18} style={{ color: 'var(--text-muted)' }} />
+          <div style={{
+            width: '32px', height: '32px', borderRadius: '10px',
+            background: 'rgba(220, 100, 100, 0.08)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0
+          }}>
+            <LogOut size={16} style={{ color: 'var(--text-muted)' }} />
+          </div>
           {!effectiveCollapsed && <span>Cerrar Sesión</span>}
         </button>
       </div>
