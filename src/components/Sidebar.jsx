@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import {
   BarChart3, Users, UserCircle, Sparkles, Package, Wallet,
   Star, Calendar, LogOut, PanelLeftClose, PanelLeftOpen,
-  Receipt, Percent, Settings, Sliders, FileText, X, ChevronDown
+  Receipt, Percent, Settings, Sliders, FileText, X
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useModal } from '../context/ModalContext';
@@ -265,43 +265,6 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
             </div>
             <span>Cerrar Sesión</span>
           </button>
-        )}
-
-        {/* User Profile Card */}
-        {!effectiveCollapsed && (
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: '10px',
-            padding: '10px 12px',
-            borderRadius: '16px',
-            background: 'rgba(255,255,255,0.7)',
-            border: '1px solid rgba(201, 114, 130, 0.1)',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease'
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.9)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.7)'; }}
-          >
-            <div style={{
-              width: '40px', height: '40px', borderRadius: '50%',
-              background: 'linear-gradient(135deg, #c97282, #a0506a)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#fff', fontWeight: 700, fontSize: '0.85rem',
-              flexShrink: 0, overflow: 'hidden',
-              boxShadow: '0 2px 8px rgba(201, 114, 130, 0.2)'
-            }}>
-              {user?.image_url ? (
-                <img src={user.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                user?.name?.charAt(0)?.toUpperCase() || 'J'
-              )}
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.82rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {user?.name || 'Jana Rodríguez'}
-              </div>
-            </div>
-            <ChevronDown size={14} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
-          </div>
         )}
       </div>
     </div>
