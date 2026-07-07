@@ -917,6 +917,11 @@ html, body {
     overflow: hidden;
   }
 
+  .salon-login-flor-top,
+  .salon-login-flor-bottom {
+    display: none;
+  }
+
   .salon-login-container {
     flex-direction: column;
     border-radius: 0;
