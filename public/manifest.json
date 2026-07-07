@@ -10,7 +10,7 @@
       "purpose": "any"
     },
     {
-      "src": "/pwa-icon.webp",
+      "src": "/pwa-icon-512.webp",
       "type": "image/webp",
       "sizes": "512x512",
       "purpose": "maskable"

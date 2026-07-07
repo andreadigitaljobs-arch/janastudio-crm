@@ -475,13 +475,13 @@ const DashboardModule = ({
         {/* Left Column: Banner, Stats grid, Bottom row */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px', minHeight: 0 }}>
           
-          {/* Main Hero Banner: draggable & zoomable background image */}
+          {/* Main Hero Banner: styled exactly like Photo 2 with real salon background */}
           <div className="wow-card wow-animate-1" style={{
             borderRadius: '24px',
             position: 'relative',
             overflow: 'hidden',
-            flex: isMobile ? 'none' : '1',
-            minHeight: isMobile ? '180px' : '0',
+            flex: 'none',
+            height: isMobile ? '185px' : '230px',
             border: '1px solid rgba(212, 160, 154, 0.15)',
             boxShadow: 'var(--shadow-card)',
             userSelect: 'none'
@@ -498,78 +498,99 @@ const DashboardModule = ({
               }}
             >
               <img 
-                src="/hero_banner.webp" 
-                alt="Banner"
+                src="/salon_banner_full.png" 
+                alt="Jana Studio Banner"
                 style={{
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
-                  objectPosition: 'center 46%',
-                  transform: 'scale(1.05)',
+                  objectPosition: 'center 50%',
                   pointerEvents: 'none'
                 }}
                 id="jana-hero-img"
               />
             </div>
 
-            {/* Dark gradient overlay so text is readable */}
+            {/* Soft cream-white gradient overlay on the left to make text highly readable */}
             <div style={{
               position: 'absolute', inset: 0,
-              background: 'linear-gradient(to right, rgba(30,15,20,0.65) 0%, rgba(30,15,20,0.3) 60%, rgba(30,15,20,0.0) 100%)',
+              background: isMobile 
+                ? 'linear-gradient(90deg, rgba(252,249,248,0.96) 0%, rgba(252,249,248,0.85) 60%, rgba(252,249,248,0.2) 100%)'
+                : 'linear-gradient(90deg, rgba(252,249,248,0.95) 0%, rgba(252,249,248,0.8) 40%, rgba(252,249,248,0.0) 80%)',
               borderRadius: '24px',
               zIndex: 1
             }} />
 
-            {/* Left aligned text content */}
+            {/* Left aligned text content matching mockup style */}
             <div style={{ 
               zIndex: 2, 
               display: 'flex', 
               flexDirection: 'column', 
-              gap: '14px', 
-              maxWidth: isMobile ? '100%' : '52%',
-              padding: isMobile ? '28px 24px' : '40px 44px',
+              gap: isMobile ? '8px' : '10px', 
+              maxWidth: isMobile ? '70%' : '50%',
+              padding: isMobile ? '20px 20px' : '30px 40px',
               position: 'relative',
               height: '100%',
               justifyContent: 'center'
             }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <span style={{ 
+                <h2 style={{ 
                   fontFamily: "'Playfair Display', Georgia, serif", 
-                  fontSize: isMobile ? '1.4rem' : '2rem', 
-                  fontStyle: 'italic', 
-                  color: '#ffffff',
-                  lineHeight: '1.25',
-                  textShadow: '0 2px 8px rgba(0,0,0,0.25)'
-                }}>Eleva la belleza.</span>
-                <span style={{ 
-                  fontFamily: "'Playfair Display', Georgia, serif", 
-                  fontSize: isMobile ? '1.4rem' : '2rem', 
-                  fontStyle: 'italic',
-                  color: '#f4d0d5',
-                  lineHeight: '1.25',
-                  textShadow: '0 2px 8px rgba(0,0,0,0.25)'
-                }}>Empodera la confianza.</span>
+                  fontSize: isMobile ? '1.3rem' : '1.9rem', 
+                  fontWeight: '700',
+                  color: 'var(--text-primary)',
+                  margin: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}>
+                  Bienvenida de nuevo, {(!user || user.role?.toLowerCase().includes('admin') || user.name?.toLowerCase().includes('administrador')) ? 'Jana' : (user.name?.split(' ')[0] || 'Jana')}
+                  <span style={{ color: 'var(--magenta-secondary)', fontSize: isMobile ? '1.1rem' : '1.6rem' }}>♡</span>
+                </h2>
+                <p style={{
+                  fontSize: isMobile ? '0.72rem' : '0.8rem',
+                  color: 'var(--text-secondary)',
+                  fontWeight: '500',
+                  margin: 0
+                }}>
+                  Esto es lo que está pasando en tu salón hoy.
+                </p>
               </div>
+
+              {/* Handwritten script text */}
+              <div style={{
+                fontFamily: "'Dancing Script', cursive",
+                fontSize: isMobile ? '1.2rem' : '1.6rem',
+                color: 'var(--magenta-secondary)',
+                fontWeight: '600',
+                margin: '2px 0'
+              }}>
+                ¡Brilla hoy, hermosa!
+              </div>
+
               <button 
                 onClick={() => onNavigate('scheduling')}
                 style={{
                   alignSelf: 'flex-start',
-                  padding: '10px 22px',
-                  borderRadius: '100px',
-                  background: 'rgba(212, 140, 154, 0.85)',
-                  backdropFilter: 'blur(6px)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: isMobile ? '8px 16px' : '10px 20px',
+                  borderRadius: '12px',
+                  background: 'var(--pink-primary)',
                   color: '#ffffff',
-                  fontSize: '0.8rem',
+                  fontSize: isMobile ? '0.72rem' : '0.78rem',
                   fontWeight: '600',
-                  border: '1px solid rgba(255,255,255,0.25)',
+                  border: 'none',
                   cursor: 'pointer',
-                  boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
-                  transition: 'all 0.3s ease'
+                  boxShadow: '0 4px 10px rgba(212, 160, 154, 0.3)',
+                  transition: 'all 0.2s ease-in-out'
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(190, 100, 125, 0.95)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(212, 140, 154, 0.85)'; e.currentTarget.style.transform = 'none' }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--magenta-secondary)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--pink-primary)'; e.currentTarget.style.transform = 'none' }}
               >
-                Ver agenda de hoy
+                <Plus size={14} strokeWidth={2.5} />
+                Nueva Cita
               </button>
             </div>
           </div>
