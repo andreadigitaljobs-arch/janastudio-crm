@@ -602,9 +602,19 @@ const DashboardModule = ({
                 </span>
               </div>
           </div>
+        </div>
 
           {/* Divider + Mini Reportes */}
-          <div style={{ borderTop: '1px solid rgba(212, 160, 154, 0.15)', paddingTop: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{
+            background: '#ffffff',
+            borderRadius: '20px',
+            border: '1px solid rgba(212, 160, 154, 0.15)',
+            padding: '16px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+            boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)'
+          }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h4 style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
                 Reportes
@@ -617,21 +627,28 @@ const DashboardModule = ({
             <span style={{ fontSize: '0.65rem', color: '#22c55e', fontWeight: '600' }}>
               ↑ 18% <span style={{ color: 'var(--text-muted)', fontWeight: '400' }}>vs mes anterior</span>
             </span>
-            <div style={{ height: '70px', width: '100%', position: 'relative' }}>
+            <div style={{ height: '90px', width: '100%', position: 'relative' }}>
               <Line
                 data={{
                   labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
                   datasets: [{
                     data: [800, 1200, 950, 1400, 1100, 1600, 1800],
-                    borderColor: '#a0506a',
-                    borderWidth: 2,
-                    pointBackgroundColor: '#a0506a',
-                    pointBorderColor: '#ffffff',
+                    borderColor: '#c97282',
+                    borderWidth: 2.5,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#c97282',
                     pointBorderWidth: 2,
                     pointRadius: 3,
                     pointHoverRadius: 5,
                     fill: true,
-                    backgroundColor: 'rgba(160, 80, 106, 0.08)',
+                    backgroundColor: (ctx) => {
+                      const gradient = ctx.chart?.ctx?.createLinearGradient(0, 0, 0, 90);
+                      if (gradient) {
+                        gradient.addColorStop(0, 'rgba(201, 114, 130, 0.25)');
+                        gradient.addColorStop(1, 'rgba(201, 114, 130, 0.02)');
+                      }
+                      return gradient || 'rgba(201, 114, 130, 0.15)';
+                    },
                     tension: 0.4
                   }]
                 }}
@@ -640,7 +657,7 @@ const DashboardModule = ({
                   maintainAspectRatio: false,
                   plugins: { legend: { display: false }, tooltip: { enabled: false } },
                   scales: {
-                    x: { grid: { display: false }, ticks: { color: '#a0506a', font: { size: 8, weight: '600' } }, border: { display: false } },
+                    x: { grid: { display: false }, ticks: { color: '#a0506a', font: { size: 9, weight: '600' } }, border: { display: false } },
                     y: { display: false, min: 0 }
                   }
                 }}
