@@ -101,25 +101,25 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
     <div style={{ display: 'flex', gap: '8px', padding: isMobile ? '0 20px 14px' : '0 0 14px', animation: 'ntfItemIn 0.4s ease 0.15s both' }}>
       <button onClick={handleMarkAllRead} style={{
         flex: 1, padding: '9px 0', borderRadius: '12px',
-        background: 'linear-gradient(135deg, #ecfdf5, #d1fae5)',
-        border: '1px solid rgba(16, 185, 129, 0.2)',
-        color: '#059669', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer',
+        background: 'linear-gradient(135deg, #fdf2f4, #f8e8ec)',
+        border: '1px solid rgba(201, 114, 130, 0.2)',
+        color: '#a0506a', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer',
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
         transition: 'all 0.25s ease'
       }}
-      onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #d1fae5, #a7f3d0)'; e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.15)'; }}
-      onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #ecfdf5, #d1fae5)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
+      onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #f8e8ec, #f0d9e1)'; e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(201,114,130,0.15)'; }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #fdf2f4, #f8e8ec)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
       ><CheckCheck size={14} /> Marcar leídas</button>
       <button onClick={handleClearHistory} style={{
         flex: 1, padding: '9px 0', borderRadius: '12px',
-        background: 'linear-gradient(135deg, #fff7ed, #ffedd5)',
-        border: '1px solid rgba(249, 115, 22, 0.2)',
-        color: '#ea580c', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer',
+        background: 'linear-gradient(135deg, #fae8e4, #f5d8d2)',
+        border: '1px solid rgba(180, 100, 90, 0.2)',
+        color: '#8a4560', fontSize: '0.72rem', fontWeight: '700', cursor: 'pointer',
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
         transition: 'all 0.25s ease'
       }}
-      onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #ffedd5, #fed7aa)'; e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(249, 115, 22, 0.15)'; }}
-      onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #fff7ed, #ffedd5)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
+      onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #f5d8d2, #edc4bc)'; e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(180,100,90,0.15)'; }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #fae8e4, #f5d8d2)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
       ><Trash2 size={14} /> Limpiar</button>
     </div>
   );
