@@ -208,6 +208,17 @@ html, body {
   animation: leafFadeIn 1.5s ease 0.3s both;
 }
 
+.salon-login-flor-bottom {
+  position: absolute;
+  bottom: -10px;
+  right: -10px;
+  width: 200px;
+  height: auto;
+  z-index: 100;
+  pointer-events: none;
+  animation: leafFadeIn 1.5s ease 0.5s both;
+}
+
 @keyframes leafFadeIn {
   0% { opacity: 0; transform: translate(10px, -10px); }
   100% { opacity: 1; transform: translate(0, 0); }

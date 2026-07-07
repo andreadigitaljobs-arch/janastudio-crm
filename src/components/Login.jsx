@@ -126,8 +126,8 @@ export default function Login() {
 
   return (
     <div className="salon-login-outer">
-      <img src="/flor_arriba.png" alt="" className="salon-login-flor-top" />
       <div className="salon-login-container">
+        <img src="/flor_arriba.png" alt="" className="salon-login-flor-top" />
 
         {/* ── SECCIÓN IZQUIERDA: Carrusel de fotos ── */}
         <div className="salon-login-left">
@@ -154,6 +154,7 @@ export default function Login() {
 
         {/* ── SECCIÓN DERECHA: Formulario flotante ── */}
         <div className="salon-login-right">
+          <img src="/flor_abajo.png" alt="" className="salon-login-flor-bottom" />
           <div className={`salon-login-form-wrapper ${mounted ? 'salon-form-mounted' : ''}`}>
 
             {/* Logo */}
