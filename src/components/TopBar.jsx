@@ -41,6 +41,7 @@ const TopBar = ({
   const formatDay = (d) => d.charAt(0).toUpperCase() + d.slice(1);
 
   if (isMobile) {
+    if (activeTab === 'dashboard') return null;
     return (
       <div style={{
         display: 'flex',

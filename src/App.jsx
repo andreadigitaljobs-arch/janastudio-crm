@@ -16,7 +16,9 @@ import {
   LogOut,
   Sliders,
   Percent,
-  FileText
+  FileText,
+  Plus,
+  Home
 } from 'lucide-react';
 import { dataService } from './services/dataService';
 
@@ -518,45 +520,103 @@ function App() {
         <div style={{
           position: 'fixed', left: 0, right: 0, bottom: 0,
           height: 'calc(64px + env(safe-area-inset-bottom, 12px))',
-          background: 'rgba(255, 255, 255, 0.85)',
+          background: 'rgba(255, 255, 255, 0.96)',
           backdropFilter: 'blur(20px)',
           borderTop: '1px solid rgba(212, 160, 154, 0.15)',
           boxShadow: '0 -4px 20px rgba(74, 48, 54, 0.05)',
           zIndex: 997,
-          display: 'flex', justifyItems: 'stretch', alignItems: 'stretch',
+          display: 'flex', justifyContent: 'space-around', alignItems: 'center',
           paddingBottom: 'env(safe-area-inset-bottom, 12px)',
         }}>
-          {mobileVisibleItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeTab === item.id && !isMoreOpen;
-            return (
-              <button
-                key={item.id}
-                onClick={() => {
-                  handleTabChange(item.id, {});
-                  setIsMoreOpen(false);
-                }}
-                className={`mobile-nav-btn ${isActive ? 'active' : ''}`}
-              >
-                <div className="mobile-nav-icon-container">
-                  <Icon size={20} style={{ color: isActive ? 'var(--magenta-primary)' : 'var(--text-muted)' }} />
-                </div>
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
+          {/* Inicio */}
+          <button
+            onClick={() => {
+              handleTabChange('dashboard', {});
+              setIsMoreOpen(false);
+            }}
+            className={`mobile-nav-btn ${activeTab === 'dashboard' && !isMoreOpen ? 'active' : ''}`}
+          >
+            <div className="mobile-nav-icon-container">
+              <Home size={20} style={{ color: activeTab === 'dashboard' && !isMoreOpen ? 'var(--magenta-primary)' : 'var(--text-muted)' }} />
+            </div>
+            <span>Inicio</span>
+          </button>
 
-          {allowedMenuItems.length > 5 && (
+          {/* Agenda */}
+          <button
+            onClick={() => {
+              handleTabChange('scheduling', {});
+              setIsMoreOpen(false);
+            }}
+            className={`mobile-nav-btn ${activeTab === 'scheduling' && !isMoreOpen ? 'active' : ''}`}
+          >
+            <div className="mobile-nav-icon-container">
+              <Calendar size={20} style={{ color: activeTab === 'scheduling' && !isMoreOpen ? 'var(--magenta-primary)' : 'var(--text-muted)' }} />
+            </div>
+            <span>Agenda</span>
+          </button>
+
+          {/* Floating Central Plus (+) Button */}
+          <div style={{
+            position: 'relative',
+            width: '56px',
+            height: '56px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+            marginTop: '-20px'
+          }}>
             <button
-              onClick={() => setIsMoreOpen(prev => !prev)}
-              className={`mobile-nav-btn ${isMoreOpen || mobileHiddenItems.some(item => item.id === activeTab) ? 'active' : ''}`}
+              onClick={() => {
+                setIsSaleModalOpen(true);
+              }}
+              style={{
+                width: '50px',
+                height: '50px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)',
+                border: '4px solid #ffffff',
+                boxShadow: '0 4px 16px rgba(160, 80, 106, 0.4)',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                outline: 'none',
+                transition: 'all 0.2s ease-in-out'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
             >
-              <div className="mobile-nav-icon-container">
-                <MoreHorizontal size={20} style={{ color: (isMoreOpen || mobileHiddenItems.some(item => item.id === activeTab)) ? 'var(--magenta-primary)' : 'var(--text-muted)' }} />
-              </div>
-              <span>Más</span>
+              <Plus size={24} strokeWidth={2.5} />
             </button>
-          )}
+          </div>
+
+          {/* Clientes */}
+          <button
+            onClick={() => {
+              handleTabChange('clients', {});
+              setIsMoreOpen(false);
+            }}
+            className={`mobile-nav-btn ${activeTab === 'clients' && !isMoreOpen ? 'active' : ''}`}
+          >
+            <div className="mobile-nav-icon-container">
+              <Users size={20} style={{ color: activeTab === 'clients' && !isMoreOpen ? 'var(--magenta-primary)' : 'var(--text-muted)' }} />
+            </div>
+            <span>Clientes</span>
+          </button>
+
+          {/* Más */}
+          <button
+            onClick={() => setIsMoreOpen(prev => !prev)}
+            className={`mobile-nav-btn ${isMoreOpen || (activeTab !== 'dashboard' && activeTab !== 'scheduling' && activeTab !== 'clients') ? 'active' : ''}`}
+          >
+            <div className="mobile-nav-icon-container">
+              <MoreHorizontal size={20} style={{ color: isMoreOpen || (activeTab !== 'dashboard' && activeTab !== 'scheduling' && activeTab !== 'clients') ? 'var(--magenta-primary)' : 'var(--text-muted)' }} />
+            </div>
+            <span>Más</span>
+          </button>
         </div>
       )}
 
