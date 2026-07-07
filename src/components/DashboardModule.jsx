@@ -3,7 +3,7 @@ import {
   Users, Clock, Calendar, Sparkles, RefreshCw,
   Flower2, Plus, Star, ChevronRight,
   Percent, Scissors, DollarSign, Activity, Award,
-  Bell, ChevronDown, ShoppingBag, MessageSquare, UserPlus, BellRing, X
+  Bell, ChevronDown, ShoppingBag, Package, UserPlus, BellRing, X
 } from 'lucide-react';
 import {
   Chart as ChartJS, CategoryScale, LinearScale, PointElement,
@@ -241,7 +241,7 @@ const DashboardModule = ({
         borderRadius: 8,
         displayColors: false,
         callbacks: {
-          label: (context) => `Ingresos: Bs. ${formatBs(context.parsed.y)}`
+          label: (context) => `Ingresos: $${formatBs(context.parsed.y)}`
         }
       }
     },
@@ -375,7 +375,7 @@ const DashboardModule = ({
           </div>
         </div>
 
-        {/* Notification Activation Banner - only when needed */}
+        {/* Notification Activation Banner - Light Pink (matches desktop) */}
         {ntfPerm !== 'granted' && (
           <div
             onClick={() => {
@@ -394,70 +394,44 @@ const DashboardModule = ({
               position: 'relative',
               overflow: 'hidden',
               cursor: 'pointer',
-              boxShadow: '0 6px 24px rgba(201, 114, 130, 0.15)',
-              background: 'linear-gradient(135deg, #c97282, #a0506a, #8a4560)',
-              backgroundSize: '200% 200%',
-              animation: 'ntfBannerPulse 3s ease-in-out infinite',
+              boxShadow: '0 4px 16px rgba(201, 114, 130, 0.08)',
+              background: 'linear-gradient(135deg, #fdf2f4 0%, #fce8ec 100%)',
+              border: '1px solid rgba(201, 114, 130, 0.12)',
               transition: 'all 0.3s ease'
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px) scale(1.01)'; e.currentTarget.style.boxShadow = '0 10px 32px rgba(201, 114, 130, 0.25)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(201, 114, 130, 0.15)'; }}
           >
-            <style>{`
-              @keyframes ntfBannerPulse { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-              @keyframes ntfBellRing { 0%, 100% { transform: rotate(0deg); } 15% { transform: rotate(14deg); } 30% { transform: rotate(-12deg); } 45% { transform: rotate(8deg); } 60% { transform: rotate(-6deg); } 75% { transform: rotate(2deg); } }
-            `}</style>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '16px 20px', position: 'relative', zIndex: 1 }}>
-              {/* Animated bell icon */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 16px', position: 'relative', zIndex: 1 }}>
               <div style={{
-                width: '48px', height: '48px', borderRadius: '16px',
-                background: 'rgba(255,255,255,0.2)',
-                backdropFilter: 'blur(8px)',
+                width: '42px', height: '42px', borderRadius: '14px',
+                background: 'rgba(201, 114, 130, 0.1)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                flexShrink: 0,
-                animation: 'ntfBellRing 2s ease-in-out infinite'
+                flexShrink: 0
               }}>
-                <BellRing size={24} style={{ color: '#fff' }} />
+                <BellRing size={20} style={{ color: '#c97282' }} />
               </div>
-
-              {/* Text */}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <span style={{
-                  fontSize: '0.82rem', fontWeight: '800', color: '#ffffff',
+                  fontSize: '0.78rem', fontWeight: '700', color: '#5a3a36',
                   display: 'block', lineHeight: '1.2', fontFamily: "'Playfair Display', Georgia, serif"
                 }}>
                   Activa las alertas
                 </span>
                 <span style={{
-                  fontSize: '0.65rem', color: 'rgba(255,255,255,0.75)',
-                  display: 'block', marginTop: '3px', lineHeight: '1.3'
+                  fontSize: '0.62rem', color: '#9e7f7b',
+                  display: 'block', marginTop: '2px', lineHeight: '1.3'
                 }}>
-                  Recibe avisos al instante como un WhatsApp
+                  Recibe avisos al instante
                 </span>
               </div>
-
-              {/* Arrow */}
-              <div style={{
-                width: '32px', height: '32px', borderRadius: '50%',
-                background: 'rgba(255,255,255,0.2)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                flexShrink: 0
+              <span style={{
+                padding: '6px 14px', borderRadius: '10px',
+                background: 'linear-gradient(135deg, #c97282, #a0506a)',
+                color: '#fff', fontSize: '0.68rem', fontWeight: '700',
+                border: 'none', flexShrink: 0
               }}>
-                <ChevronRight size={16} style={{ color: '#fff' }} />
-              </div>
+                Activar
+              </span>
             </div>
-
-            {/* Decorative circles */}
-            <div style={{
-              position: 'absolute', top: '-20px', right: '-20px',
-              width: '80px', height: '80px', borderRadius: '50%',
-              background: 'rgba(255,255,255,0.08)',
-            }} />
-            <div style={{
-              position: 'absolute', bottom: '-30px', left: '-15px',
-              width: '60px', height: '60px', borderRadius: '50%',
-              background: 'rgba(255,255,255,0.06)',
-            }} />
           </div>
         )}
 
@@ -737,7 +711,7 @@ const DashboardModule = ({
                 Ver todo <ChevronRight size={12} />
               </span>
             </div>
-            <span style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--text-primary)' }}>Bs. 12.840</span>
+            <span style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--text-primary)' }}>$12.840</span>
             <span style={{ fontSize: '0.65rem', color: '#22c55e', fontWeight: '600' }}>
               ↑ 18% <span style={{ color: 'var(--text-muted)', fontWeight: '400' }}>vs mes anterior</span>
             </span>
@@ -1005,9 +979,9 @@ const DashboardModule = ({
               </span>
             </div>
 
-            {/* Enviar mensaje */}
+            {/* Inventario */}
             <div 
-              onClick={() => {}}
+              onClick={() => onNavigate('inventory')}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
             >
               <div style={{
@@ -1022,10 +996,10 @@ const DashboardModule = ({
                 color: '#a0506a',
                 boxShadow: '0 4px 12px rgba(201, 114, 130, 0.04)'
               }}>
-                <MessageSquare size={22} />
+                <Package size={22} />
               </div>
               <span style={{ fontSize: '0.62rem', fontWeight: '600', color: 'var(--text-primary)', textAlign: 'center', whiteSpace: 'nowrap' }}>
-                Enviar mensaje
+                Inventario
               </span>
             </div>
           </div>
@@ -1167,12 +1141,8 @@ const DashboardModule = ({
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
             {TOP_SPECIALISTS.slice(0, 3).map((spec, idx) => {
-              const medals = ['🥇', '🥈', '🥉'];
-              const maxEarnings = TOP_SPECIALISTS[0]?.earnings || 1;
-              const barPct = Math.round((spec.earnings / maxEarnings) * 100);
-              const isFirst = idx === 0;
               return (
                 <div 
                   key={idx} 
@@ -1181,60 +1151,41 @@ const DashboardModule = ({
                     display: 'flex',
                     alignItems: 'center',
                     gap: '10px',
-                    padding: '10px 12px',
-                    borderRadius: '14px',
-                    background: isFirst
-                      ? 'linear-gradient(135deg, rgba(201,114,130,0.1) 0%, rgba(160,80,106,0.06) 100%)'
-                      : 'rgba(250, 243, 242, 0.6)',
-                    border: isFirst
-                      ? '1px solid rgba(201, 114, 130, 0.2)'
-                      : '1px solid rgba(212, 160, 154, 0.1)',
+                    padding: '10px 0',
+                    borderBottom: idx < 2 ? '1px solid rgba(201, 114, 130, 0.08)' : 'none',
                     cursor: 'pointer',
                     transition: 'all 0.2s'
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)' }}
-                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'none' }}
                 >
-                  {/* Rank medal */}
+                  {/* Rank badge */}
                   <div style={{
-                    width: '24px', height: '24px', borderRadius: '50%',
-                    background: isFirst ? 'linear-gradient(135deg, #c97282, #a0506a)' : '#f5e9e7',
+                    width: '26px', height: '26px', borderRadius: '50%',
+                    background: idx === 0 ? 'linear-gradient(135deg, #c97282, #a0506a)' : 'transparent',
+                    border: idx === 0 ? 'none' : '2px solid rgba(201,114,130,0.25)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: isFirst ? '9px' : '12px',
-                    flexShrink: 0, boxShadow: isFirst ? '0 3px 8px rgba(160,80,106,0.3)' : 'none'
+                    flexShrink: 0
                   }}>
-                    {isFirst
-                      ? <span style={{ color: '#fff', fontWeight: 800, fontSize: '9px' }}>#{idx + 1}</span>
-                      : <span>{medals[idx]}</span>
-                    }
+                    <span style={{ fontSize: '0.65rem', fontWeight: '800', color: idx === 0 ? '#fff' : '#a0506a' }}>#{idx + 1}</span>
                   </div>
 
                   {/* Avatar */}
                   <div style={{
-                    width: '32px', height: '32px', borderRadius: '50%',
+                    width: '34px', height: '34px', borderRadius: '50%',
                     background: 'linear-gradient(135deg, #c97282, #a0506a)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: 'white', fontWeight: 800, fontSize: '0.75rem', flexShrink: 0,
-                    boxShadow: '0 2px 6px rgba(160,80,106,0.25)'
+                    color: '#fff', fontWeight: 700, fontSize: '0.75rem', flexShrink: 0
                   }}>{spec.initial}</div>
 
-                  {/* Name + role + bar */}
+                  {/* Name + role */}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.78rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{spec.name}</div>
-                    <div style={{ fontSize: '0.58rem', color: 'var(--text-muted)', marginBottom: '4px' }}>{spec.role}</div>
-                    <div style={{ height: '3px', borderRadius: '2px', background: 'rgba(212,160,154,0.2)', overflow: 'hidden' }}>
-                      <div style={{
-                        width: `${barPct}%`, height: '100%', borderRadius: '2px',
-                        background: isFirst ? 'linear-gradient(90deg, #c97282, #a0506a)' : 'rgba(201,114,130,0.45)',
-                        transition: 'width 0.6s ease'
-                      }} />
-                    </div>
+                    <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.82rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{spec.name}</div>
+                    <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>{spec.role}</div>
                   </div>
 
                   {/* Earnings */}
                   <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <div style={{ fontWeight: 800, color: isFirst ? '#a0506a' : 'var(--text-primary)', fontSize: '0.75rem' }}>Bs. {formatBs(spec.earnings)}</div>
-                    <div style={{ fontSize: '0.55rem', color: 'var(--text-muted)', marginTop: '1px' }}>ingresos</div>
+                    <div style={{ fontWeight: 800, color: '#a0506a', fontSize: '0.82rem' }}>${formatBs(spec.earnings)}</div>
+                    <div style={{ fontSize: '0.58rem', color: 'var(--text-muted)' }}>ingresos</div>
                   </div>
                 </div>
               );
@@ -1753,7 +1704,7 @@ const DashboardModule = ({
 
                   {/* Earnings */}
                   <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <div style={{ fontWeight: 800, color: '#a0506a', fontSize: '0.82rem' }}>Bs. {formatBs(spec.earnings)}</div>
+                    <div style={{ fontWeight: 800, color: '#a0506a', fontSize: '0.82rem' }}>${formatBs(spec.earnings)}</div>
                     <div style={{ fontSize: '0.58rem', color: 'var(--text-muted)' }}>ingresos</div>
                   </div>
                 </div>
@@ -1769,7 +1720,7 @@ const DashboardModule = ({
                 Ver todo <ChevronRight size={13} />
               </span>
             </div>
-            <span style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--text-primary)' }}>Bs. 12.840</span>
+            <span style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--text-primary)' }}>$12.840</span>
             <span style={{ fontSize: '0.68rem', color: '#22c55e', fontWeight: '600' }}>
               ↑ 18% <span style={{ color: 'var(--text-muted)', fontWeight: '400' }}>vs mes anterior</span>
             </span>

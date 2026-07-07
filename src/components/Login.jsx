@@ -134,7 +134,7 @@ export default function Login() {
             <div className="salon-semicircle-content" style={{ position: 'relative', width: '100%', height: '100%' }}>
               <div
                 key={activeImage}
-                className="salon-semicircle-image ken-burns-active"
+                className="salon-semicircle-image"
                 style={{
                   backgroundImage: `url(${activeImage})`,
                   backgroundPosition: `${activeImageConfig.x}% ${activeImageConfig.y}%`,
@@ -142,7 +142,7 @@ export default function Login() {
                   position: 'absolute',
                   inset: 0,
                   opacity: 1,
-                  transition: 'opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                  transition: 'opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
                   zIndex: 2
                 }}
               />

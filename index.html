@@ -13,13 +13,32 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.webp" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="preload" as="image" href="/logo.webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="/fondo_carga.png" fetchpriority="high" />
+    <link rel="preload" as="image" href="/fondo_carga_mobile.png" fetchpriority="high" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Great+Vibes&family=Montserrat:wght@200;400;700&display=swap" rel="stylesheet" />
     <title>Jana Studio</title>
+    <style>
+      html, body { background: #f7ebe6 !important; margin: 0; padding: 0; overflow: hidden; }
+    </style>
   </head>
   <body>
+    <div id="splash-loader" style="position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background-image:url(/fondo_carga.png);background-size:cover;background-position:center;background-color:#f7ebe6;font-family:'Playfair Display',Georgia,serif;">
+      <img src="/logo.webp" alt="Jana Studio" style="width:280px;max-width:80%;margin-bottom:30px;filter:drop-shadow(0 4px 10px rgba(122,88,83,0.08));animation:fadeInScale 1.2s cubic-bezier(0.16,1,0.3,1) forwards;" />
+      <div style="width:46px;height:46px;border-radius:50%;border:3.5px solid rgba(179,130,121,0.15);border-top:3.5px solid #b38279;box-shadow:0 0 15px rgba(179,130,121,0.2);animation:luxurySpin 1.2s cubic-bezier(0.5,0.1,0.5,0.9) infinite;margin-bottom:30px;"></div>
+      <h2 style="font-size:21px;font-weight:500;color:#7a5853;margin:0 0 8px;text-shadow:0 1px 1px rgba(255,255,255,0.5);letter-spacing:0.02em;">Preparando tu experiencia...</h2>
+      <p style="font-family:'Inter',sans-serif;font-size:13px;color:#9e7f7b;margin:0;letter-spacing:0.03em;" id="splash-subtitle">Cargando citas, clientes y servicios...</p>
+      <style>@keyframes luxurySpin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}@keyframes fadeInScale{0%{opacity:0;transform:scale(0.96)}100%{opacity:1;transform:scale(1)}}@media(max-width:768px){#splash-loader{background-image:url(/fondo_carga_mobile.png)}#splash-loader img{width:220px}}</style>
+    </div>
     <div id="root"></div>
+    <script>
+      (function(){
+        var steps=["Cargando citas, clientes y servicios...","Conectando con la base de datos segura...","Configurando diseño y elementos personalizados...","Preparando tu espacio de lujo..."];
+        var i=0;var el=document.getElementById("splash-subtitle");
+        var iv=setInterval(function(){i++;if(i<steps.length&&el)el.textContent=steps[i];else clearInterval(iv);},500);
+      })();
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

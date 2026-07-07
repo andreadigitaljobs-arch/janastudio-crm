@@ -21,6 +21,21 @@ const JanaLoader = ({ visible }) => {
   const containerRef = useRef(null);
   const startTimeRef = useRef(null);
 
+  // Remove static HTML splash screen only when React loader is fully visible
+  useEffect(() => {
+    if (visible) {
+      const timer = setTimeout(() => {
+        const splash = document.getElementById('splash-loader');
+        if (splash) {
+          splash.style.transition = 'opacity 0.4s ease';
+          splash.style.opacity = '0';
+          setTimeout(() => splash.remove(), 400);
+        }
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [visible]);
+
   // Play subtle luxury chime on mount
   useEffect(() => {
     if (visible) {
@@ -154,7 +169,7 @@ const JanaLoader = ({ visible }) => {
 
         {/* Elegant typography */}
         <div className="loader-info-wrapper">
-          <h2 className="loader-title">Preparando tu experiencia en el estudio...</h2>
+          <h2 className="loader-title">Preparando tu experiencia...</h2>
           <p className="loader-subtitle">{getSubtitle()}</p>
         </div>
 
@@ -331,7 +346,7 @@ const JanaLoader = ({ visible }) => {
         /* --- Footer --- */
         .loader-footer {
           position: absolute;
-          bottom: -40px;
+          bottom: 30px;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -356,9 +371,15 @@ const JanaLoader = ({ visible }) => {
           font-family: 'Playfair Display', Georgia, serif;
           font-size: 13px;
           font-style: italic;
-          color: #9e7f7b;
+          color: #7a5853;
           margin: 0;
           letter-spacing: 0.05em;
+          text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
+          background: rgba(255, 255, 255, 0.4);
+          padding: 6px 16px;
+          border-radius: 20px;
+          backdrop-filter: blur(6px);
+          -webkit-backdrop-filter: blur(6px);
         }
 
         @keyframes heartbeat {
