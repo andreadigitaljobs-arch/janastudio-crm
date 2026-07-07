@@ -199,24 +199,38 @@ html, body {
 
 .salon-login-flor-top {
   position: absolute;
-  top: -10px;
-  right: -10px;
-  width: 250px;
+  top: -5px;
+  right: -5px;
+  width: 180px;
   height: auto;
   z-index: 100;
   pointer-events: none;
-  animation: leafFadeIn 1.5s ease 0.3s both;
+  animation: florTopSway 6s ease-in-out infinite alternate, leafFadeIn 1.5s ease 0.3s both;
+  transform-origin: top right;
 }
 
 .salon-login-flor-bottom {
   position: absolute;
-  bottom: -10px;
-  right: -10px;
-  width: 200px;
+  bottom: -5px;
+  right: -5px;
+  width: 150px;
   height: auto;
   z-index: 100;
   pointer-events: none;
-  animation: leafFadeIn 1.5s ease 0.5s both;
+  animation: florBottomSway 7s ease-in-out infinite alternate, leafFadeIn 1.5s ease 0.5s both;
+  transform-origin: bottom right;
+}
+
+@keyframes florTopSway {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(-2deg) scale(1.02); }
+  100% { transform: rotate(1deg) scale(0.99); }
+}
+
+@keyframes florBottomSway {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(1.5deg) scale(1.01); }
+  100% { transform: rotate(-1deg) scale(1.02); }
 }
 
 @keyframes leafFadeIn {
