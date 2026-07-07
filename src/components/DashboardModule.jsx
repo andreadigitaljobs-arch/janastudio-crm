@@ -241,7 +241,7 @@ const DashboardModule = ({
         borderRadius: 8,
         displayColors: false,
         callbacks: {
-          label: (context) => `Ingresos: Bs. ${formatBs(context.parsed.y)}`
+          label: (context) => `Ingresos: $ ${context.parsed.y.toLocaleString('en-US')}`
         }
       }
     },
@@ -256,7 +256,7 @@ const DashboardModule = ({
         ticks: {
           color: '#a0506a',
           font: { size: 9, weight: '500' },
-          callback: (value) => `Bs. ${value}`
+          callback: (value) => `$ ${value}`
         },
         border: { display: false },
         min: 0
@@ -737,7 +737,7 @@ const DashboardModule = ({
                 Ver todo <ChevronRight size={12} />
               </span>
             </div>
-            <span style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--text-primary)' }}>$ 12.840</span>
+            <span style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--text-primary)' }}>$ 12,840</span>
             <span style={{ fontSize: '0.65rem', color: '#22c55e', fontWeight: '600' }}>
               ↑ 18% <span style={{ color: 'var(--text-muted)', fontWeight: '400' }}>vs mes anterior</span>
             </span>
@@ -1233,7 +1233,7 @@ const DashboardModule = ({
 
                   {/* Earnings */}
                   <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <div style={{ fontWeight: 800, color: isFirst ? '#a0506a' : 'var(--text-primary)', fontSize: '0.75rem' }}>Bs. {formatBs(spec.earnings)}</div>
+                    <div style={{ fontWeight: 800, color: isFirst ? '#a0506a' : 'var(--text-primary)', fontSize: '0.75rem' }}>$ {spec.earnings?.toLocaleString('en-US')}</div>
                     <div style={{ fontSize: '0.55rem', color: 'var(--text-muted)', marginTop: '1px' }}>ingresos</div>
                   </div>
                 </div>
@@ -1642,7 +1642,7 @@ const DashboardModule = ({
 
                   {/* Earnings */}
                   <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <div style={{ fontWeight: 800, color: '#a0506a', fontSize: '0.82rem' }}>Bs. {formatBs(spec.earnings)}</div>
+                    <div style={{ fontWeight: 800, color: '#a0506a', fontSize: '0.82rem' }}>$ {spec.earnings?.toLocaleString('en-US')}</div>
                     <div style={{ fontSize: '0.58rem', color: 'var(--text-muted)' }}>ingresos</div>
                   </div>
                 </div>
@@ -1658,7 +1658,7 @@ const DashboardModule = ({
                 Ver todo <ChevronRight size={13} />
               </span>
             </div>
-            <span style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--text-primary)' }}>Bs. 12.840</span>
+            <span style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--text-primary)' }}>$ 12,840</span>
             <span style={{ fontSize: '0.68rem', color: '#22c55e', fontWeight: '600' }}>
               ↑ 18% <span style={{ color: 'var(--text-muted)', fontWeight: '400' }}>vs mes anterior</span>
             </span>
