@@ -1172,20 +1172,20 @@ const DashboardModule = ({
       </div>
 
       {/* ── OCUPACIÓN DEL EQUIPO ── */}
-      <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '20px 28px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)', display: 'flex', alignItems: 'center', gap: '24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
-          <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: '#fdf3f4', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a' }}>
-            <Activity size={22} />
+      <div style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '10px 20px', boxShadow: '0 2px 8px rgba(74, 48, 54, 0.04)', display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+          <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: '#fdf3f4', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a' }}>
+            <Activity size={15} />
           </div>
           <div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Ocupación del equipo</div>
-            <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#c97282', lineHeight: 1 }}>{dynamicStats.occupancy}%</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Ocupación del equipo</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#c97282', lineHeight: 1 }}>{dynamicStats.occupancy}%</div>
           </div>
         </div>
-        <div style={{ flex: 1, height: '10px', borderRadius: '6px', background: '#f5e9e7', overflow: 'hidden' }}>
-          <div style={{ width: `${dynamicStats.occupancy}%`, height: '100%', borderRadius: '6px', background: 'linear-gradient(90deg, #c97282, #a0506a)', transition: 'width 0.6s ease' }} />
+        <div style={{ flex: 1, height: '6px', borderRadius: '4px', background: '#f5e9e7', overflow: 'hidden' }}>
+          <div style={{ width: `${dynamicStats.occupancy}%`, height: '100%', borderRadius: '4px', background: 'linear-gradient(90deg, #c97282, #a0506a)', transition: 'width 0.6s ease' }} />
         </div>
-        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '500', flexShrink: 0 }}>{dynamicStats.activeStaff} estilistas activas hoy</span>
+        <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: '500', flexShrink: 0 }}>{dynamicStats.activeStaff} estilistas activas hoy</span>
       </div>
 
       {/* ── MAIN CONTENT ROW: Agenda + Top Servicios + Top Especialistas (ALINEACIÓN STRETCH) ── */}
@@ -1377,7 +1377,7 @@ const DashboardModule = ({
         </div>
 
         {/* TOP ESPECIALISTAS */}
-        <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '24px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
+        <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '22px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
               Top Especialistas
@@ -1387,30 +1387,73 @@ const DashboardModule = ({
             </span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, justifyContent: 'center' }}>
-            {TOP_SPECIALISTS.slice(0, 3).map((spec, idx) => (
-              <div key={idx} style={{
-                display: 'flex', alignItems: 'center', gap: '10px',
-                padding: '6px 10px', borderRadius: '12px',
-                background: idx === 0 ? 'rgba(212, 160, 154, 0.08)' : 'transparent',
-                border: idx === 0 ? '1px solid rgba(212, 160, 154, 0.15)' : '1px solid transparent'
-              }}>
-                <div style={{
-                  width: '32px', height: '32px', borderRadius: '50%',
-                  background: 'var(--pink-gradient)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: 'white', fontWeight: 700, fontSize: '0.75rem', flexShrink: 0
-                }}>{spec.initial}</div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.78rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{spec.name}</div>
-                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{spec.role}</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {TOP_SPECIALISTS.slice(0, 3).map((spec, idx) => {
+              const medals = ['🥇', '🥈', '🥉'];
+              const maxEarnings = TOP_SPECIALISTS[0]?.earnings || 1;
+              const barPct = Math.round((spec.earnings / maxEarnings) * 100);
+              const isFirst = idx === 0;
+              return (
+                <div key={idx} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  padding: '12px 14px',
+                  borderRadius: '16px',
+                  background: isFirst
+                    ? 'linear-gradient(135deg, rgba(201,114,130,0.1) 0%, rgba(160,80,106,0.06) 100%)'
+                    : 'rgba(250, 243, 242, 0.6)',
+                  border: isFirst
+                    ? '1px solid rgba(201, 114, 130, 0.2)'
+                    : '1px solid rgba(212, 160, 154, 0.1)',
+                  transition: 'all 0.2s',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}>
+                  {/* Rank medal */}
+                  <div style={{
+                    width: '28px', height: '28px', borderRadius: '50%',
+                    background: isFirst ? 'linear-gradient(135deg, #c97282, #a0506a)' : '#f5e9e7',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: isFirst ? '11px' : '14px',
+                    flexShrink: 0, boxShadow: isFirst ? '0 3px 8px rgba(160,80,106,0.3)' : 'none'
+                  }}>
+                    {isFirst
+                      ? <span style={{ color: '#fff', fontWeight: 800, fontSize: '10px' }}>#{idx + 1}</span>
+                      : <span>{medals[idx]}</span>
+                    }
+                  </div>
+
+                  {/* Avatar */}
+                  <div style={{
+                    width: '36px', height: '36px', borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #c97282, #a0506a)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'white', fontWeight: 800, fontSize: '0.82rem', flexShrink: 0,
+                    boxShadow: '0 2px 6px rgba(160,80,106,0.25)'
+                  }}>{spec.initial}</div>
+
+                  {/* Name + role + bar */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.82rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{spec.name}</div>
+                    <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', marginBottom: '5px' }}>{spec.role}</div>
+                    <div style={{ height: '4px', borderRadius: '3px', background: 'rgba(212,160,154,0.2)', overflow: 'hidden' }}>
+                      <div style={{
+                        width: `${barPct}%`, height: '100%', borderRadius: '3px',
+                        background: isFirst ? 'linear-gradient(90deg, #c97282, #a0506a)' : 'rgba(201,114,130,0.45)',
+                        transition: 'width 0.6s ease'
+                      }} />
+                    </div>
+                  </div>
+
+                  {/* Earnings */}
+                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    <div style={{ fontWeight: 800, color: isFirst ? '#a0506a' : 'var(--text-primary)', fontSize: '0.8rem' }}>Bs. {formatBs(spec.earnings)}</div>
+                    <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', marginTop: '1px' }}>ingresos</div>
+                  </div>
                 </div>
-                <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.78rem' }}>Bs. {formatBs(spec.earnings)}</div>
-                  <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)' }}>Ingresos</div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
