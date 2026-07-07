@@ -370,7 +370,7 @@ const DashboardModule = ({
         </div>
 
         {/* Notification Activation Banner - only when needed */}
-        {isMobile && ntfPerm !== 'granted' && (
+        {ntfPerm !== 'granted' && (
           <div
             onClick={requestNtfPermission}
             style={{
@@ -1294,6 +1294,65 @@ const DashboardModule = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.35s ease', paddingBottom: '40px' }}>
+
+      {/* Notification Activation Banner - Desktop */}
+      {ntfPerm !== 'granted' && (
+        <div
+          onClick={requestNtfPermission}
+          style={{
+            width: '100%',
+            borderRadius: '20px',
+            position: 'relative',
+            overflow: 'hidden',
+            cursor: 'pointer',
+            boxShadow: '0 6px 24px rgba(201, 114, 130, 0.15)',
+            background: 'linear-gradient(135deg, #c97282, #a0506a, #8a4560)',
+            backgroundSize: '200% 200%',
+            animation: 'ntfBannerPulse 3s ease-in-out infinite',
+            transition: 'all 0.3s ease'
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px) scale(1.005)'; e.currentTarget.style.boxShadow = '0 10px 32px rgba(201, 114, 130, 0.25)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(201, 114, 130, 0.15)'; }}
+        >
+          <style>{`
+            @keyframes ntfBannerPulse { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+            @keyframes ntfBellRing { 0%, 100% { transform: rotate(0deg); } 15% { transform: rotate(14deg); } 30% { transform: rotate(-12deg); } 45% { transform: rotate(8deg); } 60% { transform: rotate(-6deg); } 75% { transform: rotate(2deg); } }
+          `}</style>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '18px 28px', position: 'relative', zIndex: 1 }}>
+            <div style={{
+              width: '50px', height: '50px', borderRadius: '16px',
+              background: 'rgba(255,255,255,0.2)',
+              backdropFilter: 'blur(8px)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0,
+              animation: 'ntfBellRing 2s ease-in-out infinite'
+            }}>
+              <BellRing size={24} style={{ color: '#fff' }} />
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <span style={{ fontSize: '0.9rem', fontWeight: '800', color: '#ffffff', display: 'block', lineHeight: '1.2', fontFamily: "'Playfair Display', Georgia, serif" }}>
+                Activa las alertas de tu CRM
+              </span>
+              <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.75)', display: 'block', marginTop: '4px', lineHeight: '1.3' }}>
+                Recibe notificaciones al instante cuando haya nuevas citas y actualizaciones
+              </span>
+            </div>
+            <button style={{
+              padding: '10px 20px', borderRadius: '12px', border: '2px solid rgba(255,255,255,0.3)',
+              background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(4px)',
+              color: '#ffffff', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer',
+              flexShrink: 0, transition: 'all 0.25s ease', whiteSpace: 'nowrap'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.3)'; e.currentTarget.style.transform = 'scale(1.05)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; e.currentTarget.style.transform = 'none'; }}
+            >
+              Activar
+            </button>
+          </div>
+          <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
+          <div style={{ position: 'absolute', bottom: '-30px', left: '-15px', width: '70px', height: '70px', borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
+        </div>
+      )}
 
       {/* ── HERO BANNER ── */}
       <div style={{
