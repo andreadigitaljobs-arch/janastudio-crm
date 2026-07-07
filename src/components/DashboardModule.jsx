@@ -1285,14 +1285,14 @@ const DashboardModule = ({
           {/* Photo banner directly below progress bars */}
           <div
             onClick={() => onNavigate('services')}
-            style={{ width: '100%', height: '70px', borderRadius: '16px', overflow: 'hidden', position: 'relative', border: '1px solid rgba(212, 160, 154, 0.15)', cursor: 'pointer', transition: 'all 0.2s' }}
+            style={{ width: '100%', height: '110px', borderRadius: '16px', overflow: 'hidden', position: 'relative', border: '1px solid rgba(212, 160, 154, 0.15)', cursor: 'pointer', transition: 'all 0.2s' }}
             onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.01)' }}
             onMouseLeave={(e) => { e.currentTarget.style.transform = 'none' }}
           >
-            <img src="/foto_pestanas.png" alt="Extensiones de pestañas" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 30%' }} />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(74, 48, 54, 0.85) 0%, rgba(74, 48, 54, 0.15) 70%)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '8px 12px' }}>
-              <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#ffffff' }}>Servicio del mes: Ext. de pestañas</span>
-              <span style={{ fontSize: '0.62rem', color: '#fae8e5' }}>Desde $50</span>
+            <img src="/foto_pestanas.png" alt="Extensiones de pestañas" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 60%' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(74, 48, 54, 0.85) 0%, rgba(74, 48, 54, 0.1) 80%)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '12px 14px' }}>
+              <span style={{ fontSize: '0.8rem', fontWeight: '800', color: '#ffffff', textShadow: '0 1px 3px rgba(0, 0, 0, 0.2)' }}>Servicio del mes: Ext. de pestañas</span>
+              <span style={{ fontSize: '0.7rem', fontWeight: '600', color: '#fae8e5', textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}>Desde $50</span>
             </div>
           </div>
         </div>
