@@ -425,7 +425,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
   const getFallbackIconName = (catName) => {
     switch(catName) {
       case 'Estilismo': return 'Scissors';
-      case 'Estilismo': return 'Sparkles';
+      case 'Pestañas': return 'Sparkles';
       case 'Tratamientos': return 'Droplets';
       default: return 'Wind';
     }
@@ -1789,317 +1789,348 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
           showAddForm && (
             <div className={overlayClass} style={{
               position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-              backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)',
+              backgroundColor: 'rgba(74, 48, 54, 0.45)', backdropFilter: 'blur(8px)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               zIndex: 99999, padding: isMobile ? '12px' : '20px'
             }}>
-              <div className={`${cardClass} glass-card jana-scrollbar`} style={{
-                width: '100%', maxWidth: '900px',
+              <div className={`${cardClass} jana-scrollbar`} style={{
+                width: '100%', maxWidth: '850px',
                 maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column',
-                padding: isMobile ? '20px 16px' : '32px', borderRadius: '28px',
-                border: '1px solid rgba(212,160,154,0.2)',
-                boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.6)',
-                position: 'relative'
+                padding: isMobile ? '24px 16px' : '36px', borderRadius: '24px',
+                backgroundColor: '#ffffff',
+                border: '1px solid rgba(212, 160, 154, 0.25)',
+                boxShadow: '0 20px 50px rgba(74, 48, 54, 0.12)',
+                position: 'relative',
+                color: '#4a3036'
               }}>
                 <button 
                   onClick={() => { setShowAddForm(false); setIsEditing(false); }} 
-                  style={{ position: 'absolute', right: isMobile ? '32px' : '48px', top: '20px', background: 'rgba(255,255,255,0.05)', border: 'none', color: 'white', cursor: 'pointer', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  style={{
+                    position: 'absolute', right: '24px', top: '24px',
+                    background: 'rgba(212, 160, 154, 0.15)', border: 'none',
+                    color: '#a0506a', cursor: 'pointer', width: '32px', height: '32px',
+                    borderRadius: '50%', display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', transition: 'all 0.2s', zIndex: 10
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(201, 114, 130, 0.25)'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(212, 160, 154, 0.15)'}
                 >
-                  <X size={20} />
+                  <X size={18} />
                 </button>
 
-                <div className="jana-scrollbar" style={{ overflowY: 'auto', overflowX: 'hidden', flex: 1, paddingRight: '8px' }}><h3 style={{ fontSize: '22px', fontWeight: '800', marginBottom: '24px', paddingRight: '40px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ color: 'var(--pink-primary)', display: 'flex', alignItems: 'center' }}>
-                    {getIconComponent(newService.icon || 'Scissors', 22)}
-                  </span>
-                  {isEditing ? 'Editar Servicio' : 'Nuevo Servicio'}
-                </h3>
-                
-                <div className="modal-main-grid">
-                  {/* Left Column: Form Fields */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                    <div className="form-group">
-                      <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>NOMBRE DEL SERVICIO</label>
-                      <div style={{ position: 'relative' }}>
-                        <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--pink-primary)', display: 'flex', alignItems: 'center' }}>
-                          {getIconComponent(newService.icon || 'Scissors', 18)}
-                        </span>
-                        <input className="form-input" placeholder="Ej. Corte Suprema" value={newService.name} onChange={e => setNewService({...newService, name: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
+                <div className="jana-scrollbar" style={{ overflowY: 'auto', overflowX: 'hidden', flex: 1, paddingRight: '4px' }}>
+                  <h3 style={{ fontSize: '22px', fontWeight: '800', marginBottom: '24px', paddingRight: '40px', display: 'flex', alignItems: 'center', gap: '10px', fontFamily: "'Playfair Display', Georgia, serif", color: '#4a3036' }}>
+                    <span style={{ color: '#c97282', display: 'flex', alignItems: 'center' }}>
+                      {getIconComponent(newService.icon || 'Scissors', 22)}
+                    </span>
+                    {isEditing ? 'Editar Servicio' : 'Nuevo Servicio'}
+                  </h3>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.2fr 1fr', gap: '24px', marginBottom: '24px' }}>
+                    {/* Left Column: Form Fields */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                      
+                      {/* Name input */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <label style={{ fontSize: '11px', fontWeight: '800', color: '#a0506a', letterSpacing: '0.8px', textTransform: 'uppercase' }}>Nombre del Servicio</label>
+                        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', border: '1px solid rgba(212, 160, 154, 0.4)', borderRadius: '12px', background: '#faf3f2' }}>
+                          <span style={{ position: 'absolute', left: '14px', color: '#c97282', display: 'flex', alignItems: 'center' }}>
+                            {getIconComponent(newService.icon || 'Scissors', 18)}
+                          </span>
+                          <input 
+                            placeholder="Ej. Corte Suprema" 
+                            value={newService.name} 
+                            onChange={e => setNewService({...newService, name: e.target.value})} 
+                            style={{ width: '100%', height: '46px', paddingLeft: '44px', paddingRight: '14px', border: 'none', background: 'transparent', color: '#4a3036', fontSize: '13.5px', outline: 'none', fontWeight: '600' }} 
+                          />
+                        </div>
+                      </div>
+
+                      {/* Icon Picker */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <label style={{ fontSize: '11px', fontWeight: '800', color: '#a0506a', letterSpacing: '0.8px', textTransform: 'uppercase' }}>Ícono Asociado</label>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                          {AVAILABLE_ICONS.map(ic => (
+                            <button
+                              key={ic.name}
+                              title={ic.label}
+                              type="button"
+                              onClick={() => setNewService({...newService, icon: ic.name})}
+                              style={{
+                                width: '38px',
+                                height: '38px',
+                                borderRadius: '10px',
+                                border: newService.icon === ic.name
+                                  ? '2px solid #c97282'
+                                  : '1px solid rgba(212, 160, 154, 0.25)',
+                                background: newService.icon === ic.name
+                                  ? '#faf3f2'
+                                  : '#ffffff',
+                                color: newService.icon === ic.name ? '#c97282' : '#a78d93',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                transition: 'all 0.15s',
+                                flexShrink: 0
+                              }}
+                            >
+                              {getIconComponent(ic.name, 16)}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Description input */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <label style={{ fontSize: '11px', fontWeight: '800', color: '#a0506a', letterSpacing: '0.8px', textTransform: 'uppercase' }}>Descripción del Servicio</label>
+                        <textarea 
+                          placeholder="Describe los beneficios premium del servicio..." 
+                          value={newService.description || ''} 
+                          onChange={e => setNewService({...newService, description: e.target.value})} 
+                          style={{ width: '100%', minHeight: '76px', padding: '12px 14px', borderRadius: '12px', border: '1px solid rgba(212, 160, 154, 0.4)', background: '#ffffff', color: '#4a3036', fontSize: '13px', lineHeight: '1.45', outline: 'none', resize: 'none' }} 
+                        />
+                      </div>
+
+                      {/* Price & Duration */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          <label style={{ fontSize: '11px', fontWeight: '800', color: '#a0506a', letterSpacing: '0.8px', textTransform: 'uppercase' }}>Precio ($)</label>
+                          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', border: '1px solid rgba(212, 160, 154, 0.4)', borderRadius: '12px', background: '#ffffff' }}>
+                            <span style={{ position: 'absolute', left: '14px', color: '#c97282', fontWeight: '700', fontSize: '14px' }}>$</span>
+                            <input 
+                              type="number" 
+                              placeholder="25" 
+                              value={newService.price === 0 ? '' : newService.price} 
+                              onChange={e => setNewService({...newService, price: e.target.value === '' ? '' : Number(e.target.value)})} 
+                              style={{ width: '100%', height: '46px', paddingLeft: '28px', paddingRight: rates?.usd > 0 ? '90px' : '14px', border: 'none', background: 'transparent', color: '#4a3036', fontSize: '14px', fontWeight: '700', outline: 'none' }}
+                            />
+                            {rates?.usd > 0 && (
+                              <div style={{ position: 'absolute', right: '10px', fontSize: '11px', fontWeight: '700', color: '#a0506a', backgroundColor: '#faf3f2', padding: '3px 8px', borderRadius: '6px' }}>
+                                ≈ {Math.round((Number(newService.price) || 0) * rates.usd).toLocaleString()} Bs.
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          <label style={{ fontSize: '11px', fontWeight: '800', color: '#a0506a', letterSpacing: '0.8px', textTransform: 'uppercase' }}>Duración (Min)</label>
+                          <div style={{ display: 'flex', alignItems: 'center', border: '1px solid rgba(212, 160, 154, 0.4)', borderRadius: '12px', background: '#ffffff' }}>
+                            <input 
+                              type="number" 
+                              placeholder="45" 
+                              value={newService.duration === 0 ? '' : newService.duration} 
+                              onChange={e => setNewService({...newService, duration: e.target.value === '' ? '' : Number(e.target.value)})} 
+                              style={{ width: '100%', height: '46px', padding: '0 14px', border: 'none', background: 'transparent', color: '#4a3036', fontSize: '14px', fontWeight: '700', outline: 'none' }} 
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Category & Strategy Selects */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                        <JanaSelect 
+                          label="Categoría"
+                          value={newService.category}
+                          onChange={val => setNewService({...newService, category: val})}
+                          options={categories.map(c => ({ label: c.name, value: c.name }))}
+                        />
+                        <JanaSelect 
+                          label="Estrategia"
+                          value={newService.strategy_type}
+                          onChange={val => setNewService({...newService, strategy_type: val})}
+                          options={strategies.map(strat => ({ label: strat.label, value: strat.value }))}
+                        />
+                      </div>
+
+                      {/* Distribution / Commissions */}
+                      <div style={{ background: '#faf3f2', padding: '16px', borderRadius: '16px', border: '1px solid rgba(212, 160, 154, 0.2)' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: '800', color: '#a0506a', marginBottom: '12px', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+                          <DollarSign size={14} /> Distribución de Ingresos (%)
+                        </label>
+                        
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <label style={{ fontSize: '10px', fontWeight: '700', color: '#7a5960' }}>Comisión Estilista (%)</label>
+                            <input 
+                              type="number" 
+                              placeholder="40"
+                              value={newService.commission_stylist === 0 ? '' : newService.commission_stylist} 
+                              onChange={e => setNewService({...newService, commission_stylist: e.target.value === '' ? 0 : Number(e.target.value)})} 
+                              style={{ width: '100%', height: '42px', padding: '0 12px', borderRadius: '8px', border: '1px solid rgba(212, 160, 154, 0.3)', backgroundColor: '#ffffff', fontSize: '14px', fontWeight: '800', color: '#c97282', outline: 'none' }} 
+                            />
+                          </div>
+
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <label style={{ fontSize: '10px', fontWeight: '700', color: '#7a5960' }}>Ganancia Salón (%)</label>
+                            <input 
+                              type="number" 
+                              readOnly
+                              value={100 - (Number(newService.commission_stylist) || 0)} 
+                              style={{ width: '100%', height: '42px', padding: '0 12px', borderRadius: '8px', border: '1px solid rgba(212, 160, 154, 0.15)', backgroundColor: 'rgba(212, 160, 154, 0.05)', fontSize: '14px', fontWeight: '800', color: '#7a5960', cursor: 'not-allowed', outline: 'none' }} 
+                            />
+                          </div>
+                        </div>
+                        
+                        {/* Real Margin Summary */}
+                        {(newService.price > 0) && (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            {/* Row 1: Real Salon Gain */}
+                            <div style={{ 
+                              padding: '10px 14px', 
+                              borderRadius: '10px', 
+                              background: 'rgba(50, 215, 75, 0.04)', 
+                              border: '1px solid rgba(50, 215, 75, 0.12)',
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center'
+                            }}>
+                              <div>
+                                <div style={{ fontSize: '9px', fontWeight: '800', color: '#2f9e44', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                                  Ganancia Real Salón
+                                </div>
+                                <div style={{ fontSize: '16px', fontWeight: '900', color: '#4a3036', marginTop: '1px' }}>
+                                  ${((Number(newService.price) || 0) - ((Number(newService.price) || 0) * (Number(newService.commission_stylist) || 0) / 100)).toFixed(2)}
+                                </div>
+                              </div>
+                              {rates?.usd > 0 && (
+                                <div style={{ textAlign: 'right' }}>
+                                  <div style={{ fontSize: '9px', color: '#7a5960', fontWeight: '700' }}>EQUIVALENTE BS.</div>
+                                  <div style={{ fontSize: '12px', fontWeight: '800', color: '#2f9e44', marginTop: '1px' }}>
+                                    {Math.round(((Number(newService.price) || 0) - ((Number(newService.price) || 0) * (Number(newService.commission_stylist) || 0) / 100)) * rates.usd).toLocaleString()} Bs.
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Row 2: Stylist Pay */}
+                            <div style={{ 
+                              padding: '10px 14px', 
+                              borderRadius: '10px', 
+                              background: 'rgba(201, 114, 130, 0.04)', 
+                              border: '1px solid rgba(201, 114, 130, 0.12)',
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center'
+                            }}>
+                              <div>
+                                <div style={{ fontSize: '9px', fontWeight: '800', color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                                  Pago Real Estilista
+                                </div>
+                                <div style={{ fontSize: '16px', fontWeight: '900', color: '#4a3036', marginTop: '1px' }}>
+                                  ${(((Number(newService.price) || 0) * (Number(newService.commission_stylist) || 0)) / 100).toFixed(2)}
+                                </div>
+                              </div>
+                              {rates?.usd > 0 && (
+                                <div style={{ textAlign: 'right' }}>
+                                  <div style={{ fontSize: '9px', color: '#7a5960', fontWeight: '700' }}>EQUIVALENTE BS.</div>
+                                  <div style={{ fontSize: '12px', fontWeight: '800', color: '#a0506a', marginTop: '1px' }}>
+                                    {Math.round((((Number(newService.price) || 0) * (Number(newService.commission_stylist) || 0)) / 100) * rates.usd).toLocaleString()} Bs.
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
 
-                    {/* Icon Picker */}
-                    <div className="form-group">
-                      <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '10px', letterSpacing: '1px' }}>ÁCONO ASOCIADO</label>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                        {AVAILABLE_ICONS.map(ic => (
-                          <button
-                            key={ic.name}
-                            title={ic.label}
-                            onClick={() => setNewService({...newService, icon: ic.name})}
-                            style={{
-                              width: '40px',
-                              height: '40px',
-                              borderRadius: '10px',
-                              border: newService.icon === ic.name
-                                ? '2px solid var(--pink-primary)'
-                                : '1px solid rgba(255,255,255,0.08)',
-                              background: newService.icon === ic.name
-                                ? 'rgba(196,139,159,0.15)'
-                                : 'rgba(255,255,255,0.04)',
-                              color: newService.icon === ic.name ? 'var(--pink-primary)' : 'var(--text-muted)',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              transition: 'all 0.18s',
-                              flexShrink: 0
-                            }}
-                          >
-                            {getIconComponent(ic.name, 17)}
-                          </button>
+                    {/* Right Column: Checklist */}
+                    <div style={{ backgroundColor: '#faf3f2', padding: '20px', borderRadius: '16px', border: '1px solid rgba(212, 160, 154, 0.2)', display: 'flex', flexDirection: 'column', height: '100%', boxSizing: 'border-box' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: '800', color: '#a0506a', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+                          <LayoutList size={15} /> Checklist (Incluido)
+                        </label>
+                        <button 
+                          onClick={() => setIsExtrasModalOpen(true)}
+                          style={{ 
+                            background: '#ffffff', 
+                            border: '1px solid rgba(212, 160, 154, 0.25)', 
+                            borderRadius: '8px', 
+                            padding: '4px 10px', 
+                            fontSize: '9px',
+                            fontWeight: '800',
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '4px',
+                            cursor: 'pointer', 
+                            color: '#a0506a',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
+                          }}
+                        >
+                          <Settings size={11} /> Items
+                        </button>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '10px', overflowY: 'auto', flex: 1, maxHeight: isMobile ? '200px' : '380px', paddingRight: '4px' }}>
+                        {baseItems.map(item => (
+                          <div key={item.id} style={{ position: 'relative' }}>
+                            <button 
+                              type="button"
+                              onClick={() => {
+                                const current = newService.included_items || [];
+                                const next = current.includes(item.name) 
+                                  ? current.filter(i => i !== item.name)
+                                  : [...current, item.name];
+                                setNewService({...newService, included_items: next});
+                              }}
+                              style={{
+                                width: '100%',
+                                padding: '8px 12px',
+                                borderRadius: '10px',
+                                fontSize: '12px',
+                                textAlign: 'left',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                cursor: 'pointer',
+                                transition: 'all 0.15s',
+                                background: '#ffffff',
+                                border: newService.included_items?.includes(item.name) ? '1.5px solid #c97282' : '1px solid rgba(212, 160, 154, 0.2)',
+                                color: '#4a3036',
+                                fontWeight: newService.included_items?.includes(item.name) ? '700' : '500',
+                                boxShadow: newService.included_items?.includes(item.name) ? '0 2px 6px rgba(201, 114, 130, 0.08)' : 'none'
+                              }}
+                            >
+                              <div style={{ 
+                                width: '16px', 
+                                height: '16px', 
+                                borderRadius: '4px', 
+                                border: '1px solid rgba(212, 160, 154, 0.3)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: newService.included_items?.includes(item.name) ? '#c97282' : 'transparent'
+                              }}>
+                                {newService.included_items?.includes(item.name) && <Check size={11} color="white" strokeWidth={4} style={{ margin: 'auto' }} />}
+                              </div>
+                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</span>
+                            </button>
+                          </div>
                         ))}
                       </div>
                     </div>
-
-                    <div className="form-group">
-                      <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>DESCRIPCIÁ“N DEL SERVICIO</label>
-                      <textarea 
-                        className="form-input" 
-                        placeholder="Describe los beneficios premium del servicio..." 
-                        value={newService.description || ''} 
-                        onChange={e => setNewService({...newService, description: e.target.value})} 
-                        onInput={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }}
-                        ref={el => { if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; } }}
-                        style={{ width: '100%', minHeight: '80px', paddingTop: '12px', resize: 'none', fontSize: '13px', lineHeight: '1.5', overflow: 'hidden' }} 
-                      />
-                    </div>
-
-                    <div className="modal-grid-2col">
-                      <div className="form-group">
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '8px' }}>PRECIO ($)</label>
-                        <div className="premium-price-input-container">
-                          <span className="price-currency-symbol">$</span>
-                          <input 
-                            className="price-input-field" 
-                            type="number" 
-                            placeholder="25" 
-                            value={newService.price === 0 ? '' : newService.price} 
-                            onChange={e => setNewService({...newService, price: e.target.value === '' ? '' : Number(e.target.value)})} 
-                          />
-                          {rates?.usd > 0 && (
-                            <div className="price-bs-equivalent">
-                              â‰ˆ {Math.round((Number(newService.price) || 0) * rates.usd).toLocaleString()} Bs.
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="form-group">
-                        <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '8px' }}>DURACIÁ“N (MIN)</label>
-                        <input className="form-input" type="number" placeholder="45" value={newService.duration === 0 ? '' : newService.duration} onChange={e => setNewService({...newService, duration: e.target.value === '' ? '' : Number(e.target.value)})} style={{ width: '100%' }} />
-                      </div>
-                    </div>
-
-                    <div className="modal-grid-2col">
-                      <JanaSelect 
-                        label="CATEGORÁA"
-                        value={newService.category}
-                        onChange={val => setNewService({...newService, category: val})}
-                        options={categories.map(c => ({ label: c.name, value: c.name }))}
-                      />
-                      <JanaSelect 
-                        label="ESTRATEGIA"
-                        value={newService.strategy_type}
-                        onChange={val => setNewService({...newService, strategy_type: val})}
-                        options={strategies.map(strat => ({ label: strat.label, value: strat.value }))}
-                      />
-                    </div>
-
-                    {/* Commissions Distribution */}
-                    <div className="modal-commissions">
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', marginBottom: '16px', letterSpacing: '1px' }}>
-                        <DollarSign size={14} /> DISTRIBUCIÁ“N DE INGRESOS (%)
-                      </label>
-                      
-                      <div className="commissions-fields-grid" style={{ marginBottom: '16px' }}>
-                        <div className="form-group">
-                          <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '8px' }}>COMISIÁ“N ESTILISTA (%)</label>
-                          <input 
-                            className="form-input" 
-                            type="number" 
-                            placeholder="40"
-                            value={newService.commission_stylist === 0 ? '' : newService.commission_stylist} 
-                            onChange={e => setNewService({...newService, commission_stylist: e.target.value === '' ? 0 : Number(e.target.value)})} 
-                            style={{ width: '100%', fontSize: '15px', fontWeight: '800', height: '48px', color: 'var(--pink-primary)' }} 
-                          />
-                        </div>
-
-                        <div className="form-group">
-                          <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '8px' }}>GANANCIA SALÁ“N (%)</label>
-                          <input 
-                            className="form-input" 
-                            type="number" 
-                            readOnly
-                            value={100 - (Number(newService.commission_stylist) || 0)} 
-                            style={{ width: '100%', fontSize: '15px', fontWeight: '800', height: '48px', color: 'var(--text-muted)', backgroundColor: 'rgba(255,255,255,0.01)', cursor: 'not-allowed' }} 
-                          />
-                        </div>
-                      </div>
-                      
-                      {/* Business Net Margin Indicator */}
-                      {(newService.price > 0) && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '20px' }}>
-                          
-                          {/* Row 1: Ganancia Estilismo */}
-                          <div style={{ 
-                            padding: '12px 16px', 
-                            borderRadius: '14px', 
-                            background: 'rgba(50, 215, 75, 0.05)', 
-                            border: '1px solid rgba(50, 215, 75, 0.15)',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center'
-                          }}>
-                            <div>
-                              <div style={{ fontSize: '9px', fontWeight: '800', color: '#32d74b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                Ganancia Real Estilismo
-                              </div>
-                              <div style={{ fontSize: '18px', fontWeight: '900', color: 'white', marginTop: '2px' }}>
-                                ${((Number(newService.price) || 0) - ((Number(newService.price) || 0) * (Number(newService.commission_stylist) || 0) / 100)).toFixed(2)}
-                              </div>
-                            </div>
-                            {rates?.usd > 0 && (
-                              <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>EQUIVALENTE BS.</div>
-                                <div style={{ fontSize: '13px', fontWeight: '800', color: '#32d74b', marginTop: '2px' }}>
-                                  {Math.round(((Number(newService.price) || 0) - ((Number(newService.price) || 0) * (Number(newService.commission_stylist) || 0) / 100)) * rates.usd).toLocaleString()} Bs.
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Row 2: Pago Estilista */}
-                          <div style={{ 
-                            padding: '12px 16px', 
-                            borderRadius: '14px', 
-                            background: 'rgba(196, 139, 159, 0.05)', 
-                            border: '1px solid rgba(196, 139, 159, 0.15)',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center'
-                          }}>
-                            <div>
-                              <div style={{ fontSize: '9px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                Pago Real Estilista
-                              </div>
-                              <div style={{ fontSize: '18px', fontWeight: '900', color: 'white', marginTop: '2px' }}>
-                                ${(((Number(newService.price) || 0) * (Number(newService.commission_stylist) || 0)) / 100).toFixed(2)}
-                              </div>
-                            </div>
-                            {rates?.usd > 0 && (
-                              <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>EQUIVALENTE BS.</div>
-                                <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--pink-primary)', marginTop: '2px' }}>
-                                  {Math.round((((Number(newService.price) || 0) * (Number(newService.commission_stylist) || 0)) / 100) * rates.usd).toLocaleString()} Bs.
-                                </div>
-                              </div>
-                            )}
-                          </div>
-
-                        </div>
-                      )}
-                    </div>
                   </div>
 
-                  {/* Right Column: Checklist */}
-                  <div style={{ backgroundColor: 'rgba(255,255,255,0.02)', padding: '24px', borderRadius: '20px', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: '900', color: 'var(--pink-primary)', letterSpacing: '1px' }}>
-                        <LayoutList size={16} /> CHECKLIST (INCLUIDO)
-                      </label>
-                      <button 
-                        onClick={() => setIsExtrasModalOpen(true)}
-                        style={{ 
-                          background: 'rgba(196,139,159,0.1)', 
-                          border: '1px solid rgba(212,160,154,0.2)', 
-                          borderRadius: '8px', 
-                          padding: '4px 12px', 
-                          fontSize: '10px',
-                          fontWeight: '800',
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          gap: '6px',
-                          cursor: 'pointer', 
-                          color: 'var(--pink-primary)',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.5px'
-                        }}
-                      >
-                        <Settings size={12} /> Items
-                      </button>
-                    </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '12px' }}>
-                      {baseItems.map(item => (
-                        <div key={item.id} style={{ position: 'relative' }} className="group">
-                          <button 
-                            onClick={() => {
-                              const current = newService.included_items || [];
-                              const next = current.includes(item.name) 
-                                ? current.filter(i => i !== item.name)
-                                : [...current, item.name];
-                              setNewService({...newService, included_items: next});
-                            }}
-                            style={{
-                              width: '100%',
-                              padding: '10px 14px',
-                              borderRadius: '12px',
-                              fontSize: '13px',
-                              textAlign: 'left',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '10px',
-                              cursor: 'pointer',
-                              transition: 'all 0.2s',
-                              background: newService.included_items?.includes(item.name) ? 'rgba(196,139,159,0.15)' : 'rgba(255,255,255,0.02)',
-                              border: newService.included_items?.includes(item.name) ? '1px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.05)',
-                              color: newService.included_items?.includes(item.name) ? 'white' : 'var(--text-muted)'
-                            }}
-                          >
-                            <div style={{ 
-                              width: '18px', 
-                              height: '18px', 
-                              borderRadius: '4px', 
-                              border: '1px solid var(--border-color)',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              backgroundColor: newService.included_items?.includes(item.name) ? 'var(--pink-primary)' : 'transparent'
-                            }}>
-                              {newService.included_items?.includes(item.name) && <Check size={12} color="black" strokeWidth={4} />}
-                            </div>
-                            <div style={{ flex: 1 }}>
-                              <div style={{ fontWeight: '700' }}>{item.name}</div>
-                            </div>
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="modal-actions-wrapper">
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px', paddingTop: '16px', borderTop: '1px solid rgba(212, 160, 154, 0.15)' }}>
                   <button 
                     onClick={() => { setShowAddForm(false); setIsEditing(false); }} 
-                    style={{ height: '54px', padding: '0 30px', fontSize: '16px', borderRadius: '16px', backgroundColor: 'rgba(255,255,255,0.05)', border: 'none', color: 'white', cursor: 'pointer', fontWeight: '700' }}
+                    style={{ height: '46px', padding: '0 24px', fontSize: '14px', borderRadius: '12px', backgroundColor: '#faf3f2', border: '1px solid rgba(160, 80, 106, 0.15)', color: '#a0506a', cursor: 'pointer', fontWeight: '700', transition: 'all 0.2s' }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = '#f5e8e6'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = '#faf3f2'}
                   >
                     Cancelar
                   </button>
-                  <button className="btn-pink" onClick={handleCreateService} style={{ height: '54px', padding: '0 40px', fontSize: '16px', borderRadius: '16px' }}>
+                  <button 
+                    onClick={handleCreateService} 
+                    style={{ height: '46px', padding: '0 28px', fontSize: '14px', borderRadius: '12px', background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)', border: 'none', color: '#ffffff', cursor: 'pointer', fontWeight: '700', boxShadow: '0 4px 12px rgba(201, 114, 130, 0.25)', transition: 'all 0.2s' }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}
+                  >
                     {isEditing ? 'Guardar Cambios' : 'Lanzar Servicio al Catálogo'}
                   </button>
                 </div>
-              </div> {/* Closing jana-scrollbar */}
+                </div>
               </div>
             </div>
           )
