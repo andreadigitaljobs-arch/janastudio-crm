@@ -134,15 +134,15 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
       {permission === 'granted' && (
         <button onClick={handleSendTestNotification} style={{
           width: '100%', padding: '12px', borderRadius: '14px',
-          background: 'linear-gradient(135deg, #f5f3ff, #ede9fe)',
-          border: '1.5px dashed rgba(139, 92, 246, 0.3)',
-          color: '#7c3aed', fontSize: '0.74rem', fontWeight: '700', cursor: 'pointer',
+          background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)',
+          border: '1.5px dashed rgba(236, 72, 153, 0.3)',
+          color: '#db2777', fontSize: '0.74rem', fontWeight: '700', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
           transition: 'all 0.3s ease', animation: 'ntfItemIn 0.4s ease 0.2s both',
           position: 'relative', overflow: 'hidden'
         }}
-        onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #ede9fe, #ddd6fe)'; e.currentTarget.style.transform = 'translateY(-2px) scale(1.01)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(139, 92, 246, 0.15)'; e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.4)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #f5f3ff, #ede9fe)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.3)'; }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #fce7f3, #fbcfe8)'; e.currentTarget.style.transform = 'translateY(-2px) scale(1.01)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(236, 72, 153, 0.15)'; e.currentTarget.style.borderColor = 'rgba(236, 72, 153, 0.4)'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #fdf2f8, #fce7f3)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = 'rgba(236, 72, 153, 0.3)'; }}
         ><Sparkles size={14} /> Probar notificación push</button>
       )}
       {notifications.length === 0 ? (
