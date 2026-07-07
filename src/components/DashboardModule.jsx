@@ -694,17 +694,8 @@ const DashboardModule = ({
             </div>
           </div>
 
-          {/* Timeline points and entries */}
+          {/* Timeline entries */}
           <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', paddingLeft: '8px' }}>
-            {/* Thread vertical line */}
-            <div style={{
-              position: 'absolute',
-              left: '11px',
-              top: '16px',
-              bottom: '16px',
-              width: '2px',
-              background: 'rgba(212, 160, 154, 0.3)'
-            }} />
 
             {upcomingAppointments.length === 0 ? (
               <div style={{
@@ -721,8 +712,10 @@ const DashboardModule = ({
                 <div key={idx} style={{
                   display: 'flex',
                   gap: '10px',
-                  marginBottom: idx < upcomingAppointments.length - 1 ? '14px' : '0',
-                  position: 'relative'
+                  marginBottom: idx < upcomingAppointments.length - 1 ? '12px' : '0',
+                  position: 'relative',
+                  paddingBottom: idx < upcomingAppointments.length - 1 ? '12px' : '0',
+                  borderBottom: idx < upcomingAppointments.length - 1 ? '1px solid rgba(212, 160, 154, 0.12)' : 'none'
                 }}>
                   {/* Custom dot */}
                   <div style={{
@@ -767,37 +760,32 @@ const DashboardModule = ({
                     {apt.initial}
                   </div>
 
-                  {/* Service + Client stacked, flex grows */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px' }}>
-                      <span style={{
-                        fontSize: '0.78rem',
-                        fontWeight: '700',
-                        color: 'var(--text-primary)',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                        flex: 1,
-                        minWidth: 0
-                      }}>
-                        {apt.service}
+                  {/* Details: service + client + badge stacked */}
+                  <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <span style={{
+                      fontSize: '0.78rem',
+                      fontWeight: '700',
+                      color: 'var(--text-primary)',
+                      lineHeight: '1.2'
+                    }}>
+                      {apt.service}
+                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: '500' }}>
+                        {apt.client}
                       </span>
                       <span style={{
-                        padding: '2px 8px',
+                        padding: '1px 7px',
                         borderRadius: '20px',
                         fontSize: '0.55rem',
                         fontWeight: '700',
                         background: getStatusStyle(apt.status).bg,
                         color: getStatusStyle(apt.status).text,
-                        border: `1px solid ${getStatusStyle(apt.status).border}`,
-                        flexShrink: 0
+                        border: `1px solid ${getStatusStyle(apt.status).border}`
                       }}>
                         {apt.status}
                       </span>
                     </div>
-                    <span style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: '500' }}>
-                      {apt.client}
-                    </span>
                   </div>
                 </div>
               ))
