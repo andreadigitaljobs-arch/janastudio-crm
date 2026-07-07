@@ -460,6 +460,16 @@ html, body {
   outline: none;
 }
 
+/* Neutralizar el fondo azul de autocompletado de Chrome */
+.salon-field-input:-webkit-autofill,
+.salon-field-input:-webkit-autofill:hover,
+.salon-field-input:-webkit-autofill:focus,
+.salon-field-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #4a3036 !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
 .salon-field-input::placeholder {
   color: transparent;
 }
@@ -480,8 +490,7 @@ html, body {
   font-size: 0.92rem;
   pointer-events: none;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 6;
-  background: #ffffff;
+  background: transparent;
   padding: 0 4px;
   white-space: nowrap;
 }
