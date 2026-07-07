@@ -1531,7 +1531,7 @@ const DashboardModule = ({
               );
             })}
           </div>
-
+        </div>
 
         {/* TOP SERVICIOS */}
         <div style={{ background: '#ffffff', borderRadius: '20px', border: '1px solid rgba(201, 114, 130, 0.1)', padding: '22px', boxShadow: '0 2px 12px rgba(201, 114, 130, 0.04)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
