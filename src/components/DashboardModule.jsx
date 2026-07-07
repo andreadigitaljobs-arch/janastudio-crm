@@ -44,9 +44,15 @@ const DashboardModule = ({
 
   const requestNtfPermission = async () => {
     try {
+      if (!('Notification' in window)) {
+        alert('Tu navegador no soporta notificaciones.');
+        return;
+      }
       const res = await Notification.requestPermission();
       setNtfPerm(res);
-    } catch {}
+    } catch (err) {
+      console.error('Notification permission error:', err);
+    }
   };
 
   useEffect(() => {
@@ -305,7 +311,7 @@ const DashboardModule = ({
               borderRadius: '50%',
               overflow: 'hidden',
               border: '1px solid rgba(212, 160, 154, 0.25)',
-              boxShadow: '0 2px 10px rgba(74, 48, 54, 0.05)',
+              boxShadow: '0 2px 10px rgba(201, 114, 130, 0.08)',
               background: '#ffffff',
               display: 'flex',
               alignItems: 'center',
@@ -372,7 +378,15 @@ const DashboardModule = ({
         {/* Notification Activation Banner - only when needed */}
         {ntfPerm !== 'granted' && (
           <div
-            onClick={requestNtfPermission}
+            onClick={() => {
+              if (!('Notification' in window)) {
+                alert('Tu navegador no soporta notificaciones.');
+                return;
+              }
+              Notification.requestPermission().then(res => {
+                setNtfPerm(res);
+              });
+            }}
             style={{
               width: '100%',
               borderRadius: '20px',
@@ -451,15 +465,15 @@ const DashboardModule = ({
         <div style={{
           width: '100%',
           borderRadius: '24px',
-          border: '1px solid rgba(212, 160, 154, 0.2)',
+          border: '1px solid rgba(201, 114, 130, 0.15)',
           padding: '20px 24px',
           position: 'relative',
           overflow: 'hidden',
           display: 'flex',
           alignItems: 'center',
           minHeight: '180px',
-          boxShadow: '0 4px 20px rgba(74, 48, 54, 0.03)',
-          background: '#faf3f2'
+          boxShadow: '0 4px 20px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)',
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)'
         }}>
           {/* Full Background Image */}
           <div style={{
@@ -519,13 +533,13 @@ const DashboardModule = ({
                 alignSelf: 'flex-start',
                 padding: '8px 16px',
                 borderRadius: '10px',
-                background: '#c97282',
+                background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)',
                 color: '#ffffff',
                 fontSize: '0.75rem',
                 fontWeight: '600',
                 border: 'none',
                 cursor: 'pointer',
-                boxShadow: '0 3px 10px rgba(201, 114, 130, 0.2)',
+                boxShadow: '0 3px 10px rgba(201, 114, 130, 0.25), inset 0 1px 1px rgba(255,255,255,0.15)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '4px',
@@ -540,21 +554,23 @@ const DashboardModule = ({
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', width: '100%' }}>
             {/* Card 1: Citas del día */}
             <div style={{
-              background: '#ffffff',
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)',
+              backdropFilter: 'blur(16px)',
               borderRadius: '20px',
-              border: '1px solid rgba(212, 160, 154, 0.15)',
+              border: '1px solid rgba(201, 114, 130, 0.12)',
               padding: '12px 10px',
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              boxShadow: '0 4px 16px rgba(74, 48, 54, 0.02)',
-              minHeight: '94px'
+              boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)',
+              minHeight: '94px',
+              transition: 'all 0.3s ease'
             }}>
               <div style={{
                 width: '38px',
                 height: '38px',
                 borderRadius: '12px',
-                background: '#fdf3f4',
+                background: 'linear-gradient(135deg, #fdf3f4 0%, #fce8ec 100%)',
                 border: '1px solid rgba(160, 80, 106, 0.08)',
                 display: 'flex',
                 alignItems: 'center',
@@ -579,21 +595,23 @@ const DashboardModule = ({
 
             {/* Card 2: Nuevas clientes */}
             <div style={{
-              background: '#ffffff',
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)',
+              backdropFilter: 'blur(16px)',
               borderRadius: '20px',
-              border: '1px solid rgba(212, 160, 154, 0.15)',
+              border: '1px solid rgba(201, 114, 130, 0.12)',
               padding: '12px 10px',
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              boxShadow: '0 4px 16px rgba(74, 48, 54, 0.02)',
-              minHeight: '94px'
+              boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)',
+              minHeight: '94px',
+              transition: 'all 0.3s ease'
             }}>
               <div style={{
                 width: '38px',
                 height: '38px',
                 borderRadius: '12px',
-                background: '#fdf3f4',
+                background: 'linear-gradient(135deg, #fdf3f4 0%, #fce8ec 100%)',
                 border: '1px solid rgba(160, 80, 106, 0.08)',
                 display: 'flex',
                 alignItems: 'center',
@@ -616,21 +634,23 @@ const DashboardModule = ({
 
             {/* Card 3: Más reservado */}
             <div style={{
-              background: '#ffffff',
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)',
+              backdropFilter: 'blur(16px)',
               borderRadius: '20px',
-              border: '1px solid rgba(212, 160, 154, 0.15)',
+              border: '1px solid rgba(201, 114, 130, 0.12)',
               padding: '12px 10px',
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              boxShadow: '0 4px 16px rgba(74, 48, 54, 0.02)',
-              minHeight: '94px'
+              boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)',
+              minHeight: '94px',
+              transition: 'all 0.3s ease'
             }}>
               <div style={{
                 width: '38px',
                 height: '38px',
                 borderRadius: '12px',
-                background: '#fdf3f4',
+                background: 'linear-gradient(135deg, #fdf3f4 0%, #fce8ec 100%)',
                 border: '1px solid rgba(160, 80, 106, 0.08)',
                 display: 'flex',
                 alignItems: 'center',
@@ -661,21 +681,23 @@ const DashboardModule = ({
 
             {/* Card 4: Ocupación del equipo */}
             <div style={{
-              background: '#ffffff',
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)',
+              backdropFilter: 'blur(16px)',
               borderRadius: '20px',
-              border: '1px solid rgba(212, 160, 154, 0.15)',
+              border: '1px solid rgba(201, 114, 130, 0.12)',
               padding: '12px 10px',
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              boxShadow: '0 4px 16px rgba(74, 48, 54, 0.02)',
-              minHeight: '94px'
+              boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)',
+              minHeight: '94px',
+              transition: 'all 0.3s ease'
             }}>
               <div style={{
                 width: '38px',
                 height: '38px',
                 borderRadius: '12px',
-                background: '#fdf3f4',
+                background: 'linear-gradient(135deg, #fdf3f4 0%, #fce8ec 100%)',
                 border: '1px solid rgba(160, 80, 106, 0.08)',
                 display: 'flex',
                 alignItems: 'center',
@@ -697,14 +719,15 @@ const DashboardModule = ({
 
           {/* Divider + Mini Reportes */}
           <div style={{
-            background: '#ffffff',
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)',
+            backdropFilter: 'blur(16px)',
             borderRadius: '20px',
-            border: '1px solid rgba(212, 160, 154, 0.15)',
+            border: '1px solid rgba(201, 114, 130, 0.12)',
             padding: '16px',
             display: 'flex',
             flexDirection: 'column',
             gap: '10px',
-            boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)'
+            boxShadow: '0 4px 20px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h4 style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
@@ -758,14 +781,15 @@ const DashboardModule = ({
 
         {/* Agenda de hoy Timeline Card */}
         <div style={{
-          background: '#ffffff',
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)',
+          backdropFilter: 'blur(16px)',
           borderRadius: '24px',
-          border: '1px solid rgba(212, 160, 154, 0.15)',
+          border: '1px solid rgba(201, 114, 130, 0.12)',
           padding: '20px 18px',
           display: 'flex',
           flexDirection: 'column',
           gap: '16px',
-          boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)'
+          boxShadow: '0 4px 20px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3 style={{
@@ -924,7 +948,7 @@ const DashboardModule = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: '#a0506a',
-                boxShadow: '0 4px 12px rgba(74, 48, 54, 0.01)'
+                boxShadow: '0 4px 12px rgba(201, 114, 130, 0.04)'
               }}>
                 <Calendar size={22} />
               </div>
@@ -948,7 +972,7 @@ const DashboardModule = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: '#a0506a',
-                boxShadow: '0 4px 12px rgba(74, 48, 54, 0.01)'
+                boxShadow: '0 4px 12px rgba(201, 114, 130, 0.04)'
               }}>
                 <UserPlus size={22} />
               </div>
@@ -972,7 +996,7 @@ const DashboardModule = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: '#a0506a',
-                boxShadow: '0 4px 12px rgba(74, 48, 54, 0.01)'
+                boxShadow: '0 4px 12px rgba(201, 114, 130, 0.04)'
               }}>
                 <ShoppingBag size={22} />
               </div>
@@ -996,7 +1020,7 @@ const DashboardModule = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: '#a0506a',
-                boxShadow: '0 4px 12px rgba(74, 48, 54, 0.01)'
+                boxShadow: '0 4px 12px rgba(201, 114, 130, 0.04)'
               }}>
                 <MessageSquare size={22} />
               </div>
@@ -1009,14 +1033,15 @@ const DashboardModule = ({
 
         {/* Top Servicios */}
         <div style={{
-          background: '#ffffff',
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)',
+          backdropFilter: 'blur(16px)',
           borderRadius: '24px',
-          border: '1px solid rgba(212, 160, 154, 0.15)',
+          border: '1px solid rgba(201, 114, 130, 0.12)',
           padding: '16px 18px',
           display: 'flex',
           flexDirection: 'column',
           gap: '12px',
-          boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)'
+          boxShadow: '0 4px 20px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3 style={{
@@ -1114,14 +1139,15 @@ const DashboardModule = ({
 
         {/* Top Especialistas */}
         <div style={{
-          background: '#ffffff',
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)',
+          backdropFilter: 'blur(16px)',
           borderRadius: '24px',
-          border: '1px solid rgba(212, 160, 154, 0.15)',
+          border: '1px solid rgba(201, 114, 130, 0.12)',
           padding: '16px 18px',
           display: 'flex',
           flexDirection: 'column',
           gap: '12px',
-          boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)'
+          boxShadow: '0 4px 20px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3 style={{
@@ -1258,13 +1284,13 @@ const DashboardModule = ({
                   borderRadius: '24px',
                   overflow: 'hidden',
                   position: 'relative',
-                  border: '1px solid rgba(212, 160, 154, 0.15)',
-                  boxShadow: '0 8px 24px rgba(74, 48, 54, 0.04)',
+                  border: '1px solid rgba(201, 114, 130, 0.12)',
+                  boxShadow: '0 8px 24px rgba(201, 114, 130, 0.06)',
                   cursor: 'pointer',
                   transition: 'all 0.25s ease'
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(74, 48, 54, 0.08)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(74, 48, 54, 0.04)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(201, 114, 130, 0.1)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(201, 114, 130, 0.06)' }}
               >
                 <img 
                   src={serv.img} 
@@ -1298,7 +1324,15 @@ const DashboardModule = ({
       {/* Notification Activation Banner - Desktop */}
       {ntfPerm !== 'granted' && (
         <div
-          onClick={requestNtfPermission}
+          onClick={() => {
+            if (!('Notification' in window)) {
+              alert('Tu navegador no soporta notificaciones.');
+              return;
+            }
+            Notification.requestPermission().then(res => {
+              setNtfPerm(res);
+            });
+          }}
           style={{
             width: '100%',
             borderRadius: '20px',
@@ -1337,7 +1371,18 @@ const DashboardModule = ({
                 Recibe notificaciones al instante cuando haya nuevas citas y actualizaciones
               </span>
             </div>
-            <button style={{
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!('Notification' in window)) {
+                  alert('Tu navegador no soporta notificaciones.');
+                  return;
+                }
+                Notification.requestPermission().then(res => {
+                  setNtfPerm(res);
+                }).catch(() => {});
+              }}
+              style={{
               padding: '10px 20px', borderRadius: '12px', border: '2px solid rgba(255,255,255,0.3)',
               background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(4px)',
               color: '#ffffff', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer',
@@ -1360,8 +1405,8 @@ const DashboardModule = ({
         position: 'relative',
         overflow: 'hidden',
         height: '220px',
-        border: '1px solid rgba(212, 160, 154, 0.15)',
-        boxShadow: '0 8px 32px rgba(74, 48, 54, 0.06)',
+        border: '1px solid rgba(201, 114, 130, 0.15)',
+        boxShadow: '0 8px 32px rgba(201, 114, 130, 0.08), inset 0 1px 1px rgba(255,255,255,0.9)',
         background: '#faf3f2'
       }}>
         <img
@@ -1371,7 +1416,7 @@ const DashboardModule = ({
         />
         <div style={{
           position: 'absolute', inset: 0,
-          background: 'linear-gradient(90deg, rgba(252,249,248,0.97) 0%, rgba(252,249,248,0.82) 45%, rgba(252,249,248,0.0) 80%)',
+          background: 'linear-gradient(90deg, rgba(252,249,248,0.97) 0%, rgba(253,243,244,0.88) 45%, rgba(251,230,235,0.2) 80%)',
           borderRadius: '28px', zIndex: 1
         }} />
         <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '45%', padding: '36px 48px', height: '100%', justifyContent: 'center' }}>
@@ -1383,9 +1428,9 @@ const DashboardModule = ({
           </p>
           <button
             onClick={() => onNavigate('scheduling')}
-            style={{ alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 22px', borderRadius: '12px', background: '#c97282', color: '#ffffff', fontSize: '0.82rem', fontWeight: '600', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(201, 114, 130, 0.3)', transition: 'all 0.2s' }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(201, 114, 130, 0.4)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(201, 114, 130, 0.3)' }}
+            style={{ alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 22px', borderRadius: '12px', background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)', color: '#ffffff', fontSize: '0.82rem', fontWeight: '600', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(201, 114, 130, 0.35), inset 0 1px 1px rgba(255,255,255,0.15)', transition: 'all 0.2s' }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(201, 114, 130, 0.45), inset 0 1px 1px rgba(255,255,255,0.2)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(201, 114, 130, 0.35), inset 0 1px 1px rgba(255,255,255,0.15)' }}
           >
             <Plus size={15} strokeWidth={2.5} /> Nueva Cita
           </button>
@@ -1395,8 +1440,8 @@ const DashboardModule = ({
       {/* ── WIDGETS OPERATIVOS ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
         {/* Card 1: Citas del día */}
-        <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)' }}>
-          <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: '#fdf3f4', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
+        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', transition: 'all 0.3s ease' }}>
+          <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'linear-gradient(135deg, #fdf3f4 0%, #fce8ec 100%)', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
             <Calendar size={22} />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
@@ -1409,8 +1454,8 @@ const DashboardModule = ({
         </div>
 
         {/* Card 2: Nuevas clientes */}
-        <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)' }}>
-          <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: '#fdf3f4', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
+        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', transition: 'all 0.3s ease' }}>
+          <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'linear-gradient(135deg, #fdf3f4 0%, #fce8ec 100%)', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
             <UserPlus size={22} />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
@@ -1423,8 +1468,8 @@ const DashboardModule = ({
         </div>
 
         {/* Card 4: Más reservado */}
-        <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)' }}>
-          <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: '#fdf3f4', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
+        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', transition: 'all 0.3s ease' }}>
+          <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'linear-gradient(135deg, #fdf3f4 0%, #fce8ec 100%)', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
             <Sparkles size={22} />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
@@ -1434,8 +1479,8 @@ const DashboardModule = ({
           </div>
         </div>
         {/* Card 5: Ocupación del equipo */}
-        <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)' }}>
-          <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: '#fdf3f4', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
+        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', transition: 'all 0.3s ease' }}>
+          <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'linear-gradient(135deg, #fdf3f4 0%, #fce8ec 100%)', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
             <Activity size={22} />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1, gap: '4px' }}>
@@ -1452,7 +1497,7 @@ const DashboardModule = ({
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', alignItems: 'stretch' }}>
 
         {/* AGENDA DE HOY */}
-        <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '24px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
+        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '24px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
@@ -1492,7 +1537,7 @@ const DashboardModule = ({
 
           <button
             onClick={() => onNavigate('scheduling')}
-            style={{ width: '100%', padding: '12px 0', borderRadius: '12px', background: '#c97282', color: '#ffffff', border: 'none', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', boxShadow: '0 4px 15px rgba(201, 114, 130, 0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s', marginTop: 'auto' }}
+            style={{ width: '100%', padding: '12px 0', borderRadius: '12px', background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)', color: '#ffffff', border: 'none', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', boxShadow: '0 4px 15px rgba(201, 114, 130, 0.3), inset 0 1px 1px rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s', marginTop: 'auto' }}
             onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(201, 114, 130, 0.35)' }}
             onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(201, 114, 130, 0.25)' }}
           >
@@ -1501,7 +1546,7 @@ const DashboardModule = ({
         </div>
 
         {/* TOP SERVICIOS */}
-        <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '24px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
+        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '24px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
               Top servicios
@@ -1672,7 +1717,7 @@ const DashboardModule = ({
         </div>
 
         {/* TOP ESPECIALISTAS */}
-        <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '22px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '22px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
               Top Especialistas
@@ -1816,9 +1861,9 @@ const DashboardModule = ({
             <div
               key={idx}
               onClick={() => onNavigate('services')}
-              style={{ height: '160px', borderRadius: '22px', overflow: 'hidden', position: 'relative', border: '1px solid rgba(212, 160, 154, 0.15)', boxShadow: '0 6px 20px rgba(74, 48, 54, 0.05)', cursor: 'pointer', transition: 'all 0.25s ease' }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(74, 48, 54, 0.1)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(74, 48, 54, 0.05)' }}
+              style={{ height: '160px', borderRadius: '22px', overflow: 'hidden', position: 'relative', border: '1px solid rgba(201, 114, 130, 0.12)', boxShadow: '0 6px 20px rgba(201, 114, 130, 0.06)', cursor: 'pointer', transition: 'all 0.25s ease' }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(201, 114, 130, 0.12)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(201, 114, 130, 0.06)' }}
             >
               <img src={serv.img} alt={serv.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: serv.position || 'center' }} />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(74, 48, 54, 0.85) 0%, rgba(74, 48, 54, 0.02) 65%)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '12px 14px' }}>

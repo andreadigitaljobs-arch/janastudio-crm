@@ -81,8 +81,8 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
     height: '100vh',
     position: 'sticky',
     top: 0,
-    background: 'linear-gradient(180deg, #fdf5f3 0%, #f9eae6 40%, #f5e2de 100%)',
-    borderRight: '1px solid rgba(212, 160, 154, 0.2)',
+    background: 'linear-gradient(180deg, #fdf8f7 0%, #fceef0 40%, #fbe5e8 100%)',
+    borderRight: '1px solid rgba(201, 114, 130, 0.12)',
     display: 'flex', flexDirection: 'column',
     padding: effectiveCollapsed ? '10px 6px' : '12px 8px',
     overflowY: isMobile ? 'auto' : 'hidden', overflowX: 'hidden',
@@ -256,8 +256,8 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
             transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
             transform: 'scale(1)'
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(220, 100, 100, 0.08)'; e.currentTarget.style.color = '#dc6464'; e.currentTarget.style.borderColor = 'rgba(220, 100, 100, 0.2)'; e.currentTarget.style.transform = 'scale(1.02)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = 'rgba(220, 100, 100, 0.1)'; e.currentTarget.style.transform = 'scale(1)'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(220, 100, 100, 0.08)'; e.currentTarget.style.color = '#dc6464'; e.currentTarget.style.borderColor = 'rgba(220, 100, 100, 0.2)'; e.currentTarget.style.transform = 'scale(1.02)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = 'rgba(220, 100, 100, 0.1)'; e.currentTarget.style.transform = 'scale(1)'; }}
         >
           <div style={{
             width: '32px', height: '32px', borderRadius: '10px',

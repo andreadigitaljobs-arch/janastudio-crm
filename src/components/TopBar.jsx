@@ -208,7 +208,15 @@ const TopBar = ({
       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       marginBottom: '16px', flexWrap: 'wrap', gap: '12px',
       paddingLeft: '0',
-      paddingTop: '0'
+      paddingTop: '0',
+      background: 'rgba(255,255,255,0.7)',
+      backdropFilter: 'blur(20px) saturate(140%)',
+      WebkitBackdropFilter: 'blur(20px) saturate(140%)',
+      borderRadius: '20px',
+      border: '1px solid rgba(201, 114, 130, 0.1)',
+      padding: '14px 20px',
+      boxShadow: '0 4px 20px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)',
+      marginBottom: '20px'
     }}>
       {/* Left: Greeting (or Search Bar in Dashboard) */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
