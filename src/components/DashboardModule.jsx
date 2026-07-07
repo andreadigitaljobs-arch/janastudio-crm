@@ -1483,70 +1483,75 @@ const DashboardModule = ({
         </div>
       </div>
 
-      {/* ── MAIN CONTENT ROW: Agenda + Top Servicios + Top Especialistas (ALINEACIÓN STRETCH) ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', alignItems: 'stretch' }}>
+      {/* ── MAIN CONTENT ROW: Agenda + Top Servicios + Top Especialistas ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px', alignItems: 'start' }}>
 
         {/* AGENDA DE HOY */}
-        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '24px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
-                Agenda de hoy
-              </h3>
-              <span onClick={() => onNavigate('scheduling')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                Ver calendario <ChevronRight size={14} />
-              </span>
-            </div>
+        <div style={{ background: '#ffffff', borderRadius: '20px', border: '1px solid rgba(201, 114, 130, 0.1)', padding: '22px', boxShadow: '0 2px 12px rgba(201, 114, 130, 0.04)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>Agenda de hoy</h3>
+            <span onClick={() => onNavigate('scheduling')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              Ver calendario <ChevronRight size={13} />
+            </span>
+          </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              {upcomingAppointments.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-muted)', fontSize: '0.82rem' }}>
-                  <Clock size={28} style={{ marginBottom: '8px', opacity: 0.3 }} />
-                  <div>No hay citas programadas para hoy</div>
-                </div>
-              ) : upcomingAppointments.map((apt, idx) => {
-                const sStyle = getStatusStyle(apt.status);
-                return (
-                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '10px 12px', borderRadius: '14px', background: idx % 2 === 0 ? '#faf3f2' : 'transparent', transition: 'background 0.2s' }}>
-                    <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'var(--pink-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontWeight: '700', fontSize: '0.9rem', flexShrink: 0 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative' }}>
+            {/* Timeline line */}
+            <div style={{ position: 'absolute', left: '72px', top: '8px', bottom: '8px', width: '2px', background: 'linear-gradient(180deg, rgba(201,114,130,0.3) 0%, rgba(201,114,130,0.1) 100%)', zIndex: 0 }} />
+
+            {upcomingAppointments.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-muted)', fontSize: '0.82rem' }}>
+                <Clock size={28} style={{ marginBottom: '8px', opacity: 0.3 }} />
+                <div>No hay citas programadas para hoy</div>
+              </div>
+            ) : upcomingAppointments.map((apt, idx) => {
+              const sStyle = getStatusStyle(apt.status);
+              return (
+                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0', padding: '12px 0', position: 'relative', zIndex: 1 }}>
+                  {/* Time */}
+                  <span style={{ width: '68px', fontSize: '0.72rem', fontWeight: '600', color: 'var(--text-muted)', textAlign: 'right', paddingRight: '14px', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
+                    {apt.time}
+                  </span>
+
+                  {/* Dot */}
+                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#c97282', border: '2px solid #fff', boxShadow: '0 0 0 2px rgba(201,114,130,0.2)', flexShrink: 0, zIndex: 2 }} />
+
+                  {/* Content */}
+                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '10px', paddingLeft: '14px' }}>
+                    <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'linear-gradient(135deg, #c97282, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: '700', fontSize: '0.75rem', flexShrink: 0 }}>
                       {apt.initial}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '0.88rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{apt.client}</div>
-                      <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '1px' }}>{apt.service}</div>
+                      <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '0.82rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{apt.client}</div>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{apt.service}</div>
                     </div>
-                    <div style={{ flexShrink: 0, textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-                      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: '600' }}>{apt.time}</span>
-                      <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '0.65rem', fontWeight: '700', background: sStyle.bg, color: sStyle.text, border: `1px solid ${sStyle.border}` }}>{apt.status}</span>
-                    </div>
+                    <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '0.65rem', fontWeight: '700', background: sStyle.bg, color: sStyle.text, border: `1px solid ${sStyle.border}`, flexShrink: 0, whiteSpace: 'nowrap' }}>{apt.status}</span>
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
           </div>
 
           <button
             onClick={() => onNavigate('scheduling')}
-            style={{ width: '100%', padding: '12px 0', borderRadius: '12px', background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)', color: '#ffffff', border: 'none', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', boxShadow: '0 4px 15px rgba(201, 114, 130, 0.3), inset 0 1px 1px rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s', marginTop: 'auto' }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(201, 114, 130, 0.35)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(201, 114, 130, 0.25)' }}
+            style={{ width: '100%', padding: '10px 0', borderRadius: '12px', background: 'transparent', color: '#c97282', border: '1.5px dashed rgba(201,114,130,0.35)', fontWeight: '700', fontSize: '0.82rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s' }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201,114,130,0.04)'; e.currentTarget.style.borderColor = 'rgba(201,114,130,0.5)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(201,114,130,0.35)'; }}
           >
-            <Plus size={16} /> Nueva cita
+            <Plus size={15} /> Nueva cita
           </button>
         </div>
 
         {/* TOP SERVICIOS */}
-        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '24px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
+        <div style={{ background: '#ffffff', borderRadius: '20px', border: '1px solid rgba(201, 114, 130, 0.1)', padding: '22px', boxShadow: '0 2px 12px rgba(201, 114, 130, 0.04)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
-              Top servicios
-            </h3>
+            <h3 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>Top servicios</h3>
             <span style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              Este mes <ChevronDown size={14} />
+              Este mes <ChevronDown size={13} />
             </span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', flex: 1 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
             {[
               { name: 'Pestañas clásicas', value: 42, icon: Sparkles },
               { name: 'Laminado cejas', value: 24, icon: Star },
@@ -1558,249 +1563,115 @@ const DashboardModule = ({
                 <div
                   key={idx}
                   onClick={() => onNavigate('services')}
-                  style={{ display: 'flex', flexDirection: 'column', gap: '4px', background: '#faf3f2', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', border: '1px solid rgba(212, 160, 154, 0.08)' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = '#f5e8e6'; e.currentTarget.style.transform = 'translateY(-1px)' }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = '#faf3f2'; e.currentTarget.style.transform = 'none' }}
+                  style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '10px 0', borderBottom: idx < 3 ? '1px solid rgba(201,114,130,0.08)' : 'none', cursor: 'pointer', transition: 'all 0.2s' }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-primary)', fontWeight: '600' }}>
-                      <IconComp size={13} style={{ color: '#c97282' }} />
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '120px' }}>{serv.name}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)', fontWeight: '600', fontSize: '0.82rem' }}>
+                      <IconComp size={14} style={{ color: '#c97282' }} />
+                      <span>{serv.name}</span>
                     </div>
-                    <span style={{ color: 'var(--text-secondary)', fontWeight: '700' }}>{serv.value}%</span>
+                    <span style={{ color: 'var(--text-secondary)', fontWeight: '700', fontSize: '0.82rem' }}>{serv.value}%</span>
                   </div>
-                  <div style={{ width: '100%', height: '4px', borderRadius: '2px', background: '#f5e9e7', overflow: 'hidden' }}>
-                    <div style={{ width: `${serv.value}%`, height: '100%', background: 'linear-gradient(90deg, #c97282, #a0506a)', borderRadius: '2px' }} />
+                  <div style={{ width: '100%', height: '5px', borderRadius: '3px', background: '#fdf2f4', overflow: 'hidden' }}>
+                    <div style={{ width: `${serv.value}%`, height: '100%', background: 'linear-gradient(90deg, #c97282, #a0506a)', borderRadius: '3px', transition: 'width 0.6s ease' }} />
                   </div>
                 </div>
               );
             })}
           </div>
 
-          {/* Photo banner directly below progress bars */}
+          {/* Photo card: Más reservado */}
           <div
             onClick={() => onNavigate('services')}
             style={{
-              width: '100%',
-              height: '140px',
-              borderRadius: '20px',
-              overflow: 'hidden',
-              position: 'relative',
-              cursor: 'pointer',
-              background: 'linear-gradient(140deg, #a0506a 0%, #964a63 30%, #8a4560 60%, #7a3f55 100%)',
-              boxShadow: '0 10px 30px rgba(160, 80, 106, 0.25), 0 4px 12px rgba(112, 48, 80, 0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
-              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-              display: 'flex'
+              width: '100%', borderRadius: '16px', overflow: 'hidden', position: 'relative',
+              cursor: 'pointer', height: '160px',
+              transition: 'all 0.3s ease'
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-3px) scale(1.005)'; e.currentTarget.style.boxShadow = '0 16px 40px rgba(160, 80, 106, 0.35), 0 6px 16px rgba(112, 48, 80, 0.2), inset 0 1px 0 rgba(255,255,255,0.15)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 10px 30px rgba(160, 80, 106, 0.25), 0 4px 12px rgba(112, 48, 80, 0.15), inset 0 1px 0 rgba(255,255,255,0.1)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; }}
           >
-            {/* Peinado y maquillaje photo placed on the right */}
-            <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '58%', zIndex: 1 }}>
-              <img 
-                src="/peinado_maquillaje.png" 
-                alt="Adicional de Ondas" 
-                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 15%', filter: 'saturate(1.05)' }} 
-              />
-              {/* Minimal fade — only on the left edge where photo meets text */}
-              <div style={{ 
-                position: 'absolute', 
-                inset: 0, 
-                background: 'linear-gradient(to right, #964a63 0%, rgba(150, 74, 99, 0.4) 20%, rgba(150, 74, 99, 0.1) 40%, transparent 55%)' 
-              }} />
-              {/* Subtle warm overlay on photo */}
-              <div style={{
-                position: 'absolute',
-                inset: 0,
-                background: 'linear-gradient(180deg, rgba(201, 114, 130, 0.08) 0%, rgba(122, 58, 78, 0.12) 100%)',
-                mixBlendMode: 'soft-light'
-              }} />
-              {/* Top-right subtle glow */}
-              <div style={{
-                position: 'absolute',
-                top: '-20px',
-                right: '-20px',
-                width: '100px',
-                height: '100px',
-                borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(255,200,210,0.2) 0%, transparent 70%)',
-                filter: 'blur(15px)'
-              }} />
-            </div>
-
-            {/* Content area on the left */}
-            <div style={{ 
-              position: 'relative', 
-              zIndex: 2, 
-              display: 'flex', 
-              flexDirection: 'column', 
-              justifyContent: 'center', 
-              padding: '16px 22px', 
-              width: '55%', 
-              color: '#ffffff' 
-            }}>
-              {/* Glassmorphism badge */}
-              <div style={{ 
-                display: 'inline-flex', 
-                alignItems: 'center', 
-                gap: '5px', 
-                backgroundColor: 'rgba(255, 255, 255, 0.12)', 
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)',
-                padding: '4px 10px', 
-                borderRadius: '20px', 
-                fontSize: '8.5px', 
-                fontWeight: '800', 
-                textTransform: 'uppercase', 
-                letterSpacing: '0.8px',
-                width: 'fit-content',
-                marginBottom: '10px',
-                border: '1px solid rgba(255, 255, 255, 0.18)',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.1)'
-              }}>
-                <span style={{ fontSize: '10px' }}>🔥</span> Más reservado
-              </div>
-              <h4 style={{ 
-                fontSize: '16px', 
-                fontWeight: '800', 
-                margin: 0, 
-                color: '#ffffff', 
-                fontFamily: "'Playfair Display', Georgia, serif",
-                lineHeight: '1.15',
-                textShadow: '0 1px 3px rgba(0,0,0,0.15)'
-              }}>
-                Adicional de Ondas
-              </h4>
-              <span style={{ 
-                fontSize: '11.5px', 
-                color: '#fbcada', 
-                fontWeight: '600',
-                marginTop: '2px',
-                letterSpacing: '0.3px'
-              }}>
-                (Sirena o Sueltas)
-              </span>
-              <span style={{ 
-                fontSize: '11px', 
-                color: '#ffffff', 
-                fontWeight: '700',
-                marginTop: '10px',
-                opacity: 0.95,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '5px'
-              }}>
-                <span style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '18px',
-                  height: '18px',
-                  borderRadius: '50%',
-                  backgroundColor: 'rgba(255,255,255,0.15)',
-                  fontSize: '9px'
-                }}>📅</span>
-                5 citas hoy
+            <img src="/peinado_maquillaje.png" alt="Adicional de Ondas" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 15%' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(74, 48, 54, 0.8) 0%, rgba(74, 48, 54, 0.05) 55%)' }} />
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+              <span style={{ fontSize: '0.55rem', fontWeight: '800', color: '#fbcada', textTransform: 'uppercase', letterSpacing: '1px' }}>Más reservado</span>
+              <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#ffffff', fontFamily: "'Playfair Display', Georgia, serif" }}>Adicional de Ondas</span>
+              <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.7)' }}>(Sirena o Sueltas)</span>
+              <span style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.8)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                📅 5 citas hoy
               </span>
             </div>
           </div>
         </div>
 
-        {/* TOP ESPECIALISTAS */}
-        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '22px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
-              Top Especialistas
-            </h3>
+        {/* TOP ESPECIALISTAS + REPORTES */}
+        <div style={{ background: '#ffffff', borderRadius: '20px', border: '1px solid rgba(201, 114, 130, 0.1)', padding: '22px', boxShadow: '0 2px 12px rgba(201, 114, 130, 0.04)', display: 'flex', flexDirection: 'column', gap: '0' }}>
+          {/* Top Especialistas header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>Top especialistas</h3>
             <span onClick={() => onNavigate('personnel')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              Ver todo <ChevronRight size={14} />
+              Ver todo <ChevronRight size={13} />
             </span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {/* Specialists list */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
             {TOP_SPECIALISTS.slice(0, 3).map((spec, idx) => {
-              const medals = ['🥇', '🥈', '🥉'];
               const maxEarnings = TOP_SPECIALISTS[0]?.earnings || 1;
-              const barPct = Math.round((spec.earnings / maxEarnings) * 100);
-              const isFirst = idx === 0;
               return (
                 <div key={idx} style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  padding: '12px 14px',
-                  borderRadius: '16px',
-                  background: isFirst
-                    ? 'linear-gradient(135deg, rgba(201,114,130,0.1) 0%, rgba(160,80,106,0.06) 100%)'
-                    : 'rgba(250, 243, 242, 0.6)',
-                  border: isFirst
-                    ? '1px solid rgba(201, 114, 130, 0.2)'
-                    : '1px solid rgba(212, 160, 154, 0.1)',
-                  transition: 'all 0.2s',
-                  position: 'relative',
-                  overflow: 'hidden'
+                  display: 'flex', alignItems: 'center', gap: '10px',
+                  padding: '10px 0',
+                  borderBottom: idx < 2 ? '1px solid rgba(201,114,130,0.08)' : 'none'
                 }}>
-                  {/* Rank medal */}
+                  {/* Rank badge */}
                   <div style={{
-                    width: '28px', height: '28px', borderRadius: '50%',
-                    background: isFirst ? 'linear-gradient(135deg, #c97282, #a0506a)' : '#f5e9e7',
+                    width: '26px', height: '26px', borderRadius: '50%',
+                    background: idx === 0 ? 'linear-gradient(135deg, #c97282, #a0506a)' : 'transparent',
+                    border: idx === 0 ? 'none' : '2px solid rgba(201,114,130,0.25)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: isFirst ? '11px' : '14px',
-                    flexShrink: 0, boxShadow: isFirst ? '0 3px 8px rgba(160,80,106,0.3)' : 'none'
+                    flexShrink: 0
                   }}>
-                    {isFirst
-                      ? <span style={{ color: '#fff', fontWeight: 800, fontSize: '10px' }}>#{idx + 1}</span>
-                      : <span>{medals[idx]}</span>
-                    }
+                    <span style={{ fontSize: '0.65rem', fontWeight: '800', color: idx === 0 ? '#fff' : '#a0506a' }}>#{idx + 1}</span>
                   </div>
 
                   {/* Avatar */}
                   <div style={{
-                    width: '36px', height: '36px', borderRadius: '50%',
+                    width: '34px', height: '34px', borderRadius: '50%',
                     background: 'linear-gradient(135deg, #c97282, #a0506a)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: 'white', fontWeight: 800, fontSize: '0.82rem', flexShrink: 0,
-                    boxShadow: '0 2px 6px rgba(160,80,106,0.25)'
+                    color: '#fff', fontWeight: 700, fontSize: '0.75rem', flexShrink: 0
                   }}>{spec.initial}</div>
 
-                  {/* Name + role + bar */}
+                  {/* Name + role */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.82rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{spec.name}</div>
-                    <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', marginBottom: '5px' }}>{spec.role}</div>
-                    <div style={{ height: '4px', borderRadius: '3px', background: 'rgba(212,160,154,0.2)', overflow: 'hidden' }}>
-                      <div style={{
-                        width: `${barPct}%`, height: '100%', borderRadius: '3px',
-                        background: isFirst ? 'linear-gradient(90deg, #c97282, #a0506a)' : 'rgba(201,114,130,0.45)',
-                        transition: 'width 0.6s ease'
-                      }} />
-                    </div>
+                    <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>{spec.role}</div>
                   </div>
 
                   {/* Earnings */}
                   <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <div style={{ fontWeight: 800, color: isFirst ? '#a0506a' : 'var(--text-primary)', fontSize: '0.8rem' }}>Bs. {formatBs(spec.earnings)}</div>
-                    <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', marginTop: '1px' }}>ingresos</div>
+                    <div style={{ fontWeight: 800, color: '#a0506a', fontSize: '0.82rem' }}>Bs. {formatBs(spec.earnings)}</div>
+                    <div style={{ fontSize: '0.58rem', color: 'var(--text-muted)' }}>ingresos</div>
                   </div>
                 </div>
               );
             })}
           </div>
 
-          {/* Divider + Mini Reportes */}
-          <div style={{ borderTop: '1px solid rgba(212, 160, 154, 0.15)', paddingTop: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {/* Divider + Reportes */}
+          <div style={{ borderTop: '1px solid rgba(201, 114, 130, 0.1)', paddingTop: '16px', marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h4 style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
-                Reportes
-              </h4>
-              <span onClick={() => onNavigate('reports')} style={{ fontSize: '0.7rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                Ver todo <ChevronRight size={12} />
+              <h4 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>Reportes</h4>
+              <span onClick={() => onNavigate('reports')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                Ver todo <ChevronRight size={13} />
               </span>
             </div>
-            <span style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--text-primary)' }}>Bs. 12.840</span>
-            <span style={{ fontSize: '0.65rem', color: '#22c55e', fontWeight: '600' }}>
+            <span style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--text-primary)' }}>Bs. 12.840</span>
+            <span style={{ fontSize: '0.68rem', color: '#22c55e', fontWeight: '600' }}>
               ↑ 18% <span style={{ color: 'var(--text-muted)', fontWeight: '400' }}>vs mes anterior</span>
             </span>
-            <div style={{ height: '70px', width: '100%', position: 'relative' }}>
+            <div style={{ height: '60px', width: '100%', position: 'relative', marginTop: '4px' }}>
               <Line
                 data={{
                   labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
@@ -1814,7 +1685,7 @@ const DashboardModule = ({
                     pointRadius: 3,
                     pointHoverRadius: 5,
                     fill: true,
-                    backgroundColor: 'rgba(160, 80, 106, 0.08)',
+                    backgroundColor: 'rgba(160, 80, 106, 0.06)',
                     tension: 0.4
                   }]
                 }}
