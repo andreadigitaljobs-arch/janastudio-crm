@@ -3,7 +3,7 @@ import {
   Users, Clock, Calendar, Sparkles, RefreshCw,
   Flower2, Plus, Star, ChevronRight,
   Percent, Scissors, DollarSign, Activity, Award,
-  Bell, ChevronDown, ShoppingBag, MessageSquare, UserPlus, BellRing
+  Bell, ChevronDown, ShoppingBag, MessageSquare, UserPlus, BellRing, X
 } from 'lucide-react';
 import {
   Chart as ChartJS, CategoryScale, LinearScale, PointElement,
