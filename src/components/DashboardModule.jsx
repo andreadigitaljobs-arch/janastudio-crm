@@ -337,22 +337,22 @@ const DashboardModule = ({
             {rates && rates.usdt > 0 && (
               <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                 <div style={{
-                  display: 'flex', alignItems: 'center', gap: '4px',
-                  padding: '5px 8px', borderRadius: '10px',
+                  display: 'flex', alignItems: 'center', gap: '5px',
+                  padding: '6px 10px', borderRadius: '12px',
                   background: 'rgba(255,255,255,0.7)',
                   border: '1px solid rgba(212,160,154,0.12)'
                 }}>
-                  <span style={{ fontSize: '0.55rem', color: '#a0909a', fontWeight: '600' }}>BCV</span>
-                  <span style={{ fontSize: '0.68rem', color: '#2d1b22', fontWeight: '800' }}>Bs. {rates.bcv?.toFixed(2)}</span>
+                  <span style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: '600' }}>BCV</span>
+                  <span style={{ fontSize: '0.82rem', color: '#2d1b22', fontWeight: '800' }}>Bs. {rates.bcv?.toFixed(2)}</span>
                 </div>
                 <div style={{
-                  display: 'flex', alignItems: 'center', gap: '4px',
-                  padding: '5px 8px', borderRadius: '10px',
+                  display: 'flex', alignItems: 'center', gap: '5px',
+                  padding: '6px 10px', borderRadius: '12px',
                   background: 'rgba(255,255,255,0.7)',
                   border: '1px solid rgba(212,160,154,0.12)'
                 }}>
-                  <span style={{ fontSize: '0.55rem', color: '#a0909a', fontWeight: '600' }}>USDT</span>
-                  <span style={{ fontSize: '0.68rem', color: '#c97282', fontWeight: '800' }}>Bs. {rates.usdt?.toFixed(2)}</span>
+                  <span style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: '600' }}>USDT</span>
+                  <span style={{ fontSize: '0.82rem', color: '#c97282', fontWeight: '800' }}>Bs. {rates.usdt?.toFixed(2)}</span>
                 </div>
               </div>
             )}
