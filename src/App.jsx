@@ -444,6 +444,8 @@ function App() {
             onToggleRateType={handleSetActiveRateType}
             onOpenNotifications={() => setIsNotificationsOpen(true)}
             isMobile={isMobile}
+            dbData={dbData}
+            onNavigate={handleTabChange}
           />
           <Suspense fallback={<ModuleFallback />}>
             {renderContent()}
