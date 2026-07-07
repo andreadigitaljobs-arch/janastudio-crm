@@ -445,208 +445,274 @@ const DashboardModule = ({
             </button>
           </div>
         </div>
-        {/* Stats Grid 2x2 + 1 Full Width */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '10px',
-          width: '100%'
-        }}>
-          {/* Card 1: Citas del día */}
-          <div style={{
-            background: '#ffffff',
-            borderRadius: '20px',
-            border: '1px solid rgba(212, 160, 154, 0.15)',
-            padding: '12px 10px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            boxShadow: '0 4px 16px rgba(74, 48, 54, 0.02)',
-            minHeight: '94px'
-          }}>
+        {/* Stats Grid 2x2 */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', width: '100%' }}>
+            {/* Card 1: Citas del día */}
             <div style={{
-              width: '38px',
-              height: '38px',
-              borderRadius: '12px',
-              background: '#fdf3f4',
-              border: '1px solid rgba(160, 80, 106, 0.08)',
+              background: '#ffffff',
+              borderRadius: '20px',
+              border: '1px solid rgba(212, 160, 154, 0.15)',
+              padding: '12px 10px',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              color: '#a0506a',
-              flexShrink: 0
+              gap: '8px',
+              boxShadow: '0 4px 16px rgba(74, 48, 54, 0.02)',
+              minHeight: '94px'
             }}>
-              <Calendar size={18} />
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
-              <span style={{ fontSize: '0.62rem', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>Citas del día</span>
-              <span style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--text-primary)', margin: '1px 0' }}>
-                {stats?.appointments || 12}
-              </span>
-              <span style={{ fontSize: '0.55rem', color: 'var(--text-muted)', fontWeight: '500', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {upcomingAppointments && upcomingAppointments.length > 0 
-                  ? `Sig: ${upcomingAppointments[0].time}` 
-                  : "Sin citas"}
-              </span>
-            </div>
-          </div>
-
-          {/* Card 2: Ingresos hoy */}
-          <div style={{
-            background: '#ffffff',
-            borderRadius: '20px',
-            border: '1px solid rgba(212, 160, 154, 0.15)',
-            padding: '12px 10px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            boxShadow: '0 4px 16px rgba(74, 48, 54, 0.02)',
-            minHeight: '94px'
-          }}>
-            <div style={{
-              width: '38px',
-              height: '38px',
-              borderRadius: '12px',
-              background: '#fdf3f4',
-              border: '1px solid rgba(160, 80, 106, 0.08)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#a0506a',
-              flexShrink: 0
-            }}>
-              <DollarSign size={18} />
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
-              <span style={{ fontSize: '0.62rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Ingresos hoy</span>
-              <span style={{ fontSize: '0.82rem', fontWeight: '800', color: 'var(--text-primary)', margin: '1px 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {`Bs. ${formatBs(dynamicStats.todayIncome * (rates?.usd || 40)).split(',')[0]}`}
-              </span>
-              <span style={{ fontSize: '0.55rem', color: dynamicStats.incomeDiffPct >= 0 ? '#22c55e' : '#ef4444', fontWeight: '600', whiteSpace: 'nowrap' }}>
-                {dynamicStats.incomeDiffPct >= 0 ? '↑' : '↓'} {Math.abs(dynamicStats.incomeDiffPct)}% <span style={{ color: 'var(--text-muted)', fontWeight: '400' }}>vs ayer</span>
-              </span>
-            </div>
-          </div>
-
-          {/* Card 3: Nuevas clientes */}
-          <div style={{
-            background: '#ffffff',
-            borderRadius: '20px',
-            border: '1px solid rgba(212, 160, 154, 0.15)',
-            padding: '12px 10px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            boxShadow: '0 4px 16px rgba(74, 48, 54, 0.02)',
-            minHeight: '94px'
-          }}>
-            <div style={{
-              width: '38px',
-              height: '38px',
-              borderRadius: '12px',
-              background: '#fdf3f4',
-              border: '1px solid rgba(160, 80, 106, 0.08)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#a0506a',
-              flexShrink: 0
-            }}>
-              <UserPlus size={18} />
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
-              <span style={{ fontSize: '0.62rem', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>Nuevas clientes</span>
-              <span style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--text-primary)', margin: '1px 0' }}>
-                {dynamicStats.newClients}
-              </span>
-              <span style={{ fontSize: '0.55rem', color: dynamicStats.clientsDiffPct >= 0 ? '#22c55e' : '#ef4444', fontWeight: '600', whiteSpace: 'nowrap' }}>
-                {dynamicStats.clientsDiffPct >= 0 ? '↑' : '↓'} {Math.abs(dynamicStats.clientsDiffPct)}% <span style={{ color: 'var(--text-muted)', fontWeight: '400' }}>vs ayer</span>
-              </span>
-            </div>
-          </div>
-
-          {/* Card 4: Servicio más reservado */}
-          <div style={{
-            background: '#ffffff',
-            borderRadius: '20px',
-            border: '1px solid rgba(212, 160, 154, 0.15)',
-            padding: '12px 10px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            boxShadow: '0 4px 16px rgba(74, 48, 54, 0.02)',
-            minHeight: '94px'
-          }}>
-            <div style={{
-              width: '38px',
-              height: '38px',
-              borderRadius: '12px',
-              background: '#fdf3f4',
-              border: '1px solid rgba(160, 80, 106, 0.08)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#a0506a',
-              flexShrink: 0
-            }}>
-              <Sparkles size={18} />
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
-              <span style={{ fontSize: '0.62rem', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>Más reservado</span>
-              <span style={{ 
-                fontSize: '0.68rem', 
-                fontWeight: '800', 
-                color: 'var(--text-primary)', 
-                margin: '2px 0', 
-                display: 'block', 
-                lineHeight: '1.15',
-                wordBreak: 'break-word'
+              <div style={{
+                width: '38px',
+                height: '38px',
+                borderRadius: '12px',
+                background: '#fdf3f4',
+                border: '1px solid rgba(160, 80, 106, 0.08)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#a0506a',
+                flexShrink: 0
               }}>
-                {dynamicStats.mostReservedService}
+                <Calendar size={18} />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
+                <span style={{ fontSize: '0.62rem', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>Citas del día</span>
+                <span style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--text-primary)', margin: '1px 0' }}>
+                  {stats?.appointments || 12}
+                </span>
+                <span style={{ fontSize: '0.55rem', color: 'var(--text-muted)', fontWeight: '500', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {upcomingAppointments && upcomingAppointments.length > 0 
+                    ? `Sig: ${upcomingAppointments[0].time}` 
+                    : "Sin citas"}
+                </span>
+              </div>
+            </div>
+
+            {/* Card 2: Nuevas clientes */}
+            <div style={{
+              background: '#ffffff',
+              borderRadius: '20px',
+              border: '1px solid rgba(212, 160, 154, 0.15)',
+              padding: '12px 10px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              boxShadow: '0 4px 16px rgba(74, 48, 54, 0.02)',
+              minHeight: '94px'
+            }}>
+              <div style={{
+                width: '38px',
+                height: '38px',
+                borderRadius: '12px',
+                background: '#fdf3f4',
+                border: '1px solid rgba(160, 80, 106, 0.08)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#a0506a',
+                flexShrink: 0
+              }}>
+                <UserPlus size={18} />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
+                <span style={{ fontSize: '0.62rem', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>Nuevas clientes</span>
+                <span style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--text-primary)', margin: '1px 0' }}>
+                  {dynamicStats.newClients}
+                </span>
+                <span style={{ fontSize: '0.55rem', color: dynamicStats.clientsDiffPct >= 0 ? '#22c55e' : '#ef4444', fontWeight: '600', whiteSpace: 'nowrap' }}>
+                  {dynamicStats.clientsDiffPct >= 0 ? '↑' : '↓'} {Math.abs(dynamicStats.clientsDiffPct)}% <span style={{ color: 'var(--text-muted)', fontWeight: '400' }}>vs ayer</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Card 3: Más reservado */}
+            <div style={{
+              background: '#ffffff',
+              borderRadius: '20px',
+              border: '1px solid rgba(212, 160, 154, 0.15)',
+              padding: '12px 10px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              boxShadow: '0 4px 16px rgba(74, 48, 54, 0.02)',
+              minHeight: '94px'
+            }}>
+              <div style={{
+                width: '38px',
+                height: '38px',
+                borderRadius: '12px',
+                background: '#fdf3f4',
+                border: '1px solid rgba(160, 80, 106, 0.08)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#a0506a',
+                flexShrink: 0
+              }}>
+                <Sparkles size={18} />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
+                <span style={{ fontSize: '0.62rem', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>Más reservado</span>
+                <span style={{ 
+                  fontSize: '0.68rem', 
+                  fontWeight: '800', 
+                  color: 'var(--text-primary)', 
+                  margin: '2px 0', 
+                  display: 'block', 
+                  lineHeight: '1.15',
+                  wordBreak: 'break-word'
+                }}>
+                  {dynamicStats.mostReservedService}
+                </span>
+                <span style={{ fontSize: '0.55rem', color: 'var(--text-muted)', fontWeight: '500', whiteSpace: 'nowrap' }}>
+                  {dynamicStats.mostReservedCount} citas hoy
+                </span>
+              </div>
+            </div>
+
+            {/* Card 4: Ocupación del equipo */}
+            <div style={{
+              background: '#ffffff',
+              borderRadius: '20px',
+              border: '1px solid rgba(212, 160, 154, 0.15)',
+              padding: '12px 10px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              boxShadow: '0 4px 16px rgba(74, 48, 54, 0.02)',
+              minHeight: '94px'
+            }}>
+              <div style={{
+                width: '38px',
+                height: '38px',
+                borderRadius: '12px',
+                background: '#fdf3f4',
+                border: '1px solid rgba(160, 80, 106, 0.08)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#a0506a',
+                flexShrink: 0
+              }}>
+                <Users size={18} />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
+                <span style={{ fontSize: '0.62rem', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>Ocupación</span>
+                <span style={{ fontSize: '1.15rem', fontWeight: '800', color: '#c97282', margin: '1px 0' }}>{dynamicStats.occupancy}%</span>
+                <span style={{ fontSize: '0.55rem', color: 'var(--text-muted)', fontWeight: '500', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {dynamicStats.activeStaff} estilistas activas
+                </span>
+              </div>
+          </div>
+
+          {/* Divider + Mini Reportes */}
+          <div style={{ borderTop: '1px solid rgba(212, 160, 154, 0.15)', paddingTop: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h4 style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
+                Reportes
+              </h4>
+              <span onClick={() => onNavigate('reports')} style={{ fontSize: '0.7rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                Ver todo <ChevronRight size={12} />
               </span>
-              <span style={{ fontSize: '0.55rem', color: 'var(--text-muted)', fontWeight: '500', whiteSpace: 'nowrap' }}>
-                {dynamicStats.mostReservedCount} citas hoy
-              </span>
+            </div>
+            <span style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--text-primary)' }}>Bs. 12.840</span>
+            <span style={{ fontSize: '0.65rem', color: '#22c55e', fontWeight: '600' }}>
+              ↑ 18% <span style={{ color: 'var(--text-muted)', fontWeight: '400' }}>vs mes anterior</span>
+            </span>
+            <div style={{ height: '70px', width: '100%', position: 'relative' }}>
+              <Line
+                data={{
+                  labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                  datasets: [{
+                    data: [800, 1200, 950, 1400, 1100, 1600, 1800],
+                    borderColor: '#a0506a',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#a0506a',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 3,
+                    pointHoverRadius: 5,
+                    fill: true,
+                    backgroundColor: 'rgba(160, 80, 106, 0.08)',
+                    tension: 0.4
+                  }]
+                }}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                  scales: {
+                    x: { grid: { display: false }, ticks: { color: '#a0506a', font: { size: 8, weight: '600' } }, border: { display: false } },
+                    y: { display: false, min: 0 }
+                  }
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Widget Reportes */}
+        <div style={{
+          background: '#ffffff',
+          borderRadius: '24px',
+          border: '1px solid rgba(212, 160, 154, 0.15)',
+          padding: '18px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',
+          boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{
+              fontSize: '0.95rem',
+              fontWeight: '700',
+              color: 'var(--text-primary)',
+              fontFamily: "'Playfair Display', Georgia, serif",
+              margin: 0
+            }}>
+              Reportes
+            </h3>
+            <div 
+              onClick={() => onNavigate('reports')}
+              style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.72rem', color: '#c97282', fontWeight: '600', cursor: 'pointer' }}
+            >
+              Ver todo <ChevronRight size={12} />
             </div>
           </div>
 
-          {/* Card 5: Ocupación del equipo */}
-          <div style={{
-            gridColumn: 'span 2',
-            background: '#ffffff',
-            borderRadius: '20px',
-            border: '1px solid rgba(212, 160, 154, 0.15)',
-            padding: '14px 16px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px',
-            boxShadow: '0 4px 16px rgba(74, 48, 54, 0.02)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '10px',
-                  background: '#fdf3f4',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#a0506a'
-                }}>
-                  <Users size={16} />
-                </div>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Ocupación del equipo</span>
-              </div>
-              <span style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--text-primary)' }}>{dynamicStats.occupancy}%</span>
+          <div>
+            <span style={{ fontSize: '1.3rem', fontWeight: '800', color: 'var(--text-primary)' }}>Bs. 12.840</span>
+            <div style={{ fontSize: '0.65rem', color: '#22c55e', fontWeight: '600', marginTop: '2px' }}>
+              ↑ 18% <span style={{ color: 'var(--text-muted)', fontWeight: '400' }}>vs mes anterior</span>
             </div>
-            {/* Progress Bar */}
-            <div style={{ width: '100%', height: '8px', borderRadius: '4px', background: '#f5e9e7', overflow: 'hidden' }}>
-              <div style={{ width: `${dynamicStats.occupancy}%`, height: '100%', background: '#c97282', borderRadius: '4px' }} />
-            </div>
-            <span style={{ fontSize: '0.58rem', color: 'var(--text-muted)', fontWeight: '500' }}>
-              {dynamicStats.activeStaff} estilistas activas hoy
-            </span>
+          </div>
+
+          <div style={{ height: '100px', width: '100%', position: 'relative' }}>
+            <Line
+              data={{
+                labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                datasets: [{
+                  data: [800, 1200, 950, 1400, 1100, 1600, 1800],
+                  borderColor: '#a0506a',
+                  borderWidth: 2,
+                  pointBackgroundColor: '#a0506a',
+                  pointBorderColor: '#ffffff',
+                  pointBorderWidth: 2,
+                  pointRadius: 3,
+                  pointHoverRadius: 5,
+                  fill: true,
+                  backgroundColor: 'rgba(160, 80, 106, 0.1)',
+                  tension: 0.4
+                }]
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                scales: {
+                  x: { grid: { display: false }, ticks: { color: '#a0506a', font: { size: 9, weight: '600' } }, border: { display: false } },
+                  y: { display: false, min: 0 }
+                }
+              }}
+            />
           </div>
         </div>
 
@@ -995,6 +1061,110 @@ const DashboardModule = ({
           </div>
         </div>
 
+        {/* Top Especialistas */}
+        <div style={{
+          background: '#ffffff',
+          borderRadius: '24px',
+          border: '1px solid rgba(212, 160, 154, 0.15)',
+          padding: '16px 18px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',
+          boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{
+              fontSize: '0.9rem',
+              fontWeight: '700',
+              color: 'var(--text-primary)',
+              fontFamily: "'Playfair Display', Georgia, serif",
+              margin: 0
+            }}>
+              Top Especialistas
+            </h3>
+            <div 
+              onClick={() => onNavigate('personnel')}
+              style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.72rem', color: '#c97282', fontWeight: '600', cursor: 'pointer' }}
+            >
+              Ver todo <ChevronRight size={12} />
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {TOP_SPECIALISTS.slice(0, 3).map((spec, idx) => {
+              const medals = ['🥇', '🥈', '🥉'];
+              const maxEarnings = TOP_SPECIALISTS[0]?.earnings || 1;
+              const barPct = Math.round((spec.earnings / maxEarnings) * 100);
+              const isFirst = idx === 0;
+              return (
+                <div 
+                  key={idx} 
+                  onClick={() => onNavigate('personnel')}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    padding: '10px 12px',
+                    borderRadius: '14px',
+                    background: isFirst
+                      ? 'linear-gradient(135deg, rgba(201,114,130,0.1) 0%, rgba(160,80,106,0.06) 100%)'
+                      : 'rgba(250, 243, 242, 0.6)',
+                    border: isFirst
+                      ? '1px solid rgba(201, 114, 130, 0.2)'
+                      : '1px solid rgba(212, 160, 154, 0.1)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)' }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'none' }}
+                >
+                  {/* Rank medal */}
+                  <div style={{
+                    width: '24px', height: '24px', borderRadius: '50%',
+                    background: isFirst ? 'linear-gradient(135deg, #c97282, #a0506a)' : '#f5e9e7',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: isFirst ? '9px' : '12px',
+                    flexShrink: 0, boxShadow: isFirst ? '0 3px 8px rgba(160,80,106,0.3)' : 'none'
+                  }}>
+                    {isFirst
+                      ? <span style={{ color: '#fff', fontWeight: 800, fontSize: '9px' }}>#{idx + 1}</span>
+                      : <span>{medals[idx]}</span>
+                    }
+                  </div>
+
+                  {/* Avatar */}
+                  <div style={{
+                    width: '32px', height: '32px', borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #c97282, #a0506a)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'white', fontWeight: 800, fontSize: '0.75rem', flexShrink: 0,
+                    boxShadow: '0 2px 6px rgba(160,80,106,0.25)'
+                  }}>{spec.initial}</div>
+
+                  {/* Name + role + bar */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.78rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{spec.name}</div>
+                    <div style={{ fontSize: '0.58rem', color: 'var(--text-muted)', marginBottom: '4px' }}>{spec.role}</div>
+                    <div style={{ height: '3px', borderRadius: '2px', background: 'rgba(212,160,154,0.2)', overflow: 'hidden' }}>
+                      <div style={{
+                        width: `${barPct}%`, height: '100%', borderRadius: '2px',
+                        background: isFirst ? 'linear-gradient(90deg, #c97282, #a0506a)' : 'rgba(201,114,130,0.45)',
+                        transition: 'width 0.6s ease'
+                      }} />
+                    </div>
+                  </div>
+
+                  {/* Earnings */}
+                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    <div style={{ fontWeight: 800, color: isFirst ? '#a0506a' : 'var(--text-primary)', fontSize: '0.75rem' }}>Bs. {formatBs(spec.earnings)}</div>
+                    <div style={{ fontSize: '0.55rem', color: 'var(--text-muted)', marginTop: '1px' }}>ingresos</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Servicios Destacados Gallery */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <h3 style={{
@@ -1087,7 +1257,7 @@ const DashboardModule = ({
         <img
           src="/salon_banner_full.png"
           alt="Jana Studio"
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'left center' }}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'left 35%' }}
         />
         <div style={{
           position: 'absolute', inset: 0,
@@ -1112,8 +1282,8 @@ const DashboardModule = ({
         </div>
       </div>
 
-      {/* ── WIDGETS OPERATIVOS 2x2 ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '16px' }}>
+      {/* ── WIDGETS OPERATIVOS ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
         {/* Card 1: Citas del día */}
         <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)' }}>
           <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: '#fdf3f4', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
@@ -1128,23 +1298,7 @@ const DashboardModule = ({
           </div>
         </div>
 
-        {/* Card 2: Ingresos hoy */}
-        <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)' }}>
-          <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: '#fdf3f4', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
-            <DollarSign size={22} />
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
-            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Ingresos hoy</span>
-            <span style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--text-primary)', lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {`Bs. ${formatBs(dynamicStats.todayIncome * (rates?.usd || 40)).split(',')[0]}`}
-            </span>
-            <span style={{ fontSize: '0.65rem', color: dynamicStats.incomeDiffPct >= 0 ? '#22c55e' : '#ef4444', fontWeight: '600', whiteSpace: 'nowrap' }}>
-              {dynamicStats.incomeDiffPct >= 0 ? '↑' : '↓'} {Math.abs(dynamicStats.incomeDiffPct)}% <span style={{ color: 'var(--text-muted)', fontWeight: '400' }}>vs ayer</span>
-            </span>
-          </div>
-        </div>
-
-        {/* Card 3: Nuevas clientes */}
+        {/* Card 2: Nuevas clientes */}
         <div style={{ background: '#ffffff', borderRadius: '22px', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(74, 48, 54, 0.04)' }}>
           <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: '#fdf3f4', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
             <UserPlus size={22} />
@@ -1283,31 +1437,49 @@ const DashboardModule = ({
             onClick={() => onNavigate('services')}
             style={{
               width: '100%',
-              height: '130px',
-              borderRadius: '18px',
+              height: '140px',
+              borderRadius: '20px',
               overflow: 'hidden',
               position: 'relative',
               cursor: 'pointer',
-              background: 'linear-gradient(135deg, #a0506a 0%, #7a3a4e 100%)',
-              boxShadow: '0 8px 20px rgba(160, 80, 106, 0.15)',
-              transition: 'all 0.25s ease',
+              background: 'linear-gradient(140deg, #a0506a 0%, #964a63 30%, #8a4560 60%, #7a3f55 100%)',
+              boxShadow: '0 10px 30px rgba(160, 80, 106, 0.25), 0 4px 12px rgba(112, 48, 80, 0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               display: 'flex'
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(160, 80, 106, 0.25)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(160, 80, 106, 0.15)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-3px) scale(1.005)'; e.currentTarget.style.boxShadow = '0 16px 40px rgba(160, 80, 106, 0.35), 0 6px 16px rgba(112, 48, 80, 0.2), inset 0 1px 0 rgba(255,255,255,0.15)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 10px 30px rgba(160, 80, 106, 0.25), 0 4px 12px rgba(112, 48, 80, 0.15), inset 0 1px 0 rgba(255,255,255,0.1)' }}
           >
             {/* Peinado y maquillaje photo placed on the right */}
-            <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '55%', zIndex: 1 }}>
+            <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '58%', zIndex: 1 }}>
               <img 
                 src="/peinado_maquillaje.png" 
                 alt="Adicional de Ondas" 
-                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%' }} 
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 15%', filter: 'saturate(1.05)' }} 
               />
-              {/* Fade gradient from left (deep rose) to right (transparent) over the image */}
+              {/* Minimal fade — only on the left edge where photo meets text */}
               <div style={{ 
                 position: 'absolute', 
                 inset: 0, 
-                background: 'linear-gradient(to right, #a0506a 10%, rgba(160, 80, 106, 0.6) 50%, rgba(160, 80, 106, 0.1) 100%)' 
+                background: 'linear-gradient(to right, #964a63 0%, rgba(150, 74, 99, 0.4) 20%, rgba(150, 74, 99, 0.1) 40%, transparent 55%)' 
+              }} />
+              {/* Subtle warm overlay on photo */}
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'linear-gradient(180deg, rgba(201, 114, 130, 0.08) 0%, rgba(122, 58, 78, 0.12) 100%)',
+                mixBlendMode: 'soft-light'
+              }} />
+              {/* Top-right subtle glow */}
+              <div style={{
+                position: 'absolute',
+                top: '-20px',
+                right: '-20px',
+                width: '100px',
+                height: '100px',
+                borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(255,200,210,0.2) 0%, transparent 70%)',
+                filter: 'blur(15px)'
               }} />
             </div>
 
@@ -1318,41 +1490,48 @@ const DashboardModule = ({
               display: 'flex', 
               flexDirection: 'column', 
               justifyContent: 'center', 
-              padding: '16px 20px', 
-              width: '60%', 
+              padding: '16px 22px', 
+              width: '55%', 
               color: '#ffffff' 
             }}>
+              {/* Glassmorphism badge */}
               <div style={{ 
                 display: 'inline-flex', 
                 alignItems: 'center', 
-                gap: '4px', 
-                backgroundColor: 'rgba(255, 255, 255, 0.15)', 
-                padding: '3px 8px', 
+                gap: '5px', 
+                backgroundColor: 'rgba(255, 255, 255, 0.12)', 
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                padding: '4px 10px', 
                 borderRadius: '20px', 
-                fontSize: '9px', 
+                fontSize: '8.5px', 
                 fontWeight: '800', 
                 textTransform: 'uppercase', 
-                letterSpacing: '0.5px',
+                letterSpacing: '0.8px',
                 width: 'fit-content',
-                marginBottom: '8px'
+                marginBottom: '10px',
+                border: '1px solid rgba(255, 255, 255, 0.18)',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.1)'
               }}>
-                <span>🔥 Más reservado</span>
+                <span style={{ fontSize: '10px' }}>🔥</span> Más reservado
               </div>
               <h4 style={{ 
-                fontSize: '13.5px', 
+                fontSize: '16px', 
                 fontWeight: '800', 
                 margin: 0, 
                 color: '#ffffff', 
                 fontFamily: "'Playfair Display', Georgia, serif",
-                lineHeight: '1.2'
+                lineHeight: '1.15',
+                textShadow: '0 1px 3px rgba(0,0,0,0.15)'
               }}>
                 Adicional de Ondas
               </h4>
               <span style={{ 
-                fontSize: '11px', 
+                fontSize: '11.5px', 
                 color: '#fbcada', 
                 fontWeight: '600',
-                marginTop: '1px'
+                marginTop: '2px',
+                letterSpacing: '0.3px'
               }}>
                 (Sirena o Sueltas)
               </span>
@@ -1360,12 +1539,22 @@ const DashboardModule = ({
                 fontSize: '11px', 
                 color: '#ffffff', 
                 fontWeight: '700',
-                marginTop: '8px',
-                opacity: 0.9,
+                marginTop: '10px',
+                opacity: 0.95,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '4px'
+                gap: '5px'
               }}>
+                <span style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '18px',
+                  height: '18px',
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(255,255,255,0.15)',
+                  fontSize: '9px'
+                }}>📅</span>
                 5 citas hoy
               </span>
             </div>
@@ -1450,6 +1639,51 @@ const DashboardModule = ({
                 </div>
               );
             })}
+          </div>
+
+          {/* Divider + Mini Reportes */}
+          <div style={{ borderTop: '1px solid rgba(212, 160, 154, 0.15)', paddingTop: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h4 style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
+                Reportes
+              </h4>
+              <span onClick={() => onNavigate('reports')} style={{ fontSize: '0.7rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                Ver todo <ChevronRight size={12} />
+              </span>
+            </div>
+            <span style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--text-primary)' }}>Bs. 12.840</span>
+            <span style={{ fontSize: '0.65rem', color: '#22c55e', fontWeight: '600' }}>
+              ↑ 18% <span style={{ color: 'var(--text-muted)', fontWeight: '400' }}>vs mes anterior</span>
+            </span>
+            <div style={{ height: '70px', width: '100%', position: 'relative' }}>
+              <Line
+                data={{
+                  labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                  datasets: [{
+                    data: [800, 1200, 950, 1400, 1100, 1600, 1800],
+                    borderColor: '#a0506a',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#a0506a',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 3,
+                    pointHoverRadius: 5,
+                    fill: true,
+                    backgroundColor: 'rgba(160, 80, 106, 0.08)',
+                    tension: 0.4
+                  }]
+                }}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                  scales: {
+                    x: { grid: { display: false }, ticks: { color: '#a0506a', font: { size: 8, weight: '600' } }, border: { display: false } },
+                    y: { display: false, min: 0 }
+                  }
+                }}
+              />
+            </div>
           </div>
         </div>
 

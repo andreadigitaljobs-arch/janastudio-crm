@@ -19,11 +19,11 @@ const DEMO_STAFF = [
 ];
 
 const DEMO_APPOINTMENTS = [
-  { time: '9:00 AM', client: 'María Gabriela R.', service: 'Coloración Balayage', duration: '90 min', staff: 'Estilista Senior', status: 'Confirmada', initial: 'M' },
-  { time: '11:00 AM', client: 'Valentina S.', service: 'Uñas Acrílicas', duration: '90 min', staff: 'Nail Artist', status: 'Confirmada', initial: 'V' },
-  { time: '12:00 PM', client: 'Daniela P.', service: 'Limpieza Facial Premium', duration: '60 min', staff: 'Esteticista', status: 'Pendiente', initial: 'D' },
-  { time: '2:00 PM', client: 'Andrea L.', service: 'Extensiones de Pestañas', duration: '90 min', staff: 'Esteticista', status: 'Confirmada', initial: 'A' },
-  { time: '4:00 PM', client: 'Camila P.', service: 'Corte + Brushing', duration: '60 min', staff: 'Estilista Senior', status: 'En proceso', initial: 'C' },
+  { time: '9:00 AM', client: 'María Gabriela R.', service: 'Coloración Balayage', duration: '1h 30min', staff: 'Estilista Senior', status: 'Confirmada', initial: 'M' },
+  { time: '11:00 AM', client: 'Valentina S.', service: 'Uñas Acrílicas', duration: '1h 30min', staff: 'Nail Artist', status: 'Confirmada', initial: 'V' },
+  { time: '12:00 PM', client: 'Daniela P.', service: 'Limpieza Facial Premium', duration: '1h', staff: 'Esteticista', status: 'Pendiente', initial: 'D' },
+  { time: '2:00 PM', client: 'Andrea L.', service: 'Extensiones de Pestañas', duration: '1h 30min', staff: 'Esteticista', status: 'Confirmada', initial: 'A' },
+  { time: '4:00 PM', client: 'Camila P.', service: 'Corte + Brushing', duration: '1h', staff: 'Estilista Senior', status: 'En proceso', initial: 'C' },
   { time: '5:00 PM', client: 'Sofía M.', service: 'Diseño de Cejas', duration: '30 min', staff: 'Esteticista', status: 'Confirmada', initial: 'S' },
 ];
 
@@ -223,7 +223,11 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
 
   const formatDuration = (minutes) => {
     const safeMinutes = Number(minutes) || 60;
-    return `${safeMinutes} min`;
+    const h = Math.floor(safeMinutes / 60);
+    const m = safeMinutes % 60;
+    if (h > 0 && m > 0) return `${h}h ${m}min`;
+    if (h > 0) return `${h}h`;
+    return `${m} min`;
   };
 
   const slotToMinutes = (slot) => {
@@ -474,48 +478,77 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                     {slotApp ? (
                       <div
                         className="agenda-appointment-card"
-                        style={{ borderLeftColor: STATUS_COLORS[slotApp.status]?.leftBorder || '#22c55e' }}
+                        style={{
+                          borderLeftColor: STATUS_COLORS[slotApp.status]?.leftBorder || '#22c55e',
+                          flexDirection: isMobile ? 'column' : 'row',
+                          alignItems: isMobile ? 'stretch' : 'center',
+                          gap: isMobile ? '6px' : '14px',
+                          padding: isMobile ? '10px 12px' : '12px 16px'
+                        }}
                       >
-                        {/* Avatar */}
-                        <div style={{
-                          width: '40px', height: '40px', borderRadius: '50%',
-                          background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          color: '#fff', fontWeight: 700, fontSize: '0.85rem', flexShrink: 0,
-                          boxShadow: '0 2px 8px rgba(219,140,149,0.3)'
-                        }}>{slotApp.initial}</div>
+                        {/* Row 1: Avatar + Nombre + Duración */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '14px' }}>
+                          {/* Avatar */}
+                          <div style={{
+                            width: isMobile ? '32px' : '40px', height: isMobile ? '32px' : '40px', borderRadius: '50%',
+                            background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            color: '#fff', fontWeight: 700, fontSize: isMobile ? '0.7rem' : '0.85rem', flexShrink: 0,
+                            boxShadow: '0 2px 8px rgba(219,140,149,0.3)'
+                          }}>{slotApp.initial}</div>
 
-                        {/* Textos principales */}
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontWeight: 700, color: '#4a3036', fontSize: '0.85rem' }}>{slotApp.client}</div>
-                          <div style={{ fontSize: '0.72rem', color: '#a07880', marginTop: '2px', fontWeight: 500 }}>{slotApp.service}</div>
-                        </div>
-
-                        {/* Duración y especialista */}
-                        <div style={{ textAlign: 'right', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                          <div style={{ fontSize: '0.7rem', color: '#6b4a52', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'flex-end' }}>
-                            <Clock size={11} color="#db8c95" /> {slotApp.duration}
+                          {/* Nombre + Servicio */}
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontWeight: 700, color: '#4a3036', fontSize: isMobile ? '0.8rem' : '0.85rem' }}>{slotApp.client}</div>
+                            {!isMobile && <div style={{ fontSize: '0.72rem', color: '#a07880', marginTop: '2px', fontWeight: 500 }}>{slotApp.service}</div>}
                           </div>
-                          <div style={{ fontSize: '0.68rem', color: '#a07880', fontWeight: 500 }}>{slotApp.staff}</div>
+
+                          {/* Duración */}
+                          <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: '3px', whiteSpace: 'nowrap' }}>
+                            <Clock size={isMobile ? 10 : 11} color="#db8c95" />
+                            <span style={{ fontSize: isMobile ? '0.62rem' : '0.7rem', color: '#6b4a52', fontWeight: 600 }}>{slotApp.duration}</span>
+                          </div>
                         </div>
 
-                        {/* Badge de estado */}
-                        <div
-                          className="agenda-status-badge"
-                          style={{
-                            background: STATUS_COLORS[slotApp.status]?.bg || '#f0fdf4',
-                            color: STATUS_COLORS[slotApp.status]?.text || '#16a34a',
-                            border: `1px solid ${STATUS_COLORS[slotApp.status]?.border || '#bbf7d0'}`,
-                          }}
-                        >
-                          {slotApp.status}
-                        </div>
+                        {/* Row 2 (móvil): Servicio + Especialista + Badge */}
+                        {isMobile && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', paddingLeft: '40px' }}>
+                            <span style={{ fontSize: '0.65rem', color: '#a07880', fontWeight: 500, flex: 1 }}>{slotApp.service}</span>
+                            <span style={{ fontSize: '0.6rem', color: '#a07880', fontWeight: 500 }}>{slotApp.staff}</span>
+                          </div>
+                        )}
 
-                        {/* Acciones */}
-                        <button style={{
-                          background: 'none', border: 'none', cursor: 'pointer',
-                          color: '#db8c95', padding: '4px', display: 'flex', alignItems: 'center'
-                        }}><MoreVertical size={16} /></button>
+                        {/* Desktop: Duración y especialista */}
+                        {!isMobile && (
+                          <div style={{ textAlign: 'right', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                            <div style={{ fontSize: '0.7rem', color: '#6b4a52', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'flex-end' }}>
+                              <Clock size={11} color="#db8c95" /> {slotApp.duration}
+                            </div>
+                            <div style={{ fontSize: '0.68rem', color: '#a07880', fontWeight: 500 }}>{slotApp.staff}</div>
+                          </div>
+                        )}
+
+                        {/* Badge de estado — solo desktop */}
+                        {!isMobile && (
+                          <div
+                            className="agenda-status-badge"
+                            style={{
+                              background: STATUS_COLORS[slotApp.status]?.bg || '#f0fdf4',
+                              color: STATUS_COLORS[slotApp.status]?.text || '#16a34a',
+                              border: `1px solid ${STATUS_COLORS[slotApp.status]?.border || '#bbf7d0'}`,
+                            }}
+                          >
+                            {slotApp.status}
+                          </div>
+                        )}
+
+                        {/* Acciones — solo desktop */}
+                        {!isMobile && (
+                          <button style={{
+                            background: 'none', border: 'none', cursor: 'pointer',
+                            color: '#db8c95', padding: '4px', display: 'flex', alignItems: 'center'
+                          }}><MoreVertical size={16} /></button>
+                        )}
                       </div>
                     ) : (
                       /* Si está libre, ofrecemos agendar directamente en ese slot */
