@@ -967,8 +967,8 @@ html, body {
     margin-top: calc(var(--login-radius, 24px) * -1);
     z-index: 10;
     position: relative;
-    padding: calc(var(--login-radius, 24px) + 24px) 28px calc(var(--login-radius, 24px) + 24px);
-    padding-bottom: calc(var(--login-radius, 24px) + 24px + env(safe-area-inset-bottom, 0px));
+    padding: calc(var(--login-radius, 24px) + 40px) 28px calc(var(--login-radius, 24px) + 40px);
+    padding-bottom: calc(var(--login-radius, 24px) + 40px + env(safe-area-inset-bottom, 0px));
     outline: none;
     overflow: hidden;
     display: flex;
@@ -1074,8 +1074,8 @@ html, body {
 
   /* Decorative icons */
   .salon-decorative-section {
-    margin-top: 24px;
-    padding-top: 12px;
+    margin-top: 32px;
+    padding-top: 16px;
     gap: 4px;
   }
 
