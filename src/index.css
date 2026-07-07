@@ -997,17 +997,17 @@ html, body {
     box-sizing: border-box;
   }
 
-  /* Borde rose gold */
+  /* Doble borde: rose gold fino + blanco grueso */
   .salon-login-right::before {
     content: '';
     position: absolute;
     inset: 0;
     border-radius: var(--login-radius, 24px) var(--login-radius, 24px) 0 0;
-    border: 2px solid rgba(212, 160, 154, 0.5);
+    border: 1.5px solid rgba(212, 160, 154, 0.5);
     border-bottom: none;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9);
     pointer-events: none;
     z-index: 20;
-    animation: salonBorderShimmer 4s ease-in-out infinite;
   }
 
   .salon-login-form-wrapper {
