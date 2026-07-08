@@ -2518,13 +2518,13 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                   </button>
                   <button 
                     onClick={() => {
-                      showToast?.('Cita marcada como No-show', 'warning');
+                      showToast?.('Cita marcada como No se presentó', 'warning');
                       triggerClose();
                     }}
                     className="drawer-btn drawer-btn-noshow"
                     style={{ gridColumn: 'span 2' }}
                   >
-                    <AlertTriangle size={12} /> No-show
+                    <AlertTriangle size={12} /> No se presentó
                   </button>
                 </div>
               </div>
