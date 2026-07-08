@@ -445,6 +445,23 @@ const StaffDayColumn = ({
 const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey = null }) => {
   const { user } = useAuth();
   const { showToast } = useNotifs();
+
+  const staffRoles = {
+    'Isabella': 'Lashista Senior',
+    'Valentina': 'Especialista en Uñas',
+    'Andrea': 'Diseñadora de Cejas',
+    'Camila': 'Lashista Esteticista',
+    'Mariana': 'Colorista & Peinado',
+    'Paola': 'Manicurista Nail Art',
+    'Sofía': 'Especialista en Cejas',
+    'Test QA': 'Personal de Prueba'
+  };
+
+  const getStaffRole = (name) => {
+    const firstName = (name || '').split(' ')[0];
+    return staffRoles[firstName] || 'Especialista';
+  };
+
   const [appointments, setAppointments] = useState([]);
   const [staff, setStaff] = useState([]);
   const [clients, setClients] = useState([]);
@@ -700,22 +717,6 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
   const mobileSelectedStaff = isMobile
     ? (visibleStaff.find(s => s.id === mobileStaffId) || visibleStaff[0])
     : null;
-
-  const staffRoles = {
-    'Isabella': 'Lashista Senior',
-    'Valentina': 'Especialista en Uñas',
-    'Andrea': 'Diseñadora de Cejas',
-    'Camila': 'Lashista Esteticista',
-    'Mariana': 'Colorista & Peinado',
-    'Paola': 'Manicurista Nail Art',
-    'Sofía': 'Especialista en Cejas',
-    'Test QA': 'Personal de Prueba'
-  };
-
-  const getStaffRole = (name) => {
-    const firstName = (name || '').split(' ')[0];
-    return staffRoles[firstName] || 'Especialista';
-  };
 
   const getStaffMetrics = (sId) => {
     if (String(sId).startsWith('demo-staff-')) {
