@@ -77,6 +77,8 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
   const [navYear, setNavYear] = useState(getInitialNav().year);
   const [navMonth, setNavMonth] = useState(getInitialNav().month);
   const [selectedDay, setSelectedDay] = useState(() => parseISO(value)?.day ?? null);
+  const [openMonthSelect, setOpenMonthSelect] = useState(false);
+  const [openYearSelect, setOpenYearSelect] = useState(false);
 
   // Sync text input and calendar state when value changes externally
   useEffect(() => {
@@ -113,6 +115,16 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
         calEl && !calEl.contains(event.target)
       ) {
         setIsOpen(false);
+      }
+      // Also close sub-dropdowns if clicking elsewhere inside calendar
+      if (calEl && calEl.contains(event.target)) {
+        if (!event.target.closest('.jana-datepicker-subselect')) {
+          setOpenMonthSelect(false);
+          setOpenYearSelect(false);
+        }
+      } else {
+        setOpenMonthSelect(false);
+        setOpenYearSelect(false);
       }
     };
     if (isOpen) document.addEventListener('mousedown', handleClickOutside);
@@ -194,62 +206,121 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
     >
       {/* Month + Year selectors */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
-        <select
-          value={navMonth}
-          onChange={e => setNavMonth(parseInt(e.target.value, 10))}
-          style={{
-            flex: 1.3,
-            height: '36px',
-            background: isLight ? '#fff' : '#1c1c1e',
-            border: isLight ? '1px solid rgba(212,160,154,0.35)' : '1px solid rgba(255,255,255,0.1)',
-            borderRadius: '10px',
-            color: isLight ? 'var(--text-primary)' : 'white',
-            padding: '0 8px',
-            fontSize: '13px',
-            fontWeight: '600',
-            outline: 'none',
-            cursor: 'pointer',
-            WebkitAppearance: 'none',
-            MozAppearance: 'none',
-            appearance: 'none',
-            backgroundImage: 'url("data:image/svg+xml;utf8,<svg fill=\'%23db8c95\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/></svg>")',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'right 8px center',
-            paddingRight: '28px'
-          }}
-        >
-          {MONTHS.map((m, idx) => (
-            <option key={m} value={idx} style={{ background: isLight ? 'white' : '#1c1c1e', color: isLight ? 'var(--text-primary)' : 'white' }}>{m}</option>
-          ))}
-        </select>
-        <select
-          value={navYear}
-          onChange={e => setNavYear(parseInt(e.target.value, 10))}
-          style={{
-            flex: 1,
-            height: '36px',
-            background: isLight ? '#fff' : '#1c1c1e',
-            border: isLight ? '1px solid rgba(212,160,154,0.35)' : '1px solid rgba(255,255,255,0.1)',
-            borderRadius: '10px',
-            color: isLight ? 'var(--text-primary)' : 'white',
-            padding: '0 8px',
-            fontSize: '13px',
-            fontWeight: '600',
-            outline: 'none',
-            cursor: 'pointer',
-            WebkitAppearance: 'none',
-            MozAppearance: 'none',
-            appearance: 'none',
-            backgroundImage: 'url("data:image/svg+xml;utf8,<svg fill=\'%23db8c95\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/></svg>")',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'right 8px center',
-            paddingRight: '28px'
-          }}
-        >
-          {years.map(y => (
-            <option key={y} value={y} style={{ background: isLight ? 'white' : '#1c1c1e', color: isLight ? 'var(--text-primary)' : 'white' }}>{y}</option>
-          ))}
-        </select>
+        {/* Month Selector dropdown trigger */}
+        <div style={{ flex: 1.3, position: 'relative' }} className="jana-datepicker-subselect">
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpenMonthSelect(!openMonthSelect);
+              setOpenYearSelect(false);
+            }}
+            style={{
+              height: '36px',
+              background: isLight ? '#fff' : '#1c1c1e',
+              border: isLight ? '1px solid rgba(212,160,154,0.35)' : '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '10px',
+              color: isLight ? 'var(--text-primary)' : 'white',
+              padding: '0 12px',
+              fontSize: '13px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              userSelect: 'none'
+            }}
+          >
+            <span>{MONTHS[navMonth]}</span>
+            <span style={{ fontSize: '10px', color: '#db8c95', transform: openMonthSelect ? 'rotate(180deg)' : 'none', transition: '0.2s' }}>▼</span>
+          </div>
+          {openMonthSelect && (
+            <div style={{
+              position: 'absolute', top: '40px', left: 0, width: '100%',
+              background: isLight ? '#fff' : '#1c1c1e',
+              border: '1px solid rgba(196,139,159,0.3)', borderRadius: '10px',
+              boxShadow: '0 8px 24px rgba(74,48,54,0.12)', zIndex: 1000000,
+              maxHeight: '160px', overflowY: 'auto', padding: '4px'
+            }} className="jana-scrollbar">
+              {MONTHS.map((m, idx) => (
+                <div
+                  key={m}
+                  onClick={() => {
+                    setNavMonth(idx);
+                    setOpenMonthSelect(false);
+                  }}
+                  style={{
+                    padding: '8px 12px', fontSize: '12px', fontWeight: '600',
+                    color: idx === navMonth ? 'var(--pink-primary)' : isLight ? '#4a3036' : '#fff',
+                    background: idx === navMonth ? 'rgba(219,140,149,0.08)' : 'transparent',
+                    borderRadius: '6px', cursor: 'pointer', transition: 'all 0.15s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(219,140,149,0.05)'}
+                  onMouseLeave={e => e.currentTarget.style.background = idx === navMonth ? 'rgba(219,140,149,0.08)' : 'transparent'}
+                >
+                  {m}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Year Selector dropdown trigger */}
+        <div style={{ flex: 1, position: 'relative' }} className="jana-datepicker-subselect">
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpenYearSelect(!openYearSelect);
+              setOpenMonthSelect(false);
+            }}
+            style={{
+              height: '36px',
+              background: isLight ? '#fff' : '#1c1c1e',
+              border: isLight ? '1px solid rgba(212,160,154,0.35)' : '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '10px',
+              color: isLight ? 'var(--text-primary)' : 'white',
+              padding: '0 12px',
+              fontSize: '13px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              userSelect: 'none'
+            }}
+          >
+            <span>{navYear}</span>
+            <span style={{ fontSize: '10px', color: '#db8c95', transform: openYearSelect ? 'rotate(180deg)' : 'none', transition: '0.2s' }}>▼</span>
+          </div>
+          {openYearSelect && (
+            <div style={{
+              position: 'absolute', top: '40px', left: 0, width: '100%',
+              background: isLight ? '#fff' : '#1c1c1e',
+              border: '1px solid rgba(196,139,159,0.3)', borderRadius: '10px',
+              boxShadow: '0 8px 24px rgba(74,48,54,0.12)', zIndex: 1000000,
+              maxHeight: '160px', overflowY: 'auto', padding: '4px'
+            }} className="jana-scrollbar">
+              {years.map(y => (
+                <div
+                  key={y}
+                  onClick={() => {
+                    setNavYear(y);
+                    setOpenYearSelect(false);
+                  }}
+                  style={{
+                    padding: '8px 12px', fontSize: '12px', fontWeight: '600',
+                    color: y === navYear ? 'var(--pink-primary)' : isLight ? '#4a3036' : '#fff',
+                    background: y === navYear ? 'rgba(219,140,149,0.08)' : 'transparent',
+                    borderRadius: '6px', cursor: 'pointer', transition: 'all 0.15s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(219,140,149,0.05)'}
+                  onMouseLeave={e => e.currentTarget.style.background = y === navYear ? 'rgba(219,140,149,0.08)' : 'transparent'}
+                >
+                  {y}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Weekday headers */}
