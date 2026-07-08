@@ -1017,7 +1017,8 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                 <div style={{ display: 'flex', gap: '4px', marginBottom: '20px', background: 'rgba(250,243,242,0.8)', borderRadius: '12px', padding: '4px' }}>
                   {[
                     { key: 'citas', label: 'Próximas citas de hoy', tooltip: null },
-                    { key: 'rendimiento', label: 'Rendimiento del equipo', tooltip: 'Muestra el rendimiento actual de cada estilista en tiempo real, incluyendo sus citas completadas, ingresos generados, porcentaje de ocupación del día y su próxima cita agendada.' }
+                    { key: 'rendimiento', label: 'Rendimiento del equipo', tooltip: 'Muestra el rendimiento actual de cada estilista en tiempo real, incluyendo sus citas completadas, ingresos generados, porcentaje de ocupación del día y su próxima cita agendada.' },
+                    { key: 'top', label: 'Top del día', tooltip: 'Muestra el ranking de productividad y ventas de las especialistas hoy.' }
                   ].map(tab => (
                     <button
                       key={tab.key}
@@ -1296,6 +1297,110 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                 </div>
                 )}
 
+                {/* Tab: Top del día */}
+                {leftTab === 'top' && (
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                    <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#8c767b' }}>
+                      Clasificación diaria de rendimiento
+                    </div>
+                    {/* Toggle buttons for rankings */}
+                    <div style={{ display: 'flex', background: 'rgba(223, 178, 140, 0.12)', borderRadius: '8px', padding: '2px' }}>
+                      <button 
+                        onClick={() => setRankingTab('revenue')}
+                        style={{
+                          padding: '6px 12px', border: 'none', borderRadius: '6px',
+                          background: rankingTab === 'revenue' ? '#fff' : 'transparent',
+                          color: rankingTab === 'revenue' ? '#db8c95' : '#8c767b',
+                          fontSize: '0.68rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.1s'
+                        }}
+                      >
+                        Ingresos
+                      </button>
+                      <button 
+                        onClick={() => setRankingTab('citas')}
+                        style={{
+                          padding: '6px 12px', border: 'none', borderRadius: '6px',
+                          background: rankingTab === 'citas' ? '#fff' : 'transparent',
+                          color: rankingTab === 'citas' ? '#db8c95' : '#8c767b',
+                          fontSize: '0.68rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.1s'
+                        }}
+                      >
+                        Citas
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Rankings Grid (Clean 2 Column layout) */}
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '14px' }}>
+                    {(rankingTab === 'revenue' ? staffRankings.byRevenue : staffRankings.byCitas).slice(0, 6).map((item, idx) => {
+                      const stylistInitial = (item.staff.name || '?').charAt(0).toUpperCase();
+                      const topValue = rankingTab === 'revenue' 
+                        ? Math.max(1, staffRankings.byRevenue[0]?.metrics.revenue || 1)
+                        : Math.max(1, staffRankings.byCitas[0]?.metrics.citasCount || 1);
+                      const itemValue = rankingTab === 'revenue' ? item.metrics.revenue : item.metrics.citasCount;
+                      const percent = Math.min(100, Math.round((itemValue / topValue) * 100));
+
+                      return (
+                        <div 
+                          key={item.staff.id} 
+                          style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '12px', 
+                            background: '#fff',
+                            border: '1px solid rgba(223, 178, 140, 0.18)',
+                            borderRadius: '16px',
+                            padding: '12px 14px',
+                            boxShadow: '0 2px 8px rgba(74,48,54,0.02)'
+                          }}
+                        >
+                          {/* Ranking number badge */}
+                          <div style={{
+                            width: '22px', height: '22px', borderRadius: '50%',
+                            background: idx === 0 ? '#facc15' : idx === 1 ? '#cbd5e1' : idx === 2 ? '#fb923c' : '#e2d7d9',
+                            color: '#fff', fontSize: '0.7rem', fontWeight: 800,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                          }}>
+                            {idx + 1}
+                          </div>
+
+                          {/* Avatar */}
+                          <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '0.78rem', flexShrink: 0 }}>{stylistInitial}</div>
+
+                          {/* Name and relative bar */}
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#4a3036', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.staff.name}</div>
+                            {/* Mini visual ratio bar */}
+                            <div style={{ height: '4px', background: '#faf3f2', borderRadius: '2px', overflow: 'hidden', marginTop: '4px', width: '90%' }}>
+                              <div style={{ height: '100%', background: 'linear-gradient(90deg, #e8a2a9, #db8c95)', width: `${percent}%` }} />
+                            </div>
+                          </div>
+
+                          {/* Value */}
+                          <span style={{ fontSize: '0.78rem', fontWeight: 800, color: rankingTab === 'revenue' ? '#a0506a' : '#0284c7' }}>
+                            {rankingTab === 'revenue' ? `$ ${itemValue.toLocaleString()}` : `${itemValue} citas`}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <button 
+                    onClick={() => showToast?.('Navegando a reportes de productividad...', 'info')}
+                    style={{
+                      width: '100%', marginTop: '20px', padding: '11px', borderRadius: '12px',
+                      border: 'none', background: 'rgba(219, 140, 149, 0.08)',
+                      color: '#db8c95', fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                    }}
+                    className="btn-hover-scale"
+                  >
+                    <BarChart3 size={14} color="#db8c95" /> Ver reporte de productividad completo
+                  </button>
+                </div>
+                )}
+
               </div>
             </div>
 
@@ -1386,96 +1491,6 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                   className="btn-hover-scale"
                 >
                   Ver disponibilidad a una hora específica
-                </button>
-              </div>
-
-              {/* Top del día */}
-              <div className="agenda-glass-card" style={{ padding: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                  <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#4a3036', margin: 0 }}>
-                    Top del día
-                  </h3>
-                  
-                  {/* Toggle buttons for rankings */}
-                  <div style={{ display: 'flex', background: 'rgba(223, 178, 140, 0.12)', borderRadius: '8px', padding: '2px' }}>
-                    <button 
-                      onClick={() => setRankingTab('revenue')}
-                      style={{
-                        padding: '4px 10px', border: 'none', borderRadius: '6px',
-                        background: rankingTab === 'revenue' ? '#fff' : 'transparent',
-                        color: rankingTab === 'revenue' ? '#db8c95' : '#8c767b',
-                        fontSize: '0.62rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.1s'
-                      }}
-                    >
-                      Ingresos
-                    </button>
-                    <button 
-                      onClick={() => setRankingTab('citas')}
-                      style={{
-                        padding: '4px 10px', border: 'none', borderRadius: '6px',
-                        background: rankingTab === 'citas' ? '#fff' : 'transparent',
-                        color: rankingTab === 'citas' ? '#db8c95' : '#8c767b',
-                        fontSize: '0.62rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.1s'
-                      }}
-                    >
-                      Citas
-                    </button>
-                  </div>
-                </div>
-
-                {/* Rankings List */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {(rankingTab === 'revenue' ? staffRankings.byRevenue : staffRankings.byCitas).slice(0, 5).map((item, idx) => {
-                    const stylistInitial = (item.staff.name || '?').charAt(0).toUpperCase();
-                    const topValue = rankingTab === 'revenue' 
-                      ? Math.max(1, staffRankings.byRevenue[0]?.metrics.revenue || 1)
-                      : Math.max(1, staffRankings.byCitas[0]?.metrics.citasCount || 1);
-                    const itemValue = rankingTab === 'revenue' ? item.metrics.revenue : item.metrics.citasCount;
-                    const percent = Math.min(100, Math.round((itemValue / topValue) * 100));
-
-                    return (
-                      <div key={item.staff.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', position: 'relative', paddingBottom: '2px' }}>
-                        {/* Ranking number badge */}
-                        <div style={{
-                          width: '18px', height: '18px', borderRadius: '50%',
-                          background: idx === 0 ? '#facc15' : idx === 1 ? '#cbd5e1' : idx === 2 ? '#fb923c' : '#e2d7d9',
-                          color: '#fff', fontSize: '0.62rem', fontWeight: 800,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-                        }}>
-                          {idx + 1}
-                        </div>
-
-                        {/* Avatar */}
-                        <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '0.7rem', flexShrink: 0 }}>{stylistInitial}</div>
-
-                        {/* Name and relative bar */}
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#4a3036', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.staff.name}</div>
-                          {/* Mini visual ratio bar */}
-                          <div style={{ height: '3px', background: '#faf3f2', borderRadius: '2px', overflow: 'hidden', marginTop: '2px', width: '80%' }}>
-                            <div style={{ height: '100%', background: '#db8c95', width: `${percent}%` }} />
-                          </div>
-                        </div>
-
-                        {/* Value */}
-                        <span style={{ fontSize: '0.70rem', fontWeight: 800, color: rankingTab === 'revenue' ? '#a0506a' : '#0284c7' }}>
-                          {rankingTab === 'revenue' ? `$ ${itemValue.toLocaleString()}` : `${itemValue} citas`}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <button 
-                  onClick={() => showToast?.('Navegando a reportes de productividad...', 'info')}
-                  style={{
-                    width: '100%', marginTop: '16px', padding: '8px', borderRadius: '10px',
-                    border: 'none', background: 'rgba(223, 178, 140, 0.1)',
-                    color: '#6b4a52', fontSize: '0.70rem', fontWeight: 700, cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
-                  }}
-                >
-                  <BarChart3 size={14} color="#6b4a52" /> Ver reporte completo
                 </button>
               </div>
 
