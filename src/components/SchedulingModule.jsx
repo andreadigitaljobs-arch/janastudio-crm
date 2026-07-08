@@ -487,7 +487,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
   const [expandedStaff, setExpandedStaff] = useState({});
   const [selectedStaffDrawer, setSelectedStaffDrawer] = useState(null);
   const [rankingTab, setRankingTab] = useState('revenue');
-  const [leftTab, setLeftTab] = useState('rendimiento');
+  const [leftTab, setLeftTab] = useState('citas');
   const [staffSearchQuery, setStaffSearchQuery] = useState('');
 
   const handleMultipleSlotToggle = (staffId, minutes) => {
@@ -1016,8 +1016,8 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                 {/* Tab Header */}
                 <div style={{ display: 'flex', gap: '4px', marginBottom: '20px', background: 'rgba(250,243,242,0.8)', borderRadius: '12px', padding: '4px' }}>
                   {[
-                    { key: 'rendimiento', label: 'Rendimiento del equipo', tooltip: 'Muestra el rendimiento actual de cada estilista en tiempo real, incluyendo sus citas completadas, ingresos generados, porcentaje de ocupación del día y su próxima cita agendada.' },
-                    { key: 'citas', label: 'Próximas citas de hoy', tooltip: null }
+                    { key: 'citas', label: 'Próximas citas de hoy', tooltip: null },
+                    { key: 'rendimiento', label: 'Rendimiento del equipo', tooltip: 'Muestra el rendimiento actual de cada estilista en tiempo real, incluyendo sus citas completadas, ingresos generados, porcentaje de ocupación del día y su próxima cita agendada.' }
                   ].map(tab => (
                     <button
                       key={tab.key}
