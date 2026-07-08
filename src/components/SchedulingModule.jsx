@@ -513,6 +513,16 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
   const now = new Date();
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
+  const dayApps = useMemo(() => {
+    const term = searchTerm ? normalizeForSearch(searchTerm) : '';
+    return appointments.filter(app => {
+      const appDate = new Date(app.scheduled_at || app.created_at);
+      if (getBusinessDateKey(appDate) !== dateKey) return false;
+      if (!term) return true;
+      return normalizeForSearch(app.clients?.name || '').includes(term) || normalizeForSearch(app.clients?.phone || '').includes(term);
+    });
+  }, [appointments, dateKey, searchTerm]);
+
   const visibleStaff = useMemo(() => {
     let list = [];
     if (isWorkerView) list = staff.filter(s => s.id === user?.id);
@@ -551,16 +561,6 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
     }
     return list;
   }, [staff, isWorkerView, user?.id, filterStaffId, checkingTime, dateKey, schedules, timeOff, dayApps]);
-
-  const dayApps = useMemo(() => {
-    const term = searchTerm ? normalizeForSearch(searchTerm) : '';
-    return appointments.filter(app => {
-      const appDate = new Date(app.scheduled_at || app.created_at);
-      if (getBusinessDateKey(appDate) !== dateKey) return false;
-      if (!term) return true;
-      return normalizeForSearch(app.clients?.name || '').includes(term) || normalizeForSearch(app.clients?.phone || '').includes(term);
-    });
-  }, [appointments, dateKey, searchTerm]);
 
   const availabilityCtx = { schedules, timeOff, appointmentsForDay: dayApps };
 
