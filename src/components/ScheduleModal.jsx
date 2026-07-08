@@ -1,26 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { 
-  X, 
-  Calendar as CalendarIcon, 
-  Clock, 
-  User, 
-  ChevronRight,
-  ChevronLeft,
-  Check
+import {
+  X,
+  User,
+  Check,
+  AlertTriangle
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import AnimatedModal from './AnimatedModal';
 import JanaSelect from './JanaSelect';
+import JanaDatePicker from './JanaDatePicker';
+import JanaTimePicker from './JanaTimePicker';
+import { isStaffFreeAt } from '../utils/availability';
+import { loadStoredSchedules, loadStoredTimeOff } from '../utils/mockStaffSchedules';
+import { getBusinessDateKey } from '../utils/dateTime';
 
-const ScheduleModal = ({ 
-  isOpen, 
-  onClose, 
-  client, 
-  service, 
-  staff, 
-  onSchedule, 
+const dateToISO = (date) => getBusinessDateKey(date);
+const isoToDate = (iso) => iso ? new Date(`${iso}T00:00:00`) : new Date();
+
+const ScheduleModal = ({
+  isOpen,
+  onClose,
+  client,
+  service,
+  staff,
+  onSchedule,
   defaultDate,
+  initialTime,
   clients = [],
   services = [],
   onSave
@@ -33,6 +39,8 @@ const ScheduleModal = ({
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [customTime, setCustomTime] = useState('10:00');
   const [isCustomMode, setIsCustomMode] = useState(false);
+  const [customConflict, setCustomConflict] = useState(null);
+  const [dayAvailabilityCtx, setDayAvailabilityCtx] = useState({ schedules: [], timeOff: [], appointmentsForDay: [] });
   const [loading, setLoading] = useState(false);
 
   const [localClient, setLocalClient] = useState(client || null);
@@ -55,28 +63,43 @@ const ScheduleModal = ({
     if (isOpen && localStaff) {
       loadAvailability();
     }
-  }, [isOpen, selectedDate, localStaff]);
+  }, [isOpen, selectedDate, localStaff, localService]);
+
+  // Prellenar el turno si venimos de un click en la grilla de la Agenda
+  useEffect(() => {
+    if (initialTime && availableSlots.some(s => s.time === initialTime)) {
+      setSelectedSlot(initialTime);
+    }
+  }, [initialTime, availableSlots]);
 
   const loadAvailability = async () => {
     if (!localStaff) return;
     try {
       setLoading(true);
       const safeDate = selectedDate instanceof Date && !isNaN(selectedDate) ? selectedDate : new Date();
-      const dateStr = safeDate.toISOString().split('T')[0];
-      const allApps = await dataService.getAppointmentsByState(['Agendado', 'En Silla', 'Por Pagar']);
-      const dailyApps = (allApps || []).filter(a => 
-        a.staff_id === localStaff.id && 
-        (a.scheduled_at?.startsWith(dateStr) || (!a.scheduled_at && a.created_at?.startsWith(dateStr)))
+      const dateKey = dateToISO(safeDate);
+      const durationMinutes = localService?.duration_minutes || 60;
+
+      const [allApps, schedules, timeOff] = await Promise.all([
+        dataService.getAppointmentsByState(['Agendado', 'En Silla', 'Por Pagar']),
+        Promise.resolve(loadStoredSchedules([localStaff])),
+        Promise.resolve(loadStoredTimeOff())
+      ]);
+      const appointmentsForDay = (allApps || []).filter(a =>
+        a.staff_id === localStaff.id &&
+        getBusinessDateKey(new Date(a.scheduled_at || a.created_at)) === dateKey
       );
+      const ctx = { schedules, timeOff, appointmentsForDay };
+      setDayAvailabilityCtx(ctx);
 
       const slots = [];
       const startHour = 8; // Restrict standard slots from 8:00 AM to 8:00 PM for beauty salon aesthetics
       const endHour = 20;
       const now = new Date();
-      const isToday = selectedDate.toDateString() === now.toDateString();
+      const isToday = safeDate.toDateString() === now.toDateString();
       const currentHour = now.getHours();
       const currentMinutes = now.getMinutes();
-      
+
       for (let hour = startHour; hour < endHour; hour++) {
         for (let min of [0, 30]) {
           if (isToday && (hour < currentHour || (hour === currentHour && min <= currentMinutes))) {
@@ -84,24 +107,44 @@ const ScheduleModal = ({
           }
 
           const timeStr = `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
-          const isOccupied = dailyApps.some(a => {
-            const appDate = new Date(a.scheduled_at || a.created_at);
-            return appDate.getHours() === hour && appDate.getMinutes() === min;
-          });
+          const result = isStaffFreeAt(localStaff.id, dateKey, hour * 60 + min, durationMinutes, ctx);
 
           slots.push({
             time: timeStr,
-            isAvailable: !isOccupied,
-            isOccupied
+            isAvailable: result.free,
+            reason: result.reason
           });
         }
       }
       setAvailableSlots(slots);
+
+      if (customTime) {
+        const [ch, cm] = customTime.split(':').map(Number);
+        const customResult = isStaffFreeAt(localStaff.id, dateKey, ch * 60 + cm, durationMinutes, ctx);
+        setCustomConflict(customResult.free ? null : customResult.reason);
+      }
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const CONFLICT_MESSAGES = {
+    day_off: 'Esta especialista tiene el día libre.',
+    time_off: 'Esta especialista no trabaja ese día (día libre puntual).',
+    outside_hours: 'Fuera de su horario de trabajo.',
+    conflict: 'Se cruza con otra cita ya agendada.'
+  };
+
+  const handleCustomTimeChange = (value) => {
+    setCustomTime(value);
+    if (!localStaff) return;
+    const dateKey = dateToISO(selectedDate);
+    const durationMinutes = localService?.duration_minutes || 60;
+    const [h, m] = value.split(':').map(Number);
+    const result = isStaffFreeAt(localStaff.id, dateKey, h * 60 + m, durationMinutes, dayAvailabilityCtx);
+    setCustomConflict(result.free ? null : result.reason);
   };
 
   const handleSchedule = async () => {
@@ -216,24 +259,12 @@ const ScheduleModal = ({
             </div>
 
             {/* Date Selector */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', backgroundColor: 'rgba(212,160,154,0.1)', padding: '12px 20px', borderRadius: '16px' }}>
-              <button onClick={() => {
-                const prev = new Date(selectedDate);
-                prev.setDate(selectedDate.getDate() - 1);
-                setSelectedDate(prev);
-              }} style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}><ChevronLeft /></button>
-              
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontWeight: '800', fontSize: '16px', color: 'var(--text-primary)' }}>
-                  {selectedDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
-                </div>
-              </div>
-
-              <button onClick={() => {
-                const next = new Date(selectedDate);
-                next.setDate(selectedDate.getDate() + 1);
-                setSelectedDate(next);
-              }} style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}><ChevronRight /></button>
+            <div style={{ marginBottom: '24px' }}>
+              <JanaDatePicker
+                variant="light"
+                value={dateToISO(selectedDate)}
+                onChange={(e) => e.target.value && setSelectedDate(isoToDate(e.target.value))}
+              />
             </div>
 
             {/* Selection Mode Toggle */}
@@ -267,26 +298,19 @@ const ScheduleModal = ({
               {isCustomMode ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', padding: '24px 0' }}>
                   <label style={{ fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', letterSpacing: '1px', textTransform: 'uppercase' }}>Ingresa la hora deseada</label>
-                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <Clock size={20} color="var(--pink-primary)" />
-                    <input
-                      type="time"
-                      value={customTime}
-                      onChange={(e) => setCustomTime(e.target.value)}
-                      style={{
-                        backgroundColor: 'white',
-                        border: '1px solid rgba(196,139,159,0.3)',
-                        borderRadius: '12px',
-                        color: 'var(--text-primary)',
-                        fontSize: '22px',
-                        fontWeight: '800',
-                        padding: '10px 18px',
-                        outline: 'none',
-                        fontFamily: 'Outfit, sans-serif',
-                        textAlign: 'center'
-                      }}
-                    />
+                  <div style={{ width: '180px' }}>
+                    <JanaTimePicker variant="light" label="" value={customTime} onChange={handleCustomTimeChange} />
                   </div>
+                  {customConflict && (
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', fontWeight: '700',
+                      color: '#d97706', background: 'rgba(217,119,6,0.08)', border: '1px solid rgba(217,119,6,0.2)',
+                      padding: '8px 14px', borderRadius: '10px', maxWidth: '320px', textAlign: 'left'
+                    }}>
+                      <AlertTriangle size={16} style={{ flexShrink: 0 }} />
+                      <span>{CONFLICT_MESSAGES[customConflict] || 'Este horario podría tener un cruce.'} Puedes confirmar de todas formas si es intencional.</span>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <>
@@ -307,6 +331,7 @@ const ScheduleModal = ({
                             key={slot.time}
                             disabled={!slot.isAvailable}
                             onClick={() => setSelectedSlot(slot.time)}
+                            title={!slot.isAvailable ? (CONFLICT_MESSAGES[slot.reason] || '') : ''}
                             style={{
                               padding: '12px 0',
                               borderRadius: '12px',

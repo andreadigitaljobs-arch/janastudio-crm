@@ -4,9 +4,10 @@ import { Clock, ChevronUp, ChevronDown } from 'lucide-react';
 /**
  * JanaTimePicker - Un selector de hora ultra-premium que elimina el input nativo.
  */
-const JanaTimePicker = ({ value, onChange, label = "HORA" }) => {
+const JanaTimePicker = ({ value, onChange, label = "HORA", variant = "dark" }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
+  const isLight = variant === 'light';
 
   // Parse current value (format "HH:mm")
   const [hours, setHours] = useState(value.split(':')[0] || '10');
@@ -62,12 +63,12 @@ const JanaTimePicker = ({ value, onChange, label = "HORA" }) => {
     <div ref={containerRef} style={{ position: 'relative', width: '100%' }}>
       {label && <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</label>}
       
-      <div 
+      <div
         onClick={() => setIsOpen(!isOpen)}
         style={{
           height: '48px',
-          backgroundColor: 'rgba(255, 255, 255, 0.05)',
-          border: isOpen ? '1.5px solid var(--pink-primary)' : '1px solid var(--border-color)',
+          background: isLight ? 'linear-gradient(135deg, #fff 0%, #fff8fa 100%)' : 'rgba(255, 255, 255, 0.05)',
+          border: isOpen ? '1.5px solid var(--pink-primary)' : isLight ? '1px solid rgba(212,160,154,0.35)' : '1px solid var(--border-color)',
           borderRadius: '14px',
           display: 'flex',
           alignItems: 'center',
@@ -78,8 +79,8 @@ const JanaTimePicker = ({ value, onChange, label = "HORA" }) => {
           boxShadow: isOpen ? '0 0 15px rgba(196,139,159,0.1)' : 'none'
         }}
       >
-        <Clock size={16} color={isOpen ? 'var(--pink-primary)' : 'var(--text-muted)'} />
-        <span style={{ fontSize: '15px', fontWeight: '700', color: 'white' }}>
+        <Clock size={16} color={isOpen ? 'var(--pink-primary)' : (isLight ? '#c97282' : 'var(--text-muted)')} />
+        <span style={{ fontSize: '15px', fontWeight: '700', color: isLight ? 'var(--text-primary)' : 'white' }}>
           {displayHour}:{minutes} {ampm}
         </span>
       </div>
@@ -89,36 +90,36 @@ const JanaTimePicker = ({ value, onChange, label = "HORA" }) => {
           position: 'absolute',
           top: '60px',
           right: 0,
-          backgroundColor: 'rgba(28, 28, 30, 0.95)',
+          backgroundColor: isLight ? 'rgba(255, 255, 255, 0.98)' : 'rgba(28, 28, 30, 0.95)',
           backdropFilter: 'blur(20px)',
-          border: '1.5px solid rgba(196, 139, 159, 0.3)',
+          border: isLight ? '1px solid rgba(196, 139, 159, 0.22)' : '1.5px solid rgba(196, 139, 159, 0.3)',
           borderRadius: '24px',
           padding: '20px',
           zIndex: 1000,
           display: 'flex',
           gap: '20px',
           alignItems: 'center',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
+          boxShadow: isLight ? '0 18px 45px rgba(93, 57, 67, 0.18)' : '0 20px 40px rgba(0,0,0,0.6)',
           animation: 'scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
         }}>
           {/* Hours */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-            <button onClick={() => adjustHour(1)} style={scrollBtnStyle}><ChevronUp size={20} /></button>
-            <div style={timeValueStyle}>{displayHour}</div>
-            <button onClick={() => adjustHour(-1)} style={scrollBtnStyle}><ChevronDown size={20} /></button>
+            <button onClick={() => adjustHour(1)} style={{ ...scrollBtnStyle, color: isLight ? '#c97282' : scrollBtnStyle.color }}><ChevronUp size={20} /></button>
+            <div style={{ ...timeValueStyle, color: isLight ? 'var(--text-primary)' : timeValueStyle.color }}>{displayHour}</div>
+            <button onClick={() => adjustHour(-1)} style={{ ...scrollBtnStyle, color: isLight ? '#c97282' : scrollBtnStyle.color }}><ChevronDown size={20} /></button>
           </div>
 
           <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--pink-primary)', marginTop: '-4px' }}>:</div>
 
           {/* Minutes */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-            <button onClick={() => adjustMinute(5)} style={scrollBtnStyle}><ChevronUp size={20} /></button>
-            <div style={timeValueStyle}>{minutes}</div>
-            <button onClick={() => adjustMinute(-5)} style={scrollBtnStyle}><ChevronDown size={20} /></button>
+            <button onClick={() => adjustMinute(5)} style={{ ...scrollBtnStyle, color: isLight ? '#c97282' : scrollBtnStyle.color }}><ChevronUp size={20} /></button>
+            <div style={{ ...timeValueStyle, color: isLight ? 'var(--text-primary)' : timeValueStyle.color }}>{minutes}</div>
+            <button onClick={() => adjustMinute(-5)} style={{ ...scrollBtnStyle, color: isLight ? '#c97282' : scrollBtnStyle.color }}><ChevronDown size={20} /></button>
           </div>
 
           {/* AM/PM Toggle */}
-          <div 
+          <div
             onClick={toggleAmPm}
             style={{
               backgroundColor: 'rgba(196, 139, 159, 0.1)',

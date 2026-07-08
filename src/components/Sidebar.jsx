@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   BarChart3, Users, UserCircle, Sparkles, Package, Wallet,
   Star, Calendar, LogOut, PanelLeftClose, PanelLeftOpen,
@@ -50,6 +51,13 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
     transform: 'translateY(0px)', height: '0px', opacity: 0
   });
   const itemRefs = useRef([]);
+  const [tooltip, setTooltip] = useState(null);
+
+  const showTooltip = (e, label) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setTooltip({ label, top: rect.top + rect.height / 2, left: rect.right + 10 });
+  };
+  const hideTooltip = () => setTooltip(null);
 
   const updateIndicator = (element) => {
     if (!element) return;
@@ -126,8 +134,9 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
         {!isMobile && (
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
+            aria-label={effectiveCollapsed ? 'Expandir menú' : 'Contraer menú'}
             style={{
-              position: effectiveCollapsed ? 'static' : 'absolute',
+              position: effectiveCollapsed ? 'relative' : 'absolute',
               right: effectiveCollapsed ? 'auto' : '0', top: '0',
               background: 'transparent', border: 'none',
               color: 'var(--text-muted)', cursor: 'pointer',
@@ -136,9 +145,8 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
               borderRadius: '8px',
               transition: 'all 0.2s ease',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-            title={effectiveCollapsed ? 'Expandir menú' : 'Contraer menú'}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)'; showTooltip(e, effectiveCollapsed ? 'Expandir menú' : 'Contraer menú'); }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; hideTooltip(); }}
           >
             {effectiveCollapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
           </button>
@@ -196,8 +204,9 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
               key={item.id + item.label}
               ref={el => itemRefs.current[index] = el}
               onClick={() => handleItemClick(item.id)}
-              onMouseEnter={() => setHoveredTab(item.id)}
-              title={effectiveCollapsed ? item.label : undefined}
+              onMouseEnter={(e) => { setHoveredTab(item.id); if (effectiveCollapsed) showTooltip(e, item.label); }}
+              onMouseLeave={hideTooltip}
+              aria-label={effectiveCollapsed ? item.label : undefined}
               style={{
                 display: 'flex', alignItems: 'center', gap: effectiveCollapsed ? '0' : '12px',
                 padding: effectiveCollapsed ? '11px' : '10px 14px',
@@ -276,7 +285,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
         ) : (
           <button
             onClick={handleLogout}
-            title="Cerrar Sesión"
+            aria-label="Cerrar Sesión"
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               padding: '10px',
@@ -287,13 +296,39 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
               color: '#a0506a', cursor: 'pointer',
               transition: 'all 0.25s ease',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.12)'; e.currentTarget.style.borderColor = 'rgba(201, 114, 130, 0.3)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.6)'; e.currentTarget.style.borderColor = 'rgba(201, 114, 130, 0.15)'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.12)'; e.currentTarget.style.borderColor = 'rgba(201, 114, 130, 0.3)'; showTooltip(e, 'Cerrar Sesión'); }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.6)'; e.currentTarget.style.borderColor = 'rgba(201, 114, 130, 0.15)'; hideTooltip(); }}
           >
             <LogOut size={18} />
           </button>
         )}
       </div>
+
+      {tooltip && createPortal(
+        <div
+          style={{
+            position: 'fixed',
+            top: tooltip.top,
+            left: tooltip.left,
+            transform: 'translateY(-50%)',
+            background: 'linear-gradient(135deg, #c9788c 0%, #a0506a 100%)',
+            color: '#fff',
+            fontSize: '0.75rem',
+            fontWeight: 600,
+            letterSpacing: '0.2px',
+            padding: '6px 11px',
+            borderRadius: '8px',
+            whiteSpace: 'nowrap',
+            pointerEvents: 'none',
+            zIndex: 99999,
+            boxShadow: '0 6px 18px rgba(160, 80, 106, 0.35)',
+          }}
+          className="sidebar-tooltip-portal"
+        >
+          {tooltip.label}
+        </div>,
+        document.body
+      )}
     </div>
   );
 };

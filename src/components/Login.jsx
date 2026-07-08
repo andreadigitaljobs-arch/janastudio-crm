@@ -37,7 +37,11 @@ export default function Login() {
   const { login } = useAuth();
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    const checkMobile = () => {
+      const isNarrow = window.innerWidth <= 768;
+      const isTallEnough = window.innerHeight / window.innerWidth >= 4 / 3;
+      setIsMobile(isNarrow && isTallEnough);
+    };
     checkMobile();
     window.addEventListener('resize', checkMobile);
     setTimeout(() => setMounted(true), 100);

@@ -1,36 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Calendar as CalendarIcon, Clock, User, Plus, ChevronLeft, ChevronRight,
-  ChevronDown, Search, Filter, MoreVertical, Pencil, Trash2,
-  CheckCircle2, AlertCircle, XCircle, Loader2, Users, Sparkles,
-  CalendarDays, StickyNote, BarChart3, Eye, Scissors
+  ChevronDown, Search, Pencil,
+  CheckCircle2, Users,
+  CalendarDays, StickyNote, BarChart3, XCircle
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
 import { useAuth } from '../context/AuthContext';
+import { getRoleKind } from '../utils/roles';
+import {
+  getStaffWorkingWindow, getStaffBusyIntervals,
+  getNextFreeMinutes, getAppointmentDuration, formatMinutes
+} from '../utils/availability';
+import { loadStoredSchedules, loadStoredTimeOff } from '../utils/mockStaffSchedules';
+import { getBusinessDateKey } from '../utils/dateTime';
 import ScheduleModal from './ScheduleModal';
 import NewClientModal from './NewClientModal';
 import { normalizeForSearch } from '../utils/stringUtils';
-
-const DEMO_STAFF = [
-  { id: 1, name: 'Isabella R.', role: 'Estilista Senior', initial: 'I', nextAvailable: '6:00 PM' },
-  { id: 2, name: 'Valeria M.', role: 'Nail Artist', initial: 'V', nextAvailable: '5:30 PM' },
-  { id: 3, name: 'Camila P.', role: 'Esteticista', initial: 'C', nextAvailable: '4:00 PM' },
-];
-
-const DEMO_APPOINTMENTS = [
-  { time: '9:00 AM', client: 'María Gabriela R.', service: 'Coloración Balayage', duration: '1h 30min', staff: 'Estilista Senior', status: 'Confirmada', initial: 'M' },
-  { time: '11:00 AM', client: 'Valentina S.', service: 'Uñas Acrílicas', duration: '1h 30min', staff: 'Nail Artist', status: 'Confirmada', initial: 'V' },
-  { time: '12:00 PM', client: 'Daniela P.', service: 'Limpieza Facial Premium', duration: '1h', staff: 'Esteticista', status: 'Pendiente', initial: 'D' },
-  { time: '2:00 PM', client: 'Andrea L.', service: 'Extensiones de Pestañas', duration: '1h 30min', staff: 'Esteticista', status: 'Confirmada', initial: 'A' },
-  { time: '4:00 PM', client: 'Camila P.', service: 'Corte + Brushing', duration: '1h', staff: 'Estilista Senior', status: 'En proceso', initial: 'C' },
-  { time: '5:00 PM', client: 'Sofía M.', service: 'Diseño de Cejas', duration: '30 min', staff: 'Esteticista', status: 'Confirmada', initial: 'S' },
-];
-
-const TIME_SLOTS = [
-  '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
-  '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM'
-];
 
 const STATUS_COLORS = {
   'Confirmada': { bg: '#f0fdf4', text: '#16a34a', border: '#bbf7d0', leftBorder: '#22c55e' },
@@ -38,11 +25,23 @@ const STATUS_COLORS = {
   'En proceso': { bg: '#f0f9ff', text: '#0284c7', border: '#bae6fd', leftBorder: '#0ea5e9' },
   'Agendado': { bg: '#f0fdf4', text: '#16a34a', border: '#bbf7d0', leftBorder: '#22c55e' },
   'En Silla': { bg: '#f0f9ff', text: '#0284c7', border: '#bae6fd', leftBorder: '#0ea5e9' },
+  'En Tratamiento': { bg: '#f0f9ff', text: '#0284c7', border: '#bae6fd', leftBorder: '#0ea5e9' },
+  'Por Pagar': { bg: '#f0f9ff', text: '#0284c7', border: '#bae6fd', leftBorder: '#0ea5e9' },
   'Completado': { bg: '#f0fdf4', text: '#16a34a', border: '#bbf7d0', leftBorder: '#22c55e' },
   'Cancelada': { bg: '#fef2f2', text: '#dc2626', border: '#fecaca', leftBorder: '#ef4444' },
 };
 
-const CalendarComponent = ({ selectedDate, onSelectDate, appointments }) => {
+// Ventana visible de la grilla del día (7:00 AM a 8:00 PM)
+const VIEW_START_MIN = 7 * 60;
+const VIEW_END_MIN = 20 * 60;
+const PX_PER_MIN = 1; // 60px por hora
+const GRID_HEIGHT = (VIEW_END_MIN - VIEW_START_MIN) * PX_PER_MIN;
+const minutesToY = (minutes) => Math.max(0, (minutes - VIEW_START_MIN) * PX_PER_MIN);
+
+const HOUR_MARKS = [];
+for (let m = VIEW_START_MIN; m <= VIEW_END_MIN; m += 60) HOUR_MARKS.push(m);
+
+const CalendarComponent = ({ selectedDate, onSelectDate }) => {
   const [viewDate, setViewDate] = useState(new Date());
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
@@ -139,6 +138,119 @@ const CalendarComponent = ({ selectedDate, onSelectDate, appointments }) => {
   );
 };
 
+/** Columna de un día para una trabajadora: grilla de horas + bloques de citas posicionados por hora/duración real. */
+const StaffDayColumn = ({ staffMember, dayAppointments, workingWindow, isToday, nowMinutes, onSlotClick, onAppointmentClick, compact }) => {
+  const initial = (staffMember.name || '?').charAt(0).toUpperCase();
+  const busy = getStaffBusyIntervals(staffMember.id, dayAppointments);
+
+  const handleColumnClick = (e) => {
+    if (!workingWindow.isWorking) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const y = e.clientY - rect.top;
+    const clickedMinutes = Math.round((VIEW_START_MIN + y / PX_PER_MIN) / 30) * 30;
+    // Ignora clicks encima de una cita existente (el bloque ya maneja su propio click)
+    const onExisting = busy.some(b => clickedMinutes >= b.startMinutes && clickedMinutes < b.endMinutes);
+    if (onExisting) return;
+    onSlotClick(staffMember, clickedMinutes);
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', minWidth: compact ? '100%' : '190px', flex: compact ? 'none' : '1 1 190px' }}>
+      {/* Encabezado de la trabajadora */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 10px', marginBottom: '8px',
+        borderRadius: '12px', background: 'rgba(255,255,255,0.7)', border: '1px solid rgba(223,178,140,0.2)'
+      }}>
+        <div style={{
+          width: '30px', height: '30px', borderRadius: '50%', flexShrink: 0,
+          background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: '#fff', fontWeight: 700, fontSize: '0.72rem'
+        }}>{initial}</div>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#4a3036', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {staffMember.name}
+          </div>
+          <div style={{ fontSize: '0.62rem', color: '#a07880', fontWeight: 500 }}>
+            {workingWindow.isWorking ? `${formatMinutes(workingWindow.startMinutes)} – ${formatMinutes(workingWindow.endMinutes)}` : 'Día libre'}
+          </div>
+        </div>
+      </div>
+
+      {/* Grilla del día */}
+      <div
+        onClick={handleColumnClick}
+        style={{
+          position: 'relative',
+          height: `${GRID_HEIGHT}px`,
+          borderRadius: '14px',
+          border: '1px solid rgba(223,178,140,0.18)',
+          background: workingWindow.isWorking
+            ? 'repeating-linear-gradient(180deg, rgba(255,255,255,0.5) 0px, rgba(255,255,255,0.5) 59px, rgba(223,178,140,0.12) 60px)'
+            : 'repeating-linear-gradient(45deg, rgba(200,190,192,0.08) 0px, rgba(200,190,192,0.08) 8px, rgba(200,190,192,0.15) 8px, rgba(200,190,192,0.15) 16px)',
+          cursor: workingWindow.isWorking ? 'pointer' : 'default',
+          overflow: 'hidden'
+        }}
+      >
+        {!workingWindow.isWorking && (
+          <div style={{
+            position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+            fontSize: '0.7rem', fontWeight: 700, color: '#a0848a', background: 'rgba(255,255,255,0.85)',
+            padding: '6px 14px', borderRadius: '20px', border: '1px solid rgba(223,178,140,0.3)', whiteSpace: 'nowrap'
+          }}>
+            Día libre
+          </div>
+        )}
+
+        {/* Franjas fuera del horario de trabajo, sombreadas */}
+        {workingWindow.isWorking && workingWindow.startMinutes > VIEW_START_MIN && (
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: `${minutesToY(workingWindow.startMinutes)}px`, background: 'rgba(200,190,192,0.1)', pointerEvents: 'none' }} />
+        )}
+        {workingWindow.isWorking && workingWindow.endMinutes < VIEW_END_MIN && (
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: `${GRID_HEIGHT - minutesToY(workingWindow.endMinutes)}px`, background: 'rgba(200,190,192,0.1)', pointerEvents: 'none' }} />
+        )}
+
+        {/* Línea de "ahora" */}
+        {isToday && nowMinutes >= VIEW_START_MIN && nowMinutes <= VIEW_END_MIN && (
+          <div style={{
+            position: 'absolute', left: 0, right: 0, top: `${minutesToY(nowMinutes)}px`,
+            height: '2px', background: '#db8c95', zIndex: 5, boxShadow: '0 0 4px rgba(219,140,149,0.6)'
+          }} />
+        )}
+
+        {/* Bloques de citas */}
+        {dayAppointments.filter(a => a.staff_id === staffMember.id).map(app => {
+          const start = new Date(app.scheduled_at || app.created_at);
+          const startMinutes = start.getHours() * 60 + start.getMinutes();
+          const duration = getAppointmentDuration(app);
+          const top = minutesToY(startMinutes);
+          const height = Math.max(22, duration * PX_PER_MIN - 2);
+          const colors = STATUS_COLORS[app.status] || STATUS_COLORS.Agendado;
+          const clientName = app.clients?.name || 'Cliente';
+          return (
+            <div
+              key={app.id}
+              onClick={(e) => { e.stopPropagation(); onAppointmentClick(app); }}
+              title={`${clientName} · ${app.services?.name || 'Servicio'} · ${formatMinutes(startMinutes)}`}
+              style={{
+                position: 'absolute', top: `${top}px`, left: '3px', right: '3px', height: `${height}px`,
+                background: '#fff', borderRadius: '8px', borderLeft: `3px solid ${colors.leftBorder}`,
+                boxShadow: '0 2px 6px rgba(167,102,115,0.1)', padding: '3px 6px', cursor: 'pointer',
+                overflow: 'hidden', zIndex: 2, transition: 'transform 0.15s ease'
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.zIndex = '3'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.zIndex = '2'; }}
+            >
+              <div style={{ fontSize: '0.66rem', fontWeight: 700, color: '#4a3036', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{clientName}</div>
+              {height > 32 && <div style={{ fontSize: '0.58rem', color: '#a07880', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{app.services?.name || 'Servicio'}</div>}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey = null }) => {
   const { user } = useAuth();
   const { showToast } = useNotifs();
@@ -146,15 +258,20 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
   const [staff, setStaff] = useState([]);
   const [clients, setClients] = useState([]);
   const [services, setServices] = useState([]);
+  const [schedules, setSchedules] = useState([]);
+  const [timeOff, setTimeOff] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [loading, setLoading] = useState(true);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [scheduleModalPreset, setScheduleModalPreset] = useState(null);
   const [showNewClientModal, setShowNewClientModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('day');
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [filterStaff, setFilterStaff] = useState('all');
-  const [filterService, setFilterService] = useState('all');
+  const [filterStaffId, setFilterStaffId] = useState('all');
+  const [mobileStaffId, setMobileStaffId] = useState(null);
+
+  const roleKind = getRoleKind(user?.role);
+  const isWorkerView = roleKind === 'worker';
 
   useEffect(() => {
     loadData();
@@ -170,9 +287,17 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
         loadFilteredAppointments();
       }
     };
+    const refreshOnScheduleChange = () => {
+      setSchedules(loadStoredSchedules(staff));
+      setTimeOff(loadStoredTimeOff());
+    };
     window.addEventListener('jana:data-changed', refreshOnAppointmentChange);
-    return () => window.removeEventListener('jana:data-changed', refreshOnAppointmentChange);
-  }, [selectedDate, filterType]);
+    window.addEventListener('jana:mock-schedule-changed', refreshOnScheduleChange);
+    return () => {
+      window.removeEventListener('jana:data-changed', refreshOnAppointmentChange);
+      window.removeEventListener('jana:mock-schedule-changed', refreshOnScheduleChange);
+    };
+  }, [selectedDate, filterType, staff]);
 
   useEffect(() => {
     if (openScheduleModal) {
@@ -190,6 +315,8 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
       setStaff(st);
       setClients(cl);
       setServices(sv);
+      setSchedules(loadStoredSchedules(st));
+      setTimeOff(loadStoredTimeOff());
     } catch (err) {
       console.error(err);
     }
@@ -214,76 +341,91 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
     }
   };
 
-  const getStatusLabel = (status) => {
-    const map = { 'Agendado': 'Confirmada', 'En Silla': 'En proceso', 'En Tratamiento': 'En proceso', 'Por Pagar': 'En proceso', 'Completado': 'Confirmada', 'Cancelada': 'Cancelada' };
-    return map[status] || status;
-  };
+  const dateKey = getBusinessDateKey(selectedDate);
+  const todayKey = getBusinessDateKey(new Date());
+  const isToday = dateKey === todayKey;
+  const now = new Date();
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
-  const getAppointmentDate = (app) => new Date(app.scheduled_at || app.created_at);
+  const visibleStaff = useMemo(() => {
+    if (isWorkerView) return staff.filter(s => s.id === user?.id);
+    if (filterStaffId === 'all') return staff;
+    return staff.filter(s => s.id === filterStaffId);
+  }, [staff, isWorkerView, user?.id, filterStaffId]);
 
-  const formatDuration = (minutes) => {
-    const safeMinutes = Number(minutes) || 60;
-    const h = Math.floor(safeMinutes / 60);
-    const m = safeMinutes % 60;
-    if (h > 0 && m > 0) return `${h}h ${m}min`;
-    if (h > 0) return `${h}h`;
-    return `${m} min`;
-  };
+  const dayApps = useMemo(() => {
+    const term = searchTerm ? normalizeForSearch(searchTerm) : '';
+    return appointments.filter(app => {
+      const appDate = new Date(app.scheduled_at || app.created_at);
+      if (getBusinessDateKey(appDate) !== dateKey) return false;
+      if (!term) return true;
+      return normalizeForSearch(app.clients?.name || '').includes(term) || normalizeForSearch(app.clients?.phone || '').includes(term);
+    });
+  }, [appointments, dateKey, searchTerm]);
 
-  const slotToMinutes = (slot) => {
-    const match = slot.match(/^(\d{1,2}):(\d{2})\s(AM|PM)$/);
-    if (!match) return -1;
-    let hours = Number(match[1]);
-    const minutes = Number(match[2]);
-    const meridiem = match[3];
-    if (meridiem === 'PM' && hours !== 12) hours += 12;
-    if (meridiem === 'AM' && hours === 12) hours = 0;
-    return hours * 60 + minutes;
-  };
+  const availabilityCtx = { schedules, timeOff, appointmentsForDay: dayApps };
 
-  const appToMinutes = (app) => {
-    const date = getAppointmentDate(app);
-    return date.getHours() * 60 + date.getMinutes();
-  };
+  const staffStats = useMemo(() => visibleStaff.map(s => {
+    const window = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
+    const busy = window.isWorking ? getStaffBusyIntervals(s.id, dayApps).filter(b => b.endMinutes > window.startMinutes && b.startMinutes < window.endMinutes) : [];
+    const busyMinutes = busy.reduce((sum, b) => sum + (Math.min(b.endMinutes, window.endMinutes) - Math.max(b.startMinutes, window.startMinutes)), 0);
+    const totalWindowMinutes = window.isWorking ? window.endMinutes - window.startMinutes : 0;
+    return { staff: s, window, busyMinutes, freeMinutes: Math.max(0, totalWindowMinutes - busyMinutes) };
+  }), [visibleStaff, dateKey, schedules, timeOff, dayApps]);
 
-  const toDisplayAppointment = (app) => {
-    const clientName = app.clients?.name || 'Cliente';
-    const status = getStatusLabel(app.status);
-    const appDate = getAppointmentDate(app);
-    return {
-      ...app,
-      time: appDate.toLocaleTimeString('es-VE', { hour: 'numeric', minute: '2-digit', hour12: true }).toUpperCase(),
-      client: clientName,
-      service: app.services?.name || 'Servicio',
-      duration: formatDuration(app.services?.duration_minutes || app.duration_minutes),
-      staff: app.staff?.name || 'Sin especialista',
-      status,
-      initial: clientName.charAt(0).toUpperCase()
-    };
-  };
+  const totalCitas = dayApps.length;
+  const confirmadas = dayApps.filter(a => a.status === 'Agendado' || a.status === 'Completado').length;
+  const pendientes = dayApps.filter(a => a.status === 'En Silla' || a.status === 'En Tratamiento').length;
+  const enProceso = dayApps.filter(a => a.status === 'Por Pagar').length;
+  const nextAppointment = [...dayApps].sort((a, b) => new Date(a.scheduled_at || a.created_at) - new Date(b.scheduled_at || b.created_at))[0];
+  const nextAppTime = nextAppointment ? new Date(nextAppointment.scheduled_at || nextAppointment.created_at).toLocaleTimeString('es-VE', { hour: 'numeric', minute: '2-digit', hour12: true }) : null;
 
-  const filteredApps = (appointments.length > 0 ? appointments : []).filter(app => {
-    if (!searchTerm) return true;
-    const term = normalizeForSearch(searchTerm);
-    return normalizeForSearch(app.clients?.name || '').includes(term) || normalizeForSearch(app.clients?.phone || '').includes(term);
-  }).sort((a, b) => getAppointmentDate(a) - getAppointmentDate(b));
-
-  const displayApps = filteredApps.map(toDisplayAppointment);
-
-  const totalCitas = filteredApps.length;
-  const confirmadas = filteredApps.filter(a => a.status === 'Agendado' || a.status === 'Completado').length;
-  const pendientes = filteredApps.filter(a => a.status === 'En Silla' || a.status === 'En Tratamiento').length;
-  const enProceso = filteredApps.filter(a => a.status === 'Por Pagar').length;
-  const nextAppointment = displayApps[0];
-  const availableSlots = TIME_SLOTS.length - TIME_SLOTS.filter(slot => {
-    const slotMinutes = slotToMinutes(slot);
-    return displayApps.some(app => appToMinutes(app) >= slotMinutes && appToMinutes(app) < slotMinutes + 60);
-  }).length;
+  const totalBusyMinutes = staffStats.reduce((sum, s) => sum + s.busyMinutes, 0);
+  const totalFreeMinutes = staffStats.reduce((sum, s) => sum + s.freeMinutes, 0);
+  const occupancyPct = (totalBusyMinutes + totalFreeMinutes) ? Math.round((totalBusyMinutes / (totalBusyMinutes + totalFreeMinutes)) * 100) : 0;
   const confirmedPercent = totalCitas ? Math.round(confirmadas / totalCitas * 100) : 0;
+
+  const formatHM = (mins) => {
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    if (h > 0 && m > 0) return `${h}h ${m}m`;
+    if (h > 0) return `${h}h`;
+    return `${m}m`;
+  };
 
   const dayName = selectedDate.toLocaleDateString('es-VE', { weekday: 'long' });
   const dayNum = selectedDate.getDate();
   const monthName = selectedDate.toLocaleDateString('es-VE', { month: 'long' });
+
+  const openScheduleFor = (staffMember, minutes) => {
+    const hh = String(Math.floor(minutes / 60)).padStart(2, '0');
+    const mm = String(minutes % 60).padStart(2, '0');
+    setScheduleModalPreset({ staff: staffMember, initialTime: `${hh}:${mm}` });
+    setShowScheduleModal(true);
+  };
+
+  const openScheduleForAppointment = () => {
+    // Placeholder de edición: por ahora, el flujo de click en una cita solo confirma cuál es (Fase 1 = ver, no editar in-line todavía)
+    showToast?.('Abrir detalle de la cita — próximamente edición rápida aquí', 'info');
+  };
+
+  const handleSlotClick = (staffMember, minutes) => {
+    openScheduleFor(staffMember, minutes);
+  };
+
+  // Cuando la trabajadora que ve solo su propia agenda está de día libre, avisamos por qué no puede reservar
+  useEffect(() => {
+    if (isWorkerView && visibleStaff.length === 1) {
+      const w = getStaffWorkingWindow(visibleStaff[0].id, dateKey, schedules, timeOff);
+      if (!w.isWorking && dayApps.length === 0) {
+        // silencioso: el badge "Día libre" en la columna ya lo comunica visualmente
+      }
+    }
+  }, [isWorkerView, visibleStaff, dateKey, schedules, timeOff, dayApps]);
+
+  const mobileSelectedStaff = isMobile
+    ? (visibleStaff.find(s => s.id === mobileStaffId) || visibleStaff[0])
+    : null;
 
   return (
     <div className="animate-fade-in" style={{ paddingBottom: isMobile ? 'calc(100px + env(safe-area-inset-bottom, 12px))' : '40px' }}>
@@ -291,40 +433,40 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', gap: '12px' }}>
         <div>
           <h1 style={{ fontSize: isMobile ? '1.25rem' : '1.5rem', fontWeight: 700, color: '#4a3036', margin: 0, fontFamily: 'Playfair Display, serif' }}>
-            Agenda <span className="text-gradient">Jana</span>
+            {isWorkerView ? 'Mi ' : 'Agenda '}<span className="text-gradient">{isWorkerView ? 'Agenda' : 'Jana'}</span>
           </h1>
           {!isMobile && <p style={{ fontSize: '0.8rem', color: '#a07880', margin: '4px 0 0 0', fontWeight: 500 }}>
-            Gestión inteligente de citas y disponibilidad.
+            {isWorkerView ? 'Tus citas del día, de un vistazo.' : 'Gestión inteligente de citas y disponibilidad.'}
           </p>}
         </div>
         <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
-          {!isMobile && <button onClick={() => setShowNewClientModal(true)} style={{
+          {!isMobile && !isWorkerView && <button onClick={() => setShowNewClientModal(true)} style={{
             padding: '10px 18px', borderRadius: '12px', border: '1px solid rgba(223,178,140,0.4)',
             background: '#fff', color: '#6b4a52', fontSize: '0.8rem', fontWeight: 600,
             cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s'
           }} className="btn-hover-scale"><User size={16} /> Nuevo Cliente</button>}
-          <button onClick={() => setShowScheduleModal(true)} style={{
+          {!isWorkerView && <button onClick={() => { setScheduleModalPreset(null); setShowScheduleModal(true); }} style={{
             padding: isMobile ? '10px 14px' : '10px 18px', borderRadius: '12px', border: 'none',
             background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
             color: '#fff', fontSize: isMobile ? '0.75rem' : '0.8rem', fontWeight: 600,
             cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
             boxShadow: '0 4px 15px rgba(219,140,149,0.25)', transition: 'all 0.2s', whiteSpace: 'nowrap'
-          }} className="btn-hover-scale"><Plus size={16} /> Agendar</button>
+          }} className="btn-hover-scale"><Plus size={16} /> Agendar</button>}
         </div>
       </div>
 
       {/* Stats Row */}
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'repeat(3, 1fr)', gap: isMobile ? '8px' : '16px', marginBottom: '20px' }}>
         {[
-          { icon: CalendarDays, label: 'Citas', value: totalCitas, sub: nextAppointment ? `Sig: ${nextAppointment.time}` : 'Sin citas' },
-          { icon: Clock, label: 'Libres', value: availableSlots, sub: 'horas hoy' },
+          { icon: CalendarDays, label: 'Citas', value: totalCitas, sub: nextAppTime ? `Sig: ${nextAppTime}` : 'Sin citas' },
+          { icon: Clock, label: 'Libres', value: formatHM(totalFreeMinutes), sub: 'hoy' },
           { icon: CheckCircle2, label: 'OK', value: confirmadas, sub: `${confirmedPercent}%` },
         ].map((stat, idx) => (
           <div key={idx} className="agenda-glass-card" style={{
             padding: isMobile ? '12px 8px' : '18px',
             display: 'flex',
             flexDirection: isMobile ? 'column' : 'row',
-            alignItems: isMobile ? 'center' : 'center',
+            alignItems: 'center',
             gap: isMobile ? '4px' : '16px',
             textAlign: isMobile ? 'center' : 'left'
           }}>
@@ -349,13 +491,11 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
       <div className="agenda-main-container">
         {/* Left: Calendar + Filters */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <CalendarComponent selectedDate={selectedDate} onSelectDate={setSelectedDate} appointments={appointments} />
+          <CalendarComponent selectedDate={selectedDate} onSelectDate={setSelectedDate} />
 
-          {/* Filters */}
           <div className="agenda-glass-card" style={{ padding: '18px' }}>
             <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: '#4a3036', margin: '0 0 14px 0', borderBottom: '1px solid rgba(223,178,140,0.2)', paddingBottom: '8px' }}>Filtros de vista</h4>
 
-            {/* View Type Toggle */}
             <div style={{ display: 'flex', gap: '4px', marginBottom: '14px', background: 'rgba(232,162,169,0.06)', borderRadius: '12px', padding: '4px', border: '1px solid rgba(223,178,140,0.15)' }}>
               {[
                 { id: 'day', label: 'Hoy / Día' },
@@ -372,68 +512,48 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
               ))}
             </div>
 
-            {/* Status Filters */}
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-              {['Confirmadas', 'Pendientes'].map(s => (
-                <button key={s} style={{
-                  flex: 1, padding: '8px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.3)',
-                  background: '#fff', color: '#6b4a52', fontSize: '0.72rem', fontWeight: 600,
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s'
-                }} className="btn-hover-scale">
-                  {s} <ChevronDown size={13} color="#c97282" />
-                </button>
-              ))}
-            </div>
+            {!isWorkerView && (
+              <div style={{ position: 'relative', marginBottom: '10px' }}>
+                <select
+                  value={filterStaffId}
+                  onChange={(e) => setFilterStaffId(e.target.value)}
+                  style={{
+                    width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.3)',
+                    background: '#fff', color: '#6b4a52', fontSize: '0.72rem', fontWeight: 500,
+                    outline: 'none', cursor: 'pointer', appearance: 'none'
+                  }}
+                >
+                  <option value="all">Todas las especialistas</option>
+                  {staff.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                </select>
+                <ChevronDown size={13} color="#c97282" style={{ position: 'absolute', right: '12px', top: '12px', pointerEvents: 'none' }} />
+              </div>
+            )}
 
-            {/* Staff Filter */}
-            <div style={{ position: 'relative', marginBottom: '10px' }}>
-              <select style={{
-                width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.3)',
-                background: '#fff', color: '#6b4a52', fontSize: '0.72rem', fontWeight: 500,
-                outline: 'none', cursor: 'pointer', appearance: 'none'
-              }}>
-                <option>Especialista</option>
-                {staff.map(s => <option key={s.id}>{s.name}</option>)}
-              </select>
-              <ChevronDown size={13} color="#c97282" style={{ position: 'absolute', right: '12px', top: '12px', pointerEvents: 'none' }} />
-            </div>
-
-            {/* Service Filter */}
-            <div style={{ position: 'relative', marginBottom: '14px' }}>
-              <select style={{
-                width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.3)',
-                background: '#fff', color: '#6b4a52', fontSize: '0.72rem', fontWeight: 500,
-                outline: 'none', cursor: 'pointer', appearance: 'none'
-              }}>
-                <option>Servicio</option>
-                {services.map(s => <option key={s.id}>{s.name}</option>)}
-              </select>
-              <ChevronDown size={13} color="#c97282" style={{ position: 'absolute', right: '12px', top: '12px', pointerEvents: 'none' }} />
-            </div>
-
-            <button onClick={() => { setFilterStatus('all'); setFilterStaff('all'); setFilterService('all'); }} style={{
-              width: '100%', padding: '9px', borderRadius: '10px', border: '1px solid rgba(196,139,159,0.2)',
-              background: 'rgba(196,139,159,0.06)', color: '#c97282', fontSize: '0.72rem', fontWeight: 600,
-              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s'
-            }} className="btn-hover-scale">
-              <XCircle size={13} /> Limpiar filtros
-            </button>
+            {!isWorkerView && filterStaffId !== 'all' && (
+              <button onClick={() => setFilterStaffId('all')} style={{
+                width: '100%', padding: '9px', borderRadius: '10px', border: '1px solid rgba(196,139,159,0.2)',
+                background: 'rgba(196,139,159,0.06)', color: '#c97282', fontSize: '0.72rem', fontWeight: 600,
+                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s'
+              }} className="btn-hover-scale">
+                <XCircle size={13} /> Ver todas
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Center: Timeline */}
+        {/* Center: Grid por trabajadora */}
         <div className="agenda-glass-card" style={{ padding: '20px' }}>
-          {/* Date Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', flexWrap: 'wrap', gap: '10px' }}>
             <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#4a3036', margin: 0, textTransform: 'capitalize', fontFamily: 'Playfair Display, serif' }}>
               {dayName}, {dayNum} de {monthName}
             </h3>
             <div style={{ display: 'flex', gap: '6px' }}>
-              <button onClick={() => setSelectedDate(new Date(selectedDate.setDate(selectedDate.getDate() - 1)))} style={{
+              <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() - 1))} style={{
                 width: '30px', height: '30px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.3)',
                 background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c97282', transition: 'all 0.2s'
               }} className="btn-hover-scale"><ChevronLeft size={15} /></button>
-              <button onClick={() => setSelectedDate(new Date(selectedDate.setDate(selectedDate.getDate() + 1)))} style={{
+              <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + 1))} style={{
                 width: '30px', height: '30px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.3)',
                 background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c97282', transition: 'all 0.2s'
               }} className="btn-hover-scale"><ChevronRight size={15} /></button>
@@ -449,7 +569,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
             <Search size={16} color="#db8c95" />
             <input
               type="text"
-              placeholder="Buscar por nombre, cédula o teléfono..."
+              placeholder="Buscar por nombre o teléfono..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
@@ -457,113 +577,89 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                 fontSize: '0.8rem', color: '#4a3036'
               }}
             />
-            <Filter size={16} color="#db8c95" style={{ cursor: 'pointer' }} />
           </div>
 
-          {/* Timeline Wrapper */}
-          <div className="agenda-timeline-container">
-            {TIME_SLOTS.map((slot) => {
-              const slotMinutes = slotToMinutes(slot);
-              const slotApp = displayApps.find(a => appToMinutes(a) >= slotMinutes && appToMinutes(a) < slotMinutes + 60);
-              return (
-                <div key={slot} className="agenda-time-row">
-                  {/* Indicador de la hora */}
-                  <div className="agenda-time-indicator">{slot}</div>
-
-                  {/* Punto conector visual */}
-                  <div className="agenda-timeline-connector-dot" />
-
-                  {/* Wrapper para el contenido de la cita */}
-                  <div className="agenda-appointment-wrapper">
-                    {slotApp ? (
-                      <div
-                        className="agenda-appointment-card"
-                        style={{
-                          borderLeftColor: STATUS_COLORS[slotApp.status]?.leftBorder || '#22c55e',
-                          flexDirection: isMobile ? 'column' : 'row',
-                          alignItems: isMobile ? 'stretch' : 'center',
-                          gap: isMobile ? '6px' : '14px',
-                          padding: isMobile ? '10px 12px' : '12px 16px'
-                        }}
-                      >
-                        {/* Row 1: Avatar + Nombre + Duración */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '14px' }}>
-                          {/* Avatar */}
-                          <div style={{
-                            width: isMobile ? '32px' : '40px', height: isMobile ? '32px' : '40px', borderRadius: '50%',
-                            background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            color: '#fff', fontWeight: 700, fontSize: isMobile ? '0.7rem' : '0.85rem', flexShrink: 0,
-                            boxShadow: '0 2px 8px rgba(219,140,149,0.3)'
-                          }}>{slotApp.initial}</div>
-
-                          {/* Nombre + Servicio */}
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontWeight: 700, color: '#4a3036', fontSize: isMobile ? '0.8rem' : '0.85rem' }}>{slotApp.client}</div>
-                            {!isMobile && <div style={{ fontSize: '0.72rem', color: '#a07880', marginTop: '2px', fontWeight: 500 }}>{slotApp.service}</div>}
-                          </div>
-
-                          {/* Duración */}
-                          <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: '3px', whiteSpace: 'nowrap' }}>
-                            <Clock size={isMobile ? 10 : 11} color="#db8c95" />
-                            <span style={{ fontSize: isMobile ? '0.62rem' : '0.7rem', color: '#6b4a52', fontWeight: 600 }}>{slotApp.duration}</span>
-                          </div>
-                        </div>
-
-                        {/* Row 2 (móvil): Servicio + Especialista + Badge */}
-                        {isMobile && (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', paddingLeft: '40px' }}>
-                            <span style={{ fontSize: '0.65rem', color: '#a07880', fontWeight: 500, flex: 1 }}>{slotApp.service}</span>
-                            <span style={{ fontSize: '0.6rem', color: '#a07880', fontWeight: 500 }}>{slotApp.staff}</span>
-                          </div>
-                        )}
-
-                        {/* Desktop: Duración y especialista */}
-                        {!isMobile && (
-                          <div style={{ textAlign: 'right', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                            <div style={{ fontSize: '0.7rem', color: '#6b4a52', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'flex-end' }}>
-                              <Clock size={11} color="#db8c95" /> {slotApp.duration}
-                            </div>
-                            <div style={{ fontSize: '0.68rem', color: '#a07880', fontWeight: 500 }}>{slotApp.staff}</div>
-                          </div>
-                        )}
-
-                        {/* Badge de estado — solo desktop */}
-                        {!isMobile && (
-                          <div
-                            className="agenda-status-badge"
-                            style={{
-                              background: STATUS_COLORS[slotApp.status]?.bg || '#f0fdf4',
-                              color: STATUS_COLORS[slotApp.status]?.text || '#16a34a',
-                              border: `1px solid ${STATUS_COLORS[slotApp.status]?.border || '#bbf7d0'}`,
-                            }}
-                          >
-                            {slotApp.status}
-                          </div>
-                        )}
-
-                        {/* Acciones — solo desktop */}
-                        {!isMobile && (
-                          <button style={{
-                            background: 'none', border: 'none', cursor: 'pointer',
-                            color: '#db8c95', padding: '4px', display: 'flex', alignItems: 'center'
-                          }}><MoreVertical size={16} /></button>
-                        )}
-                      </div>
-                    ) : (
-                      /* Si está libre, ofrecemos agendar directamente en ese slot */
-                      <button
-                        onClick={() => setShowScheduleModal(true)}
-                        className="agenda-free-slot-btn"
-                      >
-                        <Plus size={14} /> Reservar {slot}
-                      </button>
-                    )}
-                  </div>
+          {filterType !== 'day' ? (
+            <div style={{
+              padding: '48px 20px', textAlign: 'center', borderRadius: '16px',
+              border: '1px dashed rgba(223,178,140,0.35)', background: 'rgba(255,255,255,0.4)'
+            }}>
+              <CalendarIcon size={28} color="#db8c95" style={{ marginBottom: '10px' }} />
+              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#4a3036', marginBottom: '4px' }}>
+                Vista de {filterType === 'week' ? 'semana' : 'mes'} — próximamente
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#a07880' }}>
+                Por ahora, usa la vista de día para ver la agenda de todo el equipo.
+              </div>
+            </div>
+          ) : loading ? (
+            <div style={{ textAlign: 'center', padding: '60px 0', color: '#a07880', fontSize: '0.8rem' }}>Cargando agenda...</div>
+          ) : visibleStaff.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '60px 0', color: '#a07880', fontSize: '0.8rem' }}>No hay especialistas para mostrar.</div>
+          ) : isMobile ? (
+            <div>
+              {/* Selector de especialista (chips) */}
+              {!isWorkerView && (
+                <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', marginBottom: '14px', paddingBottom: '4px' }}>
+                  {visibleStaff.map(s => (
+                    <button
+                      key={s.id}
+                      onClick={() => setMobileStaffId(s.id)}
+                      style={{
+                        flexShrink: 0, padding: '7px 14px', borderRadius: '20px', fontSize: '0.72rem', fontWeight: 600,
+                        border: (mobileSelectedStaff?.id === s.id) ? 'none' : '1px solid rgba(223,178,140,0.3)',
+                        background: (mobileSelectedStaff?.id === s.id) ? 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)' : '#fff',
+                        color: (mobileSelectedStaff?.id === s.id) ? '#fff' : '#6b4a52', cursor: 'pointer'
+                      }}
+                    >
+                      {s.name.split(' ')[0]}
+                    </button>
+                  ))}
                 </div>
-              );
-            })}
-          </div>
+              )}
+              {mobileSelectedStaff && (
+                <StaffDayColumn
+                  staffMember={mobileSelectedStaff}
+                  dayAppointments={dayApps}
+                  workingWindow={getStaffWorkingWindow(mobileSelectedStaff.id, dateKey, schedules, timeOff)}
+                  isToday={isToday}
+                  nowMinutes={nowMinutes}
+                  onSlotClick={handleSlotClick}
+                  onAppointmentClick={openScheduleForAppointment}
+                  compact
+                />
+              )}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '6px' }}>
+              {/* Eje de horas */}
+              <div style={{ flexShrink: 0, width: '46px', paddingTop: '46px' }}>
+                <div style={{ position: 'relative', height: `${GRID_HEIGHT}px` }}>
+                  {HOUR_MARKS.map(m => (
+                    <div key={m} style={{
+                      position: 'absolute', top: `${minutesToY(m) - 6}px`, right: 0,
+                      fontSize: '0.62rem', color: '#a07880', fontWeight: 600, fontVariantNumeric: 'tabular-nums'
+                    }}>
+                      {formatMinutes(m)}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {visibleStaff.map(s => (
+                <StaffDayColumn
+                  key={s.id}
+                  staffMember={s}
+                  dayAppointments={dayApps}
+                  workingWindow={getStaffWorkingWindow(s.id, dateKey, schedules, timeOff)}
+                  isToday={isToday}
+                  nowMinutes={nowMinutes}
+                  onSlotClick={handleSlotClick}
+                  onAppointmentClick={openScheduleForAppointment}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Right: Summary + Specialists + Notes */}
@@ -574,9 +670,6 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
               <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: '#4a3036', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <BarChart3 size={15} color="#db8c95" /> Resumen del Día
               </h4>
-              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#db8c95' }}>
-                <MoreVertical size={16} />
-              </button>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -597,54 +690,70 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
               <div style={{ borderTop: '1px solid rgba(223, 178, 140, 0.25)', paddingTop: '10px', marginTop: '6px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '6px' }}>
                   <span style={{ color: '#8c767b', fontWeight: 500 }}>Horas ocupadas</span>
-                  <span style={{ fontWeight: 700, color: '#4a3036' }}>7h 30m</span>
+                  <span style={{ fontWeight: 700, color: '#4a3036' }}>{formatHM(totalBusyMinutes)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '8px' }}>
                   <span style={{ color: '#8c767b', fontWeight: 500 }}>Disponibilidad</span>
-                  <span style={{ fontWeight: 700, color: '#4a3036' }}>4h 30m</span>
+                  <span style={{ fontWeight: 700, color: '#4a3036' }}>{formatHM(totalFreeMinutes)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem' }}>
-                  <span style={{ color: '#8c767b', fontWeight: 500 }}>Ocupación del día</span>
-                  <span style={{ fontWeight: 800, color: '#db8c95' }}>63%</span>
+                  <span style={{ color: '#8c767b', fontWeight: 500 }}>Ocupación del equipo</span>
+                  <span style={{ fontWeight: 800, color: '#db8c95' }}>{occupancyPct}%</span>
                 </div>
                 <div style={{ marginTop: '8px', height: '6px', borderRadius: '4px', background: 'rgba(232, 162, 169, 0.12)', overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: '63%', borderRadius: '4px', background: 'linear-gradient(90deg, #e8a2a9, #db8c95)' }} />
+                  <div style={{ height: '100%', width: `${occupancyPct}%`, borderRadius: '4px', background: 'linear-gradient(90deg, #e8a2a9, #db8c95)' }} />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Especialistas del Día */}
-          <div className="agenda-glass-card" style={{ padding: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-              <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: '#4a3036', margin: 0 }}>Especialistas</h4>
-              <button style={{
-                padding: '4px 10px', borderRadius: '8px', border: '1px solid rgba(223,178,140,0.3)',
-                background: 'transparent', color: '#db8c95', fontSize: '0.65rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s'
-              }} className="btn-hover-scale">Ver todos</button>
-            </div>
+          {/* Especialistas del Día — disponibilidad real */}
+          {!isWorkerView && (
+            <div className="agenda-glass-card" style={{ padding: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: '#4a3036', margin: 0 }}>Especialistas</h4>
+                <Users size={15} color="#db8c95" />
+              </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {DEMO_STAFF.map((s) => (
-                <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{
-                    width: '32px', height: '32px', borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: '#fff', fontWeight: 700, fontSize: '0.75rem', flexShrink: 0
-                  }}>{s.initial}</div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 700, color: '#4a3036', fontSize: '0.78rem' }}>{s.name}</div>
-                    <div style={{ fontSize: '0.68rem', color: '#a07880', fontWeight: 500 }}>{s.role}</div>
-                  </div>
-                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <div style={{ fontSize: '0.58rem', color: '#a07880', fontWeight: 500 }}>Libre</div>
-                    <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#4a3036' }}>{s.nextAvailable}</div>
-                  </div>
-                </div>
-              ))}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {staffStats.map(({ staff: s, window, busyMinutes }) => {
+                  const initial = (s.name || '?').charAt(0).toUpperCase();
+                  let statusLabel, statusColor;
+                  if (!window.isWorking) {
+                    statusLabel = 'Día libre';
+                    statusColor = '#a0848a';
+                  } else {
+                    const busyNow = isToday && getStaffBusyIntervals(s.id, dayApps).some(b => nowMinutes >= b.startMinutes && nowMinutes < b.endMinutes);
+                    if (busyNow) {
+                      statusLabel = 'Ocupada';
+                      statusColor = '#d97706';
+                    } else {
+                      const nextFree = isToday ? getNextFreeMinutes(s.id, dateKey, nowMinutes, availabilityCtx) : window.startMinutes;
+                      statusLabel = nextFree != null ? `Libre ${formatMinutes(nextFree)}` : 'Sin huecos';
+                      statusColor = '#16a34a';
+                    }
+                  }
+                  return (
+                    <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{
+                        width: '32px', height: '32px', borderRadius: '50%',
+                        background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: '#fff', fontWeight: 700, fontSize: '0.75rem', flexShrink: 0
+                      }}>{initial}</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: 700, color: '#4a3036', fontSize: '0.78rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name}</div>
+                        <div style={{ fontSize: '0.68rem', color: '#a07880', fontWeight: 500 }}>{busyMinutes > 0 ? `${formatHM(busyMinutes)} ocupada` : 'Sin citas hoy'}</div>
+                      </div>
+                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                        <div style={{ fontSize: '0.7rem', fontWeight: 700, color: statusColor }}>{statusLabel}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Notas Rápidas */}
           <div className="agenda-glass-card" style={{ padding: '16px' }}>
@@ -668,13 +777,14 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
       {showScheduleModal && (
         <ScheduleModal
           isOpen={showScheduleModal}
-          onClose={() => setShowScheduleModal(false)}
+          onClose={() => { setShowScheduleModal(false); setScheduleModalPreset(null); }}
           clients={clients}
           services={services}
-          staff={staff}
+          staff={scheduleModalPreset?.staff || (isWorkerView ? visibleStaff[0] : staff)}
           rates={rates}
           defaultDate={selectedDate}
-          onSave={() => { setShowScheduleModal(false); loadFilteredAppointments(); }}
+          initialTime={scheduleModalPreset?.initialTime}
+          onSave={() => { setShowScheduleModal(false); setScheduleModalPreset(null); loadFilteredAppointments(); }}
         />
       )}
       {showNewClientModal && (

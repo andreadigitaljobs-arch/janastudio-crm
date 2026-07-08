@@ -871,7 +871,7 @@ html, body {
 }
 
 /* ── TABLET: Layout optimizado ── */
-@media (min-width: 769px) and (max-width: 1024px) {
+@media (min-width: 769px) and (max-width: 1024px), (max-width: 768px) and (min-aspect-ratio: 3/4) {
   .salon-login-outer {
     padding: 20px;
   }
@@ -910,7 +910,8 @@ html, body {
 }
 
 /* ── DISEÑO MOBILE: Foto arriba, tarjeta blanca abajo ── */
-@media (max-width: 768px) {
+/* Solo para pantallas altas/angostas; las "gruesas" (aspect ratio cuadrado) usan el diseño tablet de arriba */
+@media (max-width: 768px) and (max-aspect-ratio: 3/4) {
 
   .salon-login-outer {
     padding: 0;
@@ -1678,6 +1679,26 @@ input:focus { outline: none; }
   font-weight: 600 !important;
 }
 
+/* ── Tooltip de íconos del sidebar (menú colapsado en compu) ── */
+/* Se pinta vía portal en <body>, así nunca se corta por el overflow:hidden del sidebar */
+.sidebar-tooltip-portal {
+  animation: sidebarTooltipIn 0.12s ease both;
+}
+
+.sidebar-tooltip-portal::before {
+  content: '';
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 5px solid transparent;
+  border-right-color: #b0637d;
+}
+
+@keyframes sidebarTooltipIn {
+  from { opacity: 0; transform: translateY(-50%) translateX(-6px); }
+  to { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
 
 
 
