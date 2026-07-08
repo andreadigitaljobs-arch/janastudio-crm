@@ -418,6 +418,8 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
   const [multipleBookingActive, setMultipleBookingActive] = useState(false);
   const [multipleBookedSlots, setMultipleBookedSlots] = useState([]);
   const [selectedDetailedApp, setSelectedDetailedApp] = useState(null);
+  const [viewMode, setViewMode] = useState('specialists');
+  const [expandedStaff, setExpandedStaff] = useState({});
 
   const handleMultipleSlotToggle = (staffId, minutes) => {
     setMultipleBookedSlots(prev => {
@@ -512,10 +514,43 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
   const visibleStaff = useMemo(() => {
-    if (isWorkerView) return staff.filter(s => s.id === user?.id);
-    if (filterStaffId === 'all') return staff;
-    return staff.filter(s => s.id === filterStaffId);
-  }, [staff, isWorkerView, user?.id, filterStaffId]);
+    let list = [];
+    if (isWorkerView) list = staff.filter(s => s.id === user?.id);
+    else if (filterStaffId === 'all') list = staff;
+    else list = staff.filter(s => s.id === filterStaffId);
+
+    if (checkingTime != null) {
+      // Ordenar por disponibilidad en ese minuto
+      list = [...list].sort((a, b) => {
+        const winA = getStaffWorkingWindow(a.id, dateKey, schedules, timeOff);
+        const winB = getStaffWorkingWindow(b.id, dateKey, schedules, timeOff);
+        
+        const busyA = winA.isWorking ? getStaffBusyIntervals(a.id, dayApps) : [];
+        const busyB = winB.isWorking ? getStaffBusyIntervals(b.id, dayApps) : [];
+
+        // Almuerzos manuales simulados (13:00 - 14:00)
+        const lunchA = winA.isWorking ? (checkingTime >= 13 * 60 && checkingTime < 14 * 60) : false;
+        const lunchB = winB.isWorking ? (checkingTime >= 13 * 60 && checkingTime < 14 * 60) : false;
+
+        const isFreeA = winA.isWorking && 
+                         checkingTime >= winA.startMinutes && 
+                         checkingTime < winA.endMinutes && 
+                         !busyA.some(bar => checkingTime >= bar.startMinutes && checkingTime < bar.endMinutes) &&
+                         !lunchA;
+
+        const isFreeB = winB.isWorking && 
+                         checkingTime >= winB.startMinutes && 
+                         checkingTime < winB.endMinutes && 
+                         !busyB.some(bar => checkingTime >= bar.startMinutes && checkingTime < bar.endMinutes) &&
+                         !lunchB;
+
+        if (isFreeA && !isFreeB) return -1;
+        if (!isFreeA && isFreeB) return 1;
+        return 0;
+      });
+    }
+    return list;
+  }, [staff, isWorkerView, user?.id, filterStaffId, checkingTime, dateKey, schedules, timeOff, dayApps]);
 
   const dayApps = useMemo(() => {
     const term = searchTerm ? normalizeForSearch(searchTerm) : '';
@@ -878,6 +913,32 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
             />
           </div>
 
+            {/* Pestañas de Modo de Vista */}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '18px', borderBottom: '1px solid rgba(223, 178, 140, 0.2)', paddingBottom: '8px' }}>
+              <button
+                onClick={() => setViewMode('specialists')}
+                style={{
+                  padding: '6px 14px', borderRadius: '8px', border: 'none',
+                  background: viewMode === 'specialists' ? 'linear-gradient(135deg, #e8a2a9, #db8c95)' : 'transparent',
+                  color: viewMode === 'specialists' ? '#fff' : '#6b4a52',
+                  fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s'
+                }}
+              >
+                👤 Especialistas ({visibleStaff.length})
+              </button>
+              <button
+                onClick={() => setViewMode('timeline')}
+                style={{
+                  padding: '6px 14px', borderRadius: '8px', border: 'none',
+                  background: viewMode === 'timeline' ? 'linear-gradient(135deg, #e8a2a9, #db8c95)' : 'transparent',
+                  color: viewMode === 'timeline' ? '#fff' : '#6b4a52',
+                  fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.2s'
+                }}
+              >
+                📅 Cronograma del Día ({dayApps.length})
+              </button>
+            </div>
+
           {filterType !== 'day' ? (
             <div style={{
               padding: '48px 20px', textAlign: 'center', borderRadius: '16px',
@@ -895,76 +956,163 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
             <div style={{ textAlign: 'center', padding: '60px 0', color: '#a07880', fontSize: '0.8rem' }}>Cargando agenda...</div>
           ) : visibleStaff.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px 0', color: '#a07880', fontSize: '0.8rem' }}>No hay especialistas para mostrar.</div>
-          ) : isMobile ? (
-            <div>
-              {/* Selector de especialista (chips) */}
-              {!isWorkerView && (
-                <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', marginBottom: '14px', paddingBottom: '4px' }}>
-                  {visibleStaff.map(s => (
-                    <button
-                      key={s.id}
-                      onClick={() => setMobileStaffId(s.id)}
-                      style={{
-                        flexShrink: 0, padding: '7px 14px', borderRadius: '20px', fontSize: '0.72rem', fontWeight: 600,
-                        border: (mobileSelectedStaff?.id === s.id) ? 'none' : '1px solid rgba(223,178,140,0.3)',
-                        background: (mobileSelectedStaff?.id === s.id) ? 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)' : '#fff',
-                        color: (mobileSelectedStaff?.id === s.id) ? '#fff' : '#6b4a52', cursor: 'pointer'
-                      }}
-                    >
-                      {s.name.split(' ')[0]}
-                    </button>
-                  ))}
+          ) : viewMode === 'timeline' ? (
+            <div className="cronograma-container">
+              {dayApps.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '30px', color: '#a07880', fontSize: '0.8rem', fontStyle: 'italic' }}>
+                  No hay citas agendadas para este día.
                 </div>
-              )}
-              {mobileSelectedStaff && (
-                <StaffDayColumn
-                  staffMember={mobileSelectedStaff}
-                  dayAppointments={dayApps}
-                  workingWindow={getStaffWorkingWindow(mobileSelectedStaff.id, dateKey, schedules, timeOff)}
-                  isToday={isToday}
-                  nowMinutes={nowMinutes}
-                  onSlotClick={handleSlotClick}
-                  onAppointmentClick={openScheduleForAppointment}
-                  compact
-                  checkingTime={checkingTime}
-                  multipleBookingActive={multipleBookingActive}
-                  multipleBookedSlots={multipleBookedSlots}
-                  onMultipleSlotToggle={handleMultipleSlotToggle}
-                />
+              ) : (
+                [...dayApps].sort((a, b) => {
+                  const timeA = new Date(a.scheduled_at || a.created_at);
+                  const timeB = new Date(b.scheduled_at || b.created_at);
+                  return timeA - timeB;
+                }).map(app => {
+                  const appTime = new Date(app.scheduled_at || app.created_at);
+                  const timeStr = appTime.toLocaleTimeString('es-VE', { hour: 'numeric', minute: '2-digit', hour12: true });
+                  const specialist = staff.find(s => s.id === app.staff_id);
+                  return (
+                    <div 
+                      key={app.id} 
+                      className="cronograma-item-card animate-fade-in"
+                      onClick={() => openScheduleForAppointment(app)}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div className="cronograma-time-badge">{timeStr}</div>
+                        <div>
+                          <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#4a3036' }}>
+                            {app.clients?.name || 'Cliente'}
+                          </div>
+                          <div style={{ fontSize: '0.68rem', color: '#a07880', fontWeight: 600 }}>
+                            {app.services?.name || 'Servicio'}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#4a3036' }}>
+                            {specialist ? specialist.name.split(' ')[0] : 'Especialista'}
+                          </div>
+                          <div style={{ fontSize: '0.58rem', color: '#8c767b' }}>Atendiendo</div>
+                        </div>
+                        <div style={{
+                          padding: '4px 10px', borderRadius: '12px', fontSize: '0.6rem', fontWeight: 700,
+                          background: STATUS_COLORS[app.status]?.bg || '#f3f4f6',
+                          color: STATUS_COLORS[app.status]?.text || '#374151',
+                          border: `1px solid ${STATUS_COLORS[app.status]?.border || '#e5e7eb'}`
+                        }}>{app.status}</div>
+                      </div>
+                    </div>
+                  );
+                })
               )}
             </div>
           ) : (
-            <div className="agenda-grid-container" style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '6px' }}>
-              {/* Eje de horas (Sticky) */}
-              <div className="agenda-hours-column-sticky" style={{ flexShrink: 0, width: '46px', paddingTop: '46px' }}>
-                <div style={{ position: 'relative', height: `${GRID_HEIGHT}px` }}>
-                  {HOUR_MARKS.map(m => (
-                    <div key={m} style={{
-                      position: 'absolute', top: `${minutesToY(m) - 6}px`, right: 0,
-                      fontSize: '0.62rem', color: '#a07880', fontWeight: 600, fontVariantNumeric: 'tabular-nums'
-                    }}>
-                      {formatMinutes(m)}
-                    </div>
-                  ))}
-                </div>
-              </div>
+            <div className="agenda-accordion-list">
+              {visibleStaff.map(s => {
+                const window = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
+                const isExpanded = !!expandedStaff[s.id];
+                
+                // Verificar disponibilidad para resaltar
+                let isFree = false;
+                if (checkingTime != null && window.isWorking) {
+                  const busySlots = getStaffBusyIntervals(s.id, dayApps);
+                  const insideWorking = checkingTime >= window.startMinutes && checkingTime < window.endMinutes;
+                  const isLunch = checkingTime >= 13 * 60 && checkingTime < 14 * 60;
+                  const occupied = busySlots.some(b => checkingTime >= b.startMinutes && checkingTime < b.endMinutes) || isLunch;
+                  isFree = insideWorking && !occupied;
+                }
 
-              {visibleStaff.map(s => (
-                <StaffDayColumn
-                  key={s.id}
-                  staffMember={s}
-                  dayAppointments={dayApps}
-                  workingWindow={getStaffWorkingWindow(s.id, dateKey, schedules, timeOff)}
-                  isToday={isToday}
-                  nowMinutes={nowMinutes}
-                  onSlotClick={handleSlotClick}
-                  onAppointmentClick={openScheduleForAppointment}
-                  checkingTime={checkingTime}
-                  multipleBookingActive={multipleBookingActive}
-                  multipleBookedSlots={multipleBookedSlots}
-                  onMultipleSlotToggle={handleMultipleSlotToggle}
-                />
-              ))}
+                const initial = (s.name || '?').charAt(0).toUpperCase();
+
+                return (
+                  <div 
+                    key={s.id} 
+                    className={`agenda-accordion-item ${checkingTime != null ? (isFree ? 'available-highlight animate-pulse' : 'busy-highlight') : ''}`}
+                  >
+                    <div 
+                      className="agenda-accordion-header"
+                      onClick={() => setExpandedStaff(prev => ({ ...prev, [s.id]: !prev[s.id] }))}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{
+                          width: '32px', height: '32px', borderRadius: '50%',
+                          background: checkingTime != null 
+                            ? (isFree ? 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)' : 'linear-gradient(135deg, #f87171 0%, #ef4444 100%)')
+                            : 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          color: '#fff', fontWeight: 700, fontSize: '0.75rem'
+                        }}>{initial}</div>
+                        <div>
+                          <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#4a3036' }}>{s.name}</div>
+                          <div style={{ fontSize: '0.65rem', color: '#a07880', fontWeight: 600 }}>
+                            {window.isWorking ? `${formatMinutes(window.startMinutes)} – ${formatMinutes(window.endMinutes)}` : 'Día libre'}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                        {checkingTime != null && window.isWorking && (
+                          <span style={{
+                            fontSize: '0.65rem', fontWeight: 700,
+                            color: isFree ? '#16a34a' : '#dc2626',
+                            background: isFree ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                            padding: '3px 8px', borderRadius: '10px'
+                          }}>
+                            {isFree ? '✓ Disponible' : '❌ Ocupada'}
+                          </span>
+                        )}
+                        <span style={{ 
+                          fontSize: '0.65rem', 
+                          transform: isExpanded ? 'rotate(180deg)' : 'none', 
+                          transition: 'transform 0.25s', 
+                          color: '#db8c95',
+                          fontWeight: 'bold'
+                        }}>
+                          ▼
+                        </span>
+                      </div>
+                    </div>
+
+                    {isExpanded && (
+                      <div className="agenda-accordion-content animate-fade-in">
+                        <div style={{ display: 'flex', gap: '15px' }}>
+                          {/* Eje de Horas */}
+                          <div style={{ flexShrink: 0, width: '42px', position: 'relative', height: `${GRID_HEIGHT}px` }}>
+                            {HOUR_MARKS.map(m => (
+                              <div key={m} style={{
+                                position: 'absolute', top: `${minutesToY(m) - 6}px`, right: 0,
+                                fontSize: '0.62rem', color: '#a07880', fontWeight: 600, fontVariantNumeric: 'tabular-nums'
+                              }}>
+                                {formatMinutes(m)}
+                              </div>
+                            ))}
+                          </div>
+                          
+                          {/* Columna de la Agenda */}
+                          <div style={{ flex: 1 }}>
+                            <StaffDayColumn
+                              staffMember={s}
+                              dayAppointments={dayApps}
+                              workingWindow={window}
+                              isToday={isToday}
+                              nowMinutes={nowMinutes}
+                              onSlotClick={handleSlotClick}
+                              onAppointmentClick={openScheduleForAppointment}
+                              checkingTime={checkingTime}
+                              multipleBookingActive={multipleBookingActive}
+                              multipleBookedSlots={multipleBookedSlots}
+                              onMultipleSlotToggle={handleMultipleSlotToggle}
+                              compact
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
