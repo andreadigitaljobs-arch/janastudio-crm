@@ -236,7 +236,27 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
         })}
       </nav>
 
-      <div style={{ marginTop: 'auto', paddingTop: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <div style={{ marginTop: 'auto', paddingTop: '12px', display: 'flex', flexDirection: 'column', gap: '10px', position: 'relative' }}>
+        {!effectiveCollapsed && (
+          <img src="/flor_abajo.png" alt="" style={{
+            position: 'absolute',
+            bottom: '55px',
+            right: '5px',
+            width: '110px',
+            height: 'auto',
+            opacity: 0.45,
+            pointerEvents: 'none',
+            animation: 'florSidebarSway 8s ease-in-out infinite alternate',
+            transformOrigin: 'bottom right'
+          }} />
+        )}
+        <style>{`
+          @keyframes florSidebarSway {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(-2deg); }
+            100% { transform: rotate(1deg); }
+          }
+        `}</style>
         {!effectiveCollapsed && (
           <button
             onClick={handleLogout}
