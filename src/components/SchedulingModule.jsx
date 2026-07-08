@@ -964,22 +964,39 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
       {viewMode === 'operation' && (
         <div className="staff-control-container">
           {/* KPIs Row */}
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
             {[
-              { label: 'Ingresos de hoy', value: `$ ${totalSalonRevenue.toLocaleString()}`, sub: '↑ 18% vs ayer', subColor: '#16a34a', icon: <DollarSign size={20} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.1)', color: '#16a34a' },
-              { label: 'Citas del día', value: totalCitas, sub: `${confirmadas} completadas  ·  ${pendientes} pendientes`, subColor: '#8c767b', icon: <CalendarIcon size={20} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.1)', color: '#0284c7' },
-              { label: 'Ocupación del equipo', value: `${occupancyPct}%`, sub: 'Meta diaria: 80%', subColor: '#8c767b', icon: <BarChart3 size={20} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.1)', progress: occupancyPct, color: '#db8c95' },
-              { label: 'Especialistas disponibles', value: staffByStatus.libres.length, sub: 'Ahora mismo', subColor: '#16a34a', icon: <Users size={20} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.1)', color: '#d97706' }
+              { label: 'Ingresos de hoy', value: `$ ${totalSalonRevenue.toLocaleString()}`, sub: '↑ 18% vs ayer', subColor: '#16a34a', icon: <DollarSign size={18} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.12)', color: '#16a34a' },
+              { label: 'Citas del día', value: totalCitas, sub: `${confirmadas} completadas  ·  ${pendientes} pendientes`, subColor: '#8c767b', icon: <CalendarIcon size={18} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.12)', color: '#0284c7' },
+              { label: 'Ocupación del equipo', value: `${occupancyPct}%`, sub: 'Meta diaria: 80%', subColor: '#8c767b', icon: <BarChart3 size={18} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.12)', progress: occupancyPct, color: '#db8c95' },
+              { label: 'Especialistas disponibles', value: staffByStatus.libres.length, sub: 'Ahora mismo', subColor: '#16a34a', icon: <Users size={18} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.12)', color: '#d97706' }
             ].map((kpi, idx) => (
-              <div key={idx} className="agenda-glass-card" style={{ padding: '18px', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: kpi.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>{kpi.icon}</div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '0.72rem', color: '#a07880', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.4px' }}>{kpi.label}</div>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#4a3036', margin: '4px 0 2px 0' }}>{kpi.value}</div>
-                  <div style={{ fontSize: '0.68rem', color: kpi.subColor, fontWeight: 600 }}>{kpi.sub}</div>
+              <div 
+                key={idx} 
+                className="agenda-glass-card" 
+                style={{ 
+                  padding: '20px', 
+                  display: 'flex', 
+                  alignItems: 'flex-start', 
+                  gap: '14px',
+                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.6) 100%)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.8)',
+                  boxShadow: '0 8px 32px rgba(74, 48, 54, 0.035)',
+                  borderRadius: '20px',
+                  transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 36px rgba(74, 48, 54, 0.06)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(74, 48, 54, 0.035)'; }}
+              >
+                <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: kpi.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(219, 140, 149, 0.08)' }}>{kpi.icon}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: '0.7rem', color: '#a07880', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{kpi.label}</div>
+                  <div style={{ fontSize: '1.55rem', fontWeight: 900, color: '#4a3036', margin: '4px 0 2px 0', letterSpacing: '-0.5px' }}>{kpi.value}</div>
+                  <div style={{ fontSize: '0.68rem', color: kpi.subColor, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{kpi.sub}</div>
                   {kpi.progress != null && (
-                    <div style={{ height: '3px', background: 'rgba(223, 178, 140, 0.15)', borderRadius: '2px', overflow: 'hidden', marginTop: '6px' }}>
-                      <div style={{ height: '100%', background: '#db8c95', width: `${kpi.progress}%` }} />
+                    <div style={{ height: '3px', background: 'rgba(223, 178, 140, 0.15)', borderRadius: '2px', overflow: 'hidden', marginTop: '8px' }}>
+                      <div style={{ height: '100%', background: 'linear-gradient(90deg, #e8a2a9, #db8c95)', width: `${kpi.progress}%` }} />
                     </div>
                   )}
                 </div>
@@ -1270,7 +1287,6 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                     ));
                   })()}
                 </div>
-
                 <div 
                   onClick={() => setViewMode('agenda')}
                   style={{ textAlign: 'center', marginTop: '16px', borderTop: '1px solid rgba(223, 178, 140, 0.12)', paddingTop: '12px', fontSize: '0.78rem', color: '#db8c95', fontWeight: 700, cursor: 'pointer' }}
@@ -1292,7 +1308,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                   ¿Quién está libre ahora? <InfoTooltip text="Muestra la disponibilidad actual de las estilistas en tiempo real según sus horarios de trabajo, citas activas y su hora de almuerzo programada." />
                 </h3>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   {visibleStaff.map(s => {
                     const window = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
                     const refMin = checkingTime != null ? checkingTime : nowMinutes;
@@ -1306,7 +1322,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                       const occupied = busySlots.some(b => refMin >= b.startMinutes && refMin < b.endMinutes) || isLunch;
                       if (occupied) {
                         dotColor = '#db8c95'; // Busy
-                        statusText = isLunch ? 'En Almuerzo' : `Ocupada hasta ${formatMinutes(busySlots.find(b => refMin >= b.startMinutes && refMin < b.endMinutes)?.endMinutes || (refMin + 60))}`;
+                        statusText = isLunch ? 'En Almuerzo' : `Ocupada`;
                       } else {
                         dotColor = '#22c55e'; // Free
                         statusText = 'Libre ahora';
@@ -1314,11 +1330,45 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                     }
 
                     return (
-                      <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: dotColor, flexShrink: 0 }} />
+                      <div 
+                        key={s.id} 
+                        style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: '12px',
+                          padding: '6px 8px',
+                          borderRadius: '12px',
+                          transition: 'background 0.2s ease',
+                          cursor: 'pointer'
+                        }}
+                        className="btn-hover-scale"
+                        onClick={() => setSelectedStaffDrawer(s)}
+                      >
+                        {/* iMessage style avatar with status badge */}
+                        <div style={{ position: 'relative', width: '38px', height: '38px', flexShrink: 0 }}>
+                          <img
+                            src={s.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(s.name)}&backgroundColor=e8a2a9,f7d4d7,fce4e8&radius=50`}
+                            alt={s.name}
+                            style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: '1px solid rgba(223, 178, 140, 0.15)' }}
+                          />
+                          {/* Dot status overlay */}
+                          <div 
+                            style={{ 
+                              position: 'absolute', 
+                              bottom: '-1px', 
+                              right: '-1px', 
+                              width: '11px', 
+                              height: '11px', 
+                              borderRadius: '50%', 
+                              background: dotColor, 
+                              border: '2px solid #fff',
+                              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                            }} 
+                          />
+                        </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#4a3036', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</div>
-                          <div style={{ fontSize: '0.65rem', color: '#8c767b' }}>{statusText}</div>
+                          <div style={{ fontSize: '0.78rem', fontWeight: 770, color: '#4a3036', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</div>
+                          <div style={{ fontSize: '0.62rem', color: '#8c767b', fontWeight: 650 }}>{statusText}</div>
                         </div>
                       </div>
                     );
