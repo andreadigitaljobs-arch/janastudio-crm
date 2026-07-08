@@ -21,6 +21,7 @@ import NewClientModal from './NewClientModal';
 import { normalizeForSearch } from '../utils/stringUtils';
 import JanaDatePicker from './JanaDatePicker';
 import { ModalShield } from '../context/ModalContext';
+import JanaSelect from './JanaSelect';
 
 const STATUS_COLORS = {
   'Confirmada': { bg: '#f0fdf4', text: '#16a34a', border: '#bbf7d0', leftBorder: '#22c55e' },
@@ -1575,78 +1576,68 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
           </div>
           <div>
             <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>HORA DE INICIO</label>
-            <select
+            <JanaSelect
+              variant="light"
               value={availTimeStr}
-              onChange={e => setAvailTimeStr(e.target.value)}
-              style={{
-                width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.22)',
-                background: '#fff', color: '#4a3036', fontSize: '0.78rem', outline: 'none', height: '38px', cursor: 'pointer'
-              }}
-            >
-              {[
+              onChange={val => setAvailTimeStr(val)}
+              options={[
                 "07:00", "07:30", "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
                 "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
                 "17:00", "17:30", "18:00", "18:30", "19:00", "19:30"
               ].map(time => {
                 const [h, m] = time.split(':').map(Number);
                 const label = `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`;
-                return <option key={time} value={time}>{label}</option>;
+                return { value: time, label };
               })}
-            </select>
+              style={{ width: '100%' }}
+            />
           </div>
           <div>
-            <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>DURACIÓN (MINUTOS)</label>
-            <select
+            <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>DURACIÓN</label>
+            <JanaSelect
+              variant="light"
               value={availDuration}
-              onChange={e => setAvailDuration(e.target.value)}
-              style={{
-                width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.22)',
-                background: '#fff', color: '#4a3036', fontSize: '0.78rem', outline: 'none', height: '38px', cursor: 'pointer'
-              }}
-            >
-              <option value="15">15 min</option>
-              <option value="30">30 min</option>
-              <option value="45">45 min</option>
-              <option value="60">1 hora (60 min)</option>
-              <option value="90">1.5 horas (90 min)</option>
-              <option value="120">2 horas (120 min)</option>
-              <option value="180">3 horas (180 min)</option>
-            </select>
+              onChange={val => setAvailDuration(val)}
+              options={[
+                { value: "15", label: "15 min" },
+                { value: "30", label: "30 min" },
+                { value: "45", label: "45 min" },
+                { value: "60", label: "1 hora (60 min)" },
+                { value: "90", label: "1.5 horas (90 min)" },
+                { value: "120", label: "2 horas (120 min)" },
+                { value: "180", label: "3 horas (180 min)" }
+              ]}
+              style={{ width: '100%' }}
+            />
           </div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '14px', marginBottom: '24px' }}>
           <div>
             <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>SERVICIO</label>
-            <select
+            <JanaSelect
+              variant="light"
               value={availServiceId}
-              onChange={e => setAvailServiceId(e.target.value)}
-              style={{
-                width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.22)',
-                background: '#fff', color: '#4a3036', fontSize: '0.78rem', outline: 'none', height: '38px', cursor: 'pointer'
-              }}
-            >
-              <option value="all">Cualquier servicio</option>
-              {services.map(s => (
-                <option key={s.id} value={s.id}>{s.name} ({s.duration || 60}m)</option>
-              ))}
-            </select>
+              onChange={val => setAvailServiceId(val)}
+              options={[
+                { value: "all", label: "Cualquier servicio" },
+                ...services.map(s => ({ value: s.id, label: `${s.name} (${s.duration || 60}m)` }))
+              ]}
+              style={{ width: '100%' }}
+            />
           </div>
           <div>
             <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>ESPECIALISTA</label>
-            <select
+            <JanaSelect
+              variant="light"
               value={availStaffId}
-              onChange={e => setAvailStaffId(e.target.value)}
-              style={{
-                width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.22)',
-                background: '#fff', color: '#4a3036', fontSize: '0.78rem', outline: 'none', height: '38px', cursor: 'pointer'
-              }}
-            >
-              <option value="all">Todas las especialistas</option>
-              {staff.map(s => (
-                <option key={s.id} value={s.id}>{s.name}</option>
-              ))}
-            </select>
+              onChange={val => setAvailStaffId(val)}
+              options={[
+                { value: "all", label: "Todas las especialistas" },
+                ...staff.map(s => ({ value: s.id, label: s.name }))
+              ]}
+              style={{ width: '100%' }}
+            />
           </div>
         </div>
 

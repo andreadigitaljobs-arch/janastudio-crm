@@ -200,7 +200,7 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
           style={{
             flex: 1.3,
             height: '36px',
-            background: isLight ? '#fff8fa' : 'rgba(255,255,255,0.06)',
+            background: isLight ? '#fff' : '#1c1c1e',
             border: isLight ? '1px solid rgba(212,160,154,0.35)' : '1px solid rgba(255,255,255,0.1)',
             borderRadius: '10px',
             color: isLight ? 'var(--text-primary)' : 'white',
@@ -208,7 +208,14 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
             fontSize: '13px',
             fontWeight: '600',
             outline: 'none',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            WebkitAppearance: 'none',
+            MozAppearance: 'none',
+            appearance: 'none',
+            backgroundImage: 'url("data:image/svg+xml;utf8,<svg fill=\'%23db8c95\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/></svg>")',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'right 8px center',
+            paddingRight: '28px'
           }}
         >
           {MONTHS.map((m, idx) => (
@@ -221,7 +228,7 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
           style={{
             flex: 1,
             height: '36px',
-            background: isLight ? '#fff8fa' : 'rgba(255,255,255,0.06)',
+            background: isLight ? '#fff' : '#1c1c1e',
             border: isLight ? '1px solid rgba(212,160,154,0.35)' : '1px solid rgba(255,255,255,0.1)',
             borderRadius: '10px',
             color: isLight ? 'var(--text-primary)' : 'white',
@@ -229,7 +236,14 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
             fontSize: '13px',
             fontWeight: '600',
             outline: 'none',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            WebkitAppearance: 'none',
+            MozAppearance: 'none',
+            appearance: 'none',
+            backgroundImage: 'url("data:image/svg+xml;utf8,<svg fill=\'%23db8c95\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/></svg>")',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'right 8px center',
+            paddingRight: '28px'
           }}
         >
           {years.map(y => (
