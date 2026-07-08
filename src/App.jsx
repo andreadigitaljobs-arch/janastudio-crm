@@ -65,6 +65,7 @@ function App() {
   const [isTabLoading, setIsTabLoading] = useState(false);
   const [tabParams, setTabParams] = useState({});
   const [isReceptionModalOpen, setIsReceptionModalOpen] = useState(false);
+  const [hideSidebar, setHideSidebar] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const { isModalOpen } = useModal();
@@ -129,7 +130,22 @@ function App() {
     };
     syncRates();
     const interval = setInterval(syncRates, 10 * 60 * 1000);
-    return () => clearInterval(interval);
+
+    const handleOpenNotifications = () => {
+      setIsNotificationsOpen(true);
+    };
+    const handleHideSidebar = () => setHideSidebar(true);
+    const handleShowSidebar = () => setHideSidebar(false);
+    window.addEventListener('jana:open-notifications', handleOpenNotifications);
+    window.addEventListener('jana:hide-sidebar', handleHideSidebar);
+    window.addEventListener('jana:show-sidebar', handleShowSidebar);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('jana:open-notifications', handleOpenNotifications);
+      window.removeEventListener('jana:hide-sidebar', handleHideSidebar);
+      window.removeEventListener('jana:show-sidebar', handleShowSidebar);
+    };
   }, []);
 
   useEffect(() => {
@@ -406,16 +422,18 @@ function App() {
       <JanaLoader visible={isAppLoading} />
 
       {!isMobile && (
-        <Sidebar
-          activeTab={activeTab}
-          setActiveTab={(id) => handleTabChange(id, {})}
-          rates={effectiveRates}
-          isMobile={false}
-          isCollapsed={isCollapsed}
-          setIsCollapsed={setIsCollapsed}
-          activeRateType={activeRateType}
-          onToggleRateType={handleSetActiveRateType}
-        />
+        <div style={{ display: isModalOpen || isReceptionModalOpen || hideSidebar ? 'none' : 'block' }}>
+          <Sidebar
+            activeTab={activeTab}
+            setActiveTab={(id) => handleTabChange(id, {})}
+            rates={effectiveRates}
+            isMobile={false}
+            isCollapsed={isCollapsed}
+            setIsCollapsed={setIsCollapsed}
+            activeRateType={activeRateType}
+            onToggleRateType={handleSetActiveRateType}
+          />
+        </div>
       )}
 
       <main className="main-content no-scrollbar" style={{ 

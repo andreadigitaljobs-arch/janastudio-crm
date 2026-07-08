@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Calendar as CalendarIcon, Clock, User, Plus, ChevronLeft, ChevronRight,
   ChevronDown, Search, Pencil,
@@ -9,7 +9,8 @@ import {
 import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
 import { useAuth } from '../context/AuthContext';
-import { getRoleKind } from '../utils/roles';
+import { notificationService } from '../services/notificationService';
+import { getRoleKind, getRoleName } from '../utils/roles';
 import {
   getStaffWorkingWindow, getStaffBusyIntervals,
   getNextFreeMinutes, getAppointmentDuration, formatMinutes
@@ -21,6 +22,7 @@ import NewClientModal from './NewClientModal';
 import { normalizeForSearch } from '../utils/stringUtils';
 import JanaDatePicker from './JanaDatePicker';
 import { ModalShield } from '../context/ModalContext';
+import AnimatedModal from './AnimatedModal';
 import JanaSelect from './JanaSelect';
 
 const STATUS_COLORS = {
@@ -35,7 +37,7 @@ const STATUS_COLORS = {
   'Cancelada': { bg: '#fef2f2', text: '#dc2626', border: '#fecaca', leftBorder: '#ef4444' },
 };
 
-// Ventana visible de la grilla del dÃ­a (7:00 AM a 8:00 PM)
+// Ventana visible de la grilla del día (7:00 AM a 8:00 PM)
 const VIEW_START_MIN = 7 * 60;
 const VIEW_END_MIN = 20 * 60;
 const PX_PER_MIN = 1; // 60px por hora
@@ -189,7 +191,7 @@ const CalendarComponent = ({ selectedDate, onSelectDate }) => {
   );
 };
 
-/** Columna de un dÃ­a para una trabajadora: grilla de horas + bloques de citas posicionados por hora/duraciÃ³n real. */
+/** Columna de un día para una trabajadora: grilla de horas + bloques de citas posicionados por hora/duración real. */
 const StaffDayColumn = ({ 
   staffMember, 
   dayAppointments, 
@@ -202,14 +204,15 @@ const StaffDayColumn = ({
   checkingTime,
   multipleBookingActive,
   multipleBookedSlots = [],
-  onMultipleSlotToggle
+  onMultipleSlotToggle,
+  onAppointmentContextMenu
 }) => {
   const initial = (staffMember.name || '?').charAt(0).toUpperCase();
   const busy = getStaffBusyIntervals(staffMember.id, dayAppointments);
 
   // Bloqueo manual simulado (Almuerzo de 1:00 PM a 2:00 PM si trabaja)
   const mockManualBlocks = workingWindow.isWorking ? [
-    { id: `lunch-${staffMember.id}`, startMinutes: 13 * 60, endMinutes: 14 * 60, title: 'ðŸ”’ Almuerzo (Bloqueo)' }
+    { id: `lunch-${staffMember.id}`, startMinutes: 13 * 60, endMinutes: 14 * 60, title: '🔒 Almuerzo (Bloqueo)' }
   ] : [];
 
   const isTimeBusy = (time) => {
@@ -237,7 +240,7 @@ const StaffDayColumn = ({
     }
   };
 
-  // Determinar estado de disponibilidad para "Â¿QuiÃ©n estÃ¡ libre ahorita?"
+  // Determinar estado de disponibilidad para "¿Quién está libre ahorita?"
   let isCheckingFree = false;
   if (checkingTime != null && workingWindow.isWorking) {
     const insideWorking = checkingTime >= workingWindow.startMinutes && checkingTime < workingWindow.endMinutes;
@@ -245,7 +248,7 @@ const StaffDayColumn = ({
     isCheckingFree = insideWorking && !occupied;
   }
 
-  // Filtrar ranuras pre-agendadas de reserva mÃºltiple para esta trabajadora
+  // Filtrar ranuras pre-agendadas de reserva múltiple para esta trabajadora
   const staffMultipleSlots = multipleBookedSlots.filter(slot => slot.staffId === staffMember.id);
 
   return (
@@ -276,7 +279,7 @@ const StaffDayColumn = ({
             {staffMember.name}
           </div>
           <div style={{ fontSize: '0.62rem', color: '#a07880', fontWeight: 600 }}>
-            {workingWindow.isWorking ? `${formatMinutes(workingWindow.startMinutes)} â€“ ${formatMinutes(workingWindow.endMinutes)}` : 'DÃ­a libre'}
+            {workingWindow.isWorking ? `${formatMinutes(workingWindow.startMinutes)} – ${formatMinutes(workingWindow.endMinutes)}` : 'Día libre'}
           </div>
         </div>
         {checkingTime != null && (
@@ -291,7 +294,7 @@ const StaffDayColumn = ({
         )}
       </div>
 
-      {/* Grilla del dÃ­a */}
+      {/* Grilla del día */}
       <div
         onClick={handleColumnClick}
         style={{
@@ -312,7 +315,7 @@ const StaffDayColumn = ({
             fontSize: '0.7rem', fontWeight: 700, color: '#a0848a', background: 'rgba(255,255,255,0.9)',
             padding: '6px 14px', borderRadius: '20px', border: '1px solid rgba(223,178,140,0.3)', whiteSpace: 'nowrap'
           }}>
-            DÃ­a libre
+            Día libre
           </div>
         )}
 
@@ -333,7 +336,7 @@ const StaffDayColumn = ({
               top: `${minutesToY(checkingTime)}px`,
               left: 0,
               right: 0,
-              height: '60px', // DuraciÃ³n por defecto de 60min para verificar
+              height: '60px', // Duración por defecto de 60min para verificar
               pointerEvents: 'none',
               zIndex: 1,
               display: 'flex',
@@ -343,13 +346,13 @@ const StaffDayColumn = ({
           >
             {isCheckingFree && (
               <span style={{ fontSize: '0.58rem', fontWeight: 700, color: '#16a34a', background: '#fff', padding: '2px 6px', borderRadius: '6px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                Disponible aquÃ­
+                Disponible aquí
               </span>
             )}
           </div>
         )}
 
-        {/* LÃ­nea de "ahora" */}
+        {/* Línea de "ahora" */}
         {isToday && nowMinutes >= VIEW_START_MIN && nowMinutes <= VIEW_END_MIN && (
           <div style={{
             position: 'absolute', left: 0, right: 0, top: `${minutesToY(nowMinutes)}px`,
@@ -372,12 +375,12 @@ const StaffDayColumn = ({
               }}
             >
               <div>{block.title}</div>
-              <div style={{ fontSize: '0.55rem', opacity: 0.8 }}>1:00 PM â€“ 2:00 PM</div>
+              <div style={{ fontSize: '0.55rem', opacity: 0.8 }}>1:00 PM – 2:00 PM</div>
             </div>
           );
         })}
 
-        {/* Previsualizaciones de Cita MÃºltiple (Pre-agendadas) */}
+        {/* Previsualizaciones de Cita Múltiple (Pre-agendadas) */}
         {staffMultipleSlots.map((slot, idx) => {
           const top = minutesToY(slot.startMinutes);
           const height = 60 * PX_PER_MIN; // 60 minutos por defecto
@@ -394,7 +397,7 @@ const StaffDayColumn = ({
               }}
             >
               <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0506a' }}>
-                ðŸ”— Visita MÃºltiple
+                🔗 Visita Múltiple
               </div>
               <div style={{ fontSize: '0.55rem', color: '#7a3a4e', fontWeight: 600 }}>
                 {formatMinutes(slot.startMinutes)} (Servicio {idx + 1})
@@ -413,14 +416,21 @@ const StaffDayColumn = ({
           const colors = STATUS_COLORS[app.status] || STATUS_COLORS.Agendado;
           const clientName = app.clients?.name || 'Cliente';
           
-          // Verificar si esta cita estÃ¡ conectada a la previsualizaciÃ³n mÃºltiple (si simula ID de cita mÃºltiple)
+          // Verificar si esta cita está conectada a la previsualización múltiple (si simula ID de cita múltiple)
           const isMultipleApp = app.is_multiple_booking;
 
           return (
             <div
               key={app.id}
               onClick={(e) => { e.stopPropagation(); onAppointmentClick(app); }}
-              title={`${clientName} Â· ${app.services?.name || 'Servicio'} Â· ${formatMinutes(startMinutes)}`}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (onAppointmentContextMenu) {
+                  onAppointmentContextMenu(e, app);
+                }
+              }}
+              title={`${clientName} · ${app.services?.name || 'Servicio'} · ${formatMinutes(startMinutes)}`}
               className={isMultipleApp ? "agenda-appointment-multiple-selected" : ""}
               style={{
                 position: 'absolute', top: `${top}px`, left: '3px', right: '3px', height: `${height}px`,
@@ -432,7 +442,7 @@ const StaffDayColumn = ({
               onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.zIndex = '2'; }}
             >
               <div style={{ fontSize: '0.66rem', fontWeight: 700, color: '#4a3036', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '2px' }}>
-                {isMultipleApp && <span>ðŸ”—</span>}
+                {isMultipleApp && <span>🔗</span>}
                 {clientName}
               </div>
               {height > 32 && <div style={{ fontSize: '0.58rem', color: '#a07880', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{app.services?.name || 'Servicio'}</div>}
@@ -451,12 +461,12 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
 
   const staffRoles = {
     'Isabella': 'Lashista Senior',
-    'Valentina': 'Especialista en UÃ±as',
-    'Andrea': 'DiseÃ±adora de Cejas',
+    'Valentina': 'Especialista en Uñas',
+    'Andrea': 'Diseñadora de Cejas',
     'Camila': 'Lashista Esteticista',
     'Mariana': 'Colorista & Peinado',
     'Paola': 'Manicurista Nail Art',
-    'SofÃ­a': 'Especialista en Cejas',
+    'Sofía': 'Especialista en Cejas',
     'Test QA': 'Personal de Prueba'
   };
 
@@ -481,12 +491,14 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
   const [filterStaffId, setFilterStaffId] = useState('all');
   const [mobileStaffId, setMobileStaffId] = useState(null);
 
-  // Nuevos estados para diseÃ±o de funciones avanzadas (Fase 2 / Disponibilidad)
+  // Nuevos estados para diseño de funciones avanzadas (Fase 2 / Disponibilidad)
   const [checkingTime, setCheckingTime] = useState(null);
   const [multipleBookingActive, setMultipleBookingActive] = useState(false);
   const [multipleBookedSlots, setMultipleBookedSlots] = useState([]);
   const [selectedDetailedApp, setSelectedDetailedApp] = useState(null);
+  const [isClosingDetailedApp, setIsClosingDetailedApp] = useState(false);
   const [viewMode, setViewMode] = useState('operation');
+  const [quickContextMenu, setQuickContextMenu] = useState(null); // { x, y, app }
   const [showQuickAvailModal, setShowQuickAvailModal] = useState(false);
   const [expandedStaff, setExpandedStaff] = useState({});
   const [selectedStaffDrawer, setSelectedStaffDrawer] = useState(null);
@@ -511,7 +523,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
         return prev.filter(s => !(s.staffId === staffId && s.startMinutes === minutes));
       } else {
         if (prev.length >= 3) {
-          showToast?.('MÃ¡ximo 3 servicios simultÃ¡neos para reserva mÃºltiple en esta simulaciÃ³n', 'warning');
+          showToast?.('Máximo 3 servicios simultáneos para reserva múltiple en esta simulación', 'warning');
           return prev;
         }
         return [...prev, { staffId, startMinutes: minutes }];
@@ -519,12 +531,34 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
     });
   };
 
+  const [unreadNotifsCount, setUnreadNotifsCount] = useState(0);
+
   const roleKind = getRoleKind(user?.role);
   const isWorkerView = roleKind === 'worker';
 
   useEffect(() => {
+    const updateUnread = () => {
+      setUnreadNotifsCount(notificationService.getHistory().filter(n => !n.read).length);
+    };
+    updateUnread();
+    window.addEventListener('jana_new_notification', updateUnread);
+    return () => window.removeEventListener('jana_new_notification', updateUnread);
+  }, []);
+
+  useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    if (selectedDetailedApp) {
+      window.dispatchEvent(new CustomEvent('jana:hide-sidebar'));
+    } else {
+      window.dispatchEvent(new CustomEvent('jana:show-sidebar'));
+    }
+    return () => {
+      window.dispatchEvent(new CustomEvent('jana:show-sidebar'));
+    };
+  }, [selectedDetailedApp]);
 
   useEffect(() => {
     loadFilteredAppointments();
@@ -614,8 +648,8 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
 
     if (viewMode === 'operation') {
       const demoNames = [
-        'Isabella RodrÃ­guez', 'Laura PÃ©rez', 'SofÃ­a GÃ³mez', 'Camila Silva', 
-        'Valeria Rojas', 'Mariana Torres', 'Andrea Castro', 'LucÃ­a MÃ©ndez', 
+        'Isabella Rodríguez', 'Laura Pérez', 'Sofía Gómez', 'Camila Silva', 
+        'Valeria Rojas', 'Mariana Torres', 'Andrea Castro', 'Lucía Méndez', 
         'Gabriela Ortiz', 'Daniela Vargas'
       ];
       list = demoNames.map((name, i) => {
@@ -718,7 +752,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
     openScheduleFor(staffMember, minutes);
   };
 
-  // Cuando la trabajadora que ve solo su propia agenda estÃ¡ de dÃ­a libre, avisamos por quÃ© no puede reservar
+  // Cuando la trabajadora que ve solo su propia agenda está de día libre, avisamos por qué no puede reservar
   useEffect(() => {
     if (isWorkerView && visibleStaff.length === 1) {
       const w = getStaffWorkingWindow(visibleStaff[0].id, dateKey, schedules, timeOff);
@@ -796,7 +830,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
       const metrics = getStaffMetrics(s.id);
       
       if (!window.isWorking) {
-        inactivas.push({ staff: s, window, metrics, statusDesc: 'DÃ­a libre', type: 'free-day' });
+        inactivas.push({ staff: s, window, metrics, statusDesc: 'Día libre', type: 'free-day' });
         return;
       }
       
@@ -841,7 +875,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
           .filter(m => m > refMin)
           .sort((a, b) => a - b);
         
-        const nextTimeDesc = futureApps.length > 0 ? `Cita a las ${formatMinutes(futureApps[0])}` : 'Libre el resto del dÃ­a';
+        const nextTimeDesc = futureApps.length > 0 ? `Cita a las ${formatMinutes(futureApps[0])}` : 'Libre el resto del día';
 
         libres.push({
           staff: s,
@@ -938,15 +972,24 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
 
           {/* Bell Notifications */}
           <button
-            onClick={() => setViewMode('agenda')}
+            onClick={() => window.dispatchEvent(new CustomEvent('jana:open-notifications'))}
             style={{
-              width: '34px', height: '34px', borderRadius: '12px', background: '#fff',
-              border: '1px solid rgba(223, 178, 140, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#4a3036', cursor: 'pointer', position: 'relative', boxShadow: '0 2px 8px rgba(74, 48, 54, 0.03)'
+              width: '40px', height: '40px', borderRadius: '12px',
+              background: '#ffffff', border: '1px solid rgba(223, 178, 140, 0.3)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', position: 'relative',
+              color: '#4a3036',
+              boxShadow: '0 2px 8px rgba(74, 48, 54, 0.03)', transition: 'all 0.2s'
             }}
           >
-            <Bell size={16} />
-            <div style={{ position: 'absolute', top: '8px', right: '8px', background: '#db8c95', color: '#fff', fontSize: '0.55rem', fontWeight: 'bold', width: '12px', height: '12px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>5</div>
+            <Bell size={18} />
+            {unreadNotifsCount > 0 && (
+              <div style={{
+                position: 'absolute', top: '10px', right: '10px',
+                backgroundColor: '#db8c95', width: '7px', height: '7px',
+                borderRadius: '50%',
+              }} />
+            )}
           </button>
 
           {/* + Nueva cita */}
@@ -968,21 +1011,21 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
       {/* Navigation sub-tabs (hidden but functional dynamically through mock triggers) */}
       {false && (
         <div style={{ display: 'none' }}>
-          <button onClick={() => setViewMode('operation')}>OperaciÃ³n</button>
+          <button onClick={() => setViewMode('operation')}>Operación</button>
           <button onClick={() => setViewMode('availability')}>Disponibilidad</button>
           <button onClick={() => setViewMode('agenda')}>Agenda</button>
         </div>
       )}
 
-      {/* RENDER MODE: OPERACIÃ“N DE HOY */}
+      {/* RENDER MODE: OPERACIÓN DE HOY */}
       {viewMode === 'operation' && (
         <div className="staff-control-container">
           {/* KPIs Row */}
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
             {[
-              { label: 'Ingresos de hoy', value: `$ ${totalSalonRevenue.toLocaleString()}`, sub: 'â†‘ 18% vs ayer', subColor: '#16a34a', icon: <DollarSign size={18} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.12)', color: '#16a34a' },
-              { label: 'Citas del dÃ­a', value: totalCitas, sub: `${confirmadas} completadas  Â·  ${pendientes} pendientes`, subColor: '#8c767b', icon: <CalendarIcon size={18} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.12)', color: '#0284c7' },
-              { label: 'OcupaciÃ³n del equipo', value: `${occupancyPct}%`, sub: 'Meta diaria: 80%', subColor: '#8c767b', icon: <BarChart3 size={18} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.12)', progress: occupancyPct, color: '#db8c95' },
+              { label: 'Ingresos de hoy', value: `$ ${totalSalonRevenue.toLocaleString()}`, sub: '↑ 18% vs ayer', subColor: '#16a34a', icon: <DollarSign size={18} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.12)', color: '#16a34a' },
+              { label: 'Citas del día', value: totalCitas, sub: `${confirmadas} completadas  ·  ${pendientes} pendientes`, subColor: '#8c767b', icon: <CalendarIcon size={18} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.12)', color: '#0284c7' },
+              { label: 'Ocupación del equipo', value: `${occupancyPct}%`, sub: 'Meta diaria: 80%', subColor: '#8c767b', icon: <BarChart3 size={18} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.12)', progress: occupancyPct, color: '#db8c95' },
               { label: 'Especialistas disponibles', value: staffByStatus.libres.length, sub: 'Ahora mismo', subColor: '#16a34a', icon: <Users size={18} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.12)', color: '#d97706' }
             ].map((kpi, idx) => (
               <div 
@@ -1030,9 +1073,9 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                 {/* Tab Header */}
                 <div style={{ display: 'flex', gap: '4px', marginBottom: '20px', background: 'rgba(250,243,242,0.8)', borderRadius: '12px', padding: '4px' }}>
                   {[
-                    { key: 'citas', label: 'PrÃ³ximas citas de hoy', tooltip: null },
-                    { key: 'rendimiento', label: 'Rendimiento del equipo', tooltip: 'Muestra el rendimiento actual de cada estilista en tiempo real, incluyendo sus citas completadas, ingresos generados, porcentaje de ocupaciÃ³n del dÃ­a y su prÃ³xima cita agendada.' },
-                    { key: 'top', label: 'Top del dÃ­a', tooltip: 'Muestra el ranking de productividad y ventas de las especialistas hoy.' }
+                    { key: 'citas', label: 'Próximas citas de hoy', tooltip: null },
+                    { key: 'rendimiento', label: 'Rendimiento del equipo', tooltip: 'Muestra el rendimiento actual de cada estilista en tiempo real, incluyendo sus citas completadas, ingresos generados, porcentaje de ocupación del día y su próxima cita agendada.' },
+                    { key: 'top', label: 'Top del día', tooltip: 'Muestra el ranking de productividad y ventas de las especialistas hoy.' }
                   ].map(tab => (
                     <button
                       key={tab.key}
@@ -1088,7 +1131,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                           fontSize: '0.85rem', padding: '4px'
                         }}
                       >
-                        Ã—
+                        ×
                       </button>
                     )}
                   </div>
@@ -1215,7 +1258,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                           </div>
                           <div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
-                              <span style={{ color: '#8c767b' }}>OcupaciÃ³n</span>
+                              <span style={{ color: '#8c767b' }}>Ocupación</span>
                               <span style={{ fontWeight: 700, color: '#4a3036' }}>{metrics.occupancy}%</span>
                             </div>
                             <div style={{ height: '3px', background: '#faf3f2', borderRadius: '2px', overflow: 'hidden' }}>
@@ -1226,7 +1269,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
 
                         {/* Next appointment footer */}
                         <div style={{ margin: '0 10px 10px', background: '#faf3f2', borderRadius: '10px', padding: '5px 10px', display: 'flex', justifyContent: 'space-between', fontSize: '0.62rem' }}>
-                          <span style={{ color: '#8c767b', fontWeight: 600 }}>PrÃ³xima cita</span>
+                          <span style={{ color: '#8c767b', fontWeight: 600 }}>Próxima cita</span>
                           <span style={{ fontWeight: 700, color: '#4a3036' }}>{nextApp ? nextApp.timeStr : 'Ninguna'}</span>
                         </div>
                       </div>
@@ -1237,7 +1280,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                   <div style={{ textAlign: 'center', padding: '40px 20px', color: '#a07880', fontSize: '0.8rem', border: '1px dashed rgba(223,178,140,0.25)', borderRadius: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                     <Search size={24} color="#db8c95" style={{ opacity: 0.5 }} />
                     <div style={{ fontWeight: 700 }}>No se encontraron especialistas</div>
-                    <div style={{ fontSize: '0.7rem', opacity: 0.8 }}>Prueba a buscar con otros tÃ©rminos o limpia el buscador.</div>
+                    <div style={{ fontSize: '0.7rem', opacity: 0.8 }}>Prueba a buscar con otros términos o limpia el buscador.</div>
                   </div>
                 )}
                 </div>
@@ -1250,14 +1293,14 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '14px' }}>
                   {(() => {
                     const demoApps = [
-                      { id: 'd1', timeStr: '9:00 AM',  stylistName: 'Isabella RodrÃ­guez', service: 'ExtensiÃ³n de PestaÃ±as', client: 'MarÃ­a FernÃ¡ndez', status: 'En proceso',  statusBg: 'rgba(168,85,247,0.08)', textColor: '#a855f7' },
-                      { id: 'd2', timeStr: '9:30 AM',  stylistName: 'Laura PÃ©rez',         service: 'Manicura Gel',          client: 'Valentina GÃ³mez', status: 'Confirmada',  statusBg: 'rgba(34,197,94,0.08)',  textColor: '#16a34a' },
-                      { id: 'd3', timeStr: '10:00 AM', stylistName: 'SofÃ­a GÃ³mez',         service: 'DiseÃ±o de Cejas',       client: 'Camila Torres',   status: 'En proceso',  statusBg: 'rgba(168,85,247,0.08)', textColor: '#a855f7' },
+                      { id: 'd1', timeStr: '9:00 AM',  stylistName: 'Isabella Rodríguez', service: 'Extensión de Pestañas', client: 'María Fernández', status: 'En proceso',  statusBg: 'rgba(168,85,247,0.08)', textColor: '#a855f7' },
+                      { id: 'd2', timeStr: '9:30 AM',  stylistName: 'Laura Pérez',         service: 'Manicura Gel',          client: 'Valentina Gómez', status: 'Confirmada',  statusBg: 'rgba(34,197,94,0.08)',  textColor: '#16a34a' },
+                      { id: 'd3', timeStr: '10:00 AM', stylistName: 'Sofía Gómez',         service: 'Diseño de Cejas',       client: 'Camila Torres',   status: 'En proceso',  statusBg: 'rgba(168,85,247,0.08)', textColor: '#a855f7' },
                       { id: 'd4', timeStr: '10:30 AM', stylistName: 'Camila Silva',         service: 'Pedicura Spa',          client: 'Daniela Rojas',   status: 'Pendiente',   statusBg: 'rgba(217,119,6,0.08)', textColor: '#d97706' },
-                      { id: 'd5', timeStr: '11:00 AM', stylistName: 'Valeria Rojas',        service: 'Lifting de PestaÃ±as',   client: 'Andrea Castillo', status: 'Confirmada',  statusBg: 'rgba(34,197,94,0.08)',  textColor: '#16a34a' },
-                      { id: 'd6', timeStr: '11:30 AM', stylistName: 'Mariana Torres',       service: 'Color y Mechas',        client: 'LucÃ­a MÃ©ndez',    status: 'Confirmada',  statusBg: 'rgba(34,197,94,0.08)',  textColor: '#16a34a' },
-                      { id: 'd7', timeStr: '12:00 PM', stylistName: 'Andrea Castro',        service: 'Nail Art Detalle',      client: 'SofÃ­a Vargas',    status: 'Pendiente',   statusBg: 'rgba(217,119,6,0.08)', textColor: '#d97706' },
-                      { id: 'd8', timeStr: '12:30 PM', stylistName: 'LucÃ­a MÃ©ndez',         service: 'DepilaciÃ³n Cejas',      client: 'Elena RamÃ­rez',   status: 'Confirmada',  statusBg: 'rgba(34,197,94,0.08)',  textColor: '#16a34a' },
+                      { id: 'd5', timeStr: '11:00 AM', stylistName: 'Valeria Rojas',        service: 'Lifting de Pestañas',   client: 'Andrea Castillo', status: 'Confirmada',  statusBg: 'rgba(34,197,94,0.08)',  textColor: '#16a34a' },
+                      { id: 'd6', timeStr: '11:30 AM', stylistName: 'Mariana Torres',       service: 'Color y Mechas',        client: 'Lucía Méndez',    status: 'Confirmada',  statusBg: 'rgba(34,197,94,0.08)',  textColor: '#16a34a' },
+                      { id: 'd7', timeStr: '12:00 PM', stylistName: 'Andrea Castro',        service: 'Nail Art Detalle',      client: 'Sofía Vargas',    status: 'Pendiente',   statusBg: 'rgba(217,119,6,0.08)', textColor: '#d97706' },
+                      { id: 'd8', timeStr: '12:30 PM', stylistName: 'Lucía Méndez',         service: 'Depilación Cejas',      client: 'Elena Ramírez',   status: 'Confirmada',  statusBg: 'rgba(34,197,94,0.08)',  textColor: '#16a34a' },
                     ];
                     const realApps = [...dayApps].sort((a,b) => new Date(a.scheduled_at||a.created_at) - new Date(b.scheduled_at||b.created_at)).slice(0,8);
                     const appsToShow = realApps.length > 0 ? realApps.map((app, idx) => {
@@ -1268,12 +1311,38 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                       if (app.status === 'En Silla' || app.status === 'En Tratamiento') { statusBg = 'rgba(168,85,247,0.08)'; statusText = 'En proceso'; textColor = '#a855f7'; }
                       else if (app.status === 'Cancelada' || app.status === 'Cancelado') { statusBg = 'rgba(239,68,68,0.08)'; statusText = 'Cancelada'; textColor = '#dc2626'; }
                       else if (app.status === 'Por Pagar') { statusBg = 'rgba(217,119,6,0.08)'; statusText = 'Pendiente'; textColor = '#d97706'; }
-                      return { id: app.id || idx, timeStr, stylistName: specialist?.name || 'Especialista', service: app.services?.name || 'Servicio', client: app.clients?.name || 'Cliente', status: statusText, statusBg, textColor };
-                    }) : demoApps;
+                      return { id: app.id || idx, timeStr, stylistName: specialist?.name || 'Especialista', service: app.services?.name || 'Servicio', client: app.clients?.name || 'Cliente', status: statusText, statusBg, textColor, rawApp: app };
+                    }) : demoApps.map(d => ({
+                      ...d,
+                      rawApp: {
+                        id: d.id,
+                        status: d.status === 'Confirmada' ? 'Agendado' : d.status === 'En proceso' ? 'En Silla' : 'Por Pagar',
+                        scheduled_at: new Date().toISOString(),
+                        clients: { name: d.client, phone: '0412-0000000' },
+                        services: { name: d.service },
+                        staff_id: d.stylistName
+                      }
+                    }));
 
                     return appsToShow.map((item) => (
                       <div
                         key={item.id}
+                        onClick={() => {
+                          if (String(item.id).startsWith('d')) {
+                            showToast?.('Esta es una cita de demostración. Registra una cita real para gestionarla.', 'warning');
+                            return;
+                          }
+                          openScheduleForAppointment(item.rawApp);
+                        }}
+                        onContextMenu={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (String(item.id).startsWith('d')) {
+                            showToast?.('Esta es una cita de demostración. Registra una cita real para gestionarla.', 'warning');
+                            return;
+                          }
+                          setQuickContextMenu({ x: e.clientX, y: e.clientY, app: item.rawApp });
+                        }}
                         style={{
                           background: '#fff', border: '1px solid rgba(223,178,140,0.2)',
                           borderRadius: '14px', padding: '12px 16px',
@@ -1306,17 +1375,17 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                   onClick={() => setViewMode('agenda')}
                   style={{ textAlign: 'center', marginTop: '16px', borderTop: '1px solid rgba(223, 178, 140, 0.12)', paddingTop: '12px', fontSize: '0.78rem', color: '#db8c95', fontWeight: 700, cursor: 'pointer' }}
                 >
-                  Ver todas las citas del dÃ­a â€º
+                  Ver todas las citas del día ›
                 </div>
                 </div>
                 )}
 
-                {/* Tab: Top del dÃ­a */}
+                {/* Tab: Top del día */}
                 {leftTab === 'top' && (
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#8c767b' }}>
-                      ClasificaciÃ³n diaria de rendimiento
+                      Clasificación diaria de rendimiento
                     </div>
                     {/* Toggle buttons for rankings */}
                     <div style={{ display: 'flex', background: 'rgba(223, 178, 140, 0.12)', borderRadius: '8px', padding: '2px' }}>
@@ -1421,11 +1490,11 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
             {/* Right Column (28%) */}
             <div style={{ width: isMobile ? '100%' : '320px', display: 'flex', flexDirection: 'column', gap: '16px', flexShrink: 0 }}>
               
-              {/* Â¿QuiÃ©n estÃ¡ libre ahora? */}
+              {/* ¿Quién está libre ahora? */}
               <div className="agenda-glass-card" style={{ padding: '20px', overflow: 'visible', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#4a3036', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    Â¿QuiÃ©n estÃ¡ libre ahora? <InfoTooltip text="Muestra la disponibilidad actual de las estilistas en tiempo real segÃºn sus horarios de trabajo, citas activas y su hora de almuerzo programada." />
+                    ¿Quién está libre ahora? <InfoTooltip text="Muestra la disponibilidad actual de las estilistas en tiempo real según sus horarios de trabajo, citas activas y su hora de almuerzo programada." />
                   </h3>
                 </div>
 
@@ -1440,7 +1509,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                   }}
                   className="btn-hover-scale"
                 >
-                  Ver disponibilidad a una hora especÃ­fica
+                  Ver disponibilidad a una hora específica
                 </button>
 
                 {/* Scrollable Container for Specialists (Maximum height 250px with a subtle scroll indicator) */}
@@ -1517,9 +1586,9 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
 </div>
 )}
 
-{/* PORTAL/MODAL DIALOG: DISPONIBILIDAD RÃPIDA */}
-<ModalShield active={showQuickAvailModal}>
-  {showQuickAvailModal && (
+{/* PORTAL/MODAL DIALOG: DISPONIBILIDAD RÁPIDA */}
+<AnimatedModal isOpen={showQuickAvailModal}>
+  {(overlayClass, cardClass) => (
     <div
       style={{
         position: 'fixed', inset: 0,
@@ -1528,22 +1597,22 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
         zIndex: 1100, display: 'flex',
         alignItems: 'center', justifyContent: 'center', padding: '16px'
       }}
-      className="animate-fade-in"
+      className={overlayClass}
       onClick={() => setShowQuickAvailModal(false)}
     >
       <div
         onClick={e => e.stopPropagation()}
+        className={cardClass}
         style={{
           maxWidth: '720px', width: '100%', maxHeight: '90vh',
           display: 'flex', flexDirection: 'column',
           background: '#fff',
           borderRadius: '24px',
           boxShadow: '0 25px 60px rgba(74,48,54,0.18), 0 8px 24px rgba(0,0,0,0.06)',
-          overflow: 'hidden',
-          animation: 'qaSlideUp 0.35s cubic-bezier(0.34,1.56,0.64,1)'
+          overflow: 'hidden'
         }}
       >
-        {/* â”€â”€ HEADER â”€â”€ */}
+        {/* ── HEADER ── */}
         <div style={{
           padding: '28px 32px 24px',
           borderBottom: '1px solid rgba(223,178,140,0.15)',
@@ -1555,12 +1624,12 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
               margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#3d2b30',
               letterSpacing: '-0.3px'
             }}>
-              Buscador rÃ¡pido de disponibilidad
+              Buscador rápido de disponibilidad
             </h3>
             <p style={{
               margin: '4px 0 0', fontSize: '0.76rem', color: '#a0868c', fontWeight: 500
             }}>
-              Encuentra especialistas disponibles segÃºn la fecha, hora, duraciÃ³n y servicio.
+              Encuentra especialistas disponibles según la fecha, hora, duración y servicio.
             </p>
           </div>
           <button
@@ -1576,403 +1645,229 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(219,140,149,0.12)'; e.currentTarget.style.color = '#db8c95'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(74,48,54,0.05)'; e.currentTarget.style.color = '#8c767b'; }}
           >
-            âœ•
+            ✕
           </button>
         </div>
 
-        {/* â”€â”€ SCROLLABLE BODY â”€â”€ */}
+        {/* ── SCROLLABLE BODY ── */}
         <div style={{ overflowY: 'auto', flex: 1, padding: '24px 32px 32px' }} className="jana-scrollbar">
 
-          {/* â”€â”€ FILTER ROW 1: Fecha | Hora | DuraciÃ³n â”€â”€ */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
-            gap: '16px', marginBottom: '16px'
-          }}>
+          {/* ── FILTER ROW 1: Fecha | Hora | Duración ── */}
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '16px', marginBottom: '16px' }}>
             <div>
-              <label style={{
-                fontSize: '0.65rem', fontWeight: 700, color: '#a0868c',
-                display: 'block', marginBottom: '7px', letterSpacing: '0.3px'
-              }}>Fecha</label>
+              <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a0868c', display: 'block', marginBottom: '7px', letterSpacing: '0.3px' }}>Fecha</label>
               <JanaDatePicker
                 value={availDate}
                 onChange={e => setAvailDate(e.target.value)}
                 variant="light"
                 inputClassName="agenda-input"
-                inputStyle={{
-                  borderRadius: '12px', height: '44px', fontSize: '0.82rem',
-                  fontWeight: 600, paddingLeft: '38px',
-                  background: '#fff',
-                  border: '1.5px solid rgba(212,160,154,0.3)',
-                  color: '#3d2b30'
-                }}
+                inputStyle={{ borderRadius: '12px', height: '44px', fontSize: '0.82rem', fontWeight: 600, paddingLeft: '38px', background: '#fff', border: '1.5px solid rgba(212,160,154,0.3)', color: '#3d2b30' }}
               />
             </div>
-
             <div>
-              <label style={{
-                fontSize: '0.65rem', fontWeight: 700, color: '#a0868c',
-                display: 'block', marginBottom: '7px', letterSpacing: '0.3px'
-              }}>Hora de inicio</label>
-              <JanaSelect
-                variant="light"
-                value={availTimeStr}
-                onChange={val => setAvailTimeStr(val)}
+              <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a0868c', display: 'block', marginBottom: '7px', letterSpacing: '0.3px' }}>Hora de inicio</label>
+              <JanaSelect variant="light" value={availTimeStr} onChange={val => setAvailTimeStr(val)}
                 options={[
-                  "07:00","07:30","08:00","08:30","09:00","09:30","10:00","10:30","11:00","11:30",
-                  "12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30",
-                  "17:00","17:30","18:00","18:30","19:00","19:30"
-                ].map(time => {
-                  const [h, m] = time.split(':').map(Number);
-                  const label = `${h % 12 || 12}:${String(m).padStart(2,'0')} ${h >= 12 ? 'PM' : 'AM'}`;
-                  return { value: time, label };
-                })}
-                style={{ width: '100%' }}
-              />
-            </div>
-
-            <div>
-              <label style={{
-                fontSize: '0.65rem', fontWeight: 700, color: '#a0868c',
-                display: 'block', marginBottom: '7px', letterSpacing: '0.3px'
-              }}>DuraciÃ³n</label>
-              <JanaSelect
-                variant="light"
-                value={availDuration}
-                onChange={val => setAvailDuration(val)}
-                options={[
-                  { value: "15", label: "15 min" },
-                  { value: "30", label: "30 min" },
-                  { value: "45", label: "45 min" },
-                  { value: "60", label: "1 hora (60 min)" },
-                  { value: "90", label: "1.5 horas (90 min)" },
-                  { value: "120", label: "2 horas (120 min)" },
-                  { value: "180", label: "3 horas (180 min)" }
+                  { value: "07:00", label: "07:00 AM" },
+                  { value: "07:30", label: "07:30 AM" },
+                  { value: "08:00", label: "08:00 AM" },
+                  { value: "08:30", label: "08:30 AM" },
+                  { value: "09:00", label: "09:00 AM" },
+                  { value: "09:30", label: "09:30 AM" },
+                  { value: "10:00", label: "10:00 AM" },
+                  { value: "10:30", label: "10:30 AM" },
+                  { value: "11:00", label: "11:00 AM" },
+                  { value: "11:30", label: "11:30 AM" },
+                  { value: "12:00", label: "12:00 PM" },
+                  { value: "12:30", label: "12:30 PM" },
+                  { value: "13:00", label: "13:00 PM" },
+                  { value: "13:30", label: "13:30 PM" },
+                  { value: "14:00", label: "14:00 PM" },
+                  { value: "14:30", label: "14:30 PM" },
+                  { value: "15:00", label: "15:00 PM" },
+                  { value: "15:30", label: "15:30 PM" },
+                  { value: "16:00", label: "16:00 PM" },
+                  { value: "16:30", label: "16:30 PM" },
+                  { value: "17:00", label: "17:00 PM" },
+                  { value: "17:30", label: "17:30 PM" },
+                  { value: "18:00", label: "18:00 PM" },
+                  { value: "18:30", label: "18:30 PM" },
+                  { value: "19:00", label: "19:00 PM" },
+                  { value: "19:30", label: "19:30 PM" }
                 ]}
                 style={{ width: '100%' }}
+                showSearch={true}
+                editable={true}
+                placeholder="Ej: 09:00 AM"
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a0868c', display: 'block', marginBottom: '7px', letterSpacing: '0.3px' }}>Duración</label>
+              <JanaSelect variant="light" value={availDuration} onChange={val => setAvailDuration(val)}
+                options={[
+                  { value: "15", label: "15 minutos" },
+                  { value: "30", label: "30 minutos" },
+                  { value: "45", label: "45 minutos" },
+                  { value: "60", label: "60 minutos (1 hora)" },
+                  { value: "90", label: "90 minutos (1.5 horas)" },
+                  { value: "120", label: "120 minutos (2 horas)" },
+                  { value: "180", label: "180 minutos (3 horas)" }
+                ]}
+                style={{ width: '100%' }}
+                editable={true}
+                placeholder="Ej: 1 hora o 90"
               />
             </div>
           </div>
 
-          {/* â”€â”€ FILTER ROW 2: Servicio | Especialista â”€â”€ */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
-            gap: '16px', marginBottom: '20px'
-          }}>
+          {/* ── FILTER ROW 2: Servicio | Especialista ── */}
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '16px', marginBottom: '20px' }}>
             <div>
-              <label style={{
-                fontSize: '0.65rem', fontWeight: 700, color: '#a0868c',
-                display: 'block', marginBottom: '7px', letterSpacing: '0.3px'
-              }}>Servicio</label>
-              <JanaSelect
-                variant="light"
-                value={availServiceId}
-                onChange={val => setAvailServiceId(val)}
-                options={[
-                  { value: "all", label: "Cualquier servicio" },
-                  ...services.map(s => ({ value: s.id, label: `${s.name} (${s.duration || 60}m)` }))
-                ]}
+              <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a0868c', display: 'block', marginBottom: '7px', letterSpacing: '0.3px' }}>Servicio</label>
+              <JanaSelect variant="light" value={availServiceId} onChange={val => setAvailServiceId(val)}
+                options={[{ value: "all", label: "Cualquier servicio" }, ...services.map(s => ({ value: s.id, label: `${s.name} (${s.duration || 60}m)` }))]}
                 style={{ width: '100%' }}
+                showSearch={true}
               />
             </div>
-
             <div>
-              <label style={{
-                fontSize: '0.65rem', fontWeight: 700, color: '#a0868c',
-                display: 'block', marginBottom: '7px', letterSpacing: '0.3px'
-              }}>Especialista</label>
-              <JanaSelect
-                variant="light"
-                value={availStaffId}
-                onChange={val => setAvailStaffId(val)}
-                options={[
-                  { value: "all", label: "Todas las especialistas" },
-                  ...staff.map(s => ({ value: s.id, label: s.name }))
-                ]}
+              <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a0868c', display: 'block', marginBottom: '7px', letterSpacing: '0.3px' }}>Especialista</label>
+              <JanaSelect variant="light" value={availStaffId} onChange={val => setAvailStaffId(val)}
+                options={[{ value: "all", label: "Todas las especialistas" }, ...staff.map(s => ({ value: s.id, label: s.name }))]}
                 style={{ width: '100%' }}
+                showSearch={true}
               />
             </div>
           </div>
 
-          {/* â”€â”€ ACTION ROW: Limpiar filtros + Buscar â”€â”€ */}
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            marginBottom: '28px'
-          }}>
+          {/* ── ACTION ROW ── */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px' }}>
+            <button onClick={() => { setAvailTimeStr('09:00'); setAvailDuration('60'); setAvailServiceId('all'); setAvailStaffId('all'); }}
+              style={{ background: 'none', border: 'none', color: '#db8c95', fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', padding: '4px 0', transition: 'opacity 0.2s' }}
+              onMouseEnter={e => e.currentTarget.style.opacity = '0.7'} onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+            >✦ Limpiar filtros</button>
             <button
-              onClick={() => {
-                setAvailTimeStr('09:00');
-                setAvailDuration('60');
-                setAvailServiceId('all');
-                setAvailStaffId('all');
-              }}
-              style={{
-                background: 'none', border: 'none', color: '#db8c95',
-                fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: '5px',
-                padding: '4px 0', transition: 'opacity 0.2s'
-              }}
-              onMouseEnter={e => e.currentTarget.style.opacity = '0.7'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-            >
-              âœ¦ Limpiar filtros
-            </button>
-            <button
-              style={{
-                padding: '12px 28px', borderRadius: '14px', border: 'none',
-                background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
-                color: '#fff', fontSize: '0.82rem', fontWeight: 700,
-                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
-                boxShadow: '0 6px 20px rgba(219,140,149,0.3)',
-                transition: 'all 0.2s', letterSpacing: '0.2px'
-              }}
+              style={{ padding: '12px 28px', borderRadius: '14px', border: 'none', background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)', color: '#fff', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 6px 20px rgba(219,140,149,0.3)', transition: 'all 0.2s', letterSpacing: '0.2px' }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(219,140,149,0.4)'; }}
               onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(219,140,149,0.3)'; }}
-            >
-              <Search size={15} /> Buscar disponibilidad
-            </button>
+            ><Search size={15} /> Buscar disponibilidad</button>
           </div>
 
-          {/* â”€â”€ DIVIDER â”€â”€ */}
           <div style={{ height: '1px', background: 'rgba(223,178,140,0.15)', marginBottom: '24px' }} />
 
-          {/* â”€â”€ RESULTS â”€â”€ */}
+          {/* ── RESULTS ── */}
           {(() => {
             const [hh, mm] = availTimeStr.split(':').map(Number);
             const startMinutes = hh * 60 + mm;
-            const durationVal = parseInt(availDuration);
+            let durationVal = 60;
+            const cleanDurStr = String(availDuration || '').toLowerCase().trim();
+            if (cleanDurStr.includes('hora') || cleanDurStr.includes('hr') || cleanDurStr.endsWith('h')) {
+              // Extract numeric value (like 1, 1.5, 2)
+              const match = cleanDurStr.match(/[\d.]+/);
+              if (match) {
+                durationVal = Math.round(parseFloat(match[0]) * 60);
+              }
+            } else {
+              const parsedMin = parseInt(cleanDurStr.replace(/\D/g, ''));
+              if (!isNaN(parsedMin)) {
+                durationVal = parsedMin;
+              }
+            }
             const endMinutes = startMinutes + durationVal;
-
             const queryDate = new Date(availDate);
             const queryDateKey = getBusinessDateKey(queryDate);
-
-            const staffList = availStaffId === 'all'
-              ? staff
-              : staff.filter(s => s.id === availStaffId);
-
+            const staffList = availStaffId === 'all' ? staff : staff.filter(s => s.id === availStaffId);
             const disponibles = [];
             const noDisponibles = [];
 
             staffList.forEach(s => {
               const window = getStaffWorkingWindow(s.id, queryDateKey, schedules, timeOff);
-              if (!window.isWorking) {
-                noDisponibles.push({ staff: s, reason: 'DÃ­a libre / No trabaja hoy' });
-                return;
-              }
-              if (startMinutes < window.startMinutes || endMinutes > window.endMinutes) {
-                noDisponibles.push({
-                  staff: s,
-                  reason: `Fuera de jornada (${formatMinutes(window.startMinutes)} â€“ ${formatMinutes(window.endMinutes)})`
-                });
-                return;
-              }
-              const busySlots = getStaffBusyIntervals(s.id, appointments.filter(app => {
-                const appDate = new Date(app.scheduled_at || app.created_at);
-                return getBusinessDateKey(appDate) === queryDateKey;
-              }));
+              if (!window.isWorking) { noDisponibles.push({ staff: s, reason: 'Día libre / No trabaja hoy' }); return; }
+              if (startMinutes < window.startMinutes || endMinutes > window.endMinutes) { noDisponibles.push({ staff: s, reason: `Fuera de jornada (${formatMinutes(window.startMinutes)} – ${formatMinutes(window.endMinutes)})` }); return; }
+              const busySlots = getStaffBusyIntervals(s.id, appointments.filter(app => { const appDate = new Date(app.scheduled_at || app.created_at); return getBusinessDateKey(appDate) === queryDateKey; }));
               const lunchStart = 13 * 60, lunchEnd = 14 * 60;
               const hasLunchOverlap = startMinutes < lunchEnd && endMinutes > lunchStart;
               const conflict = busySlots.find(b => startMinutes < b.endMinutes && endMinutes > b.startMinutes);
-
-              if (hasLunchOverlap) {
-                noDisponibles.push({ staff: s, reason: 'Hora de almuerzo (1:00 PM â€“ 2:00 PM)' });
-              } else if (conflict) {
-                noDisponibles.push({
-                  staff: s,
-                  reason: `Ocupada ${formatMinutes(conflict.startMinutes)} â€“ ${formatMinutes(conflict.endMinutes)}`
-                });
-              } else {
-                disponibles.push({
-                  staff: s,
-                  freeFrom: formatMinutes(window.startMinutes),
-                  freeUntil: formatMinutes(window.endMinutes)
-                });
-              }
+              if (hasLunchOverlap) { noDisponibles.push({ staff: s, reason: 'Hora de almuerzo (1:00 PM – 2:00 PM)' }); }
+              else if (conflict) { noDisponibles.push({ staff: s, reason: `Ocupada ${formatMinutes(conflict.startMinutes)} – ${formatMinutes(conflict.endMinutes)}` }); }
+              else { disponibles.push({ staff: s, freeFrom: formatMinutes(window.startMinutes), freeUntil: formatMinutes(window.endMinutes) }); }
             });
 
             return (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-
-                {/* â”€â”€ DISPONIBLES HEADER â”€â”€ */}
-                <div style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between'
-                }}>
-                  <h4 style={{
-                    margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#3d2b30',
-                    display: 'flex', alignItems: 'center', gap: '6px'
-                  }}>
-                    Especialistas disponibles ({disponibles.length})
-                  </h4>
+                {/* Header */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#3d2b30' }}>Especialistas disponibles ({disponibles.length})</h4>
                   {disponibles.length > 0 && (
-                    <span style={{
-                      display: 'flex', alignItems: 'center', gap: '5px',
-                      background: '#f0fdf4', color: '#16a34a',
-                      padding: '5px 12px', borderRadius: '20px',
-                      fontSize: '0.68rem', fontWeight: 700,
-                      border: '1px solid #bbf7d0'
-                    }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '5px', background: '#f0fdf4', color: '#16a34a', padding: '5px 12px', borderRadius: '20px', fontSize: '0.68rem', fontWeight: 700, border: '1px solid #bbf7d0' }}>
                       <CheckCircle2 size={13} /> {disponibles.length} disponibles
                     </span>
                   )}
                 </div>
 
-                {/* â”€â”€ DISPONIBLES CARDS â”€â”€ */}
+                {/* Cards */}
                 {disponibles.length === 0 ? (
-                  <div style={{
-                    padding: '24px', borderRadius: '16px',
-                    background: '#faf7f5',
-                    border: '1px dashed rgba(223,178,140,0.3)',
-                    textAlign: 'center', color: '#a0868c', fontSize: '0.82rem'
-                  }}>
+                  <div style={{ padding: '24px', borderRadius: '16px', background: '#faf7f5', border: '1px dashed rgba(223,178,140,0.3)', textAlign: 'center', color: '#a0868c', fontSize: '0.82rem' }}>
                     Ninguna especialista disponible con estos criterios.
                   </div>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {disponibles.map((d, i) => (
-                      <div
-                        key={d.staff.id}
-                        style={{
-                          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                          padding: '16px 20px', borderRadius: '16px',
-                          background: '#fff',
-                          border: '1px solid rgba(223,178,140,0.18)',
-                          boxShadow: '0 2px 8px rgba(74,48,54,0.04)',
-                          transition: 'all 0.2s',
-                          animation: `qaSlideUp 0.3s ease ${i * 50}ms both`
-                        }}
+                      <div key={d.staff.id}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderRadius: '16px', background: '#fff', border: '1px solid rgba(223,178,140,0.18)', boxShadow: '0 2px 8px rgba(74,48,54,0.04)', transition: 'all 0.2s', animation: `qaSlideUp 0.3s ease ${i * 50}ms both` }}
                         onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 4px 16px rgba(74,48,54,0.08)'; e.currentTarget.style.borderColor = 'rgba(219,140,149,0.3)'; }}
                         onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 2px 8px rgba(74,48,54,0.04)'; e.currentTarget.style.borderColor = 'rgba(223,178,140,0.18)'; }}
                       >
-                        {/* Left: Avatar + Info */}
                         <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: 1, minWidth: 0 }}>
                           <div style={{ position: 'relative', flexShrink: 0 }}>
-                            <img
-                              src={d.staff.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(d.staff.name)}&backgroundColor=e8a2a9,f7d4d7,fce4e8&radius=50`}
-                              alt={d.staff.name}
-                              style={{
-                                width: '44px', height: '44px', borderRadius: '50%',
-                                objectFit: 'cover',
-                                border: '2.5px solid rgba(219,140,149,0.3)'
-                              }}
-                            />
-                            <div style={{
-                              position: 'absolute', bottom: '0px', right: '0px',
-                              width: '12px', height: '12px', borderRadius: '50%',
-                              background: '#22c55e', border: '2.5px solid #fff',
-                              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-                            }} />
+                            <img src={d.staff.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(d.staff.name)}&backgroundColor=e8a2a9,f7d4d7,fce4e8&radius=50`} alt={d.staff.name}
+                              style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', border: '2.5px solid rgba(219,140,149,0.3)' }} />
+                            <div style={{ position: 'absolute', bottom: '0px', right: '0px', width: '12px', height: '12px', borderRadius: '50%', background: '#22c55e', border: '2.5px solid #fff', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }} />
                           </div>
                           <div style={{ minWidth: 0 }}>
-                            <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#3d2b30' }}>
-                              {d.staff.name}
-                            </div>
-                            <div style={{ fontSize: '0.65rem', color: '#a0868c', fontWeight: 500 }}>
-                              {d.staff.role || 'Especialista'}
-                            </div>
+                            <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#3d2b30' }}>{d.staff.name}</div>
+                            <div style={{ fontSize: '0.65rem', color: '#a0868c', fontWeight: 500 }}>{getRoleName(d.staff.role || 'Especialista')}</div>
                           </div>
                         </div>
-
-                        {/* Center: Availability badge + tags */}
-                        <div style={{
-                          display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '6px',
-                          flex: 1.2, minWidth: 0, padding: '0 12px'
-                        }}>
-                          <span style={{
-                            display: 'inline-block',
-                            padding: '4px 10px', borderRadius: '8px',
-                            background: '#f0fdf4', color: '#16a34a',
-                            fontSize: '0.68rem', fontWeight: 700,
-                            border: '1px solid #bbf7d0',
-                            whiteSpace: 'nowrap'
-                          }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '6px', flex: 1.2, minWidth: 0, padding: '0 12px' }}>
+                          <span style={{ display: 'inline-block', padding: '4px 10px', borderRadius: '8px', background: '#f0fdf4', color: '#16a34a', fontSize: '0.68rem', fontWeight: 700, border: '1px solid #bbf7d0', whiteSpace: 'nowrap' }}>
                             Libre de {d.freeFrom} a {d.freeUntil}
                           </span>
-                          <div style={{
-                            display: 'flex', alignItems: 'center', gap: '10px',
-                            fontSize: '0.58rem', color: '#b8a0a5', fontWeight: 500
-                          }}>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                              âœ¦ Servicio compatible
-                            </span>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                              â€¢ Disponible ahora
-                            </span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.58rem', color: '#b8a0a5', fontWeight: 500 }}>
+                            <span>✦ Servicio compatible</span>
+                            <span>• Disponible ahora</span>
                           </div>
                         </div>
-
-                        {/* Right: Reservar button */}
                         <button
-                          onClick={() => {
-                            setScheduleModalPreset({ staff: d.staff, initialTime: availTimeStr });
-                            setShowQuickAvailModal(false);
-                            setShowScheduleModal(true);
-                          }}
-                          style={{
-                            padding: '10px 20px', borderRadius: '12px', border: 'none',
-                            background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
-                            color: '#fff', fontSize: '0.76rem', fontWeight: 700,
-                            cursor: 'pointer', flexShrink: 0, letterSpacing: '0.2px',
-                            boxShadow: '0 4px 12px rgba(219,140,149,0.25)',
-                            transition: 'all 0.2s'
-                          }}
+                          onClick={() => { setScheduleModalPreset({ staff: d.staff, initialTime: availTimeStr }); setShowQuickAvailModal(false); setShowScheduleModal(true); }}
+                          style={{ padding: '10px 20px', borderRadius: '12px', border: 'none', background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)', color: '#fff', fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer', flexShrink: 0, boxShadow: '0 4px 12px rgba(219,140,149,0.25)', transition: 'all 0.2s' }}
                           onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(219,140,149,0.35)'; }}
                           onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(219,140,149,0.25)'; }}
-                        >
-                          Reservar
-                        </button>
+                        >Reservar</button>
                       </div>
                     ))}
                   </div>
                 )}
 
-                {/* â”€â”€ NO DISPONIBLES â”€â”€ */}
+                {/* No disponibles */}
                 {noDisponibles.length > 0 && (
                   <div style={{ marginTop: '8px' }}>
-                    <h4 style={{
-                      margin: '0 0 12px', fontSize: '0.85rem', fontWeight: 800, color: '#8c767b',
-                      display: 'flex', alignItems: 'center', gap: '6px'
-                    }}>
-                      No disponibles ({noDisponibles.length})
-                    </h4>
+                    <h4 style={{ margin: '0 0 12px', fontSize: '0.85rem', fontWeight: 800, color: '#8c767b' }}>No disponibles ({noDisponibles.length})</h4>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       {noDisponibles.map((nd, i) => (
-                        <div
-                          key={nd.staff.id}
-                          style={{
-                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                            padding: '12px 18px', borderRadius: '14px',
-                            background: '#faf7f5',
-                            border: '1px solid rgba(223,178,140,0.12)',
-                            opacity: 0.8,
-                            animation: `qaSlideUp 0.3s ease ${(disponibles.length + i) * 40}ms both`
-                          }}
+                        <div key={nd.staff.id}
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 18px', borderRadius: '14px', background: '#faf7f5', border: '1px solid rgba(223,178,140,0.12)', opacity: 0.8, animation: `qaSlideUp 0.3s ease ${(disponibles.length + i) * 40}ms both` }}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <img
-                              src={nd.staff.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(nd.staff.name)}&backgroundColor=d4d4d4,e5e5e5&radius=50`}
-                              alt={nd.staff.name}
-                              style={{
-                                width: '36px', height: '36px', borderRadius: '50%',
-                                objectFit: 'cover', filter: 'grayscale(30%)',
-                                border: '2px solid rgba(200,190,185,0.4)'
-                              }}
-                            />
+                            <img src={nd.staff.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(nd.staff.name)}&backgroundColor=d4d4d4,e5e5e5&radius=50`} alt={nd.staff.name}
+                              style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover', filter: 'grayscale(30%)', border: '2px solid rgba(200,190,185,0.4)' }} />
                             <div>
-                              <div style={{ fontSize: '0.82rem', fontWeight: 650, color: '#6b5a60' }}>
-                                {nd.staff.name}
-                              </div>
-                              <div style={{ fontSize: '0.6rem', color: '#b8a0a5', fontWeight: 500 }}>
-                                {nd.staff.role || 'Especialista'}
-                              </div>
+                              <div style={{ fontSize: '0.82rem', fontWeight: 650, color: '#6b5a60' }}>{nd.staff.name}</div>
+                              <div style={{ fontSize: '0.6rem', color: '#b8a0a5', fontWeight: 500 }}>{getRoleName(nd.staff.role || 'Especialista')}</div>
                             </div>
                           </div>
-                          <span style={{
-                            fontSize: '0.65rem', fontWeight: 650, color: '#dc2626',
-                            background: 'rgba(239,68,68,0.06)', padding: '5px 12px',
-                            borderRadius: '10px', border: '1px solid rgba(239,68,68,0.12)',
-                            maxWidth: '220px', textAlign: 'right'
-                          }}>
+                          <span style={{ fontSize: '0.65rem', fontWeight: 650, color: '#dc2626', background: 'rgba(239,68,68,0.06)', padding: '5px 12px', borderRadius: '10px', border: '1px solid rgba(239,68,68,0.12)', maxWidth: '220px', textAlign: 'right' }}>
                             {nd.reason}
                           </span>
                         </div>
@@ -1980,21 +1875,23 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                     </div>
                   </div>
                 )}
-
               </div>
             );
           })()}
-
         </div>
       </div>
     </div>
   )}
-</ModalShield>
+</AnimatedModal>
 
 <style>{`
   @keyframes qaSlideUp {
     from { opacity: 0; transform: translateY(16px); }
     to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes quickAvailSlideUp {
+    from { opacity: 0; transform: translateY(20px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
   }
 `}</style>
 
@@ -2012,7 +1909,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
               
               <div style={{ marginBottom: '16px' }}>
                 <label style={{ fontSize: '0.68rem', fontWeight: 700, color: '#a07880', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '6px' }}>
-                  <Search size={12} color="#a07880" /> Â¿QUIÃ‰N ESTÃ LIBRE AHORA?
+                  <Search size={12} color="#a07880" /> ¿QUIÉN ESTÁ LIBRE AHORA?
                 </label>
                 <div style={{ display: 'flex', gap: '6px' }}>
                   <select
@@ -2054,7 +1951,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                   <label style={{ fontSize: '0.68rem', fontWeight: 700, color: '#a07880' }}>
-                    ðŸ”— RESERVA MULTIPLE
+                    🔗 RESERVA MULTIPLE
                   </label>
                   <div style={{ position: 'relative', display: 'inline-block', width: '34px', height: '20px' }}>
                     <input
@@ -2089,11 +1986,11 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                     padding: '10px', borderRadius: '10px', marginTop: '8px', animation: 'fadeIn 0.2s ease'
                   }}>
                     <div style={{ fontSize: '0.62rem', color: '#a0506a', fontWeight: 700, marginBottom: '6px' }}>
-                      Haz clic en los horarios libres de cada especialista para aÃ±adir servicios simultÃ¡neos:
+                      Haz clic en los horarios libres de cada especialista para añadir servicios simultáneos:
                     </div>
                     {multipleBookedSlots.length === 0 ? (
                       <div style={{ fontSize: '0.6rem', color: '#8c767b', fontStyle: 'italic' }}>
-                        NingÃºn horario seleccionado todavÃ­a.
+                        Ningún horario seleccionado todavía.
                       </div>
                     ) : (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -2102,20 +1999,20 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                           return (
                             <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.65rem', background: '#fff', padding: '4px 8px', borderRadius: '6px', border: '1px solid rgba(223,178,140,0.2)' }}>
                               <span style={{ fontWeight: 600, color: '#4a3036', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                                <User size={11} color="#db8c95" /> {sMember?.name.split(' ')[0]} Â· <Clock size={11} color="#db8c95" /> {formatMinutes(slot.startMinutes)}
+                                <User size={11} color="#db8c95" /> {sMember?.name.split(' ')[0]} · <Clock size={11} color="#db8c95" /> {formatMinutes(slot.startMinutes)}
                               </span>
                               <button
                                 onClick={() => handleMultipleSlotToggle(slot.staffId, slot.startMinutes)}
                                 style={{ border: 'none', background: 'none', color: '#dc2626', cursor: 'pointer', fontSize: '0.8rem', padding: '0 2px', fontWeight: 'bold' }}
                               >
-                                Ã—
+                                ×
                               </button>
                             </div>
                           );
                         })}
                         <button
                           onClick={() => {
-                            showToast?.('Creando cita mÃºltiple visualmente â€” cargando modal con preselecciÃ³n', 'success');
+                            showToast?.('Creando cita múltiple visualmente — cargando modal con preselección', 'success');
                             setMultipleBookingActive(false);
                             setMultipleBookedSlots([]);
                             setShowScheduleModal(true);
@@ -2126,7 +2023,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                             fontSize: '0.65rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 2px 6px rgba(219, 140, 149, 0.2)'
                           }}
                         >
-                          Confirmar Cita MÃºltiple
+                          Confirmar Cita Múltiple
                         </button>
                       </div>
                     )}
@@ -2140,7 +2037,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
 
               <div style={{ display: 'flex', gap: '4px', marginBottom: '14px', background: 'rgba(232,162,169,0.06)', borderRadius: '12px', padding: '4px', border: '1px solid rgba(223,178,140,0.15)' }}>
                 {[
-                  { id: 'day', label: 'Hoy / DÃ­a' },
+                  { id: 'day', label: 'Hoy / Día' },
                   { id: 'week', label: 'Semana' },
                   { id: 'month', label: 'Mes' },
                 ].map(f => (
@@ -2200,7 +2097,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
               <Search size={16} color="#db8c95" />
               <input
                 type="text"
-                placeholder="Buscar por nombre o telÃ©fono..."
+                placeholder="Buscar por nombre o teléfono..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{
@@ -2213,8 +2110,8 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
             {/* Selector de sub-vista dentro de la agenda detallada */}
             <div style={{ display: 'flex', gap: '6px', marginBottom: '18px', background: 'rgba(232,162,169,0.04)', padding: '4px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.15)' }}>
               {[
-                { id: 'accordion', label: 'Vista por Especialistas (AcordeÃ³n)', icon: <Users size={12} /> },
-                { id: 'timeline_list', label: 'Cronograma del DÃ­a (Lista)', icon: <CalendarIcon size={12} /> }
+                { id: 'accordion', label: 'Vista por Especialistas (Acordeón)', icon: <Users size={12} /> },
+                { id: 'timeline_list', label: 'Cronograma del Día (Lista)', icon: <CalendarIcon size={12} /> }
               ].map(sub => {
                 const isActive = (expandedStaff.currentSubView || 'accordion') === sub.id;
                 return (
@@ -2243,10 +2140,10 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
               }}>
                 <CalendarIcon size={28} color="#db8c95" style={{ marginBottom: '10px' }} />
                 <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#4a3036', marginBottom: '4px' }}>
-                  Vista de {filterType === 'week' ? 'semana' : 'mes'} â€” prÃ³ximamente
+                  Vista de {filterType === 'week' ? 'semana' : 'mes'} — próximamente
                 </div>
                 <div style={{ fontSize: '0.75rem', color: '#a07880' }}>
-                  Por ahora, usa la vista de dÃ­a para ver la agenda de todo el equipo.
+                  Por ahora, usa la vista de día para ver la agenda de todo el equipo.
                 </div>
               </div>
             ) : loading ? (
@@ -2257,7 +2154,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
               <div className="cronograma-container">
                 {dayApps.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '30px', color: '#a07880', fontSize: '0.8rem', fontStyle: 'italic' }}>
-                    No hay citas agendadas para este dÃ­a.
+                    No hay citas agendadas para este día.
                   </div>
                 ) : (
                   [...dayApps].sort((a, b) => {
@@ -2273,6 +2170,11 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                         key={app.id} 
                         className="cronograma-item-card animate-fade-in"
                         onClick={() => openScheduleForAppointment(app)}
+                        onContextMenu={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setQuickContextMenu({ x: e.clientX, y: e.clientY, app });
+                        }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                           <div className="cronograma-time-badge">{timeStr}</div>
@@ -2343,7 +2245,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                           <div>
                             <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#4a3036' }}>{s.name}</div>
                             <div style={{ fontSize: '0.65rem', color: '#a07880', fontWeight: 600 }}>
-                              {window.isWorking ? `${formatMinutes(window.startMinutes)} â€“ ${formatMinutes(window.endMinutes)}` : 'DÃ­a libre'}
+                              {window.isWorking ? `${formatMinutes(window.startMinutes)} – ${formatMinutes(window.endMinutes)}` : 'Día libre'}
                             </div>
                           </div>
                         </div>
@@ -2356,7 +2258,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                               background: isFree ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
                               padding: '3px 8px', borderRadius: '10px'
                             }}>
-                              {isFree ? 'âœ“ Disponible' : 'âŒ Ocupada'}
+                              {isFree ? '✓ Disponible' : '❌ Ocupada'}
                             </span>
                           )}
                           <span style={{ 
@@ -2366,7 +2268,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                             color: '#db8c95',
                             fontWeight: 'bold'
                           }}>
-                            â–¼
+                            ▼
                           </span>
                         </div>
                       </div>
@@ -2398,6 +2300,9 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                                 multipleBookingActive={multipleBookingActive}
                                 multipleBookedSlots={multipleBookedSlots}
                                 onMultipleSlotToggle={handleMultipleSlotToggle}
+                                onAppointmentContextMenu={(e, app) => {
+                                  setQuickContextMenu({ x: e.clientX, y: e.clientY, app });
+                                }}
                                 compact
                               />
                             </div>
@@ -2414,110 +2319,143 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
       )}
 
       {/* DETALLE DE CITA SI HAY SELECCIONADA (Fase 2 Visual) */}
-      {selectedDetailedApp && (
-        <div className="staff-drawer-overlay" onClick={() => setSelectedDetailedApp(null)}>
-          <div className="staff-drawer" onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', borderBottom: '1px solid rgba(223, 178, 140, 0.25)', paddingBottom: '10px' }}>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#4a3036', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <CalendarIcon size={15} color="#db8c95" /> Detalle de la Cita
-              </h4>
-              <button 
-                onClick={() => setSelectedDetailedApp(null)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#db8c95', fontWeight: 700, fontSize: '1.4rem', lineHeight: 1 }}
-              >
-                &times;
-              </button>
-            </div>
+      {/* DETALLE DE CITA SI HAY SELECCIONADA (Fase 2 Visual) */}
+      {selectedDetailedApp && (() => {
+        const triggerClose = () => {
+          setIsClosingDetailedApp(true);
+          setTimeout(() => {
+            setSelectedDetailedApp(null);
+            setIsClosingDetailedApp(false);
+          }, 270);
+        };
+        return (
+          <div 
+            className={`staff-drawer-overlay ${isClosingDetailedApp ? 'closing' : ''}`} 
+            style={{ zIndex: 15000 }} 
+            onClick={triggerClose}
+          >
+            <div className="staff-drawer" onClick={(e) => e.stopPropagation()}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', borderBottom: '1px solid rgba(223, 178, 140, 0.25)', paddingBottom: '10px' }}>
+                <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#4a3036', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <CalendarIcon size={15} color="#db8c95" /> Detalle de la Cita
+                </h4>
+                <button 
+                  onClick={triggerClose}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#db8c95', fontWeight: 700, fontSize: '1.4rem', lineHeight: 1 }}
+                >
+                  &times;
+                </button>
+              </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.75rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f5ebe8' }}>
-                <span style={{ color: '#8c767b' }}>Cliente:</span>
-                <span style={{ fontWeight: 700, color: '#4a3036' }}>{selectedDetailedApp.clients?.name || 'Cliente'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f5ebe8' }}>
-                <span style={{ color: '#8c767b' }}>TelÃ©fono:</span>
-                <span style={{ fontWeight: 600, color: '#db8c95' }}>{selectedDetailedApp.clients?.phone || 'Sin nÃºmero'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f5ebe8' }}>
-                <span style={{ color: '#8c767b' }}>Servicio:</span>
-                <span style={{ fontWeight: 700, color: '#4a3036' }}>{selectedDetailedApp.services?.name || 'Servicio'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f5ebe8' }}>
-                <span style={{ color: '#8c767b' }}>Especialista:</span>
-                <span style={{ fontWeight: 600, color: '#4a3036' }}>{staff.find(s => s.id === selectedDetailedApp.staff_id)?.name || 'Especialista'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f5ebe8' }}>
-                <span style={{ color: '#8c767b' }}>Hora:</span>
-                <span style={{ fontWeight: 700, color: '#a0506a' }}>
-                  {new Date(selectedDetailedApp.scheduled_at || selectedDetailedApp.created_at).toLocaleTimeString('es-VE', { hour: 'numeric', minute: '2-digit', hour12: true })}
-                </span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0' }}>
-                <span style={{ color: '#8c767b' }}>Estado:</span>
-                <span style={{
-                  padding: '2px 8px', borderRadius: '12px', fontSize: '0.62rem', fontWeight: 700,
-                  background: STATUS_COLORS[selectedDetailedApp.status]?.bg || '#f3f4f6',
-                  color: STATUS_COLORS[selectedDetailedApp.status]?.text || '#374151',
-                  border: `1px solid ${STATUS_COLORS[selectedDetailedApp.status]?.border || '#e5e7eb'}`
-                }}>{selectedDetailedApp.status}</span>
-              </div>
-              
-              {selectedDetailedApp.notes && (
-                <div style={{ marginTop: '8px', background: 'rgba(232, 162, 169, 0.05)', padding: '10px', borderRadius: '8px', borderLeft: '2px solid #db8c95' }}>
-                  <span style={{ fontWeight: 700, color: '#6b4a52', display: 'block', fontSize: '0.62rem', marginBottom: '2px' }}>Notas:</span>
-                  <span style={{ color: '#4a3036', fontStyle: 'italic', fontSize: '0.65rem' }}>"{selectedDetailedApp.notes}"</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.75rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f5ebe8' }}>
+                  <span style={{ color: '#8c767b' }}>Cliente:</span>
+                  <span style={{ fontWeight: 700, color: '#4a3036' }}>{selectedDetailedApp.clients?.name || 'Cliente'}</span>
                 </div>
-              )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f5ebe8' }}>
+                  <span style={{ color: '#8c767b' }}>Teléfono:</span>
+                  <span style={{ fontWeight: 600, color: '#db8c95' }}>{selectedDetailedApp.clients?.phone || 'Sin número'}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f5ebe8' }}>
+                  <span style={{ color: '#8c767b' }}>Servicio:</span>
+                  <span style={{ fontWeight: 700, color: '#4a3036' }}>{selectedDetailedApp.services?.name || 'Servicio'}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f5ebe8' }}>
+                  <span style={{ color: '#8c767b' }}>Especialista:</span>
+                  <span style={{ fontWeight: 600, color: '#4a3036' }}>{staff.find(s => s.id === selectedDetailedApp.staff_id)?.name || 'Especialista'}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f5ebe8' }}>
+                  <span style={{ color: '#8c767b' }}>Hora:</span>
+                  <span style={{ fontWeight: 700, color: '#a0506a' }}>
+                    {new Date(selectedDetailedApp.scheduled_at || selectedDetailedApp.created_at).toLocaleTimeString('es-VE', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0' }}>
+                  <span style={{ color: '#8c767b' }}>Estado:</span>
+                  <span style={{
+                    padding: '2px 8px', borderRadius: '12px', fontSize: '0.62rem', fontWeight: 700,
+                    background: STATUS_COLORS[selectedDetailedApp.status]?.bg || '#f3f4f6',
+                    color: STATUS_COLORS[selectedDetailedApp.status]?.text || '#374151',
+                    border: `1px solid ${STATUS_COLORS[selectedDetailedApp.status]?.border || '#e5e7eb'}`
+                  }}>{selectedDetailedApp.status}</span>
+                </div>
+                
+                {selectedDetailedApp.notes && (
+                  <div style={{ marginTop: '8px', background: 'rgba(232, 162, 169, 0.05)', padding: '10px', borderRadius: '8px', borderLeft: '2px solid #db8c95' }}>
+                    <span style={{ fontWeight: 700, color: '#6b4a52', display: 'block', fontSize: '0.62rem', marginBottom: '2px' }}>Notas:</span>
+                    <span style={{ color: '#4a3036', fontStyle: 'italic', fontSize: '0.65rem' }}>"{selectedDetailedApp.notes}"</span>
+                  </div>
+                )}
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '16px' }}>
-                <button 
-                  onClick={() => {
-                    showToast?.('Abrir editor para esta cita (Fase 2)', 'info');
-                    setSelectedDetailedApp(null);
-                  }}
-                  style={{ padding: '10px 4px', borderRadius: '8px', border: '1px solid rgba(223, 178, 140, 0.4)', background: '#fff', color: '#6b4a52', fontWeight: 600, cursor: 'pointer', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
-                  className="btn-hover-scale"
-                >
-                  <Pencil size={12} /> Editar Cita
-                </button>
-                <button 
-                  onClick={() => {
-                    showToast?.('Cita completada con Ã©xito', 'success');
-                    setSelectedDetailedApp(null);
-                  }}
-                  style={{ padding: '10px 4px', borderRadius: '8px', border: 'none', background: 'linear-gradient(135deg, #4ade80, #22c55e)', color: '#fff', fontWeight: 700, cursor: 'pointer', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
-                  className="btn-hover-scale"
-                >
-                  <Check size={12} /> Completar
-                </button>
-                <button 
-                  onClick={() => {
-                    const motivo = prompt('Por favor, indica el motivo de la cancelaciÃ³n:');
-                    if (motivo !== null) {
-                      showToast?.(`Cita cancelada. Motivo: ${motivo || 'No indicado'}`, 'error');
-                      setSelectedDetailedApp(null);
-                    }
-                  }}
-                  style={{ padding: '10px 4px', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.3)', background: 'rgba(239, 68, 68, 0.05)', color: '#dc2626', fontWeight: 600, cursor: 'pointer', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
-                  className="btn-hover-scale"
-                >
-                  <XCircle size={12} /> Cancelar
-                </button>
-                <button 
-                  onClick={() => {
-                    showToast?.('Cita marcada como No-show', 'warning');
-                    setSelectedDetailedApp(null);
-                  }}
-                  style={{ padding: '10px 4px', borderRadius: '8px', border: '1px solid rgba(217, 119, 6, 0.3)', background: 'rgba(217, 119, 6, 0.05)', color: '#d97706', fontWeight: 600, cursor: 'pointer', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
-                  className="btn-hover-scale"
-                >
-                  <AlertTriangle size={12} /> No-show
-                </button>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '18px' }}>
+                  <button 
+                    onClick={() => {
+                      showToast?.('Abrir editor para esta cita (Fase 2)', 'info');
+                      triggerClose();
+                    }}
+                    className="drawer-btn drawer-btn-edit"
+                  >
+                    <Pencil size={12} /> Editar Cita
+                  </button>
+                  <button 
+                    onClick={() => {
+                      showToast?.('Cita completada con éxito', 'success');
+                      triggerClose();
+                    }}
+                    className="drawer-btn drawer-btn-complete"
+                  >
+                    <Check size={12} /> Completar
+                  </button>
+                  <button 
+                    onClick={async () => {
+                      const confirmDel = window.confirm('¿Estás segura de que deseas eliminar permanentemente esta cita de la agenda? Esta acción no se puede deshacer.');
+                      if (confirmDel) {
+                        try {
+                          setLoading(true);
+                          await dataService.deleteAppointment(selectedDetailedApp.id);
+                          showToast?.('Cita eliminada permanentemente', 'success');
+                          triggerClose();
+                          loadFilteredAppointments();
+                        } catch (err) {
+                          console.error(err);
+                          showToast?.('Error al eliminar la cita', 'error');
+                        } finally {
+                          setLoading(false);
+                        }
+                      }
+                    }}
+                    className="drawer-btn drawer-btn-delete"
+                  >
+                    <XCircle size={12} /> Eliminar Cita
+                  </button>
+                  <button 
+                    onClick={() => {
+                      const motivo = prompt('Por favor, indica el motivo de la cancelación:');
+                      if (motivo !== null) {
+                        showToast?.(`Cita cancelada. Motivo: ${motivo || 'No indicado'}`, 'error');
+                        triggerClose();
+                      }
+                    }}
+                    className="drawer-btn drawer-btn-cancel"
+                  >
+                    <XCircle size={12} /> Cancelar Cita
+                  </button>
+                  <button 
+                    onClick={() => {
+                      showToast?.('Cita marcada como No-show', 'warning');
+                      triggerClose();
+                    }}
+                    className="drawer-btn drawer-btn-noshow"
+                    style={{ gridColumn: 'span 2' }}
+                  >
+                    <AlertTriangle size={12} /> No-show
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* DRAWER LATERAL DESLIZANTE DE TRABAJADORA (Fase 2 Visual) */}
       {/* FULL-SCREEN STAFF DASHBOARD VIEW */}
@@ -2538,7 +2476,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                 fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'
               }}
             >
-              â† Volver a Agenda
+              ← Volver a Agenda
             </button>
             <div style={{ display: 'flex', gap: '10px' }}>
               <button 
@@ -2570,7 +2508,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                 </span>
               </div>
               <p style={{ fontSize: '0.74rem', color: '#a07880', margin: '6px 0 0', fontWeight: 650 }}>
-                Especialidad: {selectedStaffDrawer.role || 'EstÃ©tica Integral'}  Â·  TelÃ©fono: 0412 345 6789
+                Especialidad: {selectedStaffDrawer.role || 'Estética Integral'}  ·  Teléfono: 0412 345 6789
               </p>
             </div>
 
@@ -2581,7 +2519,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                 <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#16a34a', marginTop: '2px' }}>Libre ahora</div>
               </div>
               <div style={{ background: '#fff9f5', border: '1px solid rgba(217, 119, 6, 0.2)', padding: '12px 18px', borderRadius: '16px', textAlign: 'center', minWidth: '100px' }}>
-                <div style={{ fontSize: '0.58rem', color: '#d97706', fontWeight: 700, textTransform: 'uppercase' }}>PrÃ³xima cita</div>
+                <div style={{ fontSize: '0.58rem', color: '#d97706', fontWeight: 700, textTransform: 'uppercase' }}>Próxima cita</div>
                 <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#d97706', marginTop: '2px' }}>
                   {getStaffNextApp(selectedStaffDrawer.id) ? getStaffNextApp(selectedStaffDrawer.id).timeStr : 'Ninguna'}
                 </div>
@@ -2596,10 +2534,10 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
           {/* Subtabs for Detail Navigation (Visual layout mimicking mockup) */}
           <div style={{ display: 'flex', gap: '20px', borderBottom: '1px solid rgba(223, 178, 140, 0.15)', paddingBottom: '8px', marginBottom: '24px' }}>
             <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#db8c95', borderBottom: '2px solid #db8c95', paddingBottom: '8px', cursor: 'pointer' }}>
-              Agenda del dÃ­a
+              Agenda del día
             </span>
             <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#a07880', paddingBottom: '8px', cursor: 'pointer' }}>
-              Resumen del dÃ­a
+              Resumen del día
             </span>
             <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#a07880', paddingBottom: '8px', cursor: 'pointer' }}>
               Servicios realizados
@@ -2630,7 +2568,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                   if (staffApps.length === 0) {
                     return (
                       <div style={{ padding: '30px 20px', textAlign: 'center', color: '#a07880', fontSize: '0.78rem' }}>
-                        No hay citas programadas para esta especialista el dÃ­a de hoy.
+                        No hay citas programadas para esta especialista el día de hoy.
                       </div>
                     );
                   }
@@ -2676,7 +2614,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
               {/* Daily metrics values */}
               <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '20px', padding: '20px' }}>
                 <h3 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#4a3036', margin: '0 0 16px 0' }}>
-                  Resumen del dÃ­a
+                  Resumen del día
                 </h3>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
@@ -2699,7 +2637,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                     </div>
                   </div>
                   <div style={{ background: '#faf3f2', padding: '12px', borderRadius: '14px', border: '1px solid rgba(223,178,140,0.12)' }}>
-                    <div style={{ fontSize: '0.6rem', color: '#a07880', fontWeight: 700, textTransform: 'uppercase' }}>OcupaciÃ³n diaria</div>
+                    <div style={{ fontSize: '0.6rem', color: '#a07880', fontWeight: 700, textTransform: 'uppercase' }}>Ocupación diaria</div>
                     <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#4a3036', marginTop: '4px' }}>
                       {getStaffMetrics(selectedStaffDrawer.id).occupancy}%
                     </div>
@@ -2708,17 +2646,17 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
 
                 <div style={{ borderTop: '1px solid rgba(223, 178, 140, 0.12)', paddingTop: '14px' }}>
                   <div style={{ fontSize: '0.62rem', color: '#a07880', fontWeight: 700, textTransform: 'uppercase', marginBottom: '8px' }}>
-                    Servicios mÃ¡s vendidos hoy
+                    Servicios más vendidos hoy
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     {[
                       { rank: 1, name: 'Volumen 3D', qty: 2, rev: 1600 },
-                      { rank: 2, name: 'Extensiones ClÃ¡sicas', qty: 1, rev: 700 },
-                      { rank: 3, name: 'Retoque ClÃ¡sico', qty: 1, rev: 150 }
+                      { rank: 2, name: 'Extensiones Clásicas', qty: 1, rev: 700 },
+                      { rank: 3, name: 'Retoque Clásico', qty: 1, rev: 150 }
                     ].map(srv => (
                       <div key={srv.rank} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#4a3036' }}>
                         <span style={{ fontWeight: 650 }}>{srv.rank}. {srv.name}</span>
-                        <span style={{ fontWeight: 800, color: '#a0506a' }}>{srv.qty} cita(s) Â· ${srv.rev}</span>
+                        <span style={{ fontWeight: 800, color: '#a0506a' }}>{srv.qty} cita(s) · ${srv.rev}</span>
                       </div>
                     ))}
                   </div>
@@ -2797,25 +2735,164 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
           </div>
         </div>
       )}
-      {showScheduleModal && (
-        <ScheduleModal
-          isOpen={showScheduleModal}
-          onClose={() => { setShowScheduleModal(false); setScheduleModalPreset(null); }}
-          clients={clients}
-          services={services}
-          staff={scheduleModalPreset?.staff || (isWorkerView ? visibleStaff[0] : staff)}
-          rates={rates}
-          defaultDate={selectedDate}
-          initialTime={scheduleModalPreset?.initialTime}
-          onSave={() => { setShowScheduleModal(false); setScheduleModalPreset(null); loadFilteredAppointments(); }}
-        />
-      )}
+      <ScheduleModal
+        isOpen={showScheduleModal}
+        onClose={() => { setShowScheduleModal(false); setScheduleModalPreset(null); }}
+        clients={clients}
+        services={services}
+        staff={staff}
+        initialStaff={scheduleModalPreset?.staff || (isWorkerView ? visibleStaff[0] : null)}
+        rates={rates}
+        defaultDate={selectedDate}
+        initialTime={scheduleModalPreset?.initialTime}
+        onSave={() => { setShowScheduleModal(false); setScheduleModalPreset(null); loadFilteredAppointments(); }}
+      />
       {showNewClientModal && (
         <NewClientModal
           isOpen={showNewClientModal}
           onClose={() => setShowNewClientModal(false)}
           onClientCreated={(c) => { setClients(prev => [...prev, c]); setShowNewClientModal(false); }}
         />
+      )}
+
+      {/* Floating Context Menu (Quick actions from outside) */}
+      {quickContextMenu && (
+        <>
+          <div 
+            style={{ position: 'fixed', inset: 0, zIndex: 16000, background: 'transparent' }} 
+            onClick={() => setQuickContextMenu(null)}
+            onContextMenu={(e) => { e.preventDefault(); setQuickContextMenu(null); }}
+          />
+          <div style={{
+            position: 'fixed',
+            left: `${Math.min(quickContextMenu.x, window.innerWidth - 200)}px`,
+            top: `${Math.min(quickContextMenu.y, window.innerHeight - 350)}px`,
+            width: '190px',
+            backgroundColor: '#ffffff',
+            borderRadius: '12px',
+            boxShadow: '0 10px 25px rgba(74, 48, 54, 0.15)',
+            border: '1px solid rgba(223, 178, 140, 0.25)',
+            padding: '6px',
+            zIndex: 16001,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '2px',
+            animation: 'fadeIn 0.12s ease-out'
+          }}>
+            <div style={{ padding: '6px 8px', fontSize: '0.62rem', fontWeight: 700, color: '#a07880', borderBottom: '1px solid #f5ebe8', marginBottom: '4px' }}>
+              ⚡ Acciones: {quickContextMenu.app.clients?.name || 'Cita'}
+            </div>
+            
+            {/* Quick Status Submenu */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+              <div style={{ fontSize: '0.55rem', fontWeight: 800, color: '#c97282', padding: '2px 8px 4px 8px' }}>ESTADO ACTUAL:</div>
+              {['Agendado', 'En Silla', 'En Tratamiento', 'Por Pagar', 'Completado'].map(st => {
+                const isCurrent = quickContextMenu.app.status === st;
+                return (
+                  <button
+                    key={st}
+                    onClick={async () => {
+                      try {
+                        setLoading(true);
+                        await dataService.updateAppointment(quickContextMenu.app.id, { status: st });
+                        showToast?.(`Estado actualizado a: ${st}`, 'success');
+                        setQuickContextMenu(null);
+                        loadFilteredAppointments();
+                      } catch (err) {
+                        console.error(err);
+                        showToast?.('Error al actualizar estado', 'error');
+                      } finally {
+                        setLoading(false);
+                      }
+                    }}
+                    style={{
+                      padding: '5px 8px', fontSize: '0.68rem', textAlign: 'left', border: 'none', borderRadius: '6px',
+                      background: isCurrent ? 'rgba(232, 162, 169, 0.15)' : 'transparent',
+                      color: isCurrent ? '#a0506a' : '#4a3036', fontWeight: isCurrent ? 750 : 500, cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+                    }}
+                    className="btn-hover-scale"
+                  >
+                    <span>{st}</span>
+                    {isCurrent && <span style={{ fontSize: '0.6rem' }}>✓</span>}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div style={{ height: '1px', background: '#f5ebe8', margin: '4px 0' }} />
+
+            {/* Postpone Appointment (Reagendar / Posponer por horas) */}
+            <button
+              onClick={async () => {
+                const hoursInput = prompt('¿Cuántas horas o minutos deseas posponer esta cita? (Ej: "30" para 30 minutos, o "2h" para 2 horas):');
+                if (hoursInput) {
+                  try {
+                    let minutesToAdd = parseInt(hoursInput) || 0;
+                    if (hoursInput.toLowerCase().endsWith('h')) {
+                      minutesToAdd = (parseInt(hoursInput) * 60) || 0;
+                    }
+                    if (minutesToAdd > 0) {
+                      setLoading(true);
+                      const current = new Date(quickContextMenu.app.scheduled_at || quickContextMenu.app.created_at);
+                      const newTime = new Date(current.getTime() + minutesToAdd * 60000);
+                      await dataService.updateAppointment(quickContextMenu.app.id, { scheduled_at: newTime.toISOString() });
+                      showToast?.(`Cita pospuesta por ${hoursInput}`, 'success');
+                      setQuickContextMenu(null);
+                      loadFilteredAppointments();
+                    } else {
+                      showToast?.('Cantidad no válida', 'error');
+                    }
+                  } catch (err) {
+                    console.error(err);
+                    showToast?.('Error al posponer', 'error');
+                  } finally {
+                    setLoading(false);
+                  }
+                }
+              }}
+              style={{
+                padding: '6px 8px', fontSize: '0.68rem', textAlign: 'left', border: 'none', borderRadius: '6px',
+                background: 'transparent', color: '#db8c95', fontWeight: 650, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: '6px'
+              }}
+              className="btn-hover-scale"
+            >
+              ⏰ Posponer / Retrasar...
+            </button>
+
+            <div style={{ height: '1px', background: '#f5ebe8', margin: '4px 0' }} />
+
+            {/* Delete Appointment */}
+            <button
+              onClick={async () => {
+                const confirmDel = window.confirm(`¿Segura de que quieres eliminar la cita de ${quickContextMenu.app.clients?.name || 'esta clienta'}?`);
+                if (confirmDel) {
+                  try {
+                    setLoading(true);
+                    await dataService.deleteAppointment(quickContextMenu.app.id);
+                    showToast?.('Cita eliminada permanentemente', 'success');
+                    setQuickContextMenu(null);
+                    loadFilteredAppointments();
+                  } catch (err) {
+                    console.error(err);
+                    showToast?.('Error al eliminar cita', 'error');
+                  } finally {
+                    setLoading(false);
+                  }
+                }
+              }}
+              style={{
+                padding: '6px 8px', fontSize: '0.68rem', textAlign: 'left', border: 'none', borderRadius: '6px',
+                background: 'rgba(220, 38, 38, 0.05)', color: '#dc2626', fontWeight: 700, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: '6px'
+              }}
+              className="btn-hover-scale"
+            >
+              🗑️ Eliminar permanentemente
+            </button>
+          </div>
+        </>
       )}
     </div>
   );

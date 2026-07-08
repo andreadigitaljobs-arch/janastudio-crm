@@ -97,11 +97,24 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
   const openCalendar = () => {
     if (containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
-      setCalendarPos({
-        top: rect.bottom + 8,
-        left: rect.left,
-        width: Math.max(rect.width, 280)
-      });
+      const calendarHeight = 330; // approximate height of calendar dropdown
+      const spaceBelow = window.innerHeight - rect.bottom;
+      
+      if (spaceBelow < calendarHeight + 16 && rect.top > calendarHeight + 16) {
+        // Open upward
+        setCalendarPos({
+          top: rect.top - calendarHeight - 8,
+          left: rect.left,
+          width: Math.max(rect.width, 280)
+        });
+      } else {
+        // Open downward
+        setCalendarPos({
+          top: rect.bottom + 8,
+          left: rect.left,
+          width: Math.max(rect.width, 280)
+        });
+      }
     }
     setIsOpen(true);
   };

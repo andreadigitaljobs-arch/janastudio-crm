@@ -60,6 +60,11 @@ const ReceptionModule = ({ isMobile }) => {
 
   const loadData = async () => {
     try {
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const todayEnd = new Date();
+      todayEnd.setHours(23, 59, 59, 999);
+
       const [c, s, st, active, ext, inv, allApps, ratesData] = await Promise.all([
         dataService.getClients(),
         dataService.getServices(),
@@ -67,6 +72,7 @@ const ReceptionModule = ({ isMobile }) => {
         dataService.getAppointmentsByState(['En Silla', 'Agendado']),
         dataService.getExtras(),
         dataService.getSaleInventoryCatalog(),
+        dataService.getAppointments(todayStart.toISOString(), todayEnd.toISOString()),
         dataService.getExchangeRates()
       ]);
       setClients(c || []);
@@ -78,8 +84,7 @@ const ReceptionModule = ({ isMobile }) => {
       setActiveAppointments((active || []).filter(a => a.status === 'En Silla'));
       setAllExtras(ext || []);
       setInventory((inv || []).filter(i => i.is_for_sale !== false && i.category === 'Venta'));
-      const today = new Date().toISOString().split('T')[0];
-      setUpcomingAppointments((allApps || []).filter(a => a.status === 'Agendado' && (a.scheduled_at?.startsWith(today) || a.created_at?.startsWith(today))));
+      setUpcomingAppointments(allApps || []);
       if (ratesData) {
         const activeType = localStorage.getItem('jana_active_rate') || 'usdt';
         setExchangeRate(activeType === 'bcv' ? (ratesData.bcv || 36.5) : (ratesData.usdt || 43.2));
@@ -403,21 +408,108 @@ const ReceptionModule = ({ isMobile }) => {
                 <span style={{ fontWeight: 600, fontSize: '0.75rem', color: '#2d2d2d' }}>Próximas Citas (Agenda Hoy)</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {DEMO_UPCOMING.map((apt, idx) => {
-                  const sc = apt.status === 'Confirmada' ? { bg: '#f0fdf4', text: '#16a34a', border: '#bbf7d0' } : { bg: '#fffbeb', text: '#d97706', border: '#fde68a' };
+                {(upcomingAppointments.length > 0 ? upcomingAppointments : DEMO_UPCOMING.map(d => ({
+                  id: `mock-${d.client}`,
+                  scheduled_at: new Date().toISOString(),
+                  clients: { name: d.client, phone: '0412-0000000' },
+                  services: { name: d.service },
+                  staff_id: d.staff,
+                  status: d.status
+                }))).map((apt, idx) => {
+                  const sc = apt.status === 'Confirmada' || apt.status === 'Agendado' || apt.status === 'Completado' 
+                    ? { bg: '#f0fdf4', text: '#16a34a', border: '#bbf7d0' } 
+                    : { bg: '#fffbeb', text: '#d97706', border: '#fde68a' };
+
+                  const start = new Date(apt.scheduled_at);
+                  const timeStr = start.toLocaleTimeString('es-VE', { hour: 'numeric', minute: '2-digit', hour12: true });
+                  const clientName = apt.clients?.name || 'Cliente';
+                  const specialistName = staff.find(s => s.id === apt.staff_id)?.name || 'Especialista';
+
                   return (
-                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 10px', borderRadius: '10px', background: '#faf5f5', fontSize: '0.72rem' }}>
+                    <div 
+                      key={apt.id || idx} 
+                      onClick={async () => {
+                        if (String(apt.id).startsWith('mock-')) {
+                          showToast('Esta es una cita de demostración. Crea una cita real desde Agenda o Recepción para interactuar.', 'warning');
+                          return;
+                        }
+                        const opt = window.prompt(
+                          `¿Qué deseas hacer con la cita de ${clientName}?\n` +
+                          `1. Cambiar estado\n` +
+                          `2. Posponer / Retrasar\n` +
+                          `3. Eliminar / Cancelar\n` +
+                          `Escribe el número de la opción:`
+                        );
+                        if (opt === '1') {
+                          const newStatus = window.prompt('Introduce el nuevo estado (Agendado, En Silla, En Tratamiento, Por Pagar, Completado):');
+                          if (newStatus) {
+                            try {
+                              setLoading(true);
+                              await dataService.updateAppointment(apt.id, { status: newStatus });
+                              showToast('Estado actualizado', 'success');
+                              loadData();
+                            } catch (err) {
+                              showToast('Error al actualizar estado', 'error');
+                            } finally {
+                              setLoading(false);
+                            }
+                          }
+                        } else if (opt === '2') {
+                          const minutesInput = window.prompt('¿Cuántos minutos deseas posponer esta cita? (Ej: 30):');
+                          if (minutesInput) {
+                            try {
+                              setLoading(true);
+                              const parsedMins = parseInt(minutesInput) || 0;
+                              const updatedTime = new Date(start.getTime() + parsedMins * 60000);
+                              await dataService.updateAppointment(apt.id, { scheduled_at: updatedTime.toISOString() });
+                              showToast(`Cita pospuesta por ${parsedMins} minutos`, 'success');
+                              loadData();
+                            } catch (err) {
+                              showToast('Error al posponer cita', 'error');
+                            } finally {
+                              setLoading(false);
+                            }
+                          }
+                        } else if (opt === '3') {
+                          const confirmDel = window.confirm(`¿Segura de que quieres eliminar la cita de ${clientName}?`);
+                          if (confirmDel) {
+                            try {
+                              setLoading(true);
+                              await dataService.deleteAppointment(apt.id);
+                              showToast('Cita eliminada permanentemente', 'success');
+                              loadData();
+                            } catch (err) {
+                              showToast('Error al eliminar cita', 'error');
+                            } finally {
+                              setLoading(false);
+                            }
+                          }
+                        }
+                      }}
+                      style={{ 
+                        display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 10px', 
+                        borderRadius: '10px', background: '#faf5f5', fontSize: '0.72rem', cursor: 'pointer',
+                        transition: 'transform 0.15s ease'
+                      }}
+                      className="btn-hover-scale"
+                    >
                       <div style={{ width: '50px', textAlign: 'center' }}>
-                        <div style={{ fontWeight: 700, color: '#c48b9f', fontSize: '0.75rem' }}>{apt.time.split(' ')[0]}</div>
-                        <div style={{ fontSize: '0.58rem', color: '#9e9e9e' }}>{apt.time.split(' ')[1]}</div>
+                        <div style={{ fontWeight: 700, color: '#c48b9f', fontSize: '0.75rem' }}>{timeStr.split(' ')[0]}</div>
+                        <div style={{ fontSize: '0.58rem', color: '#9e9e9e' }}>{timeStr.split(' ')[1]}</div>
                       </div>
-                      <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, fontSize: '0.68rem', flexShrink: 0 }}>{apt.initial}</div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: 600, color: '#2d2d2d' }}>{apt.client}</div>
-                        <div style={{ fontSize: '0.62rem', color: '#9e9e9e' }}>- {apt.service}</div>
+                      <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, fontSize: '0.68rem', flexShrink: 0 }}>
+                        {clientName.charAt(0).toUpperCase()}
                       </div>
-                      <div style={{ fontSize: '0.62rem', color: '#6b6b6b' }}>{apt.staff}</div>
-                      <span style={{ padding: '3px 8px', borderRadius: '20px', fontSize: '0.58rem', fontWeight: 600, background: sc.bg, color: sc.text, border: `1px solid ${sc.border}` }}>{apt.status}</span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: 600, color: '#2d2d2d', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{clientName}</div>
+                        <div style={{ fontSize: '0.62rem', color: '#9e9e9e', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>- {apt.services?.name || 'Servicio'}</div>
+                      </div>
+                      <div style={{ fontSize: '0.62rem', color: '#6b6b6b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {specialistName.split(' ')[0]}
+                      </div>
+                      <span style={{ padding: '3px 8px', borderRadius: '20px', fontSize: '0.58rem', fontWeight: 600, background: sc.bg, color: sc.text, border: `1px solid ${sc.border}` }}>
+                        {apt.status}
+                      </span>
                     </div>
                   );
                 })}
@@ -529,7 +621,7 @@ const ReceptionModule = ({ isMobile }) => {
 
       {/* Modals */}
       <NewClientModal isOpen={isNewClientModalOpen} onClose={() => setIsNewClientModalOpen(false)} onSuccess={(c) => { setClients([...clients, c]); setSelectedClient(c); setIsNewClientModalOpen(false); }} />
-      <ScheduleModal isOpen={isScheduleModalOpen} onClose={() => setIsScheduleModalOpen(false)} client={selectedClient} staff={staff.find(s => s.id === formData.staffId)} service={selectedServices[0]} onSchedule={(date) => handleSubmit('Agendado', date)} />
+      <ScheduleModal isOpen={isScheduleModalOpen} onClose={() => setIsScheduleModalOpen(false)} client={selectedClient} staff={staff} initialStaff={staff.find(s => s.id === formData.staffId)} service={selectedServices[0]} onSchedule={(date) => handleSubmit('Agendado', date)} />
       <JanaDialog isOpen={dialog.isOpen} title={dialog.title} message={dialog.message} type={dialog.type} onConfirm={dialog.onConfirm} onCancel={() => setDialog({ ...dialog, isOpen: false })} confirmText="Confirmar" cancelText="Cancelar" />
       {isServiceModalOpen && <SelectionModal isOpen={isServiceModalOpen} onClose={() => setIsServiceModalOpen(false)} title="Seleccionar Servicios" items={services} selectedItems={selectedServices} onToggle={(s) => toggleService(s.id)} exchangeRate={exchangeRate} type="service" />}
       {isExtraModalOpen && <SelectionModal isOpen={isExtraModalOpen} onClose={() => setIsExtraModalOpen(false)} title="Añadir Extras" items={allExtras} selectedItems={selectedExtras} onToggle={toggleExtra} exchangeRate={exchangeRate} type="extra" />}

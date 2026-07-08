@@ -14,43 +14,82 @@ const JanaSelect = ({
   label = "",
   style = {},
   disabled = false,
-  variant = "dark"
+  variant = "dark",
+  showSearch = false,
+  editable = false
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownStyle, setDropdownStyle] = useState({});
   const containerRef = useRef(null);
   const triggerRef = useRef(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [typedValue, setTypedValue] = useState("");
   const safeOptions = Array.isArray(options) ? options : [];
 
   const selectedOption = safeOptions.find(opt => opt.value == value);
   const isLight = variant === 'light';
+
+  // Filter options based on search query if enabled
+  const filteredOptions = searchQuery 
+    ? safeOptions.filter(opt => String(opt.label).toLowerCase().includes(searchQuery.toLowerCase()))
+    : safeOptions;
+
+  // Reset search when opening/closing, sync typed value
+  useEffect(() => {
+    if (!isOpen) {
+      setSearchQuery("");
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (selectedOption) {
+      setTypedValue(selectedOption.label);
+    } else {
+      setTypedValue(value || "");
+    }
+  }, [value, selectedOption]);
 
   // Calculate fixed position whenever dropdown opens
   useEffect(() => {
     if (isOpen && triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
       const spaceBelow = window.innerHeight - rect.bottom;
-      const dropdownMaxH = 250;
+      const dropdownMaxH = 300;
+      const margin = 20; // 20px padding from the viewport bottom (accounts for Taskbar)
 
-      if (spaceBelow < dropdownMaxH + 16) {
-        // Open upward
-        setDropdownStyle({
-          position: 'fixed',
-          bottom: window.innerHeight - rect.top + 8,
-          left: rect.left,
-          width: rect.width,
-          zIndex: 999999,
-          top: 'auto'
-        });
-      } else {
-        // Open downward
+      if (spaceBelow >= dropdownMaxH + margin) {
+        // Normal open downward
         setDropdownStyle({
           position: 'fixed',
           top: rect.bottom + 8,
           left: rect.left,
           width: rect.width,
           zIndex: 999999,
-          bottom: 'auto'
+          bottom: 'auto',
+          maxHeight: `${dropdownMaxH}px`
+        });
+      } else if (rect.top >= dropdownMaxH + margin) {
+        // Open upward since there is enough space above
+        setDropdownStyle({
+          position: 'fixed',
+          bottom: window.innerHeight - rect.top + 8,
+          left: rect.left,
+          width: rect.width,
+          zIndex: 999999,
+          top: 'auto',
+          maxHeight: `${dropdownMaxH}px`
+        });
+      } else {
+        // Open downward but limit the max-height to fit remaining viewport space dynamically
+        const restrictedHeight = Math.max(120, spaceBelow - margin);
+        setDropdownStyle({
+          position: 'fixed',
+          top: rect.bottom + 8,
+          left: rect.left,
+          width: rect.width,
+          zIndex: 999999,
+          bottom: 'auto',
+          maxHeight: `${restrictedHeight}px`
         });
       }
     }
@@ -75,7 +114,7 @@ const JanaSelect = ({
   useEffect(() => {
     if (!isOpen) return;
     const close = (e) => {
-      // Ignore scroll events that happen inside the dropdown
+      // Ignore scroll events that happen inside the dropdown or inside search input
       if (e.target && e.target.closest && e.target.closest('.jana-select-dropdown')) return;
       setIsOpen(false);
     };
@@ -92,47 +131,92 @@ const JanaSelect = ({
     setIsOpen(false);
   };
 
+  const handleInputKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      onChange(typedValue);
+      setIsOpen(false);
+    }
+  };
+
   const dropdown = isOpen ? (
     <div
       className={`jana-select-dropdown jana-scrollbar ${isLight ? 'jana-select-dropdown-light' : 'jana-select-dropdown-dark'}`}
       style={{
-        ...dropdownStyle,
         backgroundColor: isLight ? 'rgba(255, 255, 255, 0.98)' : '#1c1c1e',
         backdropFilter: 'blur(18px)',
         borderRadius: '18px',
         border: isLight ? '1px solid rgba(196, 139, 159, 0.22)' : '1px solid rgba(255, 255, 255, 0.1)',
         boxShadow: isLight ? '0 18px 45px rgba(93, 57, 67, 0.18)' : '0 10px 40px rgba(0,0,0,0.8)',
-        maxHeight: '250px',
+        maxHeight: '300px',
+        ...dropdownStyle,
         overflowY: 'auto',
         padding: '8px',
         animation: 'scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-        transformOrigin: 'top center'
+        transformOrigin: 'top center',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '4px'
       }}
     >
-      {safeOptions.length === 0 ? (
-        <div style={{ padding: '12px', color: 'var(--text-muted)', textAlign: 'center', fontSize: '13px' }}>Sin opciones</div>
-      ) : (
-        safeOptions.map((opt) => (
-          <div
-            key={opt.value}
-            onClick={() => handleSelect(opt.value)}
+      {/* Search Input inside Dropdown */}
+      {showSearch && (
+        <div style={{ padding: '4px', position: 'sticky', top: 0, zIndex: 10, background: isLight ? 'rgba(255, 255, 255, 0.98)' : '#1c1c1e', marginBottom: '4px' }}>
+          <input
+            type="text"
+            placeholder="Buscar..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onClick={(e) => e.stopPropagation()}
             style={{
-              padding: '12px 16px',
+              width: '100%',
+              padding: '8px 12px',
               borderRadius: '10px',
-              cursor: 'pointer',
-              backgroundColor: value === opt.value ? 'rgba(196, 139, 159, 0.15)' : 'transparent',
-              color: value === opt.value ? 'var(--pink-primary)' : isLight ? 'var(--text-primary)' : 'white',
-              transition: '0.2s',
-              fontSize: '14px',
-              fontWeight: value === opt.value ? '700' : '500',
-              marginBottom: '2px'
+              border: isLight ? '1.5px solid rgba(212,160,154,0.4)' : '1px solid rgba(255, 255, 255, 0.15)',
+              background: isLight ? '#fff' : 'rgba(255,255,255,0.05)',
+              color: isLight ? '#3d2b30' : '#fff',
+              fontSize: '0.8rem',
+              fontWeight: '600',
+              outline: 'none',
+              transition: 'all 0.2s'
             }}
-            className="jana-option"
-          >
-            {opt.label}
-          </div>
-        ))
+            onFocus={(e) => {
+              e.target.style.borderColor = 'var(--pink-primary)';
+              e.target.style.boxShadow = isLight ? '0 0 0 3px rgba(196, 139, 159, 0.15)' : 'none';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = isLight ? 'rgba(212,160,154,0.4)' : 'rgba(255, 255, 255, 0.15)';
+              e.target.style.boxShadow = 'none';
+            }}
+          />
+        </div>
       )}
+
+      <div style={{ overflowY: 'auto', flex: 1, maxHeight: '200px' }} className="jana-scrollbar">
+        {filteredOptions.length === 0 ? (
+          <div style={{ padding: '12px', color: 'var(--text-muted)', textAlign: 'center', fontSize: '13px' }}>Sin resultados</div>
+        ) : (
+          filteredOptions.map((opt) => (
+            <div
+              key={opt.value}
+              onClick={() => handleSelect(opt.value)}
+              style={{
+                padding: '12px 16px',
+                borderRadius: '10px',
+                cursor: 'pointer',
+                backgroundColor: value === opt.value ? 'rgba(196, 139, 159, 0.15)' : 'transparent',
+                color: value === opt.value ? 'var(--pink-primary)' : isLight ? 'var(--text-primary)' : 'white',
+                transition: '0.2s',
+                fontSize: '14px',
+                fontWeight: value === opt.value ? '700' : '500',
+                marginBottom: '2px'
+              }}
+              className="jana-option"
+            >
+              {opt.label}
+            </div>
+          ))
+        )}
+      </div>
     </div>
   ) : null;
 
@@ -149,37 +233,85 @@ const JanaSelect = ({
           </label>
         )}
 
-        <div
-          ref={triggerRef}
-          onClick={() => !disabled && setIsOpen(!isOpen)}
-          style={{
-            background: 'rgba(255, 255, 255, 0.05)',
-            ...(isLight ? {
-              background: isOpen ? 'rgba(255, 255, 255, 1)' : 'linear-gradient(135deg, #fff 0%, #fff8fa 100%)',
-              border: isOpen ? '1px solid var(--pink-primary)' : '1px solid rgba(212,160,154,0.35)',
-              boxShadow: isOpen ? '0 0 0 4px rgba(196, 139, 159, 0.12), 0 12px 28px rgba(93, 57, 67, 0.10)' : '0 8px 22px rgba(93, 57, 67, 0.06)'
-            } : {
-              border: isOpen ? '1px solid var(--pink-primary)' : '1px solid rgba(255, 255, 255, 0.1)',
-              boxShadow: isOpen ? '0 0 0 4px rgba(196, 139, 159, 0.1)' : 'none'
-            }),
-            padding: '13px 16px',
-            borderRadius: '14px',
-            color: selectedOption ? isLight ? 'var(--text-primary)' : 'white' : 'var(--text-muted)',
-            cursor: disabled ? 'not-allowed' : 'pointer',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-            fontSize: '15px',
-            fontWeight: selectedOption ? '700' : '600',
-            userSelect: 'none'
-          }}
-        >
-          <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingRight: '8px' }}>
-            {selectedOption ? selectedOption.label : placeholder}
-          </span>
-          <ChevronDown size={18} color="var(--pink-primary)" style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: '0.3s', flexShrink: 0 }} />
-        </div>
+        {editable ? (
+          <div
+            ref={triggerRef}
+            style={{
+              position: 'relative',
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center'
+            }}
+          >
+            <input
+              type="text"
+              placeholder={placeholder}
+              value={typedValue}
+              onFocus={() => !disabled && setIsOpen(true)}
+              onChange={(e) => {
+                setTypedValue(e.target.value);
+                onChange(e.target.value);
+              }}
+              onKeyDown={handleInputKeyDown}
+              style={{
+                width: '100%',
+                background: isLight ? 'linear-gradient(135deg, #fff 0%, #fff8fa 100%)' : 'rgba(255, 255, 255, 0.05)',
+                border: isOpen ? '1.5px solid var(--pink-primary)' : isLight ? '1px solid rgba(212,160,154,0.35)' : '1px solid rgba(255, 255, 255, 0.15)',
+                boxShadow: isOpen ? isLight ? '0 0 0 4px rgba(196, 139, 159, 0.12), 0 12px 28px rgba(93, 57, 67, 0.10)' : '0 0 0 4px rgba(196, 139, 159, 0.1)' : 'none',
+                padding: '13px 40px 13px 16px',
+                borderRadius: '14px',
+                color: isLight ? 'var(--text-primary)' : 'white',
+                fontSize: '15px',
+                fontWeight: '700',
+                outline: 'none',
+                transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+              }}
+            />
+            <ChevronDown
+              size={18}
+              color="var(--pink-primary)"
+              style={{
+                position: 'absolute',
+                right: '16px',
+                pointerEvents: 'none',
+                transform: isOpen ? 'rotate(180deg)' : 'none',
+                transition: '0.3s'
+              }}
+            />
+          </div>
+        ) : (
+          <div
+            ref={triggerRef}
+            onClick={() => !disabled && setIsOpen(!isOpen)}
+            style={{
+              background: 'rgba(255, 255, 255, 0.05)',
+              ...(isLight ? {
+                background: isOpen ? 'rgba(255, 255, 255, 1)' : 'linear-gradient(135deg, #fff 0%, #fff8fa 100%)',
+                border: isOpen ? '1px solid var(--pink-primary)' : '1px solid rgba(212,160,154,0.35)',
+                boxShadow: isOpen ? '0 0 0 4px rgba(196, 139, 159, 0.12), 0 12px 28px rgba(93, 57, 67, 0.10)' : '0 8px 22px rgba(93, 57, 67, 0.06)'
+              } : {
+                border: isOpen ? '1px solid var(--pink-primary)' : '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: isOpen ? '0 0 0 4px rgba(196, 139, 159, 0.1)' : 'none'
+              }),
+              padding: '13px 16px',
+              borderRadius: '14px',
+              color: selectedOption ? isLight ? 'var(--text-primary)' : 'white' : 'var(--text-muted)',
+              cursor: disabled ? 'not-allowed' : 'pointer',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+              fontSize: '15px',
+              fontWeight: selectedOption ? '700' : '600',
+              userSelect: 'none'
+            }}
+          >
+            <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingRight: '8px' }}>
+              {selectedOption ? selectedOption.label : placeholder}
+            </span>
+            <ChevronDown size={18} color="var(--pink-primary)" style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: '0.3s', flexShrink: 0 }} />
+          </div>
+        )}
       </div>
 
       {/* Render dropdown via portal so it escapes all overflow/transform contexts */}

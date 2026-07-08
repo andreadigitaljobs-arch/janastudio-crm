@@ -1975,30 +1975,133 @@ input:focus { outline: none; }
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(74, 48, 54, 0.25);
-  backdrop-filter: blur(4px);
-  z-index: 100;
+  background: rgba(46, 32, 35, 0.48); /* Fused dark rose tint for high contrast */
+  backdrop-filter: blur(24px) saturate(120%);
+  -webkit-backdrop-filter: blur(24px) saturate(120%);
+  z-index: 999999;
   display: flex;
   justify-content: flex-end;
-  animation: fadeIn 0.2s ease-out;
+  animation: fadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .staff-drawer {
-  width: 420px;
+  width: 440px;
   max-width: 100%;
   height: 100%;
   background: #ffffff;
-  box-shadow: -10px 0 30px rgba(74, 48, 54, 0.12);
+  border-left: 1px solid rgba(223, 178, 140, 0.35);
+  box-shadow: -15px 0 45px rgba(46, 32, 35, 0.28); /* Strong elegant dark shadow */
   display: flex;
   flex-direction: column;
-  padding: 24px;
+  padding: 28px 24px;
   overflow-y: auto;
-  animation: drawerSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: drawerSlide 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes drawerSlide {
   from { transform: translateX(100%); }
   to { transform: translateX(0); }
+}
+
+@keyframes drawerSlideOut {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.staff-drawer-overlay.closing {
+  animation: fadeOut 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.staff-drawer-overlay.closing .staff-drawer {
+  animation: drawerSlideOut 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Botones Premium del Detalle de Cita */
+.drawer-btn {
+  padding: 11px 16px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(74, 48, 54, 0.04);
+}
+
+.drawer-btn:active {
+  transform: scale(0.96);
+}
+
+/* Botón Editar - Elegante con Borde */
+.drawer-btn-edit {
+  border: 1.5px solid rgba(223, 178, 140, 0.5);
+  background: #ffffff;
+  color: #6b4a52;
+}
+.drawer-btn-edit:hover {
+  background: rgba(223, 178, 140, 0.08);
+  border-color: #db8c95;
+  box-shadow: 0 4px 12px rgba(223, 178, 140, 0.18);
+}
+
+/* Botón Completar - Verde Lleno Premium */
+.drawer-btn-complete {
+  border: none;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+.drawer-btn-complete:hover {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+  transform: translateY(-1px);
+}
+
+/* Botón Eliminar - Rojo de Borde */
+.drawer-btn-delete {
+  border: 1.5px solid rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.02);
+  color: #dc2626;
+}
+.drawer-btn-delete:hover {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: #dc2626;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.18);
+  transform: translateY(-1px);
+}
+
+/* Botón Cancelar - Rosa/Rojo suave */
+.drawer-btn-cancel {
+  border: 1.5px solid rgba(220, 38, 38, 0.25);
+  background: rgba(220, 38, 38, 0.02);
+  color: #dc2626;
+}
+.drawer-btn-cancel:hover {
+  background: rgba(220, 38, 38, 0.08);
+  border-color: #dc2626;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.18);
+  transform: translateY(-1px);
+}
+
+/* Botón No-show - Naranja elegante */
+.drawer-btn-noshow {
+  border: 1.5px solid rgba(245, 158, 11, 0.25);
+  background: rgba(245, 158, 11, 0.02);
+  color: #d97706;
+}
+.drawer-btn-noshow:hover {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: #d97706;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.18);
+  transform: translateY(-1px);
 }
 
 /* Rankings de Rendimiento del Día */
@@ -2077,5 +2180,46 @@ input:focus { outline: none; }
 /* Hover transitions for interactive elements */
 .agenda-glass-card, .btn-hover-scale {
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease, border 0.2s ease;
+}
+
+/* Modal Overlay & Card Entrance / Exit Animations */
+.modal-overlay-enter {
+  opacity: 1;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal-overlay-exit {
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.modal-card-enter {
+  animation: modalEnterAnim 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.modal-card-exit {
+  animation: modalExitAnim 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+  pointer-events: none;
+}
+
+@keyframes modalEnterAnim {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modalExitAnim {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.92) translateY(18px);
+  }
 }
 

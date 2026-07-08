@@ -32,16 +32,14 @@ const AnimatedModal = ({ isOpen, children }) => {
     clearTimeout(timer.current);
     if (isOpen) {
       setMounted(true);
-      // Tiny delay lets the DOM paint before the enter class fires
-      requestAnimationFrame(() => setPhase('enter'));
+      setPhase('enter');
     } else {
       if (!mounted) return;
       setPhase('exit');
-      // Keep mounted for the exit animation duration (match CSS: 0.2s)
-      timer.current = setTimeout(() => setMounted(false), 220);
+      timer.current = setTimeout(() => setMounted(false), 350);
     }
     return () => clearTimeout(timer.current);
-  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isOpen, mounted]);
 
   if (!mounted) return null;
 
