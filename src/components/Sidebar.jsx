@@ -238,16 +238,17 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
 
       <div style={{ marginTop: 'auto', paddingTop: '12px', display: 'flex', flexDirection: 'column', gap: '10px', position: 'relative' }}>
         {!effectiveCollapsed && (
-          <img src="/flor_abajo.png" alt="" style={{
+          <img src="/flor_arriba.png" alt="" style={{
             position: 'absolute',
-            bottom: '55px',
-            right: '5px',
-            width: '110px',
+            bottom: '50px',
+            left: '-10px',
+            width: '130px',
             height: 'auto',
-            opacity: 0.45,
+            opacity: 0.5,
             pointerEvents: 'none',
+            transform: 'scaleX(-1)',
             animation: 'florSidebarSway 8s ease-in-out infinite alternate',
-            transformOrigin: 'bottom right'
+            transformOrigin: 'bottom left'
           }} />
         )}
         <style>{`
