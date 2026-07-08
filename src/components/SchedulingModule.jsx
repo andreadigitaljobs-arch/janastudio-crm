@@ -1300,7 +1300,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
             </div>
 
             {/* Right Column (28%) */}
-            <div style={{ width: isMobile ? '100%' : '320px', display: 'flex', flexDirection: 'column', gap: '24px', flexShrink: 0 }}>
+            <div style={{ width: isMobile ? '100%' : '320px', display: 'flex', flexDirection: 'column', gap: '16px', flexShrink: 0 }}>
               
               {/* ¿Quién está libre ahora? */}
               <div className="agenda-glass-card" style={{ padding: '20px', overflow: 'visible' }}>
@@ -1308,7 +1308,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                   ¿Quién está libre ahora? <InfoTooltip text="Muestra la disponibilidad actual de las estilistas en tiempo real según sus horarios de trabajo, citas activas y su hora de almuerzo programada." />
                 </h3>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {visibleStaff.map(s => {
                     const window = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
                     const refMin = checkingTime != null ? checkingTime : nowMinutes;
@@ -1434,7 +1434,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                     const percent = Math.min(100, Math.round((itemValue / topValue) * 100));
 
                     return (
-                      <div key={item.staff.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', position: 'relative', paddingBottom: '6px' }}>
+                      <div key={item.staff.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', position: 'relative', paddingBottom: '2px' }}>
                         {/* Ranking number badge */}
                         <div style={{
                           width: '18px', height: '18px', borderRadius: '50%',
@@ -1446,20 +1446,20 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                         </div>
 
                         {/* Avatar */}
-                        <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '0.7rem', flexShrink: 0 }}>{stylistInitial}</div>
+                        <div style={{ width: '26px', height: '26px', borderRadius: '50%', background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '0.7rem', flexShrink: 0 }}>{stylistInitial}</div>
 
                         {/* Name and relative bar */}
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#4a3036', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.staff.name}</div>
+                          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#4a3036', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.staff.name}</div>
                           {/* Mini visual ratio bar */}
-                          <div style={{ height: '3px', background: '#faf3f2', borderRadius: '2px', overflow: 'hidden', marginTop: '3px', width: '80%' }}>
+                          <div style={{ height: '3px', background: '#faf3f2', borderRadius: '2px', overflow: 'hidden', marginTop: '2px', width: '80%' }}>
                             <div style={{ height: '100%', background: '#db8c95', width: `${percent}%` }} />
                           </div>
                         </div>
 
                         {/* Value */}
-                        <span style={{ fontSize: '0.72rem', fontWeight: 800, color: rankingTab === 'revenue' ? '#a0506a' : '#0284c7' }}>
-                          {rankingTab === 'revenue' ? `$ ${item.metrics.revenue.toLocaleString()}` : `${item.metrics.citasCount} citas`}
+                        <span style={{ fontSize: '0.70rem', fontWeight: 800, color: rankingTab === 'revenue' ? '#a0506a' : '#0284c7' }}>
+                          {rankingTab === 'revenue' ? `$ ${itemValue.toLocaleString()}` : `${itemValue} citas`}
                         </span>
                       </div>
                     );
@@ -1469,9 +1469,9 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                 <button 
                   onClick={() => showToast?.('Navegando a reportes de productividad...', 'info')}
                   style={{
-                    width: '100%', marginTop: '14px', padding: '10px', borderRadius: '10px',
+                    width: '100%', marginTop: '16px', padding: '8px', borderRadius: '10px',
                     border: 'none', background: 'rgba(223, 178, 140, 0.1)',
-                    color: '#6b4a52', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer',
+                    color: '#6b4a52', fontSize: '0.70rem', fontWeight: 700, cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
                   }}
                 >
