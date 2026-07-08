@@ -470,6 +470,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
   const [expandedStaff, setExpandedStaff] = useState({});
   const [selectedStaffDrawer, setSelectedStaffDrawer] = useState(null);
   const [rankingTab, setRankingTab] = useState('revenue');
+  const [leftTab, setLeftTab] = useState('rendimiento');
 
   const handleMultipleSlotToggle = (staffId, minutes) => {
     setMultipleBookedSlots(prev => {
@@ -983,16 +984,39 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
           <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '24px', width: '100%', alignItems: 'flex-start', marginTop: '10px' }}>
             
             {/* Left Column (72%) */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '24px', minWidth: 0 }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0', minWidth: 0 }}>
               
-              {/* Rendimiento del equipo hoy */}
+              {/* Tabbed Card */}
               <div className="agenda-glass-card" style={{ padding: '20px', overflow: 'visible' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#4a3036', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    Rendimiento del equipo hoy <InfoTooltip text="Muestra el rendimiento actual de cada estilista en tiempo real, incluyendo sus citas completadas, ingresos generados, porcentaje de ocupación del día y su próxima cita agendada." />
-                  </h3>
+
+                {/* Tab Header */}
+                <div style={{ display: 'flex', gap: '4px', marginBottom: '20px', background: 'rgba(250,243,242,0.8)', borderRadius: '12px', padding: '4px' }}>
+                  {[
+                    { key: 'rendimiento', label: 'Rendimiento del equipo', tooltip: 'Muestra el rendimiento actual de cada estilista en tiempo real, incluyendo sus citas completadas, ingresos generados, porcentaje de ocupación del día y su próxima cita agendada.' },
+                    { key: 'citas', label: 'Próximas citas de hoy', tooltip: null }
+                  ].map(tab => (
+                    <button
+                      key={tab.key}
+                      onClick={() => setLeftTab(tab.key)}
+                      style={{
+                        flex: 1, padding: '8px 14px', borderRadius: '9px', border: 'none', cursor: 'pointer',
+                        fontSize: '0.78rem', fontWeight: 700,
+                        background: leftTab === tab.key ? '#fff' : 'transparent',
+                        color: leftTab === tab.key ? '#4a3036' : '#a07880',
+                        boxShadow: leftTab === tab.key ? '0 2px 8px rgba(74,48,54,0.08)' : 'none',
+                        transition: 'all 0.2s ease',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                      }}
+                    >
+                      {tab.label}
+                      {tab.tooltip && <InfoTooltip text={tab.tooltip} />}
+                    </button>
+                  ))}
                 </div>
 
+                {/* Tab: Rendimiento */}
+                {leftTab === 'rendimiento' && (
+                <div>
                 {/* Stylists Grid */}
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '14px' }}>
                   {visibleStaff.map(s => {
@@ -1058,69 +1082,87 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                     }
 
                     return (
-                      <div key={s.id} className="staff-metric-card animate-fade-in" onClick={() => setSelectedStaffDrawer(s)} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                        {/* Header */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                          <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '0.75rem', flexShrink: 0 }}>{initial}</div>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#4a3036', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name}</div>
-                            <div style={{ fontSize: '0.62rem', color: '#8c767b', fontWeight: 600 }}>{getStaffRole(s.name)}</div>
+                      <div
+                        key={s.id}
+                        className="animate-fade-in"
+                        onClick={() => setSelectedStaffDrawer(s)}
+                        style={{
+                          background: '#fff',
+                          border: '1px solid rgba(223,178,140,0.2)',
+                          borderRadius: '18px',
+                          overflow: 'hidden',
+                          cursor: 'pointer',
+                          boxShadow: '0 4px 14px rgba(74,48,54,0.04)',
+                          transition: 'all 0.25s cubic-bezier(0.16,1,0.3,1)',
+                          display: 'flex', flexDirection: 'column'
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 10px 28px rgba(167,102,115,0.12)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(74,48,54,0.04)'; }}
+                      >
+                        {/* Photo hero */}
+                        <div style={{ position: 'relative', height: '120px', overflow: 'hidden', flexShrink: 0 }}>
+                          <img
+                            src={s.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(s.name)}&backgroundColor=e8a2a9,f7d4d7,fce4e8&radius=0`}
+                            alt={s.name}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                          />
+                          {/* Fallback gradient with initial */}
+                          <div style={{ display: 'none', position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: '2.5rem', letterSpacing: '-1px' }}>
+                            {initial}
+                          </div>
+                          {/* Gradient overlay at bottom */}
+                          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '50px', background: 'linear-gradient(to top, rgba(255,255,255,0.95), transparent)' }} />
+                          {/* Status badge floating */}
+                          <div style={{ position: 'absolute', top: '8px', right: '8px' }}>
+                            <span style={{ fontSize: '0.55rem', color: statusColor, background: statusBg, backdropFilter: 'blur(6px)', padding: '3px 8px', borderRadius: '20px', fontWeight: 700, border: `1px solid ${statusColor}22` }}>
+                              {statusText}
+                            </span>
                           </div>
                         </div>
 
-                        {/* Status badge */}
-                        <div style={{ marginBottom: '10px' }}>
-                          <span style={{ fontSize: '0.58rem', color: statusColor, background: statusBg, padding: '2px 6px', borderRadius: '8px', fontWeight: 700 }}>
-                            {statusText}
-                          </span>
+                        {/* Identity */}
+                        <div style={{ padding: '10px 14px 6px', textAlign: 'center' }}>
+                          <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#4a3036', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name.split(' ')[0]} {s.name.split(' ')[1] || ''}</div>
+                          <div style={{ fontSize: '0.62rem', color: '#a07880', fontWeight: 600, marginTop: '2px' }}>{getStaffRole(s.name)}</div>
                         </div>
 
-                        {/* Stats list */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.68rem', borderTop: '1px solid rgba(223,178,140,0.12)', paddingTop: '8px', flex: 1 }}>
+                        {/* Stats */}
+                        <div style={{ padding: '8px 14px 10px', display: 'flex', flexDirection: 'column', gap: '5px', fontSize: '0.67rem', borderTop: '1px solid rgba(223,178,140,0.1)', marginTop: '2px' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: '#8c767b' }}>Citas</span>
-                            <span style={{ fontWeight: 700, color: '#4a3036' }}>{metrics.citasCount} hoy</span>
+                            <span style={{ color: '#8c767b' }}>Citas hoy</span>
+                            <span style={{ fontWeight: 700, color: '#4a3036' }}>{metrics.citasCount}</span>
                           </div>
                           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <span style={{ color: '#8c767b' }}>Ingresos</span>
                             <span style={{ fontWeight: 700, color: '#a0506a' }}>$ {metrics.revenue.toLocaleString()}</span>
                           </div>
-                          
-                          {/* Ocupación with Progress Bar */}
-                          <div style={{ display: 'flex', flexDirection: 'column', marginTop: '2px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                               <span style={{ color: '#8c767b' }}>Ocupación</span>
                               <span style={{ fontWeight: 700, color: '#4a3036' }}>{metrics.occupancy}%</span>
                             </div>
-                            <div style={{ height: '4px', background: '#faf3f2', borderRadius: '2px', overflow: 'hidden', marginTop: '4px' }}>
-                              <div style={{ height: '100%', background: '#db8c95', width: `${metrics.occupancy}%` }} />
+                            <div style={{ height: '3px', background: '#faf3f2', borderRadius: '2px', overflow: 'hidden' }}>
+                              <div style={{ height: '100%', background: 'linear-gradient(90deg, #e8a2a9, #db8c95)', width: `${metrics.occupancy}%`, transition: 'width 0.6s ease' }} />
                             </div>
-                          </div>
-
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '2px' }}>
-                            <span style={{ color: '#8c767b' }}>Cancelaciones</span>
-                            <span style={{ fontWeight: 700, color: '#dc2626' }}>{metrics.cancelaciones}</span>
                           </div>
                         </div>
 
-                        {/* Footer (Next appointment) */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.62rem', background: '#faf3f2', padding: '4px 8px', borderRadius: '8px', marginTop: '10px' }}>
+                        {/* Next appointment footer */}
+                        <div style={{ margin: '0 10px 10px', background: '#faf3f2', borderRadius: '10px', padding: '5px 10px', display: 'flex', justifyContent: 'space-between', fontSize: '0.62rem' }}>
                           <span style={{ color: '#8c767b', fontWeight: 600 }}>Próxima cita</span>
-                          <span style={{ fontWeight: 700, color: '#4a3036', textAlign: 'right', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '80px' }}>
-                            {nextApp ? nextApp.timeStr : 'Ninguna'}
-                          </span>
+                          <span style={{ fontWeight: 700, color: '#4a3036' }}>{nextApp ? nextApp.timeStr : 'Ninguna'}</span>
                         </div>
                       </div>
                     );
                   })}
                 </div>
-              </div>
+                </div>
+                )}
 
-              {/* Próximas citas de hoy */}
-              <div className="agenda-glass-card" style={{ padding: '20px' }}>
-                <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#4a3036', margin: '0 0 16px 0' }}>
-                  Próximas citas de hoy
-                </h3>
+                {/* Tab: Citas */}
+                {leftTab === 'citas' && (
+                <div>
                 
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(3, 1fr)', gap: '12px' }}>
                   {(() => {
@@ -1182,8 +1224,11 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                   onClick={() => setViewMode('agenda')}
                   style={{ textAlign: 'center', marginTop: '16px', borderTop: '1px solid rgba(223, 178, 140, 0.12)', paddingTop: '12px', fontSize: '0.78rem', color: '#db8c95', fontWeight: 700, cursor: 'pointer' }}
                 >
-                  Ver todas las citas del día v
+                  Ver todas las citas del día ›
                 </div>
+                </div>
+                )}
+
               </div>
             </div>
 
