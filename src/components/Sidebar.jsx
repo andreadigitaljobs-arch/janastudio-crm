@@ -93,7 +93,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
     borderRight: '1px solid rgba(201, 114, 130, 0.1)',
     display: 'flex', flexDirection: 'column',
     padding: effectiveCollapsed ? '16px 8px' : '12px 8px',
-    overflowY: isMobile ? 'auto' : 'hidden', overflowX: 'hidden',
+    overflowY: 'hidden', overflowX: 'hidden',
     transition: 'all 0.3s ease',
     zIndex: 10,
   };
@@ -181,7 +181,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
 
       <nav
         onMouseLeave={() => setHoveredTab(null)}
-        style={{ display: 'flex', flexDirection: 'column', gap: '3px', position: 'relative' }}
+        style={{ display: 'flex', flexDirection: 'column', gap: '3px', position: 'relative', flex: 1, overflowY: 'auto', overflowX: 'hidden' }}
       >
         <div
           style={{
@@ -253,7 +253,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
         })}
       </nav>
 
-      <div style={{ marginTop: 'auto', paddingTop: '12px', display: 'flex', flexDirection: 'column', gap: '10px', position: 'relative' }}>
+      <div style={{ flexShrink: 0, paddingTop: '12px', display: 'flex', flexDirection: 'column', gap: '10px', position: 'relative' }}>
         {!effectiveCollapsed ? (
           <button
             onClick={handleLogout}
