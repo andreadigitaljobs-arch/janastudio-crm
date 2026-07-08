@@ -240,15 +240,15 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
         {!effectiveCollapsed && (
           <img src="/flor_arriba.png" alt="" style={{
             position: 'absolute',
-            bottom: '50px',
-            left: '-10px',
-            width: '130px',
+            bottom: '40px',
+            left: '-20px',
+            width: '180px',
             height: 'auto',
-            opacity: 0.5,
+            opacity: 0.55,
             pointerEvents: 'none',
             transform: 'scaleX(-1)',
             animation: 'florSidebarSway 8s ease-in-out infinite alternate',
-            transformOrigin: 'bottom left'
+            transformOrigin: 'bottom right'
           }} />
         )}
         <style>{`
