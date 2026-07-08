@@ -1079,7 +1079,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                   </div>
 
                   {/* Stylists Grid */}
-                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '14px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '14px' }}>
                   {visibleStaff.map(s => {
                     const window = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
                     const metrics = getStaffMetrics(s.id);
@@ -1232,7 +1232,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                 {leftTab === 'citas' && (
                 <div>
                 
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(3, 1fr)', gap: '12px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '14px' }}>
                   {(() => {
                     const demoApps = [
                       { id: 'd1', timeStr: '9:00 AM',  stylistName: 'Isabella Rodríguez', service: 'Extensión de Pestañas', client: 'María Fernández', status: 'En proceso',  statusBg: 'rgba(168,85,247,0.08)', textColor: '#a855f7' },
