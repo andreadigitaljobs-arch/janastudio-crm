@@ -4,7 +4,7 @@ import {
   ChevronDown, Search, Pencil,
   CheckCircle2, Users,
   CalendarDays, StickyNote, BarChart3, XCircle, Bell,
-  DollarSign, Info, AlertTriangle, Coffee, Sliders, Check, HelpCircle
+  DollarSign, Info, AlertTriangle, Coffee, Sliders, Check, HelpCircle, Scissors
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
@@ -2328,66 +2328,142 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
             setIsClosingDetailedApp(false);
           }, 270);
         };
+        const appDate = new Date(selectedDetailedApp.scheduled_at || selectedDetailedApp.created_at);
+        const activeStaff = staff.find(s => s.id === selectedDetailedApp.staff_id);
+        const staffNameOnly = activeStaff ? activeStaff.name.split('(')[0].trim() : 'Especialista';
+        const staffRoleOnly = activeStaff ? String(activeStaff.role || 'Especialista').split('|')[0] : 'Especialista';
+        const formattedDate = appDate.toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        const formattedTime = appDate.toLocaleTimeString('es-VE', { hour: 'numeric', minute: '2-digit', hour12: true });
+
         return (
           <div 
             className={`staff-drawer-overlay ${isClosingDetailedApp ? 'closing' : ''}`} 
             style={{ zIndex: 15000 }} 
             onClick={triggerClose}
           >
-            <div className="staff-drawer" onClick={(e) => e.stopPropagation()}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', borderBottom: '1px solid rgba(223, 178, 140, 0.25)', paddingBottom: '10px' }}>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#4a3036', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <CalendarIcon size={15} color="#db8c95" /> Detalle de la Cita
-                </h4>
-                <button 
-                  onClick={triggerClose}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#db8c95', fontWeight: 700, fontSize: '1.4rem', lineHeight: 1 }}
-                >
-                  &times;
-                </button>
+            <div className="staff-drawer" onClick={(e) => e.stopPropagation()} style={{
+              background: 'linear-gradient(180deg, #ffffff 0%, #fffbfb 100%)',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between'
+            }}>
+              {/* Header */}
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid rgba(223, 178, 140, 0.15)', paddingBottom: '14px' }}>
+                  <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#3d2b30', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '-0.3px' }}>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#db8c95' }}>
+                      <CalendarIcon size={16} />
+                    </div>
+                    Detalle del <span style={{ color: '#db8c95' }}>Turno</span>
+                  </h4>
+                  <button 
+                    onClick={triggerClose}
+                    style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'rgba(74,48,54,0.05)', border: 'none', color: '#8c767b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', transition: 'all 0.2s' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(219,140,149,0.12)'; e.currentTarget.style.color = '#db8c95'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(74,48,54,0.05)'; e.currentTarget.style.color = '#8c767b'; }}
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {/* Client Card (Foto 2 Inspired) */}
+                  <div style={{
+                    padding: '16px', borderRadius: '16px', border: '1.5px solid rgba(223,178,140,0.22)',
+                    display: 'flex', alignItems: 'center', gap: '14px', background: '#ffffff',
+                    boxShadow: '0 4px 12px rgba(74, 48, 54, 0.03)'
+                  }}>
+                    <img 
+                      src={`https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(selectedDetailedApp.clients?.name || '')}&radius=50`} 
+                      alt={selectedDetailedApp.clients?.name || ''} 
+                      style={{ width: '46px', height: '46px', borderRadius: '50%', backgroundColor: '#fff0f2', border: '2px solid #fff' }} 
+                    />
+                    <div>
+                      <div style={{ fontSize: '0.62rem', color: '#a0868c', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Clienta</div>
+                      <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#3d2b30' }}>{selectedDetailedApp.clients?.name || 'Cliente'}</div>
+                      <div style={{ fontSize: '0.74rem', color: '#db8c95', fontWeight: 600, marginTop: '1px' }}>{selectedDetailedApp.clients?.phone || 'Sin número'}</div>
+                    </div>
+                  </div>
+
+                  {/* Specialist & Service Card */}
+                  <div style={{
+                    padding: '16px', borderRadius: '16px', border: '1.5px solid rgba(223,178,140,0.18)',
+                    display: 'flex', flexDirection: 'column', gap: '12px', background: '#faf8f7'
+                  }}>
+                    {/* Service Row */}
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                      <div style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#db8c95', border: '1px solid rgba(223,178,140,0.2)', flexShrink: 0 }}>
+                        <Scissors size={14} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '0.58rem', color: '#a0868c', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Servicio contratado</div>
+                        <div style={{ fontSize: '0.8rem', fontWeight: 850, color: '#3d2b30', marginTop: '1px' }}>{selectedDetailedApp.services?.name || 'Servicio'}</div>
+                        <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#db8c95', marginTop: '2px' }}>${Number(selectedDetailedApp.total_price || selectedDetailedApp.services?.price || 0).toFixed(2)}</div>
+                      </div>
+                    </div>
+
+                    <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.15)' }} />
+
+                    {/* Specialist Row */}
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      <img 
+                        src={activeStaff?.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(staffNameOnly)}&radius=50`} 
+                        alt={staffNameOnly} 
+                        style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#fff', border: '1px solid rgba(223,178,140,0.2)', objectFit: 'cover' }} 
+                      />
+                      <div>
+                        <div style={{ fontSize: '0.58rem', color: '#a0868c', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Profesional a cargo</div>
+                        <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#3d2b30', marginTop: '1px' }}>{staffNameOnly}</div>
+                        <div style={{ fontSize: '0.68rem', color: '#a0868c', fontWeight: 600 }}>{staffRoleOnly}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Time, Date and Status Card */}
+                  <div style={{
+                    padding: '16px', borderRadius: '16px', border: '1.5px solid rgba(223,178,140,0.18)',
+                    display: 'flex', flexDirection: 'column', gap: '10px', background: '#ffffff',
+                    boxShadow: '0 4px 12px rgba(74, 48, 54, 0.02)'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.72rem', color: '#8c767b', fontWeight: 600 }}>Fecha:</span>
+                      <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#3d2b30', textTransform: 'capitalize' }}>{formattedDate}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.72rem', color: '#8c767b', fontWeight: 600 }}>Hora reservada:</span>
+                      <span style={{ fontSize: '0.78rem', fontWeight: 850, color: '#a0506a' }}>{formattedTime}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.72rem', color: '#8c767b', fontWeight: 600 }}>Estado:</span>
+                      <span style={{
+                        padding: '3px 10px', borderRadius: '20px', fontSize: '0.65rem', fontWeight: 800,
+                        background: STATUS_COLORS[selectedDetailedApp.status]?.bg || '#f3f4f6',
+                        color: STATUS_COLORS[selectedDetailedApp.status]?.text || '#374151',
+                        border: `1px solid ${STATUS_COLORS[selectedDetailedApp.status]?.border || '#e5e7eb'}`
+                      }}>{selectedDetailedApp.status}</span>
+                    </div>
+                  </div>
+
+                  {/* Notes Card */}
+                  {selectedDetailedApp.notes && (
+                    <div style={{ 
+                      marginTop: '2px', 
+                      background: 'rgba(232, 162, 169, 0.03)', 
+                      padding: '14px', 
+                      borderRadius: '16px', 
+                      border: '1.5px solid rgba(223, 178, 140, 0.12)', 
+                      borderLeft: '4px solid #db8c95' 
+                    }}>
+                      <span style={{ fontWeight: 800, color: '#6b4a52', display: 'block', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Notas o Comentarios:</span>
+                      <span style={{ color: '#4a3036', fontStyle: 'italic', fontSize: '0.74rem', lineHeight: '1.4', display: 'block' }}>"{selectedDetailedApp.notes}"</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.75rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f5ebe8' }}>
-                  <span style={{ color: '#8c767b' }}>Cliente:</span>
-                  <span style={{ fontWeight: 700, color: '#4a3036' }}>{selectedDetailedApp.clients?.name || 'Cliente'}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f5ebe8' }}>
-                  <span style={{ color: '#8c767b' }}>Teléfono:</span>
-                  <span style={{ fontWeight: 600, color: '#db8c95' }}>{selectedDetailedApp.clients?.phone || 'Sin número'}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f5ebe8' }}>
-                  <span style={{ color: '#8c767b' }}>Servicio:</span>
-                  <span style={{ fontWeight: 700, color: '#4a3036' }}>{selectedDetailedApp.services?.name || 'Servicio'}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f5ebe8' }}>
-                  <span style={{ color: '#8c767b' }}>Especialista:</span>
-                  <span style={{ fontWeight: 600, color: '#4a3036' }}>{staff.find(s => s.id === selectedDetailedApp.staff_id)?.name || 'Especialista'}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f5ebe8' }}>
-                  <span style={{ color: '#8c767b' }}>Hora:</span>
-                  <span style={{ fontWeight: 700, color: '#a0506a' }}>
-                    {new Date(selectedDetailedApp.scheduled_at || selectedDetailedApp.created_at).toLocaleTimeString('es-VE', { hour: 'numeric', minute: '2-digit', hour12: true })}
-                  </span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0' }}>
-                  <span style={{ color: '#8c767b' }}>Estado:</span>
-                  <span style={{
-                    padding: '2px 8px', borderRadius: '12px', fontSize: '0.62rem', fontWeight: 700,
-                    background: STATUS_COLORS[selectedDetailedApp.status]?.bg || '#f3f4f6',
-                    color: STATUS_COLORS[selectedDetailedApp.status]?.text || '#374151',
-                    border: `1px solid ${STATUS_COLORS[selectedDetailedApp.status]?.border || '#e5e7eb'}`
-                  }}>{selectedDetailedApp.status}</span>
-                </div>
-                
-                {selectedDetailedApp.notes && (
-                  <div style={{ marginTop: '8px', background: 'rgba(232, 162, 169, 0.05)', padding: '10px', borderRadius: '8px', borderLeft: '2px solid #db8c95' }}>
-                    <span style={{ fontWeight: 700, color: '#6b4a52', display: 'block', fontSize: '0.62rem', marginBottom: '2px' }}>Notas:</span>
-                    <span style={{ color: '#4a3036', fontStyle: 'italic', fontSize: '0.65rem' }}>"{selectedDetailedApp.notes}"</span>
-                  </div>
-                )}
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '18px' }}>
+              {/* Action Buttons Footer */}
+              <div style={{ borderTop: '1px solid rgba(223, 178, 140, 0.15)', paddingTop: '20px', marginTop: '20px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                   <button 
                     onClick={() => {
                       showToast?.('Abrir editor para esta cita (Fase 2)', 'info');
@@ -2452,6 +2528,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                   </button>
                 </div>
               </div>
+
             </div>
           </div>
         );
