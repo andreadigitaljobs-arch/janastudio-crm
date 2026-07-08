@@ -1443,8 +1443,8 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                   Ver disponibilidad a una hora específica
                 </button>
 
-                {/* Scrollable Container for Specialists (Maximum height 280px to prevent long scrolling list) */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '280px', overflowY: 'auto', paddingRight: '4px' }} className="no-scrollbar">
+                {/* Scrollable Container for Specialists (Maximum height 250px with a subtle scroll indicator) */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '250px', overflowY: 'auto', paddingRight: '6px' }} className="jana-scrollbar">
                   {visibleStaff.map(s => {
                     const window = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
                     const refMin = checkingTime != null ? checkingTime : nowMinutes;
