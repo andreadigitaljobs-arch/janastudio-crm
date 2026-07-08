@@ -1520,226 +1520,313 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
 {/* PORTAL/MODAL DIALOG: DISPONIBILIDAD RÁPIDA */}
 <ModalShield active={showQuickAvailModal}>
   {showQuickAvailModal && (
-    <div 
+    <div
       style={{
-        position: 'fixed', inset: 0, background: 'rgba(74, 48, 54, 0.4)',
-        backdropFilter: 'blur(4px)', zIndex: 1100, display: 'flex',
+        position: 'fixed', inset: 0,
+        background: 'linear-gradient(135deg, rgba(74,48,54,0.55) 0%, rgba(30,20,25,0.65) 100%)',
+        backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)',
+        zIndex: 1100, display: 'flex',
         alignItems: 'center', justifyContent: 'center', padding: '16px'
       }}
       className="animate-fade-in"
       onClick={() => setShowQuickAvailModal(false)}
     >
-      <div 
-        className="agenda-glass-card animate-scale-up" 
-        style={{ 
-          padding: '24px', maxWidth: '650px', width: '100%', maxHeight: '85vh', 
-          overflowY: 'auto', background: '#fff', boxShadow: '0 20px 40px rgba(74,48,54,0.15)'
-        }}
+      <div
         onClick={e => e.stopPropagation()}
+        style={{
+          maxWidth: '680px', width: '100%', maxHeight: '90vh',
+          display: 'flex', flexDirection: 'column',
+          background: 'rgba(18, 12, 15, 0.92)',
+          backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)',
+          border: '1px solid rgba(219,140,149,0.2)',
+          borderRadius: '28px',
+          boxShadow: '0 40px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(219,140,149,0.08), inset 0 1px 0 rgba(255,255,255,0.05)',
+          overflow: 'hidden',
+          animation: 'quickAvailSlideUp 0.4s cubic-bezier(0.34,1.56,0.64,1)'
+        }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid rgba(223,178,140,0.2)', paddingBottom: '12px' }}>
-          <div>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#4a3036', margin: 0 }}>
-              Buscador Rápido de Disponibilidad
-            </h3>
-            <p style={{ fontSize: '0.68rem', color: '#8c767b', margin: '2px 0 0' }}>Encuentra especialistas disponibles según la fecha, hora y duración del servicio.</p>
+        {/* ── HEADER GRADIENT ── */}
+        <div style={{
+          padding: '24px 28px 20px',
+          background: 'linear-gradient(135deg, rgba(219,140,149,0.12) 0%, rgba(180,100,120,0.06) 100%)',
+          borderBottom: '1px solid rgba(219,140,149,0.12)',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          flexShrink: 0
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <div style={{
+              width: '44px', height: '44px', borderRadius: '14px',
+              background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: '0 6px 18px rgba(219,140,149,0.35)'
+            }}>
+              <Search size={20} color="#fff" />
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.3px' }}>
+                Buscador Rápido de Disponibilidad
+              </h3>
+              <p style={{ margin: '2px 0 0', fontSize: '0.68rem', color: 'rgba(219,140,149,0.7)', fontWeight: 500 }}>
+                Encuentra especialistas disponibles por fecha, hora y servicio
+              </p>
+            </div>
           </div>
-          <button 
+          <button
             onClick={() => setShowQuickAvailModal(false)}
             style={{
-              background: 'rgba(219, 140, 149, 0.1)', border: 'none', color: '#db8c95',
-              padding: '6px 12px', borderRadius: '8px', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer'
+              width: '36px', height: '36px', borderRadius: '10px',
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              color: 'rgba(255,255,255,0.5)', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '18px', lineHeight: 1, transition: 'all 0.2s',
+              fontWeight: 300
             }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(219,140,149,0.15)'; e.currentTarget.style.color = '#db8c95'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'rgba(255,255,255,0.5)'; }}
           >
-            Cerrar
+            ✕
           </button>
         </div>
 
-        {/* Form Filter Row */}
-        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '14px', marginBottom: '20px' }}>
-          <div>
-            <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>FECHA</label>
-            <JanaDatePicker
-              value={availDate}
-              onChange={e => setAvailDate(e.target.value)}
-              variant="light"
-              inputClassName="agenda-input"
-              inputStyle={{
-                borderRadius: '10px',
-                height: '38px',
-                fontSize: '0.78rem',
-                paddingLeft: '38px',
-                background: '#fff',
-                border: '1px solid rgba(223,178,140,0.22)'
-              }}
-            />
+        {/* ── SCROLLABLE BODY ── */}
+        <div style={{ overflowY: 'auto', flex: 1, padding: '24px 28px 28px' }} className="jana-scrollbar">
+
+          {/* Filter Grid */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
+            gap: '14px', marginBottom: '14px'
+          }}>
+            {/* FECHA */}
+            <div>
+              <label style={{
+                fontSize: '0.6rem', fontWeight: 800, color: 'rgba(219,140,149,0.7)',
+                display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.8px'
+              }}>📅 Fecha</label>
+              <JanaDatePicker
+                value={availDate}
+                onChange={e => setAvailDate(e.target.value)}
+                variant="dark"
+                inputStyle={{
+                  borderRadius: '12px',
+                  height: '42px',
+                  fontSize: '0.78rem',
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  color: '#fff'
+                }}
+              />
+            </div>
+
+            {/* HORA */}
+            <div>
+              <label style={{
+                fontSize: '0.6rem', fontWeight: 800, color: 'rgba(219,140,149,0.7)',
+                display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.8px'
+              }}>🕐 Hora de inicio</label>
+              <JanaSelect
+                variant="dark"
+                value={availTimeStr}
+                onChange={val => setAvailTimeStr(val)}
+                options={[
+                  "07:00","07:30","08:00","08:30","09:00","09:30","10:00","10:30","11:00","11:30",
+                  "12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30",
+                  "17:00","17:30","18:00","18:30","19:00","19:30"
+                ].map(time => {
+                  const [h, m] = time.split(':').map(Number);
+                  const label = `${h % 12 || 12}:${String(m).padStart(2,'0')} ${h >= 12 ? 'PM' : 'AM'}`;
+                  return { value: time, label };
+                })}
+                style={{ width: '100%' }}
+              />
+            </div>
+
+            {/* DURACIÓN */}
+            <div>
+              <label style={{
+                fontSize: '0.6rem', fontWeight: 800, color: 'rgba(219,140,149,0.7)',
+                display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.8px'
+              }}>⏱ Duración</label>
+              <JanaSelect
+                variant="dark"
+                value={availDuration}
+                onChange={val => setAvailDuration(val)}
+                options={[
+                  { value: "15", label: "15 min" },
+                  { value: "30", label: "30 min" },
+                  { value: "45", label: "45 min" },
+                  { value: "60", label: "1 hora" },
+                  { value: "90", label: "1.5 horas" },
+                  { value: "120", label: "2 horas" },
+                  { value: "180", label: "3 horas" },
+                ]}
+                style={{ width: '100%' }}
+              />
+            </div>
           </div>
-          <div>
-            <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>HORA DE INICIO</label>
-            <JanaSelect
-              variant="light"
-              value={availTimeStr}
-              onChange={val => setAvailTimeStr(val)}
-              options={[
-                "07:00", "07:30", "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-                "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
-                "17:00", "17:30", "18:00", "18:30", "19:00", "19:30"
-              ].map(time => {
-                const [h, m] = time.split(':').map(Number);
-                const label = `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`;
-                return { value: time, label };
-              })}
-              style={{ width: '100%' }}
-            />
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
+            gap: '14px', marginBottom: '28px'
+          }}>
+            {/* SERVICIO */}
+            <div>
+              <label style={{
+                fontSize: '0.6rem', fontWeight: 800, color: 'rgba(219,140,149,0.7)',
+                display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.8px'
+              }}>✨ Servicio</label>
+              <JanaSelect
+                variant="dark"
+                value={availServiceId}
+                onChange={val => setAvailServiceId(val)}
+                options={[
+                  { value: "all", label: "Cualquier servicio" },
+                  ...services.map(s => ({ value: s.id, label: `${s.name} (${s.duration || 60}m)` }))
+                ]}
+                style={{ width: '100%' }}
+              />
+            </div>
+
+            {/* ESPECIALISTA */}
+            <div>
+              <label style={{
+                fontSize: '0.6rem', fontWeight: 800, color: 'rgba(219,140,149,0.7)',
+                display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.8px'
+              }}>👩‍💼 Especialista</label>
+              <JanaSelect
+                variant="dark"
+                value={availStaffId}
+                onChange={val => setAvailStaffId(val)}
+                options={[
+                  { value: "all", label: "Todas las especialistas" },
+                  ...staff.map(s => ({ value: s.id, label: s.name }))
+                ]}
+                style={{ width: '100%' }}
+              />
+            </div>
           </div>
-          <div>
-            <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>DURACIÓN</label>
-            <JanaSelect
-              variant="light"
-              value={availDuration}
-              onChange={val => setAvailDuration(val)}
-              options={[
-                { value: "15", label: "15 min" },
-                { value: "30", label: "30 min" },
-                { value: "45", label: "45 min" },
-                { value: "60", label: "1 hora (60 min)" },
-                { value: "90", label: "1.5 horas (90 min)" },
-                { value: "120", label: "2 horas (120 min)" },
-                { value: "180", label: "3 horas (180 min)" }
-              ]}
-              style={{ width: '100%' }}
-            />
-          </div>
-        </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '14px', marginBottom: '24px' }}>
-          <div>
-            <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>SERVICIO</label>
-            <JanaSelect
-              variant="light"
-              value={availServiceId}
-              onChange={val => setAvailServiceId(val)}
-              options={[
-                { value: "all", label: "Cualquier servicio" },
-                ...services.map(s => ({ value: s.id, label: `${s.name} (${s.duration || 60}m)` }))
-              ]}
-              style={{ width: '100%' }}
-            />
-          </div>
-          <div>
-            <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>ESPECIALISTA</label>
-            <JanaSelect
-              variant="light"
-              value={availStaffId}
-              onChange={val => setAvailStaffId(val)}
-              options={[
-                { value: "all", label: "Todas las especialistas" },
-                ...staff.map(s => ({ value: s.id, label: s.name }))
-              ]}
-              style={{ width: '100%' }}
-            />
-          </div>
-        </div>
+          {/* Divider */}
+          <div style={{
+            height: '1px', background: 'linear-gradient(90deg, transparent, rgba(219,140,149,0.2), transparent)',
+            marginBottom: '24px'
+          }} />
 
-        {/* Results list according to criteria */}
-        {(() => {
-          const [hh, mm] = availTimeStr.split(':').map(Number);
-          const startMinutes = hh * 60 + mm;
-          const durationVal = parseInt(availDuration);
-          const endMinutes = startMinutes + durationVal;
+          {/* Results */}
+          {(() => {
+            const [hh, mm] = availTimeStr.split(':').map(Number);
+            const startMinutes = hh * 60 + mm;
+            const durationVal = parseInt(availDuration);
+            const endMinutes = startMinutes + durationVal;
 
-          // Generate query dateKey
-          const queryDate = new Date(availDate);
-          const queryDateKey = getBusinessDateKey(queryDate);
+            const queryDate = new Date(availDate);
+            const queryDateKey = getBusinessDateKey(queryDate);
 
-          // Filter staff list
-          const staffList = availStaffId === 'all' 
-            ? staff 
-            : staff.filter(s => s.id === availStaffId);
+            const staffList = availStaffId === 'all'
+              ? staff
+              : staff.filter(s => s.id === availStaffId);
 
-          // Classify staff as available or not available
-          const disponibles = [];
-          const noDisponibles = [];
+            const disponibles = [];
+            const noDisponibles = [];
 
-          staffList.forEach(s => {
-            const window = getStaffWorkingWindow(s.id, queryDateKey, schedules, timeOff);
-            
-            if (!window.isWorking) {
-              noDisponibles.push({ staff: s, reason: 'Día libre / No trabaja hoy' });
-              return;
-            }
+            staffList.forEach(s => {
+              const window = getStaffWorkingWindow(s.id, queryDateKey, schedules, timeOff);
+              if (!window.isWorking) {
+                noDisponibles.push({ staff: s, reason: 'Día libre / No trabaja hoy' });
+                return;
+              }
+              if (startMinutes < window.startMinutes || endMinutes > window.endMinutes) {
+                noDisponibles.push({
+                  staff: s,
+                  reason: `Fuera de jornada (${formatMinutes(window.startMinutes)} – ${formatMinutes(window.endMinutes)})`
+                });
+                return;
+              }
+              const busySlots = getStaffBusyIntervals(s.id, appointments.filter(app => {
+                const appDate = new Date(app.scheduled_at || app.created_at);
+                return getBusinessDateKey(appDate) === queryDateKey;
+              }));
+              const lunchStart = 13 * 60, lunchEnd = 14 * 60;
+              const hasLunchOverlap = startMinutes < lunchEnd && endMinutes > lunchStart;
+              const conflict = busySlots.find(b => startMinutes < b.endMinutes && endMinutes > b.startMinutes);
 
-            // Check if inside hours
-            if (startMinutes < window.startMinutes || endMinutes > window.endMinutes) {
-              noDisponibles.push({ 
-                staff: s, 
-                reason: `Fuera de jornada (Trabaja de ${formatMinutes(window.startMinutes)} a ${formatMinutes(window.endMinutes)})` 
-              });
-              return;
-            }
+              if (hasLunchOverlap) {
+                noDisponibles.push({ staff: s, reason: 'Hora de almuerzo (1:00 PM – 2:00 PM)' });
+              } else if (conflict) {
+                noDisponibles.push({
+                  staff: s,
+                  reason: `Ocupada ${formatMinutes(conflict.startMinutes)} – ${formatMinutes(conflict.endMinutes)}`
+                });
+              } else {
+                disponibles.push({
+                  staff: s,
+                  freeFrom: formatMinutes(window.startMinutes),
+                  freeUntil: formatMinutes(window.endMinutes)
+                });
+              }
+            });
 
-            // Check appointments conflicts
-            const busySlots = getStaffBusyIntervals(s.id, appointments.filter(app => {
-              const appDate = new Date(app.scheduled_at || app.created_at);
-              return getBusinessDateKey(appDate) === queryDateKey;
-            }));
+            return (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-            // Check lunch conflict (13:00 - 14:00)
-            const lunchStart = 13 * 60;
-            const lunchEnd = 14 * 60;
-            const hasLunchOverlap = startMinutes < lunchEnd && endMinutes > lunchStart;
-
-            const conflict = busySlots.find(b => startMinutes < b.endMinutes && endMinutes > b.startMinutes);
-
-            if (hasLunchOverlap) {
-              noDisponibles.push({ staff: s, reason: 'Hora de almuerzo programada (1:00 PM - 2:00 PM)' });
-            } else if (conflict) {
-              noDisponibles.push({ 
-                staff: s, 
-                reason: `Ocupada en cita de ${formatMinutes(conflict.startMinutes)} a ${formatMinutes(conflict.endMinutes)}` 
-              });
-            } else {
-              // Calculate free range window surrounding requested slot
-              disponibles.push({
-                staff: s,
-                freeFrom: formatMinutes(window.startMinutes),
-                freeUntil: formatMinutes(window.endMinutes)
-              });
-            }
-          });
-
-          return (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              
-              {/* Available Section */}
-              <div>
-                <h4 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#16a34a', display: 'flex', alignItems: 'center', gap: '6px', margin: '0 0 10px 0' }}>
-                  <CheckCircle2 size={16} /> DISPONIBLES ({disponibles.length})
-                </h4>
-                {disponibles.length === 0 ? (
-                  <div style={{ padding: '12px', border: '1px dashed rgba(223,178,140,0.2)', borderRadius: '10px', fontSize: '0.74rem', color: '#8c767b', background: '#faf3f2' }}>
-                    Ninguna especialista está disponible con los criterios solicitados.
+                {/* ── DISPONIBLES ── */}
+                <div>
+                  <div style={{
+                    display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px'
+                  }}>
+                    <div style={{
+                      width: '8px', height: '8px', borderRadius: '50%',
+                      background: '#22c55e', boxShadow: '0 0 8px rgba(34,197,94,0.6)'
+                    }} />
+                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#4ade80', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                      Disponibles — {disponibles.length}
+                    </span>
                   </div>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {disponibles.map(d => (
-                      <div 
-                        key={d.staff.id} 
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: '12px', border: '1px solid rgba(34, 197, 94, 0.25)', background: 'rgba(34, 197, 94, 0.01)' }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #4ade80, #22c55e)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 800, fontSize: '0.7rem' }}>
-                            {(d.staff.name || '?').charAt(0).toUpperCase()}
+                  {disponibles.length === 0 ? (
+                    <div style={{
+                      padding: '16px 20px', borderRadius: '16px',
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px dashed rgba(255,255,255,0.08)',
+                      color: 'rgba(255,255,255,0.3)', fontSize: '0.76rem', textAlign: 'center'
+                    }}>
+                      Ninguna especialista disponible con estos criterios
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {disponibles.map((d, i) => (
+                        <div
+                          key={d.staff.id}
+                          style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                            padding: '14px 16px', borderRadius: '16px',
+                            background: 'rgba(34,197,94,0.06)',
+                            border: '1px solid rgba(34,197,94,0.2)',
+                            animation: `quickAvailSlideUp 0.35s cubic-bezier(0.34,1.56,0.64,1) ${i * 60}ms both`
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ position: 'relative' }}>
+                              <img
+                                src={d.staff.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(d.staff.name)}&backgroundColor=e8a2a9,f7d4d7&radius=50`}
+                                alt={d.staff.name}
+                                style={{ width: '38px', height: '38px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(34,197,94,0.4)' }}
+                              />
+                              <div style={{
+                                position: 'absolute', bottom: '-1px', right: '-1px',
+                                width: '11px', height: '11px', borderRadius: '50%',
+                                background: '#22c55e', border: '2px solid rgba(18,12,15,0.9)',
+                                boxShadow: '0 0 6px rgba(34,197,94,0.7)'
+                              }} />
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#fff' }}>{d.staff.name}</div>
+                              <div style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.4)', marginTop: '1px' }}>
+                                Libre de {d.freeFrom} a {d.freeUntil}
+                              </div>
+                            </div>
                           </div>
-                          <div>
-                            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#4a3036' }}>{d.staff.name}</div>
-                            <div style={{ fontSize: '0.62rem', color: '#8c767b' }}>{getStaffRole(d.staff.name)}</div>
-                          </div>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#16a34a', background: 'rgba(34,197,94,0.06)', padding: '3px 8px', borderRadius: '8px' }}>
-                            Libre de {d.freeFrom} a {d.freeUntil}
-                          </span>
                           <button
                             onClick={() => {
                               setScheduleModalPreset({ staff: d.staff, initialTime: availTimeStr });
@@ -1747,55 +1834,99 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                               setShowScheduleModal(true);
                             }}
                             style={{
-                              padding: '6px 12px', borderRadius: '8px', border: 'none',
-                              background: 'linear-gradient(135deg, #e8a2a9, #db8c95)', color: '#fff',
-                              fontSize: '0.68rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 2px 6px rgba(219, 140, 149, 0.2)'
+                              padding: '8px 16px', borderRadius: '10px', border: 'none',
+                              background: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)',
+                              color: '#0f2d1a', fontSize: '0.7rem', fontWeight: 800,
+                              cursor: 'pointer', letterSpacing: '0.2px',
+                              boxShadow: '0 4px 12px rgba(34,197,94,0.3)',
+                              transition: 'all 0.2s', flexShrink: 0
                             }}
+                            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                            onMouseLeave={e => e.currentTarget.style.transform = 'none'}
                           >
                             Reservar
                           </button>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
-              {/* Not Available Section */}
-              <div>
-                <h4 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#dc2626', display: 'flex', alignItems: 'center', gap: '6px', margin: '10px 0 10px 0' }}>
-                  <XCircle size={16} /> NO DISPONIBLES ({noDisponibles.length})
-                </h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {noDisponibles.map(nd => (
-                    <div 
-                      key={nd.staff.id} 
-                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: '12px', border: '1px solid rgba(223,178,140,0.15)', background: '#fff' }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#e2d7d9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8c767b', fontWeight: 700, fontSize: '0.7rem' }}>
-                          {(nd.staff.name || '?').charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#4a3036' }}>{nd.staff.name}</div>
-                          <div style={{ fontSize: '0.62rem', color: '#8c767b' }}>{getStaffRole(nd.staff.name)}</div>
-                        </div>
-                      </div>
-                      <span style={{ fontSize: '0.68rem', fontWeight: 650, color: '#dc2626', background: 'rgba(239,68,68,0.05)', padding: '3px 8px', borderRadius: '8px' }}>
-                        {nd.reason}
+                {/* ── NO DISPONIBLES ── */}
+                {noDisponibles.length > 0 && (
+                  <div>
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px'
+                    }}>
+                      <div style={{
+                        width: '8px', height: '8px', borderRadius: '50%',
+                        background: '#f87171', boxShadow: '0 0 8px rgba(248,113,113,0.5)'
+                      }} />
+                      <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#f87171', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                        No disponibles — {noDisponibles.length}
                       </span>
                     </div>
-                  ))}
-                </div>
-              </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {noDisponibles.map((nd, i) => (
+                        <div
+                          key={nd.staff.id}
+                          style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                            padding: '12px 16px', borderRadius: '14px',
+                            background: 'rgba(255,255,255,0.03)',
+                            border: '1px solid rgba(255,255,255,0.07)',
+                            opacity: 0.75,
+                            animation: `quickAvailSlideUp 0.35s ease ${i * 50}ms both`
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ position: 'relative' }}>
+                              <img
+                                src={nd.staff.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(nd.staff.name)}&backgroundColor=9ca3af,6b7280&radius=50`}
+                                alt={nd.staff.name}
+                                style={{ width: '34px', height: '34px', borderRadius: '50%', objectFit: 'cover', filter: 'grayscale(40%)', border: '1.5px solid rgba(255,255,255,0.1)' }}
+                              />
+                              <div style={{
+                                position: 'absolute', bottom: '-1px', right: '-1px',
+                                width: '10px', height: '10px', borderRadius: '50%',
+                                background: '#ef4444', border: '2px solid rgba(18,12,15,0.9)'
+                              }} />
+                            </div>
+                            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'rgba(255,255,255,0.55)' }}>
+                              {nd.staff.name}
+                            </div>
+                          </div>
+                          <span style={{
+                            fontSize: '0.62rem', fontWeight: 650, color: 'rgba(248,113,113,0.8)',
+                            background: 'rgba(239,68,68,0.08)', padding: '4px 10px',
+                            borderRadius: '8px', border: '1px solid rgba(239,68,68,0.15)',
+                            maxWidth: '200px', textAlign: 'right'
+                          }}>
+                            {nd.reason}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-            </div>
-          );
-        })()}
+              </div>
+            );
+          })()}
+
+        </div>
       </div>
     </div>
   )}
 </ModalShield>
+
+<style>{`
+  @keyframes quickAvailSlideUp {
+    from { opacity: 0; transform: translateY(20px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+`}</style>
+
 
 {/* RENDER MODE: AGENDA DETALLADA */}
 {viewMode === 'agenda' && (
