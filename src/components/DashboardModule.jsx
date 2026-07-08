@@ -41,6 +41,26 @@ const DashboardModule = ({
   const [ntfPerm, setNtfPerm] = useState(() => {
     try { return Notification?.permission || 'default'; } catch { return 'default'; }
   });
+  const [showNtfBanner, setShowNtfBanner] = useState(true);
+
+  const [activeServiceIndex, setActiveServiceIndex] = useState(0);
+
+  const SERVICES_LIST = [
+    { name: 'Ext. de Pestañas', price: 'Desde $50', img: '/foto_pestanas.png' },
+    { name: 'Nail Art / Uñas', price: 'Desde $45', img: '/unas_foto.png' },
+    { name: 'Diseño de Cejas', price: 'Desde $35', img: '/cejas_foto.png' },
+    { name: 'Corte de Cabello', price: 'Desde $25', img: '/corte_cabello_foto.jpg' },
+    { name: 'Peinado y Maquillaje', price: 'Desde $60', img: '/peinado_maquillaje.png', position: 'top center' },
+    { name: 'Depilación Láser', price: 'Desde $40', img: '/depilacion_laser_foto.jpg' }
+  ];
+
+  const handleServiceScroll = (e) => {
+    const container = e.target;
+    const scrollLeft = container.scrollLeft;
+    const cardWidth = 214;
+    const index = Math.round(scrollLeft / cardWidth);
+    setActiveServiceIndex(Math.min(index, SERVICES_LIST.length - 1));
+  };
 
   const requestNtfPermission = async () => {
     try {
@@ -50,6 +70,9 @@ const DashboardModule = ({
       }
       const res = await Notification.requestPermission();
       setNtfPerm(res);
+      if (res === 'granted' || res === 'denied') {
+        setTimeout(() => setShowNtfBanner(false), 2000);
+      }
     } catch (err) {
       console.error('Notification permission error:', err);
     }
@@ -376,7 +399,7 @@ const DashboardModule = ({
         </div>
 
         {/* Notification Activation Banner - Light Pink (matches desktop) */}
-        {ntfPerm !== 'granted' && (
+        {ntfPerm !== 'granted' && showNtfBanner && (
           <div
             onClick={() => {
               if (!('Notification' in window)) {
@@ -715,41 +738,19 @@ const DashboardModule = ({
             <span style={{ fontSize: '0.65rem', color: '#22c55e', fontWeight: '600' }}>
               ↑ 18% <span style={{ color: 'var(--text-muted)', fontWeight: '400' }}>vs mes anterior</span>
             </span>
-            <div style={{ height: '90px', width: '100%', position: 'relative' }}>
-              <Line
-                data={{
-                  labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
-                  datasets: [{
-                    data: [800, 1200, 950, 1400, 1100, 1600, 1800],
-                    borderColor: '#c97282',
-                    borderWidth: 2.5,
-                    pointBackgroundColor: '#ffffff',
-                    pointBorderColor: '#c97282',
-                    pointBorderWidth: 2,
-                    pointRadius: 3,
-                    pointHoverRadius: 5,
-                    fill: true,
-                    backgroundColor: (ctx) => {
-                      const gradient = ctx.chart?.ctx?.createLinearGradient(0, 0, 0, 90);
-                      if (gradient) {
-                        gradient.addColorStop(0, 'rgba(201, 114, 130, 0.25)');
-                        gradient.addColorStop(1, 'rgba(201, 114, 130, 0.02)');
-                      }
-                      return gradient || 'rgba(201, 114, 130, 0.15)';
-                    },
-                    tension: 0.4
-                  }]
-                }}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: { legend: { display: false }, tooltip: { enabled: false } },
-                  scales: {
-                    x: { grid: { display: false }, ticks: { color: '#a0506a', font: { size: 9, weight: '600' } }, border: { display: false } },
-                    y: { display: false, min: 0 }
-                  }
-                }}
-              />
+            {/* Mini sparkline CSS bars */}
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '3px', height: '32px', marginTop: '4px' }}>
+              {[35, 55, 42, 68, 52, 78, 90].map((h, i) => (
+                <div key={i} style={{
+                  flex: 1,
+                  height: `${h}%`,
+                  borderRadius: '3px',
+                  background: i === 6 
+                    ? 'linear-gradient(180deg, #c97282, #a0506a)' 
+                    : 'rgba(201, 114, 130, 0.2)',
+                  transition: 'height 0.3s ease'
+                }} />
+              ))}
             </div>
           </div>
 
@@ -1206,6 +1207,7 @@ const DashboardModule = ({
           </h3>
           <div 
             ref={carouselRef}
+            onScroll={handleServiceScroll}
             className="no-scrollbar" 
             style={{
               display: 'flex',
@@ -1214,17 +1216,11 @@ const DashboardModule = ({
               width: '100%',
               paddingBottom: '12px',
               WebkitOverflowScrolling: 'touch',
-              scrollBehavior: 'smooth'
+              scrollBehavior: 'smooth',
+              scrollSnapType: 'x mandatory'
             }}
           >
-            {[
-              { name: 'Ext. de Pestañas', price: 'Desde $50', img: '/foto_pestanas.png' },
-              { name: 'Nail Art / Uñas', price: 'Desde $45', img: '/unas_foto.png' },
-              { name: 'Diseño de Cejas', price: 'Desde $35', img: '/cejas_foto.png' },
-              { name: 'Corte de Cabello', price: 'Desde $25', img: '/corte_cabello_foto.jpg' },
-              { name: 'Peinado y Maquillaje', price: 'Desde $60', img: '/peinado_maquillaje.png', position: 'top center' },
-              { name: 'Depilación Láser', price: 'Desde $40', img: '/depilacion_laser_foto.jpg' }
-            ].map((serv, idx) => (
+            {SERVICES_LIST.map((serv, idx) => (
               <div 
                 key={idx} 
                 onClick={() => onNavigate('services')}
@@ -1238,7 +1234,8 @@ const DashboardModule = ({
                   border: '1px solid rgba(201, 114, 130, 0.12)',
                   boxShadow: '0 8px 24px rgba(201, 114, 130, 0.06)',
                   cursor: 'pointer',
-                  transition: 'all 0.25s ease'
+                  transition: 'all 0.25s ease',
+                  scrollSnapAlign: 'start'
                 }}
                 onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(201, 114, 130, 0.1)' }}
                 onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(201, 114, 130, 0.06)' }}
@@ -1263,6 +1260,21 @@ const DashboardModule = ({
               </div>
             ))}
           </div>
+          {/* Scroll indicators */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '4px' }}>
+            {SERVICES_LIST.map((_, idx) => (
+              <div 
+                key={idx} 
+                style={{
+                  width: activeServiceIndex === idx ? '20px' : '6px',
+                  height: '6px',
+                  borderRadius: '3px',
+                  background: activeServiceIndex === idx ? '#c97282' : 'rgba(201, 114, 130, 0.25)',
+                  transition: 'all 0.3s ease'
+                }}
+              />
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -1273,7 +1285,7 @@ const DashboardModule = ({
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.35s ease', paddingBottom: '40px' }}>
 
       {/* Notification Activation Banner - Desktop */}
-      {ntfPerm !== 'granted' && (
+      {ntfPerm !== 'granted' && showNtfBanner && (
         <div style={{
           width: '100%',
           borderRadius: '16px',
@@ -1309,6 +1321,9 @@ const DashboardModule = ({
               }
               Notification.requestPermission().then(res => {
                 setNtfPerm(res);
+                if (res === 'granted' || res === 'denied') {
+                  setTimeout(() => setShowNtfBanner(false), 2000);
+                }
               }).catch(() => {});
             }}
             style={{
@@ -1324,7 +1339,7 @@ const DashboardModule = ({
             Activar
           </button>
           <button
-            onClick={() => setNtfPerm('granted')}
+            onClick={() => setShowNtfBanner(false)}
             style={{
               width: '28px', height: '28px', borderRadius: '8px',
               border: 'none', background: 'transparent',
@@ -1376,6 +1391,40 @@ const DashboardModule = ({
             <Plus size={15} strokeWidth={2.5} /> Nueva Cita
           </button>
         </div>
+      </div>
+
+      {/* ── ACCIONES RÁPIDAS ── */}
+      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+        {[
+          { label: 'Nueva cita', icon: Calendar, action: () => onNavigate('scheduling'), color: '#c97282' },
+          { label: 'Cobrar', icon: DollarSign, action: () => onOpenSale(), color: '#a0506a' },
+          { label: 'Buscar cliente', icon: Users, action: () => onNavigate('clients'), color: '#ba82a0' },
+          { label: 'Inventario', icon: Package, action: () => onNavigate('inventory'), color: '#c99482' },
+        ].map((item, idx) => {
+          const Icon = item.icon;
+          return (
+            <button
+              key={idx}
+              onClick={item.action}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                padding: '10px 18px', borderRadius: '14px',
+                border: '1px solid rgba(201, 114, 130, 0.15)',
+                background: 'rgba(255,255,255,0.7)',
+                backdropFilter: 'blur(8px)',
+                color: 'var(--text-primary)',
+                cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 2px 8px rgba(201, 114, 130, 0.04)'
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = `${item.color}15`; e.currentTarget.style.borderColor = `${item.color}40`; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.7)'; e.currentTarget.style.borderColor = 'rgba(201, 114, 130, 0.15)'; e.currentTarget.style.transform = 'none'; }}
+            >
+              <Icon size={16} style={{ color: item.color }} />
+              {item.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* ── WIDGETS OPERATIVOS ── */}
@@ -1492,8 +1541,8 @@ const DashboardModule = ({
             <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
               Top servicios
             </h3>
-            <span style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              Este mes <ChevronDown size={14} />
+            <span onClick={() => onNavigate('services')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              Ver todo <ChevronRight size={14} />
             </span>
           </div>
 
@@ -1658,7 +1707,7 @@ const DashboardModule = ({
         </div>
 
         {/* TOP ESPECIALISTAS + REPORTES */}
-        <div style={{ background: '#ffffff', borderRadius: '20px', border: '1px solid rgba(201, 114, 130, 0.1)', padding: '22px', boxShadow: '0 2px 12px rgba(201, 114, 130, 0.04)', display: 'flex', flexDirection: 'column', gap: '0' }}>
+        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '22px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', gap: '0' }}>
           {/* Top Especialistas header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
             <h3 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>Top especialistas</h3>
@@ -1760,18 +1809,16 @@ const DashboardModule = ({
 
       {/* ── SERVICIOS DESTACADOS ── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-        <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
-          Servicios destacados
-        </h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
+            Servicios destacados
+          </h3>
+          <span onClick={() => onNavigate('services')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            Ver todos <ChevronRight size={13} />
+          </span>
+        </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '14px' }}>
-          {[
-            { name: 'Ext. de Pestañas', price: 'Desde $50', img: '/foto_pestanas.png' },
-            { name: 'Nail Art / Uñas', price: 'Desde $45', img: '/unas_foto.png' },
-            { name: 'Diseño de Cejas', price: 'Desde $35', img: '/cejas_foto.png' },
-            { name: 'Corte de Cabello', price: 'Desde $25', img: '/corte_cabello_foto.jpg' },
-            { name: 'Peinado y Maquillaje', price: 'Desde $60', img: '/peinado_maquillaje.png', position: 'top center' },
-            { name: 'Depilación Láser', price: 'Desde $40', img: '/depilacion_laser_foto.jpg' }
-          ].map((serv, idx) => (
+          {SERVICES_LIST.map((serv, idx) => (
             <div
               key={idx}
               onClick={() => onNavigate('services')}
@@ -1785,7 +1832,7 @@ const DashboardModule = ({
                 <span style={{ fontSize: '0.65rem', color: '#fae8e5' }}>{serv.price}</span>
               </div>
             </div>
-          ))}
+            ))}
         </div>
       </div>
 

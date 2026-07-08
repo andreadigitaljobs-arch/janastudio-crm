@@ -424,7 +424,8 @@ html, body {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
+  padding-top: 12px;
 }
 
 .salon-logo-image {
@@ -697,8 +698,9 @@ html, body {
 
 /* ── DECORATIVE ICONS ── */
 .salon-decorative-section {
-  margin-top: 24px;
+  margin-top: 12px;
   padding-top: 20px;
+  padding-bottom: 20px;
   border-top: 1px solid rgba(223, 178, 140, 0.2);
   display: flex;
   justify-content: space-around;

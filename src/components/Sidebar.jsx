@@ -84,7 +84,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
     background: 'linear-gradient(180deg, #fefaf9 0%, #fdf6f5 40%, #fcf2f1 100%)',
     borderRight: '1px solid rgba(201, 114, 130, 0.1)',
     display: 'flex', flexDirection: 'column',
-    padding: effectiveCollapsed ? '10px 6px' : '12px 8px',
+    padding: effectiveCollapsed ? '16px 8px' : '12px 8px',
     overflowY: isMobile ? 'auto' : 'hidden', overflowX: 'hidden',
     transition: 'all 0.3s ease',
     zIndex: 10,
@@ -104,9 +104,10 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
     <div className="sidebar" ref={sidebarRef} style={sidebarStyle}>
       {/* Mobile close button + Logo header */}
       <div style={{
-        gap: effectiveCollapsed ? '16px' : '28px',
+        gap: effectiveCollapsed ? '24px' : '28px',
         display: 'flex', flexDirection: 'column', alignItems: 'center',
-        position: 'relative'
+        position: 'relative',
+        marginBottom: effectiveCollapsed ? '16px' : '0'
       }}>
         {isMobile && (
           <button
@@ -130,8 +131,14 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
               right: effectiveCollapsed ? 'auto' : '0', top: '0',
               background: 'transparent', border: 'none',
               color: 'var(--text-muted)', cursor: 'pointer',
-              marginBottom: effectiveCollapsed ? '12px' : '0'
+              marginBottom: effectiveCollapsed ? '8px' : '0',
+              padding: '4px',
+              borderRadius: '8px',
+              transition: 'all 0.2s ease',
             }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+            title={effectiveCollapsed ? 'Expandir menú' : 'Contraer menú'}
           >
             {effectiveCollapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
           </button>
@@ -157,7 +164,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
             src="/logo.webp"
             alt="JS"
             style={{
-              height: '36px', marginTop: '4px',
+              height: '32px', marginTop: '4px',
               filter: 'brightness(1.0) drop-shadow(0 2px 6px rgba(212, 160, 154, 0.15))'
             }}
           />
@@ -190,6 +197,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
               ref={el => itemRefs.current[index] = el}
               onClick={() => handleItemClick(item.id)}
               onMouseEnter={() => setHoveredTab(item.id)}
+              title={effectiveCollapsed ? item.label : undefined}
               style={{
                 display: 'flex', alignItems: 'center', gap: effectiveCollapsed ? '0' : '12px',
                 padding: effectiveCollapsed ? '11px' : '10px 14px',
@@ -237,28 +245,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
       </nav>
 
       <div style={{ marginTop: 'auto', paddingTop: '12px', display: 'flex', flexDirection: 'column', gap: '10px', position: 'relative' }}>
-        {!effectiveCollapsed && (
-          <img src="/flor_arriba.png" alt="" style={{
-            position: 'absolute',
-            bottom: '40px',
-            left: '-20px',
-            width: '180px',
-            height: 'auto',
-            opacity: 0.55,
-            pointerEvents: 'none',
-            transform: 'scaleX(-1)',
-            animation: 'florSidebarSway 8s ease-in-out infinite alternate',
-            transformOrigin: 'bottom right'
-          }} />
-        )}
-        <style>{`
-          @keyframes florSidebarSway {
-            0% { transform: rotate(0deg); }
-            50% { transform: rotate(-2deg); }
-            100% { transform: rotate(1deg); }
-          }
-        `}</style>
-        {!effectiveCollapsed && (
+        {!effectiveCollapsed ? (
           <button
             onClick={handleLogout}
             style={{
@@ -285,6 +272,25 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
               <LogOut size={16} style={{ color: '#a0506a' }} />
             </div>
             <span>Cerrar Sesión</span>
+          </button>
+        ) : (
+          <button
+            onClick={handleLogout}
+            title="Cerrar Sesión"
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              padding: '10px',
+              borderRadius: '12px',
+              border: '1px solid rgba(201, 114, 130, 0.15)',
+              background: 'rgba(255,255,255,0.6)',
+              backdropFilter: 'blur(8px)',
+              color: '#a0506a', cursor: 'pointer',
+              transition: 'all 0.25s ease',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.12)'; e.currentTarget.style.borderColor = 'rgba(201, 114, 130, 0.3)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.6)'; e.currentTarget.style.borderColor = 'rgba(201, 114, 130, 0.15)'; }}
+          >
+            <LogOut size={18} />
           </button>
         )}
       </div>
