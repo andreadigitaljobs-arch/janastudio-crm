@@ -288,38 +288,7 @@ const TopBar = ({
           </button>
         </div>
 
-        {/* Second Line: Greeting (Dashboard) or Search Bar (Other Tabs) */}
-        {activeTab === 'dashboard' ? (
-          <div style={{ padding: '0 4px' }}>
-            <h1 style={{
-              fontSize: '18px',
-              fontWeight: '700',
-              color: 'var(--text-primary)',
-              fontFamily: "'Playfair Display', Georgia, serif",
-              margin: 0,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}>
-              {getGreeting().replace('¡', '').replace('!', '')}, {(!user || user.role?.toLowerCase().includes('admin') || user.name?.toLowerCase().includes('administrador')) ? 'Jana' : (user.name?.split(' ')[0] || 'Jana')}
-              <Sparkles
-                size={16}
-                style={{
-                  color: 'var(--magenta-secondary)',
-                  animation: 'pulse 2s infinite ease-in-out'
-                }}
-              />
-            </h1>
-            <p style={{
-              fontSize: '0.75rem',
-              color: 'var(--text-secondary)',
-              margin: '2px 0 0 0',
-              fontWeight: '500'
-            }}>Aquí tienes un resumen de hoy en Jana Studio.</p>
-          </div>
-        ) : (
-          renderSearchBar({ padding: '0 4px' })
-        )}
+        {renderSearchBar({ padding: '0 4px' })}
 
         {/* Third Line: BCV/USDT and Date styled horizontally scrolling & super neat */}
         <div className="no-scrollbar" style={{
@@ -381,37 +350,7 @@ const TopBar = ({
     }}>
       {/* Left: Greeting (or Search Bar in Dashboard) */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        {activeTab === 'dashboard' ? (
-          <div>
-            <h1 style={{
-              fontSize: '26px',
-              fontWeight: '700',
-              color: 'var(--text-primary)',
-              fontFamily: "'Playfair Display', Georgia, serif",
-              margin: 0,
-              display: 'flex',
-              alignItems: 'center'
-            }}>
-              {getGreeting().replace('¡', '').replace('!', '')}, {(!user || user.role?.toLowerCase().includes('admin') || user.name?.toLowerCase().includes('administrador')) ? 'Jana' : (user.name?.split(' ')[0] || 'Jana')}
-              <Sparkles
-                size={22}
-                style={{
-                  color: 'var(--magenta-secondary)',
-                  marginLeft: '8px',
-                  animation: 'pulse 2s infinite ease-in-out'
-                }}
-              />
-            </h1>
-            <p style={{
-              fontSize: '0.8rem',
-              color: 'var(--text-secondary)',
-              margin: '4px 0 0 0',
-              fontWeight: '500'
-            }}>Aquí tienes un resumen de hoy en Jana Studio.</p>
-          </div>
-        ) : (
-          renderSearchBar({ width: '350px' })
-        )}
+        {renderSearchBar({ width: '350px' })}
       </div>
 
       {/* Right: Notification Bell & Date Selector */}
