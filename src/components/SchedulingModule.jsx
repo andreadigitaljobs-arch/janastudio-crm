@@ -19,6 +19,7 @@ import { getBusinessDateKey } from '../utils/dateTime';
 import ScheduleModal from './ScheduleModal';
 import NewClientModal from './NewClientModal';
 import { normalizeForSearch } from '../utils/stringUtils';
+import JanaDatePicker from './JanaDatePicker';
 
 const STATUS_COLORS = {
   'Confirmada': { bg: '#f0fdf4', text: '#16a34a', border: '#bbf7d0', leftBorder: '#22c55e' },
@@ -1555,27 +1556,41 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '14px', marginBottom: '20px' }}>
               <div>
                 <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>FECHA</label>
-                <input 
-                  type="date" 
+                <JanaDatePicker
                   value={availDate}
                   onChange={e => setAvailDate(e.target.value)}
-                  style={{
-                    width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.2)',
-                    background: '#faf3f2', color: '#4a3036', fontSize: '0.78rem', outline: 'none'
+                  variant="light"
+                  inputClassName="agenda-input"
+                  inputStyle={{
+                    borderRadius: '10px',
+                    height: '38px',
+                    fontSize: '0.78rem',
+                    paddingLeft: '38px',
+                    background: '#fff',
+                    border: '1px solid rgba(223,178,140,0.22)'
                   }}
                 />
               </div>
               <div>
                 <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>HORA DE INICIO</label>
-                <input 
-                  type="time" 
+                <select
                   value={availTimeStr}
                   onChange={e => setAvailTimeStr(e.target.value)}
                   style={{
-                    width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.2)',
-                    background: '#faf3f2', color: '#4a3036', fontSize: '0.78rem', outline: 'none'
+                    width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.22)',
+                    background: '#fff', color: '#4a3036', fontSize: '0.78rem', outline: 'none', height: '38px', cursor: 'pointer'
                   }}
-                />
+                >
+                  {[
+                    "07:00", "07:30", "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+                    "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
+                    "17:00", "17:30", "18:00", "18:30", "19:00", "19:30"
+                  ].map(time => {
+                    const [h, m] = time.split(':').map(Number);
+                    const label = `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`;
+                    return <option key={time} value={time}>{label}</option>;
+                  })}
+                </select>
               </div>
               <div>
                 <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>DURACIÓN (MINUTOS)</label>
@@ -1583,8 +1598,8 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                   value={availDuration}
                   onChange={e => setAvailDuration(e.target.value)}
                   style={{
-                    width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.2)',
-                    background: '#faf3f2', color: '#4a3036', fontSize: '0.78rem', outline: 'none'
+                    width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.22)',
+                    background: '#fff', color: '#4a3036', fontSize: '0.78rem', outline: 'none', height: '38px', cursor: 'pointer'
                   }}
                 >
                   <option value="15">15 min</option>
@@ -1605,8 +1620,8 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                   value={availServiceId}
                   onChange={e => setAvailServiceId(e.target.value)}
                   style={{
-                    width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.2)',
-                    background: '#faf3f2', color: '#4a3036', fontSize: '0.78rem', outline: 'none'
+                    width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.22)',
+                    background: '#fff', color: '#4a3036', fontSize: '0.78rem', outline: 'none', height: '38px', cursor: 'pointer'
                   }}
                 >
                   <option value="all">Cualquier servicio</option>
@@ -1621,8 +1636,8 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                   value={availStaffId}
                   onChange={e => setAvailStaffId(e.target.value)}
                   style={{
-                    width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.2)',
-                    background: '#faf3f2', color: '#4a3036', fontSize: '0.78rem', outline: 'none'
+                    width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.22)',
+                    background: '#fff', color: '#4a3036', fontSize: '0.78rem', outline: 'none', height: '38px', cursor: 'pointer'
                   }}
                 >
                   <option value="all">Todas las especialistas</option>
