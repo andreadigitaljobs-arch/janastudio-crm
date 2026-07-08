@@ -1408,12 +1408,29 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
             <div style={{ width: isMobile ? '100%' : '320px', display: 'flex', flexDirection: 'column', gap: '16px', flexShrink: 0 }}>
               
               {/* ¿Quién está libre ahora? */}
-              <div className="agenda-glass-card" style={{ padding: '20px', overflow: 'visible' }}>
-                <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#4a3036', margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  ¿Quién está libre ahora? <InfoTooltip text="Muestra la disponibilidad actual de las estilistas en tiempo real según sus horarios de trabajo, citas activas y su hora de almuerzo programada." />
-                </h3>
+              <div className="agenda-glass-card" style={{ padding: '20px', overflow: 'visible', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#4a3036', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    ¿Quién está libre ahora? <InfoTooltip text="Muestra la disponibilidad actual de las estilistas en tiempo real según sus horarios de trabajo, citas activas y su hora de almuerzo programada." />
+                  </h3>
+                </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {/* Relocated Button at the Top */}
+                <button 
+                  onClick={() => setViewMode('availability')}
+                  style={{
+                    width: '100%', padding: '9px', borderRadius: '10px',
+                    border: '1px solid rgba(219, 140, 149, 0.22)', background: 'rgba(219, 140, 149, 0.05)',
+                    color: '#db8c95', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                  className="btn-hover-scale"
+                >
+                  Ver disponibilidad a una hora específica
+                </button>
+
+                {/* Scrollable Container for Specialists (Maximum height 280px to prevent long scrolling list) */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '280px', overflowY: 'auto', paddingRight: '4px' }} className="no-scrollbar">
                   {visibleStaff.map(s => {
                     const window = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
                     const refMin = checkingTime != null ? checkingTime : nowMinutes;
@@ -1440,9 +1457,9 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                         style={{ 
                           display: 'flex', 
                           alignItems: 'center', 
-                          gap: '12px',
-                          padding: '6px 8px',
-                          borderRadius: '12px',
+                          gap: '10px',
+                          padding: '4px 6px',
+                          borderRadius: '10px',
                           transition: 'background 0.2s ease',
                           cursor: 'pointer'
                         }}
@@ -1450,11 +1467,11 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                         onClick={() => setSelectedStaffDrawer(s)}
                       >
                         {/* iMessage style avatar with status badge */}
-                        <div style={{ position: 'relative', width: '38px', height: '38px', flexShrink: 0 }}>
+                        <div style={{ position: 'relative', width: '32px', height: '32px', flexShrink: 0 }}>
                           <img
                             src={s.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(s.name)}&backgroundColor=e8a2a9,f7d4d7,fce4e8&radius=50`}
                             alt={s.name}
-                            style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: '1px solid rgba(223, 178, 140, 0.15)' }}
+                            style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: '1px solid rgba(223, 178, 140, 0.12)' }}
                           />
                           {/* Dot status overlay */}
                           <div 
@@ -1462,36 +1479,23 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                               position: 'absolute', 
                               bottom: '-1px', 
                               right: '-1px', 
-                              width: '11px', 
-                              height: '11px', 
+                              width: '9px', 
+                              height: '9px', 
                               borderRadius: '50%', 
                               background: dotColor, 
-                              border: '2px solid #fff',
-                              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                              border: '1.5px solid #fff',
+                              boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
                             }} 
                           />
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '0.78rem', fontWeight: 770, color: '#4a3036', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</div>
-                          <div style={{ fontSize: '0.62rem', color: '#8c767b', fontWeight: 650 }}>{statusText}</div>
+                          <div style={{ fontSize: '0.74rem', fontWeight: 770, color: '#4a3036', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</div>
+                          <div style={{ fontSize: '0.6rem', color: '#8c767b', fontWeight: 650 }}>{statusText}</div>
                         </div>
                       </div>
                     );
                   })}
                 </div>
-
-                <button 
-                  onClick={() => setViewMode('availability')}
-                  style={{
-                    width: '100%', marginTop: '18px', padding: '10px', borderRadius: '10px',
-                    border: '1px solid rgba(219, 140, 149, 0.25)', background: 'rgba(219, 140, 149, 0.05)',
-                    color: '#db8c95', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer',
-                    transition: 'all 0.2s'
-                  }}
-                  className="btn-hover-scale"
-                >
-                  Ver disponibilidad a una hora específica
-                </button>
               </div>
 
             </div>
