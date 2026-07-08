@@ -2290,87 +2290,280 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
       )}
 
       {/* DRAWER LATERAL DESLIZANTE DE TRABAJADORA (Fase 2 Visual) */}
+      {/* FULL-SCREEN STAFF DASHBOARD VIEW */}
       {selectedStaffDrawer && (
-        <div className="staff-drawer-overlay" onClick={() => setSelectedStaffDrawer(null)}>
-          <div className="staff-drawer" onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', borderBottom: '1px solid rgba(223, 178, 140, 0.25)', paddingBottom: '10px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '0.9rem' }}>
-                  {(selectedStaffDrawer.name || '?').charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#4a3036', margin: 0 }}>{selectedStaffDrawer.name}</h3>
-                  <p style={{ fontSize: '0.68rem', color: '#8c767b', margin: 0, fontWeight: 600 }}>{getStaffRole(selectedStaffDrawer.name)}</p>
-                </div>
-              </div>
+        <div 
+          style={{ 
+            position: 'fixed', inset: 0, background: 'rgba(250, 243, 242, 0.96)', zIndex: 1000, 
+            display: 'flex', flexDirection: 'column', padding: isMobile ? '12px' : '24px 32px', overflowY: 'auto' 
+          }}
+        >
+          {/* Header Action Bar */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <button 
+              onClick={() => setSelectedStaffDrawer(null)}
+              style={{
+                background: 'transparent', border: 'none', color: '#8c767b', fontSize: '0.85rem',
+                fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'
+              }}
+            >
+              ← Volver a Agenda
+            </button>
+            <div style={{ display: 'flex', gap: '10px' }}>
               <button 
-                onClick={() => setSelectedStaffDrawer(null)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#db8c95', fontWeight: 700, fontSize: '1.4rem', lineHeight: 1 }}
+                onClick={() => showToast?.('Abriendo editor de horarios...', 'info')}
+                style={{
+                  background: '#fff', border: '1px solid rgba(223,178,140,0.3)', color: '#db8c95',
+                  padding: '8px 16px', borderRadius: '10px', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer'
+                }}
               >
-                &times;
+                Editar horario
               </button>
             </div>
+          </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' }}>
-              {[
-                { label: 'Ingresos hoy', value: `$ ${getStaffMetrics(selectedStaffDrawer.id).revenue.toLocaleString()}` },
-                { label: 'Ocupación hoy', value: `${getStaffMetrics(selectedStaffDrawer.id).occupancy}%` },
-                { label: 'Citas programadas', value: `${getStaffMetrics(selectedStaffDrawer.id).citasCount} citas` },
-                { label: 'Cancelaciones', value: `${getStaffMetrics(selectedStaffDrawer.id).cancelaciones}` },
-                { label: 'Tasa Rebooking', value: '85%' },
-                { label: 'Puntualidad hoy', value: '98%' }
-              ].map((stat, i) => (
-                <div key={i} style={{ background: '#faf3f2', padding: '10px', borderRadius: '12px', border: '1px solid rgba(223, 178, 140, 0.15)' }}>
-                  <div style={{ fontSize: '0.58rem', color: '#a07880', textTransform: 'uppercase', fontWeight: 700 }}>{stat.label}</div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#4a3036', marginTop: '2px' }}>{stat.value}</div>
-                </div>
-              ))}
+          {/* Identity & Status Ribbon */}
+          <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '24px', alignItems: 'center', background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '24px', marginBottom: '24px' }}>
+            <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #db8c95', flexShrink: 0 }}>
+              <img 
+                src={selectedStaffDrawer.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(selectedStaffDrawer.name)}&backgroundColor=e8a2a9,f7d4d7,fce4e8&radius=50`}
+                alt={selectedStaffDrawer.name}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            </div>
+            <div style={{ flex: 1, minWidth: 0, textAlign: isMobile ? 'center' : 'left' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: isMobile ? 'center' : 'flex-start', flexWrap: 'wrap' }}>
+                <h2 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#4a3036', margin: 0 }}>{selectedStaffDrawer.name}</h2>
+                <span style={{ fontSize: '0.68rem', color: '#db8c95', background: 'rgba(219,140,149,0.1)', padding: '3px 8px', borderRadius: '12px', fontWeight: 700 }}>
+                  {getStaffRole(selectedStaffDrawer.name)}
+                </span>
+              </div>
+              <p style={{ fontSize: '0.74rem', color: '#a07880', margin: '6px 0 0', fontWeight: 650 }}>
+                Especialidad: {selectedStaffDrawer.role || 'Estética Integral'}  ·  Teléfono: 0412 345 6789
+              </p>
             </div>
 
-            <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: '#4a3036', margin: '0 0 10px 0' }}>📋 Itinerario de Hoy</h4>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, overflowY: 'auto', paddingRight: '4px', marginBottom: '16px' }}>
-              {dayApps.filter(a => a.staff_id === selectedStaffDrawer.id).length === 0 ? (
-                <div style={{ fontSize: '0.72rem', color: '#a07880', fontStyle: 'italic', textAlign: 'center', padding: '20px 0' }}>
-                  Sin citas asignadas hoy.
+            {/* Quick Status Badges */}
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <div style={{ background: '#f2fcf5', border: '1px solid rgba(34, 197, 94, 0.2)', padding: '12px 18px', borderRadius: '16px', textAlign: 'center', minWidth: '100px' }}>
+                <div style={{ fontSize: '0.58rem', color: '#16a34a', fontWeight: 700, textTransform: 'uppercase' }}>Estado actual</div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#16a34a', marginTop: '2px' }}>Libre ahora</div>
+              </div>
+              <div style={{ background: '#fff9f5', border: '1px solid rgba(217, 119, 6, 0.2)', padding: '12px 18px', borderRadius: '16px', textAlign: 'center', minWidth: '100px' }}>
+                <div style={{ fontSize: '0.58rem', color: '#d97706', fontWeight: 700, textTransform: 'uppercase' }}>Próxima cita</div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#d97706', marginTop: '2px' }}>
+                  {getStaffNextApp(selectedStaffDrawer.id) ? getStaffNextApp(selectedStaffDrawer.id).timeStr : 'Ninguna'}
                 </div>
-              ) : (
-                [...dayApps]
-                  .filter(a => a.staff_id === selectedStaffDrawer.id)
-                  .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at))
-                  .map((app, i) => {
+              </div>
+              <div style={{ background: '#faf3f2', border: '1px solid rgba(223, 178, 140, 0.2)', padding: '12px 18px', borderRadius: '16px', textAlign: 'center', minWidth: '120px' }}>
+                <div style={{ fontSize: '0.58rem', color: '#a07880', fontWeight: 700, textTransform: 'uppercase' }}>Horario de hoy</div>
+                <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#4a3036', marginTop: '2px' }}>9:00 AM - 6:00 PM</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Subtabs for Detail Navigation (Visual layout mimicking mockup) */}
+          <div style={{ display: 'flex', gap: '20px', borderBottom: '1px solid rgba(223, 178, 140, 0.15)', paddingBottom: '8px', marginBottom: '24px' }}>
+            <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#db8c95', borderBottom: '2px solid #db8c95', paddingBottom: '8px', cursor: 'pointer' }}>
+              Agenda del día
+            </span>
+            <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#a07880', paddingBottom: '8px', cursor: 'pointer' }}>
+              Resumen del día
+            </span>
+            <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#a07880', paddingBottom: '8px', cursor: 'pointer' }}>
+              Servicios realizados
+            </span>
+            <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#a07880', paddingBottom: '8px', cursor: 'pointer' }}>
+              Historial
+            </span>
+            <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#a07880', paddingBottom: '8px', cursor: 'pointer' }}>
+              Notas
+            </span>
+          </div>
+
+          {/* Dashboard 3-Column Content Layout */}
+          <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '24px', alignItems: 'flex-start' }}>
+            
+            {/* Column 1: Daily Agenda Timeline (50% Width) */}
+            <div style={{ flex: 1.5, background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '20px', padding: '20px', minWidth: 0, width: '100%' }}>
+              <h3 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#4a3036', margin: '0 0 16px 0' }}>
+                Agenda del {selectedDate.toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'long' })}
+              </h3>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {(() => {
+                  const staffApps = dayApps
+                    .filter(a => a.staff_id === selectedStaffDrawer.id)
+                    .sort((a, b) => new Date(a.scheduled_at || a.created_at) - new Date(b.scheduled_at || b.created_at));
+
+                  if (staffApps.length === 0) {
+                    return (
+                      <div style={{ padding: '30px 20px', textAlign: 'center', color: '#a07880', fontSize: '0.78rem' }}>
+                        No hay citas programadas para esta especialista el día de hoy.
+                      </div>
+                    );
+                  }
+
+                  return staffApps.map((app, idx) => {
                     const start = new Date(app.scheduled_at || app.created_at);
                     const timeStr = start.toLocaleTimeString('es-VE', { hour: 'numeric', minute: '2-digit', hour12: true });
                     return (
-                      <div key={i} style={{ background: '#fff', border: '1px solid rgba(223, 178, 140, 0.18)', borderLeft: '4px solid #db8c95', padding: '10px', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#4a3036' }}>{app.clients?.name || 'Cliente'}</div>
-                          <div style={{ fontSize: '0.62rem', color: '#a07880', fontWeight: 600 }}>{app.services?.name || 'Servicio'}</div>
-                        </div>
-                        <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#db8c95', background: 'rgba(232, 162, 169, 0.08)', padding: '2px 8px', borderRadius: '8px' }}>
+                      <div 
+                        key={app.id || idx} 
+                        style={{ 
+                          display: 'flex', gap: '14px', alignItems: 'center', padding: '14px', 
+                          background: '#faf3f2', border: '1px solid rgba(223, 178, 140, 0.15)', 
+                          borderRadius: '16px', cursor: 'pointer' 
+                        }}
+                      >
+                        <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#db8c95', width: '70px', flexShrink: 0 }}>
                           {timeStr}
-                        </span>
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#4a3036', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {app.clients?.name || 'Cliente sin nombre'}
+                          </div>
+                          <div style={{ fontSize: '0.65rem', color: '#8c767b', marginTop: '2px' }}>
+                            {app.services?.name || 'Servicio General'} (1 hora)
+                          </div>
+                        </div>
+                        <div>
+                          <span style={{ fontSize: '0.58rem', fontWeight: 800, background: 'rgba(34,197,94,0.08)', color: '#16a34a', padding: '3px 8px', borderRadius: '6px', textTransform: 'uppercase' }}>
+                            Confirmada
+                          </span>
+                        </div>
                       </div>
                     );
-                  })
-              )}
+                  });
+                })()}
+              </div>
             </div>
 
-            <button
-              onClick={() => {
-                setScheduleModalPreset({ staff: selectedStaffDrawer });
-                setSelectedStaffDrawer(null);
-                setShowScheduleModal(true);
-              }}
-              style={{
-                width: '100%', padding: '12px', borderRadius: '12px', border: 'none',
-                background: 'linear-gradient(135deg, #e8a2a9, #db8c95)', color: '#fff',
-                fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 15px rgba(219,140,149,0.25)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
-              }}
-            >
-              <Plus size={16} /> Agendar Cita con {selectedStaffDrawer.name.split(' ')[0]}
-            </button>
+            {/* Column 2: Performance Summary & Top Metrics (30% Width) */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
+              
+              {/* Daily metrics values */}
+              <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '20px', padding: '20px' }}>
+                <h3 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#4a3036', margin: '0 0 16px 0' }}>
+                  Resumen del día
+                </h3>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+                  <div style={{ background: '#faf3f2', padding: '12px', borderRadius: '14px', border: '1px solid rgba(223,178,140,0.12)' }}>
+                    <div style={{ fontSize: '0.6rem', color: '#a07880', fontWeight: 700, textTransform: 'uppercase' }}>Citas programadas</div>
+                    <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#4a3036', marginTop: '4px' }}>
+                      {getStaffMetrics(selectedStaffDrawer.id).citasCount}
+                    </div>
+                  </div>
+                  <div style={{ background: '#faf3f2', padding: '12px', borderRadius: '14px', border: '1px solid rgba(223,178,140,0.12)' }}>
+                    <div style={{ fontSize: '0.6rem', color: '#a07880', fontWeight: 700, textTransform: 'uppercase' }}>Citas completadas</div>
+                    <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#16a34a', marginTop: '4px' }}>
+                      {getStaffMetrics(selectedStaffDrawer.id).citasCount}
+                    </div>
+                  </div>
+                  <div style={{ background: '#faf3f2', padding: '12px', borderRadius: '14px', border: '1px solid rgba(223,178,140,0.12)' }}>
+                    <div style={{ fontSize: '0.6rem', color: '#a07880', fontWeight: 700, textTransform: 'uppercase' }}>Ingresos generados</div>
+                    <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#a0506a', marginTop: '4px' }}>
+                      ${getStaffMetrics(selectedStaffDrawer.id).revenue}
+                    </div>
+                  </div>
+                  <div style={{ background: '#faf3f2', padding: '12px', borderRadius: '14px', border: '1px solid rgba(223,178,140,0.12)' }}>
+                    <div style={{ fontSize: '0.6rem', color: '#a07880', fontWeight: 700, textTransform: 'uppercase' }}>Ocupación diaria</div>
+                    <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#4a3036', marginTop: '4px' }}>
+                      {getStaffMetrics(selectedStaffDrawer.id).occupancy}%
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ borderTop: '1px solid rgba(223, 178, 140, 0.12)', paddingTop: '14px' }}>
+                  <div style={{ fontSize: '0.62rem', color: '#a07880', fontWeight: 700, textTransform: 'uppercase', marginBottom: '8px' }}>
+                    Servicios más vendidos hoy
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    {[
+                      { rank: 1, name: 'Volumen 3D', qty: 2, rev: 1600 },
+                      { rank: 2, name: 'Extensiones Clásicas', qty: 1, rev: 700 },
+                      { rank: 3, name: 'Retoque Clásico', qty: 1, rev: 150 }
+                    ].map(srv => (
+                      <div key={srv.rank} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#4a3036' }}>
+                        <span style={{ fontWeight: 650 }}>{srv.rank}. {srv.name}</span>
+                        <span style={{ fontWeight: 800, color: '#a0506a' }}>{srv.qty} cita(s) · ${srv.rev}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Column 3: Clients, Internal Notes & Actions (20% Width) */}
+            <div style={{ flex: 0.8, display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
+              
+              {/* Internal Notes container */}
+              <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '20px', padding: '20px' }}>
+                <h3 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#4a3036', margin: '0 0 12px 0' }}>
+                  Notas internas
+                </h3>
+                <textarea 
+                  placeholder="Escribe notas de seguimiento para esta especialista, observaciones de rendimiento o recordatorios..."
+                  style={{
+                    width: '100%', height: '80px', border: '1px solid rgba(223, 178, 140, 0.18)', borderRadius: '10px',
+                    background: '#faf3f2', padding: '10px', fontSize: '0.74rem', color: '#4a3036', outline: 'none',
+                    resize: 'none'
+                  }}
+                  defaultValue="Prefiere pinzas tipo curva. Muy puntual. Excelente trato al cliente."
+                />
+              </div>
+
+              {/* Action buttons list */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <button
+                  onClick={() => {
+                    setScheduleModalPreset({ staff: selectedStaffDrawer });
+                    setShowScheduleModal(true);
+                  }}
+                  style={{
+                    width: '100%', padding: '12px', borderRadius: '12px', border: 'none',
+                    background: 'linear-gradient(135deg, #e8a2a9, #db8c95)', color: '#fff',
+                    fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 15px rgba(219,140,149,0.2)'
+                  }}
+                  className="btn-hover-scale"
+                >
+                  Agendar Nueva Cita
+                </button>
+
+                <button
+                  onClick={() => {
+                    setSelectedStaffDrawer(null);
+                    setViewMode('availability');
+                  }}
+                  style={{
+                    width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid rgba(219, 140, 149, 0.25)',
+                    background: '#fff', color: '#db8c95',
+                    fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer'
+                  }}
+                  className="btn-hover-scale"
+                >
+                  Ver disponibilidad
+                </button>
+
+                <button
+                  onClick={() => {
+                    setSelectedStaffDrawer(null);
+                    showToast?.('Navegando a reportes de productividad...', 'info');
+                  }}
+                  style={{
+                    width: '100%', padding: '12px', borderRadius: '12px', border: 'none',
+                    background: 'rgba(74, 48, 54, 0.08)', color: '#4a3036',
+                    fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer'
+                  }}
+                  className="btn-hover-scale"
+                >
+                  Ver reporte completo
+                </button>
+              </div>
+
+            </div>
+
           </div>
         </div>
       )}
