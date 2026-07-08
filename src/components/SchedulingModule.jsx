@@ -471,6 +471,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
   const [selectedStaffDrawer, setSelectedStaffDrawer] = useState(null);
   const [rankingTab, setRankingTab] = useState('revenue');
   const [leftTab, setLeftTab] = useState('rendimiento');
+  const [staffSearchQuery, setStaffSearchQuery] = useState('');
 
   const handleMultipleSlotToggle = (staffId, minutes) => {
     setMultipleBookedSlots(prev => {
@@ -598,6 +599,11 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
       });
     }
 
+    if (staffSearchQuery.trim()) {
+      const term = staffSearchQuery.toLowerCase().trim();
+      list = list.filter(s => s.name.toLowerCase().includes(term) || (getStaffRole(s.name) || '').toLowerCase().includes(term));
+    }
+
     if (checkingTime != null) {
       // Ordenar por disponibilidad en ese minuto
       list = [...list].sort((a, b) => {
@@ -629,7 +635,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
       });
     }
     return list;
-  }, [staff, isWorkerView, user?.id, filterStaffId, checkingTime, dateKey, schedules, timeOff, dayApps]);
+  }, [staff, isWorkerView, user?.id, filterStaffId, checkingTime, dateKey, schedules, timeOff, dayApps, staffSearchQuery]);
 
   const availabilityCtx = { schedules, timeOff, appointmentsForDay: dayApps };
 
@@ -1017,8 +1023,45 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                 {/* Tab: Rendimiento */}
                 {leftTab === 'rendimiento' && (
                 <div>
-                {/* Stylists Grid */}
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '14px' }}>
+                  
+                  {/* Search Bar for Specialists */}
+                  <div style={{ position: 'relative', marginBottom: '16px' }}>
+                    <Search size={14} color="#a07880" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <input
+                      type="text"
+                      placeholder="Buscar especialista por nombre o especialidad..."
+                      value={staffSearchQuery}
+                      onChange={e => setStaffSearchQuery(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px 10px 34px',
+                        fontSize: '0.78rem',
+                        color: '#4a3036',
+                        background: '#faf3f2',
+                        border: '1px solid rgba(223, 178, 140, 0.15)',
+                        borderRadius: '12px',
+                        outline: 'none',
+                        transition: 'all 0.2s ease',
+                      }}
+                      onFocus={e => { e.target.style.background = '#fff'; e.target.style.borderColor = 'rgba(219, 140, 149, 0.4)'; e.target.style.boxShadow = '0 0 0 3px rgba(219, 140, 149, 0.1)'; }}
+                      onBlur={e => { e.target.style.background = '#faf3f2'; e.target.style.borderColor = 'rgba(223, 178, 140, 0.15)'; e.target.style.boxShadow = 'none'; }}
+                    />
+                    {staffSearchQuery && (
+                      <button
+                        onClick={() => setStaffSearchQuery('')}
+                        style={{
+                          position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)',
+                          border: 'none', background: 'transparent', color: '#a07880', cursor: 'pointer',
+                          fontSize: '0.85rem', padding: '4px'
+                        }}
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Stylists Grid */}
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '14px' }}>
                   {visibleStaff.map(s => {
                     const window = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
                     const metrics = getStaffMetrics(s.id);
@@ -1157,6 +1200,13 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                     );
                   })}
                 </div>
+                {visibleStaff.length === 0 && (
+                  <div style={{ textAlign: 'center', padding: '40px 20px', color: '#a07880', fontSize: '0.8rem', border: '1px dashed rgba(223,178,140,0.25)', borderRadius: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                    <Search size={24} color="#db8c95" style={{ opacity: 0.5 }} />
+                    <div style={{ fontWeight: 700 }}>No se encontraron especialistas</div>
+                    <div style={{ fontSize: '0.7rem', opacity: 0.8 }}>Prueba a buscar con otros términos o limpia el buscador.</div>
+                  </div>
+                )}
                 </div>
                 )}
 
