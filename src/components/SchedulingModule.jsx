@@ -20,6 +20,7 @@ import ScheduleModal from './ScheduleModal';
 import NewClientModal from './NewClientModal';
 import { normalizeForSearch } from '../utils/stringUtils';
 import JanaDatePicker from './JanaDatePicker';
+import { ModalShield } from '../context/ModalContext';
 
 const STATUS_COLORS = {
   'Confirmada': { bg: '#f0fdf4', text: '#16a34a', border: '#bbf7d0', leftBorder: '#22c55e' },
@@ -1502,309 +1503,311 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: '0.74rem', fontWeight: 770, color: '#4a3036', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</div>
-                          <div style={{ fontSize: '0.6rem', color: '#8c767b', fontWeight: 650 }}>{statusText}</div>
-                        </div>
-                      </div>
-                    );
-                  })}
+                  <div style={{ fontSize: '0.6rem', color: '#8c767b', fontWeight: 650 }}>{statusText}</div>
                 </div>
               </div>
-
-            </div>
-          </div>
+            );
+          })}
         </div>
-      )}
+      </div>
 
-      {/* PORTAL/MODAL DIALOG: DISPONIBILIDAD RÁPIDA */}
-      {showQuickAvailModal && (
-        <div 
-          style={{
-            position: 'fixed', inset: 0, background: 'rgba(74, 48, 54, 0.4)',
-            backdropFilter: 'blur(4px)', zIndex: 1100, display: 'flex',
-            alignItems: 'center', justifyContent: 'center', padding: '16px'
-          }}
-          className="animate-fade-in"
-          onClick={() => setShowQuickAvailModal(false)}
-        >
-          <div 
-            className="agenda-glass-card animate-scale-up" 
-            style={{ 
-              padding: '24px', maxWidth: '650px', width: '100%', maxHeight: '85vh', 
-              overflowY: 'auto', background: '#fff', boxShadow: '0 20px 40px rgba(74,48,54,0.15)'
+    </div>
+  </div>
+</div>
+)}
+
+{/* PORTAL/MODAL DIALOG: DISPONIBILIDAD RÁPIDA */}
+<ModalShield active={showQuickAvailModal}>
+  {showQuickAvailModal && (
+    <div 
+      style={{
+        position: 'fixed', inset: 0, background: 'rgba(74, 48, 54, 0.4)',
+        backdropFilter: 'blur(4px)', zIndex: 1100, display: 'flex',
+        alignItems: 'center', justifyContent: 'center', padding: '16px'
+      }}
+      className="animate-fade-in"
+      onClick={() => setShowQuickAvailModal(false)}
+    >
+      <div 
+        className="agenda-glass-card animate-scale-up" 
+        style={{ 
+          padding: '24px', maxWidth: '650px', width: '100%', maxHeight: '85vh', 
+          overflowY: 'auto', background: '#fff', boxShadow: '0 20px 40px rgba(74,48,54,0.15)'
+        }}
+        onClick={e => e.stopPropagation()}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid rgba(223,178,140,0.2)', paddingBottom: '12px' }}>
+          <div>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#4a3036', margin: 0 }}>
+              Buscador Rápido de Disponibilidad
+            </h3>
+            <p style={{ fontSize: '0.68rem', color: '#8c767b', margin: '2px 0 0' }}>Encuentra especialistas disponibles según la fecha, hora y duración del servicio.</p>
+          </div>
+          <button 
+            onClick={() => setShowQuickAvailModal(false)}
+            style={{
+              background: 'rgba(219, 140, 149, 0.1)', border: 'none', color: '#db8c95',
+              padding: '6px 12px', borderRadius: '8px', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer'
             }}
-            onClick={e => e.stopPropagation()}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid rgba(223,178,140,0.2)', paddingBottom: '12px' }}>
-              <div>
-                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#4a3036', margin: 0 }}>
-                  Buscador Rápido de Disponibilidad
-                </h3>
-                <p style={{ fontSize: '0.68rem', color: '#8c767b', margin: '2px 0 0' }}>Encuentra especialistas disponibles según la fecha, hora y duración del servicio.</p>
-              </div>
-              <button 
-                onClick={() => setShowQuickAvailModal(false)}
-                style={{
-                  background: 'rgba(219, 140, 149, 0.1)', border: 'none', color: '#db8c95',
-                  padding: '6px 12px', borderRadius: '8px', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer'
-                }}
-              >
-                Cerrar
-              </button>
-            </div>
+            Cerrar
+          </button>
+        </div>
 
-            {/* Form Filter Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '14px', marginBottom: '20px' }}>
-              <div>
-                <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>FECHA</label>
-                <JanaDatePicker
-                  value={availDate}
-                  onChange={e => setAvailDate(e.target.value)}
-                  variant="light"
-                  inputClassName="agenda-input"
-                  inputStyle={{
-                    borderRadius: '10px',
-                    height: '38px',
-                    fontSize: '0.78rem',
-                    paddingLeft: '38px',
-                    background: '#fff',
-                    border: '1px solid rgba(223,178,140,0.22)'
-                  }}
-                />
-              </div>
-              <div>
-                <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>HORA DE INICIO</label>
-                <select
-                  value={availTimeStr}
-                  onChange={e => setAvailTimeStr(e.target.value)}
-                  style={{
-                    width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.22)',
-                    background: '#fff', color: '#4a3036', fontSize: '0.78rem', outline: 'none', height: '38px', cursor: 'pointer'
-                  }}
-                >
-                  {[
-                    "07:00", "07:30", "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-                    "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
-                    "17:00", "17:30", "18:00", "18:30", "19:00", "19:30"
-                  ].map(time => {
-                    const [h, m] = time.split(':').map(Number);
-                    const label = `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`;
-                    return <option key={time} value={time}>{label}</option>;
-                  })}
-                </select>
-              </div>
-              <div>
-                <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>DURACIÓN (MINUTOS)</label>
-                <select
-                  value={availDuration}
-                  onChange={e => setAvailDuration(e.target.value)}
-                  style={{
-                    width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.22)',
-                    background: '#fff', color: '#4a3036', fontSize: '0.78rem', outline: 'none', height: '38px', cursor: 'pointer'
-                  }}
-                >
-                  <option value="15">15 min</option>
-                  <option value="30">30 min</option>
-                  <option value="45">45 min</option>
-                  <option value="60">1 hora (60 min)</option>
-                  <option value="90">1.5 horas (90 min)</option>
-                  <option value="120">2 horas (120 min)</option>
-                  <option value="180">3 horas (180 min)</option>
-                </select>
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '14px', marginBottom: '24px' }}>
-              <div>
-                <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>SERVICIO</label>
-                <select
-                  value={availServiceId}
-                  onChange={e => setAvailServiceId(e.target.value)}
-                  style={{
-                    width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.22)',
-                    background: '#fff', color: '#4a3036', fontSize: '0.78rem', outline: 'none', height: '38px', cursor: 'pointer'
-                  }}
-                >
-                  <option value="all">Cualquier servicio</option>
-                  {services.map(s => (
-                    <option key={s.id} value={s.id}>{s.name} ({s.duration || 60}m)</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>ESPECIALISTA</label>
-                <select
-                  value={availStaffId}
-                  onChange={e => setAvailStaffId(e.target.value)}
-                  style={{
-                    width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.22)',
-                    background: '#fff', color: '#4a3036', fontSize: '0.78rem', outline: 'none', height: '38px', cursor: 'pointer'
-                  }}
-                >
-                  <option value="all">Todas las especialistas</option>
-                  {staff.map(s => (
-                    <option key={s.id} value={s.id}>{s.name}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Results list according to criteria */}
-            {(() => {
-              const [hh, mm] = availTimeStr.split(':').map(Number);
-              const startMinutes = hh * 60 + mm;
-              const durationVal = parseInt(availDuration);
-              const endMinutes = startMinutes + durationVal;
-
-              // Generate query dateKey
-              const queryDate = new Date(availDate);
-              const queryDateKey = getBusinessDateKey(queryDate);
-
-              // Filter staff list
-              const staffList = availStaffId === 'all' 
-                ? staff 
-                : staff.filter(s => s.id === availStaffId);
-
-              // Classify staff as available or not available
-              const disponibles = [];
-              const noDisponibles = [];
-
-              staffList.forEach(s => {
-                const window = getStaffWorkingWindow(s.id, queryDateKey, schedules, timeOff);
-                
-                if (!window.isWorking) {
-                  noDisponibles.push({ staff: s, reason: 'Día libre / No trabaja hoy' });
-                  return;
-                }
-
-                // Check if inside hours
-                if (startMinutes < window.startMinutes || endMinutes > window.endMinutes) {
-                  noDisponibles.push({ 
-                    staff: s, 
-                    reason: `Fuera de jornada (Trabaja de ${formatMinutes(window.startMinutes)} a ${formatMinutes(window.endMinutes)})` 
-                  });
-                  return;
-                }
-
-                // Check appointments conflicts
-                const busySlots = getStaffBusyIntervals(s.id, appointments.filter(app => {
-                  const appDate = new Date(app.scheduled_at || app.created_at);
-                  return getBusinessDateKey(appDate) === queryDateKey;
-                }));
-
-                // Check lunch conflict (13:00 - 14:00)
-                const lunchStart = 13 * 60;
-                const lunchEnd = 14 * 60;
-                const hasLunchOverlap = startMinutes < lunchEnd && endMinutes > lunchStart;
-
-                const conflict = busySlots.find(b => startMinutes < b.endMinutes && endMinutes > b.startMinutes);
-
-                if (hasLunchOverlap) {
-                  noDisponibles.push({ staff: s, reason: 'Hora de almuerzo programada (1:00 PM - 2:00 PM)' });
-                } else if (conflict) {
-                  noDisponibles.push({ 
-                    staff: s, 
-                    reason: `Ocupada en cita de ${formatMinutes(conflict.startMinutes)} a ${formatMinutes(conflict.endMinutes)}` 
-                  });
-                } else {
-                  // Calculate free range window surrounding requested slot
-                  disponibles.push({
-                    staff: s,
-                    freeFrom: formatMinutes(window.startMinutes),
-                    freeUntil: formatMinutes(window.endMinutes)
-                  });
-                }
-              });
-
-              return (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                  
-                  {/* Available Section */}
-                  <div>
-                    <h4 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#16a34a', display: 'flex', alignItems: 'center', gap: '6px', margin: '0 0 10px 0' }}>
-                      <CheckCircle2 size={16} /> DISPONIBLES ({disponibles.length})
-                    </h4>
-                    {disponibles.length === 0 ? (
-                      <div style={{ padding: '12px', border: '1px dashed rgba(223,178,140,0.2)', borderRadius: '10px', fontSize: '0.74rem', color: '#8c767b', background: '#faf3f2' }}>
-                        Ninguna especialista está disponible con los criterios solicitados.
-                      </div>
-                    ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        {disponibles.map(d => (
-                          <div 
-                            key={d.staff.id} 
-                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: '12px', border: '1px solid rgba(34, 197, 94, 0.25)', background: 'rgba(34, 197, 94, 0.01)' }}
-                          >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #4ade80, #22c55e)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 800, fontSize: '0.7rem' }}>
-                                {(d.staff.name || '?').charAt(0).toUpperCase()}
-                              </div>
-                              <div>
-                                <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#4a3036' }}>{d.staff.name}</div>
-                                <div style={{ fontSize: '0.62rem', color: '#8c767b' }}>{getStaffRole(d.staff.name)}</div>
-                              </div>
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                              <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#16a34a', background: 'rgba(34,197,94,0.06)', padding: '3px 8px', borderRadius: '8px' }}>
-                                Libre de {d.freeFrom} a {d.freeUntil}
-                              </span>
-                              <button
-                                onClick={() => {
-                                  setScheduleModalPreset({ staff: d.staff, initialTime: availTimeStr });
-                                  setShowQuickAvailModal(false);
-                                  setShowScheduleModal(true);
-                                }}
-                                style={{
-                                  padding: '6px 12px', borderRadius: '8px', border: 'none',
-                                  background: 'linear-gradient(135deg, #e8a2a9, #db8c95)', color: '#fff',
-                                  fontSize: '0.68rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 2px 6px rgba(219, 140, 149, 0.2)'
-                                }}
-                              >
-                                Reservar
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Not Available Section */}
-                  <div>
-                    <h4 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#dc2626', display: 'flex', alignItems: 'center', gap: '6px', margin: '10px 0 10px 0' }}>
-                      <XCircle size={16} /> NO DISPONIBLES ({noDisponibles.length})
-                    </h4>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      {noDisponibles.map(nd => (
-                        <div 
-                          key={nd.staff.id} 
-                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: '12px', border: '1px solid rgba(223,178,140,0.15)', background: '#fff' }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#e2d7d9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8c767b', fontWeight: 700, fontSize: '0.7rem' }}>
-                              {(nd.staff.name || '?').charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#4a3036' }}>{nd.staff.name}</div>
-                              <div style={{ fontSize: '0.62rem', color: '#8c767b' }}>{getStaffRole(nd.staff.name)}</div>
-                            </div>
-                          </div>
-                          <span style={{ fontSize: '0.68rem', fontWeight: 650, color: '#dc2626', background: 'rgba(239,68,68,0.05)', padding: '3px 8px', borderRadius: '8px' }}>
-                            {nd.reason}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                </div>
-              );
-            })()}
+        {/* Form Filter Row */}
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '14px', marginBottom: '20px' }}>
+          <div>
+            <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>FECHA</label>
+            <JanaDatePicker
+              value={availDate}
+              onChange={e => setAvailDate(e.target.value)}
+              variant="light"
+              inputClassName="agenda-input"
+              inputStyle={{
+                borderRadius: '10px',
+                height: '38px',
+                fontSize: '0.78rem',
+                paddingLeft: '38px',
+                background: '#fff',
+                border: '1px solid rgba(223,178,140,0.22)'
+              }}
+            />
+          </div>
+          <div>
+            <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>HORA DE INICIO</label>
+            <select
+              value={availTimeStr}
+              onChange={e => setAvailTimeStr(e.target.value)}
+              style={{
+                width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.22)',
+                background: '#fff', color: '#4a3036', fontSize: '0.78rem', outline: 'none', height: '38px', cursor: 'pointer'
+              }}
+            >
+              {[
+                "07:00", "07:30", "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+                "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
+                "17:00", "17:30", "18:00", "18:30", "19:00", "19:30"
+              ].map(time => {
+                const [h, m] = time.split(':').map(Number);
+                const label = `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`;
+                return <option key={time} value={time}>{label}</option>;
+              })}
+            </select>
+          </div>
+          <div>
+            <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>DURACIÓN (MINUTOS)</label>
+            <select
+              value={availDuration}
+              onChange={e => setAvailDuration(e.target.value)}
+              style={{
+                width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.22)',
+                background: '#fff', color: '#4a3036', fontSize: '0.78rem', outline: 'none', height: '38px', cursor: 'pointer'
+              }}
+            >
+              <option value="15">15 min</option>
+              <option value="30">30 min</option>
+              <option value="45">45 min</option>
+              <option value="60">1 hora (60 min)</option>
+              <option value="90">1.5 horas (90 min)</option>
+              <option value="120">2 horas (120 min)</option>
+              <option value="180">3 horas (180 min)</option>
+            </select>
           </div>
         </div>
-      )}
 
-      {/* RENDER MODE: AGENDA DETALLADA */}
-      {viewMode === 'agenda' && (
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '14px', marginBottom: '24px' }}>
+          <div>
+            <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>SERVICIO</label>
+            <select
+              value={availServiceId}
+              onChange={e => setAvailServiceId(e.target.value)}
+              style={{
+                width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.22)',
+                background: '#fff', color: '#4a3036', fontSize: '0.78rem', outline: 'none', height: '38px', cursor: 'pointer'
+              }}
+            >
+              <option value="all">Cualquier servicio</option>
+              {services.map(s => (
+                <option key={s.id} value={s.id}>{s.name} ({s.duration || 60}m)</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a07880', display: 'block', marginBottom: '6px' }}>ESPECIALISTA</label>
+            <select
+              value={availStaffId}
+              onChange={e => setAvailStaffId(e.target.value)}
+              style={{
+                width: '100%', padding: '9px 12px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.22)',
+                background: '#fff', color: '#4a3036', fontSize: '0.78rem', outline: 'none', height: '38px', cursor: 'pointer'
+              }}
+            >
+              <option value="all">Todas las especialistas</option>
+              {staff.map(s => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Results list according to criteria */}
+        {(() => {
+          const [hh, mm] = availTimeStr.split(':').map(Number);
+          const startMinutes = hh * 60 + mm;
+          const durationVal = parseInt(availDuration);
+          const endMinutes = startMinutes + durationVal;
+
+          // Generate query dateKey
+          const queryDate = new Date(availDate);
+          const queryDateKey = getBusinessDateKey(queryDate);
+
+          // Filter staff list
+          const staffList = availStaffId === 'all' 
+            ? staff 
+            : staff.filter(s => s.id === availStaffId);
+
+          // Classify staff as available or not available
+          const disponibles = [];
+          const noDisponibles = [];
+
+          staffList.forEach(s => {
+            const window = getStaffWorkingWindow(s.id, queryDateKey, schedules, timeOff);
+            
+            if (!window.isWorking) {
+              noDisponibles.push({ staff: s, reason: 'Día libre / No trabaja hoy' });
+              return;
+            }
+
+            // Check if inside hours
+            if (startMinutes < window.startMinutes || endMinutes > window.endMinutes) {
+              noDisponibles.push({ 
+                staff: s, 
+                reason: `Fuera de jornada (Trabaja de ${formatMinutes(window.startMinutes)} a ${formatMinutes(window.endMinutes)})` 
+              });
+              return;
+            }
+
+            // Check appointments conflicts
+            const busySlots = getStaffBusyIntervals(s.id, appointments.filter(app => {
+              const appDate = new Date(app.scheduled_at || app.created_at);
+              return getBusinessDateKey(appDate) === queryDateKey;
+            }));
+
+            // Check lunch conflict (13:00 - 14:00)
+            const lunchStart = 13 * 60;
+            const lunchEnd = 14 * 60;
+            const hasLunchOverlap = startMinutes < lunchEnd && endMinutes > lunchStart;
+
+            const conflict = busySlots.find(b => startMinutes < b.endMinutes && endMinutes > b.startMinutes);
+
+            if (hasLunchOverlap) {
+              noDisponibles.push({ staff: s, reason: 'Hora de almuerzo programada (1:00 PM - 2:00 PM)' });
+            } else if (conflict) {
+              noDisponibles.push({ 
+                staff: s, 
+                reason: `Ocupada en cita de ${formatMinutes(conflict.startMinutes)} a ${formatMinutes(conflict.endMinutes)}` 
+              });
+            } else {
+              // Calculate free range window surrounding requested slot
+              disponibles.push({
+                staff: s,
+                freeFrom: formatMinutes(window.startMinutes),
+                freeUntil: formatMinutes(window.endMinutes)
+              });
+            }
+          });
+
+          return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              
+              {/* Available Section */}
+              <div>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#16a34a', display: 'flex', alignItems: 'center', gap: '6px', margin: '0 0 10px 0' }}>
+                  <CheckCircle2 size={16} /> DISPONIBLES ({disponibles.length})
+                </h4>
+                {disponibles.length === 0 ? (
+                  <div style={{ padding: '12px', border: '1px dashed rgba(223,178,140,0.2)', borderRadius: '10px', fontSize: '0.74rem', color: '#8c767b', background: '#faf3f2' }}>
+                    Ninguna especialista está disponible con los criterios solicitados.
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {disponibles.map(d => (
+                      <div 
+                        key={d.staff.id} 
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: '12px', border: '1px solid rgba(34, 197, 94, 0.25)', background: 'rgba(34, 197, 94, 0.01)' }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #4ade80, #22c55e)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 800, fontSize: '0.7rem' }}>
+                            {(d.staff.name || '?').charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#4a3036' }}>{d.staff.name}</div>
+                            <div style={{ fontSize: '0.62rem', color: '#8c767b' }}>{getStaffRole(d.staff.name)}</div>
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#16a34a', background: 'rgba(34,197,94,0.06)', padding: '3px 8px', borderRadius: '8px' }}>
+                            Libre de {d.freeFrom} a {d.freeUntil}
+                          </span>
+                          <button
+                            onClick={() => {
+                              setScheduleModalPreset({ staff: d.staff, initialTime: availTimeStr });
+                              setShowQuickAvailModal(false);
+                              setShowScheduleModal(true);
+                            }}
+                            style={{
+                              padding: '6px 12px', borderRadius: '8px', border: 'none',
+                              background: 'linear-gradient(135deg, #e8a2a9, #db8c95)', color: '#fff',
+                              fontSize: '0.68rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 2px 6px rgba(219, 140, 149, 0.2)'
+                            }}
+                          >
+                            Reservar
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Not Available Section */}
+              <div>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#dc2626', display: 'flex', alignItems: 'center', gap: '6px', margin: '10px 0 10px 0' }}>
+                  <XCircle size={16} /> NO DISPONIBLES ({noDisponibles.length})
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {noDisponibles.map(nd => (
+                    <div 
+                      key={nd.staff.id} 
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: '12px', border: '1px solid rgba(223,178,140,0.15)', background: '#fff' }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#e2d7d9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8c767b', fontWeight: 700, fontSize: '0.7rem' }}>
+                          {(nd.staff.name || '?').charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#4a3036' }}>{nd.staff.name}</div>
+                          <div style={{ fontSize: '0.62rem', color: '#8c767b' }}>{getStaffRole(nd.staff.name)}</div>
+                        </div>
+                      </div>
+                      <span style={{ fontSize: '0.68rem', fontWeight: 650, color: '#dc2626', background: 'rgba(239,68,68,0.05)', padding: '3px 8px', borderRadius: '8px' }}>
+                        {nd.reason}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+          );
+        })()}
+      </div>
+    </div>
+  )}
+</ModalShield>
+
+{/* RENDER MODE: AGENDA DETALLADA */}
+{viewMode === 'agenda' && (
         <div className="agenda-main-container">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <CalendarComponent selectedDate={selectedDate} onSelectDate={setSelectedDate} />
