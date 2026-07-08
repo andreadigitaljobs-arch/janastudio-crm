@@ -36,8 +36,10 @@ const ScheduleModal = ({
   initialTime,
   clients = [],
   services = [],
-  onSave
+  onSave,
+  appointmentToEdit = null,  // ← objeto cita completo para modo edición
 }) => {
+  const isEditMode = !!appointmentToEdit;
   const staffArray = Array.isArray(staff) ? staff : [];
 
   // Step wizard state: 1 (Client), 2 (Service), 3 (Staff), 4 (Date/Time), 5 (Summary)
@@ -76,22 +78,48 @@ const ScheduleModal = ({
   // Prepopulate step selection and direct steps
   useEffect(() => {
     if (isOpen) {
-      setLocalClient(client || null);
-      setLocalService(service || null);
-      setLocalStaff(initialStaff || null);
+      if (appointmentToEdit) {
+        // Modo edición: pre-cargar todos los campos con los datos de la cita
+        const editClient = clients.find(c => c.id === appointmentToEdit.client_id) ||
+          appointmentToEdit.clients || null;
+        const editService = services.find(s => s.id === appointmentToEdit.service_id) ||
+          appointmentToEdit.services || null;
+        const staffArray2 = Array.isArray(staff) ? staff : [];
+        const editStaff = staffArray2.find(s => s.id === appointmentToEdit.staff_id) ||
+          appointmentToEdit.staff || null;
 
-      // Determine logical starting step based on provided props
-      if (client) {
-        if (service) {
-          setCurrentStep(3); // Start at specialist selection so they can choose/confirm the professional
-        } else {
-          setCurrentStep(2);
+        setLocalClient(editClient);
+        setLocalService(editService);
+        setLocalStaff(editStaff);
+
+        if (appointmentToEdit.scheduled_at) {
+          const dt = new Date(appointmentToEdit.scheduled_at);
+          setSelectedDate(dt);
+          const hh = dt.getHours().toString().padStart(2, '0');
+          const mm = dt.getMinutes().toString().padStart(2, '0');
+          setCustomTime(`${hh}:${mm}`);
+          setIsCustomMode(true);
         }
+        // Ir directo al paso de resumen para poder ver todo y cambiar lo que quiera
+        setCurrentStep(5);
       } else {
-        setCurrentStep(1);
+        setLocalClient(client || null);
+        setLocalService(service || null);
+        setLocalStaff(initialStaff || null);
+
+        // Determine logical starting step based on provided props
+        if (client) {
+          if (service) {
+            setCurrentStep(3);
+          } else {
+            setCurrentStep(2);
+          }
+        } else {
+          setCurrentStep(1);
+        }
       }
     }
-  }, [isOpen, client, service, initialStaff]);
+  }, [isOpen, client, service, initialStaff, appointmentToEdit]);
 
   // Prellenar el turno si venimos de un click en la grilla de la Agenda
   useEffect(() => {
@@ -201,21 +229,33 @@ const ScheduleModal = ({
       if (!localClient || !localService || !localStaff) return;
       try {
         setLoading(true);
-        await dataService.createAppointment({
-          client_id: localClient.id,
-          service_id: localService.id,
-          staff_id: localStaff.id,
-          status: 'Agendado',
-          total_price: localService.price,
-          scheduled_at: scheduledAt.toISOString()
-        });
+        if (isEditMode) {
+          // ── MODO EDICIÓN: actualizar cita existente ──
+          await dataService.updateAppointment(appointmentToEdit.id, {
+            client_id: localClient.id,
+            service_id: localService.id,
+            staff_id: localStaff.id,
+            total_price: localService.price,
+            scheduled_at: scheduledAt.toISOString()
+          });
+        } else {
+          // ── MODO CREACIÓN: nueva cita ──
+          await dataService.createAppointment({
+            client_id: localClient.id,
+            service_id: localService.id,
+            staff_id: localStaff.id,
+            status: 'Agendado',
+            total_price: localService.price,
+            scheduled_at: scheduledAt.toISOString()
+          });
+        }
         setShowSuccess(true);
         setTimeout(() => {
           onSave();
           setShowSuccess(false);
         }, 2200);
       } catch (err) {
-        console.error("Error creating appointment:", err);
+        console.error(isEditMode ? 'Error editando cita:' : 'Error creando cita:', err);
       } finally {
         setLoading(false);
       }
@@ -267,8 +307,12 @@ const ScheduleModal = ({
                 }}>
                   <Check size={40} strokeWidth={3} />
                 </div>
-                <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#3d2b30', margin: '0 0 8px 0' }}>¡Turno Confirmado!</h3>
-                <p style={{ fontSize: '0.86rem', color: '#a0868c', fontWeight: 500, margin: 0 }}>La cita ha sido registrada exitosamente en la agenda.</p>
+                <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#3d2b30', margin: '0 0 8px 0' }}>
+                  {isEditMode ? '¡Cita Actualizada!' : '¡Turno Confirmado!'}
+                </h3>
+                <p style={{ fontSize: '0.86rem', color: '#a0868c', fontWeight: 500, margin: 0 }}>
+                  {isEditMode ? 'Los cambios han sido guardados correctamente.' : 'La cita ha sido registrada exitosamente en la agenda.'}
+                </p>
                 <div style={{ marginTop: '20px', fontSize: '0.78rem', color: '#db8c95', fontWeight: 700 }}>Redirigiendo...</div>
                 
                 <style>{`
@@ -285,7 +329,11 @@ const ScheduleModal = ({
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <div>
                 <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#3d2b30', margin: 0, letterSpacing: '-0.3px' }}>
-                  Agendar <span style={{ color: '#db8c95' }}>Turno</span>
+                  {isEditMode ? (
+                    <>Editar <span style={{ color: '#db8c95' }}>Cita</span></>
+                  ) : (
+                    <>Agendar <span style={{ color: '#db8c95' }}>Turno</span></>
+                  )}
                 </h2>
                 <div style={{ display: 'flex', gap: '4px', marginTop: '8px' }}>
                   {[1, 2, 3, 4, 5].map((s) => (
@@ -503,27 +551,34 @@ const ScheduleModal = ({
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px dashed rgba(223,178,140,0.25)', paddingBottom: '10px' }}>
                       <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.5px' }}>CLIENTA</span>
-                      <span style={{ fontSize: '0.76rem', fontWeight: 700, color: '#3d2b30' }}>{localClient?.name}</span>
+                      <button onClick={() => setCurrentStep(1)} style={{ fontSize: '0.76rem', fontWeight: 700, color: '#3d2b30', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}>{localClient?.name}</button>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px dashed rgba(223,178,140,0.25)', paddingBottom: '10px' }}>
                       <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.5px' }}>SERVICIO</span>
-                      <span style={{ fontSize: '0.76rem', fontWeight: 700, color: '#3d2b30' }}>{localService?.name}</span>
+                      <button onClick={() => setCurrentStep(2)} style={{ fontSize: '0.76rem', fontWeight: 700, color: '#3d2b30', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}>{localService?.name}</button>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px dashed rgba(223,178,140,0.25)', paddingBottom: '10px' }}>
                       <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.5px' }}>ESPECIALISTA</span>
-                      <span style={{ fontSize: '0.76rem', fontWeight: 700, color: '#3d2b30' }}>{getStaffDisplayName(localStaff)}</span>
+                      <button onClick={() => setCurrentStep(3)} style={{ fontSize: '0.76rem', fontWeight: 700, color: '#3d2b30', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}>{getStaffDisplayName(localStaff)}</button>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px dashed rgba(223,178,140,0.25)', paddingBottom: '10px' }}>
                       <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.5px' }}>FECHA</span>
-                      <span style={{ fontSize: '0.76rem', fontWeight: 700, color: '#3d2b30' }}>{selectedDate.toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'short' })}</span>
+                      <button onClick={() => setCurrentStep(4)} style={{ fontSize: '0.76rem', fontWeight: 700, color: '#3d2b30', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}>{selectedDate.toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'short' })}</button>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.5px' }}>HORARIO</span>
-                      <span style={{ fontSize: '0.76rem', fontWeight: 700, color: '#3d2b30', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <button onClick={() => setCurrentStep(4)} style={{ fontSize: '0.76rem', fontWeight: 700, color: '#a0506a', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}>
                         <Clock size={12} color="#db8c95" />
                         {getDisplayTime(isCustomMode ? customTime : selectedSlot)}
-                      </span>
+                      </button>
                     </div>
+                    {isEditMode && (
+                      <div style={{ marginTop: '8px', padding: '10px 12px', background: 'rgba(219,140,149,0.06)', borderRadius: '10px', border: '1px dashed rgba(219,140,149,0.2)' }}>
+                        <p style={{ margin: 0, fontSize: '0.7rem', color: '#a0868c', fontWeight: 600, textAlign: 'center' }}>
+                          💡 Toca cualquier campo para cambiarlo
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -613,7 +668,7 @@ const ScheduleModal = ({
                     e.currentTarget.style.boxShadow = '0 10px 28px rgba(219,140,149,0.4)';
                   }}
                 >
-                  <Check size={20} strokeWidth={3} /> Confirmar Turno
+                  <Check size={20} strokeWidth={3} /> {isEditMode ? 'Guardar Cambios' : 'Confirmar Turno'}
                 </button>
               )}
             </div>

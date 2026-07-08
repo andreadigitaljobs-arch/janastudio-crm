@@ -485,6 +485,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
   const [loading, setLoading] = useState(true);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [scheduleModalPreset, setScheduleModalPreset] = useState(null);
+  const [appointmentToEdit, setAppointmentToEdit] = useState(null);
   const [showNewClientModal, setShowNewClientModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('day');
@@ -2466,8 +2467,11 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                   <button 
                     onClick={() => {
-                      showToast?.('Abrir editor para esta cita (Fase 2)', 'info');
                       triggerClose();
+                      setTimeout(() => {
+                        setAppointmentToEdit(selectedDetailedApp);
+                        setShowScheduleModal(true);
+                      }, 280);
                     }}
                     className="drawer-btn drawer-btn-edit"
                   >
@@ -2814,7 +2818,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
       )}
       <ScheduleModal
         isOpen={showScheduleModal}
-        onClose={() => { setShowScheduleModal(false); setScheduleModalPreset(null); }}
+        onClose={() => { setShowScheduleModal(false); setScheduleModalPreset(null); setAppointmentToEdit(null); }}
         clients={clients}
         services={services}
         staff={staff}
@@ -2822,7 +2826,8 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
         rates={rates}
         defaultDate={selectedDate}
         initialTime={scheduleModalPreset?.initialTime}
-        onSave={() => { setShowScheduleModal(false); setScheduleModalPreset(null); loadFilteredAppointments(); }}
+        appointmentToEdit={appointmentToEdit}
+        onSave={() => { setShowScheduleModal(false); setScheduleModalPreset(null); setAppointmentToEdit(null); loadFilteredAppointments(); }}
       />
       {showNewClientModal && (
         <NewClientModal
