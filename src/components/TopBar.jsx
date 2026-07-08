@@ -230,8 +230,9 @@ const TopBar = ({
     </div>
   );
 
+  if (activeTab !== 'dashboard') return null;
+
   if (isMobile) {
-    if (activeTab === 'dashboard') return null;
     return (
       <div style={{
         display: 'flex',
@@ -287,39 +288,37 @@ const TopBar = ({
           </button>
         </div>
 
-        {/* Second Line: Search Bar (Dashboard) or Greeting (Other Tabs) */}
+        {/* Second Line: Greeting (Dashboard) or Search Bar (Other Tabs) */}
         {activeTab === 'dashboard' ? (
-          renderSearchBar({ padding: '0 4px' })
+          <div style={{ padding: '0 4px' }}>
+            <h1 style={{
+              fontSize: '18px',
+              fontWeight: '700',
+              color: 'var(--text-primary)',
+              fontFamily: "'Playfair Display', Georgia, serif",
+              margin: 0,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}>
+              {getGreeting().replace('¡', '').replace('!', '')}, {(!user || user.role?.toLowerCase().includes('admin') || user.name?.toLowerCase().includes('administrador')) ? 'Jana' : (user.name?.split(' ')[0] || 'Jana')}
+              <Sparkles
+                size={16}
+                style={{
+                  color: 'var(--magenta-secondary)',
+                  animation: 'pulse 2s infinite ease-in-out'
+                }}
+              />
+            </h1>
+            <p style={{
+              fontSize: '0.75rem',
+              color: 'var(--text-secondary)',
+              margin: '2px 0 0 0',
+              fontWeight: '500'
+            }}>Aquí tienes un resumen de hoy en Jana Studio.</p>
+          </div>
         ) : (
-          activeTab !== 'dashboard' && (
-            <div style={{ padding: '0 4px' }}>
-              <h1 style={{
-                fontSize: '18px',
-                fontWeight: '700',
-                color: 'var(--text-primary)',
-                fontFamily: "'Playfair Display', Georgia, serif",
-                margin: 0,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px'
-              }}>
-                {getGreeting().replace('¡', '').replace('!', '')}, {(!user || user.role?.toLowerCase().includes('admin') || user.name?.toLowerCase().includes('administrador')) ? 'Jana' : (user.name?.split(' ')[0] || 'Jana')}
-                <Sparkles
-                  size={16}
-                  style={{
-                    color: 'var(--magenta-secondary)',
-                    animation: 'pulse 2s infinite ease-in-out'
-                  }}
-                />
-              </h1>
-              <p style={{
-                fontSize: '0.75rem',
-                color: 'var(--text-secondary)',
-                margin: '2px 0 0 0',
-                fontWeight: '500'
-              }}>Aquí tienes un resumen de hoy en Jana Studio.</p>
-            </div>
-          )
+          renderSearchBar({ padding: '0 4px' })
         )}
 
         {/* Third Line: BCV/USDT and Date styled horizontally scrolling & super neat */}
@@ -331,7 +330,7 @@ const TopBar = ({
           width: '100%',
           WebkitOverflowScrolling: 'touch'
         }}>
-          {rates && rates.usdt > 0 && (
+          {rates && rates.usdt > 0 && activeTab === 'dashboard' && (
             <div style={{
               display: 'flex', alignItems: 'center', gap: '10px',
               padding: '6px 12px', borderRadius: '10px',
@@ -368,7 +367,7 @@ const TopBar = ({
   return (
     <div style={{
       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      marginBottom: '16px', flexWrap: 'wrap', gap: '12px',
+      flexWrap: 'wrap', gap: '12px',
       paddingLeft: '0',
       paddingTop: '0',
       background: 'rgba(255,255,255,0.7)',
@@ -383,8 +382,6 @@ const TopBar = ({
       {/* Left: Greeting (or Search Bar in Dashboard) */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         {activeTab === 'dashboard' ? (
-          renderSearchBar({ width: '350px' })
-        ) : (
           <div>
             <h1 style={{
               fontSize: '26px',
@@ -412,13 +409,15 @@ const TopBar = ({
               fontWeight: '500'
             }}>Aquí tienes un resumen de hoy en Jana Studio.</p>
           </div>
+        ) : (
+          renderSearchBar({ width: '350px' })
         )}
       </div>
 
       {/* Right: Notification Bell & Date Selector */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         {/* Rates pill: BCV / USDT */}
-        {rates && rates.usdt > 0 && (
+        {rates && rates.usdt > 0 && activeTab === 'dashboard' && (
           <div style={{
             display: 'flex', alignItems: 'center', gap: '10px',
             padding: '8px 14px', borderRadius: '12px',
