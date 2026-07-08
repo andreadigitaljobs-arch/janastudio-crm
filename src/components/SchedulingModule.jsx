@@ -1522,10 +1522,11 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
             backdropFilter: 'blur(4px)', zIndex: 1100, display: 'flex',
             alignItems: 'center', justifyContent: 'center', padding: '16px'
           }}
+          className="animate-fade-in"
           onClick={() => setShowQuickAvailModal(false)}
         >
           <div 
-            className="agenda-glass-card" 
+            className="agenda-glass-card animate-scale-up" 
             style={{ 
               padding: '24px', maxWidth: '650px', width: '100%', maxHeight: '85vh', 
               overflowY: 'auto', background: '#fff', boxShadow: '0 20px 40px rgba(74,48,54,0.15)'
@@ -2315,6 +2316,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
             position: 'fixed', inset: 0, background: 'rgba(250, 243, 242, 0.96)', zIndex: 1000, 
             display: 'flex', flexDirection: 'column', padding: isMobile ? '12px' : '24px 32px', overflowY: 'auto' 
           }}
+          className="animate-slide-up"
         >
           {/* Header Action Bar */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
