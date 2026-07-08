@@ -961,7 +961,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
               { label: 'Ingresos de hoy', value: `$ ${totalSalonRevenue.toLocaleString()}`, sub: '↑ 18% vs ayer', subColor: '#16a34a', icon: <DollarSign size={20} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.1)', color: '#16a34a' },
               { label: 'Citas del día', value: totalCitas, sub: `${confirmadas} completadas  ·  ${pendientes} pendientes`, subColor: '#8c767b', icon: <CalendarIcon size={20} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.1)', color: '#0284c7' },
               { label: 'Ocupación del equipo', value: `${occupancyPct}%`, sub: 'Meta diaria: 80%', subColor: '#8c767b', icon: <BarChart3 size={20} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.1)', progress: occupancyPct, color: '#db8c95' },
-              { label: 'Trabajadoras disponibles', value: staffByStatus.libres.length, sub: 'Ahora mismo', subColor: '#16a34a', icon: <Users size={20} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.1)', color: '#d97706' }
+              { label: 'Especialistas disponibles', value: staffByStatus.libres.length, sub: 'Ahora mismo', subColor: '#16a34a', icon: <Users size={20} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.1)', color: '#d97706' }
             ].map((kpi, idx) => (
               <div key={idx} className="agenda-glass-card" style={{ padding: '18px', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                 <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: kpi.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>{kpi.icon}</div>
@@ -994,7 +994,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                 </div>
 
                 {/* Stylists Grid */}
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)', gap: '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '14px' }}>
                   {visibleStaff.map(s => {
                     const window = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
                     const metrics = getStaffMetrics(s.id);
@@ -1122,66 +1122,60 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                   Próximas citas de hoy
                 </h3>
                 
-                <div style={{ display: 'flex', gap: '14px', overflowX: 'auto', paddingBottom: '8px', WebkitOverflowScrolling: 'touch' }} className="no-scrollbar">
-                  {[...dayApps]
-                    .sort((a, b) => new Date(a.scheduled_at || a.created_at) - new Date(b.scheduled_at || b.created_at))
-                    .slice(0, 6)
-                    .map((app, idx) => {
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(3, 1fr)', gap: '12px' }}>
+                  {(() => {
+                    const demoApps = [
+                      { id: 'd1', timeStr: '9:00 AM',  stylistName: 'Isabella Rodríguez', service: 'Extensión de Pestañas', client: 'María Fernández', status: 'En proceso',  statusBg: 'rgba(168,85,247,0.08)', textColor: '#a855f7' },
+                      { id: 'd2', timeStr: '9:30 AM',  stylistName: 'Laura Pérez',         service: 'Manicura Gel',          client: 'Valentina Gómez', status: 'Confirmada',  statusBg: 'rgba(34,197,94,0.08)',  textColor: '#16a34a' },
+                      { id: 'd3', timeStr: '10:00 AM', stylistName: 'Sofía Gómez',         service: 'Diseño de Cejas',       client: 'Camila Torres',   status: 'En proceso',  statusBg: 'rgba(168,85,247,0.08)', textColor: '#a855f7' },
+                      { id: 'd4', timeStr: '10:30 AM', stylistName: 'Camila Silva',         service: 'Pedicura Spa',          client: 'Daniela Rojas',   status: 'Pendiente',   statusBg: 'rgba(217,119,6,0.08)', textColor: '#d97706' },
+                      { id: 'd5', timeStr: '11:00 AM', stylistName: 'Valeria Rojas',        service: 'Lifting de Pestañas',   client: 'Andrea Castillo', status: 'Confirmada',  statusBg: 'rgba(34,197,94,0.08)',  textColor: '#16a34a' },
+                      { id: 'd6', timeStr: '11:30 AM', stylistName: 'Mariana Torres',       service: 'Color y Mechas',        client: 'Lucía Méndez',    status: 'Confirmada',  statusBg: 'rgba(34,197,94,0.08)',  textColor: '#16a34a' },
+                      { id: 'd7', timeStr: '12:00 PM', stylistName: 'Andrea Castro',        service: 'Nail Art Detalle',      client: 'Sofía Vargas',    status: 'Pendiente',   statusBg: 'rgba(217,119,6,0.08)', textColor: '#d97706' },
+                      { id: 'd8', timeStr: '12:30 PM', stylistName: 'Lucía Méndez',         service: 'Depilación Cejas',      client: 'Elena Ramírez',   status: 'Confirmada',  statusBg: 'rgba(34,197,94,0.08)',  textColor: '#16a34a' },
+                    ];
+                    const realApps = [...dayApps].sort((a,b) => new Date(a.scheduled_at||a.created_at) - new Date(b.scheduled_at||b.created_at)).slice(0,8);
+                    const appsToShow = realApps.length > 0 ? realApps.map((app, idx) => {
                       const appTime = new Date(app.scheduled_at || app.created_at);
                       const timeStr = appTime.toLocaleTimeString('es-VE', { hour: 'numeric', minute: '2-digit', hour12: true });
                       const specialist = staff.find(s => s.id === app.staff_id);
-                      const stylistInitial = (specialist?.name || '?').charAt(0).toUpperCase();
-                      
-                      let statusBg = 'rgba(34, 197, 94, 0.08)';
-                      let statusText = 'Confirmada';
-                      let textColor = '#16a34a';
+                      let statusBg = 'rgba(34,197,94,0.08)', statusText = 'Confirmada', textColor = '#16a34a';
+                      if (app.status === 'En Silla' || app.status === 'En Tratamiento') { statusBg = 'rgba(168,85,247,0.08)'; statusText = 'En proceso'; textColor = '#a855f7'; }
+                      else if (app.status === 'Cancelada' || app.status === 'Cancelado') { statusBg = 'rgba(239,68,68,0.08)'; statusText = 'Cancelada'; textColor = '#dc2626'; }
+                      else if (app.status === 'Por Pagar') { statusBg = 'rgba(217,119,6,0.08)'; statusText = 'Pendiente'; textColor = '#d97706'; }
+                      return { id: app.id || idx, timeStr, stylistName: specialist?.name || 'Especialista', service: app.services?.name || 'Servicio', client: app.clients?.name || 'Cliente', status: statusText, statusBg, textColor };
+                    }) : demoApps;
 
-                      if (app.status === 'En Silla' || app.status === 'En Tratamiento') {
-                        statusBg = 'rgba(168, 85, 247, 0.08)';
-                        statusText = 'En proceso';
-                        textColor = '#a855f7';
-                      } else if (app.status === 'Cancelada' || app.status === 'Cancelado') {
-                        statusBg = 'rgba(239, 68, 68, 0.08)';
-                        statusText = 'Cancelada';
-                        textColor = '#dc2626';
-                      } else if (app.status === 'Por Pagar') {
-                        statusBg = 'rgba(217, 119, 6, 0.08)';
-                        statusText = 'Pendiente';
-                        textColor = '#d97706';
-                      }
-
-                      return (
-                        <div 
-                          key={app.id || idx} 
-                          onClick={() => openScheduleForAppointment(app)}
-                          style={{
-                            background: '#fff', border: '1px solid rgba(223, 178, 140, 0.2)',
-                            borderRadius: '14px', padding: '12px 16px', minWidth: '220px', flexShrink: 0,
-                            display: 'flex', flexDirection: 'column', gap: '8px', cursor: 'pointer',
-                            boxShadow: '0 2px 8px rgba(74, 48, 54, 0.02)'
-                          }}
-                        >
-                          <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#db8c95' }}>
-                            {timeStr}
+                    return appsToShow.map((item) => (
+                      <div
+                        key={item.id}
+                        style={{
+                          background: '#fff', border: '1px solid rgba(223,178,140,0.2)',
+                          borderRadius: '14px', padding: '12px 16px',
+                          display: 'flex', flexDirection: 'column', gap: '8px', cursor: 'pointer',
+                          boxShadow: '0 2px 8px rgba(74,48,54,0.03)',
+                          transition: 'box-shadow 0.2s ease, transform 0.2s ease'
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 6px 20px rgba(219,140,149,0.15)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 2px 8px rgba(74,48,54,0.03)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                      >
+                        <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#db8c95' }}>{item.timeStr}</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '0.75rem', flexShrink: 0 }}>
+                            {item.stylistName.charAt(0).toUpperCase()}
                           </div>
-                          
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '0.75rem' }}>{stylistInitial}</div>
-                            <div style={{ minWidth: 0, flex: 1 }}>
-                              <div style={{ fontSize: '0.76rem', fontWeight: 700, color: '#4a3036', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{specialist?.name || 'Especialista'}</div>
-                              <div style={{ fontSize: '0.62rem', color: '#8c767b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{app.services?.name || 'Servicio'}</div>
-                            </div>
-                          </div>
-
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
-                            <span style={{ fontSize: '0.68rem', color: '#8c767b' }}>{app.clients?.name || 'Cliente'}</span>
-                            <span style={{ fontSize: '0.58rem', fontWeight: 700, background: statusBg, color: textColor, padding: '2px 6px', borderRadius: '6px' }}>
-                              {statusText}
-                            </span>
+                          <div style={{ minWidth: 0, flex: 1 }}>
+                            <div style={{ fontSize: '0.76rem', fontWeight: 700, color: '#4a3036', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.stylistName.split(' ')[0]}</div>
+                            <div style={{ fontSize: '0.62rem', color: '#8c767b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.service}</div>
                           </div>
                         </div>
-                      );
-                    })}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px' }}>
+                          <span style={{ fontSize: '0.68rem', color: '#8c767b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '110px' }}>{item.client}</span>
+                          <span style={{ fontSize: '0.58rem', fontWeight: 700, background: item.statusBg, color: item.textColor, padding: '2px 7px', borderRadius: '6px', whiteSpace: 'nowrap' }}>{item.status}</span>
+                        </div>
+                      </div>
+                    ));
+                  })()}
                 </div>
 
                 <div 
@@ -1568,7 +1562,7 @@ const SchedulingModule = ({ isMobile, rates, openScheduleModal = false, modalKey
                     padding: '10px', borderRadius: '10px', marginTop: '8px', animation: 'fadeIn 0.2s ease'
                   }}>
                     <div style={{ fontSize: '0.62rem', color: '#a0506a', fontWeight: 700, marginBottom: '6px' }}>
-                      Haz clic en los horarios libres de cada trabajadora para añadir servicios simultáneos:
+                      Haz clic en los horarios libres de cada especialista para añadir servicios simultáneos:
                     </div>
                     {multipleBookedSlots.length === 0 ? (
                       <div style={{ fontSize: '0.6rem', color: '#8c767b', fontStyle: 'italic' }}>
