@@ -1,0 +1,60 @@
+Funciones de la Agenda — JanaStudio CRM
+Lista de referencia para diseño: qué funciones ya tiene la Agenda, cuáles siguen, y cuáles valdría la pena considerar a futuro.
+Fase 1 — Ya construido
+Función
+Qué hace
+Vista de columnas por trabajadora
+Una columna por cada quien, lado a lado, con sus citas del día
+Bloques con duración real
+El alto del bloque representa la duración real del servicio
+Columna "Día libre"
+Se sombrea si esa trabajadora no trabaja ese día
+Agenda personal (rol trabajadora)
+Si entra una trabajadora, solo ve su propia columna
+Panel "Especialistas" real
+Dice quién está libre, ocupada, o de día libre, y desde qué hora está disponible
+Resumen del día real
+Horas ocupadas, disponibilidad y % de ocupación calculados de verdad
+Horario configurable
+Pestaña en el perfil de cada trabajadora: qué días trabaja, de qué hora a qué hora, días libres puntuales
+Reservar con un clic
+Clic en un espacio libre de una columna abre el formulario con esa hora y trabajadora ya puestas
+Aviso de cruce de horario
+Si se agenda una hora ocupada, avisa (pero deja confirmar si es a propósito)
+Buscar cliente
+Filtra las citas del día por nombre o teléfono
+Fase 2 — Próximo (lo que pidió la clienta)
+Función
+Qué hace
+Reserva de servicio múltiple simultáneo
+Elegir 1 clienta + 2 o más servicios + 2 trabajadoras distintas + la misma hora, guardado como una sola visita conectada (no citas sueltas)
+"¿Quién está libre ahorita?"
+Vistazo rápido que resalta en verde/rojo cada columna en un momento específico, sin tener que revisar toda la grilla
+Ver detalle de una cita
+Ventana con el detalle completo: clienta, servicio, notas, teléfono
+Editar / reagendar una cita existente
+Mover una cita ya creada a otra hora, otra trabajadora, o cambiar el servicio
+Cancelar cita (con motivo)
+Cancelar directamente desde la agenda, registrando el motivo
+Fase 3 — Pulido y funciones avanzadas
+Función
+Qué hace
+Vista de semana real
+Grilla de 7 días, no solo el día actual
+Vista de mes real
+Calendario mensual con resumen de citas por día
+Arrastrar y soltar
+Mover una cita de hora o de trabajadora arrastrándola con el mouse
+Recordatorios automáticos por WhatsApp
+Confirmación al agendar + recordatorio antes de la cita
+Rediseño visual final
+Pulir animaciones, transiciones y micro-interacciones
+Funciones adicionales a considerar
+No están en el plan actual, pero son estándar en este tipo de sistema — vale la pena que el diseño les deje espacio por si se agregan más adelante:
+Bloqueo manual de horario: Para almuerzo, mantenimiento o un evento puntual dentro de un día que sí se trabaja (distinto del "día libre" semanal)
+Citas recurrentes: Una clienta que viene cada cierto tiempo se agenda una sola vez y se repite sola
+Lista de espera: Si un horario está lleno, anotar a quien quiera ese cupo por si se libera
+Marcar "no show": Registrar cuando una clienta no llegó, para las estadísticas
+Tiempo de preparación entre citas: Un "colchón" de 10-15 minutos entre citas para limpieza u orden
+Depósito o anticipo al reservar: Cobrar un adelanto para asegurar la cita
+Reserva pública en línea: Que la propia clienta reserve desde un link, sin pasar por recepción
