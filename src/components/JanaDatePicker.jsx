@@ -421,6 +421,10 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
           onKeyDown={handleKeyDown}
           maxLength={10}
           inputMode="numeric"
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck="false"
           style={{
             width: '100%',
             paddingLeft: '48px',
@@ -430,6 +434,7 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
             border: isOpen ? '1.5px solid var(--pink-primary)' : isLight ? '1px solid rgba(212,160,154,0.35)' : '1px solid rgba(255,255,255,0.15)',
             color: isLight ? 'var(--text-primary)' : 'white',
             outline: 'none',
+            boxShadow: 'none',
             transition: 'border-color 0.2s',
             ...inputStyle
           }}

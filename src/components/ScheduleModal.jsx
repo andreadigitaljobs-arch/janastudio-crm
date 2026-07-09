@@ -29,7 +29,7 @@ import JanaTimePicker from './JanaTimePicker';
 import { isStaffFreeAt } from '../utils/availability';
 import { loadStoredSchedules, loadStoredTimeOff } from '../utils/mockStaffSchedules';
 import { getBusinessDateKey } from '../utils/dateTime';
-import { getRoleKind } from '../utils/roles';
+import { getRoleKind, getRoleName } from '../utils/roles';
 
 const dateToISO = (date) => getBusinessDateKey(date);
 const isoToDate = (iso) => iso ? new Date(`${iso}T00:00:00`) : new Date();
@@ -1044,7 +1044,8 @@ const ScheduleModal = ({
                              variant="light"
                              value={dateToISO(selectedDate)}
                              onChange={(e) => e.target.value && setSelectedDate(isoToDate(e.target.value))}
-                             inputStyle={{ borderRadius: '12px', height: '44px', fontSize: '0.82rem', fontWeight: 650, paddingLeft: '38px', background: '#fff', border: '1.5px solid rgba(212,160,154,0.25)', color: '#3d2b30' }}
+                             autoComplete="off"
+                             inputStyle={{ borderRadius: '12px', height: '44px', fontSize: '0.82rem', fontWeight: 650, paddingLeft: '48px', background: '#fff', border: '1.5px solid rgba(212,160,154,0.25)', color: '#3d2b30' }}
                            />
                            <div style={{ fontSize: '0.68rem', color: '#a0868c', marginTop: '10px', fontWeight: 500, lineHeight: '1.4' }}>
                              Elige el día en el que se agendarán todas las citas del grupo.

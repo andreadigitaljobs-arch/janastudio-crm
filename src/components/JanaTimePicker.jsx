@@ -150,10 +150,11 @@ const JanaTimePicker = ({ value, onChange, label = "", variant = "dark", placeme
             padding: '2px',
             display: 'flex',
             alignItems: 'center',
-            color: isOpen ? 'var(--pink-primary)' : (isLight ? '#c97282' : 'var(--text-muted)')
+            color: isOpen ? 'var(--pink-primary)' : (isLight ? '#c97282' : 'var(--text-muted)'),
+            flexShrink: 0
           }}
         >
-          <Clock size={16} color="inherit" />
+          <Clock size={16} color={isOpen ? 'var(--pink-primary)' : (isLight ? '#c97282' : '#b0999e')} />
         </button>
         <input
           ref={inputRef}
@@ -162,11 +163,16 @@ const JanaTimePicker = ({ value, onChange, label = "", variant = "dark", placeme
           onChange={handleInputChange}
           placeholder="HH:MM AM"
           maxLength={8}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck="false"
           style={{
             flex: 1,
             border: 'none',
             background: 'transparent',
             outline: 'none',
+            boxShadow: 'none',
             fontSize: '14px',
             fontWeight: '700',
             color: isLight ? 'var(--text-primary)' : 'white',
