@@ -1006,34 +1006,42 @@ const ScheduleModal = ({
                     </div>
                   )}
 
-                  {!isEditMode && currentStep === 3 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', animation: 'fadeInUp 0.4s ease-out' }}>
-                      <div style={{ textAlign: 'center', marginBottom: '4px' }}>
-                        <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
-                          <Calendar size={24} />
-                        </div>
-                        <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#3d2b30' }}>¿Cuándo será la cita?</h3>
-                        <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Todos los servicios serán el mismo día.</p>
-                      </div>
+                   {!isEditMode && currentStep === 3 && (
+                     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', animation: 'fadeInUp 0.4s ease-out' }}>
+                       <div style={{ textAlign: 'center', marginBottom: '8px' }}>
+                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
+                           <Calendar size={24} />
+                         </div>
+                         <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#3d2b30' }}>¿Cuándo será la cita?</h3>
+                         <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Define la fecha y hora base de los servicios de esta orden.</p>
+                       </div>
 
-                      <div>
-                        <label style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', display: 'block', marginBottom: '6px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Fecha</label>
-                        <JanaDatePicker
-                          variant="light"
-                          value={dateToISO(selectedDate)}
-                          onChange={(e) => e.target.value && setSelectedDate(isoToDate(e.target.value))}
-                          inputStyle={{ borderRadius: '12px', height: '48px', fontSize: '0.85rem', fontWeight: 600, paddingLeft: '38px', background: '#fff', border: '1.5px solid rgba(212,160,154,0.3)', color: '#3d2b30' }}
-                        />
-                      </div>
-                      <div>
-                        <label style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', display: 'block', marginBottom: '6px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Hora general</label>
-                        <JanaTimePicker variant="light" label="" value={generalTime} onChange={applyGeneralTime} />
-                        <div style={{ fontSize: '0.68rem', color: '#a0868c', marginTop: '8px' }}>
-                          Se aplica a todos los servicios por defecto — podrás personalizar la hora de cada uno individualmente en el siguiente paso.
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', alignItems: 'start', marginTop: '10px' }}>
+                         {/* Left Column: Date Selector */}
+                         <div style={{ background: '#ffffff', padding: '20px', borderRadius: '20px', border: '1px solid rgba(223, 178, 140, 0.15)', boxShadow: '0 4px 15px rgba(74,48,54,0.01)' }}>
+                           <label style={{ fontSize: '0.65rem', fontWeight: 800, color: '#db8c95', display: 'block', marginBottom: '10px', letterSpacing: '0.8px', textTransform: 'uppercase' }}>1. Seleccionar Fecha</label>
+                           <JanaDatePicker
+                             variant="light"
+                             value={dateToISO(selectedDate)}
+                             onChange={(e) => e.target.value && setSelectedDate(isoToDate(e.target.value))}
+                             inputStyle={{ borderRadius: '12px', height: '44px', fontSize: '0.82rem', fontWeight: 650, paddingLeft: '38px', background: '#fff', border: '1.5px solid rgba(212,160,154,0.25)', color: '#3d2b30' }}
+                           />
+                           <div style={{ fontSize: '0.68rem', color: '#a0868c', marginTop: '10px', fontWeight: 500, lineHeight: '1.4' }}>
+                             Elige el día en el que se agendarán todas las citas del grupo.
+                           </div>
+                         </div>
+
+                         {/* Right Column: Time Selector */}
+                         <div style={{ background: '#ffffff', padding: '20px', borderRadius: '20px', border: '1px solid rgba(223, 178, 140, 0.15)', boxShadow: '0 4px 15px rgba(74,48,54,0.01)' }}>
+                           <label style={{ fontSize: '0.65rem', fontWeight: 800, color: '#db8c95', display: 'block', marginBottom: '10px', letterSpacing: '0.8px', textTransform: 'uppercase' }}>2. Hora de Inicio General</label>
+                           <JanaTimePicker variant="light" label="" value={generalTime} onChange={applyGeneralTime} />
+                           <div style={{ fontSize: '0.68rem', color: '#a0868c', marginTop: '10px', fontWeight: 500, lineHeight: '1.4' }}>
+                             Se aplicará por defecto a todos los servicios seleccionados. Podrás ajustar la hora de cada uno de forma individual en el paso siguiente.
+                           </div>
+                         </div>
+                       </div>
+                     </div>
+                   )}
 
                   {!isEditMode && currentStep === 4 && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out', flex: 1, minHeight: 0 }}>
