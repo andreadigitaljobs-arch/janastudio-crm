@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import {
   X,
@@ -120,6 +120,34 @@ const ScheduleModal = ({
   const serviceCategories = [...new Set(services.map(s => s.category).filter(Boolean))];
 
   const totalSteps = 5;
+
+  const cardRef = useRef(null);
+  const [panelPos, setPanelPos] = useState({ left: 0, top: 116, maxHeight: 400 });
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const PANEL_WIDTH = 340;
+    const GAP = 20;
+    const recalc = () => {
+      const card = cardRef.current;
+      if (!card) return;
+      const rect = card.getBoundingClientRect();
+      const desiredLeft = rect.right + GAP;
+      const left = Math.min(desiredLeft, window.innerWidth - PANEL_WIDTH - 12);
+      setPanelPos({
+        left,
+        top: rect.top + 110,
+        maxHeight: rect.height - 150
+      });
+    };
+    recalc();
+    window.addEventListener('resize', recalc);
+    const interval = setInterval(recalc, 300);
+    return () => {
+      window.removeEventListener('resize', recalc);
+      clearInterval(interval);
+    };
+  }, [isOpen, currentStep]);
 
   // Fetch client packages when client changes
   useEffect(() => {
@@ -476,7 +504,7 @@ const ScheduleModal = ({
       {(overlayClass, cardClass) => (
         <>
         <div className={`${overlayClass} jana-schedule-modal-overlay`} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(30, 30, 30, 0.4)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 20000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '28px', animation: 'fadeIn 0.25s ease-out' }}>
-          <div className={`${cardClass} jana-schedule-modal-card`} style={{ width: '92vw', maxWidth: '1100px', height: '90vh', maxHeight: '860px', backgroundColor: '#fcf8f7', borderRadius: '32px', boxShadow: '0 25px 60px rgba(74,48,54,0.25), 0 8px 24px rgba(0,0,0,0.08)', overflow: 'hidden', display: 'flex', flexDirection: 'column', animation: 'slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)', position: 'relative' }}>
+          <div ref={cardRef} className={`${cardClass} jana-schedule-modal-card`} style={{ width: '92vw', maxWidth: '1100px', height: '90vh', maxHeight: '860px', backgroundColor: '#fcf8f7', borderRadius: '32px', boxShadow: '0 25px 60px rgba(74,48,54,0.25), 0 8px 24px rgba(0,0,0,0.08)', overflow: 'hidden', display: 'flex', flexDirection: 'column', animation: 'slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)', position: 'relative' }}>
             <style>{`
               @keyframes fadeIn {
                 from { opacity: 0; }
@@ -1269,9 +1297,9 @@ const ScheduleModal = ({
             background: '#fff',
             boxShadow: '0 25px 60px rgba(74,48,54,0.25)',
             position: 'fixed',
-            left: 'calc(50% + min(46vw, 550px) + 20px)',
-            top: 'calc(50% - min(45vh, 430px) + 110px)',
-            maxHeight: 'calc(min(90vh, 860px) - 150px)',
+            left: `${panelPos.left}px`,
+            top: `${panelPos.top}px`,
+            maxHeight: `${panelPos.maxHeight}px`,
             overflowY: 'auto',
             zIndex: 20001,
             animation: 'slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
