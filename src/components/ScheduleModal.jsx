@@ -572,7 +572,7 @@ const ScheduleModal = ({
                 </div>
 
                 {/* Stepper Views */}
-                <div style={{ flex: 1, minHeight: '300px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
 
                   {/* STEP 1: CLIENT SELECTION (ambos modos) */}
                   {currentStep === 1 && (
@@ -866,7 +866,7 @@ const ScheduleModal = ({
                         </div>
                       )}
 
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: 'calc(65vh - 200px)', overflowY: 'auto', paddingBottom: '20px' }} className="jana-scrollbar">
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingBottom: '8px' }}>
                         {services
                           .filter(svc => serviceCategoryFilter === 'Todas' || svc.category === serviceCategoryFilter)
                           .filter(svc => !serviceSearchQuery || normalizeForSearch(svc.name || '').includes(normalizeForSearch(serviceSearchQuery)))
@@ -954,7 +954,7 @@ const ScheduleModal = ({
                         La hora general se aplica a todos los servicios que no hayas personalizado individualmente.
                       </div>
 
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: 'calc(75vh - 120px)', overflowY: 'auto', paddingRight: '2px', paddingBottom: '40px' }} className="jana-scrollbar">
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingBottom: '8px' }}>
                         {selectedServices.map(svc => {
                           const conflict = getServiceConflict(svc);
                           return (
