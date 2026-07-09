@@ -507,9 +507,12 @@ const ScheduleModal = ({
               .animate-fade-in-up { animation: fadeInUp 0.3s ease-out; }
               .animate-scale-in { animation: scaleIn 0.3s ease-out; }
 
+              @media (max-width: 900px) {
+                .svc-grid { grid-template-columns: 1fr !important; }
+              }
+
               @media (max-width: 640px) {
                 .jana-schedule-header-inner, .jana-schedule-content-inner, .jana-schedule-footer-inner { padding-left: 18px !important; padding-right: 18px !important; }
-                .svc-header-row { display: none !important; }
                 .svc-row { flex-wrap: wrap !important; }
                 .svc-row > div:first-child { flex-basis: 100% !important; }
                 .svc-time-col { width: auto !important; flex: 1 !important; align-items: stretch !important; }
@@ -1003,12 +1006,7 @@ const ScheduleModal = ({
                         </div>
                       )}
 
-                      <div className="svc-header-row" style={{ display: 'flex', gap: '10px', padding: '0 2px', flexShrink: 0 }}>
-                        <div style={{ flex: 1, minWidth: 0, fontSize: '0.6rem', fontWeight: 700, color: '#a0868c', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Servicio / Profesional</div>
-                        <div style={{ width: '138px', flexShrink: 0, fontSize: '0.6rem', fontWeight: 700, color: '#a0868c', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Horario</div>
-                      </div>
-
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingBottom: '8px', flex: 1, minHeight: '200px', overflowY: 'auto' }} className="jana-scrollbar">
+                      <div className="svc-grid jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px 14px', paddingBottom: '8px', flex: 1, minHeight: '200px', overflowY: 'auto', alignContent: 'start' }}>
                         {selectedServices.map(svc => {
                           const conflict = getServiceConflict(svc);
                           return (
