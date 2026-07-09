@@ -580,7 +580,7 @@ const ScheduleModal = ({
                   background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
                   boxShadow: '0 4px 20px rgba(219,140,149,0.35)'
                 }}>
-                  <div className="jana-schedule-header-inner" style={{ maxWidth: '760px', margin: '0 auto', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div className="jana-schedule-header-inner" style={{ padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div style={{ flex: 1 }}>
                       <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fff', margin: 0, letterSpacing: '-0.3px', textShadow: '0 2px 8px rgba(74,30,38,0.15)' }}>
                         {isReprogramOnly ? (
@@ -624,7 +624,7 @@ const ScheduleModal = ({
 
                 {/* Scrollable content area */}
                 <div className="jana-scrollbar" style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
-                  <div className="jana-schedule-content-inner" style={{ maxWidth: '760px', margin: '0 auto', padding: '28px 32px', display: 'flex', flexDirection: 'column', overflowX: 'hidden' }}>
+                  <div className="jana-schedule-content-inner" style={{ width: '100%', boxSizing: 'border-box', padding: '28px 32px', display: 'flex', flexDirection: 'column', overflowX: 'hidden' }}>
 
                   {/* STEP 1: CLIENT SELECTION (ambos modos) */}
                   {currentStep === 1 && (
@@ -1193,7 +1193,7 @@ const ScheduleModal = ({
 
                 {/* Stepper Buttons Footer (sticky, full-width strip) */}
                 <div style={{ flexShrink: 0, position: 'sticky', bottom: 0, background: '#fff', borderTop: '1px solid rgba(223,178,140,0.15)', boxShadow: '0 -6px 20px rgba(74,48,54,0.06)', animation: 'fadeInUp 0.4s ease-out 0.3s both' }}>
-                <div className="jana-schedule-footer-inner" style={{ maxWidth: '760px', margin: '0 auto', padding: '16px 32px', display: 'flex', gap: '12px' }}>
+                 <div className="jana-schedule-footer-inner" style={{ padding: '16px 32px', display: 'flex', gap: '12px' }}>
                   {currentStep > 1 && !isReprogramOnly && (
                     <button
                       onClick={() => setCurrentStep(prev => prev - 1)}
