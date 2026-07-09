@@ -14,12 +14,10 @@ import {
   RotateCcw,
   Trash2,
   Search,
-  Droplets,
   Flame,
   Zap,
   Heart,
-  Palette,
-  Hammer
+  Palette
 } from 'lucide-react';
 import { normalizeForSearch } from '../utils/stringUtils';
 import { dataService } from '../services/dataService';
@@ -53,13 +51,22 @@ const getDisplayTime = (timeStr) => {
 
 const getStaffDisplayName = (member) => String(member?.name || '').split('(')[0].trim();
 
+const formatDuration = (minutes) => {
+  if (!minutes || minutes < 1) return '0 min';
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  if (hours === 0) return `${mins}min`;
+  if (mins === 0) return `${hours}h`;
+  return `${hours}h ${mins}min`;
+};
+
 const getCategoryIcon = (category) => {
   const iconMap = {
     'Cabello': <Scissors size={16} />,
     'Cejas & Pestañas': <Sparkles size={16} />,
     'Depilación': <Flame size={16} />,
     'Peinados': <Palette size={16} />,
-    'Uñas': <Hammer size={16} />,
+    'Uñas': <Heart size={16} />,
     'Pestañas': <Heart size={16} />
   };
   return iconMap[category] || <Zap size={16} />;
@@ -459,7 +466,7 @@ const ScheduleModal = ({
     <AnimatedModal isOpen={isOpen}>
       {(overlayClass, cardClass) => (
         <div className={overlayClass} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(30, 30, 30, 0.4)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 20000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', animation: 'fadeIn 0.3s ease-out' }}>
-          <div className={`${cardClass} jana-scrollbar`} style={{ maxWidth: '1000px', width: '100%', maxHeight: 'calc(100vh - 40px)', overflowY: 'auto', borderRadius: '32px', padding: '40px 40px 52px 40px', backgroundColor: '#fff', boxShadow: '0 25px 60px rgba(74,48,54,0.18), 0 8px 24px rgba(0,0,0,0.06)', border: '1px solid rgba(223,178,140,0.15)', display: 'grid', gridTemplateColumns: !isEditMode && selectedServices.length > 0 && currentStep !== 1 ? '1fr 320px' : '1fr', gap: '20px', animation: 'slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
+          <div className={`${cardClass} jana-scrollbar`} style={{ maxWidth: '720px', width: '100%', maxHeight: 'calc(100vh - 40px)', overflowY: 'auto', borderRadius: '32px', padding: '40px 40px 52px 40px', backgroundColor: '#fff', boxShadow: '0 25px 60px rgba(74,48,54,0.18), 0 8px 24px rgba(0,0,0,0.06)', border: '1px solid rgba(223,178,140,0.15)', display: 'flex', flexDirection: 'column', animation: 'slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)', position: 'relative' }}>
             <style>{`
               @keyframes fadeIn {
                 from { opacity: 0; }
@@ -468,6 +475,10 @@ const ScheduleModal = ({
               @keyframes slideUp {
                 from { transform: translateY(60px); opacity: 0; }
                 to { transform: translateY(0); opacity: 1; }
+              }
+              @keyframes slideInRight {
+                from { transform: translateX(80px); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
               }
               @keyframes fadeInDown {
                 from { opacity: 0; transform: translateY(-20px); }
@@ -776,7 +787,7 @@ const ScheduleModal = ({
 
                   {/* ══════════════ MODO CREACIÓN (orden con varios servicios) ══════════════ */}
                   {!isEditMode && currentStep === 2 && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: '20px', animation: 'fadeInUp 0.4s ease-out', alignItems: 'start' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out', position: 'relative' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                       <div style={{ textAlign: 'center', marginBottom: '8px' }}>
                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
@@ -854,7 +865,7 @@ const ScheduleModal = ({
                         </div>
                       )}
 
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '260px', overflowY: 'auto' }} className="jana-scrollbar">
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: 'calc(65vh - 200px)', overflowY: 'auto', paddingBottom: '20px' }} className="jana-scrollbar">
                         {services
                           .filter(svc => serviceCategoryFilter === 'Todas' || svc.category === serviceCategoryFilter)
                           .filter(svc => !serviceSearchQuery || normalizeForSearch(svc.name || '').includes(normalizeForSearch(serviceSearchQuery)))
@@ -892,7 +903,7 @@ const ScheduleModal = ({
                                 <div style={{ fontSize: '0.68rem', color: '#a0868c', marginTop: '3px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                   <span>${Number(svc.price || 0).toFixed(2)}</span>
                                   <span style={{ color: '#c8b6ba' }}>•</span>
-                                  <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}><Clock size={12} /> {svc.duration_minutes || 60} min</span>
+                                  <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}><Clock size={12} /> {formatDuration(svc.duration_minutes || 60)}</span>
                                   {pkg && <span style={{ color: '#16a34a', fontWeight: 700 }}>✓ Paquete</span>}
                                 </div>
                               </div>
@@ -909,88 +920,6 @@ const ScheduleModal = ({
                           </div>
                         )}
                       </div>
-
-                      </div>
-
-                      {/* Panel de Resumen - Derecha */}
-                      <div style={{
-                        display: 'flex', flexDirection: 'column', gap: '14px',
-                        padding: '16px', borderRadius: '16px',
-                        background: 'linear-gradient(135deg, #fffcfb 0%, #fff6f7 100%)',
-                        border: '1.5px solid rgba(219,140,149,0.2)',
-                        height: 'fit-content',
-                        position: 'sticky', top: 0,
-                        animation: 'fadeInUp 0.4s ease-out 0.2s both'
-                      }}>
-                        <div>
-                          <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#a0868c', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
-                            📋 Tu Orden
-                          </div>
-                          {selectedServices.length === 0 ? (
-                            <div style={{ fontSize: '0.72rem', color: '#c8b6ba', fontStyle: 'italic', textAlign: 'center', padding: '16px 8px' }}>
-                              Selecciona servicios para verlos aquí
-                            </div>
-                          ) : (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                              {selectedServices.map((svc, idx) => (
-                                <div key={svc._uid} style={{
-                                  padding: '10px 12px', borderRadius: '10px',
-                                  background: '#fff', border: '1px solid rgba(219,140,149,0.15)',
-                                  animation: `fadeInUp 0.3s ease-out ${0.25 + idx * 0.05}s both`
-                                }}>
-                                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                                    <div style={{ color: '#db8c95', marginTop: '1px', minWidth: '16px' }}>
-                                      {getCategoryIcon(services.find(s => s.id === svc.service_id)?.category)}
-                                    </div>
-                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                      <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#3d2b30', lineHeight: '1.2' }}>
-                                        {svc.name}
-                                      </div>
-                                      <div style={{ fontSize: '0.65rem', color: '#a0868c', marginTop: '2px' }}>
-                                        ${Number(svc.price || 0).toFixed(2)}
-                                      </div>
-                                    </div>
-                                    <button
-                                      onClick={() => removeServiceRow(svc._uid)}
-                                      style={{
-                                        background: 'none', border: 'none', cursor: 'pointer',
-                                        color: '#c8949c', padding: 0, fontSize: '16px', lineHeight: 1
-                                      }}
-                                    >
-                                      ×
-                                    </button>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-
-                        {selectedServices.length > 0 && (
-                          <>
-                            <div style={{ borderTop: '1px dashed rgba(219,140,149,0.3)', paddingTop: '10px' }}>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                                <span style={{ fontSize: '0.68rem', color: '#a0868c', fontWeight: 600 }}>Subtotal</span>
-                                <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#3d2b30' }}>${cartTotal.toFixed(2)}</span>
-                              </div>
-                              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <span style={{ fontSize: '0.68rem', color: '#a0868c', fontWeight: 600 }}>Items</span>
-                                <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#db8c95' }}>{selectedServices.length}</span>
-                              </div>
-                            </div>
-                            <div style={{
-                              padding: '10px 12px', borderRadius: '10px',
-                              background: 'rgba(219,140,149,0.1)',
-                              border: '1px solid rgba(219,140,149,0.3)',
-                              textAlign: 'center'
-                            }}>
-                              <div style={{ fontSize: '0.65rem', color: '#a0868c', fontWeight: 600, marginBottom: '3px' }}>Total</div>
-                              <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#db8c95' }}>
-                                ${cartTotal.toFixed(2)}
-                              </div>
-                            </div>
-                          </>
-                        )}
                       </div>
                     </div>
                   )}
@@ -1024,7 +953,7 @@ const ScheduleModal = ({
                         La hora general se aplica a todos los servicios que no hayas personalizado individualmente.
                       </div>
 
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '320px', overflowY: 'auto', paddingRight: '2px' }} className="jana-scrollbar">
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: 'calc(75vh - 250px)', overflowY: 'auto', paddingRight: '2px', paddingBottom: '20px' }} className="jana-scrollbar">
                         {selectedServices.map(svc => {
                           const conflict = getServiceConflict(svc);
                           return (
@@ -1039,25 +968,52 @@ const ScheduleModal = ({
                                   <Trash2 size={14} />
                                 </button>
                               </div>
-                              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                <div style={{ flex: 1.4 }}>
-                                  <select
-                                    value={svc.staffId || ''}
-                                    onChange={(e) => setRowStaff(svc._uid, e.target.value)}
-                                    style={{
-                                      width: '100%', fontSize: '0.74rem', fontWeight: 600, padding: '8px 10px', borderRadius: '10px',
-                                      border: svc.staffId ? '1px solid rgba(223,178,140,0.3)' : '1.5px solid #dc2626',
-                                      background: svc.staffId ? '#fff' : '#fef2f2', color: '#3d2b30'
-                                    }}
-                                  >
-                                    <option value="">Elegir profesional...</option>
-                                    {staffArray.map(s => (
-                                      <option key={s.id} value={s.id}>{getStaffDisplayName(s)}</option>
+                              <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                                <div style={{ flex: 1, minWidth: '160px' }}>
+                                  <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#a0868c', marginBottom: '8px', textTransform: 'uppercase' }}>Profesional</div>
+                                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(75px, 1fr))', gap: '10px' }}>
+                                    {staffArray.map(staff => (
+                                      <button
+                                        key={staff.id}
+                                        onClick={() => setRowStaff(svc._uid, staff.id)}
+                                        title={getStaffDisplayName(staff)}
+                                        style={{
+                                          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
+                                          padding: '8px', borderRadius: '12px', cursor: 'pointer', border: 'none',
+                                          background: svc.staffId === staff.id ? 'rgba(219,140,149,0.15)' : 'transparent',
+                                          transition: 'all 0.2s'
+                                        }}
+                                        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(219,140,149,0.08)'; }}
+                                        onMouseLeave={(e) => { e.currentTarget.style.background = svc.staffId === staff.id ? 'rgba(219,140,149,0.15)' : 'transparent'; }}
+                                      >
+                                        <div style={{
+                                          width: '50px', height: '50px', borderRadius: '10px', overflow: 'hidden',
+                                          border: svc.staffId === staff.id ? '2.5px solid #db8c95' : '1px solid rgba(223,178,140,0.2)',
+                                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                          background: '#fff', flexShrink: 0
+                                        }}>
+                                          {staff.avatar_url ? (
+                                            <img src={staff.avatar_url} alt={getStaffDisplayName(staff)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                          ) : (
+                                            <User size={20} color="#db8c95" />
+                                          )}
+                                        </div>
+                                        <div style={{ fontSize: '0.7rem', fontWeight: 600, color: '#3d2b30', textAlign: 'center', lineHeight: '1.2', wordBreak: 'break-word' }}>
+                                          {getStaffDisplayName(staff)}
+                                        </div>
+                                      </button>
                                     ))}
-                                  </select>
+                                  </div>
+                                  {!svc.staffId && (
+                                    <div style={{ fontSize: '0.62rem', color: '#dc2626', marginTop: '6px', fontWeight: 600 }}>Requerido</div>
+                                  )}
                                 </div>
-                                <div style={{ width: '120px' }}>
-                                  <JanaTimePicker variant="light" label="" value={svc.time} onChange={(v) => setRowTime(svc._uid, v)} />
+                                <div style={{ minWidth: '150px' }}>
+                                  <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#a0868c', marginBottom: '4px', textTransform: 'uppercase' }}>Horario</div>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 12px', background: '#faf8f7', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.2)', whiteSpace: 'nowrap' }}>
+                                    <Clock size={14} color="#db8c95" style={{ flexShrink: 0 }} />
+                                    <JanaTimePicker variant="light" label="" value={svc.time} onChange={(v) => setRowTime(svc._uid, v)} />
+                                  </div>
                                 </div>
                                 {svc.customized && (
                                   <button onClick={() => resetRowToGeneralTime(svc._uid)} title="Usar hora general" style={{ background: 'none', border: 'none', color: '#a0868c', cursor: 'pointer', display: 'flex', padding: '4px' }}>
@@ -1128,105 +1084,114 @@ const ScheduleModal = ({
                   )}
                 </div>
 
-                {/* Resumen Flotante Lateral - Modo Creación */}
+                {/* Panel Flotante - Resumen Orden */}
                 {!isEditMode && selectedServices.length > 0 && currentStep !== 1 && (
-                  <div style={{
-                    display: 'flex', flexDirection: 'column', gap: '12px',
-                    padding: '16px', borderRadius: '16px',
-                    background: 'linear-gradient(135deg, #fffcfb 0%, #fff6f7 100%)',
-                    border: '1.5px solid rgba(219,140,149,0.2)',
-                    height: 'fit-content',
-                    position: 'sticky', top: '16px',
-                    animation: 'fadeInUp 0.4s ease-out 0.2s both'
+                  <div className="jana-scrollbar" style={{
+                    display: 'flex', flexDirection: 'column', gap: '0',
+                    borderRadius: '20px', width: '340px',
+                    background: '#fff',
+                    boxShadow: '0 25px 60px rgba(74,48,54,0.18)',
+                    position: 'fixed',
+                    right: '32px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    maxHeight: '85vh',
+                    overflowY: 'auto',
+                    zIndex: 1000,
+                    animation: 'slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
                   }}>
-                    {/* Cliente */}
-                    {localClient && (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', paddingBottom: '10px', borderBottom: '1px solid rgba(219,140,149,0.2)' }}>
-                        <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', textTransform: 'uppercase', letterSpacing: '0.5px' }}>👤 Cliente</div>
-                        <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#3d2b30' }}>{localClient.name}</div>
+                    {/* Header Rosado */}
+                    <div style={{
+                      background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
+                      padding: '24px 20px',
+                      color: '#fff',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '8px'
+                    }}>
+                      <div style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.95, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <User size={16} /> Cliente
                       </div>
-                    )}
-
-                    {/* Fecha */}
-                    {selectedDate && (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', paddingBottom: '10px', borderBottom: '1px solid rgba(219,140,149,0.2)' }}>
-                        <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', textTransform: 'uppercase', letterSpacing: '0.5px' }}>📅 Fecha</div>
-                        <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#3d2b30' }}>
-                          {selectedDate.toLocaleDateString('es-VE', { weekday: 'short', day: 'numeric', month: 'short' })}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Servicios Seleccionados */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', textTransform: 'uppercase', letterSpacing: '0.5px' }}>✂️ Servicios ({selectedServices.length})</div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        {selectedServices.map((svc, idx) => {
-                          const svcData = services.find(s => s.id === svc.service_id);
-                          const staffData = staffArray.find(s => s.id === svc.staffId);
-                          return (
-                            <div key={svc._uid} style={{
-                              padding: '10px 12px', borderRadius: '10px',
-                              background: '#fff', border: '1px solid rgba(219,140,149,0.15)',
-                              animation: `fadeInUp 0.3s ease-out ${0.3 + idx * 0.05}s both`
-                            }}>
-                              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px' }}>
-                                <div style={{ color: '#db8c95', marginTop: '1px', minWidth: '14px', fontSize: '14px' }}>
-                                  {getCategoryIcon(svcData?.category)}
-                                </div>
-                                <div style={{ flex: 1, minWidth: 0 }}>
-                                  <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#3d2b30', lineHeight: '1.2' }}>
-                                    {svc.name}
-                                  </div>
-                                  <div style={{ fontSize: '0.62rem', color: '#a0868c', marginTop: '2px' }}>
-                                    ${Number(svc.price || 0).toFixed(2)}
-                                  </div>
-                                </div>
-                                <button
-                                  onClick={() => removeServiceRow(svc._uid)}
-                                  style={{
-                                    background: 'none', border: 'none', cursor: 'pointer',
-                                    color: '#c8949c', padding: 0, fontSize: '16px', lineHeight: 1, flexShrink: 0
-                                  }}
-                                  title="Eliminar servicio"
-                                >
-                                  ✕
-                                </button>
-                              </div>
-
-                              {/* Detalles por servicio */}
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.65rem', color: '#a0868c', paddingTop: '6px', borderTop: '1px solid rgba(219,140,149,0.15)' }}>
-                                {svc.staffId && staffData && (
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                    <span>👩‍💼</span>
-                                    <span>{getStaffDisplayName(staffData)}</span>
-                                  </div>
-                                )}
-                                {svc.time && (
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                    <span>⏰</span>
-                                    <span>{getDisplayTime(svc.time)}</span>
-                                  </div>
-                                )}
-                                {!svc.staffId || !svc.time ? (
-                                  <div style={{ color: '#f59e0b', fontWeight: 600 }}>⚠️ Incompleto</div>
-                                ) : null}
-                              </div>
-                            </div>
-                          );
-                        })}
+                      <div style={{ fontSize: '1.2rem', fontWeight: 800, lineHeight: 1.2 }}>{localClient?.name || 'Sin cliente'}</div>
+                      <div style={{ fontSize: '0.8rem', fontWeight: 600, opacity: 0.9, display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+                        <Calendar size={14} /> {selectedDate?.toLocaleDateString('es-VE', { weekday: 'short', day: 'numeric', month: 'short' }) || 'Sin fecha'}
                       </div>
                     </div>
 
-                    {/* Total */}
+                    {/* Contenedor de Servicios */}
+                    <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px', borderBottom: '2px solid #f5f5f5' }}>
+
+                      <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#a0868c', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                        <Scissors size={16} /> Servicios
+                      </div>
+                      {selectedServices.map((svc, idx) => {
+                        const svcData = services.find(s => s.id === svc.service_id);
+                        const staffData = staffArray.find(s => s.id === svc.staffId);
+                        return (
+                          <div key={svc._uid} style={{
+                            padding: '14px', borderRadius: '12px',
+                            background: '#f9f6f5', border: '1px solid rgba(219,140,149,0.2)',
+                            animation: `fadeInUp 0.3s ease-out ${0.3 + idx * 0.05}s both`
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '10px' }}>
+                              <div style={{ color: '#db8c95', minWidth: '20px', fontSize: '18px', flexShrink: 0 }}>
+                                {getCategoryIcon(svcData?.category)}
+                              </div>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#3d2b30', lineHeight: '1.3' }}>
+                                  {svc.name}
+                                </div>
+                                <div style={{ fontSize: '0.75rem', color: '#a0868c', marginTop: '3px', fontWeight: 600 }}>
+                                  ${Number(svc.price || 0).toFixed(2)}
+                                </div>
+                              </div>
+                              <button
+                                onClick={() => removeServiceRow(svc._uid)}
+                                style={{
+                                  background: 'none', border: 'none', cursor: 'pointer',
+                                  color: '#c8949c', padding: '4px', display: 'flex', flexShrink: 0
+                                }}
+                                title="Eliminar"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+
+                            {/* Detalles por servicio */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.75rem', color: '#a0868c', paddingTop: '10px', borderTop: '1px solid rgba(219,140,149,0.2)' }}>
+                              {svc.staffId && staffData && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <Sparkles size={13} style={{ color: '#db8c95', flexShrink: 0 }} />
+                                  <span style={{ fontWeight: 600 }}>{getStaffDisplayName(staffData)}</span>
+                                </div>
+                              )}
+                              {svc.time && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <Clock size={13} style={{ color: '#db8c95', flexShrink: 0 }} />
+                                  <span style={{ fontWeight: 600 }}>{getDisplayTime(svc.time)}</span>
+                                </div>
+                              )}
+                              {!svc.staffId || !svc.time ? (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#f59e0b', fontWeight: 700 }}>
+                                  <AlertTriangle size={13} />
+                                  {!svc.staffId && !svc.time ? 'Falta profesional y horario' : !svc.staffId ? 'Falta profesional' : 'Falta horario'}
+                                </div>
+                              ) : null}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Total - Sección Premium */}
                     <div style={{
-                      padding: '10px 12px', borderRadius: '10px',
-                      background: 'rgba(219,140,149,0.1)',
-                      border: '1px solid rgba(219,140,149,0.3)',
+                      padding: '20px', borderRadius: '0 0 20px 20px',
+                      background: 'linear-gradient(135deg, #f5e8eb 0%, #faf5f7 100%)',
+                      borderTop: '2px solid #f0e0e5',
                       textAlign: 'center'
                     }}>
-                      <div style={{ fontSize: '0.62rem', color: '#a0868c', fontWeight: 600, marginBottom: '3px' }}>TOTAL</div>
-                      <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#db8c95' }}>
+                      <div style={{ fontSize: '0.7rem', color: '#a0868c', fontWeight: 700, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total de la Orden</div>
+                      <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#db8c95', lineHeight: 1 }}>
                         ${cartTotal.toFixed(2)}
                       </div>
                     </div>
