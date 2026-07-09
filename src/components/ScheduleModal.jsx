@@ -474,6 +474,7 @@ const ScheduleModal = ({
   return createPortal(
     <AnimatedModal isOpen={isOpen}>
       {(overlayClass, cardClass) => (
+        <>
         <div className={`${overlayClass} jana-schedule-modal-overlay`} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(30, 30, 30, 0.4)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 20000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '28px', animation: 'fadeIn 0.25s ease-out' }}>
           <div className={`${cardClass} jana-schedule-modal-card`} style={{ width: '92vw', maxWidth: '1100px', height: '90vh', maxHeight: '860px', backgroundColor: '#fcf8f7', borderRadius: '32px', boxShadow: '0 25px 60px rgba(74,48,54,0.25), 0 8px 24px rgba(0,0,0,0.08)', overflow: 'hidden', display: 'flex', flexDirection: 'column', animation: 'slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)', position: 'relative' }}>
             <style>{`
@@ -516,11 +517,20 @@ const ScheduleModal = ({
                 .svc-select-grid { grid-template-columns: 1fr !important; }
               }
 
-              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar { display: block !important; width: 6px !important; }
-              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-track { background: transparent; }
-              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-thumb { background: rgba(219,140,149,0.3); border-radius: 10px; }
-              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(219,140,149,0.5); }
-              .jana-schedule-modal-card .jana-scrollbar { scrollbar-width: thin; scrollbar-color: rgba(219,140,149,0.3) transparent; }
+              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar,
+              .jana-summary-panel::-webkit-scrollbar { display: block !important; width: 6px !important; }
+              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-track,
+              .jana-summary-panel::-webkit-scrollbar-track { background: transparent; }
+              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-thumb,
+              .jana-summary-panel::-webkit-scrollbar-thumb { background: rgba(219,140,149,0.3); border-radius: 10px; }
+              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-thumb:hover,
+              .jana-summary-panel::-webkit-scrollbar-thumb:hover { background: rgba(219,140,149,0.5); }
+              .jana-schedule-modal-card .jana-scrollbar,
+              .jana-summary-panel { scrollbar-width: thin; scrollbar-color: rgba(219,140,149,0.3) transparent; }
+
+              @media (max-width: 1150px) {
+                .jana-summary-panel { display: none !important; }
+              }
 
               @media (max-width: 640px) {
                 .jana-schedule-modal-overlay { padding: 0 !important; }
@@ -1131,119 +1141,6 @@ const ScheduleModal = ({
                   </div>
                 </div>
 
-                {/* Panel Flotante - Resumen Orden */}
-                {!isEditMode && selectedServices.length > 0 && currentStep !== 1 && (
-                  <div className="jana-scrollbar" style={{
-                    display: 'flex', flexDirection: 'column', gap: '0',
-                    borderRadius: '20px', width: '340px',
-                    background: '#fff',
-                    boxShadow: '0 25px 60px rgba(74,48,54,0.18)',
-                    position: 'absolute',
-                    right: '24px',
-                    top: '116px',
-                    maxHeight: 'calc(100% - 212px)',
-                    overflowY: 'auto',
-                    zIndex: 1000,
-                    animation: 'slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
-                  }}>
-                    {/* Header Rosado */}
-                    <div style={{
-                      background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
-                      padding: '24px 20px',
-                      color: '#fff',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '8px'
-                    }}>
-                      <div style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.95, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <User size={16} /> Cliente
-                      </div>
-                      <div style={{ fontSize: '1.2rem', fontWeight: 800, lineHeight: 1.2 }}>{localClient?.name || 'Sin cliente'}</div>
-                      <div style={{ fontSize: '0.8rem', fontWeight: 600, opacity: 0.9, display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                        <Calendar size={14} /> {selectedDate?.toLocaleDateString('es-VE', { weekday: 'short', day: 'numeric', month: 'short' }) || 'Sin fecha'}
-                      </div>
-                    </div>
-
-                    {/* Contenedor de Servicios */}
-                    <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px', borderBottom: '2px solid #f5f5f5' }}>
-
-                      <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#a0868c', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                        <Scissors size={16} /> Servicios
-                      </div>
-                      {selectedServices.map((svc, idx) => {
-                        const svcData = services.find(s => s.id === svc.service_id);
-                        const staffData = staffArray.find(s => s.id === svc.staffId);
-                        return (
-                          <div key={svc._uid} style={{
-                            padding: '14px', borderRadius: '12px',
-                            background: '#f9f6f5', border: '1px solid rgba(219,140,149,0.2)',
-                            animation: `fadeInUp 0.3s ease-out ${0.3 + idx * 0.05}s both`
-                          }}>
-                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '10px' }}>
-                              <div style={{ color: '#db8c95', minWidth: '20px', fontSize: '18px', flexShrink: 0 }}>
-                                {getCategoryIcon(svcData?.category)}
-                              </div>
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#3d2b30', lineHeight: '1.3' }}>
-                                  {svc.name}
-                                </div>
-                                <div style={{ fontSize: '0.75rem', color: '#a0868c', marginTop: '3px', fontWeight: 600 }}>
-                                  ${Number(svc.price || 0).toFixed(2)}
-                                </div>
-                              </div>
-                              <button
-                                onClick={() => removeServiceRow(svc._uid)}
-                                style={{
-                                  background: 'none', border: 'none', cursor: 'pointer',
-                                  color: '#c8949c', padding: '4px', display: 'flex', flexShrink: 0
-                                }}
-                                title="Eliminar"
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            </div>
-
-                            {/* Detalles por servicio */}
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.75rem', color: '#a0868c', paddingTop: '10px', borderTop: '1px solid rgba(219,140,149,0.2)' }}>
-                              {svc.staffId && staffData && (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  <Sparkles size={13} style={{ color: '#db8c95', flexShrink: 0 }} />
-                                  <span style={{ fontWeight: 600 }}>{getStaffDisplayName(staffData)}</span>
-                                </div>
-                              )}
-                              {svc.time && (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                  <Clock size={13} style={{ color: '#db8c95', flexShrink: 0 }} />
-                                  <span style={{ fontWeight: 600 }}>{getDisplayTime(svc.time)}</span>
-                                </div>
-                              )}
-                              {!svc.staffId || !svc.time ? (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#f59e0b', fontWeight: 700 }}>
-                                  <AlertTriangle size={13} />
-                                  {!svc.staffId && !svc.time ? 'Falta profesional y horario' : !svc.staffId ? 'Falta profesional' : 'Falta horario'}
-                                </div>
-                              ) : null}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {/* Total - Sección Premium */}
-                    <div style={{
-                      padding: '20px', borderRadius: '0 0 20px 20px',
-                      background: 'linear-gradient(135deg, #f5e8eb 0%, #faf5f7 100%)',
-                      borderTop: '2px solid #f0e0e5',
-                      textAlign: 'center'
-                    }}>
-                      <div style={{ fontSize: '0.7rem', color: '#a0868c', fontWeight: 700, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total de la Orden</div>
-                      <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#db8c95', lineHeight: 1 }}>
-                        ${cartTotal.toFixed(2)}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
                 {/* Stepper Buttons Footer (sticky, full-width strip) */}
                 <div style={{ flexShrink: 0, position: 'sticky', bottom: 0, background: '#fff', borderTop: '1px solid rgba(223,178,140,0.15)', boxShadow: '0 -6px 20px rgba(74,48,54,0.06)', animation: 'fadeInUp 0.4s ease-out 0.3s both' }}>
                 <div className="jana-schedule-footer-inner" style={{ maxWidth: '760px', margin: '0 auto', padding: '16px 32px', display: 'flex', gap: '12px' }}>
@@ -1363,6 +1260,120 @@ const ScheduleModal = ({
             )}
           </div>
         </div>
+
+        {/* Panel Flotante - Resumen Orden (hermano del modal, no clipeado por su overflow) */}
+        {!showSuccess && !isEditMode && selectedServices.length > 0 && currentStep !== 1 && (
+          <div className="jana-scrollbar jana-summary-panel" style={{
+            display: 'flex', flexDirection: 'column', gap: '0',
+            borderRadius: '20px', width: '340px',
+            background: '#fff',
+            boxShadow: '0 25px 60px rgba(74,48,54,0.25)',
+            position: 'fixed',
+            left: 'calc(50% + min(46vw, 550px) + 20px)',
+            top: 'calc(50% - min(45vh, 430px) + 110px)',
+            maxHeight: 'calc(min(90vh, 860px) - 150px)',
+            overflowY: 'auto',
+            zIndex: 20001,
+            animation: 'slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
+          }}>
+            {/* Header Rosado */}
+            <div style={{
+              background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
+              padding: '24px 20px',
+              color: '#fff',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px'
+            }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.95, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <User size={16} /> Cliente
+              </div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 800, lineHeight: 1.2 }}>{localClient?.name || 'Sin cliente'}</div>
+              <div style={{ fontSize: '0.8rem', fontWeight: 600, opacity: 0.9, display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+                <Calendar size={14} /> {selectedDate?.toLocaleDateString('es-VE', { weekday: 'short', day: 'numeric', month: 'short' }) || 'Sin fecha'}
+              </div>
+            </div>
+
+            {/* Contenedor de Servicios */}
+            <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px', borderBottom: '2px solid #f5f5f5' }}>
+
+              <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#a0868c', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                <Scissors size={16} /> Servicios
+              </div>
+              {selectedServices.map((svc, idx) => {
+                const svcData = services.find(s => s.id === svc.service_id);
+                const staffData = staffArray.find(s => s.id === svc.staffId);
+                return (
+                  <div key={svc._uid} style={{
+                    padding: '14px', borderRadius: '12px',
+                    background: '#f9f6f5', border: '1px solid rgba(219,140,149,0.2)',
+                    animation: `fadeInUp 0.3s ease-out ${0.3 + idx * 0.05}s both`
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '10px' }}>
+                      <div style={{ color: '#db8c95', minWidth: '20px', fontSize: '18px', flexShrink: 0 }}>
+                        {getCategoryIcon(svcData?.category)}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#3d2b30', lineHeight: '1.3' }}>
+                          {svc.name}
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: '#a0868c', marginTop: '3px', fontWeight: 600 }}>
+                          ${Number(svc.price || 0).toFixed(2)}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => removeServiceRow(svc._uid)}
+                        style={{
+                          background: 'none', border: 'none', cursor: 'pointer',
+                          color: '#c8949c', padding: '4px', display: 'flex', flexShrink: 0
+                        }}
+                        title="Eliminar"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+
+                    {/* Detalles por servicio */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.75rem', color: '#a0868c', paddingTop: '10px', borderTop: '1px solid rgba(219,140,149,0.2)' }}>
+                      {svc.staffId && staffData && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Sparkles size={13} style={{ color: '#db8c95', flexShrink: 0 }} />
+                          <span style={{ fontWeight: 600 }}>{getStaffDisplayName(staffData)}</span>
+                        </div>
+                      )}
+                      {svc.time && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Clock size={13} style={{ color: '#db8c95', flexShrink: 0 }} />
+                          <span style={{ fontWeight: 600 }}>{getDisplayTime(svc.time)}</span>
+                        </div>
+                      )}
+                      {!svc.staffId || !svc.time ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#f59e0b', fontWeight: 700 }}>
+                          <AlertTriangle size={13} />
+                          {!svc.staffId && !svc.time ? 'Falta profesional y horario' : !svc.staffId ? 'Falta profesional' : 'Falta horario'}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Total - Sección Premium */}
+            <div style={{
+              padding: '20px', borderRadius: '0 0 20px 20px',
+              background: 'linear-gradient(135deg, #f5e8eb 0%, #faf5f7 100%)',
+              borderTop: '2px solid #f0e0e5',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '0.7rem', color: '#a0868c', fontWeight: 700, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total de la Orden</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#db8c95', lineHeight: 1 }}>
+                ${cartTotal.toFixed(2)}
+              </div>
+            </div>
+          </div>
+        )}
+        </>
       )}
     </AnimatedModal>,
     document.body
