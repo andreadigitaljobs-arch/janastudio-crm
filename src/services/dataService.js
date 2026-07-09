@@ -423,6 +423,203 @@ export const dataService = {
     if (error) throw error;
   },
 
+  // ─── APPOINTMENT SERVICES (Multiple services per appointment) ───────────────────────
+
+  async createAppointmentWithServices(appointmentData, services = []) {
+    _cacheInvalidateAppts();
+
+    // 1. Create the main appointment
+    const { data: apptData, error: apptError } = await supabase
+      .from('appointments')
+      .insert([{
+        client_id: appointmentData.client_id,
+        status: appointmentData.status || 'Agendado',
+        total_price: 0,
+        scheduled_at: appointmentData.scheduled_at,
+        notes: appointmentData.notes,
+        created_by_staff_id: (await supabase.auth.getUser()).data?.user?.id ?
+          (await supabase.from('staff').select('id').eq('auth_user_id', (await supabase.auth.getUser()).data.user.id).single()).data?.id : null
+      }])
+      .select()
+      .single();
+
+    if (apptError) throw apptError;
+
+    // 2. Add services to appointment
+    if (services.length > 0) {
+      const serviceInserts = services.map((svc, idx) => ({
+        appointment_id: apptData.id,
+        service_id: svc.service_id,
+        staff_id: svc.staff_id,
+        sequence_order: idx,
+        price_paid: svc.price_paid || 0,
+        status: 'Pendiente'
+      }));
+
+      const { error: svcError } = await supabase
+        .from('appointment_services')
+        .insert(serviceInserts);
+
+      if (svcError) throw svcError;
+    }
+
+    return apptData;
+  },
+
+  async addServiceToAppointment(appointmentId, serviceData) {
+    _cacheInvalidateAppts();
+
+    const { data, error } = await supabase
+      .from('appointment_services')
+      .insert([{
+        appointment_id: appointmentId,
+        service_id: serviceData.service_id,
+        staff_id: serviceData.staff_id,
+        price_paid: serviceData.price_paid || 0,
+        status: 'Pendiente'
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  async removeServiceFromAppointment(appointmentServiceId) {
+    _cacheInvalidateAppts();
+
+    const { error } = await supabase
+      .from('appointment_services')
+      .delete()
+      .eq('id', appointmentServiceId);
+
+    if (error) throw error;
+  },
+
+  async getAppointmentWithServices(appointmentId) {
+    const { data, error } = await supabase
+      .from('appointments')
+      .select(`
+        *,
+        clients (id, name, phone, email),
+        appointment_services (
+          id,
+          service_id,
+          staff_id,
+          sequence_order,
+          price_paid,
+          status,
+          started_at,
+          completed_at,
+          services (id, name, price, duration_minutes, commission_pct),
+          staff (id, name, role, photo_url)
+        ),
+        appointment_extras (
+          id,
+          price,
+          service_extras (id, name, price, commission_pct)
+        ),
+        appointment_products (
+          id,
+          quantity,
+          price,
+          inventory (id, name, commission_pct)
+        )
+      `)
+      .eq('id', appointmentId)
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  async addExtraToAppointment(appointmentId, appointmentServiceId, extraId, price) {
+    _cacheInvalidateAppts();
+
+    const { data, error } = await supabase
+      .from('appointment_extras')
+      .insert([{
+        appointment_id: appointmentId,
+        appointment_service_id: appointmentServiceId,
+        extra_id: extraId,
+        price: price || 0
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  async removeExtraFromAppointment(appointmentExtraId) {
+    _cacheInvalidateAppts();
+
+    const { error } = await supabase
+      .from('appointment_extras')
+      .delete()
+      .eq('id', appointmentExtraId);
+
+    if (error) throw error;
+  },
+
+  async addProductToAppointment(appointmentId, productId, quantity, price, cost) {
+    _cacheInvalidateAppts();
+
+    const { data, error } = await supabase
+      .from('appointment_products')
+      .insert([{
+        appointment_id: appointmentId,
+        product_id: productId,
+        quantity,
+        price,
+        cost: cost || 0
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  async removeProductFromAppointment(appointmentProductId) {
+    _cacheInvalidateAppts();
+
+    const { error } = await supabase
+      .from('appointment_products')
+      .delete()
+      .eq('id', appointmentProductId);
+
+    if (error) throw error;
+  },
+
+  async updateServiceStatus(appointmentServiceId, status, startedAt = null, completedAt = null) {
+    _cacheInvalidateAppts();
+
+    const { data, error } = await supabase
+      .from('appointment_services')
+      .update({
+        status,
+        started_at: startedAt,
+        completed_at: completedAt
+      })
+      .eq('id', appointmentServiceId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  async getServiceExtras() {
+    const { data, error } = await supabase
+      .from('service_extras')
+      .select('*')
+      .eq('active', true);
+
+    if (error) throw error;
+    return data;
+  },
+
   // ─── Transactions ───────────────────────────────────────────────────────────
   async getTransactions(startDate) {
     const cacheKey = `transactions_${startDate || 'all'}`;
