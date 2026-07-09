@@ -1125,9 +1125,8 @@ const ScheduleModal = ({
                     boxShadow: '0 25px 60px rgba(74,48,54,0.18)',
                     position: 'fixed',
                     right: '32px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    maxHeight: '85vh',
+                    top: '116px',
+                    bottom: '96px',
                     overflowY: 'auto',
                     zIndex: 1000,
                     animation: 'slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
