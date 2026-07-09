@@ -972,7 +972,7 @@ const ScheduleModal = ({
                                 <div style={{ flex: 1, minWidth: '160px' }}>
                                   <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#a0868c', marginBottom: '8px', textTransform: 'uppercase' }}>Profesional</div>
                                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(75px, 1fr))', gap: '10px' }}>
-                                    {staffArray.filter(s => s.staff_type !== 'Administrador' && s.staff_type !== 'ADMIN').map(staff => (
+                                    {staffArray.filter(s => !s.role?.startsWith('Administrador')).map(staff => (
                                       <button
                                         key={staff.id}
                                         onClick={() => setRowStaff(svc._uid, staff.id)}
