@@ -536,10 +536,19 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
   const [showQuickAvailModal, setShowQuickAvailModal] = useState(false);
   const [expandedStaff, setExpandedStaff] = useState({});
   const [selectedStaffDrawer, setSelectedStaffDrawer] = useState(null);
+  const [isClosingStaffDrawer, setIsClosingStaffDrawer] = useState(false);
   const [staffActiveTab, setStaffActiveTab] = useState('agenda');
   const [rankingTab, setRankingTab] = useState('revenue');
   const [leftTab, setLeftTab] = useState('citas');
   const [staffSearchQuery, setStaffSearchQuery] = useState('');
+
+  const handleCloseStaffDrawer = () => {
+    setIsClosingStaffDrawer(true);
+    setTimeout(() => {
+      setSelectedStaffDrawer(null);
+      setIsClosingStaffDrawer(false);
+    }, 280);
+  };
 
   // States for Quick Availability Form
   const [availDate, setAvailDate] = useState(() => {
@@ -2609,7 +2618,7 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
             overflowY: 'auto',
             transition: 'left 0.3s ease'
           }}
-          className="animate-slide-up no-scrollbar"
+          className={`${isClosingStaffDrawer ? 'staff-drawer-exit' : 'staff-drawer-enter'} no-scrollbar`}
         >
           {/* Custom Header Action Bar (Top Bar) */}
           <div style={{
@@ -2625,7 +2634,7 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
             zIndex: 10
           }}>
             <button 
-              onClick={() => setSelectedStaffDrawer(null)}
+              onClick={handleCloseStaffDrawer}
               style={{
                 background: 'transparent',
                 border: 'none',
