@@ -29,6 +29,7 @@ import JanaTimePicker from './JanaTimePicker';
 import { isStaffFreeAt } from '../utils/availability';
 import { loadStoredSchedules, loadStoredTimeOff } from '../utils/mockStaffSchedules';
 import { getBusinessDateKey } from '../utils/dateTime';
+import { getRoleKind } from '../utils/roles';
 
 const dateToISO = (date) => getBusinessDateKey(date);
 const isoToDate = (iso) => iso ? new Date(`${iso}T00:00:00`) : new Date();
@@ -644,7 +645,7 @@ const ScheduleModal = ({
                         value={localStaff?.id || ''}
                         placeholder="Elige una estilista"
                         onChange={(value) => setLocalStaff(staffArray.find(s => s.id === value))}
-                        options={staffArray.map(s => ({
+                        options={staffArray.filter(s => getRoleKind(s.role) !== 'admin').map(s => ({
                           value: s.id,
                           label: getStaffDisplayName(s)
                         }))}
@@ -969,42 +970,21 @@ const ScheduleModal = ({
                                   <Trash2 size={14} />
                                 </button>
                               </div>
-                              <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-                                <div style={{ flex: 1, minWidth: '160px' }}>
-                                  <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#a0868c', marginBottom: '8px', textTransform: 'uppercase' }}>Profesional</div>
-                                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(75px, 1fr))', gap: '10px' }}>
-                                    {staffArray.filter(s => !s.role?.startsWith('Administrador')).map(staff => (
-                                      <button
-                                        key={staff.id}
-                                        onClick={() => setRowStaff(svc._uid, staff.id)}
-                                        title={getStaffDisplayName(staff)}
-                                        style={{
-                                          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
-                                          padding: '8px', borderRadius: '12px', cursor: 'pointer', border: 'none',
-                                          background: svc.staffId === staff.id ? 'rgba(219,140,149,0.15)' : 'transparent',
-                                          transition: 'all 0.2s'
-                                        }}
-                                        onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(219,140,149,0.08)'; }}
-                                        onMouseLeave={(e) => { e.currentTarget.style.background = svc.staffId === staff.id ? 'rgba(219,140,149,0.15)' : 'transparent'; }}
-                                      >
-                                        <div style={{
-                                          width: '50px', height: '50px', borderRadius: '10px', overflow: 'hidden',
-                                          border: svc.staffId === staff.id ? '2.5px solid #db8c95' : '1px solid rgba(223,178,140,0.2)',
-                                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                          background: '#fff', flexShrink: 0
-                                        }}>
-                                          {staff.image_url ? (
-                                            <img src={staff.image_url} alt={getStaffDisplayName(staff)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                          ) : (
-                                            <User size={20} color="#db8c95" />
-                                          )}
-                                        </div>
-                                        <div style={{ fontSize: '0.7rem', fontWeight: 600, color: '#3d2b30', textAlign: 'center', lineHeight: '1.2', wordBreak: 'break-word' }}>
-                                          {getStaffDisplayName(staff)}
-                                        </div>
-                                      </button>
-                                    ))}
-                                  </div>
+                              <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                                <div style={{ flex: 1, minWidth: '180px' }}>
+                                  <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#a0868c', marginBottom: '6px', textTransform: 'uppercase' }}>Profesional</div>
+                                  <JanaSelect
+                                    variant="light"
+                                    label=""
+                                    value={svc.staffId || ''}
+                                    placeholder="Elige una especialista"
+                                    onChange={(value) => setRowStaff(svc._uid, value)}
+                                    options={staffArray.filter(s => getRoleKind(s.role) !== 'admin').map(s => ({
+                                      value: s.id,
+                                      label: getStaffDisplayName(s)
+                                    }))}
+                                    showSearch={true}
+                                  />
                                   {!svc.staffId && (
                                     <div style={{ fontSize: '0.62rem', color: '#dc2626', marginTop: '6px', fontWeight: 600 }}>Requerido</div>
                                   )}
@@ -1014,7 +994,7 @@ const ScheduleModal = ({
                                   <JanaTimePicker variant="light" label="" value={svc.time} onChange={(v) => setRowTime(svc._uid, v)} />
                                 </div>
                                 {svc.customized && (
-                                  <button onClick={() => resetRowToGeneralTime(svc._uid)} title="Usar hora general" style={{ background: 'none', border: 'none', color: '#a0868c', cursor: 'pointer', display: 'flex', padding: '4px' }}>
+                                  <button onClick={() => resetRowToGeneralTime(svc._uid)} title="Usar hora general" style={{ background: 'none', border: 'none', color: '#a0868c', cursor: 'pointer', display: 'flex', padding: '4px', marginTop: '20px' }}>
                                     <RotateCcw size={14} />
                                   </button>
                                 )}
