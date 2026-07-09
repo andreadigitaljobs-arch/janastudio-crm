@@ -356,6 +356,12 @@ const ScheduleModal = ({
     setSelectedServices(selectedServices.map(s => s.customized ? s : { ...s, time: value }));
   };
 
+  const applyStaffToAll = (staffId) => {
+    setSelectedServices(selectedServices.map(s => ({ ...s, staffId })));
+    const member = staffArray.find(s => s.id === staffId);
+    if (member) loadStaffAvailability(member);
+  };
+
   const cartTotal = selectedServices.reduce((sum, s) => sum + (Number(s.price) || 0), 0);
 
   // ── Guardar ──────────────────────────────────────────────────────────────
@@ -975,6 +981,24 @@ const ScheduleModal = ({
                         <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#3d2b30' }}>Asigna profesional y horario</h3>
                         <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Pueden atenderla a la vez o en momentos distintos.</p>
                       </div>
+
+                      {selectedServices.length > 1 && (
+                        <div style={{ padding: '12px 14px', borderRadius: '14px', background: 'rgba(219,140,149,0.06)', border: '1px dashed rgba(219,140,149,0.25)', flexShrink: 0 }}>
+                          <label style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', display: 'block', marginBottom: '6px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>¿La misma profesional para todos?</label>
+                          <JanaSelect
+                            variant="light"
+                            label=""
+                            value=""
+                            placeholder="Asignar a todos los servicios"
+                            onChange={(value) => applyStaffToAll(value)}
+                            options={staffArray.filter(s => getRoleKind(s.role) !== 'admin').map(s => ({
+                              value: s.id,
+                              label: getStaffDisplayName(s)
+                            }))}
+                            showSearch={true}
+                          />
+                        </div>
+                      )}
 
                       <div className="svc-header-row" style={{ display: 'flex', gap: '10px', padding: '0 2px', flexShrink: 0 }}>
                         <div style={{ flex: 1, minWidth: 0, fontSize: '0.6rem', fontWeight: 700, color: '#a0868c', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Servicio / Profesional</div>
