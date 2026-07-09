@@ -474,8 +474,8 @@ const ScheduleModal = ({
   return createPortal(
     <AnimatedModal isOpen={isOpen}>
       {(overlayClass, cardClass) => (
-        <div className={overlayClass} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(30, 30, 30, 0.4)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 20000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', animation: 'fadeIn 0.3s ease-out' }}>
-          <div className={`${cardClass} jana-scrollbar jana-schedule-modal-card`} style={{ maxWidth: '720px', width: '100%', maxHeight: 'calc(100vh - 40px)', overflowY: 'auto', borderRadius: '32px', padding: '40px 40px 52px 40px', backgroundColor: '#fff', boxShadow: '0 25px 60px rgba(74,48,54,0.18), 0 8px 24px rgba(0,0,0,0.06)', border: '1px solid rgba(223,178,140,0.15)', display: 'flex', flexDirection: 'column', animation: 'slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)', position: 'relative' }}>
+        <div className={overlayClass} style={{ position: 'fixed', inset: 0, backgroundColor: '#fcf8f7', zIndex: 20000, display: 'flex', animation: 'fadeIn 0.25s ease-out' }}>
+          <div className={`${cardClass} jana-schedule-modal-card`} style={{ width: '100%', height: '100%', backgroundColor: '#fcf8f7', display: 'flex', flexDirection: 'column', animation: 'slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)', position: 'relative' }}>
             <style>{`
               @keyframes fadeIn {
                 from { opacity: 0; }
@@ -508,7 +508,7 @@ const ScheduleModal = ({
               .animate-scale-in { animation: scaleIn 0.3s ease-out; }
 
               @media (max-width: 640px) {
-                .jana-schedule-modal-card { padding: 24px 18px 28px 18px !important; }
+                .jana-schedule-header-inner, .jana-schedule-content-inner, .jana-schedule-footer-inner { padding-left: 18px !important; padding-right: 18px !important; }
                 .svc-header-row { display: none !important; }
                 .svc-row { flex-wrap: wrap !important; }
                 .svc-row > div:first-child { flex-basis: 100% !important; }
@@ -547,50 +547,53 @@ const ScheduleModal = ({
               </div>
             ) : (
               <>
-                {/* Header with Step indicator */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
-                  <div style={{ flex: 1 }}>
-                    <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#3d2b30', margin: 0, letterSpacing: '-0.3px' }}>
-                      {isReprogramOnly ? (
-                        <>Reprogramar <span style={{ color: '#db8c95' }}>Turno</span></>
-                      ) : isEditMode ? (
-                        <>Editar <span style={{ color: '#db8c95' }}>Servicio</span></>
-                      ) : (
-                        <>Agendar <span style={{ color: '#db8c95' }}>Orden</span></>
-                      )}
-                    </h2>
-                    {!isReprogramOnly && (
-                      <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#db8c95', backgroundColor: '#fff0f2', padding: '4px 10px', borderRadius: '8px', display: 'inline-block', marginTop: '8px' }}>
-                        Paso {currentStep} de {totalSteps}
-                      </div>
-                    )}
-                    <div style={{ display: 'flex', gap: '4px', marginTop: '10px' }}>
-                      {isReprogramOnly ? (
-                        <div style={{ fontSize: '0.72rem', color: '#db8c95', fontWeight: 700 }}>
-                          Modo reprogramación rápida para {localClient?.name}
+                {/* Header with Step indicator (sticky, full-width strip) */}
+                <div style={{ flexShrink: 0, position: 'sticky', top: 0, zIndex: 10, background: 'rgba(252,248,247,0.92)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(223,178,140,0.15)' }}>
+                  <div className="jana-schedule-header-inner" style={{ maxWidth: '760px', margin: '0 auto', padding: '20px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div style={{ flex: 1 }}>
+                      <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#3d2b30', margin: 0, letterSpacing: '-0.3px' }}>
+                        {isReprogramOnly ? (
+                          <>Reprogramar <span style={{ color: '#db8c95' }}>Turno</span></>
+                        ) : isEditMode ? (
+                          <>Editar <span style={{ color: '#db8c95' }}>Servicio</span></>
+                        ) : (
+                          <>Agendar <span style={{ color: '#db8c95' }}>Orden</span></>
+                        )}
+                      </h2>
+                      {!isReprogramOnly && (
+                        <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#db8c95', backgroundColor: '#fff0f2', padding: '4px 10px', borderRadius: '8px', display: 'inline-block', marginTop: '8px' }}>
+                          Paso {currentStep} de {totalSteps}
                         </div>
-                      ) : [...Array(totalSteps)].map((_, i) => (
-                        <div
-                          key={i}
-                          style={{
-                            width: '32px',
-                            height: '6px',
-                            borderRadius: '3px',
-                            backgroundColor: (i + 1) <= currentStep ? '#db8c95' : '#f3e8e9',
-                            transition: 'background-color 0.3s ease'
-                          }}
-                        />
-                      ))}
+                      )}
+                      <div style={{ display: 'flex', gap: '4px', marginTop: '10px' }}>
+                        {isReprogramOnly ? (
+                          <div style={{ fontSize: '0.72rem', color: '#db8c95', fontWeight: 700 }}>
+                            Modo reprogramación rápida para {localClient?.name}
+                          </div>
+                        ) : [...Array(totalSteps)].map((_, i) => (
+                          <div
+                            key={i}
+                            style={{
+                              width: '32px',
+                              height: '6px',
+                              borderRadius: '3px',
+                              backgroundColor: (i + 1) <= currentStep ? '#db8c95' : '#f3e8e9',
+                              transition: 'background-color 0.3s ease'
+                            }}
+                          />
+                        ))}
+                      </div>
                     </div>
+                    <button onClick={onClose} style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(74,48,54,0.05)', border: 'none', color: '#8c767b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', transition: 'all 0.2s', flexShrink: 0 }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(219,140,149,0.12)'; e.currentTarget.style.color = '#db8c95'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(74,48,54,0.05)'; e.currentTarget.style.color = '#8c767b'; }}
+                    >✕</button>
                   </div>
-                  <button onClick={onClose} style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(74,48,54,0.05)', border: 'none', color: '#8c767b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', transition: 'all 0.2s' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(219,140,149,0.12)'; e.currentTarget.style.color = '#db8c95'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(74,48,54,0.05)'; e.currentTarget.style.color = '#8c767b'; }}
-                  >✕</button>
                 </div>
 
-                {/* Stepper Views */}
-                <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+                {/* Scrollable content area */}
+                <div className="jana-scrollbar" style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
+                  <div className="jana-schedule-content-inner" style={{ maxWidth: '760px', margin: '0 auto', padding: '28px 32px', display: 'flex', flexDirection: 'column' }}>
 
                   {/* STEP 1: CLIENT SELECTION (ambos modos) */}
                   {currentStep === 1 && (
@@ -1110,6 +1113,7 @@ const ScheduleModal = ({
                       </div>
                     </div>
                   )}
+                  </div>
                 </div>
 
                 {/* Panel Flotante - Resumen Orden */}
@@ -1226,8 +1230,9 @@ const ScheduleModal = ({
                   </div>
                 )}
 
-                {/* Stepper Buttons Footer */}
-                <div style={{ display: 'flex', gap: '12px', marginTop: '32px', flexShrink: 0, animation: 'fadeInUp 0.4s ease-out 0.3s both', backgroundColor: '#fff', padding: '12px 0 0 0' }}>
+                {/* Stepper Buttons Footer (sticky, full-width strip) */}
+                <div style={{ flexShrink: 0, position: 'sticky', bottom: 0, background: '#fff', borderTop: '1px solid rgba(223,178,140,0.15)', boxShadow: '0 -6px 20px rgba(74,48,54,0.06)', animation: 'fadeInUp 0.4s ease-out 0.3s both' }}>
+                <div className="jana-schedule-footer-inner" style={{ maxWidth: '760px', margin: '0 auto', padding: '16px 32px', display: 'flex', gap: '12px' }}>
                   {currentStep > 1 && !isReprogramOnly && (
                     <button
                       onClick={() => setCurrentStep(prev => prev - 1)}
@@ -1338,6 +1343,7 @@ const ScheduleModal = ({
                       <Check size={20} strokeWidth={3} style={{ animation: loading ? 'none' : 'scaleIn 0.3s ease-out' }} /> {isReprogramOnly ? 'Reprogramar Turno' : isEditMode ? 'Guardar Cambios' : 'Confirmar Orden'}
                     </button>
                   )}
+                </div>
                 </div>
               </>
             )}
