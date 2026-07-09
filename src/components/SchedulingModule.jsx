@@ -1384,7 +1384,7 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
                   No hay citas agendadas para hoy
                 </div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', overflowY: 'auto', flex: 1, paddingRight: '8px' }} className="jana-scrollbar">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', overflowY: 'auto', flex: 1, paddingRight: '8px' }} className="jana-scrollbar">
                 {dayApps.map((app, idx) => {
                   const start = new Date(app.scheduled_at || app.created_at);
                   const now = new Date();
