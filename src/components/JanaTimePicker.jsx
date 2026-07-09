@@ -134,9 +134,9 @@ const JanaTimePicker = ({ value, onChange, label = "", variant = "dark", placeme
           borderRadius: '14px',
           display: 'flex',
           alignItems: 'center',
-          padding: '0 12px 0 16px',
+          padding: '0 8px 0 10px',
           transition: 'all 0.2s ease',
-          gap: '8px',
+          gap: '4px',
           boxShadow: 'none'
         }}
       >
