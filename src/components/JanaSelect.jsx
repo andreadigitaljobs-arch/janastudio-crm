@@ -200,19 +200,44 @@ const JanaSelect = ({
               key={opt.value}
               onClick={() => handleSelect(opt.value)}
               style={{
-                padding: '12px 16px',
+                padding: opt.image || opt.subLabel ? '8px 12px' : '12px 16px',
                 borderRadius: '10px',
                 cursor: 'pointer',
-                backgroundColor: value === opt.value ? 'rgba(196, 139, 159, 0.15)' : 'transparent',
+                backgroundColor: value === opt.value ? 'rgba(196, 139, 159, 0.12)' : 'transparent',
                 color: value === opt.value ? 'var(--pink-primary)' : isLight ? 'var(--text-primary)' : 'white',
                 transition: '0.2s',
                 fontSize: '14px',
                 fontWeight: value === opt.value ? '700' : '500',
-                marginBottom: '2px'
+                marginBottom: '2px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px'
               }}
               className="jana-option"
             >
-              {opt.label}
+              {opt.image && (
+                <img 
+                  src={opt.image} 
+                  alt={opt.label} 
+                  style={{ 
+                    width: '32px', 
+                    height: '32px', 
+                    borderRadius: '50%', 
+                    objectFit: 'cover',
+                    border: '1.5px solid rgba(219,140,149,0.2)' 
+                  }} 
+                />
+              )}
+              <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
+                <div style={{ fontWeight: value === opt.value ? '750' : '650', fontSize: '0.82rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {opt.label}
+                </div>
+                {opt.subLabel && (
+                  <div style={{ fontSize: '0.66rem', color: '#a0868c', marginTop: '1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: '500' }}>
+                    {opt.subLabel}
+                  </div>
+                )}
+              </div>
             </div>
           ))
         )}
@@ -306,9 +331,25 @@ const JanaSelect = ({
               userSelect: 'none'
             }}
           >
-            <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingRight: '8px' }}>
-              {selectedOption ? selectedOption.label : placeholder}
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, overflow: 'hidden' }}>
+              {selectedOption && selectedOption.image && (
+                <img 
+                  src={selectedOption.image} 
+                  alt={selectedOption.label} 
+                  style={{ 
+                    width: '24px', 
+                    height: '24px', 
+                    borderRadius: '50%', 
+                    objectFit: 'cover',
+                    marginRight: '2px',
+                    border: '1px solid rgba(219,140,149,0.25)'
+                  }} 
+                />
+              )}
+              <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingRight: '8px' }}>
+                {selectedOption ? selectedOption.label : placeholder}
+              </span>
+            </div>
             <ChevronDown size={18} color="var(--pink-primary)" style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: '0.3s', flexShrink: 0 }} />
           </div>
         )}

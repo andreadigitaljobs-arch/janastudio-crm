@@ -1126,15 +1126,41 @@ const ScheduleModal = ({
                                  {/* Specialist Select */}
                                  <div style={{ flex: 1, minWidth: 0 }}>
                                    <JanaSelect
+                                     options={(() => {
+                                        const svcData = services.find(s => s.id === svc.service_id);
+                                        const serviceCategory = (svcData?.category || '').toLowerCase();
+                                        return staffArray
+                                          .filter(s => getRoleKind(s.role) !== 'admin')
+                                          .map(s => {
+                                            const rawRole = getRoleName(s.role);
+                                            const roleLower = rawRole.toLowerCase();
+                                            let isRecommended = false;
+                                            if (serviceCategory.includes('uña') && (roleLower.includes('manicurista') || roleLower.includes('uña'))) {
+                                              isRecommended = true;
+                                            } else if ((serviceCategory.includes('ceja') || serviceCategory.includes('pestaña') || serviceCategory.includes('lash')) && 
+                                                       (roleLower.includes('lashista') || roleLower.includes('ceja') || roleLower.includes('pestaña') || roleLower.includes('eyelash'))) {
+                                              isRecommended = true;
+                                            } else if ((serviceCategory.includes('cabello') || serviceCategory.includes('peinado') || serviceCategory.includes('corte')) && 
+                                                       (roleLower.includes('estilista') || roleLower.includes('peluquera') || roleLower.includes('cabello'))) {
+                                              isRecommended = true;
+                                            } else if (serviceCategory.includes('depila') && (roleLower.includes('depila') || roleLower.includes('esteticista'))) {
+                                              isRecommended = true;
+                                            }
+                                            return {
+                                              value: s.id,
+                                              label: getStaffDisplayName(s),
+                                              image: s.image_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100',
+                                              subLabel: isRecommended ? `✨ Recomendada (${rawRole})` : rawRole,
+                                              isRecommended
+                                            };
+                                          })
+                                          .sort((a, b) => (b.isRecommended ? 1 : 0) - (a.isRecommended ? 1 : 0));
+                                      })()}
                                      variant="light"
                                      label=""
                                      value={svc.staffId || ''}
                                      placeholder="Elige una especialista"
                                      onChange={(value) => setRowStaff(svc._uid, value)}
-                                     options={staffArray.filter(s => getRoleKind(s.role) !== 'admin').map(s => ({
-                                       value: s.id,
-                                       label: getStaffDisplayName(s)
-                                     }))}
                                      showSearch={true}
                                    />
                                    {!svc.staffId && (
