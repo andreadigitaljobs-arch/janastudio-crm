@@ -440,8 +440,35 @@ const ScheduleModal = ({
   return createPortal(
     <AnimatedModal isOpen={isOpen}>
       {(overlayClass, cardClass) => (
-        <div className={overlayClass} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(74, 48, 54, 0.35)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 20000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-          <div className={`${cardClass} jana-scrollbar`} style={{ maxWidth: '640px', width: '100%', maxHeight: '92vh', overflowY: 'auto', borderRadius: '32px', padding: '36px', backgroundColor: '#fff', boxShadow: '0 25px 60px rgba(74,48,54,0.18), 0 8px 24px rgba(0,0,0,0.06)', border: '1px solid rgba(223,178,140,0.15)', display: 'flex', flexDirection: 'column' }}>
+        <div className={overlayClass} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(74, 48, 54, 0.35)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 20000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', animation: 'fadeIn 0.3s ease-out' }}>
+          <div className={`${cardClass} jana-scrollbar`} style={{ maxWidth: '640px', width: '100%', maxHeight: 'calc(100vh - 40px)', overflowY: 'auto', borderRadius: '32px', padding: '36px 36px 48px 36px', backgroundColor: '#fff', boxShadow: '0 25px 60px rgba(74,48,54,0.18), 0 8px 24px rgba(0,0,0,0.06)', border: '1px solid rgba(223,178,140,0.15)', display: 'flex', flexDirection: 'column', animation: 'slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
+            <style>{`
+              @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+              }
+              @keyframes slideUp {
+                from { transform: translateY(60px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+              }
+              @keyframes fadeInDown {
+                from { opacity: 0; transform: translateY(-20px); }
+                to { opacity: 1; transform: translateY(0); }
+              }
+              @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+              }
+              @keyframes scaleIn {
+                from { opacity: 0; transform: scale(0.95); }
+                to { opacity: 1; transform: scale(1); }
+              }
+              .animate-fade-in { animation: fadeIn 0.4s ease-out; }
+              .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+              .animate-fade-in-down { animation: fadeInDown 0.3s ease-out; }
+              .animate-fade-in-up { animation: fadeInUp 0.3s ease-out; }
+              .animate-scale-in { animation: scaleIn 0.3s ease-out; }
+            `}</style>
             {showSuccess ? (
               <div className="animate-scale-up" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', textAlign: 'center', flex: 1 }}>
                 <div style={{
@@ -514,7 +541,7 @@ const ScheduleModal = ({
 
                   {/* STEP 1: CLIENT SELECTION (ambos modos) */}
                   {currentStep === 1 && (
-                    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out' }}>
                       <div style={{ textAlign: 'center', marginBottom: '8px' }}>
                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
                           <User size={24} />
@@ -539,7 +566,7 @@ const ScheduleModal = ({
 
                   {/* ══════════════ MODO EDICIÓN (servicio único) ══════════════ */}
                   {isEditMode && currentStep === 2 && (
-                    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out' }}>
                       <div style={{ textAlign: 'center', marginBottom: '8px' }}>
                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
                           <Scissors size={24} />
@@ -568,7 +595,7 @@ const ScheduleModal = ({
                   )}
 
                   {isEditMode && currentStep === 3 && (
-                    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out' }}>
                       <div style={{ textAlign: 'center', marginBottom: '8px' }}>
                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
                           <Sparkles size={24} />
@@ -605,7 +632,7 @@ const ScheduleModal = ({
                   )}
 
                   {isEditMode && currentStep === 4 && (
-                    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out' }}>
                       <div>
                         <label style={{ fontSize: '0.65rem', fontWeight: 800, color: '#a0868c', display: 'block', marginBottom: '7px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Fecha de Reserva</label>
                         <JanaDatePicker
@@ -674,7 +701,7 @@ const ScheduleModal = ({
                   )}
 
                   {isEditMode && currentStep === 5 && (
-                    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out' }}>
                       <div style={{ textAlign: 'center', marginBottom: '8px' }}>
                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#e2fbe9', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#16a34a' }}>
                           <Check size={26} strokeWidth={2.5} />
@@ -726,7 +753,7 @@ const ScheduleModal = ({
 
                   {/* ══════════════ MODO CREACIÓN (orden con varios servicios) ══════════════ */}
                   {!isEditMode && currentStep === 2 && (
-                    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out' }}>
                       <div style={{ textAlign: 'center', marginBottom: '8px' }}>
                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
                           <Scissors size={24} />
@@ -757,7 +784,7 @@ const ScheduleModal = ({
                       </div>
 
                       {serviceCategories.length > 0 && (
-                        <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '2px' }} className="jana-scrollbar">
+                        <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '2px', animation: 'fadeInUp 0.4s ease-out 0.15s both' }} className="jana-scrollbar">
                           <button
                             onClick={() => setServiceCategoryFilter('Todas')}
                             style={{
@@ -765,12 +792,16 @@ const ScheduleModal = ({
                               fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap',
                               background: serviceCategoryFilter === 'Todas' ? '#db8c95' : '#faf3f2',
                               color: serviceCategoryFilter === 'Todas' ? '#fff' : '#a0506a',
-                              border: '1px solid ' + (serviceCategoryFilter === 'Todas' ? '#db8c95' : 'rgba(160,80,106,0.15)')
+                              border: '1px solid ' + (serviceCategoryFilter === 'Todas' ? '#db8c95' : 'rgba(160,80,106,0.15)'),
+                              transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                              transform: 'scale(1)'
                             }}
+                            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(219,140,149,0.2)'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none'; }}
                           >
                             Todas
                           </button>
-                          {serviceCategories.map(cat => (
+                          {serviceCategories.map((cat, idx) => (
                             <button
                               key={cat}
                               onClick={() => setServiceCategoryFilter(cat)}
@@ -779,8 +810,13 @@ const ScheduleModal = ({
                                 fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap',
                                 background: serviceCategoryFilter === cat ? '#db8c95' : '#faf3f2',
                                 color: serviceCategoryFilter === cat ? '#fff' : '#a0506a',
-                                border: '1px solid ' + (serviceCategoryFilter === cat ? '#db8c95' : 'rgba(160,80,106,0.15)')
+                                border: '1px solid ' + (serviceCategoryFilter === cat ? '#db8c95' : 'rgba(160,80,106,0.15)'),
+                                transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                                transform: 'scale(1)',
+                                animation: `fadeInUp 0.4s ease-out ${0.2 + idx * 0.05}s both`
                               }}
+                              onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(219,140,149,0.2)'; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none'; }}
                             >
                               {cat}
                             </button>
@@ -803,7 +839,21 @@ const ScheduleModal = ({
                                 display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px',
                                 padding: '12px 14px', borderRadius: '14px', textAlign: 'left', cursor: 'pointer',
                                 border: isSel ? '1.5px solid #db8c95' : '1px solid rgba(223,178,140,0.2)',
-                                background: isSel ? 'rgba(219,140,149,0.08)' : '#faf8f7'
+                                background: isSel ? 'rgba(219,140,149,0.08)' : '#faf8f7',
+                                transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                animation: 'fadeInUp 0.3s ease-out',
+                                transform: 'translateY(0)',
+                                opacity: 1
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                e.currentTarget.style.boxShadow = '0 6px 16px rgba(219,140,149,0.15)';
+                                e.currentTarget.style.borderColor = '#db8c95';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = 'none';
+                                e.currentTarget.style.borderColor = isSel ? '#db8c95' : 'rgba(223,178,140,0.2)';
                               }}
                             >
                               <div>
@@ -813,7 +863,7 @@ const ScheduleModal = ({
                                   {pkg && <span style={{ color: '#16a34a', fontWeight: 700 }}> · ✓ Paquete activo</span>}
                                 </div>
                               </div>
-                              {isSel && <Check size={18} color="#db8c95" style={{ flexShrink: 0 }} />}
+                              {isSel && <Check size={18} color="#db8c95" style={{ flexShrink: 0, animation: 'scaleIn 0.3s ease-out' }} />}
                             </button>
                           );
                         })}
@@ -836,7 +886,7 @@ const ScheduleModal = ({
                   )}
 
                   {!isEditMode && currentStep === 3 && (
-                    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out' }}>
                       <div style={{ textAlign: 'center', marginBottom: '4px' }}>
                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
                           <Sparkles size={24} />
@@ -919,7 +969,7 @@ const ScheduleModal = ({
                   )}
 
                   {!isEditMode && currentStep === 4 && (
-                    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out' }}>
                       <div style={{ textAlign: 'center', marginBottom: '8px' }}>
                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#e2fbe9', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#16a34a' }}>
                           <Check size={26} strokeWidth={2.5} />
@@ -969,7 +1019,7 @@ const ScheduleModal = ({
                 </div>
 
                 {/* Stepper Buttons Footer */}
-                <div style={{ display: 'flex', gap: '12px', marginTop: '32px', flexShrink: 0 }}>
+                <div style={{ display: 'flex', gap: '12px', marginTop: '32px', flexShrink: 0, animation: 'fadeInUp 0.4s ease-out 0.3s both' }}>
                   {currentStep > 1 && !isReprogramOnly && (
                     <button
                       onClick={() => setCurrentStep(prev => prev - 1)}
@@ -987,10 +1037,18 @@ const ScheduleModal = ({
                         justifyContent: 'center',
                         gap: '8px',
                         padding: '0 20px',
-                        transition: 'all 0.2s'
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                       }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#fff8fa'}
-                      onMouseLeave={e => e.currentTarget.style.background = '#fff'}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.background = '#fff8fa';
+                        e.currentTarget.style.transform = 'translateX(-2px)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(219,140,149,0.15)';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.background = '#fff';
+                        e.currentTarget.style.transform = 'translateX(0)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
                     >
                       <ArrowLeft size={16} /> Atrás
                     </button>
@@ -1015,7 +1073,17 @@ const ScheduleModal = ({
                         justifyContent: 'center',
                         gap: '8px',
                         boxShadow: isStepValid(currentStep) ? '0 8px 24px rgba(219,140,149,0.25)' : 'none',
-                        transition: 'all 0.2s'
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                      }}
+                      onMouseEnter={e => {
+                        if (isStepValid(currentStep)) {
+                          e.currentTarget.style.transform = 'translateX(2px)';
+                          e.currentTarget.style.boxShadow = '0 10px 28px rgba(219,140,149,0.35)';
+                        }
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.transform = 'translateX(0)';
+                        e.currentTarget.style.boxShadow = isStepValid(currentStep) ? '0 8px 24px rgba(219,140,149,0.25)' : 'none';
                       }}
                     >
                       Siguiente <ArrowRight size={16} />
@@ -1042,19 +1110,22 @@ const ScheduleModal = ({
                         justifyContent: 'center',
                         gap: '10px',
                         boxShadow: '0 10px 28px rgba(219,140,149,0.4)',
-                        transition: 'all 0.25s ease',
-                        letterSpacing: '0.5px'
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        letterSpacing: '0.5px',
+                        animation: 'slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both'
                       }}
                       onMouseEnter={e => {
-                        e.currentTarget.style.transform = 'translateY(-2px)';
-                        e.currentTarget.style.boxShadow = '0 12px 32px rgba(219,140,149,0.45)';
+                        if (!loading) {
+                          e.currentTarget.style.transform = 'translateY(-3px)';
+                          e.currentTarget.style.boxShadow = '0 14px 36px rgba(219,140,149,0.5)';
+                        }
                       }}
                       onMouseLeave={e => {
-                        e.currentTarget.style.transform = 'none';
+                        e.currentTarget.style.transform = 'translateY(0)';
                         e.currentTarget.style.boxShadow = '0 10px 28px rgba(219,140,149,0.4)';
                       }}
                     >
-                      <Check size={20} strokeWidth={3} /> {isReprogramOnly ? 'Reprogramar Turno' : isEditMode ? 'Guardar Cambios' : 'Confirmar Orden'}
+                      <Check size={20} strokeWidth={3} style={{ animation: loading ? 'none' : 'scaleIn 0.3s ease-out' }} /> {isReprogramOnly ? 'Reprogramar Turno' : isEditMode ? 'Guardar Cambios' : 'Confirmar Orden'}
                     </button>
                   )}
                 </div>
