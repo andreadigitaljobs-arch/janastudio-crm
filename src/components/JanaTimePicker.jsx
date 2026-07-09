@@ -2,17 +2,36 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Clock, ChevronUp, ChevronDown } from 'lucide-react';
 
 /**
- * JanaTimePicker - Un selector de hora ultra-premium que elimina el input nativo.
+ * JanaTimePicker - Un selector de hora ultra-premium que permite escribir y seleccionar.
  */
-const JanaTimePicker = ({ value, onChange, label = "HORA", variant = "dark", placement = "bottom" }) => {
+const JanaTimePicker = ({ value, onChange, label = "", variant = "dark", placement = "bottom" }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
+  const inputRef = useRef(null);
   const isLight = variant === 'light';
 
   // Parse current value (format "HH:mm")
   const [hours, setHours] = useState(value.split(':')[0] || '10');
   const [minutes, setMinutes] = useState(value.split(':')[1] || '00');
   const [ampm, setAmPm] = useState(parseInt(hours) >= 12 ? 'PM' : 'AM');
+
+  // Local text input state (formatted value: "HH:MM AM/PM")
+  const getFormattedDisplay = (h, m, am_pm) => {
+    const displayH = h === '00' ? '12' : (parseInt(h) > 12 ? (parseInt(h) - 12).toString().padStart(2, '0') : h);
+    return `${displayH}:${m} ${am_pm}`;
+  };
+
+  const [textInput, setTextInput] = useState(getFormattedDisplay(hours, minutes, ampm));
+
+  useEffect(() => {
+    const h = value.split(':')[0] || '10';
+    const m = value.split(':')[1] || '00';
+    const a = parseInt(h) >= 12 ? 'PM' : 'AM';
+    setHours(h);
+    setMinutes(m);
+    setAmPm(a);
+    setTextInput(getFormattedDisplay(h, m, a));
+  }, [value]);
 
   // Convert 12h to 24h for the parent
   const handleTimeChange = (newH, newM, newAmPm) => {
@@ -56,9 +75,51 @@ const JanaTimePicker = ({ value, onChange, label = "HORA", variant = "dark", pla
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Display time in 12h format
-  const displayHour = hours === '00' ? '12' : (parseInt(hours) > 12 ? (parseInt(hours) - 12).toString().padStart(2, '0') : hours);
+  // Format typing (mask "XX:XX AM" or "XX:XX PM")
+  const handleInputChange = (e) => {
+    let raw = e.target.value.toUpperCase();
+    
+    // Clean anything that isn't a digit, A, P, or M
+    let clean = raw.replace(/[^0-9APM]/g, '');
+    
+    let formatted = '';
+    if (clean.length > 0) {
+      formatted += clean.slice(0, 2);
+    }
+    if (clean.length > 2) {
+      formatted += ':' + clean.slice(2, 4);
+    }
+    if (clean.length > 4) {
+      const part = clean.slice(4).replace(/[^APM]/g, '');
+      if (part.length > 0) {
+        formatted += ' ' + part.slice(0, 2);
+      }
+    }
+    
+    setTextInput(formatted);
 
+    // Try parsing
+    const match = formatted.match(/^(\d{2}):(\d{2})\s?([AP]M?)$/);
+    if (match) {
+      let typedH = parseInt(match[1]);
+      let typedM = parseInt(match[2]);
+      let typedAmPm = match[3];
+      if (!typedAmPm.endsWith('M')) typedAmPm += 'M'; // autocomplete 'A' to 'AM'
+
+      if (typedH >= 1 && typedH <= 12 && typedM >= 0 && typedM <= 59) {
+        let h24 = typedH;
+        if (typedAmPm === 'PM' && h24 < 12) h24 += 12;
+        if (typedAmPm === 'AM' && h24 === 12) h24 = 0;
+        
+        const stringH = h24.toString().padStart(2, '0');
+        const stringM = typedM.toString().padStart(2, '0');
+        onChange(`${stringH}:${stringM}`);
+      }
+    }
+  };
+
+  // Display hour representation
+  const displayHour = hours === '00' ? '12' : (parseInt(hours) > 12 ? (parseInt(hours) - 12).toString().padStart(2, '0') : hours);
   const isTop = placement === 'top';
 
   return (
@@ -66,7 +127,6 @@ const JanaTimePicker = ({ value, onChange, label = "HORA", variant = "dark", pla
       {label && <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</label>}
       
       <div
-        onClick={() => setIsOpen(!isOpen)}
         style={{
           height: '48px',
           background: isLight ? 'linear-gradient(135deg, #fff 0%, #fff8fa 100%)' : 'rgba(255, 255, 255, 0.05)',
@@ -74,17 +134,46 @@ const JanaTimePicker = ({ value, onChange, label = "HORA", variant = "dark", pla
           borderRadius: '14px',
           display: 'flex',
           alignItems: 'center',
-          padding: '0 16px',
-          cursor: 'pointer',
+          padding: '0 12px 0 16px',
           transition: 'all 0.2s ease',
-          gap: '12px',
+          gap: '8px',
           boxShadow: isOpen ? '0 0 15px rgba(196,139,159,0.1)' : 'none'
         }}
       >
-        <Clock size={16} color={isOpen ? 'var(--pink-primary)' : (isLight ? '#c97282' : 'var(--text-muted)')} />
-        <span style={{ fontSize: '15px', fontWeight: '700', color: isLight ? 'var(--text-primary)' : 'white', whiteSpace: 'nowrap' }}>
-          {displayHour}:{minutes} {ampm}
-        </span>
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '2px',
+            display: 'flex',
+            alignItems: 'center',
+            color: isOpen ? 'var(--pink-primary)' : (isLight ? '#c97282' : 'var(--text-muted)')
+          }}
+        >
+          <Clock size={16} color="inherit" />
+        </button>
+        <input
+          ref={inputRef}
+          type="text"
+          value={textInput}
+          onChange={handleInputChange}
+          placeholder="HH:MM AM"
+          maxLength={8}
+          style={{
+            flex: 1,
+            border: 'none',
+            background: 'transparent',
+            outline: 'none',
+            fontSize: '14px',
+            fontWeight: '700',
+            color: isLight ? 'var(--text-primary)' : 'white',
+            padding: 0,
+            cursor: 'text'
+          }}
+        />
       </div>
 
       {isOpen && (
@@ -108,18 +197,18 @@ const JanaTimePicker = ({ value, onChange, label = "HORA", variant = "dark", pla
         }}>
           {/* Hours */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-            <button onClick={() => adjustHour(1)} style={{ ...scrollBtnStyle, color: isLight ? '#c97282' : scrollBtnStyle.color }}><ChevronUp size={20} /></button>
+            <button type="button" onClick={() => adjustHour(1)} style={{ ...scrollBtnStyle, color: isLight ? '#c97282' : scrollBtnStyle.color }}><ChevronUp size={20} /></button>
             <div style={{ ...timeValueStyle, color: isLight ? 'var(--text-primary)' : timeValueStyle.color }}>{displayHour}</div>
-            <button onClick={() => adjustHour(-1)} style={{ ...scrollBtnStyle, color: isLight ? '#c97282' : scrollBtnStyle.color }}><ChevronDown size={20} /></button>
+            <button type="button" onClick={() => adjustHour(-1)} style={{ ...scrollBtnStyle, color: isLight ? '#c97282' : scrollBtnStyle.color }}><ChevronDown size={20} /></button>
           </div>
 
           <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--pink-primary)', marginTop: '-4px' }}>:</div>
 
           {/* Minutes */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-            <button onClick={() => adjustMinute(5)} style={{ ...scrollBtnStyle, color: isLight ? '#c97282' : scrollBtnStyle.color }}><ChevronUp size={20} /></button>
+            <button type="button" onClick={() => adjustMinute(5)} style={{ ...scrollBtnStyle, color: isLight ? '#c97282' : scrollBtnStyle.color }}><ChevronUp size={20} /></button>
             <div style={{ ...timeValueStyle, color: isLight ? 'var(--text-primary)' : timeValueStyle.color }}>{minutes}</div>
-            <button onClick={() => adjustMinute(-5)} style={{ ...scrollBtnStyle, color: isLight ? '#c97282' : scrollBtnStyle.color }}><ChevronDown size={20} /></button>
+            <button type="button" onClick={() => adjustMinute(-5)} style={{ ...scrollBtnStyle, color: isLight ? '#c97282' : scrollBtnStyle.color }}><ChevronDown size={20} /></button>
           </div>
 
           {/* AM/PM Toggle */}

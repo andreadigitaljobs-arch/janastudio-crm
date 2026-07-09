@@ -390,11 +390,27 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
   return (
     <div ref={containerRef} style={{ position: 'relative', width: '100%' }}>
       <div style={{ position: 'relative' }}>
-        <Calendar
-          style={{ position: 'absolute', left: '16px', top: '14px', zIndex: 1, pointerEvents: 'none' }}
-          size={18}
-          color="var(--pink-primary)"
-        />
+        <button
+          type="button"
+          onClick={openCalendar}
+          style={{
+            position: 'absolute',
+            left: '16px',
+            top: '12px',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '2px',
+            display: 'flex',
+            alignItems: 'center',
+            zIndex: 10
+          }}
+        >
+          <Calendar
+            size={18}
+            color="var(--pink-primary)"
+          />
+        </button>
         <input
           ref={inputRef}
           className={inputClassName}
@@ -403,8 +419,6 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
           value={textInput}
           onChange={handleTextChange}
           onKeyDown={handleKeyDown}
-          onFocus={openCalendar}
-          onClick={openCalendar}
           maxLength={10}
           inputMode="numeric"
           style={{
