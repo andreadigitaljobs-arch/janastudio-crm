@@ -708,7 +708,7 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
       else if (filterType === 'week') { end.setDate(start.getDate() + 7); }
       else if (filterType === 'month') { start.setDate(1); end = new Date(start.getFullYear(), start.getMonth() + 1, 0); end.setHours(23, 59, 59, 999); }
       const endQuery = new Date(end.getTime() - 1);
-      const data = await dataService.getAppointments(start.toISOString(), endQuery.toISOString());
+      const data = await dataService.getAppointmentServicesFlat(start.toISOString(), endQuery.toISOString());
       let appointments = data.filter(a => a.status !== 'Cancelada' && a.status !== 'Cancelado');
 
       // Si no hay citas y es hoy, añadir citas demo
