@@ -2607,12 +2607,12 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
         <div 
           style={{ 
             position: 'fixed',
-            left: isMobile ? 0 : (isCollapsed ? '70px' : '230px'),
+            left: 0,
             top: 0,
             right: 0,
             bottom: 0,
             background: '#fcf8f7',
-            zIndex: 998, 
+            zIndex: 9999, 
             display: 'flex',
             flexDirection: 'column',
             overflowY: 'auto',
@@ -3954,226 +3954,14 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
           </div>
         </>
       )}
-      {/* POPUP DETALLE DE DISPONIBILIDAD DE ESPECIALISTA */}
+      {/* POPUP DETALLE DE DISPONIBILIDAD DE ESPECIALISTA - REDIRIGIDO A PERFIL DIRECTAMENTE SIN POPUP */}
       {selectedStaffAvailDetail && (() => {
-        const { staff: s, busySlots, isWorking, isLunch, refMin, statusText } = selectedStaffAvailDetail;
-        return (
-          <>
-            <div 
-              style={{
-                position: 'fixed', inset: 0,
-                background: 'rgba(74, 48, 54, 0.25)',
-                backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)',
-                zIndex: 17000, display: 'flex',
-                alignItems: 'center', justifyContent: 'center', padding: '16px',
-                animation: 'fadeIn 0.2s ease-out'
-              }}
-              onClick={() => setSelectedStaffAvailDetail(null)}
-            >
-              <div 
-                style={{
-                  width: '100%', maxWidth: '380px',
-                  backgroundColor: '#ffffff',
-                  borderRadius: '24px',
-                  boxShadow: '0 20px 50px rgba(74, 48, 54, 0.18)',
-                  border: '1px solid rgba(223, 178, 140, 0.2)',
-                  padding: '24px',
-                  position: 'relative',
-                  display: 'flex', flexDirection: 'column', gap: '16px',
-                  animation: 'scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1)'
-                }}
-                onClick={e => e.stopPropagation()}
-              >
-                {/* Close Button */}
-                <button 
-                  onClick={() => setSelectedStaffAvailDetail(null)}
-                  style={{
-                    position: 'absolute', top: '16px', right: '16px',
-                    border: 'none', background: 'rgba(219, 140, 149, 0.08)',
-                    color: '#db8c95', cursor: 'pointer', width: '26px', height: '26px',
-                    borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontWeight: 'bold', fontSize: '0.85rem', transition: 'all 0.2s'
-                  }}
-                  className="btn-hover-scale"
-                >
-                  ×
-                </button>
-
-                {/* Profile Header */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                  <img
-                    src={s.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(s.name)}&backgroundColor=e8a2a9,f7d4d7,fce4e8&radius=50`}
-                    alt={s.name}
-                    style={{ width: '56px', height: '56px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #faf3f2' }}
-                  />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#3d2b30' }}>{s.name}</h4>
-                    <div style={{ fontSize: '0.72rem', color: '#a0868c', fontWeight: 650, marginTop: '1px' }}>{getStaffRole(s.name)}</div>
-                    
-                    {/* Specialty tags */}
-                    <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '4px' }}>
-                      {s.name.includes('Isabella') && ['Pestañas', 'Lifting', 'Cejas'].map(tag => (
-                        <span key={tag} style={{ fontSize: '0.52rem', background: '#faf3f2', color: '#8c767b', padding: '1px 5px', borderRadius: '4px', fontWeight: 700 }}>{tag}</span>
-                      ))}
-                      {s.name.includes('Laura') && ['Uñas Acrílicas', 'Gel', 'Manicura'].map(tag => (
-                        <span key={tag} style={{ fontSize: '0.52rem', background: '#faf3f2', color: '#8c767b', padding: '1px 5px', borderRadius: '4px', fontWeight: 700 }}>{tag}</span>
-                      ))}
-                      {s.name.includes('Sofía') && ['Microblading', 'Laminación Cejas', 'Hilo'].map(tag => (
-                        <span key={tag} style={{ fontSize: '0.52rem', background: '#faf3f2', color: '#8c767b', padding: '1px 5px', borderRadius: '4px', fontWeight: 700 }}>{tag}</span>
-                      ))}
-                      {!s.name.includes('Isabella') && !s.name.includes('Laura') && !s.name.includes('Sofía') && ['Cosmetología', 'Peinados', 'Manicura'].map(tag => (
-                        <span key={tag} style={{ fontSize: '0.52rem', background: '#faf3f2', color: '#8c767b', padding: '1px 5px', borderRadius: '4px', fontWeight: 700 }}>{tag}</span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Metrics Row (KPIs) */}
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(3, 1fr)',
-                  gap: '8px',
-                  background: '#faf6f5',
-                  borderRadius: '16px',
-                  padding: '10px'
-                }}>
-                  <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '2px', borderRight: '1px solid rgba(223, 178, 140, 0.15)' }}>
-                    <span style={{ fontSize: '0.55rem', fontWeight: 750, color: '#a0868c', textTransform: 'uppercase' }}>Citas hoy</span>
-                    <span style={{ fontSize: '0.88rem', fontWeight: 900, color: '#4a3036' }}>
-                      {isWorking ? (busySlots.length) : 0}
-                    </span>
-                  </div>
-                  <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '2px', borderRight: '1px solid rgba(223, 178, 140, 0.15)' }}>
-                    <span style={{ fontSize: '0.55rem', fontWeight: 750, color: '#a0868c', textTransform: 'uppercase' }}>Ocupación</span>
-                    <span style={{ fontSize: '0.88rem', fontWeight: 900, color: '#a0506a' }}>
-                      {isWorking ? `${Math.min(100, Math.round((busySlots.length * 60 / 480) * 100))}%` : '0%'}
-                    </span>
-                  </div>
-                  <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                    <span style={{ fontSize: '0.55rem', fontWeight: 750, color: '#a0868c', textTransform: 'uppercase' }}>Disp. Desde</span>
-                    <span style={{ fontSize: '0.78rem', fontWeight: 900, color: '#16a34a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', paddingTop: '1px' }}>
-                      {(() => {
-                        if (!isWorking) return 'N/A';
-                        if (isLunch) return '2:00 PM';
-                        
-                        const currentActive = busySlots.find(b => refMin >= b.startMinutes && refMin < b.endMinutes);
-                        if (currentActive) return formatMinutes(currentActive.endMinutes);
-                        return 'Ahora';
-                      })()}
-                    </span>
-                  </div>
-                </div>
-
-                <div style={{ borderTop: '1px solid #fcf7f6' }} />
-
-                {/* Status Indicator */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#db8c95', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado de Hoy:</div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#4a3036', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{
-                      width: '8px', height: '8px', borderRadius: '50%',
-                      background: statusText.includes('Ocupada') ? '#f59e0b' : statusText.includes('Almuerzo') ? '#db8c95' : isWorking ? '#22c55e' : '#94a3b8'
-                    }} />
-                    {statusText}
-                  </div>
-                </div>
-
-                {/* Agenda Items List */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#db8c95', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>
-                    Citas programadas para hoy:
-                  </div>
-
-                  {!isWorking && (
-                    <div style={{ padding: '16px', background: '#faf6f5', borderRadius: '14px', textAlign: 'center', fontSize: '0.74rem', color: '#a0868c', fontWeight: 600 }}>
-                      🏖️ No labora el día de hoy
-                    </div>
-                  )}
-
-                  {isWorking && busySlots.length === 0 && (
-                    <div style={{ padding: '16px', background: 'rgba(34, 197, 94, 0.04)', borderRadius: '14px', textAlign: 'center', fontSize: '0.74rem', color: '#16a34a', fontWeight: 600 }}>
-                      ✨ Disponible para agendar todo el día
-                    </div>
-                  )}
-
-                  {isWorking && busySlots.length > 0 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '180px', overflowY: 'auto' }} className="jana-scrollbar">
-                      {isLunch && (
-                        <div style={{ padding: '8px 12px', background: 'rgba(219, 140, 149, 0.08)', border: '1px dashed rgba(219, 140, 149, 0.2)', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem' }}>
-                          <span style={{ color: '#db8c95', fontWeight: 800 }}>🥪 Receso / Almuerzo</span>
-                          <span style={{ color: '#db8c95', fontWeight: 700 }}>1:00 PM - 2:00 PM</span>
-                        </div>
-                      )}
-                      {busySlots.sort((a,b) => a.startMinutes - b.startMinutes).map((slot, index) => {
-                        const isCurrentSlot = refMin >= slot.startMinutes && refMin < slot.endMinutes;
-                        return (
-                          <div 
-                            key={index}
-                            style={{
-                              padding: '10px 12px',
-                              background: isCurrentSlot ? 'rgba(245, 158, 11, 0.04)' : '#faf6f5',
-                              border: isCurrentSlot ? '1px solid rgba(245, 158, 11, 0.2)' : '1px solid rgba(223, 178, 140, 0.08)',
-                              borderRadius: '12px',
-                              display: 'flex',
-                              justifyContent: 'space-between',
-                              alignItems: 'center'
-                            }}
-                          >
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                              <span style={{ fontSize: '0.76rem', fontWeight: 800, color: '#3d2b30' }}>
-                                {slot.client}
-                              </span>
-                              {isCurrentSlot && (
-                                <span style={{ fontSize: '0.58rem', color: '#d97706', fontWeight: 800, textTransform: 'uppercase' }}>
-                                  ● En Curso ahora
-                                </span>
-                              )}
-                            </div>
-                            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#8c767b' }}>
-                              {formatMinutes(slot.startMinutes)} - {formatMinutes(slot.endMinutes)}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-
-                <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
-                  <button
-                    onClick={() => {
-                      setSelectedStaffDrawer(s);
-                      setSelectedStaffAvailDetail(null);
-                    }}
-                    style={{
-                      flex: 1, padding: '10px', borderRadius: '12px',
-                      border: '1px solid rgba(219, 140, 149, 0.3)', background: 'transparent',
-                      color: '#db8c95', fontSize: '0.74rem', fontWeight: 700, cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                    className="btn-hover-scale"
-                  >
-                    Ver perfil completo
-                  </button>
-                  <button
-                    onClick={() => {
-                      setSelectedStaffAvailDetail(null);
-                    }}
-                    style={{
-                      flex: 1, padding: '10px', borderRadius: '12px',
-                      border: 'none', background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
-                      color: '#ffffff', fontSize: '0.74rem', fontWeight: 700, cursor: 'pointer',
-                      boxShadow: '0 4px 12px rgba(219, 140, 149, 0.2)', transition: 'all 0.2s'
-                    }}
-                    className="btn-hover-scale"
-                  >
-                    Cerrar ventana
-                  </button>
-                </div>
-              </div>
-            </div>
-          </>
-        );
+        // Instead of opening a popup, immediately open the full-screen sliding profile drawer
+        setTimeout(() => {
+          setSelectedStaffDrawer(selectedStaffAvailDetail.staff);
+          setSelectedStaffAvailDetail(null);
+        }, 10);
+        return null;
       })()}
     </div>
   );
