@@ -1034,7 +1034,7 @@ const ScheduleModal = ({
                          {/* Right Column: Time Selector */}
                          <div style={{ background: '#ffffff', padding: '20px', borderRadius: '20px', border: '1px solid rgba(223, 178, 140, 0.15)', boxShadow: '0 4px 15px rgba(74,48,54,0.01)' }}>
                            <label style={{ fontSize: '0.65rem', fontWeight: 800, color: '#db8c95', display: 'block', marginBottom: '10px', letterSpacing: '0.8px', textTransform: 'uppercase' }}>2. Hora de Inicio General</label>
-                           <JanaTimePicker variant="light" label="" value={generalTime} onChange={applyGeneralTime} />
+                           <JanaTimePicker variant="light" label="" value={generalTime} onChange={applyGeneralTime} placement="top" />
                            <div style={{ fontSize: '0.68rem', color: '#a0868c', marginTop: '10px', fontWeight: 500, lineHeight: '1.4' }}>
                              Se aplicará por defecto a todos los servicios seleccionados. Podrás ajustar la hora de cada uno de forma individual en el paso siguiente.
                            </div>

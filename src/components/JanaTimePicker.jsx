@@ -4,7 +4,7 @@ import { Clock, ChevronUp, ChevronDown } from 'lucide-react';
 /**
  * JanaTimePicker - Un selector de hora ultra-premium que elimina el input nativo.
  */
-const JanaTimePicker = ({ value, onChange, label = "HORA", variant = "dark" }) => {
+const JanaTimePicker = ({ value, onChange, label = "HORA", variant = "dark", placement = "bottom" }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
   const isLight = variant === 'light';
@@ -59,6 +59,8 @@ const JanaTimePicker = ({ value, onChange, label = "HORA", variant = "dark" }) =
   // Display time in 12h format
   const displayHour = hours === '00' ? '12' : (parseInt(hours) > 12 ? (parseInt(hours) - 12).toString().padStart(2, '0') : hours);
 
+  const isTop = placement === 'top';
+
   return (
     <div ref={containerRef} style={{ position: 'relative', width: '100%' }}>
       {label && <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</label>}
@@ -88,7 +90,8 @@ const JanaTimePicker = ({ value, onChange, label = "HORA", variant = "dark" }) =
       {isOpen && (
         <div className="animate-scale-in" style={{
           position: 'absolute',
-          top: '60px',
+          bottom: isTop ? '58px' : 'auto',
+          top: isTop ? 'auto' : '60px',
           right: 0,
           backgroundColor: isLight ? 'rgba(255, 255, 255, 0.98)' : 'rgba(28, 28, 30, 0.95)',
           backdropFilter: 'blur(20px)',
@@ -100,7 +103,8 @@ const JanaTimePicker = ({ value, onChange, label = "HORA", variant = "dark" }) =
           gap: '20px',
           alignItems: 'center',
           boxShadow: isLight ? '0 18px 45px rgba(93, 57, 67, 0.18)' : '0 20px 40px rgba(0,0,0,0.6)',
-          animation: 'scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
+          animation: 'scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+          transformOrigin: isTop ? 'bottom right' : 'top right'
         }}>
           {/* Hours */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
