@@ -1063,6 +1063,33 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
             </button>
           </div>
 
+          {/* Cronograma del Día Button */}
+          <button
+            onClick={() => setViewMode('agenda')}
+            style={{
+              padding: '8px 14px', borderRadius: '12px', border: '1px solid rgba(212, 160, 154, 0.4)',
+              background: '#fff', cursor: 'pointer',
+              color: '#a0506a', fontSize: '0.78rem', fontWeight: 600,
+              display: 'flex', alignItems: 'center', gap: '6px',
+              boxShadow: '0 2px 8px rgba(74, 48, 54, 0.03)',
+              transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.02) translateY(-2px)';
+              e.currentTarget.style.borderColor = 'rgba(212, 160, 154, 0.6)';
+              e.currentTarget.style.background = 'rgba(212, 160, 154, 0.04)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(212, 160, 154, 0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1) translateY(0)';
+              e.currentTarget.style.borderColor = 'rgba(212, 160, 154, 0.4)';
+              e.currentTarget.style.background = '#fff';
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(74, 48, 54, 0.03)';
+            }}
+          >
+            <CalendarIcon size={14} /> Cronograma
+          </button>
+
           {/* Bell Notifications */}
           <button
             onClick={() => window.dispatchEvent(new CustomEvent('jana:open-notifications'))}
