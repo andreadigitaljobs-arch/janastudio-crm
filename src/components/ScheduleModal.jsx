@@ -846,12 +846,10 @@ const ScheduleModal = ({
                                 opacity: 1
                               }}
                               onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-2px)';
                                 e.currentTarget.style.boxShadow = '0 6px 16px rgba(219,140,149,0.15)';
                                 e.currentTarget.style.borderColor = '#db8c95';
                               }}
                               onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(0)';
                                 e.currentTarget.style.boxShadow = 'none';
                                 e.currentTarget.style.borderColor = isSel ? '#db8c95' : 'rgba(223,178,140,0.2)';
                               }}
