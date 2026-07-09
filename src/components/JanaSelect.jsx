@@ -249,7 +249,7 @@ const JanaSelect = ({
     <>
       <div
         className="form-group"
-        style={{ position: 'relative', width: '100%', ...style, opacity: disabled ? 0.6 : 1, pointerEvents: disabled ? 'none' : 'auto' }}
+        style={{ position: 'relative', width: '100%', minWidth: 0, ...style, opacity: disabled ? 0.6 : 1, pointerEvents: disabled ? 'none' : 'auto' }}
         ref={containerRef}
       >
         {label && (
@@ -328,7 +328,8 @@ const JanaSelect = ({
               transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
               fontSize: '15px',
               fontWeight: selectedOption ? '700' : '600',
-              userSelect: 'none'
+              userSelect: 'none',
+              minWidth: 0
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, overflow: 'hidden' }}>
