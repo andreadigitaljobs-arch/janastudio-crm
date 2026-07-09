@@ -12,8 +12,10 @@ import {
   ArrowLeft,
   Clock,
   RotateCcw,
-  Trash2
+  Trash2,
+  Search
 } from 'lucide-react';
+import { normalizeForSearch } from '../utils/stringUtils';
 import { dataService } from '../services/dataService';
 import AnimatedModal from './AnimatedModal';
 import JanaSelect from './JanaSelect';
@@ -86,6 +88,7 @@ const ScheduleModal = ({
   const [selectedServices, setSelectedServices] = useState([]); // [{ _uid, service_id, name, price, duration_minutes, staffId, time, customized }]
   const [generalTime, setGeneralTime] = useState('10:00');
   const [staffAvailability, setStaffAvailability] = useState({}); // { [staffId]: { schedules, timeOff, appointmentsForDay, dateKey } }
+  const [serviceSearchQuery, setServiceSearchQuery] = useState('');
 
   const totalSteps = isEditMode ? 5 : 4;
 
@@ -244,6 +247,7 @@ const ScheduleModal = ({
         setCurrentStep(isReprogramOnly ? 4 : 5);
       } else {
         setLocalClient(client || null);
+        setServiceSearchQuery('');
         setSelectedServices(
           service ? [{
             _uid: `${service.id}-${Date.now()}`,
@@ -728,8 +732,31 @@ const ScheduleModal = ({
                         <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Puede elegir uno o varios — cada uno con su propia profesional.</p>
                       </div>
 
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '320px', overflowY: 'auto' }} className="jana-scrollbar">
-                        {services.map(svc => {
+                      <div style={{ position: 'relative' }}>
+                        <Search size={15} color="#a0868c" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
+                        <input
+                          type="text"
+                          placeholder="Buscar servicio..."
+                          value={serviceSearchQuery}
+                          onChange={(e) => setServiceSearchQuery(e.target.value)}
+                          style={{
+                            width: '100%', padding: '11px 14px 11px 38px', borderRadius: '12px',
+                            border: '1.5px solid rgba(212,160,154,0.3)', background: '#fff',
+                            fontSize: '0.8rem', fontWeight: 600, color: '#3d2b30', outline: 'none'
+                          }}
+                        />
+                        {serviceSearchQuery && (
+                          <button
+                            onClick={() => setServiceSearchQuery('')}
+                            style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#a0868c', cursor: 'pointer', fontSize: '1.1rem', lineHeight: 1, padding: '4px' }}
+                          >×</button>
+                        )}
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '280px', overflowY: 'auto' }} className="jana-scrollbar">
+                        {services
+                          .filter(svc => !serviceSearchQuery || normalizeForSearch(svc.name || '').includes(normalizeForSearch(serviceSearchQuery)))
+                          .map(svc => {
                           const isSel = selectedServices.some(s => s.service_id === svc.id);
                           const pkg = matchingPkg(svc.id);
                           return (
@@ -754,6 +781,11 @@ const ScheduleModal = ({
                             </button>
                           );
                         })}
+                        {services.filter(svc => !serviceSearchQuery || normalizeForSearch(svc.name || '').includes(normalizeForSearch(serviceSearchQuery))).length === 0 && (
+                          <div style={{ padding: '20px', textAlign: 'center', fontSize: '0.76rem', color: '#a0868c' }}>
+                            No se encontró ningún servicio con "{serviceSearchQuery}"
+                          </div>
+                        )}
                       </div>
 
                       {selectedServices.length > 0 && (
