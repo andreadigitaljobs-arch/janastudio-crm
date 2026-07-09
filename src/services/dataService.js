@@ -525,6 +525,68 @@ export const dataService = {
     if (error) throw error;
   },
 
+  async updateAppointmentService(appointmentServiceId, updates) {
+    _cacheInvalidateAppts();
+
+    const { data, error } = await supabase
+      .from('appointment_services')
+      .update(updates)
+      .eq('id', appointmentServiceId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  // Vista "aplanada" para la Agenda: cada fila es UN servicio de UNA orden,
+  // con su profesional y horario propios (una orden con 3 servicios = 3 tarjetas).
+  async getAppointmentServicesFlat(startDate, endDate) {
+    const cacheKey = `appt_svcs_flat_${startDate}_${endDate}`;
+    const cached = _cacheGet(cacheKey);
+    if (cached) return cached;
+
+    const { data, error } = await supabase
+      .from('appointment_services')
+      .select(`
+        id,
+        appointment_id,
+        service_id,
+        staff_id,
+        price_paid,
+        status,
+        scheduled_at,
+        duration_minutes,
+        services (id, name, price, duration_minutes),
+        staff (id, name, role),
+        appointments!inner (id, client_id, status, notes, clients (id, name, phone))
+      `)
+      .gte('scheduled_at', startDate)
+      .lte('scheduled_at', endDate)
+      .order('scheduled_at');
+
+    if (error) throw error;
+
+    const result = _asArray(data).map(row => ({
+      id: row.id,
+      appointment_id: row.appointment_id,
+      client_id: row.appointments?.client_id,
+      clients: row.appointments?.clients,
+      staff_id: row.staff_id,
+      staff: row.staff,
+      service_id: row.service_id,
+      services: row.services || { name: 'Servicio', duration_minutes: row.duration_minutes, price: row.price_paid },
+      scheduled_at: row.scheduled_at,
+      duration_minutes: row.duration_minutes,
+      total_price: row.price_paid,
+      status: row.appointments?.status || 'Agendado',
+      service_status: row.status
+    }));
+
+    _cacheSet(cacheKey, result, 15000);
+    return result;
+  },
+
   async getAppointmentWithServices(appointmentId) {
     const { data, error } = await supabase
       .from('appointments')
