@@ -57,6 +57,8 @@ const ScheduleModal = ({
   const [localClient, setLocalClient] = useState(client || null);
   const [localService, setLocalService] = useState(service || null);
   const [localStaff, setLocalStaff] = useState(initialStaff || null);
+  const [isSharedService, setIsSharedService] = useState(false);
+  const [localStaffArray, setLocalStaffArray] = useState(initialStaff ? [initialStaff] : []);
   const [clientActivePackages, setClientActivePackages] = useState([]);
 
   // Fetch client packages when client changes
@@ -434,33 +436,108 @@ const ScheduleModal = ({
                       <Sparkles size={24} />
                     </div>
                     <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#3d2b30' }}>¿Con qué profesional prefiere atenderse?</h3>
-                    <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Selecciona una estilista o especialista asignada.</p>
+                    <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>{isSharedService ? 'Selecciona varias estilistas' : 'Selecciona una estilista o especialista asignada.'}</p>
                   </div>
-                  <JanaSelect
-                    variant="light"
-                    label=""
-                    value={localStaff?.id || ''}
-                    placeholder="Elige una estilista"
-                    onChange={(value) => setLocalStaff(staffArray.find(s => s.id === value))}
-                    options={staffArray.map(s => ({
-                      value: s.id,
-                      label: getStaffDisplayName(s)
-                    }))}
-                    showSearch={true}
-                  />
 
-                  {localStaff && (
-                    <div className="animate-scale-up" style={{
-                      padding: '16px', borderRadius: '16px', border: '1.5px solid rgba(223,178,140,0.25)',
-                      display: 'flex', alignItems: 'center', gap: '12px', background: '#faf8f7',
-                      marginTop: '8px'
-                    }}>
-                      <img src={localStaff.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(localStaff.name || '')}&radius=50`} alt={localStaff.name || ''} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
-                      <div>
-                        <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#3d2b30' }}>{localStaff.name || ''}</div>
-                        <div style={{ fontSize: '0.68rem', color: '#a0868c', fontWeight: 600 }}>{String(localStaff.role || 'Especialista').split('|')[0]}</div>
+                  {/* Toggle Servicio Compartido */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px', background: '#f5ebec', borderRadius: '12px', border: '1px solid rgba(219,140,149,0.2)' }}>
+                    <input
+                      type="checkbox"
+                      checked={isSharedService}
+                      onChange={(e) => {
+                        setIsSharedService(e.target.checked);
+                        if (!e.target.checked) {
+                          setLocalStaff(localStaffArray[0] || null);
+                        } else {
+                          setLocalStaffArray(localStaff ? [localStaff] : []);
+                        }
+                      }}
+                      style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#db8c95' }}
+                    />
+                    <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#4a3036', cursor: 'pointer', flex: 1, margin: 0 }}>
+                      🤝 Servicio compartido (múltiples profesionales)
+                    </label>
+                  </div>
+
+                  {isSharedService ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <div style={{ padding: '12px', background: '#fff0f2', borderRadius: '12px', border: '1px dashed rgba(219,140,149,0.3)' }}>
+                        <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#db8c95', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Profesionales seleccionadas</div>
+                        {localStaffArray.length > 0 ? (
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                            {localStaffArray.map(s => (
+                              <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#fff', padding: '6px 12px', borderRadius: '8px', border: '1px solid rgba(219,140,149,0.3)' }}>
+                                <img src={s.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(s.name || '')}&radius=50`} alt={s.name || ''} style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }} />
+                                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#4a3036' }}>{s.name}</span>
+                                <button
+                                  onClick={() => setLocalStaffArray(localStaffArray.filter(x => x.id !== s.id))}
+                                  style={{ background: 'none', border: 'none', color: '#db8c95', cursor: 'pointer', fontSize: '1.2rem', padding: '0 2px', lineHeight: 1 }}
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div style={{ fontSize: '0.75rem', color: '#a0868c', fontStyle: 'italic' }}>Selecciona profesionales abajo</div>
+                        )}
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+                        {staffArray.map(s => (
+                          <button
+                            key={s.id}
+                            onClick={() => {
+                              if (localStaffArray.find(x => x.id === s.id)) {
+                                setLocalStaffArray(localStaffArray.filter(x => x.id !== s.id));
+                              } else {
+                                setLocalStaffArray([...localStaffArray, s]);
+                              }
+                            }}
+                            style={{
+                              padding: '12px', borderRadius: '12px', border: '1.5px solid',
+                              background: localStaffArray.find(x => x.id === s.id) ? '#e8a2a9' : '#fff',
+                              borderColor: localStaffArray.find(x => x.id === s.id) ? '#db8c95' : 'rgba(223,178,140,0.3)',
+                              color: localStaffArray.find(x => x.id === s.id) ? '#fff' : '#4a3036',
+                              cursor: 'pointer', fontSize: '0.8rem', fontWeight: 700,
+                              display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center',
+                              transition: 'all 0.2s ease'
+                            }}
+                          >
+                            <img src={s.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(s.name || '')}&radius=50`} alt={s.name || ''} style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }} />
+                            {s.name?.split(' ')[0]}
+                          </button>
+                        ))}
                       </div>
                     </div>
+                  ) : (
+                    <>
+                      <JanaSelect
+                        variant="light"
+                        label=""
+                        value={localStaff?.id || ''}
+                        placeholder="Elige una estilista"
+                        onChange={(value) => setLocalStaff(staffArray.find(s => s.id === value))}
+                        options={staffArray.map(s => ({
+                          value: s.id,
+                          label: getStaffDisplayName(s)
+                        }))}
+                        showSearch={true}
+                      />
+
+                      {localStaff && (
+                        <div className="animate-scale-up" style={{
+                          padding: '16px', borderRadius: '16px', border: '1.5px solid rgba(223,178,140,0.25)',
+                          display: 'flex', alignItems: 'center', gap: '12px', background: '#faf8f7',
+                          marginTop: '8px'
+                        }}>
+                          <img src={localStaff.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(localStaff.name || '')}&radius=50`} alt={localStaff.name || ''} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+                          <div>
+                            <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#3d2b30' }}>{localStaff.name || ''}</div>
+                            <div style={{ fontSize: '0.68rem', color: '#a0868c', fontWeight: 600 }}>{String(localStaff.role || 'Especialista').split('|')[0]}</div>
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               )}
