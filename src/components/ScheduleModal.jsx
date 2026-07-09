@@ -14,10 +14,11 @@ import {
   RotateCcw,
   Trash2,
   Search,
-  Flame,
   Zap,
-  Heart,
-  Palette
+  Eye,
+  Droplet,
+  Wind,
+  Paintbrush
 } from 'lucide-react';
 import { normalizeForSearch } from '../utils/stringUtils';
 import { dataService } from '../services/dataService';
@@ -63,11 +64,11 @@ const formatDuration = (minutes) => {
 const getCategoryIcon = (category) => {
   const iconMap = {
     'Cabello': <Scissors size={16} />,
-    'Cejas & Pestañas': <Sparkles size={16} />,
-    'Depilación': <Flame size={16} />,
-    'Peinados': <Palette size={16} />,
-    'Uñas': <Heart size={16} />,
-    'Pestañas': <Heart size={16} />
+    'Cejas & Pestañas': <Eye size={16} />,
+    'Depilación': <Droplet size={16} />,
+    'Peinados': <Wind size={16} />,
+    'Uñas': <Paintbrush size={16} />,
+    'Pestañas': <Eye size={16} />
   };
   return iconMap[category] || <Zap size={16} />;
 };
