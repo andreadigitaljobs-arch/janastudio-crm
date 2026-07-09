@@ -1124,7 +1124,7 @@ const ScheduleModal = ({
                     position: 'fixed',
                     right: '32px',
                     top: '116px',
-                    bottom: '96px',
+                    maxHeight: 'calc(100vh - 212px)',
                     overflowY: 'auto',
                     zIndex: 1000,
                     animation: 'slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
