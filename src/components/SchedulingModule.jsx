@@ -1010,56 +1010,73 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
 
         {/* Date Selector and Buttons on Right */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-          {/* Datepicker styled button */}
-          <div 
-            onClick={() => setViewMode('agenda')}
-            style={{
-              display: 'flex', alignItems: 'center', gap: '10px',
-              padding: '8px 16px', borderRadius: '12px', background: '#fff',
-              border: '1px solid rgba(223, 178, 140, 0.3)', boxShadow: '0 2px 8px rgba(74, 48, 54, 0.03)',
-              cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600', color: '#4a3036'
-            }}
-          >
-            <CalendarIcon size={15} color="#db8c95" />
-            <span style={{ textTransform: 'capitalize' }}>
-              {selectedDate.toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).replace(' de', '').replace(' de', '')}
-            </span>
-            <ChevronDown size={14} color="#a07880" />
-          </div>
+          {/* Simplified Date Navigation Group */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#fff', borderRadius: '12px', border: '1px solid rgba(223, 178, 140, 0.3)', padding: '4px 8px', boxShadow: '0 2px 8px rgba(74, 48, 54, 0.03)' }}>
+            {/* Hoy button */}
+            <button
+              onClick={() => setSelectedDate(new Date())}
+              style={{
+                padding: '6px 12px', borderRadius: '8px', border: 'none', background: 'transparent',
+                cursor: 'pointer', fontSize: '0.78rem', fontWeight: '600', color: '#4a3036',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(212, 160, 154, 0.1)';
+                e.currentTarget.style.color = '#db8c95';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = '#4a3036';
+              }}
+            >
+              Hoy
+            </button>
 
-          {/* Hoy button */}
-          <button
-            onClick={() => setSelectedDate(new Date())}
-            style={{
-              padding: '8px 16px', borderRadius: '12px', background: '#fff',
-              border: '1px solid rgba(223, 178, 140, 0.3)', boxShadow: '0 2px 8px rgba(74, 48, 54, 0.03)',
-              cursor: 'pointer', fontSize: '0.82rem', fontWeight: '600', color: '#4a3036'
-            }}
-          >
-            Hoy
-          </button>
+            <div style={{ width: '1px', height: '20px', background: 'rgba(223, 178, 140, 0.2)' }} />
 
-          {/* Navigator Arrows */}
-          <div style={{ display: 'flex', gap: '4px' }}>
-            <button 
+            {/* Navigator Arrows with Date */}
+            <button
               onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() - 1))}
               style={{
-                width: '34px', height: '34px', borderRadius: '12px', background: '#fff',
-                border: '1px solid rgba(223, 178, 140, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#db8c95', cursor: 'pointer', boxShadow: '0 2px 8px rgba(74, 48, 54, 0.03)'
+                width: '28px', height: '28px', borderRadius: '8px', background: 'transparent',
+                border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: '#db8c95', cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(212, 160, 154, 0.15)';
+                e.currentTarget.style.transform = 'scale(1.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.transform = 'scale(1)';
               }}
             >
-              <ChevronLeft size={16} />
+              <ChevronLeft size={14} />
             </button>
-            <button 
+
+            <span style={{ fontSize: '0.78rem', fontWeight: '600', color: '#4a3036', minWidth: '65px', textAlign: 'center' }}>
+              {selectedDate.toLocaleDateString('es-VE', { day: 'numeric', month: 'short' })}
+            </span>
+
+            <button
               onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + 1))}
               style={{
-                width: '34px', height: '34px', borderRadius: '12px', background: '#fff',
-                border: '1px solid rgba(223, 178, 140, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#db8c95', cursor: 'pointer', boxShadow: '0 2px 8px rgba(74, 48, 54, 0.03)'
+                width: '28px', height: '28px', borderRadius: '8px', background: 'transparent',
+                border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: '#db8c95', cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(212, 160, 154, 0.15)';
+                e.currentTarget.style.transform = 'scale(1.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.transform = 'scale(1)';
               }}
             >
-              <ChevronRight size={16} />
+              <ChevronRight size={14} />
             </button>
           </div>
 
