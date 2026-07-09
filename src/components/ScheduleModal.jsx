@@ -1098,7 +1098,7 @@ const ScheduleModal = ({
                          </div>
                        )}
 
-                       <div className="svc-grid jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', paddingBottom: '8px', flex: 1, minHeight: '200px', overflowY: 'auto', overflowX: 'hidden', alignContent: 'start' }}>
+                       <div className="svc-grid jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '12px', paddingBottom: '8px', flex: 1, minHeight: '200px', overflowY: 'auto', overflowX: 'hidden', alignContent: 'start' }}>
                          {selectedServices.map(svc => {
                            const conflict = getServiceConflict(svc);
                            return (
