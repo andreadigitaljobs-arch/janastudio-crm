@@ -63,7 +63,7 @@ const JanaSelect = ({
           position: 'fixed',
           top: rect.bottom + 8,
           left: rect.left,
-          width: rect.width,
+          width: Math.max(rect.width, 220),
           zIndex: 999999,
           bottom: 'auto',
           maxHeight: `${dropdownMaxH}px`
@@ -74,7 +74,7 @@ const JanaSelect = ({
           position: 'fixed',
           bottom: window.innerHeight - rect.top + 8,
           left: rect.left,
-          width: rect.width,
+          width: Math.max(rect.width, 220),
           zIndex: 999999,
           top: 'auto',
           maxHeight: `${dropdownMaxH}px`
@@ -86,7 +86,7 @@ const JanaSelect = ({
           position: 'fixed',
           top: rect.bottom + 8,
           left: rect.left,
-          width: rect.width,
+          width: Math.max(rect.width, 220),
           zIndex: 999999,
           bottom: 'auto',
           maxHeight: `${restrictedHeight}px`
@@ -229,11 +229,11 @@ const JanaSelect = ({
                 />
               )}
               <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
-                <div style={{ fontWeight: value === opt.value ? '750' : '650', fontSize: '0.82rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <div style={{ fontWeight: value === opt.value ? '750' : '650', fontSize: '0.82rem', lineHeight: '1.25' }}>
                   {opt.label}
                 </div>
                 {opt.subLabel && (
-                  <div style={{ fontSize: '0.66rem', color: '#a0868c', marginTop: '1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: '500' }}>
+                  <div style={{ fontSize: '0.66rem', color: '#a0868c', marginTop: '2px', fontWeight: '500', lineHeight: '1.2' }}>
                     {opt.subLabel}
                   </div>
                 )}
