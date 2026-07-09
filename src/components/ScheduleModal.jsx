@@ -468,7 +468,7 @@ const ScheduleModal = ({
     <AnimatedModal isOpen={isOpen}>
       {(overlayClass, cardClass) => (
         <div className={overlayClass} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(30, 30, 30, 0.4)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 20000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', animation: 'fadeIn 0.3s ease-out' }}>
-          <div className={`${cardClass} jana-scrollbar`} style={{ maxWidth: '720px', width: '100%', maxHeight: 'calc(100vh - 40px)', overflowY: 'auto', borderRadius: '32px', padding: '40px 40px 52px 40px', backgroundColor: '#fff', boxShadow: '0 25px 60px rgba(74,48,54,0.18), 0 8px 24px rgba(0,0,0,0.06)', border: '1px solid rgba(223,178,140,0.15)', display: 'flex', flexDirection: 'column', animation: 'slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)', position: 'relative' }}>
+          <div className={`${cardClass} jana-scrollbar jana-schedule-modal-card`} style={{ maxWidth: '720px', width: '100%', maxHeight: 'calc(100vh - 40px)', overflowY: 'auto', borderRadius: '32px', padding: '40px 40px 52px 40px', backgroundColor: '#fff', boxShadow: '0 25px 60px rgba(74,48,54,0.18), 0 8px 24px rgba(0,0,0,0.06)', border: '1px solid rgba(223,178,140,0.15)', display: 'flex', flexDirection: 'column', animation: 'slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)', position: 'relative' }}>
             <style>{`
               @keyframes fadeIn {
                 from { opacity: 0; }
@@ -499,6 +499,16 @@ const ScheduleModal = ({
               .animate-fade-in-down { animation: fadeInDown 0.3s ease-out; }
               .animate-fade-in-up { animation: fadeInUp 0.3s ease-out; }
               .animate-scale-in { animation: scaleIn 0.3s ease-out; }
+
+              @media (max-width: 640px) {
+                .jana-schedule-modal-card { padding: 24px 18px 28px 18px !important; }
+                .svc-header-row { display: none !important; }
+                .svc-row { flex-wrap: wrap !important; }
+                .svc-row > div:first-child { flex-basis: 100% !important; }
+                .svc-time-col { width: auto !important; flex: 1 !important; align-items: stretch !important; }
+                .svc-time-picker-wrap { margin-top: 6px !important; }
+                .svc-actions-col { flex-direction: row !important; margin-top: 6px !important; }
+              }
             `}</style>
             {showSuccess ? (
               <div className="animate-scale-up" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', textAlign: 'center', flex: 1 }}>
@@ -955,24 +965,23 @@ const ScheduleModal = ({
                         La hora general se aplica a todos los servicios que no hayas personalizado individualmente.
                       </div>
 
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingBottom: '8px', flex: 1, minHeight: '120px', overflowY: 'auto' }} className="jana-scrollbar">
+                      <div className="svc-header-row" style={{ display: 'flex', gap: '10px', padding: '0 2px', flexShrink: 0 }}>
+                        <div style={{ flex: 1, minWidth: 0, fontSize: '0.6rem', fontWeight: 700, color: '#a0868c', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Servicio / Profesional</div>
+                        <div style={{ width: '118px', flexShrink: 0, fontSize: '0.6rem', fontWeight: 700, color: '#a0868c', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Horario</div>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', paddingBottom: '8px', flex: 1, minHeight: '120px', overflowY: 'auto' }} className="jana-scrollbar">
                         {selectedServices.map(svc => {
                           const conflict = getServiceConflict(svc);
                           return (
                             <div key={svc._uid} style={{
-                              padding: '14px', borderRadius: '16px',
+                              padding: '10px 12px', borderRadius: '14px',
                               border: conflict ? '1.5px solid #f59e0b' : '1px solid rgba(223,178,140,0.2)',
                               background: conflict ? '#fffbeb' : '#faf8f7'
                             }}>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#3d2b30' }}>{svc.name}</div>
-                                <button onClick={() => removeServiceRow(svc._uid)} style={{ background: 'none', border: 'none', color: '#c8949c', cursor: 'pointer', display: 'flex' }}>
-                                  <Trash2 size={14} />
-                                </button>
-                              </div>
-                              <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-                                <div style={{ flex: 1, minWidth: '180px' }}>
-                                  <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#a0868c', marginBottom: '6px', textTransform: 'uppercase' }}>Profesional</div>
+                              <div className="svc-row" style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ fontSize: '0.76rem', fontWeight: 700, color: '#3d2b30', marginBottom: '5px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{svc.name}</div>
                                   <JanaSelect
                                     variant="light"
                                     label=""
@@ -986,21 +995,27 @@ const ScheduleModal = ({
                                     showSearch={true}
                                   />
                                   {!svc.staffId && (
-                                    <div style={{ fontSize: '0.62rem', color: '#dc2626', marginTop: '6px', fontWeight: 600 }}>Requerido</div>
+                                    <div style={{ fontSize: '0.6rem', color: '#dc2626', marginTop: '4px', fontWeight: 600 }}>Requerido</div>
                                   )}
                                 </div>
-                                <div style={{ minWidth: '150px' }}>
-                                  <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#a0868c', marginBottom: '4px', textTransform: 'uppercase' }}>Horario</div>
-                                  <JanaTimePicker variant="light" label="" value={svc.time} onChange={(v) => setRowTime(svc._uid, v)} />
+                                <div className="svc-time-col" style={{ width: '118px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                                  <div className="svc-time-picker-wrap" style={{ width: '100%', marginTop: '25px' }}>
+                                    <JanaTimePicker variant="light" label="" value={svc.time} onChange={(v) => setRowTime(svc._uid, v)} />
+                                  </div>
                                 </div>
-                                {svc.customized && (
-                                  <button onClick={() => resetRowToGeneralTime(svc._uid)} title="Usar hora general" style={{ background: 'none', border: 'none', color: '#a0868c', cursor: 'pointer', display: 'flex', padding: '4px', marginTop: '20px' }}>
-                                    <RotateCcw size={14} />
+                                <div className="svc-actions-col" style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '25px', flexShrink: 0 }}>
+                                  <button onClick={() => removeServiceRow(svc._uid)} title="Eliminar" style={{ background: 'none', border: 'none', color: '#c8949c', cursor: 'pointer', display: 'flex', padding: '2px' }}>
+                                    <Trash2 size={14} />
                                   </button>
-                                )}
+                                  {svc.customized && (
+                                    <button onClick={() => resetRowToGeneralTime(svc._uid)} title="Usar hora general" style={{ background: 'none', border: 'none', color: '#a0868c', cursor: 'pointer', display: 'flex', padding: '2px' }}>
+                                      <RotateCcw size={13} />
+                                    </button>
+                                  )}
+                                </div>
                               </div>
                               {conflict && (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.66rem', fontWeight: 650, color: '#d97706', marginTop: '8px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.64rem', fontWeight: 650, color: '#d97706', marginTop: '6px' }}>
                                   <AlertTriangle size={12} style={{ flexShrink: 0 }} />
                                   <span>{CONFLICT_MESSAGES[conflict] || 'Cruce de horario potencial.'}</span>
                                 </div>
