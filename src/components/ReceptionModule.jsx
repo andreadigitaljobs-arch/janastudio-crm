@@ -121,7 +121,11 @@ const ReceptionModule = ({ isMobile }) => {
     const exists = selectedServices.find(s => s.id === serviceId);
     if (exists) { setSelectedServices(selectedServices.filter(s => s.id !== serviceId)); return; }
     const service = services.find(s => s.id === serviceId);
-    if (service) setSelectedServices([...selectedServices, service]);
+    if (service) setSelectedServices([...selectedServices, { ...service, staffId: formData.staffId || null }]);
+  };
+
+  const setServiceStaff = (serviceId, staffId) => {
+    setSelectedServices(selectedServices.map(s => s.id === serviceId ? { ...s, staffId } : s));
   };
 
   const toggleExtra = (extra) => {
@@ -141,40 +145,38 @@ const ReceptionModule = ({ isMobile }) => {
     if (selectedServices.length === 0 && selectedExtras.length === 0 && selectedProducts.length === 0) {
       showToast("Agrega al menos un servicio, extra o producto", "error"); return;
     }
+    if (selectedServices.some(s => !s.staffId)) {
+      showToast("Asigna una profesional a cada servicio de la orden", "error"); return;
+    }
     try {
       setLoading(true);
-      let appointments = [];
-      if (selectedServices.length > 0) {
-        const promises = selectedServices.map(service =>
-          dataService.createAppointment({
-            client_id: selectedClient.id, service_id: service.id,
-            staff_id: formData.staffId, status: statusOverride || formData.status,
-            total_price: service.price, scheduled_at: scheduledAt
-          })
-        );
-        appointments = await Promise.all(promises);
-      } else {
-        const shellApp = await dataService.createAppointment({
-          client_id: selectedClient.id, service_id: null, staff_id: formData.staffId,
-          status: statusOverride || formData.status, total_price: 0, scheduled_at: scheduledAt
-        });
-        appointments = [shellApp];
-      }
-      if (appointments.length > 0) {
-        const mainAppId = appointments[0].id;
-        const extraPromises = selectedExtras.map(extra =>
-          dataService.addExtraToAppointment(mainAppId, extra.id, extra.customPrice ?? extra.price)
-        );
-        const productPromises = selectedProducts.map(prod =>
-          dataService.addProductToAppointment(mainAppId, prod.id, prod.quantity, prod.price)
-        );
-        await Promise.all([...extraPromises, ...productPromises]);
-      }
+
+      const appointment = await dataService.createAppointmentWithServices(
+        {
+          client_id: selectedClient.id,
+          status: statusOverride || formData.status,
+          scheduled_at: scheduledAt
+        },
+        selectedServices.map(s => ({
+          service_id: s.id,
+          staff_id: s.staffId,
+          price_paid: s.price
+        }))
+      );
+
+      const extraPromises = selectedExtras.map(extra =>
+        dataService.addExtraToAppointment(appointment.id, null, extra.id, extra.customPrice ?? extra.price)
+      );
+      const productPromises = selectedProducts.map(prod =>
+        dataService.addProductToAppointment(appointment.id, prod.id, prod.quantity, prod.price)
+      );
+      await Promise.all([...extraPromises, ...productPromises]);
+
       showToast("¡Orden procesada!");
       setSelectedClient(null); setSelectedServices([]); setSelectedExtras([]); setSelectedProducts([]);
       setFormData({ serviceId: '', staffId: '', status: 'En Silla' });
       loadData();
-    } catch (error) { showToast("Error al procesar orden", "error"); }
+    } catch (error) { console.error(error); showToast("Error al procesar orden", "error"); }
     finally { setLoading(false); }
   };
 
@@ -330,11 +332,29 @@ const ReceptionModule = ({ isMobile }) => {
                       <div style={{ fontSize: '0.6rem', color: '#9e9e9e' }}>Servicio</div>
                     </div>
                     <span style={{ color: '#6b6b6b' }}>1</span>
-                    <span style={{ color: '#6b6b6b' }}>{staff.find(st => st.id === formData.staffId)?.name?.split(' ')[0] || '—'}</span>
+                    <select
+                      value={s.staffId || ''}
+                      onChange={(e) => setServiceStaff(s.id, e.target.value)}
+                      style={{
+                        fontSize: '0.64rem', padding: '4px 4px', borderRadius: '6px',
+                        border: s.staffId ? '1px solid rgba(0,0,0,0.1)' : '1.5px solid #dc2626',
+                        background: s.staffId ? '#fff' : '#fef2f2', color: '#2d2d2d', maxWidth: '100%'
+                      }}
+                    >
+                      <option value="">Elegir...</option>
+                      {staff.map(st => (
+                        <option key={st.id} value={st.id}>{st.name}</option>
+                      ))}
+                    </select>
                     <span style={{ color: '#6b6b6b' }}>{s.duration_minutes || 60} min</span>
                     <div style={{ textAlign: 'right', fontWeight: 600, color: '#2d2d2d' }}>Bs. {(s.price * exchangeRate).toFixed(2)}</div>
                   </div>
                 ))}
+                {selectedServices.some(s => !s.staffId) && (
+                  <div style={{ padding: '6px 8px', fontSize: '0.65rem', color: '#dc2626', fontWeight: 600 }}>
+                    ⚠️ Asigna una profesional a cada servicio antes de continuar
+                  </div>
+                )}
                 {selectedProducts.map(p => (
                   <div key={p.id} style={{ display: 'grid', gridTemplateColumns: '2fr 0.5fr 1fr 0.5fr 0.8fr', gap: '6px', padding: '8px', alignItems: 'center', borderBottom: '1px solid rgba(0,0,0,0.03)', fontSize: '0.72rem' }}>
                     <div>
@@ -361,10 +381,12 @@ const ReceptionModule = ({ isMobile }) => {
                     <span style={{ fontWeight: 700, color: '#2d2d2d', fontSize: '0.85rem' }}>Total</span>
                     <span style={{ fontWeight: 700, color: '#c48b9f', fontSize: '1rem' }}>Bs. {(total * exchangeRate).toFixed(2)}</span>
                   </div>
-                  <button onClick={() => handleSubmit('En Silla')} disabled={loading || !selectedClient} style={{
+                  <button onClick={() => handleSubmit('En Silla')} disabled={loading || !selectedClient || selectedServices.some(s => !s.staffId)} style={{
                     width: '100%', marginTop: '10px', padding: '10px', borderRadius: '10px', border: 'none',
                     background: 'linear-gradient(135deg, #d4a09a, #c48b9f, #a0506a)',
-                    color: '#fff', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer',
+                    color: '#fff', fontSize: '0.78rem', fontWeight: 600,
+                    cursor: (loading || !selectedClient || selectedServices.some(s => !s.staffId)) ? 'not-allowed' : 'pointer',
+                    opacity: (loading || !selectedClient || selectedServices.some(s => !s.staffId)) ? 0.6 : 1,
                     boxShadow: '0 3px 10px rgba(196,139,159,0.25)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
                   }}>Continuar a Pago →</button>
