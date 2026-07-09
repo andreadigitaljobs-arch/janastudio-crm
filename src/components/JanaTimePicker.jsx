@@ -137,7 +137,7 @@ const JanaTimePicker = ({ value, onChange, label = "", variant = "dark", placeme
           padding: '0 12px 0 16px',
           transition: 'all 0.2s ease',
           gap: '8px',
-          boxShadow: isOpen ? '0 0 15px rgba(196,139,159,0.1)' : 'none'
+          boxShadow: 'none'
         }}
       >
         <button
