@@ -516,6 +516,12 @@ const ScheduleModal = ({
                 .svc-select-grid { grid-template-columns: 1fr !important; }
               }
 
+              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar { display: block !important; width: 6px !important; }
+              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-track { background: transparent; }
+              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-thumb { background: rgba(219,140,149,0.3); border-radius: 10px; }
+              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(219,140,149,0.5); }
+              .jana-schedule-modal-card .jana-scrollbar { scrollbar-width: thin; scrollbar-color: rgba(219,140,149,0.3) transparent; }
+
               @media (max-width: 640px) {
                 .jana-schedule-modal-overlay { padding: 0 !important; }
                 .jana-schedule-modal-card { width: 100vw !important; height: 100vh !important; max-width: 100vw !important; max-height: 100vh !important; border-radius: 0 !important; }
