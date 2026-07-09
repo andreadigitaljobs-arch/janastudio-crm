@@ -459,7 +459,7 @@ const ScheduleModal = ({
     <AnimatedModal isOpen={isOpen}>
       {(overlayClass, cardClass) => (
         <div className={overlayClass} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(30, 30, 30, 0.4)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 20000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', animation: 'fadeIn 0.3s ease-out' }}>
-          <div className={`${cardClass} jana-scrollbar`} style={{ maxWidth: '720px', width: '100%', maxHeight: 'calc(100vh - 40px)', overflowY: 'auto', borderRadius: '32px', padding: '40px 40px 52px 40px', backgroundColor: '#fff', boxShadow: '0 25px 60px rgba(74,48,54,0.18), 0 8px 24px rgba(0,0,0,0.06)', border: '1px solid rgba(223,178,140,0.15)', display: 'flex', flexDirection: 'column', animation: 'slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
+          <div className={`${cardClass} jana-scrollbar`} style={{ maxWidth: '1000px', width: '100%', maxHeight: 'calc(100vh - 40px)', overflowY: 'auto', borderRadius: '32px', padding: '40px 40px 52px 40px', backgroundColor: '#fff', boxShadow: '0 25px 60px rgba(74,48,54,0.18), 0 8px 24px rgba(0,0,0,0.06)', border: '1px solid rgba(223,178,140,0.15)', display: 'grid', gridTemplateColumns: !isEditMode && selectedServices.length > 0 && currentStep !== 1 ? '1fr 320px' : '1fr', gap: '20px', animation: 'slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
             <style>{`
               @keyframes fadeIn {
                 from { opacity: 0; }
@@ -1127,6 +1127,111 @@ const ScheduleModal = ({
                     </div>
                   )}
                 </div>
+
+                {/* Resumen Flotante Lateral - Modo Creación */}
+                {!isEditMode && selectedServices.length > 0 && currentStep !== 1 && (
+                  <div style={{
+                    display: 'flex', flexDirection: 'column', gap: '12px',
+                    padding: '16px', borderRadius: '16px',
+                    background: 'linear-gradient(135deg, #fffcfb 0%, #fff6f7 100%)',
+                    border: '1.5px solid rgba(219,140,149,0.2)',
+                    height: 'fit-content',
+                    position: 'sticky', top: '16px',
+                    animation: 'fadeInUp 0.4s ease-out 0.2s both'
+                  }}>
+                    {/* Cliente */}
+                    {localClient && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', paddingBottom: '10px', borderBottom: '1px solid rgba(219,140,149,0.2)' }}>
+                        <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', textTransform: 'uppercase', letterSpacing: '0.5px' }}>👤 Cliente</div>
+                        <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#3d2b30' }}>{localClient.name}</div>
+                      </div>
+                    )}
+
+                    {/* Fecha */}
+                    {selectedDate && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', paddingBottom: '10px', borderBottom: '1px solid rgba(219,140,149,0.2)' }}>
+                        <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', textTransform: 'uppercase', letterSpacing: '0.5px' }}>📅 Fecha</div>
+                        <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#3d2b30' }}>
+                          {selectedDate.toLocaleDateString('es-VE', { weekday: 'short', day: 'numeric', month: 'short' })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Servicios Seleccionados */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', textTransform: 'uppercase', letterSpacing: '0.5px' }}>✂️ Servicios ({selectedServices.length})</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {selectedServices.map((svc, idx) => {
+                          const svcData = services.find(s => s.id === svc.service_id);
+                          const staffData = staffArray.find(s => s.id === svc.staffId);
+                          return (
+                            <div key={svc._uid} style={{
+                              padding: '10px 12px', borderRadius: '10px',
+                              background: '#fff', border: '1px solid rgba(219,140,149,0.15)',
+                              animation: `fadeInUp 0.3s ease-out ${0.3 + idx * 0.05}s both`
+                            }}>
+                              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px' }}>
+                                <div style={{ color: '#db8c95', marginTop: '1px', minWidth: '14px', fontSize: '14px' }}>
+                                  {getCategoryIcon(svcData?.category)}
+                                </div>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#3d2b30', lineHeight: '1.2' }}>
+                                    {svc.name}
+                                  </div>
+                                  <div style={{ fontSize: '0.62rem', color: '#a0868c', marginTop: '2px' }}>
+                                    ${Number(svc.price || 0).toFixed(2)}
+                                  </div>
+                                </div>
+                                <button
+                                  onClick={() => removeServiceRow(svc._uid)}
+                                  style={{
+                                    background: 'none', border: 'none', cursor: 'pointer',
+                                    color: '#c8949c', padding: 0, fontSize: '16px', lineHeight: 1, flexShrink: 0
+                                  }}
+                                  title="Eliminar servicio"
+                                >
+                                  ✕
+                                </button>
+                              </div>
+
+                              {/* Detalles por servicio */}
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.65rem', color: '#a0868c', paddingTop: '6px', borderTop: '1px solid rgba(219,140,149,0.15)' }}>
+                                {svc.staffId && staffData && (
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    <span>👩‍💼</span>
+                                    <span>{getStaffDisplayName(staffData)}</span>
+                                  </div>
+                                )}
+                                {svc.time && (
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    <span>⏰</span>
+                                    <span>{getDisplayTime(svc.time)}</span>
+                                  </div>
+                                )}
+                                {!svc.staffId || !svc.time ? (
+                                  <div style={{ color: '#f59e0b', fontWeight: 600 }}>⚠️ Incompleto</div>
+                                ) : null}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Total */}
+                    <div style={{
+                      padding: '10px 12px', borderRadius: '10px',
+                      background: 'rgba(219,140,149,0.1)',
+                      border: '1px solid rgba(219,140,149,0.3)',
+                      textAlign: 'center'
+                    }}>
+                      <div style={{ fontSize: '0.62rem', color: '#a0868c', fontWeight: 600, marginBottom: '3px' }}>TOTAL</div>
+                      <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#db8c95' }}>
+                        ${cartTotal.toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Stepper Buttons Footer */}
                 <div style={{ display: 'flex', gap: '12px', marginTop: '32px', flexShrink: 0, animation: 'fadeInUp 0.4s ease-out 0.3s both', backgroundColor: '#fff', padding: '12px 0 0 0' }}>
