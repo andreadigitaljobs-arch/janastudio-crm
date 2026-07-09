@@ -169,11 +169,12 @@ const JanaTimePicker = ({ value, onChange, label = "", variant = "dark", placeme
           spellCheck="false"
           style={{
             flex: 1,
+            minWidth: 0,
             border: 'none',
             background: 'transparent',
             outline: 'none',
             boxShadow: 'none',
-            fontSize: '14px',
+            fontSize: '13.5px',
             fontWeight: '700',
             color: isLight ? 'var(--text-primary)' : 'white',
             padding: 0,

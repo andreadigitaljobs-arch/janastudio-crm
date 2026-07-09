@@ -1173,7 +1173,7 @@ const ScheduleModal = ({
                                    )}
                                  </div>
                                  {/* Time Select */}
-                                 <div style={{ width: '125px', flexShrink: 0 }}>
+                                 <div style={{ width: '135px', flexShrink: 0 }}>
                                    <JanaTimePicker variant="light" label="" value={svc.time} onChange={(v) => setRowTime(svc._uid, v)} placement="top" />
                                  </div>
                                 </div>
