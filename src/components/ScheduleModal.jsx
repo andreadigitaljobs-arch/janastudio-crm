@@ -966,8 +966,8 @@ const ScheduleModal = ({
                               </div>
 
                               {/* Service Info */}
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#3d2b30', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{svc.name}</div>
+                              <div style={{ flex: 1, minWidth: 0, paddingRight: '8px' }}>
+                                <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#3d2b30', lineHeight: '1.25', wordBreak: 'break-word' }}>{svc.name}</div>
                                 <div style={{ fontSize: '0.65rem', color: '#a0868c', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
                                   <span style={{ color: '#db8c95', fontWeight: 800 }}>${Number(svc.price || 0).toFixed(2)}</span>
                                   <span style={{ color: '#e2d5d7' }}>·</span>
