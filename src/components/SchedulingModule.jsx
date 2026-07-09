@@ -1551,7 +1551,7 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
                   </div>
 
                   {/* Stylists Grid */}
-                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '14px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '14px' }}>
                   {visibleStaff.map(s => {
                     const window = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
                     const metrics = getStaffMetrics(s.id);
