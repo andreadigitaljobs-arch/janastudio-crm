@@ -382,7 +382,7 @@ function App() {
           onRefresh={fetchInitialData}
           onOpenNotifications={() => setIsNotificationsOpen(true)}
         /></div>;
-      case 'scheduling': return <div className="p-container p-container-agenda"><SchedulingModule isMobile={isMobile} rates={effectiveRates} openScheduleModal={tabParams.openScheduleModal} modalKey={tabParams.modalKey} /></div>;
+      case 'scheduling': return <div className="p-container p-container-agenda"><SchedulingModule isMobile={isMobile} isCollapsed={isCollapsed} rates={effectiveRates} openScheduleModal={tabParams.openScheduleModal} modalKey={tabParams.modalKey} /></div>;
       case 'reception': return <div className="p-container"><ReceptionModule isMobile={isMobile} /></div>;
       case 'checkout': return <div className="p-container"><CheckoutPOS isMobile={isMobile} rates={effectiveRates} onOpenSale={() => setIsSaleModalOpen(true)} onNavigate={handleTabChange} /></div>;
       case 'services': return <div className="p-container"><ServicesModule isMobile={isMobile} currency={currency} rates={effectiveRates} /></div>;
@@ -422,7 +422,7 @@ function App() {
       <JanaLoader visible={isAppLoading} />
 
       {!isMobile && (
-        <div style={{ display: isModalOpen || isReceptionModalOpen || hideSidebar ? 'none' : 'block' }}>
+        <div style={{ display: isReceptionModalOpen || hideSidebar ? 'none' : 'block' }}>
           <Sidebar
             activeTab={activeTab}
             setActiveTab={(id) => handleTabChange(id, {})}

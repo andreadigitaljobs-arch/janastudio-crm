@@ -38,6 +38,7 @@ const ScheduleModal = ({
   services = [],
   onSave,
   appointmentToEdit = null,  // ← objeto cita completo para modo edición
+  isReprogramOnly = false,    // ← flag para ir directo a reprogramar fecha/hora
 }) => {
   const isEditMode = !!appointmentToEdit;
   const staffArray = Array.isArray(staff) ? staff : [];
@@ -100,8 +101,13 @@ const ScheduleModal = ({
           setCustomTime(`${hh}:${mm}`);
           setIsCustomMode(true);
         }
-        // Ir directo al paso de resumen para poder ver todo y cambiar lo que quiera
-        setCurrentStep(5);
+        if (isReprogramOnly) {
+          // Si es reprogramar rápido, ir directo a paso 4 (Fecha/Hora)
+          setCurrentStep(4);
+        } else {
+          // Ir directo al paso de resumen para poder ver todo y cambiar lo que quiera
+          setCurrentStep(5);
+        }
       } else {
         setLocalClient(client || null);
         setLocalService(service || null);
@@ -329,14 +335,20 @@ const ScheduleModal = ({
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <div>
                 <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#3d2b30', margin: 0, letterSpacing: '-0.3px' }}>
-                  {isEditMode ? (
+                  {isReprogramOnly ? (
+                    <>Reprogramar <span style={{ color: '#db8c95' }}>Turno</span></>
+                  ) : isEditMode ? (
                     <>Editar <span style={{ color: '#db8c95' }}>Cita</span></>
                   ) : (
                     <>Agendar <span style={{ color: '#db8c95' }}>Turno</span></>
                   )}
                 </h2>
                 <div style={{ display: 'flex', gap: '4px', marginTop: '8px' }}>
-                  {[1, 2, 3, 4, 5].map((s) => (
+                  {isReprogramOnly ? (
+                    <div style={{ fontSize: '0.72rem', color: '#db8c95', fontWeight: 700 }}>
+                      Modo reprogramación rápida para {localClient?.name}
+                    </div>
+                  ) : [1, 2, 3, 4, 5].map((s) => (
                     <div
                       key={s}
                       style={{
@@ -586,7 +598,7 @@ const ScheduleModal = ({
 
             {/* Stepper Buttons Footer */}
             <div style={{ display: 'flex', gap: '12px', marginTop: '32px', flexShrink: 0 }}>
-              {currentStep > 1 && (
+              {currentStep > 1 && !isReprogramOnly && (
                 <button
                   onClick={() => setCurrentStep(prev => prev - 1)}
                   style={{
@@ -612,7 +624,7 @@ const ScheduleModal = ({
                 </button>
               )}
 
-              {currentStep < 5 ? (
+              {currentStep < 5 && !isReprogramOnly ? (
                 <button
                   disabled={!isStepValid(currentStep)}
                   onClick={() => setCurrentStep(prev => prev + 1)}
@@ -668,7 +680,7 @@ const ScheduleModal = ({
                     e.currentTarget.style.boxShadow = '0 10px 28px rgba(219,140,149,0.4)';
                   }}
                 >
-                  <Check size={20} strokeWidth={3} /> {isEditMode ? 'Guardar Cambios' : 'Confirmar Turno'}
+                  <Check size={20} strokeWidth={3} /> {isReprogramOnly ? 'Reprogramar Turno' : isEditMode ? 'Guardar Cambios' : 'Confirmar Turno'}
                 </button>
               )}
             </div>
