@@ -1484,13 +1484,16 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
               </div>
               )}
               </div>
-              
+            </div>
+
+            {/* Column 2 - Especialistas */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', minWidth: 0 }}>
               {/* Rendimiento Grid (Sin tabs) */}
               <div className="agenda-glass-card" style={{ padding: '20px', overflow: 'visible' }}>
 
                 {/* Tab: Rendimiento - Always Shown */}
                 <div>
-                  
+
                   {/* Search Bar for Specialists */}
                   <div style={{ position: 'relative', marginBottom: '16px' }}>
                     <Search size={14} color="#a07880" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
@@ -1715,8 +1718,8 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
               </div>
             </div>
 
-            {/* Right Column - Calendario */}
-            <div style={{ width: isMobile ? '100%' : '300px', display: 'flex', flexDirection: 'column', gap: '16px', flexShrink: 0 }}>
+            {/* Column 3 - Calendario */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', minWidth: 0 }}>
 
               {/* Mini Calendar */}
               <div className="agenda-glass-card" style={{ padding: '20px', overflow: 'visible' }}>
