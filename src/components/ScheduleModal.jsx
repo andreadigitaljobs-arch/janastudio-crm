@@ -19,7 +19,7 @@ import {
   Zap,
   Heart,
   Palette,
-  Nail
+  Hammer
 } from 'lucide-react';
 import { normalizeForSearch } from '../utils/stringUtils';
 import { dataService } from '../services/dataService';
@@ -59,7 +59,7 @@ const getCategoryIcon = (category) => {
     'Cejas & Pestañas': <Sparkles size={16} />,
     'Depilación': <Flame size={16} />,
     'Peinados': <Palette size={16} />,
-    'Uñas': <Nail size={16} />,
+    'Uñas': <Hammer size={16} />,
     'Pestañas': <Heart size={16} />
   };
   return iconMap[category] || <Zap size={16} />;
