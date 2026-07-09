@@ -2266,6 +2266,37 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
 {/* RENDER MODE: AGENDA DETALLADA */}
 {viewMode === 'agenda' && (
         <div className="agenda-main-container">
+          <button
+            onClick={() => setViewMode('operation')}
+            style={{
+              marginBottom: '16px',
+              padding: '8px 14px',
+              borderRadius: '10px',
+              border: '1px solid rgba(223, 178, 140, 0.3)',
+              background: '#fff',
+              color: '#a07880',
+              fontSize: '0.78rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#db8c95';
+              e.currentTarget.style.transform = 'translateX(-4px)';
+              e.currentTarget.style.borderColor = 'rgba(219, 140, 149, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = '#a07880';
+              e.currentTarget.style.transform = 'translateX(0)';
+              e.currentTarget.style.borderColor = 'rgba(223, 178, 140, 0.3)';
+            }}
+          >
+            ← Volver a Operación
+          </button>
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <CalendarComponent selectedDate={selectedDate} onSelectDate={setSelectedDate} />
 
