@@ -1224,12 +1224,15 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {dayApps.slice(0, 5).map((app, idx) => {
                   const start = new Date(app.scheduled_at || app.created_at);
+                  const now = new Date();
                   const startHour = start.getHours().toString().padStart(2, '0');
                   const startMin = start.getMinutes().toString().padStart(2, '0');
                   const staffName = staff.find(s => s.id === app.staff_id)?.name || 'Especialista';
                   const duration = getAppointmentDuration(app);
-                  const endHour = new Date(start.getTime() + duration * 60000).getHours().toString().padStart(2, '0');
-                  const endMin = new Date(start.getTime() + duration * 60000).getMinutes().toString().padStart(2, '0');
+
+                  // Detectar si está retrasada (más de 15 minutos después de la hora de inicio)
+                  const minutosRetraso = Math.floor((now.getTime() - start.getTime()) / 60000);
+                  const isRetrasada = minutosRetraso > 15 && app.status !== 'Completado' && app.status !== 'Cancelada';
 
                   return (
                     <div
@@ -1238,31 +1241,50 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
                         display: 'flex',
                         gap: '12px',
                         padding: '12px',
-                        background: '#faf3f2',
+                        background: isRetrasada ? 'rgba(239, 68, 68, 0.08)' : '#faf3f2',
                         borderRadius: '10px',
-                        border: '1px solid rgba(223, 178, 140, 0.15)',
+                        border: isRetrasada ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(223, 178, 140, 0.15)',
                         transition: 'all 0.2s ease',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        position: 'relative'
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = '#fff';
-                        e.currentTarget.style.borderColor = 'rgba(219, 140, 149, 0.3)';
+                        e.currentTarget.style.background = isRetrasada ? 'rgba(239, 68, 68, 0.12)' : '#fff';
+                        e.currentTarget.style.borderColor = isRetrasada ? 'rgba(239, 68, 68, 0.5)' : 'rgba(219, 140, 149, 0.3)';
                         e.currentTarget.style.transform = 'translateX(4px)';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.background = '#faf3f2';
-                        e.currentTarget.style.borderColor = 'rgba(223, 178, 140, 0.15)';
+                        e.currentTarget.style.background = isRetrasada ? 'rgba(239, 68, 68, 0.08)' : '#faf3f2';
+                        e.currentTarget.style.borderColor = isRetrasada ? 'rgba(239, 68, 68, 0.3)' : 'rgba(223, 178, 140, 0.15)';
                         e.currentTarget.style.transform = 'translateX(0)';
                       }}
                     >
+                      {/* Indicador Retrasada */}
+                      {isRetrasada && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '-8px',
+                          left: '12px',
+                          background: '#dc2626',
+                          color: '#fff',
+                          fontSize: '0.58rem',
+                          fontWeight: 800,
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          animation: 'glowPulse 1.5s ease-in-out infinite'
+                        }}>
+                          ⚠️ RETRASADA +{minutosRetraso}min
+                        </div>
+                      )}
+
                       {/* Hora */}
-                      <div style={{ minWidth: '50px', fontWeight: 800, color: '#db8c95', fontSize: '0.78rem' }}>
+                      <div style={{ minWidth: '50px', fontWeight: 800, color: isRetrasada ? '#dc2626' : '#db8c95', fontSize: '0.78rem' }}>
                         {startHour}:{startMin}
                       </div>
 
                       {/* Info */}
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#4a3036', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div style={{ flex: 1, minWidth: 0, paddingTop: isRetrasada ? '6px' : '0px' }}>
+                        <div style={{ fontSize: '0.78rem', fontWeight: 700, color: isRetrasada ? '#dc2626' : '#4a3036', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {app.clients?.name || 'Cliente'} → {app.services?.name || 'Servicio'}
                         </div>
                         <div style={{ fontSize: '0.68rem', color: '#a07880', fontWeight: 600, marginTop: '2px' }}>
@@ -1277,10 +1299,10 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
                           fontWeight: 700,
                           padding: '3px 6px',
                           borderRadius: '6px',
-                          background: app.status === 'Completado' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(245, 158, 11, 0.1)',
-                          color: app.status === 'Completado' ? '#16a34a' : '#d97706'
+                          background: isRetrasada ? 'rgba(239, 68, 68, 0.2)' : (app.status === 'Completado' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(245, 158, 11, 0.1)'),
+                          color: isRetrasada ? '#dc2626' : (app.status === 'Completado' ? '#16a34a' : '#d97706')
                         }}>
-                          {app.status === 'Completado' ? '✓' : '○'}
+                          {isRetrasada ? '⚠️' : (app.status === 'Completado' ? '✓' : '○')}
                         </span>
                       </div>
                     </div>
@@ -1940,8 +1962,17 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
                   </div>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-
-
+                    {/* Especialistas disponibles aquí */}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+        </div>
+      </div>
+    </div>
+      )}
+    </AnimatedModal>
 
       {/* DRAWER LATERAL DESLIZANTE DE TRABAJADORA (Fase 2 Visual) */}
       {/* FULL-SCREEN STAFF DASHBOARD VIEW */}
