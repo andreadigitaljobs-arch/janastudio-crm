@@ -953,7 +953,7 @@ const ScheduleModal = ({
                         La hora general se aplica a todos los servicios que no hayas personalizado individualmente.
                       </div>
 
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: 'calc(75vh - 250px)', overflowY: 'auto', paddingRight: '2px', paddingBottom: '20px' }} className="jana-scrollbar">
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: 'calc(75vh - 120px)', overflowY: 'auto', paddingRight: '2px', paddingBottom: '40px' }} className="jana-scrollbar">
                         {selectedServices.map(svc => {
                           const conflict = getServiceConflict(svc);
                           return (
