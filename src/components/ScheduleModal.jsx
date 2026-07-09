@@ -564,26 +564,30 @@ const ScheduleModal = ({
             ) : (
               <>
                 {/* Header with Step indicator (sticky, full-width strip) */}
-                <div style={{ flexShrink: 0, position: 'sticky', top: 0, zIndex: 10, background: 'rgba(252,248,247,0.92)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(223,178,140,0.15)' }}>
-                  <div className="jana-schedule-header-inner" style={{ maxWidth: '760px', margin: '0 auto', padding: '20px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{
+                  flexShrink: 0, position: 'sticky', top: 0, zIndex: 10,
+                  background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
+                  boxShadow: '0 4px 20px rgba(219,140,149,0.35)'
+                }}>
+                  <div className="jana-schedule-header-inner" style={{ maxWidth: '760px', margin: '0 auto', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div style={{ flex: 1 }}>
-                      <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#3d2b30', margin: 0, letterSpacing: '-0.3px' }}>
+                      <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fff', margin: 0, letterSpacing: '-0.3px', textShadow: '0 2px 8px rgba(74,30,38,0.15)' }}>
                         {isReprogramOnly ? (
-                          <>Reprogramar <span style={{ color: '#db8c95' }}>Turno</span></>
+                          <>Reprogramar <span style={{ opacity: 0.85 }}>Turno</span></>
                         ) : isEditMode ? (
-                          <>Editar <span style={{ color: '#db8c95' }}>Servicio</span></>
+                          <>Editar <span style={{ opacity: 0.85 }}>Servicio</span></>
                         ) : (
-                          <>Agendar <span style={{ color: '#db8c95' }}>Orden</span></>
+                          <>Agendar <span style={{ opacity: 0.85 }}>Orden</span></>
                         )}
                       </h2>
                       {!isReprogramOnly && (
-                        <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#db8c95', backgroundColor: '#fff0f2', padding: '4px 10px', borderRadius: '8px', display: 'inline-block', marginTop: '8px' }}>
+                        <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#db8c95', backgroundColor: '#fff', padding: '4px 12px', borderRadius: '8px', display: 'inline-block', marginTop: '10px', letterSpacing: '0.3px' }}>
                           Paso {currentStep} de {totalSteps}
                         </div>
                       )}
                       <div style={{ display: 'flex', gap: '4px', marginTop: '10px' }}>
                         {isReprogramOnly ? (
-                          <div style={{ fontSize: '0.72rem', color: '#db8c95', fontWeight: 700 }}>
+                          <div style={{ fontSize: '0.72rem', color: '#fff', fontWeight: 700 }}>
                             Modo reprogramación rápida para {localClient?.name}
                           </div>
                         ) : [...Array(totalSteps)].map((_, i) => (
@@ -593,16 +597,16 @@ const ScheduleModal = ({
                               width: '32px',
                               height: '6px',
                               borderRadius: '3px',
-                              backgroundColor: (i + 1) <= currentStep ? '#db8c95' : '#f3e8e9',
+                              backgroundColor: (i + 1) <= currentStep ? '#fff' : 'rgba(255,255,255,0.35)',
                               transition: 'background-color 0.3s ease'
                             }}
                           />
                         ))}
                       </div>
                     </div>
-                    <button onClick={onClose} style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(74,48,54,0.05)', border: 'none', color: '#8c767b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', transition: 'all 0.2s', flexShrink: 0 }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(219,140,149,0.12)'; e.currentTarget.style.color = '#db8c95'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(74,48,54,0.05)'; e.currentTarget.style.color = '#8c767b'; }}
+                    <button onClick={onClose} style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255,255,255,0.2)', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', transition: 'all 0.2s', flexShrink: 0 }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.35)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.2)'; }}
                     >✕</button>
                   </div>
                 </div>
