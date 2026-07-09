@@ -717,9 +717,11 @@ const ScheduleModal = ({
                         placeholder="Elige una estilista"
                         onChange={(value) => setLocalStaff(staffArray.find(s => s.id === value))}
                         options={staffArray.filter(s => getRoleKind(s.role) !== 'admin').map(s => ({
-                          value: s.id,
-                          label: getStaffDisplayName(s)
-                        }))}
+                                  value: s.id,
+                                  label: getStaffDisplayName(s),
+                                  image: s.image_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100',
+                                  subLabel: getRoleName(s.role)
+                                }))}
                         showSearch={true}
                       />
                       {localStaff && (
@@ -1085,9 +1087,11 @@ const ScheduleModal = ({
                                placeholder="Asignar a todos..."
                                onChange={(value) => applyStaffToAll(value)}
                                options={staffArray.filter(s => getRoleKind(s.role) !== 'admin').map(s => ({
-                                 value: s.id,
-                                 label: getStaffDisplayName(s)
-                               }))}
+                                  value: s.id,
+                                  label: getStaffDisplayName(s),
+                                  image: s.image_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100',
+                                  subLabel: getRoleName(s.role)
+                                }))}
                                showSearch={true}
                              />
                            </div>
