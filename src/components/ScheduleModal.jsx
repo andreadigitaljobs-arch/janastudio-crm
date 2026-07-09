@@ -790,7 +790,7 @@ const ScheduleModal = ({
                   {!isEditMode && currentStep === 2 && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out', position: 'relative', flex: 1, minHeight: 0 }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1, minHeight: 0 }}>
-                      <div style={{ textAlign: 'center', marginBottom: '8px' }}>
+                      <div style={{ textAlign: 'center', marginBottom: '8px', flexShrink: 0 }}>
                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
                           <Scissors size={24} />
                         </div>
@@ -798,7 +798,7 @@ const ScheduleModal = ({
                         <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Puede elegir uno o varios — cada uno con su propia profesional.</p>
                       </div>
 
-                      <div style={{ position: 'relative' }}>
+                      <div style={{ position: 'relative', flexShrink: 0 }}>
                         <Search size={15} color="#a0868c" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
                         <input
                           type="text"
@@ -820,7 +820,7 @@ const ScheduleModal = ({
                       </div>
 
                       {serviceCategories.length > 0 && (
-                        <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '2px', animation: 'fadeInUp 0.4s ease-out 0.15s both' }} className="jana-scrollbar">
+                        <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '2px', flexShrink: 0, animation: 'fadeInUp 0.4s ease-out 0.15s both' }} className="jana-scrollbar">
                           <button
                             onClick={() => setServiceCategoryFilter('Todas')}
                             style={{
@@ -927,7 +927,7 @@ const ScheduleModal = ({
 
                   {!isEditMode && currentStep === 3 && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out', flex: 1, minHeight: 0 }}>
-                      <div style={{ textAlign: 'center', marginBottom: '4px' }}>
+                      <div style={{ textAlign: 'center', marginBottom: '4px', flexShrink: 0 }}>
                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
                           <Sparkles size={24} />
                         </div>
@@ -935,7 +935,7 @@ const ScheduleModal = ({
                         <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Todo el mismo día. Pueden atenderla a la vez o en momentos distintos.</p>
                       </div>
 
-                      <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-end' }}>
+                      <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-end', flexShrink: 0 }}>
                         <div style={{ flex: 1 }}>
                           <label style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', display: 'block', marginBottom: '6px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Fecha</label>
                           <JanaDatePicker
@@ -950,7 +950,7 @@ const ScheduleModal = ({
                           <JanaTimePicker variant="light" label="" value={generalTime} onChange={applyGeneralTime} />
                         </div>
                       </div>
-                      <div style={{ fontSize: '0.66rem', color: '#a0868c', marginTop: '-8px' }}>
+                      <div style={{ fontSize: '0.66rem', color: '#a0868c', marginTop: '-8px', flexShrink: 0 }}>
                         La hora general se aplica a todos los servicios que no hayas personalizado individualmente.
                       </div>
 
