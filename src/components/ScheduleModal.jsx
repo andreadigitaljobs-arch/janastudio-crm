@@ -474,8 +474,8 @@ const ScheduleModal = ({
   return createPortal(
     <AnimatedModal isOpen={isOpen}>
       {(overlayClass, cardClass) => (
-        <div className={overlayClass} style={{ position: 'fixed', inset: 0, backgroundColor: '#fcf8f7', zIndex: 20000, display: 'flex', animation: 'fadeIn 0.25s ease-out' }}>
-          <div className={`${cardClass} jana-schedule-modal-card`} style={{ width: '100%', height: '100%', backgroundColor: '#fcf8f7', display: 'flex', flexDirection: 'column', animation: 'slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)', position: 'relative' }}>
+        <div className={`${overlayClass} jana-schedule-modal-overlay`} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(30, 30, 30, 0.4)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 20000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '28px', animation: 'fadeIn 0.25s ease-out' }}>
+          <div className={`${cardClass} jana-schedule-modal-card`} style={{ width: '92vw', maxWidth: '1100px', height: '90vh', maxHeight: '860px', backgroundColor: '#fcf8f7', borderRadius: '32px', boxShadow: '0 25px 60px rgba(74,48,54,0.25), 0 8px 24px rgba(0,0,0,0.08)', overflow: 'hidden', display: 'flex', flexDirection: 'column', animation: 'slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)', position: 'relative' }}>
             <style>{`
               @keyframes fadeIn {
                 from { opacity: 0; }
@@ -512,6 +512,8 @@ const ScheduleModal = ({
               }
 
               @media (max-width: 640px) {
+                .jana-schedule-modal-overlay { padding: 0 !important; }
+                .jana-schedule-modal-card { width: 100vw !important; height: 100vh !important; max-width: 100vw !important; max-height: 100vh !important; border-radius: 0 !important; }
                 .jana-schedule-header-inner, .jana-schedule-content-inner, .jana-schedule-footer-inner { padding-left: 18px !important; padding-right: 18px !important; }
                 .svc-row { flex-wrap: wrap !important; }
                 .svc-row > div:first-child { flex-basis: 100% !important; }
@@ -1121,10 +1123,10 @@ const ScheduleModal = ({
                     borderRadius: '20px', width: '340px',
                     background: '#fff',
                     boxShadow: '0 25px 60px rgba(74,48,54,0.18)',
-                    position: 'fixed',
-                    right: '32px',
+                    position: 'absolute',
+                    right: '24px',
                     top: '116px',
-                    maxHeight: 'calc(100vh - 212px)',
+                    maxHeight: 'calc(100% - 212px)',
                     overflowY: 'auto',
                     zIndex: 1000,
                     animation: 'slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
