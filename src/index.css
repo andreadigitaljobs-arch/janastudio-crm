@@ -45,6 +45,8 @@
 
   --transition-fast: 0.2s ease;
   --transition-slow: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-spring: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 * {
@@ -2032,12 +2034,32 @@ input:focus { outline: none; }
   align-items: center;
   justify-content: center;
   gap: 6px;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: 0 2px 4px rgba(74, 48, 54, 0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.drawer-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.4s, height 0.4s;
+}
+
+.drawer-btn:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .drawer-btn:active {
-  transform: scale(0.96);
+  transform: scale(0.94);
 }
 
 /* Botón Editar - Elegante con Borde */
@@ -2050,6 +2072,7 @@ input:focus { outline: none; }
   background: rgba(223, 178, 140, 0.08);
   border-color: #db8c95;
   box-shadow: 0 4px 12px rgba(223, 178, 140, 0.18);
+  transform: translateY(-2px) scale(1.02);
 }
 
 /* Botón Completar - Verde Lleno Premium */
@@ -2062,7 +2085,7 @@ input:focus { outline: none; }
 .drawer-btn-complete:hover {
   background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
   box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
-  transform: translateY(-1px);
+  transform: translateY(-3px) scale(1.03);
 }
 
 /* Botón Eliminar - Rojo de Borde */
@@ -2075,7 +2098,7 @@ input:focus { outline: none; }
   background: rgba(239, 68, 68, 0.08);
   border-color: #dc2626;
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.18);
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.02);
 }
 
 /* Botón Cancelar - Rosa/Rojo suave */
@@ -2088,7 +2111,7 @@ input:focus { outline: none; }
   background: rgba(220, 38, 38, 0.08);
   border-color: #dc2626;
   box-shadow: 0 4px 12px rgba(220, 38, 38, 0.18);
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.02);
 }
 
 /* Botón No-show - Naranja elegante */
@@ -2101,7 +2124,7 @@ input:focus { outline: none; }
   background: rgba(245, 158, 11, 0.08);
   border-color: #d97706;
   box-shadow: 0 4px 12px rgba(245, 158, 11, 0.18);
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.02);
 }
 
 /* Botón Reprogramar - Degradado Púrpura/Rosa Premium */
@@ -2114,7 +2137,7 @@ input:focus { outline: none; }
 .drawer-btn-reprogram:hover {
   background: linear-gradient(135deg, #c99482 0%, #ba82a0 100%);
   box-shadow: 0 6px 18px rgba(160, 80, 106, 0.35);
-  transform: translateY(-1px);
+  transform: translateY(-3px) scale(1.03);
 }
 
 /* Botón Unificado Eliminar/Cancelar - Peligro */
@@ -2277,5 +2300,373 @@ input:focus { outline: none; }
     opacity: 0;
     transform: translateY(30px);
   }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SCHEDULING MODULE — Elegant Animations
+   ═══════════════════════════════════════════════════════════ */
+
+/* Card Animations */
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes cardExit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+}
+
+@keyframes appointmentSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Hover Effects */
+@keyframes buttonHoverPulse {
+  0%, 100% { box-shadow: 0 2px 8px rgba(74, 48, 54, 0.08); }
+  50% { box-shadow: 0 8px 20px rgba(212, 160, 154, 0.2); }
+}
+
+@keyframes cardHoverLift {
+  from {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(74, 48, 54, 0.04);
+  }
+  to {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(212, 160, 154, 0.12);
+  }
+}
+
+/* Loading & Shimmer */
+@keyframes shimmerLoad {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(212, 160, 154, 0.7);
+  }
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 0 8px rgba(212, 160, 154, 0);
+  }
+}
+
+/* Time Slot Animations */
+@keyframes timeSlotFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dateTransition {
+  0% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes datePrevTransition {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Microinteraction Animations */
+@keyframes buttonClick {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.96);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes checkmarkBounce {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUpConfirm {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+/* Glow Effects */
+@keyframes glowPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 0px rgba(212, 160, 154, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 6px rgba(212, 160, 154, 0.4));
+  }
+}
+
+@keyframes highlightGlow {
+  from {
+    box-shadow: 0 0 0 0 rgba(212, 160, 154, 0.4);
+  }
+  to {
+    box-shadow: 0 0 0 8px rgba(212, 160, 154, 0);
+  }
+}
+
+/* Input & Control Animations */
+@keyframes inputFocus {
+  from {
+    box-shadow: 0 0 0 0 rgba(212, 160, 154, 0.3);
+  }
+  to {
+    box-shadow: 0 0 0 3px rgba(212, 160, 154, 0.15);
+  }
+}
+
+@keyframes labelFloat {
+  from {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(-24px);
+    opacity: 1;
+  }
+}
+
+/* Grid & List Animations */
+@keyframes staggerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes expandHeight {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 500px;
+    opacity: 1;
+  }
+}
+
+@keyframes collapseHeight {
+  from {
+    max-height: 500px;
+    opacity: 1;
+  }
+  to {
+    max-height: 0;
+    opacity: 0;
+  }
+}
+
+/* Rotation & Transform */
+@keyframes iconRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(180deg);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Utility Classes for Animations */
+.animate-card-enter {
+  animation: cardEnter 0.3s var(--transition-smooth) forwards;
+}
+
+.animate-card-exit {
+  animation: cardExit 0.25s var(--transition-smooth) forwards;
+}
+
+.animate-appointment-slide {
+  animation: appointmentSlideIn 0.32s var(--transition-smooth) forwards;
+}
+
+.animate-time-slot {
+  animation: timeSlotFadeIn 0.2s ease forwards;
+}
+
+.animate-date-enter {
+  animation: dateTransition 0.3s var(--transition-smooth) forwards;
+}
+
+.animate-date-prev {
+  animation: datePrevTransition 0.3s var(--transition-smooth) forwards;
+}
+
+.animate-button-click {
+  animation: buttonClick 0.15s ease;
+}
+
+.animate-checkmark {
+  animation: checkmarkBounce 0.4s var(--transition-spring) forwards;
+}
+
+.animate-error-shake {
+  animation: errorShake 0.4s ease;
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 1.5s ease-in-out infinite;
+}
+
+.animate-input-focus {
+  animation: inputFocus 0.3s ease forwards;
+}
+
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(212, 160, 154, 0.12);
+}
+
+.hover-scale {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 20px rgba(212, 160, 154, 0.15);
+}
+
+.hover-glow {
+  transition: box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 12px rgba(212, 160, 154, 0.3);
+  color: #a0506a;
+}
+
+/* Global Input Animations */
+input, textarea, select {
+  transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+input:focus, textarea:focus, select:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(212, 160, 154, 0.15) !important;
+}
+
+/* Smooth transitions for all interactive elements */
+button, [role="button"], a[href] {
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Loading state animation */
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* Card / List Item Animations */
+.list-item {
+  animation: staggerFadeIn 0.3s ease forwards;
+}
+
+.card {
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(212, 160, 154, 0.15);
+}
+
+/* Status Badge Animations */
+.status-badge {
+  transition: all 0.2s ease;
+}
+
+.status-badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(74, 48, 54, 0.15);
+}
+
+/* Smooth color transitions */
+* {
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 

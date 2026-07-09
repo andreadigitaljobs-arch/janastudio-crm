@@ -129,16 +129,46 @@ const CalendarComponent = ({ selectedDate, onSelectDate }) => {
           {monthName}
         </h3>
         <div style={{ display: 'flex', gap: '6px' }}>
-          <button onClick={handlePrev} style={{
-            width: '30px', height: '30px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.3)',
-            background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: '#c97282', transition: 'all 0.2s'
-          }} className="btn-hover-scale"><ChevronLeft size={15} /></button>
-          <button onClick={handleNext} style={{
-            width: '30px', height: '30px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.3)',
-            background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: '#c97282', transition: 'all 0.2s'
-          }} className="btn-hover-scale"><ChevronRight size={15} /></button>
+          <button
+            onClick={handlePrev}
+            style={{
+              width: '30px', height: '30px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.3)',
+              background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: '#c97282', transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.1) translateX(-3px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(212, 160, 154, 0.15)';
+              e.currentTarget.style.borderColor = 'rgba(212, 160, 154, 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1) translateX(0)';
+              e.currentTarget.style.boxShadow = 'none';
+              e.currentTarget.style.borderColor = 'rgba(223,178,140,0.3)';
+            }}
+          >
+            <ChevronLeft size={15} />
+          </button>
+          <button
+            onClick={handleNext}
+            style={{
+              width: '30px', height: '30px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.3)',
+              background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: '#c97282', transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.1) translateX(3px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(212, 160, 154, 0.15)';
+              e.currentTarget.style.borderColor = 'rgba(212, 160, 154, 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1) translateX(0)';
+              e.currentTarget.style.boxShadow = 'none';
+              e.currentTarget.style.borderColor = 'rgba(223,178,140,0.3)';
+            }}
+          >
+            <ChevronRight size={15} />
+          </button>
         </div>
       </div>
 
@@ -179,10 +209,24 @@ const CalendarComponent = ({ selectedDate, onSelectDate }) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 margin: '0 auto',
-                transition: 'all 0.2s ease',
-                opacity: d.currentMonth ? 1 : 0.3
+                transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                opacity: d.currentMonth ? 1 : 0.3,
+                boxShadow: selected ? '0 4px 12px rgba(212, 160, 154, 0.2)' : 'none'
               }}
-              className={d.currentMonth ? "btn-hover-scale" : ""}
+              onMouseEnter={(e) => {
+                if (d.currentMonth && !selected) {
+                  e.currentTarget.style.transform = 'scale(1.1)';
+                  e.currentTarget.style.background = 'rgba(212, 160, 154, 0.1)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(212, 160, 154, 0.15)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (d.currentMonth && !selected) {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.boxShadow = 'none';
+                }
+              }}
             >{d.day}</button>
           );
         })}
@@ -436,10 +480,19 @@ const StaffDayColumn = ({
                 position: 'absolute', top: `${top}px`, left: '3px', right: '3px', height: `${height}px`,
                 background: '#fff', borderRadius: '8px', borderLeft: `3px solid ${colors.leftBorder}`,
                 boxShadow: '0 2px 6px rgba(167,102,115,0.1)', padding: '3px 6px', cursor: 'pointer',
-                overflow: 'hidden', zIndex: 2, transition: 'transform 0.15s ease'
+                overflow: 'hidden', zIndex: 2, transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                animation: `appointmentSlideIn 0.35s ease forwards`
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.zIndex = '3'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.zIndex = '2'; }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.05) translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 8px 16px rgba(167,102,115,0.2)';
+                e.currentTarget.style.zIndex = '3';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1) translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 6px rgba(167,102,115,0.1)';
+                e.currentTarget.style.zIndex = '2';
+              }}
             >
               <div style={{ fontSize: '0.66rem', fontWeight: 700, color: '#4a3036', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '2px' }}>
                 {isMultipleApp && <span>🔗</span>}
@@ -593,16 +646,6 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
     loadData();
   }, []);
 
-  useEffect(() => {
-    if (selectedDetailedApp) {
-      window.dispatchEvent(new CustomEvent('jana:hide-sidebar'));
-    } else {
-      window.dispatchEvent(new CustomEvent('jana:show-sidebar'));
-    }
-    return () => {
-      window.dispatchEvent(new CustomEvent('jana:show-sidebar'));
-    };
-  }, [selectedDetailedApp]);
 
   useEffect(() => {
     if (selectedStaffDrawer) {
@@ -1043,14 +1086,23 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
           </button>
 
           {/* + Nueva cita */}
-          <button 
+          <button
             onClick={() => { setScheduleModalPreset(null); setShowScheduleModal(true); }}
             style={{
               padding: '8px 18px', borderRadius: '12px', border: 'none',
               background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
               color: '#fff', fontSize: '0.82rem', fontWeight: 600,
               cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
-              boxShadow: '0 4px 15px rgba(219,140,149,0.25)'
+              boxShadow: '0 4px 15px rgba(219,140,149,0.25)',
+              transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-3px) scale(1.03)';
+              e.currentTarget.style.boxShadow = '0 12px 28px rgba(219,140,149,0.35)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0) scale(1)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(219,140,149,0.25)';
             }}
           >
             <Plus size={15} /> Nueva cita
@@ -1078,22 +1130,23 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
               { label: 'Ocupación del equipo', value: `${occupancyPct}%`, sub: 'Meta diaria: 80%', subColor: '#8c767b', icon: <BarChart3 size={18} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.12)', progress: occupancyPct, color: '#db8c95' },
               { label: 'Especialistas disponibles', value: staffByStatus.libres.length, sub: 'Ahora mismo', subColor: '#16a34a', icon: <Users size={18} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.12)', color: '#d97706' }
             ].map((kpi, idx) => (
-              <div 
-                key={idx} 
-                className="agenda-glass-card" 
-                style={{ 
-                  padding: '20px', 
-                  display: 'flex', 
-                  alignItems: 'flex-start', 
+              <div
+                key={idx}
+                className="agenda-glass-card animate-card-enter"
+                style={{
+                  padding: '20px',
+                  display: 'flex',
+                  alignItems: 'flex-start',
                   gap: '14px',
                   background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.6) 100%)',
                   backdropFilter: 'blur(20px)',
                   border: '1px solid rgba(255, 255, 255, 0.8)',
                   boxShadow: '0 8px 32px rgba(74, 48, 54, 0.035)',
                   borderRadius: '20px',
-                  transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                  transition: 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease',
+                  animation: `cardEnter 0.4s var(--transition-smooth) ${idx * 0.1}s forwards`
                 }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 36px rgba(74, 48, 54, 0.06)'; }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 36px rgba(74, 48, 54, 0.1)'; }}
                 onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(74, 48, 54, 0.035)'; }}
               >
                 <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: kpi.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(219, 140, 149, 0.08)' }}>{kpi.icon}</div>
@@ -1136,8 +1189,21 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
                         background: leftTab === tab.key ? '#fff' : 'transparent',
                         color: leftTab === tab.key ? '#4a3036' : '#a07880',
                         boxShadow: leftTab === tab.key ? '0 2px 8px rgba(74,48,54,0.08)' : 'none',
-                        transition: 'all 0.2s ease',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
+                        transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                        transform: leftTab === tab.key ? 'scale(1.02)' : 'scale(1)'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (leftTab !== tab.key) {
+                          e.currentTarget.style.color = '#db8c95';
+                          e.currentTarget.style.background = 'rgba(212, 160, 154, 0.05)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (leftTab !== tab.key) {
+                          e.currentTarget.style.color = '#a07880';
+                          e.currentTarget.style.background = 'transparent';
+                        }
                       }}
                     >
                       {tab.label}
@@ -1167,10 +1233,20 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
                         border: '1px solid rgba(223, 178, 140, 0.15)',
                         borderRadius: '12px',
                         outline: 'none',
-                        transition: 'all 0.2s ease',
+                        transition: 'all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
                       }}
-                      onFocus={e => { e.target.style.background = '#fff'; e.target.style.borderColor = 'rgba(219, 140, 149, 0.4)'; e.target.style.boxShadow = '0 0 0 3px rgba(219, 140, 149, 0.1)'; }}
-                      onBlur={e => { e.target.style.background = '#faf3f2'; e.target.style.borderColor = 'rgba(223, 178, 140, 0.15)'; e.target.style.boxShadow = 'none'; }}
+                      onFocus={(e) => {
+                        e.target.style.background = '#fff';
+                        e.target.style.borderColor = 'rgba(219, 140, 149, 0.5)';
+                        e.target.style.boxShadow = '0 0 0 3px rgba(219, 140, 149, 0.12)';
+                        e.target.style.transform = 'scale(1.01)';
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.background = '#faf3f2';
+                        e.target.style.borderColor = 'rgba(223, 178, 140, 0.15)';
+                        e.target.style.boxShadow = 'none';
+                        e.target.style.transform = 'scale(1)';
+                      }}
                     />
                     {staffSearchQuery && (
                       <button
@@ -1178,7 +1254,17 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
                         style={{
                           position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)',
                           border: 'none', background: 'transparent', color: '#a07880', cursor: 'pointer',
-                          fontSize: '0.85rem', padding: '4px'
+                          fontSize: '0.85rem', padding: '4px',
+                          transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                          animation: 'checkmarkBounce 0.3s ease forwards'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = '#db8c95';
+                          e.currentTarget.style.transform = 'translateY(-50%) scale(1.2) rotate(90deg)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = '#a07880';
+                          e.currentTarget.style.transform = 'translateY(-50%) scale(1) rotate(0deg)';
                         }}
                       >
                         ×
@@ -2605,14 +2691,14 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
       {/* FULL-SCREEN STAFF DASHBOARD VIEW */}
       {selectedStaffDrawer && (
         <div 
-          style={{ 
+          style={{
             position: 'fixed',
-            left: 0,
+            left: isMobile ? 0 : (isCollapsed ? '70px' : '230px'),
             top: 0,
             right: 0,
             bottom: 0,
             background: '#fcf8f7',
-            zIndex: 9999, 
+            zIndex: 998, 
             display: 'flex',
             flexDirection: 'column',
             overflowY: 'auto',
@@ -2633,7 +2719,7 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
             top: 0,
             zIndex: 10
           }}>
-            <button 
+            <button
               onClick={handleCloseStaffDrawer}
               style={{
                 background: 'transparent',
@@ -2645,10 +2731,16 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                transition: 'color 0.2s'
+                transition: 'all 0.2s ease'
               }}
-              onMouseEnter={(e) => e.currentTarget.style.color = '#db8c95'}
-              onMouseLeave={(e) => e.currentTarget.style.color = '#a07880'}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = '#db8c95';
+                e.currentTarget.style.transform = 'translateX(-4px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = '#a07880';
+                e.currentTarget.style.transform = 'translateX(0)';
+              }}
             >
               <ChevronLeft size={18} /> Volver a Agenda
             </button>
@@ -2665,9 +2757,16 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
                   cursor: 'pointer', position: 'relative',
                   color: '#4a3036',
                   boxShadow: '0 2px 8px rgba(74, 48, 54, 0.03)',
-                  transition: 'transform 0.15s'
+                  transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)'
                 }}
-                className="btn-hover-scale"
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.08) translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 8px 20px rgba(212, 160, 154, 0.2)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1) translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(74, 48, 54, 0.03)';
+                }}
               >
                 <Bell size={16} />
                 <span style={{
