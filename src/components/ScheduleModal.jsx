@@ -1043,90 +1043,102 @@ const ScheduleModal = ({
                      </div>
                    )}
 
-                  {!isEditMode && currentStep === 4 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out', flex: 1, minHeight: 0 }}>
-                      <div style={{ textAlign: 'center', marginBottom: '4px', flexShrink: 0 }}>
-                        <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
-                          <Sparkles size={24} />
-                        </div>
-                        <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#3d2b30' }}>Asigna profesional y horario</h3>
-                        <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Pueden atenderla a la vez o en momentos distintos.</p>
-                      </div>
+                   {!isEditMode && currentStep === 4 && (
+                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out', flex: 1, minHeight: 0 }}>
+                       <div style={{ textAlign: 'center', marginBottom: '4px', flexShrink: 0 }}>
+                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
+                           <Sparkles size={24} />
+                         </div>
+                         <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#3d2b30' }}>Asigna profesional y horario</h3>
+                         <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Asigna una estilista y confirma el horario para cada servicio.</p>
+                       </div>
 
-                      {selectedServices.length > 1 && (
-                        <div style={{ padding: '12px 14px', borderRadius: '14px', background: 'rgba(219,140,149,0.06)', border: '1px dashed rgba(219,140,149,0.25)', flexShrink: 0 }}>
-                          <label style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', display: 'block', marginBottom: '6px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>¿La misma profesional para todos?</label>
-                          <JanaSelect
-                            variant="light"
-                            label=""
-                            value=""
-                            placeholder="Asignar a todos los servicios"
-                            onChange={(value) => applyStaffToAll(value)}
-                            options={staffArray.filter(s => getRoleKind(s.role) !== 'admin').map(s => ({
-                              value: s.id,
-                              label: getStaffDisplayName(s)
-                            }))}
-                            showSearch={true}
-                          />
-                        </div>
-                      )}
+                       {selectedServices.length > 1 && (
+                         <div style={{ padding: '12px 16px', borderRadius: '18px', background: 'rgba(219,140,149,0.04)', border: '1px solid rgba(219,140,149,0.12)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
+                           <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.3px' }}>⚡ ¿MISMA ESPECIALISTA PARA TODOS LOS SERVICIOS?</span>
+                           <div style={{ width: '220px' }}>
+                             <JanaSelect
+                               variant="light"
+                               label=""
+                               value=""
+                               placeholder="Asignar a todos..."
+                               onChange={(value) => applyStaffToAll(value)}
+                               options={staffArray.filter(s => getRoleKind(s.role) !== 'admin').map(s => ({
+                                 value: s.id,
+                                 label: getStaffDisplayName(s)
+                               }))}
+                               showSearch={true}
+                             />
+                           </div>
+                         </div>
+                       )}
 
-                      <div className="svc-grid jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: showSummaryPanel ? '1fr' : 'repeat(2, 1fr)', gap: '10px 14px', paddingBottom: '8px', flex: 1, minHeight: '200px', overflowY: 'auto', overflowX: 'hidden', alignContent: 'start' }}>
-                        {selectedServices.map(svc => {
-                          const conflict = getServiceConflict(svc);
-                          return (
-                            <div key={svc._uid} style={{
-                              padding: '12px 14px', borderRadius: '14px',
-                              border: conflict ? '1.5px solid #f59e0b' : '1px solid rgba(223,178,140,0.2)',
-                              background: conflict ? '#fffbeb' : '#faf8f7'
-                            }}>
-                              <div className="svc-row" style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                                <div style={{ flex: 1, minWidth: 0 }}>
-                                  <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#3d2b30', marginBottom: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{svc.name}</div>
-                                  <JanaSelect
-                                    variant="light"
-                                    label=""
-                                    value={svc.staffId || ''}
-                                    placeholder="Elige una especialista"
-                                    onChange={(value) => setRowStaff(svc._uid, value)}
-                                    options={staffArray.filter(s => getRoleKind(s.role) !== 'admin').map(s => ({
-                                      value: s.id,
-                                      label: getStaffDisplayName(s)
-                                    }))}
-                                    showSearch={true}
-                                  />
-                                  {!svc.staffId && (
-                                    <div style={{ fontSize: '0.62rem', color: '#dc2626', marginTop: '5px', fontWeight: 600 }}>Requerido</div>
-                                  )}
+                       <div className="svc-grid jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: showSummaryPanel ? '1fr' : 'repeat(2, 1fr)', gap: '12px', paddingBottom: '8px', flex: 1, minHeight: '200px', overflowY: 'auto', overflowX: 'hidden', alignContent: 'start' }}>
+                         {selectedServices.map(svc => {
+                           const conflict = getServiceConflict(svc);
+                           return (
+                             <div key={svc._uid} style={{
+                               padding: '14px', borderRadius: '16px',
+                               border: conflict ? '1.5px solid #f59e0b' : '1px solid rgba(223,178,140,0.18)',
+                               background: conflict ? '#fffbeb' : '#ffffff',
+                               boxShadow: '0 4px 12px rgba(74,48,54,0.01)',
+                               display: 'flex',
+                               flexDirection: 'column',
+                               gap: '10px'
+                             }}>
+                               {/* Service Header Info */}
+                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
+                                 <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#3d2b30', lineHeight: '1.3', flex: 1 }}>{svc.name}</div>
+                                 <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                                   {svc.customized && (
+                                     <button onClick={() => resetRowToGeneralTime(svc._uid)} title="Restablecer hora general" style={{ background: 'rgba(219,140,149,0.08)', border: 'none', color: '#db8c95', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px', borderRadius: '6px', transition: 'all 0.2s' }}>
+                                       <RotateCcw size={12} />
+                                     </button>
+                                   )}
+                                   <button onClick={() => removeServiceRow(svc._uid)} title="Eliminar servicio" style={{ background: 'rgba(239,68,68,0.06)', border: 'none', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px', borderRadius: '6px', transition: 'all 0.2s' }}>
+                                     <Trash2 size={12} />
+                                   </button>
+                                 </div>
+                               </div>
+
+                               {/* Selection Controls Row */}
+                               <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                                 {/* Specialist Select */}
+                                 <div style={{ flex: 1, minWidth: 0 }}>
+                                   <JanaSelect
+                                     variant="light"
+                                     label=""
+                                     value={svc.staffId || ''}
+                                     placeholder="Elige una especialista"
+                                     onChange={(value) => setRowStaff(svc._uid, value)}
+                                     options={staffArray.filter(s => getRoleKind(s.role) !== 'admin').map(s => ({
+                                       value: s.id,
+                                       label: getStaffDisplayName(s)
+                                     }))}
+                                     showSearch={true}
+                                   />
+                                   {!svc.staffId && (
+                                     <div style={{ fontSize: '0.62rem', color: '#dc2626', marginTop: '4px', fontWeight: 700 }}>Requerido</div>
+                                   )}
+                                 </div>
+                                 {/* Time Select */}
+                                 <div style={{ width: '115px', flexShrink: 0 }}>
+                                   <JanaTimePicker variant="light" label="" value={svc.time} onChange={(v) => setRowTime(svc._uid, v)} placement="top" />
+                                 </div>
                                 </div>
-                                <div className="svc-time-col" style={{ width: '138px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-                                  <div className="svc-time-picker-wrap" style={{ width: '100%', marginTop: '26px' }}>
-                                    <JanaTimePicker variant="light" label="" value={svc.time} onChange={(v) => setRowTime(svc._uid, v)} />
-                                  </div>
-                                </div>
-                                <div className="svc-actions-col" style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '26px', flexShrink: 0 }}>
-                                  <button onClick={() => removeServiceRow(svc._uid)} title="Eliminar" style={{ background: 'none', border: 'none', color: '#c8949c', cursor: 'pointer', display: 'flex', padding: '2px' }}>
-                                    <Trash2 size={14} />
-                                  </button>
-                                  {svc.customized && (
-                                    <button onClick={() => resetRowToGeneralTime(svc._uid)} title="Usar hora general" style={{ background: 'none', border: 'none', color: '#a0868c', cursor: 'pointer', display: 'flex', padding: '2px' }}>
-                                      <RotateCcw size={13} />
-                                    </button>
-                                  )}
-                                </div>
-                              </div>
-                              {conflict && (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.64rem', fontWeight: 650, color: '#d97706', marginTop: '8px' }}>
-                                  <AlertTriangle size={12} style={{ flexShrink: 0 }} />
-                                  <span>{CONFLICT_MESSAGES[conflict] || 'Cruce de horario potencial.'}</span>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
+
+                               {conflict && (
+                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.64rem', fontWeight: 650, color: '#d97706', background: '#fffbeb', border: '1px solid #fde68a', padding: '6px 10px', borderRadius: '8px' }}>
+                                   <AlertTriangle size={12} style={{ flexShrink: 0 }} />
+                                   <span>{CONFLICT_MESSAGES[conflict] || 'Cruce de horario potencial.'}</span>
+                                 </div>
+                               )}
+                             </div>
+                           );
+                         })}
+                       </div>
+                     </div>
+                   )}
 
                   {!isEditMode && currentStep === 5 && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out' }}>
