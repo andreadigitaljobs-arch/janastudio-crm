@@ -1002,7 +1002,7 @@ const ScheduleModal = ({
 
                       <div className="svc-header-row" style={{ display: 'flex', gap: '10px', padding: '0 2px', flexShrink: 0 }}>
                         <div style={{ flex: 1, minWidth: 0, fontSize: '0.6rem', fontWeight: 700, color: '#a0868c', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Servicio / Profesional</div>
-                        <div style={{ width: '118px', flexShrink: 0, fontSize: '0.6rem', fontWeight: 700, color: '#a0868c', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Horario</div>
+                        <div style={{ width: '138px', flexShrink: 0, fontSize: '0.6rem', fontWeight: 700, color: '#a0868c', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Horario</div>
                       </div>
 
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingBottom: '8px', flex: 1, minHeight: '200px', overflowY: 'auto' }} className="jana-scrollbar">
@@ -1033,7 +1033,7 @@ const ScheduleModal = ({
                                     <div style={{ fontSize: '0.62rem', color: '#dc2626', marginTop: '5px', fontWeight: 600 }}>Requerido</div>
                                   )}
                                 </div>
-                                <div className="svc-time-col" style={{ width: '118px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                                <div className="svc-time-col" style={{ width: '138px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
                                   <div className="svc-time-picker-wrap" style={{ width: '100%', marginTop: '26px' }}>
                                     <JanaTimePicker variant="light" label="" value={svc.time} onChange={(v) => setRowTime(svc._uid, v)} />
                                   </div>

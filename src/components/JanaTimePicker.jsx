@@ -80,7 +80,7 @@ const JanaTimePicker = ({ value, onChange, label = "HORA", variant = "dark" }) =
         }}
       >
         <Clock size={16} color={isOpen ? 'var(--pink-primary)' : (isLight ? '#c97282' : 'var(--text-muted)')} />
-        <span style={{ fontSize: '15px', fontWeight: '700', color: isLight ? 'var(--text-primary)' : 'white' }}>
+        <span style={{ fontSize: '15px', fontWeight: '700', color: isLight ? 'var(--text-primary)' : 'white', whiteSpace: 'nowrap' }}>
           {displayHour}:{minutes} {ampm}
         </span>
       </div>
