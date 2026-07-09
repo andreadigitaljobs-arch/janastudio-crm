@@ -776,7 +776,8 @@ const ScheduleModal = ({
 
                   {/* ══════════════ MODO CREACIÓN (orden con varios servicios) ══════════════ */}
                   {!isEditMode && currentStep === 2 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: '20px', animation: 'fadeInUp 0.4s ease-out', alignItems: 'start' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                       <div style={{ textAlign: 'center', marginBottom: '8px' }}>
                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
                           <Scissors size={24} />
@@ -909,11 +910,88 @@ const ScheduleModal = ({
                         )}
                       </div>
 
-                      {selectedServices.length > 0 && (
-                        <div style={{ padding: '10px 14px', background: '#fff0f2', borderRadius: '12px', fontSize: '0.74rem', color: '#a0506a', fontWeight: 700, textAlign: 'center' }}>
-                          {selectedServices.length} servicio{selectedServices.length > 1 ? 's' : ''} seleccionado{selectedServices.length > 1 ? 's' : ''} · Total ${cartTotal.toFixed(2)}
+                      </div>
+
+                      {/* Panel de Resumen - Derecha */}
+                      <div style={{
+                        display: 'flex', flexDirection: 'column', gap: '14px',
+                        padding: '16px', borderRadius: '16px',
+                        background: 'linear-gradient(135deg, #fffcfb 0%, #fff6f7 100%)',
+                        border: '1.5px solid rgba(219,140,149,0.2)',
+                        height: 'fit-content',
+                        position: 'sticky', top: 0,
+                        animation: 'fadeInUp 0.4s ease-out 0.2s both'
+                      }}>
+                        <div>
+                          <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#a0868c', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
+                            📋 Tu Orden
+                          </div>
+                          {selectedServices.length === 0 ? (
+                            <div style={{ fontSize: '0.72rem', color: '#c8b6ba', fontStyle: 'italic', textAlign: 'center', padding: '16px 8px' }}>
+                              Selecciona servicios para verlos aquí
+                            </div>
+                          ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                              {selectedServices.map((svc, idx) => (
+                                <div key={svc._uid} style={{
+                                  padding: '10px 12px', borderRadius: '10px',
+                                  background: '#fff', border: '1px solid rgba(219,140,149,0.15)',
+                                  animation: `fadeInUp 0.3s ease-out ${0.25 + idx * 0.05}s both`
+                                }}>
+                                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                                    <div style={{ color: '#db8c95', marginTop: '1px', minWidth: '16px' }}>
+                                      {getCategoryIcon(services.find(s => s.id === svc.service_id)?.category)}
+                                    </div>
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                      <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#3d2b30', lineHeight: '1.2' }}>
+                                        {svc.name}
+                                      </div>
+                                      <div style={{ fontSize: '0.65rem', color: '#a0868c', marginTop: '2px' }}>
+                                        ${Number(svc.price || 0).toFixed(2)}
+                                      </div>
+                                    </div>
+                                    <button
+                                      onClick={() => removeServiceRow(svc._uid)}
+                                      style={{
+                                        background: 'none', border: 'none', cursor: 'pointer',
+                                        color: '#c8949c', padding: 0, fontSize: '16px', lineHeight: 1
+                                      }}
+                                    >
+                                      ×
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      )}
+
+                        {selectedServices.length > 0 && (
+                          <>
+                            <div style={{ borderTop: '1px dashed rgba(219,140,149,0.3)', paddingTop: '10px' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                                <span style={{ fontSize: '0.68rem', color: '#a0868c', fontWeight: 600 }}>Subtotal</span>
+                                <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#3d2b30' }}>${cartTotal.toFixed(2)}</span>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span style={{ fontSize: '0.68rem', color: '#a0868c', fontWeight: 600 }}>Items</span>
+                                <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#db8c95' }}>{selectedServices.length}</span>
+                              </div>
+                            </div>
+                            <div style={{
+                              padding: '10px 12px', borderRadius: '10px',
+                              background: 'rgba(219,140,149,0.1)',
+                              border: '1px solid rgba(219,140,149,0.3)',
+                              textAlign: 'center'
+                            }}>
+                              <div style={{ fontSize: '0.65rem', color: '#a0868c', fontWeight: 600, marginBottom: '3px' }}>Total</div>
+                              <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#db8c95' }}>
+                                ${cartTotal.toFixed(2)}
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
                     </div>
                   )}
 
