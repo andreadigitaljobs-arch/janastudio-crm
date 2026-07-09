@@ -440,7 +440,7 @@ const ScheduleModal = ({
   return createPortal(
     <AnimatedModal isOpen={isOpen}>
       {(overlayClass, cardClass) => (
-        <div className={overlayClass} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(74, 48, 54, 0.35)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 20000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', animation: 'fadeIn 0.3s ease-out' }}>
+        <div className={overlayClass} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(30, 30, 30, 0.4)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 20000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', animation: 'fadeIn 0.3s ease-out' }}>
           <div className={`${cardClass} jana-scrollbar`} style={{ maxWidth: '640px', width: '100%', maxHeight: 'calc(100vh - 40px)', overflowY: 'auto', borderRadius: '32px', padding: '36px 36px 48px 36px', backgroundColor: '#fff', boxShadow: '0 25px 60px rgba(74,48,54,0.18), 0 8px 24px rgba(0,0,0,0.06)', border: '1px solid rgba(223,178,140,0.15)', display: 'flex', flexDirection: 'column', animation: 'slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
             <style>{`
               @keyframes fadeIn {
@@ -1019,7 +1019,7 @@ const ScheduleModal = ({
                 </div>
 
                 {/* Stepper Buttons Footer */}
-                <div style={{ display: 'flex', gap: '12px', marginTop: '32px', flexShrink: 0, animation: 'fadeInUp 0.4s ease-out 0.3s both' }}>
+                <div style={{ display: 'flex', gap: '12px', marginTop: '32px', flexShrink: 0, animation: 'fadeInUp 0.4s ease-out 0.3s both', backgroundColor: '#fff', padding: '12px 0 0 0' }}>
                   {currentStep > 1 && !isReprogramOnly && (
                     <button
                       onClick={() => setCurrentStep(prev => prev - 1)}
