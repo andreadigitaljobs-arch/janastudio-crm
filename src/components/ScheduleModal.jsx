@@ -972,7 +972,7 @@ const ScheduleModal = ({
                                 <div style={{ flex: 1, minWidth: '160px' }}>
                                   <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#a0868c', marginBottom: '8px', textTransform: 'uppercase' }}>Profesional</div>
                                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(75px, 1fr))', gap: '10px' }}>
-                                    {staffArray.map(staff => (
+                                    {staffArray.filter(s => s.staff_type !== 'Administrador' && s.staff_type !== 'ADMIN').map(staff => (
                                       <button
                                         key={staff.id}
                                         onClick={() => setRowStaff(svc._uid, staff.id)}
@@ -992,8 +992,8 @@ const ScheduleModal = ({
                                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                                           background: '#fff', flexShrink: 0
                                         }}>
-                                          {staff.avatar_url ? (
-                                            <img src={staff.avatar_url} alt={getStaffDisplayName(staff)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                          {staff.image_url ? (
+                                            <img src={staff.image_url} alt={getStaffDisplayName(staff)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                           ) : (
                                             <User size={20} color="#db8c95" />
                                           )}
@@ -1010,10 +1010,7 @@ const ScheduleModal = ({
                                 </div>
                                 <div style={{ minWidth: '150px' }}>
                                   <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#a0868c', marginBottom: '4px', textTransform: 'uppercase' }}>Horario</div>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 12px', background: '#faf8f7', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.2)', whiteSpace: 'nowrap' }}>
-                                    <Clock size={14} color="#db8c95" style={{ flexShrink: 0 }} />
-                                    <JanaTimePicker variant="light" label="" value={svc.time} onChange={(v) => setRowTime(svc._uid, v)} />
-                                  </div>
+                                  <JanaTimePicker variant="light" label="" value={svc.time} onChange={(v) => setRowTime(svc._uid, v)} />
                                 </div>
                                 {svc.customized && (
                                   <button onClick={() => resetRowToGeneralTime(svc._uid)} title="Usar hora general" style={{ background: 'none', border: 'none', color: '#a0868c', cursor: 'pointer', display: 'flex', padding: '4px' }}>
