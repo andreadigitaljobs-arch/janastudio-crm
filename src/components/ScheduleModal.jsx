@@ -622,7 +622,7 @@ const ScheduleModal = ({
 
                 {/* Scrollable content area */}
                 <div className="jana-scrollbar" style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
-                  <div className="jana-schedule-content-inner" style={{ maxWidth: '760px', margin: '0 auto', padding: '28px 32px', display: 'flex', flexDirection: 'column' }}>
+                  <div className="jana-schedule-content-inner" style={{ maxWidth: '760px', margin: '0 auto', padding: '28px 32px', display: 'flex', flexDirection: 'column', overflowX: 'hidden' }}>
 
                   {/* STEP 1: CLIENT SELECTION (ambos modos) */}
                   {currentStep === 1 && (
@@ -916,7 +916,7 @@ const ScheduleModal = ({
                         </div>
                       )}
 
-                      <div className="svc-select-grid jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', paddingBottom: '8px', flex: 1, minHeight: '120px', overflowY: 'auto', alignContent: 'start' }}>
+                      <div className="svc-select-grid jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: showSummaryPanel ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '10px', paddingBottom: '8px', flex: 1, minHeight: '120px', overflowY: 'auto', overflowX: 'hidden', alignContent: 'start' }}>
                         {services
                           .filter(svc => serviceCategoryFilter === 'Todas' || svc.category === serviceCategoryFilter)
                           .filter(svc => !serviceSearchQuery || normalizeForSearch(svc.name || '').includes(normalizeForSearch(serviceSearchQuery)))
@@ -1032,7 +1032,7 @@ const ScheduleModal = ({
                         </div>
                       )}
 
-                      <div className="svc-grid jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px 14px', paddingBottom: '8px', flex: 1, minHeight: '200px', overflowY: 'auto', alignContent: 'start' }}>
+                      <div className="svc-grid jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: showSummaryPanel ? '1fr' : 'repeat(2, 1fr)', gap: '10px 14px', paddingBottom: '8px', flex: 1, minHeight: '200px', overflowY: 'auto', overflowX: 'hidden', alignContent: 'start' }}>
                         {selectedServices.map(svc => {
                           const conflict = getServiceConflict(svc);
                           return (
