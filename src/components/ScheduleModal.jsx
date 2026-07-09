@@ -473,11 +473,31 @@ const ScheduleModal = ({
 
   const showSummaryPanel = !showSuccess && !isEditMode && selectedServices.length > 0 && currentStep !== 1;
 
+  const getModalDimensions = () => {
+    if (isEditMode) {
+      return { width: 'min(90vw, 560px)', maxWidth: '560px' };
+    }
+    switch (currentStep) {
+      case 1:
+        return { width: 'min(90vw, 540px)', maxWidth: '540px' };
+      case 5:
+        return { width: 'min(90vw, 680px)', maxWidth: '680px' };
+      default:
+        // Steps 2, 3, 4 with service lists, double columns, and sidebars
+        return { 
+          width: showSummaryPanel ? 'min(85vw, 840px)' : 'min(90vw, 840px)', 
+          maxWidth: '840px' 
+        };
+    }
+  };
+
+  const modalSize = getModalDimensions();
+
   return createPortal(
     <AnimatedModal isOpen={isOpen}>
       {(overlayClass, cardClass) => (
         <div className={`${overlayClass} jana-schedule-modal-overlay`} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(30, 30, 30, 0.45)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', zIndex: 20000, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: showSummaryPanel ? '24px' : '0', padding: '24px', animation: 'fadeIn 0.25s ease-out' }}>
-          <div className={`${cardClass} jana-schedule-modal-card`} style={{ width: showSummaryPanel ? 'min(85vw, 840px)' : '92vw', maxWidth: showSummaryPanel ? '840px' : '1100px', flexShrink: 0, height: '90vh', maxHeight: '860px', backgroundColor: '#fcf8f7', borderRadius: '32px', boxShadow: '0 25px 60px rgba(74,48,54,0.2), 0 8px 24px rgba(0,0,0,0.06)', overflow: 'hidden', display: 'flex', flexDirection: 'column', animation: 'slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)', position: 'relative', transition: 'width 0.35s cubic-bezier(0.16, 1, 0.3, 1), max-width 0.35s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+          <div className={`${cardClass} jana-schedule-modal-card`} style={{ width: modalSize.width, maxWidth: modalSize.maxWidth, flexShrink: 0, height: '90vh', maxHeight: '860px', backgroundColor: '#fcf8f7', borderRadius: '32px', boxShadow: '0 25px 60px rgba(74,48,54,0.2), 0 8px 24px rgba(0,0,0,0.06)', overflow: 'hidden', display: 'flex', flexDirection: 'column', animation: 'slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)', position: 'relative', transition: 'width 0.35s cubic-bezier(0.16, 1, 0.3, 1), max-width 0.35s cubic-bezier(0.16, 1, 0.3, 1)' }}>
             <style>{`
               @keyframes fadeIn {
                 from { opacity: 0; }
