@@ -2856,7 +2856,6 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
                      onClick={() => setStaffActiveTab(tab.id)}
                      style={{ 
                        fontSize: '0.85rem', 
-{{ ... }}
                        fontWeight: isActive ? 800 : 600, 
                        color: isActive ? '#db8c95' : '#a07880', 
                        borderBottom: isActive ? '3px solid #db8c95' : '3px solid transparent', 
@@ -3394,9 +3393,38 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
                 <div style={{ flex: 1.5, background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
                   <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#4a3036', margin: '0 0 16px 0' }}>Bloc de Notas Internas</h3>
                   <textarea 
-              </div>
+                    placeholder="Escribe notas generales sobre el desempeño, preferencias de materiales o avisos para esta especialista..."
+                    style={{
+                      width: '100%', height: '180px', border: '1px solid rgba(223,178,140,0.15)', borderRadius: '16px',
+                      background: '#faf6f5', padding: '16px', fontSize: '0.82rem', color: '#4a3036', outline: 'none',
+                      resize: 'none', fontWeight: 550, lineHeight: '1.5'
+                    }}
+                    defaultValue="Nota de cabina: Isabella prefiere utilizar el adhesivo de secado rápido (0.5s) en cabinas con humedad controlada de 50%. En el turno de tarde, requiere asistencia de recepción para la preparación de pestañas pre-armadas."
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '14px' }}>
+                    <button 
+                      onClick={() => showToast?.('Notas guardadas correctamente', 'success')}
+                      style={{
+                        padding: '10px 24px', borderRadius: '12px', border: 'none',
+                        background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
+                        color: '#ffffff', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer',
+                        boxShadow: '0 4px 12px rgba(219, 140, 149, 0.2)'
+                      }}
+                      className="btn-hover-scale"
+                    >
+                      Guardar notas
+                    </button>
+                  </div>
+                </div>
 
-            </div>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div style={{ background: '#fff0f2', border: '1px solid rgba(219,140,149,0.12)', borderRadius: '24px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.01)' }}>
+                    <h4 style={{ margin: '0 0 10px 0', fontSize: '0.85rem', color: '#a0506a', fontWeight: 750 }}>RECORDATORIO</h4>
+                    <p style={{ fontSize: '0.78rem', color: '#4a3036', lineHeight: '1.4' }}>Las notas son privadas y solo visibles para administradoras y dueñas del salón en esta consola de CRM.</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
