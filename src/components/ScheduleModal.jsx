@@ -509,6 +509,11 @@ const ScheduleModal = ({
 
               @media (max-width: 900px) {
                 .svc-grid { grid-template-columns: 1fr !important; }
+                .svc-select-grid { grid-template-columns: repeat(2, 1fr) !important; }
+              }
+
+              @media (max-width: 560px) {
+                .svc-select-grid { grid-template-columns: 1fr !important; }
               }
 
               @media (max-width: 640px) {
@@ -892,7 +897,7 @@ const ScheduleModal = ({
                         </div>
                       )}
 
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingBottom: '8px', flex: 1, minHeight: '120px', overflowY: 'auto' }} className="jana-scrollbar">
+                      <div className="svc-select-grid jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', paddingBottom: '8px', flex: 1, minHeight: '120px', overflowY: 'auto', alignContent: 'start' }}>
                         {services
                           .filter(svc => serviceCategoryFilter === 'Todas' || svc.category === serviceCategoryFilter)
                           .filter(svc => !serviceSearchQuery || normalizeForSearch(svc.name || '').includes(normalizeForSearch(serviceSearchQuery)))
