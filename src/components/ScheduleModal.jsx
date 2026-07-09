@@ -89,6 +89,8 @@ const ScheduleModal = ({
   const [generalTime, setGeneralTime] = useState('10:00');
   const [staffAvailability, setStaffAvailability] = useState({}); // { [staffId]: { schedules, timeOff, appointmentsForDay, dateKey } }
   const [serviceSearchQuery, setServiceSearchQuery] = useState('');
+  const [serviceCategoryFilter, setServiceCategoryFilter] = useState('Todas');
+  const serviceCategories = [...new Set(services.map(s => s.category).filter(Boolean))];
 
   const totalSteps = isEditMode ? 5 : 4;
 
@@ -248,6 +250,7 @@ const ScheduleModal = ({
       } else {
         setLocalClient(client || null);
         setServiceSearchQuery('');
+        setServiceCategoryFilter('Todas');
         setSelectedServices(
           service ? [{
             _uid: `${service.id}-${Date.now()}`,
@@ -753,8 +756,41 @@ const ScheduleModal = ({
                         )}
                       </div>
 
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '280px', overflowY: 'auto' }} className="jana-scrollbar">
+                      {serviceCategories.length > 0 && (
+                        <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '2px' }} className="jana-scrollbar">
+                          <button
+                            onClick={() => setServiceCategoryFilter('Todas')}
+                            style={{
+                              flexShrink: 0, padding: '7px 13px', borderRadius: '10px', cursor: 'pointer',
+                              fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap',
+                              background: serviceCategoryFilter === 'Todas' ? '#db8c95' : '#faf3f2',
+                              color: serviceCategoryFilter === 'Todas' ? '#fff' : '#a0506a',
+                              border: '1px solid ' + (serviceCategoryFilter === 'Todas' ? '#db8c95' : 'rgba(160,80,106,0.15)')
+                            }}
+                          >
+                            Todas
+                          </button>
+                          {serviceCategories.map(cat => (
+                            <button
+                              key={cat}
+                              onClick={() => setServiceCategoryFilter(cat)}
+                              style={{
+                                flexShrink: 0, padding: '7px 13px', borderRadius: '10px', cursor: 'pointer',
+                                fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap',
+                                background: serviceCategoryFilter === cat ? '#db8c95' : '#faf3f2',
+                                color: serviceCategoryFilter === cat ? '#fff' : '#a0506a',
+                                border: '1px solid ' + (serviceCategoryFilter === cat ? '#db8c95' : 'rgba(160,80,106,0.15)')
+                              }}
+                            >
+                              {cat}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '260px', overflowY: 'auto' }} className="jana-scrollbar">
                         {services
+                          .filter(svc => serviceCategoryFilter === 'Todas' || svc.category === serviceCategoryFilter)
                           .filter(svc => !serviceSearchQuery || normalizeForSearch(svc.name || '').includes(normalizeForSearch(serviceSearchQuery)))
                           .map(svc => {
                           const isSel = selectedServices.some(s => s.service_id === svc.id);
@@ -781,9 +817,12 @@ const ScheduleModal = ({
                             </button>
                           );
                         })}
-                        {services.filter(svc => !serviceSearchQuery || normalizeForSearch(svc.name || '').includes(normalizeForSearch(serviceSearchQuery))).length === 0 && (
+                        {services
+                          .filter(svc => serviceCategoryFilter === 'Todas' || svc.category === serviceCategoryFilter)
+                          .filter(svc => !serviceSearchQuery || normalizeForSearch(svc.name || '').includes(normalizeForSearch(serviceSearchQuery)))
+                          .length === 0 && (
                           <div style={{ padding: '20px', textAlign: 'center', fontSize: '0.76rem', color: '#a0868c' }}>
-                            No se encontró ningún servicio con "{serviceSearchQuery}"
+                            {serviceSearchQuery ? `No se encontró ningún servicio con "${serviceSearchQuery}"` : 'No hay servicios en esta categoría'}
                           </div>
                         )}
                       </div>
