@@ -1452,69 +1452,75 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
                         style={{
                           background: '#fff',
                           border: '1px solid rgba(223,178,140,0.2)',
-                          borderRadius: '18px',
+                          borderRadius: '14px',
                           overflow: 'hidden',
                           cursor: 'pointer',
-                          boxShadow: '0 4px 14px rgba(74,48,54,0.04)',
-                          transition: 'all 0.25s cubic-bezier(0.16,1,0.3,1)',
-                          display: 'flex', flexDirection: 'column'
+                          boxShadow: '0 2px 8px rgba(74,48,54,0.05)',
+                          transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          height: '100%'
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 10px 28px rgba(167,102,115,0.12)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(74,48,54,0.04)'; }}
+                        onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(212,160,154,0.15)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(74,48,54,0.05)'; }}
                       >
-                        {/* Photo hero */}
-                        <div style={{ position: 'relative', height: '120px', overflow: 'hidden', flexShrink: 0 }}>
+                        {/* Photo hero - COMPACTA */}
+                        <div style={{ position: 'relative', height: '90px', overflow: 'hidden', flexShrink: 0 }}>
                           <img
                             src={s.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(s.name)}&backgroundColor=e8a2a9,f7d4d7,fce4e8&radius=0`}
                             alt={s.name}
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                             onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
                           />
-                          {/* Fallback gradient with initial */}
-                          <div style={{ display: 'none', position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: '2.5rem', letterSpacing: '-1px' }}>
+                          {/* Fallback gradient */}
+                          <div style={{ display: 'none', position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: '2rem' }}>
                             {initial}
                           </div>
-                          {/* Gradient overlay at bottom */}
-                          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '50px', background: 'linear-gradient(to top, rgba(255,255,255,0.95), transparent)' }} />
-                          {/* Status badge floating */}
-                          <div style={{ position: 'absolute', top: '8px', right: '8px' }}>
-                            <span style={{ fontSize: '0.55rem', color: statusColor, background: statusBg, backdropFilter: 'blur(6px)', padding: '3px 8px', borderRadius: '20px', fontWeight: 700, border: `1px solid ${statusColor}22` }}>
-                              {statusText}
+                          {/* Status badge - GRANDE y visible */}
+                          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.9))', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: '6px' }}>
+                            <span style={{
+                              fontSize: '0.7rem',
+                              color: '#fff',
+                              background: statusColor,
+                              padding: '4px 10px',
+                              borderRadius: '12px',
+                              fontWeight: 800,
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                            }}>
+                              {statusText === 'Libre ahora' ? '🟢 LIBRE' : statusText === 'Almuerzo' ? '🟡 ALMUERZO' : '🔴 EN CITA'}
                             </span>
                           </div>
                         </div>
 
-                        {/* Identity */}
-                        <div style={{ padding: '10px 14px 6px', textAlign: 'center' }}>
-                          <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#4a3036', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name.split(' ')[0]} {s.name.split(' ')[1] || ''}</div>
-                          <div style={{ fontSize: '0.62rem', color: '#a07880', fontWeight: 600, marginTop: '2px' }}>{getStaffRole(s.name)}</div>
-                        </div>
-
-                        {/* Stats */}
-                        <div style={{ padding: '8px 14px 10px', display: 'flex', flexDirection: 'column', gap: '5px', fontSize: '0.67rem', borderTop: '1px solid rgba(223,178,140,0.1)', marginTop: '2px' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: '#8c767b' }}>Citas hoy</span>
-                            <span style={{ fontWeight: 700, color: '#4a3036' }}>{metrics.citasCount}</span>
-                          </div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span style={{ color: '#8c767b' }}>Ingresos</span>
-                            <span style={{ fontWeight: 700, color: '#a0506a' }}>$ {metrics.revenue.toLocaleString()}</span>
-                          </div>
-                          <div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
-                              <span style={{ color: '#8c767b' }}>Ocupación</span>
-                              <span style={{ fontWeight: 700, color: '#4a3036' }}>{metrics.occupancy}%</span>
+                        {/* Content - COMPACTA */}
+                        <div style={{ padding: '12px 12px', display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+                          {/* Nombre + Especialidad */}
+                          <div style={{ textAlign: 'center' }}>
+                            <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#4a3036' }}>
+                              {s.name.split(' ')[0]} {s.name.split(' ')[1] || ''}
                             </div>
-                            <div style={{ height: '3px', background: '#faf3f2', borderRadius: '2px', overflow: 'hidden' }}>
+                            <div style={{ fontSize: '0.6rem', color: '#a07880', fontWeight: 600, marginTop: '1px' }}>
+                              {getStaffRole(s.name)}
+                            </div>
+                          </div>
+
+                          {/* Ocupación como barra */}
+                          <div>
+                            <div style={{ height: '4px', background: '#faf3f2', borderRadius: '2px', overflow: 'hidden' }}>
                               <div style={{ height: '100%', background: 'linear-gradient(90deg, #e8a2a9, #db8c95)', width: `${metrics.occupancy}%`, transition: 'width 0.6s ease' }} />
                             </div>
+                            <div style={{ fontSize: '0.6rem', color: '#8c767b', fontWeight: 600, marginTop: '2px', textAlign: 'center' }}>
+                              {metrics.occupancy}% ocupada
+                            </div>
                           </div>
-                        </div>
 
-                        {/* Next appointment footer */}
-                        <div style={{ margin: '0 10px 10px', background: '#faf3f2', borderRadius: '10px', padding: '5px 10px', display: 'flex', justifyContent: 'space-between', fontSize: '0.62rem' }}>
-                          <span style={{ color: '#8c767b', fontWeight: 600 }}>Próxima cita</span>
-                          <span style={{ fontWeight: 700, color: '#4a3036' }}>{nextApp ? nextApp.timeStr : 'Ninguna'}</span>
+                          {/* Próxima cita */}
+                          <div style={{ background: '#faf3f2', borderRadius: '8px', padding: '6px 10px', textAlign: 'center' }}>
+                            <div style={{ fontSize: '0.58rem', color: '#8c767b', fontWeight: 600 }}>Próx cita</div>
+                            <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#4a3036', marginTop: '2px' }}>
+                              {nextApp ? nextApp.timeStr : 'Ninguna'}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     );
