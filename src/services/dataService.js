@@ -428,6 +428,14 @@ export const dataService = {
   async createAppointmentWithServices(appointmentData, services = []) {
     _cacheInvalidateAppts();
 
+    // Use the earliest per-service scheduled_at as the parent appointment's scheduled_at
+    const earliestScheduledAt = services.length > 0
+      ? services.reduce((min, svc) => {
+          const t = svc.scheduled_at || appointmentData.scheduled_at;
+          return (!min || new Date(t) < new Date(min)) ? t : min;
+        }, null)
+      : appointmentData.scheduled_at;
+
     // 1. Create the main appointment
     const { data: apptData, error: apptError } = await supabase
       .from('appointments')
@@ -435,7 +443,7 @@ export const dataService = {
         client_id: appointmentData.client_id,
         status: appointmentData.status || 'Agendado',
         total_price: 0,
-        scheduled_at: appointmentData.scheduled_at,
+        scheduled_at: earliestScheduledAt || appointmentData.scheduled_at,
         notes: appointmentData.notes,
         created_by_staff_id: (await supabase.auth.getUser()).data?.user?.id ?
           (await supabase.from('staff').select('id').eq('auth_user_id', (await supabase.auth.getUser()).data.user.id).single()).data?.id : null
@@ -453,6 +461,8 @@ export const dataService = {
         staff_id: svc.staff_id,
         sequence_order: idx,
         price_paid: svc.price_paid || 0,
+        scheduled_at: svc.scheduled_at || appointmentData.scheduled_at,
+        duration_minutes: svc.duration_minutes || 60,
         status: 'Pendiente'
       }));
 
@@ -476,6 +486,8 @@ export const dataService = {
         service_id: serviceData.service_id,
         staff_id: serviceData.staff_id,
         price_paid: serviceData.price_paid || 0,
+        scheduled_at: serviceData.scheduled_at || null,
+        duration_minutes: serviceData.duration_minutes || 60,
         status: 'Pendiente'
       }])
       .select()
@@ -483,6 +495,23 @@ export const dataService = {
 
     if (error) throw error;
     return data;
+  },
+
+  async getStaffBusyServicesForDate(staffId, dateKey) {
+    if (!staffId || !dateKey) return [];
+    const dayStart = `${dateKey}T00:00:00`;
+    const dayEnd = `${dateKey}T23:59:59`;
+
+    const { data, error } = await supabase
+      .from('appointment_services')
+      .select('id, scheduled_at, duration_minutes, status, appointments!inner(status)')
+      .eq('staff_id', staffId)
+      .gte('scheduled_at', dayStart)
+      .lte('scheduled_at', dayEnd)
+      .not('status', 'in', '("Cancelado")');
+
+    if (error) throw error;
+    return (data || []).filter(s => s.appointments?.status !== 'Cancelado');
   },
 
   async removeServiceFromAppointment(appointmentServiceId) {
@@ -509,6 +538,8 @@ export const dataService = {
           sequence_order,
           price_paid,
           status,
+          scheduled_at,
+          duration_minutes,
           started_at,
           completed_at,
           services (id, name, price, duration_minutes, commission_pct),
