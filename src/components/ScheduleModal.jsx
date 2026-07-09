@@ -788,8 +788,8 @@ const ScheduleModal = ({
 
                   {/* ══════════════ MODO CREACIÓN (orden con varios servicios) ══════════════ */}
                   {!isEditMode && currentStep === 2 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out', position: 'relative' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out', position: 'relative', flex: 1, minHeight: 0 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1, minHeight: 0 }}>
                       <div style={{ textAlign: 'center', marginBottom: '8px' }}>
                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
                           <Scissors size={24} />
@@ -866,7 +866,7 @@ const ScheduleModal = ({
                         </div>
                       )}
 
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingBottom: '8px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingBottom: '8px', flex: 1, minHeight: '120px', overflowY: 'auto' }} className="jana-scrollbar">
                         {services
                           .filter(svc => serviceCategoryFilter === 'Todas' || svc.category === serviceCategoryFilter)
                           .filter(svc => !serviceSearchQuery || normalizeForSearch(svc.name || '').includes(normalizeForSearch(serviceSearchQuery)))
@@ -926,7 +926,7 @@ const ScheduleModal = ({
                   )}
 
                   {!isEditMode && currentStep === 3 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out', flex: 1, minHeight: 0 }}>
                       <div style={{ textAlign: 'center', marginBottom: '4px' }}>
                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
                           <Sparkles size={24} />
@@ -954,7 +954,7 @@ const ScheduleModal = ({
                         La hora general se aplica a todos los servicios que no hayas personalizado individualmente.
                       </div>
 
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingBottom: '8px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingBottom: '8px', flex: 1, minHeight: '120px', overflowY: 'auto' }} className="jana-scrollbar">
                         {selectedServices.map(svc => {
                           const conflict = getServiceConflict(svc);
                           return (
