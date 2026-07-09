@@ -1366,22 +1366,25 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
             </div>
           </div>
 
-          {/* CITAS Y ESTADÍSTICAS - LAYOUT HORIZONTAL */}
-          <div style={{ display: 'flex', gap: '20px', marginBottom: '24px', width: '100%', flexDirection: isMobile ? 'column' : 'row', alignItems: 'flex-start' }}>
+          {/* THREE-COLUMN CONTENT GRID */}
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '24px', width: '100%', alignItems: 'start', marginTop: '0' }}>
 
-            {/* PRÓXIMAS CITAS IMPORTANTES */}
-            <div className="agenda-glass-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', minHeight: '400px', overflow: 'hidden', flex: 1, minWidth: 0 }}>
-            <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#4a3036', margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-              <CalendarIcon size={16} color="#db8c95" />
-              PRÓXIMAS CITAS HOY
-            </h4>
+            {/* Column 1 - Próximas Citas */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', minWidth: 0 }}>
 
-            {dayApps.length === 0 ? (
-              <div style={{ padding: '20px', textAlign: 'center', color: '#a07880', fontSize: '0.78rem' }}>
-                No hay citas agendadas para hoy
-              </div>
-            ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', overflowY: 'auto', flex: 1, paddingRight: '8px' }} className="jana-scrollbar">
+              {/* PRÓXIMAS CITAS IMPORTANTES */}
+              <div className="agenda-glass-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', minHeight: '400px', overflow: 'hidden' }}>
+              <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#4a3036', margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                <CalendarIcon size={16} color="#db8c95" />
+                PRÓXIMAS CITAS HOY
+              </h4>
+
+              {dayApps.length === 0 ? (
+                <div style={{ padding: '20px', textAlign: 'center', color: '#a07880', fontSize: '0.78rem' }}>
+                  No hay citas agendadas para hoy
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', overflowY: 'auto', flex: 1, paddingRight: '8px' }} className="jana-scrollbar">
                 {dayApps.map((app, idx) => {
                   const start = new Date(app.scheduled_at || app.created_at);
                   const now = new Date();
@@ -1479,15 +1482,8 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
                   );
                 })}
               </div>
-            )}
-            </div>
-          </div>
-
-          {/* TWO-COLUMN CONTENT GRID */}
-          <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '24px', width: '100%', alignItems: 'flex-start', marginTop: '0' }}>
-
-            {/* Left Column (Main) */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0', minWidth: 0 }}>
+              )}
+              </div>
               
               {/* Rendimiento Grid (Sin tabs) */}
               <div className="agenda-glass-card" style={{ padding: '20px', overflow: 'visible' }}>
@@ -1677,8 +1673,8 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
                             </div>
                           </div>
 
-                          {/* Próxima cita + Ocupación */}
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          {/* Próxima cita + Ocupación + Indicador */}
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1 }}>
                             {/* Próxima cita */}
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.68rem' }}>
                               <span style={{ color: '#8c767b', fontWeight: 600 }}>Próx cita:</span>
@@ -1695,6 +1691,11 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
                               <div style={{ fontSize: '0.6rem', color: '#8c767b', fontWeight: 600, marginTop: '2px', textAlign: 'right' }}>
                                 {metrics.occupancy}%
                               </div>
+                            </div>
+
+                            {/* Indicador clickeable */}
+                            <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid rgba(223,178,140,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px', fontSize: '0.65rem', fontWeight: 700, color: '#db8c95', opacity: 0.8, transition: 'all 0.3s ease' }} className="hover-indicator">
+                              Ver detalles →
                             </div>
                           </div>
                         </div>
