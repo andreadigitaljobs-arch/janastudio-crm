@@ -476,8 +476,8 @@ const ScheduleModal = ({
   return createPortal(
     <AnimatedModal isOpen={isOpen}>
       {(overlayClass, cardClass) => (
-        <div className={`${overlayClass} jana-schedule-modal-overlay`} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(30, 30, 30, 0.4)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 20000, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: showSummaryPanel ? '20px' : '0', padding: '28px', animation: 'fadeIn 0.25s ease-out' }}>
-          <div className={`${cardClass} jana-schedule-modal-card`} style={{ width: showSummaryPanel ? 'min(70vw, 760px)' : '92vw', maxWidth: showSummaryPanel ? '760px' : '1100px', flexShrink: 0, height: '90vh', maxHeight: '860px', backgroundColor: '#fcf8f7', borderRadius: '32px', boxShadow: '0 25px 60px rgba(74,48,54,0.25), 0 8px 24px rgba(0,0,0,0.08)', overflow: 'hidden', display: 'flex', flexDirection: 'column', animation: 'slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)', position: 'relative', transition: 'width 0.3s ease, max-width 0.3s ease' }}>
+        <div className={`${overlayClass} jana-schedule-modal-overlay`} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(30, 30, 30, 0.45)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', zIndex: 20000, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: showSummaryPanel ? '24px' : '0', padding: '24px', animation: 'fadeIn 0.25s ease-out' }}>
+          <div className={`${cardClass} jana-schedule-modal-card`} style={{ width: showSummaryPanel ? 'min(85vw, 840px)' : '92vw', maxWidth: showSummaryPanel ? '840px' : '1100px', flexShrink: 0, height: '90vh', maxHeight: '860px', backgroundColor: '#fcf8f7', borderRadius: '32px', boxShadow: '0 25px 60px rgba(74,48,54,0.2), 0 8px 24px rgba(0,0,0,0.06)', overflow: 'hidden', display: 'flex', flexDirection: 'column', animation: 'slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)', position: 'relative', transition: 'width 0.35s cubic-bezier(0.16, 1, 0.3, 1), max-width 0.35s cubic-bezier(0.16, 1, 0.3, 1)' }}>
             <style>{`
               @keyframes fadeIn {
                 from { opacity: 0; }
@@ -511,7 +511,7 @@ const ScheduleModal = ({
 
               @media (max-width: 900px) {
                 .svc-grid { grid-template-columns: 1fr !important; }
-                .svc-select-grid { grid-template-columns: repeat(2, 1fr) !important; }
+                .svc-select-grid { grid-template-columns: 1fr !important; }
               }
 
               @media (max-width: 560px) {
@@ -523,8 +523,10 @@ const ScheduleModal = ({
               .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-thumb { background: rgba(219,140,149,0.3); border-radius: 10px; }
               .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(219,140,149,0.5); }
               .jana-schedule-modal-card .jana-scrollbar { scrollbar-width: thin; scrollbar-color: rgba(219,140,149,0.3) transparent; }
-              .jana-summary-panel::-webkit-scrollbar { display: none !important; width: 0 !important; }
-              .jana-summary-panel { scrollbar-width: none; }
+              .jana-summary-panel::-webkit-scrollbar { display: block !important; width: 4px !important; }
+              .jana-summary-panel::-webkit-scrollbar-track { background: transparent; }
+              .jana-summary-panel::-webkit-scrollbar-thumb { background: rgba(219,140,149,0.25); border-radius: 10px; }
+              .jana-summary-panel { scrollbar-width: thin; scrollbar-color: rgba(219,140,149,0.2) transparent; }
 
               @media (max-width: 1250px) {
                 .jana-summary-panel { display: none !important; }
@@ -916,7 +918,7 @@ const ScheduleModal = ({
                         </div>
                       )}
 
-                      <div className="svc-select-grid jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: showSummaryPanel ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '10px', paddingBottom: '8px', flex: 1, minHeight: '120px', overflowY: 'auto', overflowX: 'hidden', alignContent: 'start' }}>
+                      <div className="svc-select-grid jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: showSummaryPanel ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '8px', paddingBottom: '8px', flex: 1, minHeight: '120px', overflowY: 'auto', overflowX: 'hidden', alignContent: 'start' }}>
                         {services
                           .filter(svc => serviceCategoryFilter === 'Todas' || svc.category === serviceCategoryFilter)
                           .filter(svc => !serviceSearchQuery || normalizeForSearch(svc.name || '').includes(normalizeForSearch(serviceSearchQuery)))
@@ -928,37 +930,66 @@ const ScheduleModal = ({
                               key={svc.id}
                               onClick={() => toggleServiceSelection(svc)}
                               style={{
-                                display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
-                                padding: '14px 16px', borderRadius: '14px', textAlign: 'left', cursor: 'pointer',
-                                border: isSel ? '1.5px solid #db8c95' : '1px solid rgba(223,178,140,0.2)',
-                                background: isSel ? 'rgba(219,140,149,0.08)' : '#faf8f7',
-                                transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                                animation: 'fadeInUp 0.3s ease-out',
+                                display: 'flex', alignItems: 'center', gap: '10px',
+                                padding: '10px 14px', borderRadius: '12px', textAlign: 'left', cursor: 'pointer',
+                                border: isSel ? '1.5px solid #db8c95' : '1px solid rgba(223,178,140,0.16)',
+                                background: isSel ? 'rgba(219,140,149,0.06)' : '#ffffff',
+                                transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                                animation: 'fadeInUp 0.25s ease-out',
                                 transform: 'translateY(0)',
-                                opacity: 1
+                                opacity: 1,
+                                width: '100%',
+                                minHeight: '52px'
                               }}
                               onMouseEnter={(e) => {
-                                e.currentTarget.style.boxShadow = '0 6px 16px rgba(219,140,149,0.15)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(219,140,149,0.1)';
                                 e.currentTarget.style.borderColor = '#db8c95';
                               }}
                               onMouseLeave={(e) => {
                                 e.currentTarget.style.boxShadow = 'none';
-                                e.currentTarget.style.borderColor = isSel ? '#db8c95' : 'rgba(223,178,140,0.2)';
+                                e.currentTarget.style.borderColor = isSel ? '#db8c95' : 'rgba(223,178,140,0.16)';
                               }}
                             >
-                              <div style={{ color: '#db8c95', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '20px' }}>
+                              {/* Category Icon */}
+                              <div style={{ 
+                                color: isSel ? '#db8c95' : '#a0868c', 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center', 
+                                width: '32px', 
+                                height: '32px', 
+                                borderRadius: '8px', 
+                                background: isSel ? 'rgba(219, 140, 149, 0.12)' : 'rgba(223, 178, 140, 0.08)',
+                                flexShrink: 0 
+                              }}>
                                 {getCategoryIcon(svc.category)}
                               </div>
-                              <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: '0.84rem', fontWeight: 700, color: '#3d2b30' }}>{svc.name}</div>
-                                <div style={{ fontSize: '0.68rem', color: '#a0868c', marginTop: '3px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                  <span>${Number(svc.price || 0).toFixed(2)}</span>
-                                  <span style={{ color: '#c8b6ba' }}>•</span>
-                                  <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}><Clock size={12} /> {formatDuration(svc.duration_minutes || 60)}</span>
+
+                              {/* Service Info */}
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#3d2b30', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{svc.name}</div>
+                                <div style={{ fontSize: '0.65rem', color: '#a0868c', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
+                                  <span style={{ color: '#db8c95', fontWeight: 800 }}>${Number(svc.price || 0).toFixed(2)}</span>
+                                  <span style={{ color: '#e2d5d7' }}>·</span>
+                                  <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}><Clock size={11} /> {formatDuration(svc.duration_minutes || 60)}</span>
                                   {pkg && <span style={{ color: '#16a34a', fontWeight: 700 }}>✓ Paquete</span>}
                                 </div>
                               </div>
-                              {isSel && <Check size={20} color="#db8c95" style={{ flexShrink: 0, animation: 'scaleIn 0.3s ease-out' }} />}
+
+                              {/* Checkbox indicator */}
+                              <div style={{ 
+                                width: '16px', 
+                                height: '16px', 
+                                borderRadius: '4px', 
+                                border: isSel ? 'none' : '1.5px solid rgba(223, 178, 140, 0.3)', 
+                                background: isSel ? '#db8c95' : 'transparent',
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center',
+                                flexShrink: 0
+                              }}>
+                                {isSel && <Check size={12} color="#fff" strokeWidth={3} />}
+                              </div>
                             </button>
                           );
                         })}
@@ -1263,36 +1294,37 @@ const ScheduleModal = ({
           {showSummaryPanel && (
             <div className="jana-scrollbar jana-summary-panel" style={{
               display: 'flex', flexDirection: 'column', gap: '0',
-              borderRadius: '20px', width: '340px', flexShrink: 0,
+              borderRadius: '32px', width: '340px', flexShrink: 0,
               background: '#fff',
-              boxShadow: '0 25px 60px rgba(74,48,54,0.25)',
+              boxShadow: '0 25px 60px rgba(74,48,54,0.15)',
               maxHeight: '90vh',
               overflowY: 'auto',
-              animation: 'slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
+              border: '1.5px solid rgba(223, 178, 140, 0.15)',
+              animation: 'slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1)'
             }}>
             {/* Header Rosado */}
             <div style={{
               background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
-              padding: '24px 20px',
+              padding: '24px',
               color: '#fff',
               display: 'flex',
               flexDirection: 'column',
               gap: '8px'
             }}>
-              <div style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.95, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <User size={16} /> Cliente
+              <div style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.85, textTransform: 'uppercase', letterSpacing: '0.8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <User size={14} /> Cliente
               </div>
-              <div style={{ fontSize: '1.2rem', fontWeight: 800, lineHeight: 1.2 }}>{localClient?.name || 'Sin cliente'}</div>
-              <div style={{ fontSize: '0.8rem', fontWeight: 600, opacity: 0.9, display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                <Calendar size={14} /> {selectedDate?.toLocaleDateString('es-VE', { weekday: 'short', day: 'numeric', month: 'short' }) || 'Sin fecha'}
+              <div style={{ fontSize: '1.3rem', fontWeight: 900, lineHeight: 1.2, fontFamily: "'Playfair Display', Georgia, serif" }}>{localClient?.name || 'Sin cliente'}</div>
+              <div style={{ fontSize: '0.78rem', fontWeight: 700, opacity: 0.9, display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+                <Calendar size={13} /> {selectedDate?.toLocaleDateString('es-VE', { weekday: 'short', day: 'numeric', month: 'short' }) || 'Sin fecha'}
               </div>
             </div>
 
             {/* Contenedor de Servicios */}
-            <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px', borderBottom: '2px solid #f5f5f5' }}>
+            <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px', borderBottom: '2px solid #fcf8f7' }}>
 
-              <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#a0868c', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                <Scissors size={16} /> Servicios
+              <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#db8c95', textTransform: 'uppercase', letterSpacing: '0.8px', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                <Scissors size={14} /> Servicios
               </div>
               {selectedServices.map((svc, idx) => {
                 const svcData = services.find(s => s.id === svc.service_id);
