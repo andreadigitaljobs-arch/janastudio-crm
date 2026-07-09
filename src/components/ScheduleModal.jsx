@@ -13,7 +13,13 @@ import {
   Clock,
   RotateCcw,
   Trash2,
-  Search
+  Search,
+  Droplets,
+  Flame,
+  Zap,
+  Heart,
+  Palette,
+  Nail
 } from 'lucide-react';
 import { normalizeForSearch } from '../utils/stringUtils';
 import { dataService } from '../services/dataService';
@@ -46,6 +52,18 @@ const getDisplayTime = (timeStr) => {
 };
 
 const getStaffDisplayName = (member) => String(member?.name || '').split('(')[0].trim();
+
+const getCategoryIcon = (category) => {
+  const iconMap = {
+    'Cabello': <Scissors size={16} />,
+    'Cejas & Pestañas': <Sparkles size={16} />,
+    'Depilación': <Flame size={16} />,
+    'Peinados': <Palette size={16} />,
+    'Uñas': <Nail size={16} />,
+    'Pestañas': <Heart size={16} />
+  };
+  return iconMap[category] || <Zap size={16} />;
+};
 
 const ScheduleModal = ({
   isOpen,
@@ -441,7 +459,7 @@ const ScheduleModal = ({
     <AnimatedModal isOpen={isOpen}>
       {(overlayClass, cardClass) => (
         <div className={overlayClass} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(30, 30, 30, 0.4)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 20000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px', animation: 'fadeIn 0.3s ease-out' }}>
-          <div className={`${cardClass} jana-scrollbar`} style={{ maxWidth: '640px', width: '100%', maxHeight: 'calc(100vh - 40px)', overflowY: 'auto', borderRadius: '32px', padding: '36px 36px 48px 36px', backgroundColor: '#fff', boxShadow: '0 25px 60px rgba(74,48,54,0.18), 0 8px 24px rgba(0,0,0,0.06)', border: '1px solid rgba(223,178,140,0.15)', display: 'flex', flexDirection: 'column', animation: 'slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
+          <div className={`${cardClass} jana-scrollbar`} style={{ maxWidth: '720px', width: '100%', maxHeight: 'calc(100vh - 40px)', overflowY: 'auto', borderRadius: '32px', padding: '40px 40px 52px 40px', backgroundColor: '#fff', boxShadow: '0 25px 60px rgba(74,48,54,0.18), 0 8px 24px rgba(0,0,0,0.06)', border: '1px solid rgba(223,178,140,0.15)', display: 'flex', flexDirection: 'column', animation: 'slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
             <style>{`
               @keyframes fadeIn {
                 from { opacity: 0; }
@@ -500,8 +518,8 @@ const ScheduleModal = ({
             ) : (
               <>
                 {/* Header with Step indicator */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                  <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+                  <div style={{ flex: 1 }}>
                     <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#3d2b30', margin: 0, letterSpacing: '-0.3px' }}>
                       {isReprogramOnly ? (
                         <>Reprogramar <span style={{ color: '#db8c95' }}>Turno</span></>
@@ -511,7 +529,12 @@ const ScheduleModal = ({
                         <>Agendar <span style={{ color: '#db8c95' }}>Orden</span></>
                       )}
                     </h2>
-                    <div style={{ display: 'flex', gap: '4px', marginTop: '8px' }}>
+                    {!isReprogramOnly && (
+                      <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#db8c95', backgroundColor: '#fff0f2', padding: '4px 10px', borderRadius: '8px', display: 'inline-block', marginTop: '8px' }}>
+                        Paso {currentStep} de {totalSteps}
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', gap: '4px', marginTop: '10px' }}>
                       {isReprogramOnly ? (
                         <div style={{ fontSize: '0.72rem', color: '#db8c95', fontWeight: 700 }}>
                           Modo reprogramación rápida para {localClient?.name}
@@ -788,37 +811,43 @@ const ScheduleModal = ({
                           <button
                             onClick={() => setServiceCategoryFilter('Todas')}
                             style={{
-                              flexShrink: 0, padding: '7px 13px', borderRadius: '10px', cursor: 'pointer',
+                              flexShrink: 0, padding: '8px 14px', borderRadius: '10px', cursor: 'pointer',
                               fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap',
                               background: serviceCategoryFilter === 'Todas' ? '#db8c95' : '#faf3f2',
                               color: serviceCategoryFilter === 'Todas' ? '#fff' : '#a0506a',
                               border: '1px solid ' + (serviceCategoryFilter === 'Todas' ? '#db8c95' : 'rgba(160,80,106,0.15)'),
                               transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                              transform: 'scale(1)'
+                              transform: 'scale(1)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '5px'
                             }}
                             onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(219,140,149,0.2)'; }}
                             onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none'; }}
                           >
-                            Todas
+                            <Zap size={14} style={{ color: 'inherit' }} /> Todas
                           </button>
                           {serviceCategories.map((cat, idx) => (
                             <button
                               key={cat}
                               onClick={() => setServiceCategoryFilter(cat)}
                               style={{
-                                flexShrink: 0, padding: '7px 13px', borderRadius: '10px', cursor: 'pointer',
+                                flexShrink: 0, padding: '8px 14px', borderRadius: '10px', cursor: 'pointer',
                                 fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap',
                                 background: serviceCategoryFilter === cat ? '#db8c95' : '#faf3f2',
                                 color: serviceCategoryFilter === cat ? '#fff' : '#a0506a',
                                 border: '1px solid ' + (serviceCategoryFilter === cat ? '#db8c95' : 'rgba(160,80,106,0.15)'),
                                 transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                                 transform: 'scale(1)',
-                                animation: `fadeInUp 0.4s ease-out ${0.2 + idx * 0.05}s both`
+                                animation: `fadeInUp 0.4s ease-out ${0.2 + idx * 0.05}s both`,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '5px'
                               }}
                               onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(219,140,149,0.2)'; }}
                               onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none'; }}
                             >
-                              {cat}
+                              {getCategoryIcon(cat)} {cat}
                             </button>
                           ))}
                         </div>
@@ -836,8 +865,8 @@ const ScheduleModal = ({
                               key={svc.id}
                               onClick={() => toggleServiceSelection(svc)}
                               style={{
-                                display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px',
-                                padding: '12px 14px', borderRadius: '14px', textAlign: 'left', cursor: 'pointer',
+                                display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
+                                padding: '14px 16px', borderRadius: '14px', textAlign: 'left', cursor: 'pointer',
                                 border: isSel ? '1.5px solid #db8c95' : '1px solid rgba(223,178,140,0.2)',
                                 background: isSel ? 'rgba(219,140,149,0.08)' : '#faf8f7',
                                 transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -854,14 +883,19 @@ const ScheduleModal = ({
                                 e.currentTarget.style.borderColor = isSel ? '#db8c95' : 'rgba(223,178,140,0.2)';
                               }}
                             >
-                              <div>
-                                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#3d2b30' }}>{svc.name}</div>
-                                <div style={{ fontSize: '0.68rem', color: '#a0868c', marginTop: '2px' }}>
-                                  ${Number(svc.price || 0).toFixed(2)} · {svc.duration_minutes || 60} min
-                                  {pkg && <span style={{ color: '#16a34a', fontWeight: 700 }}> · ✓ Paquete activo</span>}
+                              <div style={{ color: '#db8c95', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '20px' }}>
+                                {getCategoryIcon(svc.category)}
+                              </div>
+                              <div style={{ flex: 1 }}>
+                                <div style={{ fontSize: '0.84rem', fontWeight: 700, color: '#3d2b30' }}>{svc.name}</div>
+                                <div style={{ fontSize: '0.68rem', color: '#a0868c', marginTop: '3px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <span>${Number(svc.price || 0).toFixed(2)}</span>
+                                  <span style={{ color: '#c8b6ba' }}>•</span>
+                                  <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}><Clock size={12} /> {svc.duration_minutes || 60} min</span>
+                                  {pkg && <span style={{ color: '#16a34a', fontWeight: 700 }}>✓ Paquete</span>}
                                 </div>
                               </div>
-                              {isSel && <Check size={18} color="#db8c95" style={{ flexShrink: 0, animation: 'scaleIn 0.3s ease-out' }} />}
+                              {isSel && <Check size={20} color="#db8c95" style={{ flexShrink: 0, animation: 'scaleIn 0.3s ease-out' }} />}
                             </button>
                           );
                         })}
@@ -1058,33 +1092,35 @@ const ScheduleModal = ({
                       onClick={() => setCurrentStep(prev => prev + 1)}
                       style={{
                         flex: 1,
-                        height: '52px',
+                        height: '56px',
                         borderRadius: '16px',
                         border: 'none',
                         background: isStepValid(currentStep) ? 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)' : '#ebdcd0',
                         color: isStepValid(currentStep) ? '#fff' : '#b29c9e',
-                        fontSize: '0.86rem',
+                        fontSize: '0.9rem',
                         fontWeight: 800,
+                        letterSpacing: '0.3px',
                         cursor: isStepValid(currentStep) ? 'pointer' : 'not-allowed',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: '8px',
-                        boxShadow: isStepValid(currentStep) ? '0 8px 24px rgba(219,140,149,0.25)' : 'none',
-                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                        boxShadow: isStepValid(currentStep) ? '0 10px 28px rgba(219,140,149,0.3)' : 'none',
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        textTransform: 'uppercase'
                       }}
                       onMouseEnter={e => {
                         if (isStepValid(currentStep)) {
                           e.currentTarget.style.transform = 'translateX(2px)';
-                          e.currentTarget.style.boxShadow = '0 10px 28px rgba(219,140,149,0.35)';
+                          e.currentTarget.style.boxShadow = '0 12px 32px rgba(219,140,149,0.4)';
                         }
                       }}
                       onMouseLeave={e => {
                         e.currentTarget.style.transform = 'translateX(0)';
-                        e.currentTarget.style.boxShadow = isStepValid(currentStep) ? '0 8px 24px rgba(219,140,149,0.25)' : 'none';
+                        e.currentTarget.style.boxShadow = isStepValid(currentStep) ? '0 10px 28px rgba(219,140,149,0.3)' : 'none';
                       }}
                     >
-                      Siguiente <ArrowRight size={16} />
+                      Siguiente <ArrowRight size={18} strokeWidth={2.5} />
                     </button>
                   ) : (
                     <button
