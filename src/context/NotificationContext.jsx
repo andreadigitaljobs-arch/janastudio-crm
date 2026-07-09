@@ -1,11 +1,20 @@
-import React, { createContext, useContext } from 'react';
-import { useNotifications } from '../hooks/useNotifications';
-import { Bell, CheckCircle, AlertCircle } from 'lucide-react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
+import { CheckCircle, AlertCircle } from 'lucide-react';
 
 const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
-  const notifs = useNotifications();
+  const [toasts, setToasts] = useState([]);
+
+  const showToast = useCallback((message, type = 'success') => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 4000);
+  }, []);
+
+  const notifs = { toasts, showToast };
 
   return (
     <NotificationContext.Provider value={notifs}>
