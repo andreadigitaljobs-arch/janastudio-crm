@@ -119,7 +119,7 @@ const ScheduleModal = ({
   const [serviceCategoryFilter, setServiceCategoryFilter] = useState('Todas');
   const serviceCategories = [...new Set(services.map(s => s.category).filter(Boolean))];
 
-  const totalSteps = isEditMode ? 5 : 4;
+  const totalSteps = 5;
 
   // Fetch client packages when client changes
   useEffect(() => {
@@ -459,7 +459,8 @@ const ScheduleModal = ({
     switch (step) {
       case 1: return !!localClient;
       case 2: return selectedServices.length > 0;
-      case 3: return selectedServices.every(s => s.staffId && s.time && !getServiceConflict(s));
+      case 3: return !!selectedDate;
+      case 4: return selectedServices.every(s => s.staffId && s.time && !getServiceConflict(s));
       default: return true;
     }
   };
@@ -937,32 +938,42 @@ const ScheduleModal = ({
                   )}
 
                   {!isEditMode && currentStep === 3 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', animation: 'fadeInUp 0.4s ease-out' }}>
+                      <div style={{ textAlign: 'center', marginBottom: '4px' }}>
+                        <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
+                          <Calendar size={24} />
+                        </div>
+                        <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#3d2b30' }}>¿Cuándo será la cita?</h3>
+                        <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Todos los servicios serán el mismo día.</p>
+                      </div>
+
+                      <div>
+                        <label style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', display: 'block', marginBottom: '6px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Fecha</label>
+                        <JanaDatePicker
+                          variant="light"
+                          value={dateToISO(selectedDate)}
+                          onChange={(e) => e.target.value && setSelectedDate(isoToDate(e.target.value))}
+                          inputStyle={{ borderRadius: '12px', height: '48px', fontSize: '0.85rem', fontWeight: 600, paddingLeft: '38px', background: '#fff', border: '1.5px solid rgba(212,160,154,0.3)', color: '#3d2b30' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', display: 'block', marginBottom: '6px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Hora general</label>
+                        <JanaTimePicker variant="light" label="" value={generalTime} onChange={applyGeneralTime} />
+                        <div style={{ fontSize: '0.68rem', color: '#a0868c', marginTop: '8px' }}>
+                          Se aplica a todos los servicios por defecto — podrás personalizar la hora de cada uno individualmente en el siguiente paso.
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {!isEditMode && currentStep === 4 && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out', flex: 1, minHeight: 0 }}>
                       <div style={{ textAlign: 'center', marginBottom: '4px', flexShrink: 0 }}>
                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
                           <Sparkles size={24} />
                         </div>
                         <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#3d2b30' }}>Asigna profesional y horario</h3>
-                        <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Todo el mismo día. Pueden atenderla a la vez o en momentos distintos.</p>
-                      </div>
-
-                      <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-end', flexShrink: 0 }}>
-                        <div style={{ flex: 1 }}>
-                          <label style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', display: 'block', marginBottom: '6px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Fecha</label>
-                          <JanaDatePicker
-                            variant="light"
-                            value={dateToISO(selectedDate)}
-                            onChange={(e) => e.target.value && setSelectedDate(isoToDate(e.target.value))}
-                            inputStyle={{ borderRadius: '12px', height: '42px', fontSize: '0.78rem', fontWeight: 600, paddingLeft: '34px', background: '#fff', border: '1.5px solid rgba(212,160,154,0.3)', color: '#3d2b30' }}
-                          />
-                        </div>
-                        <div style={{ width: '140px' }}>
-                          <label style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', display: 'block', marginBottom: '6px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Hora general</label>
-                          <JanaTimePicker variant="light" label="" value={generalTime} onChange={applyGeneralTime} />
-                        </div>
-                      </div>
-                      <div style={{ fontSize: '0.66rem', color: '#a0868c', marginTop: '-8px', flexShrink: 0 }}>
-                        La hora general se aplica a todos los servicios que no hayas personalizado individualmente.
+                        <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Pueden atenderla a la vez o en momentos distintos.</p>
                       </div>
 
                       <div className="svc-header-row" style={{ display: 'flex', gap: '10px', padding: '0 2px', flexShrink: 0 }}>
@@ -970,18 +981,18 @@ const ScheduleModal = ({
                         <div style={{ width: '118px', flexShrink: 0, fontSize: '0.6rem', fontWeight: 700, color: '#a0868c', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Horario</div>
                       </div>
 
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', paddingBottom: '8px', flex: 1, minHeight: '120px', overflowY: 'auto' }} className="jana-scrollbar">
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingBottom: '8px', flex: 1, minHeight: '200px', overflowY: 'auto' }} className="jana-scrollbar">
                         {selectedServices.map(svc => {
                           const conflict = getServiceConflict(svc);
                           return (
                             <div key={svc._uid} style={{
-                              padding: '10px 12px', borderRadius: '14px',
+                              padding: '12px 14px', borderRadius: '14px',
                               border: conflict ? '1.5px solid #f59e0b' : '1px solid rgba(223,178,140,0.2)',
                               background: conflict ? '#fffbeb' : '#faf8f7'
                             }}>
-                              <div className="svc-row" style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                              <div className="svc-row" style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
                                 <div style={{ flex: 1, minWidth: 0 }}>
-                                  <div style={{ fontSize: '0.76rem', fontWeight: 700, color: '#3d2b30', marginBottom: '5px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{svc.name}</div>
+                                  <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#3d2b30', marginBottom: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{svc.name}</div>
                                   <JanaSelect
                                     variant="light"
                                     label=""
@@ -995,15 +1006,15 @@ const ScheduleModal = ({
                                     showSearch={true}
                                   />
                                   {!svc.staffId && (
-                                    <div style={{ fontSize: '0.6rem', color: '#dc2626', marginTop: '4px', fontWeight: 600 }}>Requerido</div>
+                                    <div style={{ fontSize: '0.62rem', color: '#dc2626', marginTop: '5px', fontWeight: 600 }}>Requerido</div>
                                   )}
                                 </div>
                                 <div className="svc-time-col" style={{ width: '118px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-                                  <div className="svc-time-picker-wrap" style={{ width: '100%', marginTop: '25px' }}>
+                                  <div className="svc-time-picker-wrap" style={{ width: '100%', marginTop: '26px' }}>
                                     <JanaTimePicker variant="light" label="" value={svc.time} onChange={(v) => setRowTime(svc._uid, v)} />
                                   </div>
                                 </div>
-                                <div className="svc-actions-col" style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '25px', flexShrink: 0 }}>
+                                <div className="svc-actions-col" style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '26px', flexShrink: 0 }}>
                                   <button onClick={() => removeServiceRow(svc._uid)} title="Eliminar" style={{ background: 'none', border: 'none', color: '#c8949c', cursor: 'pointer', display: 'flex', padding: '2px' }}>
                                     <Trash2 size={14} />
                                   </button>
@@ -1015,7 +1026,7 @@ const ScheduleModal = ({
                                 </div>
                               </div>
                               {conflict && (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.64rem', fontWeight: 650, color: '#d97706', marginTop: '6px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.64rem', fontWeight: 650, color: '#d97706', marginTop: '8px' }}>
                                   <AlertTriangle size={12} style={{ flexShrink: 0 }} />
                                   <span>{CONFLICT_MESSAGES[conflict] || 'Cruce de horario potencial.'}</span>
                                 </div>
@@ -1027,7 +1038,7 @@ const ScheduleModal = ({
                     </div>
                   )}
 
-                  {!isEditMode && currentStep === 4 && (
+                  {!isEditMode && currentStep === 5 && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out' }}>
                       <div style={{ textAlign: 'center', marginBottom: '8px' }}>
                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#e2fbe9', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#16a34a' }}>
