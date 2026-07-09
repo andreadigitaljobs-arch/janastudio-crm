@@ -518,16 +518,13 @@ const ScheduleModal = ({
                 .svc-select-grid { grid-template-columns: 1fr !important; }
               }
 
-              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar,
-              .jana-summary-panel::-webkit-scrollbar { display: block !important; width: 6px !important; }
-              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-track,
-              .jana-summary-panel::-webkit-scrollbar-track { background: transparent; }
-              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-thumb,
-              .jana-summary-panel::-webkit-scrollbar-thumb { background: rgba(219,140,149,0.3); border-radius: 10px; }
-              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-thumb:hover,
-              .jana-summary-panel::-webkit-scrollbar-thumb:hover { background: rgba(219,140,149,0.5); }
-              .jana-schedule-modal-card .jana-scrollbar,
-              .jana-summary-panel { scrollbar-width: thin; scrollbar-color: rgba(219,140,149,0.3) transparent; }
+              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar { display: block !important; width: 6px !important; }
+              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-track { background: transparent; }
+              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-thumb { background: rgba(219,140,149,0.3); border-radius: 10px; }
+              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(219,140,149,0.5); }
+              .jana-schedule-modal-card .jana-scrollbar { scrollbar-width: thin; scrollbar-color: rgba(219,140,149,0.3) transparent; }
+              .jana-summary-panel::-webkit-scrollbar { display: none !important; width: 0 !important; }
+              .jana-summary-panel { scrollbar-width: none; }
 
               @media (max-width: 1250px) {
                 .jana-summary-panel { display: none !important; }
