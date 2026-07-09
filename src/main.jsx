@@ -10,17 +10,15 @@ import { DialogProvider } from './context/DialogContext'
 import AppErrorBoundary from './components/AppErrorBoundary'
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <AppErrorBoundary>
-      <AuthProvider>
-        <DialogProvider>
-          <NotificationProvider>
-            <ModalProvider>
-              <App />
-            </ModalProvider>
-          </NotificationProvider>
-        </DialogProvider>
-      </AuthProvider>
-    </AppErrorBoundary>
-  </StrictMode>,
+  <AppErrorBoundary>
+    <AuthProvider>
+      <DialogProvider>
+        <NotificationProvider>
+          <ModalProvider>
+            <App />
+          </ModalProvider>
+        </NotificationProvider>
+      </DialogProvider>
+    </AuthProvider>
+  </AppErrorBoundary>
 )
