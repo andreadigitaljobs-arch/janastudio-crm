@@ -709,7 +709,90 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
       else if (filterType === 'month') { start.setDate(1); end = new Date(start.getFullYear(), start.getMonth() + 1, 0); end.setHours(23, 59, 59, 999); }
       const endQuery = new Date(end.getTime() - 1);
       const data = await dataService.getAppointments(start.toISOString(), endQuery.toISOString());
-      setAppointments(data.filter(a => a.status !== 'Cancelada' && a.status !== 'Cancelado'));
+      let appointments = data.filter(a => a.status !== 'Cancelada' && a.status !== 'Cancelado');
+
+      // Si no hay citas y es hoy, añadir citas demo
+      if (appointments.length === 0 && filterType === 'day') {
+        const todayKey = getBusinessDateKey(new Date());
+        const selectedKey = getBusinessDateKey(selectedDate);
+        if (todayKey === selectedKey && staff.length > 0) {
+          const demoAppts = [
+            {
+              id: 'demo-1', client_id: '1', staff_id: staff[0]?.id || 'demo-staff-1',
+              clients: { name: 'María Fernández', phone: '04121234567' },
+              services: { name: 'Extensión de Pestañas', price: 600 },
+              scheduled_at: new Date(selectedDate.getTime() + 9 * 60 * 60000).toISOString(),
+              status: 'En Silla'
+            },
+            {
+              id: 'demo-2', client_id: '2', staff_id: staff[1]?.id || 'demo-staff-2',
+              clients: { name: 'Valentina Gómez', phone: '04149876543' },
+              services: { name: 'Diseño de Cejas', price: 400 },
+              scheduled_at: new Date(selectedDate.getTime() + 9.5 * 60 * 60000).toISOString(),
+              status: 'En Proceso'
+            },
+            {
+              id: 'demo-3', client_id: '3', staff_id: staff[2]?.id || 'demo-staff-3',
+              clients: { name: 'Camila Torres', phone: '04162341234' },
+              services: { name: 'Corte y Color', price: 800 },
+              scheduled_at: new Date(selectedDate.getTime() + 10 * 60 * 60000).toISOString(),
+              status: 'En Silla'
+            },
+            {
+              id: 'demo-4', client_id: '4', staff_id: staff[3]?.id || 'demo-staff-4',
+              clients: { name: 'Daniela Rojas', phone: '04125678901' },
+              services: { name: 'Manicura + Pedicura', price: 500 },
+              scheduled_at: new Date(selectedDate.getTime() + 10.5 * 60 * 60000).toISOString(),
+              status: 'En Tratamiento'
+            },
+            {
+              id: 'demo-5', client_id: '5', staff_id: staff[4]?.id || 'demo-staff-5',
+              clients: { name: 'Andrea Castillo', phone: '04149234567' },
+              services: { name: 'Microblading', price: 1200 },
+              scheduled_at: new Date(selectedDate.getTime() + 11 * 60 * 60000).toISOString(),
+              status: 'Completado'
+            },
+            {
+              id: 'demo-6', client_id: '6', staff_id: staff[5]?.id || 'demo-staff-6',
+              clients: { name: 'Lucía Méndez', phone: '04128765432' },
+              services: { name: 'Tratamiento Facial', price: 550 },
+              scheduled_at: new Date(selectedDate.getTime() + 11.5 * 60 * 60000).toISOString(),
+              status: 'Agendado'
+            },
+            {
+              id: 'demo-7', client_id: '7', staff_id: staff[0]?.id || 'demo-staff-1',
+              clients: { name: 'Paula Martínez', phone: '04141234567' },
+              services: { name: 'Extensión de Pestañas', price: 600 },
+              scheduled_at: new Date(selectedDate.getTime() + 14.5 * 60 * 60000).toISOString(),
+              status: 'Agendado'
+            },
+            {
+              id: 'demo-8', client_id: '8', staff_id: staff[1]?.id || 'demo-staff-2',
+              clients: { name: 'Sofía López', phone: '04169876543' },
+              services: { name: 'Diseño de Cejas', price: 400 },
+              scheduled_at: new Date(selectedDate.getTime() + 15 * 60 * 60000).toISOString(),
+              status: 'Agendado'
+            },
+            {
+              id: 'demo-9', client_id: '9', staff_id: staff[2]?.id || 'demo-staff-3',
+              clients: { name: 'Valentina Ruiz', phone: '04162341234' },
+              services: { name: 'Corte y Arreglo', price: 450 },
+              scheduled_at: new Date(selectedDate.getTime() + 15.5 * 60 * 60000).toISOString(),
+              status: 'Agendado'
+            },
+            {
+              id: 'demo-10', client_id: '10', staff_id: staff[3]?.id || 'demo-staff-4',
+              clients: { name: 'Karla Sánchez', phone: '04125678901' },
+              services: { name: 'Pedicura Decorada', price: 350 },
+              scheduled_at: new Date(selectedDate.getTime() + 16 * 60 * 60000).toISOString(),
+              status: 'Agendado'
+            }
+          ];
+          appointments = demoAppts;
+        }
+      }
+
+      setAppointments(appointments);
     } catch (err) {
       console.error(err);
     } finally {
@@ -1181,37 +1264,114 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
             ))}
           </div>
 
-          {/* ESTADO ACTUAL DEL SALÓN */}
-          <div className="agenda-glass-card" style={{ padding: '20px', marginBottom: '24px' }}>
-            <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#4a3036', margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#db8c95' }} />
-              ESTADO ACTUAL DEL SALÓN
-            </h4>
+          {/* ESTADO ACTUAL DEL SALÓN - DISEÑO PREMIUM */}
+          <div style={{ marginBottom: '24px' }}>
+            <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#4a3036', margin: '0 0 14px 0', letterSpacing: '0.5px' }}>
+              ESTADO DEL EQUIPO
+            </h3>
 
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '16px' }}>
               {/* Disponibles */}
-              <div style={{ background: 'rgba(34, 197, 94, 0.08)', border: '1px solid rgba(34, 197, 94, 0.2)', borderRadius: '12px', padding: '14px', textAlign: 'center' }}>
-                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#16a34a', textTransform: 'uppercase', marginBottom: '6px' }}>🟢 Disponibles</div>
-                <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#16a34a' }}>{staffByStatus.libres.length}</div>
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(34, 197, 94, 0.02) 100%)',
+                  border: '2px solid rgba(34, 197, 94, 0.25)',
+                  borderRadius: '16px',
+                  padding: '20px',
+                  textAlign: 'center',
+                  transition: 'all 0.3s ease',
+                  cursor: 'default'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(34, 197, 94, 0.4)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(34, 197, 94, 0.25)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
+                  <Users size={24} color="#16a34a" strokeWidth={1.5} />
+                </div>
+                <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#16a34a', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '8px' }}>
+                  Disponibles
+                </div>
+                <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#16a34a', lineHeight: 1 }}>
+                  {staffByStatus.libres.length}
+                </div>
               </div>
 
               {/* En Cita */}
-              <div style={{ background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '12px', padding: '14px', textAlign: 'center' }}>
-                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#dc2626', textTransform: 'uppercase', marginBottom: '6px' }}>🔴 En Cita</div>
-                <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#dc2626' }}>{staffByStatus.ocupadas.length}</div>
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(239, 68, 68, 0.02) 100%)',
+                  border: '2px solid rgba(239, 68, 68, 0.25)',
+                  borderRadius: '16px',
+                  padding: '20px',
+                  textAlign: 'center',
+                  transition: 'all 0.3s ease',
+                  cursor: 'default'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.25)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
+                  <Scissors size={24} color="#dc2626" strokeWidth={1.5} />
+                </div>
+                <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '8px' }}>
+                  En Cita
+                </div>
+                <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#dc2626', lineHeight: 1 }}>
+                  {staffByStatus.ocupadas.length}
+                </div>
               </div>
 
               {/* Almuerzo */}
-              <div style={{ background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.2)', borderRadius: '12px', padding: '14px', textAlign: 'center' }}>
-                <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#d97706', textTransform: 'uppercase', marginBottom: '6px' }}>🟡 Almuerzo</div>
-                <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#d97706' }}>1</div>
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, rgba(212, 160, 154, 0.08) 0%, rgba(212, 160, 154, 0.02) 100%)',
+                  border: '2px solid rgba(212, 160, 154, 0.3)',
+                  borderRadius: '16px',
+                  padding: '20px',
+                  textAlign: 'center',
+                  transition: 'all 0.3s ease',
+                  cursor: 'default'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(212, 160, 154, 0.5)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(212, 160, 154, 0.3)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
+                  <Clock size={24} color="#a0506a" strokeWidth={1.5} />
+                </div>
+                <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '8px' }}>
+                  Almuerzo
+                </div>
+                <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#a0506a', lineHeight: 1 }}>
+                  1
+                </div>
               </div>
             </div>
           </div>
 
-          {/* PRÓXIMAS CITAS IMPORTANTES */}
-          <div className="agenda-glass-card" style={{ padding: '20px', marginBottom: '24px' }}>
-            <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#4a3036', margin: '0 0 14px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {/* CITAS Y ESTADÍSTICAS - LAYOUT HORIZONTAL */}
+          <div style={{ display: 'flex', gap: '20px', marginBottom: '24px', width: '100%', flexDirection: isMobile ? 'column' : 'row', alignItems: 'flex-start' }}>
+
+            {/* PRÓXIMAS CITAS IMPORTANTES */}
+            <div className="agenda-glass-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', minHeight: '400px', overflow: 'hidden', flex: 1, minWidth: 0 }}>
+            <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#4a3036', margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
               <CalendarIcon size={16} color="#db8c95" />
               PRÓXIMAS CITAS HOY
             </h4>
@@ -1221,12 +1381,16 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
                 No hay citas agendadas para hoy
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {dayApps.slice(0, 5).map((app, idx) => {
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', overflowY: 'auto', flex: 1, paddingRight: '8px' }} className="jana-scrollbar">
+                {dayApps.map((app, idx) => {
                   const start = new Date(app.scheduled_at || app.created_at);
                   const now = new Date();
-                  const startHour = start.getHours().toString().padStart(2, '0');
-                  const startMin = start.getMinutes().toString().padStart(2, '0');
+                  const hours24 = start.getHours();
+                  const minutes = start.getMinutes();
+                  const hours12 = hours24 % 12 || 12;
+                  const ampm = hours24 >= 12 ? 'PM' : 'AM';
+                  const startHour = hours12.toString().padStart(2, '0');
+                  const startMin = minutes.toString().padStart(2, '0');
                   const staffName = staff.find(s => s.id === app.staff_id)?.name || 'Especialista';
                   const duration = getAppointmentDuration(app);
 
@@ -1234,75 +1398,81 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
                   const minutosRetraso = Math.floor((now.getTime() - start.getTime()) / 60000);
                   const isRetrasada = minutosRetraso > 15 && app.status !== 'Completado' && app.status !== 'Cancelada';
 
+                  const staffPhoto = staff.find(s => s.id === app.staff_id)?.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(staffName)}&backgroundColor=e8a2a9,f7d4d7,fce4e8&radius=50`;
+
                   return (
                     <div
                       key={app.id}
                       style={{
                         display: 'flex',
                         gap: '12px',
-                        padding: '12px',
+                        padding: '10px',
                         background: isRetrasada ? 'rgba(239, 68, 68, 0.08)' : '#faf3f2',
                         borderRadius: '10px',
                         border: isRetrasada ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(223, 178, 140, 0.15)',
                         transition: 'all 0.2s ease',
                         cursor: 'pointer',
-                        position: 'relative'
+                        alignItems: 'flex-start'
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.background = isRetrasada ? 'rgba(239, 68, 68, 0.12)' : '#fff';
                         e.currentTarget.style.borderColor = isRetrasada ? 'rgba(239, 68, 68, 0.5)' : 'rgba(219, 140, 149, 0.3)';
-                        e.currentTarget.style.transform = 'translateX(4px)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(219, 140, 149, 0.2)';
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.background = isRetrasada ? 'rgba(239, 68, 68, 0.08)' : '#faf3f2';
                         e.currentTarget.style.borderColor = isRetrasada ? 'rgba(239, 68, 68, 0.3)' : 'rgba(223, 178, 140, 0.15)';
-                        e.currentTarget.style.transform = 'translateX(0)';
+                        e.currentTarget.style.boxShadow = 'none';
                       }}
                     >
-                      {/* Indicador Retrasada */}
-                      {isRetrasada && (
-                        <div style={{
-                          position: 'absolute',
-                          top: '-8px',
-                          left: '12px',
-                          background: '#dc2626',
-                          color: '#fff',
-                          fontSize: '0.58rem',
-                          fontWeight: 800,
-                          padding: '2px 6px',
-                          borderRadius: '4px',
-                          animation: 'glowPulse 1.5s ease-in-out infinite'
-                        }}>
-                          ⚠️ RETRASADA +{minutosRetraso}min
+                      {/* Foto Especialista */}
+                      <div style={{ position: 'relative', width: '50px', height: '50px', flexShrink: 0 }}>
+                        <img
+                          src={staffPhoto}
+                          alt={staffName}
+                          style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(219, 140, 149, 0.3)' }}
+                          onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                        />
+                        <div style={{ display: 'none', position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '1.2rem', borderRadius: '50%' }}>
+                          {staffName.charAt(0).toUpperCase()}
                         </div>
-                      )}
-
-                      {/* Hora */}
-                      <div style={{ minWidth: '50px', fontWeight: 800, color: isRetrasada ? '#dc2626' : '#db8c95', fontSize: '0.78rem' }}>
-                        {startHour}:{startMin}
                       </div>
 
                       {/* Info */}
-                      <div style={{ flex: 1, minWidth: 0, paddingTop: isRetrasada ? '6px' : '0px' }}>
-                        <div style={{ fontSize: '0.78rem', fontWeight: 700, color: isRetrasada ? '#dc2626' : '#4a3036', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {app.clients?.name || 'Cliente'} → {app.services?.name || 'Servicio'}
+                      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        {/* Hora */}
+                        <div style={{ fontWeight: 900, color: isRetrasada ? '#dc2626' : '#db8c95', fontSize: '0.75rem' }}>
+                          {startHour}:{startMin} {ampm}
                         </div>
-                        <div style={{ fontSize: '0.68rem', color: '#a07880', fontWeight: 600, marginTop: '2px' }}>
-                          {staffName}
+
+                        {/* Cliente */}
+                        <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#4a3036', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          👤 {app.clients?.name || 'Cliente'}
+                        </div>
+
+                        {/* Servicio */}
+                        <div style={{ fontSize: '0.68rem', color: '#a07880', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {app.services?.name || 'Servicio'}
+                        </div>
+
+                        {/* Especialista */}
+                        <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#db8c95', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          ✨ {staffName}
                         </div>
                       </div>
 
                       {/* Status */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <div style={{ flexShrink: 0 }}>
                         <span style={{
-                          fontSize: '0.62rem',
+                          fontSize: '0.65rem',
                           fontWeight: 700,
-                          padding: '3px 6px',
-                          borderRadius: '6px',
-                          background: isRetrasada ? 'rgba(239, 68, 68, 0.2)' : (app.status === 'Completado' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(245, 158, 11, 0.1)'),
-                          color: isRetrasada ? '#dc2626' : (app.status === 'Completado' ? '#16a34a' : '#d97706')
+                          padding: '2px 6px',
+                          borderRadius: '5px',
+                          background: isRetrasada ? 'rgba(239, 68, 68, 0.2)' : (app.status === 'Completado' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(245, 158, 11, 0.15)'),
+                          color: isRetrasada ? '#dc2626' : (app.status === 'Completado' ? '#16a34a' : '#d97706'),
+                          whiteSpace: 'nowrap'
                         }}>
-                          {isRetrasada ? '⚠️' : (app.status === 'Completado' ? '✓' : '○')}
+                          {isRetrasada ? '⚠️' : (app.status === 'Completado' ? '✓' : '●')}
                         </span>
                       </div>
                     </div>
@@ -1310,12 +1480,13 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
                 })}
               </div>
             )}
+            </div>
           </div>
 
           {/* TWO-COLUMN CONTENT GRID */}
           <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '24px', width: '100%', alignItems: 'flex-start', marginTop: '0' }}>
-            
-            {/* Left Column (72%) */}
+
+            {/* Left Column (Main) */}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0', minWidth: 0 }}>
               
               {/* Rendimiento Grid (Sin tabs) */}
@@ -1458,67 +1629,72 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
                           boxShadow: '0 2px 8px rgba(74,48,54,0.05)',
                           transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
                           display: 'flex',
-                          flexDirection: 'column',
+                          flexDirection: 'row',
                           height: '100%'
                         }}
                         onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(212,160,154,0.15)'; }}
                         onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(74,48,54,0.05)'; }}
                       >
-                        {/* Photo hero - COMPACTA */}
-                        <div style={{ position: 'relative', height: '90px', overflow: 'hidden', flexShrink: 0 }}>
+                        {/* Photo - Left Side with Gradient Overlay */}
+                        <div style={{ position: 'relative', width: '110px', height: 'auto', minHeight: '140px', flexShrink: 0, overflow: 'hidden' }}>
                           <img
                             src={s.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(s.name)}&backgroundColor=e8a2a9,f7d4d7,fce4e8&radius=0`}
                             alt={s.name}
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
                             onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
                           />
                           {/* Fallback gradient */}
-                          <div style={{ display: 'none', position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: '2rem' }}>
+                          <div style={{ display: 'none', position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: '2.5rem' }}>
                             {initial}
                           </div>
-                          {/* Status badge - GRANDE y visible */}
-                          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.9))', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: '6px' }}>
-                            <span style={{
-                              fontSize: '0.7rem',
-                              color: '#fff',
-                              background: statusColor,
-                              padding: '4px 10px',
-                              borderRadius: '12px',
-                              fontWeight: 800,
-                              boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-                            }}>
-                              {statusText === 'Libre ahora' ? '🟢 LIBRE' : statusText === 'Almuerzo' ? '🟡 ALMUERZO' : '🔴 EN CITA'}
-                            </span>
-                          </div>
+                          {/* Gradient Overlay - Bottom */}
+                          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.15) 100%)' }} />
                         </div>
 
-                        {/* Content - COMPACTA */}
-                        <div style={{ padding: '12px 12px', display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
-                          {/* Nombre + Especialidad */}
-                          <div style={{ textAlign: 'center' }}>
-                            <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#4a3036' }}>
-                              {s.name.split(' ')[0]} {s.name.split(' ')[1] || ''}
+                        {/* Content - Right Side */}
+                        <div style={{ padding: '14px 14px', display: 'flex', flexDirection: 'column', gap: '10px', flex: 1, justifyContent: 'space-between' }}>
+                          {/* Nombre + Especialidad + Status */}
+                          <div>
+                            <div style={{ fontSize: '0.85rem', fontWeight: 900, color: '#4a3036', letterSpacing: '0.3px' }}>
+                              {s.name}
                             </div>
-                            <div style={{ fontSize: '0.6rem', color: '#a07880', fontWeight: 600, marginTop: '1px' }}>
+                            <div style={{ fontSize: '0.62rem', color: '#a07880', fontWeight: 600, marginTop: '2px' }}>
                               {getStaffRole(s.name)}
                             </div>
+
+                            {/* Status badge */}
+                            <div style={{ marginTop: '6px' }}>
+                              <span style={{
+                                fontSize: '0.62rem',
+                                color: statusColor,
+                                background: statusBg,
+                                padding: '3px 8px',
+                                borderRadius: '6px',
+                                fontWeight: 700,
+                              }}>
+                                {statusText === 'Libre ahora' ? '● LIBRE' : statusText.includes('Almuerzo') ? '● ALMUERZO' : '● EN CITA'}
+                              </span>
+                            </div>
                           </div>
 
-                          {/* Ocupación como barra */}
-                          <div>
-                            <div style={{ height: '4px', background: '#faf3f2', borderRadius: '2px', overflow: 'hidden' }}>
-                              <div style={{ height: '100%', background: 'linear-gradient(90deg, #e8a2a9, #db8c95)', width: `${metrics.occupancy}%`, transition: 'width 0.6s ease' }} />
+                          {/* Próxima cita + Ocupación */}
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                            {/* Próxima cita */}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.68rem' }}>
+                              <span style={{ color: '#8c767b', fontWeight: 600 }}>Próx cita:</span>
+                              <span style={{ fontWeight: 800, color: '#4a3036' }}>
+                                {nextApp ? nextApp.timeStr : 'Ninguna'}
+                              </span>
                             </div>
-                            <div style={{ fontSize: '0.6rem', color: '#8c767b', fontWeight: 600, marginTop: '2px', textAlign: 'center' }}>
-                              {metrics.occupancy}% ocupada
-                            </div>
-                          </div>
 
-                          {/* Próxima cita */}
-                          <div style={{ background: '#faf3f2', borderRadius: '8px', padding: '6px 10px', textAlign: 'center' }}>
-                            <div style={{ fontSize: '0.58rem', color: '#8c767b', fontWeight: 600 }}>Próx cita</div>
-                            <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#4a3036', marginTop: '2px' }}>
-                              {nextApp ? nextApp.timeStr : 'Ninguna'}
+                            {/* Ocupación barra */}
+                            <div>
+                              <div style={{ height: '3px', background: '#faf3f2', borderRadius: '2px', overflow: 'hidden' }}>
+                                <div style={{ height: '100%', background: `linear-gradient(90deg, ${statusColor === '#db8c95' ? '#db8c95 0%, #e8a2a9' : statusColor === '#dc2626' ? '#dc2626 0%, #f87171' : '#16a34a 0%, #86efac'} 100%)`, width: `${metrics.occupancy}%`, transition: 'width 0.6s ease' }} />
+                              </div>
+                              <div style={{ fontSize: '0.6rem', color: '#8c767b', fontWeight: 600, marginTop: '2px', textAlign: 'right' }}>
+                                {metrics.occupancy}%
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -1538,205 +1714,159 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
               </div>
             </div>
 
-            {/* Right Column (28%) */}
-            <div style={{ width: isMobile ? '100%' : '320px', display: 'flex', flexDirection: 'column', gap: '16px', flexShrink: 0 }}>
-              
-              {/* ¿Quién está libre ahora? */}
-              <div className="agenda-glass-card" style={{ padding: '20px', overflow: 'visible', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#4a3036', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    ¿Quién está libre ahora? <InfoTooltip text="Muestra la disponibilidad actual de las estilistas en tiempo real según sus horarios de trabajo, citas activas y su hora de almuerzo programada." />
-                  </h3>
+            {/* Right Column - Calendario */}
+            <div style={{ width: isMobile ? '100%' : '300px', display: 'flex', flexDirection: 'column', gap: '16px', flexShrink: 0 }}>
+
+              {/* Mini Calendar */}
+              <div className="agenda-glass-card" style={{ padding: '20px', overflow: 'visible' }}>
+                {/* Header with navigation */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <button
+                    onClick={() => {
+                      const prev = new Date(selectedDate);
+                      prev.setMonth(prev.getMonth() - 1);
+                      setSelectedDate(prev);
+                    }}
+                    style={{
+                      width: '28px', height: '28px', borderRadius: '8px',
+                      background: 'rgba(219, 140, 149, 0.08)',
+                      border: '1px solid rgba(219, 140, 149, 0.2)',
+                      color: '#db8c95', cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '14px', transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgba(219, 140, 149, 0.15)';
+                      e.currentTarget.style.borderColor = 'rgba(219, 140, 149, 0.4)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'rgba(219, 140, 149, 0.08)';
+                      e.currentTarget.style.borderColor = 'rgba(219, 140, 149, 0.2)';
+                    }}
+                  >
+                    ←
+                  </button>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#4a3036', margin: 0 }}>
+                    {selectedDate.toLocaleDateString('es-VE', { month: 'long', year: 'numeric' })}
+                  </h4>
+                  <button
+                    onClick={() => {
+                      const next = new Date(selectedDate);
+                      next.setMonth(next.getMonth() + 1);
+                      setSelectedDate(next);
+                    }}
+                    style={{
+                      width: '28px', height: '28px', borderRadius: '8px',
+                      background: 'rgba(219, 140, 149, 0.08)',
+                      border: '1px solid rgba(219, 140, 149, 0.2)',
+                      color: '#db8c95', cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '14px', transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgba(219, 140, 149, 0.15)';
+                      e.currentTarget.style.borderColor = 'rgba(219, 140, 149, 0.4)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'rgba(219, 140, 149, 0.08)';
+                      e.currentTarget.style.borderColor = 'rgba(219, 140, 149, 0.2)';
+                    }}
+                  >
+                    →
+                  </button>
                 </div>
 
-                {/* Relocated Button at the Top */}
-                <button 
-                  onClick={() => setShowQuickAvailModal(true)}
-                  style={{
-                    width: '100%', padding: '9px', borderRadius: '10px',
-                    border: '1px solid rgba(219, 140, 149, 0.22)', background: 'rgba(219, 140, 149, 0.05)',
-                    color: '#db8c95', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer',
-                    transition: 'all 0.2s'
-                  }}
-                  className="btn-hover-scale"
-                >
-                  Ver disponibilidad a una hora específica
-                </button>
-                {/* Container for Specialists - Dynamic height, shows everyone without scrolling */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {visibleStaff.map(s => {
-                    const window = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
-                      const busySlots = (() => {
-                      const realBusy = getStaffBusyIntervals(s.id, dayApps);
-                      if (realBusy.length > 0) return realBusy;
-                      
-                      // Simulated busy hours based on the static demoApps on dashboard
-                      // demoApps maps: Isabella: 9:00 (d1), Laura: 9:30 (d2), Sofia: 10:00 (d3), Camila: 10:30 (d4), Valeria: 11:00 (d5), Mariana: 11:30 (d6)
-                      const simulated = [];
-                      if (s.name.includes('Isabella')) simulated.push({ startMinutes: 9 * 60, endMinutes: 10.5 * 60, client: 'María Fernández' }); // 9:00 - 10:30
-                      if (s.name.includes('Laura')) simulated.push({ startMinutes: 9.5 * 60, endMinutes: 10.25 * 60, client: 'Valentina Gómez' }); // 9:30 - 10:15
-                      if (s.name.includes('Sofía')) simulated.push({ startMinutes: 10 * 60, endMinutes: 10.75 * 60, client: 'Camila Torres' });  // 10:00 - 10:45
-                      if (s.name.includes('Camila')) simulated.push({ startMinutes: 10.5 * 60, endMinutes: 11.25 * 60, client: 'Daniela Rojas' }); // 10:30 - 11:15
-                      if (s.name.includes('Valeria')) simulated.push({ startMinutes: 11 * 60, endMinutes: 11.75 * 60, client: 'Andrea Castillo' }); // 11:00 - 11:45
-                      if (s.name.includes('Mariana')) simulated.push({ startMinutes: 11.5 * 60, endMinutes: 13 * 60, client: 'Lucía Méndez' }); // 11:30 - 13:00
-                      return simulated;
-                    })();
+                {/* Day names */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '8px' }}>
+                  {['L', 'M', 'X', 'J', 'V', 'S', 'D'].map((day, i) => (
+                    <div key={i} style={{ textAlign: 'center', fontSize: '0.6rem', fontWeight: 700, color: '#a07880', padding: '4px 0' }}>
+                      {day}
+                    </div>
+                  ))}
+                </div>
 
-                    const refMin = checkingTime != null ? checkingTime : nowMinutes;
-                    const isLunch = refMin >= 13 * 60 && refMin < 14 * 60;
-                    
-                    let dotColor = '#94a3b8'; // Off duty
-                    let statusText = 'No trabaja hoy';
-                    let occupied = false;
-                    let activeSlot = null;
+                {/* Calendar days */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
+                  {(() => {
+                    const year = selectedDate.getFullYear();
+                    const month = selectedDate.getMonth();
+                    const firstDay = new Date(year, month, 1).getDay();
+                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+                    const days = [];
 
-                    if (window.isWorking) {
-                      activeSlot = busySlots.find(b => refMin >= b.startMinutes && refMin < b.endMinutes);
-                      occupied = activeSlot || isLunch;
-                      
-                      if (occupied) {
-                        dotColor = isLunch ? '#db8c95' : '#f59e0b'; // Amber for busy, rose for lunch
-                        statusText = isLunch ? 'En Almuerzo' : `Ocupada c/ ${activeSlot?.client || 'Cliente'}`;
-                      } else {
-                        dotColor = '#22c55e'; // Free
-                        // Find when is next appointment
-                        const nextSimulated = busySlots.filter(b => b.startMinutes > refMin).sort((a,b) => a.startMinutes - b.startMinutes)[0];
-                        statusText = nextSimulated 
-                          ? `Libre ahora (Cita ${formatMinutes(nextSimulated.startMinutes)})`
-                          : 'Libre ahora';
-                      }
+                    // Empty cells before month starts
+                    for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) {
+                      days.push(<div key={`empty-${i}`} />);
                     }
 
-                    let badgeBg = 'rgba(148, 163, 184, 0.08)';
-                    let badgeColor = '#64748b';
-                    if (window.isWorking) {
-                      if (isLunch) {
-                        badgeBg = 'rgba(219, 140, 149, 0.12)';
-                        badgeColor = '#db8c95';
-                      } else if (occupied) {
-                        badgeBg = 'rgba(245, 158, 11, 0.1)';
-                        badgeColor = '#d97706';
-                      } else {
-                        badgeBg = 'rgba(34, 197, 94, 0.08)';
-                        badgeColor = '#16a34a';
-                      }
+                    // Days of month
+                    for (let day = 1; day <= daysInMonth; day++) {
+                      const dateObj = new Date(year, month, day);
+                      const dateKey = getBusinessDateKey(dateObj);
+                      const dayAppsCount = appointments.filter(app => {
+                        const appDate = new Date(app.scheduled_at || app.created_at);
+                        return getBusinessDateKey(appDate) === dateKey;
+                      }).length;
+                      const isSelected = dateKey === getBusinessDateKey(selectedDate);
+                      const isToday = dateKey === getBusinessDateKey(new Date());
+
+                      days.push(
+                        <button
+                          key={day}
+                          onClick={() => setSelectedDate(dateObj)}
+                          style={{
+                            padding: '6px 0',
+                            borderRadius: '8px',
+                            border: isSelected ? '2px solid #db8c95' : '1px solid rgba(223, 178, 140, 0.1)',
+                            background: isSelected ? 'rgba(219, 140, 149, 0.15)' : isToday ? 'rgba(219, 140, 149, 0.08)' : '#fff',
+                            color: isSelected ? '#db8c95' : '#4a3036',
+                            fontSize: '0.72rem',
+                            fontWeight: isSelected || isToday ? 700 : 600,
+                            cursor: 'pointer',
+                            position: 'relative',
+                            transition: 'all 0.2s',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!isSelected) {
+                              e.currentTarget.style.background = 'rgba(219, 140, 149, 0.1)';
+                              e.currentTarget.style.borderColor = 'rgba(219, 140, 149, 0.3)';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!isSelected) {
+                              e.currentTarget.style.background = '#fff';
+                              e.currentTarget.style.borderColor = 'rgba(223, 178, 140, 0.1)';
+                            }
+                          }}
+                        >
+                          {day}
+                          {dayAppsCount > 0 && (
+                            <div style={{
+                              position: 'absolute',
+                              bottom: '2px',
+                              width: '4px',
+                              height: '4px',
+                              borderRadius: '50%',
+                              background: '#db8c95',
+                              opacity: 0.8
+                            }} />
+                          )}
+                        </button>
+                      );
                     }
 
-                    return (
-                      <div 
-                        key={s.id} 
-                        style={{ 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          gap: '12px',
-                          padding: '8px 10px',
-                          borderRadius: '14px',
-                          background: '#ffffff',
-                          border: '1px solid rgba(223, 178, 140, 0.08)',
-                          transition: 'all 0.2s ease',
-                          cursor: 'pointer'
-                        }}
-                        className="btn-hover-scale"
-                        onMouseEnter={e => {
-                          e.currentTarget.style.background = '#faf6f5';
-                          e.currentTarget.style.borderColor = 'rgba(219, 140, 149, 0.2)';
-                        }}
-                        onMouseLeave={e => {
-                          e.currentTarget.style.background = '#ffffff';
-                          e.currentTarget.style.borderColor = 'rgba(223, 178, 140, 0.08)';
-                        }}
-                        onClick={() => setSelectedStaffAvailDetail({
-                          staff: s,
-                          busySlots,
-                          isWorking: window.isWorking,
-                          isLunch,
-                          refMin,
-                          statusText
-                        })}
-                      >
-                        {/* Larger Avatar */}
-                        <div style={{ position: 'relative', width: '40px', height: '40px', flexShrink: 0 }}>
-                          <img
-                            src={s.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(s.name)}&backgroundColor=e8a2a9,f7d4d7,fce4e8&radius=50`}
-                            alt={s.name}
-                            style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: '1.5px solid rgba(223, 178, 140, 0.15)' }}
-                          />
-                          {/* Dot Status Overlay */}
-                          <div 
-                            style={{ 
-                              position: 'absolute', 
-                              bottom: '-1px', 
-                              right: '-1px', 
-                              width: '10px', 
-                              height: '10px', 
-                              borderRadius: '50%', 
-                              background: dotColor, 
-                              border: '1.5px solid #fff',
-                              boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-                            }} 
-                          />
-                        </div>
-
-                        {/* Specialist Info */}
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#3d2b30', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {s.name}
-                          </div>
-                          <div style={{ fontSize: '0.66rem', color: '#a0868c', fontWeight: 600, marginTop: '1px' }}>
-                            {getStaffRole(s.name)}
-                          </div>
-                          {window.isWorking && (
-                            <div style={{ fontSize: '0.68rem', color: '#6b4a52', fontWeight: 600, marginTop: '3px' }}>
-                              {isLunch 
-                                ? <span style={{ color: '#db8c95', fontWeight: 700 }}>Regresa a las 2:00 PM</span>
-                                : activeSlot 
-                                  ? <span style={{ color: '#d97706', fontWeight: 700 }}>Con {activeSlot.client || 'Cliente'} (Libre {formatMinutes(activeSlot.endMinutes)})</span>
-                                  : (() => {
-                                      const nextSimulated = busySlots.filter(b => b.startMinutes > refMin).sort((a,b) => a.startMinutes - b.startMinutes)[0];
-                                      if (nextSimulated) {
-                                        const minsDiff = nextSimulated.startMinutes - refMin;
-                                        const hrs = Math.floor(minsDiff / 60);
-                                        const mins = minsDiff % 60;
-                                        const timeText = hrs > 0 ? `${hrs}h ${mins > 0 ? `${mins}m` : ''}` : `${mins} min`;
-                                        return (
-                                          <span style={{ color: '#4a3036' }}>
-                                            Disp. por <strong style={{ color: '#16a34a' }}>{timeText}</strong> <span style={{ opacity: 0.8 }}>(Cita {formatMinutes(nextSimulated.startMinutes)})</span>
-                                          </span>
-                                        );
-                                      }
-                                      return <span style={{ color: '#16a34a', fontWeight: 700 }}>Disponible todo el día</span>;
-                                    })()
-                              }
-                            </div>
-                          )}
-                          {!window.isWorking && (
-                            <div style={{ fontSize: '0.58rem', color: '#94a3b8', fontWeight: 700, marginTop: '2px' }}>
-                              Día libre
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Visual Status Capsule Badge */}
-                        <div style={{
-                          padding: '4px 10px',
-                          borderRadius: '12px',
-                          background: badgeBg,
-                          color: badgeColor,
-                          fontSize: '0.65rem',
-                          fontWeight: 800,
-                          textAlign: 'center',
-                          whiteSpace: 'nowrap',
-                          letterSpacing: '-0.1px',
-                          textTransform: 'uppercase'
-                        }}>
-                          {isLunch ? 'Almuerzo' : occupied ? 'Ocupada' : 'Libre'}
-                        </div>
-                      </div>
-                    );
-                  })}
+                    return days;
+                  })()}
                 </div>
               </div>
+
+
             </div>
+
           </div>
         </div>
       )}
