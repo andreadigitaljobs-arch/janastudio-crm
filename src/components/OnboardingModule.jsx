@@ -54,8 +54,21 @@ export default function OnboardingModule({ onComplete }) {
         .onboarding-image-panel {
           flex: 1;
           position: relative;
-          background: #111;
+          background: #fcf9f8;
           display: flex;
+          opacity: 0;
+          animation: fadeImageIn 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes fadeImageIn {
+          0% {
+            opacity: 0;
+            transform: scale(1.05);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1);
+          }
         }
 
         .onboarding-images {
