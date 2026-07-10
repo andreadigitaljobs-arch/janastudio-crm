@@ -1810,45 +1810,6 @@ input:focus { outline: none; }
   50% { background-position: 100% 50%; }
 }
 
-.jana-page-title-wrap {
-  position: relative;
-  display: inline-block;
-}
-
-.jana-title-sparkle {
-  position: absolute;
-  color: #dc90a0;
-  pointer-events: none;
-  animation: janaSparkleTwinkle 2.6s ease-in-out infinite;
-}
-
-.jana-title-sparkle-1 {
-  top: -6px;
-  right: -18px;
-  animation-delay: 0s;
-}
-
-.jana-title-sparkle-2 {
-  top: 10px;
-  right: -28px;
-  animation-delay: 0.9s;
-  color: #c97282;
-}
-
-.jana-title-sparkle-3 {
-  top: -14px;
-  right: 2px;
-  animation-delay: 1.7s;
-  color: #a0506a;
-}
-
-@keyframes janaSparkleTwinkle {
-  0%, 100% { opacity: 0; transform: scale(0.4) rotate(0deg) translateY(0); }
-  15% { opacity: 1; transform: scale(1) rotate(8deg) translateY(-2px); }
-  35% { opacity: 0.85; transform: scale(0.85) rotate(-4deg) translateY(0px); }
-  55% { opacity: 0; transform: scale(0.4) rotate(0deg) translateY(2px); }
-}
-
 @keyframes fabHintIn {
   from { opacity: 0; transform: translateX(-50%) translateY(8px) scale(0.9); }
   to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }

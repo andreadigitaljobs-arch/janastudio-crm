@@ -1093,14 +1093,9 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
       {/* HEADER EXACTLY LIKE THE MOCKUP */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
         <div>
-          <div className="jana-page-title-wrap">
-            <h1 className="jana-page-title">
-              Agenda
-            </h1>
-            <Sparkles className="jana-title-sparkle jana-title-sparkle-1" size={14} />
-            <Sparkles className="jana-title-sparkle jana-title-sparkle-2" size={10} />
-            <Sparkles className="jana-title-sparkle jana-title-sparkle-3" size={17} />
-          </div>
+          <h1 className="jana-page-title">
+            Agenda
+          </h1>
           <p style={{ fontSize: '0.82rem', color: '#a0909a', margin: '6px 0 0 0', fontWeight: 500 }}>
             Controla el rendimiento y la disponibilidad de tu equipo.
           </p>
