@@ -546,7 +546,7 @@ const DashboardModule = ({
           </div>
         </div>
         {/* Stats Grid 2x2 */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', width: '100%' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '10px', width: '100%' }}>
             {/* Card 1: Citas del día */}
             <div style={{
               background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)',
@@ -657,14 +657,12 @@ const DashboardModule = ({
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
                 <span style={{ fontSize: '0.62rem', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>Más reservado</span>
-                <span style={{ 
-                  fontSize: '0.68rem', 
-                  fontWeight: '800', 
-                  color: 'var(--text-primary)', 
-                  margin: '2px 0', 
-                  display: 'block', 
-                  lineHeight: '1.15',
-                  wordBreak: 'break-word'
+                <span style={{
+                  fontSize: '0.68rem',
+                  fontWeight: '800',
+                  color: 'var(--text-primary)',
+                  margin: '2px 0',
+                  lineHeight: '1.15'
                 }}>
                   {dynamicStats.mostReservedService}
                 </span>
@@ -903,7 +901,7 @@ const DashboardModule = ({
           }}>
             Acciones rápidas
           </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '10px' }}>
             {/* Nueva Cita */}
             <div 
               onClick={() => onOpenSale()}
@@ -1421,7 +1419,7 @@ const DashboardModule = ({
       </div>
 
       {/* ── WIDGETS OPERATIVOS ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isTablet ? 'repeat(2, minmax(0, 1fr))' : 'repeat(4, minmax(0, 1fr))', gap: '16px' }}>
         {/* Card 1: Citas del día */}
         <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', transition: 'all 0.3s ease' }}>
           <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'linear-gradient(135deg, #fdf3f4 0%, #fce8ec 100%)', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
@@ -1457,7 +1455,7 @@ const DashboardModule = ({
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
             <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>Más reservado</span>
-            <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--text-primary)', lineHeight: 1.2, wordBreak: 'break-word' }}>{dynamicStats.mostReservedService}</span>
+            <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--text-primary)', lineHeight: 1.2 }}>{dynamicStats.mostReservedService}</span>
             <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: '500', whiteSpace: 'nowrap' }}>{dynamicStats.mostReservedCount} citas hoy</span>
           </div>
         </div>
@@ -1477,7 +1475,7 @@ const DashboardModule = ({
       </div>
 
       {/* ── MAIN CONTENT ROW: Agenda + Top Servicios + Top Especialistas (ALINEACIÓN STRETCH) ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', alignItems: 'stretch' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isTablet ? 'minmax(0, 1fr)' : 'repeat(3, minmax(0, 1fr))', gap: '16px', alignItems: 'stretch' }}>
 
         {/* AGENDA DE HOY */}
         <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '24px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
@@ -1809,7 +1807,7 @@ const DashboardModule = ({
             Ver todos <ChevronRight size={13} />
           </span>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '14px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isTablet ? 'repeat(3, minmax(0, 1fr))' : 'repeat(6, minmax(0, 1fr))', gap: '14px' }}>
           {SERVICES_LIST.map((serv, idx) => (
             <div
               key={idx}
