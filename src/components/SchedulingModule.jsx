@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar as CalendarIcon, Clock, User, Plus, ChevronLeft, ChevronRight,
   ChevronDown, Search, Pencil,
@@ -350,6 +351,7 @@ const StaffDayColumn = ({
       {/* Grilla del día */}
       <div
         onClick={handleColumnClick}
+        className="hover-glow"
         style={{
           position: 'relative',
           height: `${GRID_HEIGHT}px`,
@@ -544,6 +546,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
   const [schedules, setSchedules] = useState([]);
   const [timeOff, setTimeOff] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [dateNavDir, setDateNavDir] = useState('next');
+  const goToDate = (newDate, dir) => { setDateNavDir(dir); setSelectedDate(newDate); };
   const [loading, setLoading] = useState(true);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [scheduleModalPreset, setScheduleModalPreset] = useState(null);
@@ -1110,7 +1114,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
   }, [visibleStaff, dayApps, schedules, timeOff, dateKey]);
 
   return (
-    <div className="animate-fade-in" style={{ paddingBottom: isMobile ? 'calc(100px + env(safe-area-inset-bottom, 12px))' : '40px' }}>
+    <div className="animate-fade-in agenda-module" style={{ paddingBottom: isMobile ? 'calc(100px + env(safe-area-inset-bottom, 12px))' : '40px' }}>
       
       {/* HEADER EXACTLY LIKE THE MOCKUP */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
@@ -1308,7 +1312,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
             {/* Navigator Arrows with Date */}
             <button
-              onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() - 1))}
+              onClick={() => goToDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() - 1), 'prev')}
               style={{
                 width: '28px', height: '28px', borderRadius: '8px', background: 'transparent',
                 border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -1327,12 +1331,12 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               <ChevronLeft size={14} />
             </button>
 
-            <span style={{ fontSize: '0.78rem', fontWeight: '600', color: '#2d1b22', minWidth: '65px', textAlign: 'center' }}>
+            <span key={selectedDate.toDateString()} className={dateNavDir === 'next' ? 'animate-date-enter' : 'animate-date-prev'} style={{ display: 'inline-block', fontSize: '0.78rem', fontWeight: '600', color: '#2d1b22', minWidth: '65px', textAlign: 'center' }}>
               {selectedDate.toLocaleDateString('es-VE', { day: 'numeric', month: 'short' })}
             </span>
 
             <button
-              onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + 1))}
+              onClick={() => goToDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + 1), 'next')}
               style={{
                 width: '28px', height: '28px', borderRadius: '8px', background: 'transparent',
                 border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -1569,11 +1573,21 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         }
                       });
 
-                      return groups.map(group => {
+                      return (
+                        <AnimatePresence mode="popLayout">
+                          {groups.map((group, groupIdx) => {
                         const h12 = group.start.getHours() % 12 || 12;
                         const ampm = group.start.getHours() >= 12 ? 'PM' : 'AM';
                         return (
-                          <div key={group.timeKey} style={{ marginBottom: '18px' }}>
+                          <motion.div
+                            key={group.timeKey}
+                            layout
+                            initial={{ opacity: 0, x: -16 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 16, transition: { duration: 0.2 } }}
+                            transition={{ duration: 0.32, delay: Math.min(groupIdx * 0.05, 0.4), ease: [0.16, 1, 0.3, 1] }}
+                            style={{ marginBottom: '18px' }}
+                          >
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                               <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#c97282', flexShrink: 0 }}>
                                 {h12}:{group.start.getMinutes().toString().padStart(2, '0')} {ampm}
@@ -1639,9 +1653,11 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                 );
                               })}
                             </div>
-                          </div>
+                          </motion.div>
                         );
-                      });
+                          })}
+                        </AnimatePresence>
+                      );
                     })()}
                   </div>
                 )}
@@ -1657,17 +1673,17 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   ESTADO DEL EQUIPO
                 </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: (isMobile || isTablet) ? '8px' : '16px' }}>
-                  <div style={{ background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(34, 197, 94, 0.02) 100%)', border: '2px solid rgba(34, 197, 94, 0.25)', borderRadius: '16px', padding: (isMobile || isTablet) ? '12px 6px' : '20px', textAlign: 'center', transition: 'all 0.3s ease', minWidth: 0 }}>
+                  <div className="hover-lift" style={{ background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(34, 197, 94, 0.02) 100%)', border: '2px solid rgba(34, 197, 94, 0.25)', borderRadius: '16px', padding: (isMobile || isTablet) ? '12px 6px' : '20px', textAlign: 'center', minWidth: 0, animation: 'cardEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0s both' }}>
                     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: (isMobile || isTablet) ? '6px' : '10px' }}><Users size={(isMobile || isTablet) ? 20 : 24} color="#16a34a" strokeWidth={1.5} /></div>
                     <div style={{ fontSize: (isMobile || isTablet) ? '0.56rem' : '0.68rem', fontWeight: 700, color: '#16a34a', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: (isMobile || isTablet) ? '4px' : '8px' }}>Disponibles</div>
                     <div style={{ fontSize: (isMobile || isTablet) ? '1.4rem' : '2.2rem', fontWeight: 900, color: '#16a34a', lineHeight: 1 }}>{staffByStatus.libres.length}</div>
                   </div>
-                  <div style={{ background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(239, 68, 68, 0.02) 100%)', border: '2px solid rgba(239, 68, 68, 0.25)', borderRadius: '16px', padding: (isMobile || isTablet) ? '12px 6px' : '20px', textAlign: 'center', transition: 'all 0.3s ease', minWidth: 0 }}>
+                  <div className="hover-lift" style={{ background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(239, 68, 68, 0.02) 100%)', border: '2px solid rgba(239, 68, 68, 0.25)', borderRadius: '16px', padding: (isMobile || isTablet) ? '12px 6px' : '20px', textAlign: 'center', minWidth: 0, animation: 'cardEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both' }}>
                     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: (isMobile || isTablet) ? '6px' : '10px' }}><Scissors size={(isMobile || isTablet) ? 20 : 24} color="#dc2626" strokeWidth={1.5} /></div>
                     <div style={{ fontSize: (isMobile || isTablet) ? '0.56rem' : '0.68rem', fontWeight: 700, color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: (isMobile || isTablet) ? '4px' : '8px' }}>En Cita</div>
                     <div style={{ fontSize: (isMobile || isTablet) ? '1.4rem' : '2.2rem', fontWeight: 900, color: '#dc2626', lineHeight: 1 }}>{staffByStatus.ocupadas.length}</div>
                   </div>
-                  <div style={{ background: 'linear-gradient(135deg, rgba(212, 160, 154, 0.08) 0%, rgba(212, 160, 154, 0.02) 100%)', border: '2px solid rgba(212, 160, 154, 0.3)', borderRadius: '16px', padding: (isMobile || isTablet) ? '12px 6px' : '20px', textAlign: 'center', transition: 'all 0.3s ease', minWidth: 0 }}>
+                  <div className="hover-lift" style={{ background: 'linear-gradient(135deg, rgba(212, 160, 154, 0.08) 0%, rgba(212, 160, 154, 0.02) 100%)', border: '2px solid rgba(212, 160, 154, 0.3)', borderRadius: '16px', padding: (isMobile || isTablet) ? '12px 6px' : '20px', textAlign: 'center', minWidth: 0, animation: 'cardEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.16s both' }}>
                     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: (isMobile || isTablet) ? '6px' : '10px' }}><Clock size={(isMobile || isTablet) ? 20 : 24} color="#a0506a" strokeWidth={1.5} /></div>
                     <div style={{ fontSize: (isMobile || isTablet) ? '0.56rem' : '0.68rem', fontWeight: 700, color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: (isMobile || isTablet) ? '4px' : '8px' }}>Almuerzo</div>
                     <div style={{ fontSize: (isMobile || isTablet) ? '1.4rem' : '2.2rem', fontWeight: 900, color: '#a0506a', lineHeight: 1 }}>1</div>
@@ -1675,7 +1691,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 </div>
               </div>
 
-              <div className="agenda-glass-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', minHeight: '400px' }}>
+              <div className="agenda-glass-card hover-lift" style={{ padding: '20px', display: 'flex', flexDirection: 'column', minHeight: '400px' }}>
                 <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22', margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                   <Sparkles size={16} color="#c97282" />
                   ESTADO DE ESPECIALISTAS
@@ -1705,16 +1721,25 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
                 {/* Stylists Compact Grid */}
                 <div className="jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px', overflowY: 'auto', flex: 1, paddingRight: '4px' }}>
-                  {visibleStaff.map(s => {
+                  <AnimatePresence mode="popLayout">
+                  {visibleStaff.map((s, staffIdx) => {
                     const window = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
                     const metrics = getStaffMetrics(s.id);
                     const initial = (s.name || '?').charAt(0).toUpperCase();
                     const nextApp = getStaffNextApp(s.id);
+                    const staffMotionProps = {
+                      layout: true,
+                      initial: { opacity: 0, y: 12, scale: 0.96 },
+                      animate: { opacity: 1, y: 0, scale: 1 },
+                      exit: { opacity: 0, y: -8, scale: 0.96, transition: { duration: 0.18 } },
+                      transition: { duration: 0.3, delay: Math.min(staffIdx * 0.05, 0.35), ease: [0.16, 1, 0.3, 1] }
+                    };
 
                     if (!window.isWorking) {
                       return (
-                        <div
+                        <motion.div
                           key={s.id}
+                          {...staffMotionProps}
                           onClick={() => setSelectedStaffDrawer(s)}
                           style={{
                             padding: '12px',
@@ -1742,7 +1767,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                           </div>
                           <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#8c767b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{s.name}</div>
                           <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 700, marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.3px' }}>NO TRABAJA</div>
-                        </div>
+                        </motion.div>
                       );
                     }
 
@@ -1771,8 +1796,9 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     }
 
                     return (
-                      <div
+                      <motion.div
                         key={s.id}
+                        {...staffMotionProps}
                         onClick={() => setSelectedStaffDrawer(s)}
                         style={{
                           padding: '12px',
@@ -1819,9 +1845,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                             <span>{metrics.occupancy}%</span>
                           </div>
                         </div>
-                      </div>
+                      </motion.div>
                     );
                   })}
+                  </AnimatePresence>
                 </div>
 
                 {visibleStaff.length === 0 && (
@@ -2243,18 +2270,18 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   padding: '4px',
                   boxShadow: '0 2px 8px rgba(74, 48, 54, 0.02)'
                 }}>
-                  <div style={{ 
-                    padding: '8px 16px', 
-                    fontSize: '0.82rem', 
-                    fontWeight: 700, 
+                  <div key={selectedDate.toDateString()} className={dateNavDir === 'next' ? 'animate-date-enter' : 'animate-date-prev'} style={{
+                    padding: '8px 16px',
+                    fontSize: '0.82rem',
+                    fontWeight: 700,
                     color: '#2d1b22',
                     textTransform: 'capitalize'
                   }}>
                     {selectedDate.toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).replace(' de', '').replace(' de', '')}
                   </div>
                   <div style={{ display: 'flex', gap: '2px', borderLeft: '1px solid rgba(223,178,140,0.15)', paddingLeft: '4px' }}>
-                    <button 
-                      onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() - 1))}
+                    <button
+                      onClick={() => goToDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() - 1), 'prev')}
                       style={{
                         width: '32px', height: '32px', borderRadius: '8px', border: 'none', background: 'transparent',
                         color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
@@ -2263,8 +2290,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     >
                       <ChevronLeft size={16} />
                     </button>
-                    <button 
-                      onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + 1))}
+                    <button
+                      onClick={() => goToDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + 1), 'next')}
                       style={{
                         width: '32px', height: '32px', borderRadius: '8px', border: 'none', background: 'transparent',
                         color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
