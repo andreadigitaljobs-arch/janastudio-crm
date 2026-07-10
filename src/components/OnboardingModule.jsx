@@ -337,7 +337,7 @@ export default function OnboardingModule({ onComplete }) {
 
           .onboarding-title {
             color: #2d1b22;
-            font-size: clamp(1.9rem, 4.6vw, 2.35rem);
+            font-size: clamp(2.2rem, 9vw, 2.75rem);
             text-shadow: none;
             text-wrap: balance;
           }
@@ -355,7 +355,8 @@ export default function OnboardingModule({ onComplete }) {
             color: #7a6065;
             text-shadow: none;
             font-weight: 500;
-            max-width: 380px;
+            font-size: clamp(1.15rem, 4.2vw, 1.35rem);
+            max-width: 400px;
             margin: 0 auto 22px auto;
           }
 
