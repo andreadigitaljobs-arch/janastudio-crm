@@ -2284,22 +2284,15 @@ input:focus { outline: none; }
    Driven by a real media query (not the JS isTablet flag, which only
    covers up to 1024px) so it stacks on any iPad size, including
    landscape orientations that are wider than that JS breakpoint. */
+/* Agenda de hoy, Top servicios, Top especialistas and Reportes as four
+   cards in a 2x2 grid — gives Agenda/Top servicios more room than the
+   old 3-equal-column layout, and Top especialistas/Reportes each get
+   their own card instead of sharing one. */
 .dashboard-main-row {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   align-items: stretch;
-}
-
-@media (max-width: 1300px) {
-  .dashboard-main-row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  /* Odd one out: let it take the full second row instead of leaving an
-     empty gap next to it. */
-  .dashboard-specialists-card {
-    grid-column: 1 / -1;
-  }
 }
 
 .dashboard-kpi-row {

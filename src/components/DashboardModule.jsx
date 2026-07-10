@@ -1587,9 +1587,8 @@ const DashboardModule = ({
           </div>
         </div>
 
-        {/* TOP ESPECIALISTAS + REPORTES */}
-        <div className="dashboard-specialists-card" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '22px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', gap: '0' }}>
-          {/* Top Especialistas header */}
+        {/* TOP ESPECIALISTAS */}
+        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '22px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', gap: '0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
             <h3 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>Top especialistas</h3>
             <span onClick={() => onNavigate('personnel')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -1641,48 +1640,48 @@ const DashboardModule = ({
               );
             })}
           </div>
+        </div>
 
-          {/* Divider + Reportes */}
-          <div style={{ borderTop: '1px solid rgba(201, 114, 130, 0.1)', paddingTop: '16px', marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h4 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>Reportes</h4>
-              <span onClick={() => onNavigate('reports')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                Ver todo <ChevronRight size={13} />
-              </span>
-            </div>
-            <span style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--text-primary)' }}>$12.840</span>
-            <span style={{ fontSize: '0.68rem', color: '#22c55e', fontWeight: '600' }}>
-              ↑ 18% <span style={{ color: 'var(--text-muted)', fontWeight: '400' }}>vs mes anterior</span>
+        {/* REPORTES */}
+        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '22px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', gap: '6px', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h4 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>Reportes</h4>
+            <span onClick={() => onNavigate('reports')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              Ver todo <ChevronRight size={13} />
             </span>
-            <div style={{ height: '60px', width: '100%', position: 'relative', marginTop: '4px' }}>
-              <Line
-                data={{
-                  labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
-                  datasets: [{
-                    data: [800, 1200, 950, 1400, 1100, 1600, 1800],
-                    borderColor: '#a0506a',
-                    borderWidth: 2,
-                    pointBackgroundColor: '#a0506a',
-                    pointBorderColor: '#ffffff',
-                    pointBorderWidth: 2,
-                    pointRadius: 3,
-                    pointHoverRadius: 5,
-                    fill: true,
-                    backgroundColor: 'rgba(160, 80, 106, 0.06)',
-                    tension: 0.4
-                  }]
-                }}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: { legend: { display: false }, tooltip: { enabled: false } },
-                  scales: {
-                    x: { grid: { display: false }, ticks: { color: '#a0506a', font: { size: 8, weight: '600' } }, border: { display: false } },
-                    y: { display: false, min: 0 }
-                  }
-                }}
-              />
-            </div>
+          </div>
+          <span style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--text-primary)' }}>$12.840</span>
+          <span style={{ fontSize: '0.68rem', color: '#22c55e', fontWeight: '600' }}>
+            ↑ 18% <span style={{ color: 'var(--text-muted)', fontWeight: '400' }}>vs mes anterior</span>
+          </span>
+          <div style={{ height: '90px', width: '100%', position: 'relative', marginTop: '4px' }}>
+            <Line
+              data={{
+                labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                datasets: [{
+                  data: [800, 1200, 950, 1400, 1100, 1600, 1800],
+                  borderColor: '#a0506a',
+                  borderWidth: 2,
+                  pointBackgroundColor: '#a0506a',
+                  pointBorderColor: '#ffffff',
+                  pointBorderWidth: 2,
+                  pointRadius: 3,
+                  pointHoverRadius: 5,
+                  fill: true,
+                  backgroundColor: 'rgba(160, 80, 106, 0.06)',
+                  tension: 0.4
+                }]
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                scales: {
+                  x: { grid: { display: false }, ticks: { color: '#a0506a', font: { size: 8, weight: '600' } }, border: { display: false } },
+                  y: { display: false, min: 0 }
+                }
+              }}
+            />
           </div>
         </div>
 
