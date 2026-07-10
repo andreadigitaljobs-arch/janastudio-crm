@@ -337,7 +337,7 @@ export default function OnboardingModule({ onComplete }) {
 
           .onboarding-title {
             color: #2d1b22;
-            font-size: clamp(2.2rem, 9vw, 2.75rem);
+            font-size: clamp(2.3rem, 9.5vw, 3rem);
             text-shadow: none;
             text-wrap: balance;
           }
@@ -390,11 +390,11 @@ export default function OnboardingModule({ onComplete }) {
         /* Any tablet portrait (iPad Mini through iPad Pro / Galaxy Tab) — crop the photo higher and scale up text to match the larger canvas */
         @media (min-width: 700px) and (max-width: 1400px) and (orientation: portrait) {
           .onboarding-mobile-img {
-            object-position: center 22%;
+            object-position: center 30%;
           }
 
           .onboarding-title {
-            font-size: clamp(2.6rem, 7.2vw, 5rem);
+            font-size: clamp(2.6rem, 7.6vw, 5.4rem);
           }
 
           .onboarding-subtitle {
@@ -419,7 +419,7 @@ export default function OnboardingModule({ onComplete }) {
         /* Short/squarish portrait screens (e.g. iPhone SE, resized browser windows) — crop the photo higher so text has room and never touches the curve */
         @media (max-height: 780px) and (orientation: portrait) {
           .onboarding-mobile-img {
-            object-position: center 16%;
+            object-position: center 26%;
           }
 
           .onboarding-content-panel {
