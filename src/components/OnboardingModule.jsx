@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 
 const slides = [
@@ -21,6 +21,15 @@ const slides = [
 
 export default function OnboardingModule({ onComplete }) {
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const splash = document.getElementById('splash-loader');
+    if (splash) {
+      splash.style.transition = 'opacity 0.4s ease';
+      splash.style.opacity = '0';
+      setTimeout(() => splash.remove(), 400);
+    }
+  }, []);
 
   const handleNext = () => {
     if (currentSlide === slides.length - 1) {
@@ -191,19 +200,19 @@ export default function OnboardingModule({ onComplete }) {
             display: block;
             position: absolute;
             inset: 0;
-            background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.85) 80%, #000 100%);
+            background: linear-gradient(to bottom, rgba(74,48,54,0) 0%, rgba(74,48,54,0.2) 40%, rgba(74,48,54,0.85) 80%, #4a3036 100%);
             z-index: 5;
           }
 
           .onboarding-title {
             color: #ffffff;
             font-size: 2.2rem;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            text-shadow: 0 2px 10px rgba(74,48,54,0.5);
           }
 
           .onboarding-subtitle {
             color: rgba(255, 255, 255, 0.9);
-            text-shadow: 0 1px 5px rgba(0,0,0,0.3);
+            text-shadow: 0 1px 5px rgba(74,48,54,0.5);
           }
 
           .onboarding-dot {
