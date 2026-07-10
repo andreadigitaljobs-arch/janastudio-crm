@@ -190,7 +190,7 @@ const TopBar = ({
                         <Scissors size={14} />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontWeight: 600, fontSize: '0.82rem', color: 'var(--text-primary)' }}>{s.name}</div>
+                        <div style={{ fontWeight: 600, fontSize: '0.82rem', color: 'var(--text-primary)', textWrap: 'balance' }}>{s.name}</div>
                         <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>{s.duration_minutes || 60} min</div>
                       </div>
                     </div>
@@ -217,7 +217,7 @@ const TopBar = ({
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontWeight: 600, fontSize: '0.82rem', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.clients?.name || 'Cliente'}</div>
-                        <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>{a.services?.name || ''} · {a.time || ''}</div>
+                        <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textWrap: 'balance' }}>{a.services?.name || ''} · {a.time || ''}</div>
                       </div>
                     </div>
                   ))}
