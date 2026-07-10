@@ -1220,53 +1220,108 @@ const ScheduleModal = ({
                    )}
 
                   {!isEditMode && currentStep === 5 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out' }}>
-                      <div style={{ textAlign: 'center', marginBottom: '8px' }}>
-                        <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#e2fbe9', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#16a34a' }}>
-                          <Check size={26} strokeWidth={2.5} />
-                        </div>
-                        <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#3d2b30' }}>Resumen de la Orden</h3>
-                        <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Verifica que todos los datos sean correctos.</p>
-                      </div>
+                     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', animation: 'fadeInUp 0.4s ease-out' }}>
+                       <div style={{ textAlign: 'center', marginBottom: '4px' }}>
+                         <div style={{ width: '60px', height: '60px', borderRadius: '20px', backgroundColor: '#e2fbe9', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#16a34a', boxShadow: '0 8px 20px rgba(22,163,74,0.15)' }}>
+                           <Check size={28} strokeWidth={2.5} />
+                         </div>
+                         <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#3d2b30' }}>Resumen de la Cita</h3>
+                         <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Verifica los datos detallados antes de registrar el turno.</p>
+                       </div>
 
-                      <div style={{
-                        background: 'linear-gradient(135deg, #fffcfb 0%, #fff6f7 100%)',
-                        border: '1.5px solid rgba(219,140,149,0.15)',
-                        borderRadius: '20px',
-                        padding: '18px',
-                        boxShadow: '0 10px 30px rgba(74,48,54,0.04)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '10px'
-                      }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px dashed rgba(223,178,140,0.25)', paddingBottom: '10px' }}>
-                          <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.5px' }}>CLIENTA</span>
-                          <button onClick={() => setCurrentStep(1)} style={{ fontSize: '0.76rem', fontWeight: 700, color: '#3d2b30', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}>{localClient?.name}</button>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px dashed rgba(223,178,140,0.25)', paddingBottom: '10px' }}>
-                          <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.5px' }}>FECHA</span>
-                          <button onClick={() => setCurrentStep(3)} style={{ fontSize: '0.76rem', fontWeight: 700, color: '#3d2b30', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}>{selectedDate.toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'short' })}</button>
-                        </div>
+                       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                           <div style={{ padding: '14px 16px', background: '#ffffff', borderRadius: '18px', border: '1px solid rgba(223, 178, 140, 0.18)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                               <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(219,140,149,0.1)', color: '#db8c95', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem', flexShrink: 0 }}>
+                                 {localClient?.name?.charAt(0).toUpperCase() || 'C'}
+                               </div>
+                               <div style={{ minWidth: 0 }}>
+                                 <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Clienta</div>
+                                 <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#3d2b30', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{localClient?.name}</div>
+                               </div>
+                             </div>
+                             <button onClick={() => setCurrentStep(1)} style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(219,140,149,0.06)', border: 'none', color: '#db8c95', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', flexShrink: 0 }} title="Editar clienta">
+                               <Pen size={12} />
+                             </button>
+                           </div>
 
-                        {selectedServices.map(svc => (
-                          <div key={svc._uid} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px dashed rgba(223,178,140,0.15)' }}>
-                            <div>
-                              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#3d2b30' }}>{svc.name}</div>
-                              <div style={{ fontSize: '0.66rem', color: '#a0868c' }}>
-                                {getStaffDisplayName(staffArray.find(s => s.id === svc.staffId))} · {getDisplayTime(svc.time)}
-                              </div>
-                            </div>
-                            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#4a3036' }}>${Number(svc.price || 0).toFixed(2)}</span>
-                          </div>
-                        ))}
+                           <div style={{ padding: '14px 16px', background: '#ffffff', borderRadius: '18px', border: '1px solid rgba(223, 178, 140, 0.18)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                               <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(219,140,149,0.1)', color: '#db8c95', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                 <Calendar size={16} />
+                               </div>
+                               <div style={{ minWidth: 0 }}>
+                                 <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Fecha Base</div>
+                                 <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#3d2b30', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textTransform: 'capitalize' }}>
+                                   {selectedDate.toLocaleDateString('es-VE', { weekday: 'short', day: 'numeric', month: 'short' })}
+                                 </div>
+                               </div>
+                             </div>
+                             <button onClick={() => setCurrentStep(3)} style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(219,140,149,0.06)', border: 'none', color: '#db8c95', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', flexShrink: 0 }} title="Editar fecha">
+                               <Pen size={12} />
+                             </button>
+                           </div>
+                         </div>
 
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '6px' }}>
-                          <span style={{ fontWeight: 800, color: '#3d2b30', fontSize: '0.9rem' }}>Total</span>
-                          <span style={{ fontWeight: 800, color: '#db8c95', fontSize: '1.05rem' }}>${cartTotal.toFixed(2)}</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                           <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.8px', textTransform: 'uppercase', paddingLeft: '4px' }}>Servicios Asignados</div>
+                           {selectedServices.map(svc => {
+                             const staffObj = staffArray.find(s => s.id === svc.staffId);
+                             return (
+                               <div key={svc._uid} style={{
+                                 background: '#ffffff',
+                                 border: '1px solid rgba(223, 178, 140, 0.18)',
+                                 borderRadius: '16px',
+                                 padding: '12px 16px',
+                                 display: 'flex',
+                                 justifyContent: 'space-between',
+                                 alignItems: 'center',
+                                 gap: '16px',
+                                 boxShadow: '0 2px 8px rgba(74,48,54,0.01)'
+                               }}>
+                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0, flex: 1 }}>
+                                   <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#3d2b30' }}>{svc.name}</div>
+                                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                     <img 
+                                       src={staffObj?.image_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100'} 
+                                       alt={staffObj?.name}
+                                       style={{ width: '18px', height: '18px', borderRadius: '50%', objectFit: 'cover' }}
+                                     />
+                                     <span style={{ fontSize: '0.68rem', color: '#8b7076', fontWeight: 650 }}>
+                                       {getStaffDisplayName(staffObj)} · <span style={{ color: '#db8c95', fontWeight: 700 }}>{getDisplayTime(svc.time)}</span>
+                                     </span>
+                                   </div>
+                                 </div>
+                                 <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#3d2b30', flexShrink: 0 }}>
+                                   ${Number(svc.price || 0).toFixed(2)}
+                                 </div>
+                               </div>
+                             );
+                           })}
+                         </div>
+
+                         <div style={{
+                           marginTop: '8px',
+                           padding: '16px 20px',
+                           borderRadius: '20px',
+                           background: 'linear-gradient(135deg, #fffcfb 0%, #fff2f4 100%)',
+                           border: '1.5px dashed rgba(219,140,149,0.25)',
+                           display: 'flex',
+                           justifyContent: 'space-between',
+                           alignItems: 'center'
+                         }}>
+                           <div>
+                             <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Valor Total</div>
+                             <div style={{ fontSize: '0.68rem', color: '#db8c95', fontWeight: 700, marginTop: '2px' }}>{selectedServices.length} servicios</div>
+                           </div>
+                           <div style={{ fontSize: '1.6rem', fontWeight: 950, color: '#db8c95', fontFamily: 'var(--font-heading)', letterSpacing: '-0.5px' }}>
+                             ${cartTotal.toFixed(2)}
+                           </div>
+                         </div>
+                       </div>
+                     </div>
+                   )}
                   </div>
                 </div>
 
