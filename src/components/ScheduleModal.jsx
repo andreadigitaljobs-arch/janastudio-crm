@@ -1086,13 +1086,41 @@ const ScheduleModal = ({
                                value=""
                                placeholder="Asignar a todos..."
                                onChange={(value) => applyStaffToAll(value)}
-                               options={staffArray.filter(s => getRoleKind(s.role) !== 'admin').map(s => ({
-                                  value: s.id,
-                                  label: getStaffDisplayName(s),
-                                  image: s.image_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100',
-                                  subLabel: getRoleName(s.role)
-                                }))}
-                               showSearch={true}
+                               options={(() => {
+                                  const serviceCategories = selectedServices.map(svc => {
+                                    const svcData = services.find(s => s.id === svc.service_id);
+                                    return (svcData?.category || '').toLowerCase();
+                                  });
+                                  return staffArray
+                                    .filter(s => getRoleKind(s.role) !== 'admin')
+                                    .map(s => {
+                                      const rawRole = getRoleName(s.role);
+                                      const roleLower = rawRole.toLowerCase();
+                                      let isRecommended = false;
+                                      for (const cat of serviceCategories) {
+                                        if (cat.includes('uña') && (roleLower.includes('manicurista') || roleLower.includes('uña'))) {
+                                          isRecommended = true;
+                                        } else if ((cat.includes('ceja') || cat.includes('pestaña') || cat.includes('lash')) && 
+                                                   (roleLower.includes('lashista') || roleLower.includes('ceja') || roleLower.includes('pestaña') || roleLower.includes('eyelash'))) {
+                                          isRecommended = true;
+                                        } else if ((cat.includes('cabello') || cat.includes('peinado') || cat.includes('corte')) && 
+                                                   (roleLower.includes('estilista') || roleLower.includes('peluquera') || roleLower.includes('cabello'))) {
+                                          isRecommended = true;
+                                        } else if (cat.includes('depila') && (roleLower.includes('depila') || roleLower.includes('esteticista'))) {
+                                          isRecommended = true;
+                                        }
+                                      }
+                                      return {
+                                        value: s.id,
+                                        label: getStaffDisplayName(s),
+                                        image: s.image_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100',
+                                        subLabel: isRecommended ? `✨ Recomendada (${rawRole})` : rawRole,
+                                        isRecommended
+                                      };
+                                    })
+                                    .sort((a, b) => (b.isRecommended ? 1 : 0) - (a.isRecommended ? 1 : 0));
+                                })()}
+                                showSearch={true}
                              />
                            </div>
                          </div>
