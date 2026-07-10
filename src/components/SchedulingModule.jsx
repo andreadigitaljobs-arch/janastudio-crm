@@ -1093,7 +1093,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
       {/* HEADER EXACTLY LIKE THE MOCKUP */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
         <div>
-          <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#2d1b22', margin: 0, fontFamily: "'Playfair Display', Georgia, serif" }}>
+          <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#2d1b22', margin: 0, }}>
             Agenda
           </h1>
           <p style={{ fontSize: '0.82rem', color: '#a0909a', margin: '4px 0 0 0', fontWeight: 500 }}>
@@ -2309,7 +2309,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 </div>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                    <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#2d1b22', margin: 0, fontFamily: "'Playfair Display', Georgia, serif" }}>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#2d1b22', margin: 0, }}>
                       {selectedStaffDrawer.name}
                     </h2>
                     <span style={{ fontSize: '0.72rem', color: '#c97282', background: 'rgba(201, 114, 130,0.1)', padding: '3px 10px', borderRadius: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px' }}>

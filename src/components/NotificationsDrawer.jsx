@@ -165,7 +165,7 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
             }}><Heart size={12} style={{ color: '#fff', fill: '#fff' }} /></div>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#1f1215', display: 'block', fontFamily: "'Playfair Display', Georgia, serif" }}>Todo tranquilo</span>
+            <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#1f1215', display: 'block', }}>Todo tranquilo</span>
             <span style={{ fontSize: '0.72rem', color: '#9ca3af', display: 'block', marginTop: '6px', lineHeight: '1.5' }}>No hay notificaciones nuevas.<br/>Vuelve más tarde 💕</span>
           </div>
         </div>
@@ -319,7 +319,7 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
                   )}
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#1f1215', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>Notificaciones</h3>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#1f1215', margin: 0 }}>Notificaciones</h3>
                   <span style={{ fontSize: '0.68rem', color: '#d4a0ae', fontWeight: '600' }}>
                     {notifications.length === 0 ? 'Sin novedades' : unreadCount > 0 ? `${unreadCount} sin leer` : 'Todo al día ✨'}
                   </span>
@@ -417,7 +417,7 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
                 )}
               </div>
               <div>
-                <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#1f1215', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>Notificaciones</h3>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#1f1215', margin: 0 }}>Notificaciones</h3>
                 <span style={{ fontSize: '0.65rem', color: '#d4a0ae', fontWeight: '600' }}>
                   {notifications.length === 0 ? 'Sin novedades' : unreadCount > 0 ? `${unreadCount} sin leer` : 'Todo al día ✨'}
                 </span>

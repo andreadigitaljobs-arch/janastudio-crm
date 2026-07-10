@@ -25,6 +25,7 @@ import { dataService } from './services/dataService';
 import ParticleBackground from './components/ParticleBackground';
 import JanaLoader from './components/JanaLoader';
 import Login from './components/Login';
+import OnboardingModule from './components/OnboardingModule';
 import { useAuth } from './context/AuthContext';
 import TopBar from './components/TopBar';
 import NotificationsDrawer from './components/NotificationsDrawer';
@@ -55,6 +56,7 @@ const ModuleFallback = () => (
 function App() {
   const { user, loading: authLoading, logout } = useAuth();
   const { alert, confirm } = useDialog();
+  const [showOnboarding, setShowOnboarding] = useState(() => localStorage.getItem('jana_onboarding_completed') !== 'true');
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(() => localStorage.getItem('jana_active_tab') || 'dashboard');
   const [isMobile, setIsMobile] = useState(() => {
@@ -426,6 +428,14 @@ function App() {
   }, [activeTab, mobileVisibleItems, isMoreOpen, totalMobileButtons, allowedMenuItems.length]);
 
   const hasSessionKey = Object.keys(localStorage).some(key => key.startsWith('sb-') && key.endsWith('-auth-token'));
+  
+  if (showOnboarding && !user && !hasSessionKey) {
+    return <OnboardingModule onComplete={() => {
+      localStorage.setItem('jana_onboarding_completed', 'true');
+      setShowOnboarding(false);
+    }} />;
+  }
+
   if (authLoading && !user) {
     if (!hasSessionKey) return <Login />;
     return <JanaLoader visible={true} />;

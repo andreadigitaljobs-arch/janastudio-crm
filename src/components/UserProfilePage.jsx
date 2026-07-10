@@ -799,7 +799,7 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
               <div style={{ fontSize: '9px', fontWeight: '800', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px' }}>
                 {isAssistant ? 'Comisión Tratamiento' : 'Comisión Servicios'}
               </div>
-              <div style={{ fontSize: '30px', fontWeight: '950', color: 'white', fontFamily: 'Outfit, system-ui', letterSpacing: '-0.5px' }}>
+              <div style={{ fontSize: '30px', fontWeight: '950', color: 'white', letterSpacing: '-0.5px' }}>
                 <MoneyValue usd={_stats.totalServiceComm} rate={profileRate} />
               </div>
               <div style={{ height: '2px', background: '#c48b9f', borderRadius: '2px', width: '32px', opacity: 0.7, marginTop: '10px' }} />
@@ -822,7 +822,7 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
                     {card.icon}
                   </div>
                 </div>
-                <div style={{ fontSize: '22px', fontWeight: '950', color: 'white', fontFamily: 'Outfit, system-ui', letterSpacing: '-0.5px' }}>{card.val}</div>
+                <div style={{ fontSize: '22px', fontWeight: '950', color: 'white', letterSpacing: '-0.5px' }}>{card.val}</div>
                 <div style={{ height: '2px', background: card.accentColor, borderRadius: '2px', width: '32px', opacity: 0.7 }} />
               </div>
             ))}

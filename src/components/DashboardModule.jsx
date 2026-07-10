@@ -435,8 +435,7 @@ const DashboardModule = ({
               <div style={{ flex: 1, minWidth: 0 }}>
                 <span style={{
                   fontSize: '0.78rem', fontWeight: '700', color: '#5a3a36',
-                  display: 'block', lineHeight: '1.2', fontFamily: "'Playfair Display', Georgia, serif"
-                }}>
+                  display: 'block', lineHeight: '1.2', }}>
                   Activa las alertas
                 </span>
                 <span style={{
@@ -506,7 +505,6 @@ const DashboardModule = ({
             position: 'relative'
           }}>
             <h2 style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
               fontSize: '1.35rem',
               fontWeight: '700',
               color: 'var(--text-primary)',
@@ -727,7 +725,7 @@ const DashboardModule = ({
             boxShadow: '0 4px 20px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h4 style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
+              <h4 style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>
                 Reportes
               </h4>
               <span onClick={() => onNavigate('reports')} style={{ fontSize: '0.7rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}>
@@ -771,7 +769,6 @@ const DashboardModule = ({
               fontSize: '1rem',
               fontWeight: '700',
               color: 'var(--text-primary)',
-              fontFamily: "'Playfair Display', Georgia, serif",
               margin: 0
             }}>
               Agenda de hoy
@@ -902,7 +899,6 @@ const DashboardModule = ({
             fontSize: '0.9rem',
             fontWeight: '700',
             color: 'var(--text-primary)',
-            fontFamily: "'Playfair Display', Georgia, serif",
             margin: '4px 0 0 0'
           }}>
             Acciones rápidas
@@ -1023,7 +1019,6 @@ const DashboardModule = ({
               fontSize: '0.9rem',
               fontWeight: '700',
               color: 'var(--text-primary)',
-              fontFamily: "'Playfair Display', Georgia, serif",
               margin: 0
             }}>
               Top servicios
@@ -1129,7 +1124,6 @@ const DashboardModule = ({
               fontSize: '0.9rem',
               fontWeight: '700',
               color: 'var(--text-primary)',
-              fontFamily: "'Playfair Display', Georgia, serif",
               margin: 0
             }}>
               Top Especialistas
@@ -1200,7 +1194,6 @@ const DashboardModule = ({
             fontSize: '0.95rem',
             fontWeight: '700',
             color: 'var(--text-primary)',
-            fontFamily: "'Playfair Display', Georgia, serif",
             margin: '6px 0 0 0'
           }}>
             Servicios destacados
@@ -1376,7 +1369,7 @@ const DashboardModule = ({
           borderRadius: '28px', zIndex: 1
         }} />
         <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '45%', padding: '36px 48px', height: '100%', justifyContent: 'center' }}>
-          <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: '1.9rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0, lineHeight: '1.2' }}>
+          <h2 style={{ fontSize: '1.9rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0, lineHeight: '1.2' }}>
             Bienvenida de nuevo, {(!user || user.role?.toLowerCase().includes('admin')) ? 'Jana' : (user.name?.split(' ')[0] || 'Jana')} <span style={{ color: '#c97282' }}>♡</span>
           </h2>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '500', margin: 0, lineHeight: 1.5 }}>
@@ -1490,7 +1483,7 @@ const DashboardModule = ({
         <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '24px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>
                 Agenda de hoy
               </h3>
               <span onClick={() => onNavigate('scheduling')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -1538,7 +1531,7 @@ const DashboardModule = ({
         {/* TOP SERVICIOS */}
         <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '24px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>
               Top servicios
             </h3>
             <span onClick={() => onNavigate('services')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -1665,7 +1658,6 @@ const DashboardModule = ({
                 fontWeight: '800', 
                 margin: 0, 
                 color: '#ffffff', 
-                fontFamily: "'Playfair Display', Georgia, serif",
                 lineHeight: '1.15',
                 textShadow: '0 1px 3px rgba(0,0,0,0.15)'
               }}>
@@ -1810,7 +1802,7 @@ const DashboardModule = ({
       {/* ── SERVICIOS DESTACADOS ── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>
+          <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>
             Servicios destacados
           </h3>
           <span onClick={() => onNavigate('services')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>

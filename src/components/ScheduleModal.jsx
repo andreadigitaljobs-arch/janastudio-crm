@@ -1342,7 +1342,7 @@ const ScheduleModal = ({
                              <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0909a', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Valor Total</div>
                              <div style={{ fontSize: '0.68rem', color: '#c97282', fontWeight: 700, marginTop: '2px' }}>{selectedServices.length} servicios</div>
                            </div>
-                           <div style={{ fontSize: '1.6rem', fontWeight: 950, color: '#c97282', fontFamily: 'var(--font-heading)', letterSpacing: '-0.5px' }}>
+                           <div style={{ fontSize: '1.6rem', fontWeight: 950, color: '#c97282', letterSpacing: '-0.5px' }}>
                              ${cartTotal.toFixed(2)}
                            </div>
                          </div>
@@ -1495,7 +1495,7 @@ const ScheduleModal = ({
               <div style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.85, textTransform: 'uppercase', letterSpacing: '0.8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <User size={14} /> Cliente
               </div>
-              <div style={{ fontSize: '1.3rem', fontWeight: 900, lineHeight: 1.2, fontFamily: "'Playfair Display', Georgia, serif" }}>{localClient?.name || 'Sin cliente'}</div>
+              <div style={{ fontSize: '1.3rem', fontWeight: 900, lineHeight: 1.2, }}>{localClient?.name || 'Sin cliente'}</div>
               <div style={{ fontSize: '0.78rem', fontWeight: 700, opacity: 0.9, display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
                 <Calendar size={13} /> {selectedDate?.toLocaleDateString('es-VE', { weekday: 'short', day: 'numeric', month: 'short' }) || 'Sin fecha'}
               </div>

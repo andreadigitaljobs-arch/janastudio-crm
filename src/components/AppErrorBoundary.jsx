@@ -63,7 +63,7 @@ class AppErrorBoundary extends React.Component {
     const errorStack = String(err?.stack || '').slice(0, 1500);
 
     return (
-      <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #fbf8f7 0%, #f5eff1 100%)', color: '#4a3036', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: 'Outfit, sans-serif' }}>
+      <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #fbf8f7 0%, #f5eff1 100%)', color: '#4a3036', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', }}>
         <div style={{ width: '100%', maxWidth: '520px', padding: '32px', borderRadius: '24px', background: 'rgba(255, 255, 255, 0.8)', backdropFilter: 'blur(20px)', border: '1px solid rgba(212, 160, 154, 0.35)', textAlign: 'center', boxShadow: '0 12px 40px rgba(74, 48, 54, 0.05)' }}>
           <div style={{ color: '#d4a09a', fontSize: '48px', marginBottom: '12px', fontWeight: '300' }}>✨</div>
           <h1 style={{ margin: '0 0 10px', fontSize: '24px', fontWeight: '800', color: '#4a3036' }}>La pantalla necesita recuperarse</h1>

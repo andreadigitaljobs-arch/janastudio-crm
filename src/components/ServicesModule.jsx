@@ -587,7 +587,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
       ) : services.length === 0 ? (
         <div className="glass-card" style={{ textAlign: 'center', padding: '80px', borderRadius: '32px', border: '1px solid rgba(212, 160, 154, 0.2)', boxShadow: '0 8px 32px rgba(74, 48, 54, 0.05)' }}>
           <Star size={64} color="rgba(212, 160, 154, 0.2)" style={{ marginBottom: '24px' }} />
-          <h3 style={{ fontSize: '20px', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif" }}>Tu catálogo está vacío</h3>
+          <h3 style={{ fontSize: '20px', color: 'var(--text-primary)', }}>Tu catálogo está vacío</h3>
           <p style={{ color: 'var(--text-muted)', marginTop: '8px' }}>Comienza agregando los servicios que definirán tu marca.</p>
         </div>
       ) : (
@@ -598,7 +598,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
             
             {/* Header */}
             <div>
-              <h2 style={{ fontSize: isMobile ? '28px' : '34px', fontWeight: '800', letterSpacing: '-0.5px', color: 'var(--text-primary)', fontFamily: "'Playfair Display', Georgia, serif", margin: 0 }}>Servicios</h2>
+              <h2 style={{ fontSize: isMobile ? '28px' : '34px', fontWeight: '800', letterSpacing: '-0.5px', color: 'var(--text-primary)', margin: 0 }}>Servicios</h2>
               <p style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: '0.85rem' }}>Define tu oferta y servicios adicionales.</p>
             </div>
             
@@ -881,7 +881,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                         )}
                       </div>
                       <div>
-                        <h4 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: "'Playfair Display', Georgia, serif" }}>
+                        <h4 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', }}>
                           {service.name}
                         </h4>
                         <span style={{ fontSize: '10px', fontWeight: '700', color: '#c97282', textTransform: 'uppercase', letterSpacing: '0.4px', marginTop: '2px', display: 'block' }}>
@@ -1080,7 +1080,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               
               {/* CATEGORÍAS MÁS VENDIDAS */}
               <div style={{ background: '#ffffff', borderRadius: '22px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.03)', border: '1px solid rgba(212, 160, 154, 0.15)' }}>
-                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '18px', fontFamily: "'Playfair Display', Georgia, serif" }}>Categorías más vendidas</h4>
+                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '18px', }}>Categorías más vendidas</h4>
                 {[
                   { name: 'Cabello', pct: 54, color: '#c97282' },
                   { name: 'Uñas', pct: 21, color: '#a0506a' },
@@ -1102,12 +1102,12 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               
               {/* SERVICIO DESTACADO DEL MES */}
               <div style={{ background: '#ffffff', borderRadius: '22px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.03)', border: '1px solid rgba(212, 160, 154, 0.15)' }}>
-                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '18px', fontFamily: "'Playfair Display', Georgia, serif" }}>Servicio destacado del mes</h4>
+                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '18px', }}>Servicio destacado del mes</h4>
                 <div style={{ width: '100%', height: '110px', borderRadius: '16px', overflow: 'hidden', position: 'relative', marginBottom: '14px' }}>
                   <img src="/corte_cabello_foto.jpg" alt="Corte Suprema" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(74, 48, 54, 0.7) 0%, rgba(74, 48, 54, 0) 70%)' }} />
                 </div>
-                <h5 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: '0 0 6px', fontFamily: "'Playfair Display', Georgia, serif" }}>Corte Suprema</h5>
+                <h5 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: '0 0 6px', }}>Corte Suprema</h5>
                 <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', margin: '0 0 14px', lineHeight: '1.45' }}>El servicio estrella del mes con la mejor valoración por parte de nuestras clientas.</p>
                 <div style={{ alignItems: 'center', gap: '6px', marginBottom: '14px', fontSize: '12px', color: '#c97282', fontWeight: '700', backgroundColor: '#faf3f2', padding: '4px 10px', borderRadius: '8px', alignSelf: 'flex-start', display: 'inline-flex' }}>
                   <Heart size={13} fill="currentColor" /> 142 reservas
@@ -1124,7 +1124,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               
               {/* EXTRAS MÁS AÑADIDOS */}
               <div style={{ background: '#ffffff', borderRadius: '22px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.03)', border: '1px solid rgba(212, 160, 154, 0.15)' }}>
-                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '18px', fontFamily: "'Playfair Display', Georgia, serif" }}>Extras más añadidos</h4>
+                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '18px', }}>Extras más añadidos</h4>
                 {[
                   { name: 'Ampolla de Keratina', count: 88 },
                   { name: 'Diseño de Cejas', count: 72 },
@@ -1140,7 +1140,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               
               {/* PAQUETES RECOMENDADOS */}
               <div style={{ background: '#ffffff', borderRadius: '22px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.03)', border: '1px solid rgba(212, 160, 154, 0.15)' }}>
-                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '18px', fontFamily: "'Playfair Display', Georgia, serif" }}>Paquetes recomendados</h4>
+                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '18px', }}>Paquetes recomendados</h4>
                 {[
                   { name: 'Pack Cabello Premium', desc: 'Corte + Keratina + Secado', price: '$45' },
                   { name: 'Combo Manicura & Pestañas', desc: 'Manicura gel + Extensiones', price: '$38' },
@@ -1819,7 +1819,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                 </button>
 
                 <div className="jana-scrollbar" style={{ overflowY: 'auto', overflowX: 'hidden', flex: 1, paddingRight: '4px' }}>
-                  <h3 style={{ fontSize: '22px', fontWeight: '800', marginBottom: '24px', paddingRight: '40px', display: 'flex', alignItems: 'center', gap: '10px', fontFamily: "'Playfair Display', Georgia, serif", color: '#4a3036' }}>
+                  <h3 style={{ fontSize: '22px', fontWeight: '800', marginBottom: '24px', paddingRight: '40px', display: 'flex', alignItems: 'center', gap: '10px', color: '#4a3036' }}>
                     <span style={{ color: '#c97282', display: 'flex', alignItems: 'center' }}>
                       {getIconComponent(newService.icon || 'Scissors', 22)}
                     </span>
