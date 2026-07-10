@@ -2319,6 +2319,49 @@ input:focus { outline: none; }
   }
 }
 
+/* Top bar: search + rates/bell/date row. Keep everything on one line on
+   tablets — shrink the pieces instead of wrapping/stacking.
+   !important is required on flex-wrap/flex here because the component
+   sets those same properties inline (React style prop), and inline
+   styles always beat external stylesheet rules regardless of
+   selector — without !important these rules are silently ignored. */
+@media (max-width: 1300px) {
+  .topbar-header-row {
+    flex-wrap: nowrap !important;
+    padding: 10px 12px !important;
+    gap: 8px !important;
+  }
+  .topbar-search-wrap {
+    flex: 1 1 120px !important;
+    min-width: 0 !important;
+  }
+  .topbar-search-wrap input {
+    padding: 8px 34px 8px 10px !important;
+    font-size: 0.78rem !important;
+  }
+  .topbar-actions-wrap {
+    flex-shrink: 0 !important;
+    gap: 6px !important;
+  }
+  .topbar-rates-pill {
+    padding: 6px 8px !important;
+    gap: 6px !important;
+    font-size: 0.68rem !important;
+  }
+  .topbar-date-pill {
+    padding: 6px 10px !important;
+    font-size: 0.72rem !important;
+  }
+}
+
+@media (max-width: 700px) {
+  /* No room left for the rates pill without crowding the search bar
+     into single-character width — hide it here, keep bell + date. */
+  .topbar-rates-pill {
+    display: none;
+  }
+}
+
 /* Hero banner welcome text: give it more of the banner's width as the
    screen narrows, so "Bienvenida de nuevo, Jana" and the subtitle don't
    leave a lone word stranded on its own line. */

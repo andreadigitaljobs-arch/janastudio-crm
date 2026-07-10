@@ -307,12 +307,12 @@ const TopBar = ({
               boxShadow: 'var(--shadow-card)', fontSize: '0.72rem',
               flexShrink: 0
             }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1.2 }}>
+              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '4px' }}>
                 <span style={{ color: 'var(--text-muted)', fontSize: '0.58rem', fontWeight: 500 }}>BCV</span>
                 <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>Bs. {rates.bcv?.toFixed(2)}</span>
               </div>
               <div style={{ width: '1px', height: '22px', background: 'var(--border-color)' }} />
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1.2 }}>
+              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '4px' }}>
                 <span style={{ color: 'var(--text-muted)', fontSize: '0.58rem', fontWeight: 500 }}>USDT</span>
                 <span style={{ color: 'var(--magenta-primary)', fontWeight: 700 }}>Bs. {rates.usdt?.toFixed(2)}</span>
               </div>
@@ -334,11 +334,13 @@ const TopBar = ({
   }
 
   return (
-    <div style={{
+    <div className="topbar-header-row" style={{
       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       flexWrap: 'wrap', gap: '12px',
       paddingLeft: '0',
       paddingTop: '0',
+      position: 'relative',
+      zIndex: 20,
       background: 'rgba(255,255,255,0.7)',
       backdropFilter: 'blur(20px) saturate(140%)',
       WebkitBackdropFilter: 'blur(20px) saturate(140%)',
@@ -349,26 +351,26 @@ const TopBar = ({
       marginBottom: '20px'
     }}>
       {/* Left: Greeting (or Search Bar in Dashboard) */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        {renderSearchBar({ width: '350px' })}
+      <div className="topbar-search-wrap" style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: '1 1 350px', minWidth: 0 }}>
+        {renderSearchBar({ width: '350px', maxWidth: '100%' })}
       </div>
 
       {/* Right: Notification Bell & Date Selector */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div className="topbar-actions-wrap" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         {/* Rates pill: BCV / USDT */}
         {rates && rates.usdt > 0 && activeTab === 'dashboard' && (
-          <div style={{
+          <div className="topbar-rates-pill" style={{
             display: 'flex', alignItems: 'center', gap: '10px',
             padding: '8px 14px', borderRadius: '12px',
             background: '#ffffff', border: '1px solid var(--border-color)',
             boxShadow: 'var(--shadow-card)', fontSize: '0.78rem',
           }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1.3 }}>
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '5px' }}>
               <span style={{ color: 'var(--text-muted)', fontSize: '0.65rem', fontWeight: 500 }}>BCV</span>
               <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>Bs. {rates.bcv?.toFixed(2)}</span>
             </div>
             <div style={{ width: '1px', height: '28px', background: 'var(--border-color)' }} />
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1.3 }}>
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '5px' }}>
               <span style={{ color: 'var(--text-muted)', fontSize: '0.65rem', fontWeight: 500 }}>USDT</span>
               <span style={{ color: 'var(--magenta-primary)', fontWeight: 700 }}>Bs. {rates.usdt?.toFixed(2)}</span>
             </div>
@@ -397,7 +399,7 @@ const TopBar = ({
         </button>
 
         {/* Date Dropdown styled exactly like the mockup */}
-        <div style={{
+        <div className="topbar-date-pill" style={{
           padding: '8px 16px', borderRadius: '12px', background: '#ffffff',
           border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)',
           display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer',
