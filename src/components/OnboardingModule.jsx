@@ -419,7 +419,7 @@ export default function OnboardingModule({ onComplete }) {
         /* Short/squarish portrait screens (e.g. iPhone SE, resized browser windows) — crop the photo higher so text has room and never touches the curve */
         @media (max-height: 780px) and (orientation: portrait) {
           .onboarding-mobile-img {
-            object-position: center 26%;
+            object-position: center 38%;
           }
 
           .onboarding-content-panel {
