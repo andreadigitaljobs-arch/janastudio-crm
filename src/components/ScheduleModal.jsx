@@ -1317,7 +1317,7 @@ const ScheduleModal = ({
                                }}>
                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0, flex: 1 }}>
                                    <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#2d1b22' }}>{svc.name}</div>
-                                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '10px' }}>
                                      {/* Fila de la especialista asignada */}
                                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
                                        <img 
