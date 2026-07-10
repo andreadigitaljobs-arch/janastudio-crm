@@ -16,7 +16,7 @@ import {
   getNextFreeMinutes, getAppointmentDuration, formatMinutes
 } from '../utils/availability';
 import { loadStoredSchedules, loadStoredTimeOff } from '../utils/mockStaffSchedules';
-import { getBusinessDateKey } from '../utils/dateTime';
+import { getBusinessDateKey, businessDateStart } from '../utils/dateTime';
 import ScheduleModal from './ScheduleModal';
 import NewClientModal from './NewClientModal';
 import { normalizeForSearch } from '../utils/stringUtils';
@@ -40,6 +40,15 @@ const STATUS_COLORS = {
 // Ventana visible de la grilla del día (7:00 AM a 8:00 PM)
 const VIEW_START_MIN = 7 * 60;
 const VIEW_END_MIN = 20 * 60;
+
+// Franjas horarias para filtrar el listado de "Citas de hoy"
+const TIME_PERIODS = [
+  { key: 'all', label: 'Todo el día' },
+  { key: 'manana', label: 'Mañana', startMin: 0, endMin: 12 * 60 },
+  { key: 'mediodia', label: 'Mediodía', startMin: 12 * 60, endMin: 14 * 60 },
+  { key: 'tarde', label: 'Tarde', startMin: 14 * 60, endMin: 18 * 60 },
+  { key: 'noche', label: 'Noche', startMin: 18 * 60, endMin: 24 * 60 },
+];
 const PX_PER_MIN = 1; // 60px por hora
 const GRID_HEIGHT = (VIEW_END_MIN - VIEW_START_MIN) * PX_PER_MIN;
 const minutesToY = (minutes) => Math.max(0, (minutes - VIEW_START_MIN) * PX_PER_MIN);
@@ -593,7 +602,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
   const [staffActiveTab, setStaffActiveTab] = useState('agenda');
   const [rankingTab, setRankingTab] = useState('revenue');
   const [leftTab, setLeftTab] = useState('citas');
+  // Filtro del timeline "Citas de hoy": 'all' = "Todos" (todas las citas del día, por defecto),
+  // o el id de una especialista puntual.
   const [mobileStaffFilter, setMobileStaffFilter] = useState('all');
+  const [timeOfDayFilter, setTimeOfDayFilter] = useState('all'); // 'all' | 'manana' | 'mediodia' | 'tarde' | 'noche'
   const [staffSearchQuery, setStaffSearchQuery] = useState('');
   const [showHeaderCalendar, setShowHeaderCalendar] = useState(false);
 
@@ -657,7 +669,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
   useEffect(() => {
     loadFilteredAppointments();
-  }, [selectedDate, filterType]);
+  }, [selectedDate, filterType, staff]);
 
   useEffect(() => {
     const refreshOnAppointmentChange = (event) => {
@@ -718,83 +730,93 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
       else if (filterType === 'week') { end.setDate(start.getDate() + 7); }
       else if (filterType === 'month') { start.setDate(1); end = new Date(start.getFullYear(), start.getMonth() + 1, 0); end.setHours(23, 59, 59, 999); }
       const endQuery = new Date(end.getTime() - 1);
-      const data = await dataService.getAppointmentServicesFlat(start.toISOString(), endQuery.toISOString());
-      let appointments = data.filter(a => a.status !== 'Cancelada' && a.status !== 'Cancelado');
+      let appointments = [];
+      try {
+        const data = await dataService.getAppointmentServicesFlat(start.toISOString(), endQuery.toISOString());
+        appointments = data.filter(a => a.status !== 'Cancelada' && a.status !== 'Cancelado');
+      } catch (fetchErr) {
+        console.error('Error cargando citas reales, se usarán datos demo si aplica:', fetchErr);
+        appointments = [];
+      }
 
       // Si no hay citas y es hoy, añadir citas demo
       if (appointments.length === 0 && filterType === 'day') {
         const todayKey = getBusinessDateKey(new Date());
         const selectedKey = getBusinessDateKey(selectedDate);
-        if (todayKey === selectedKey && staff.length > 0) {
+        if (todayKey === selectedKey) {
+          // Anclado a la medianoche de la fecha de negocio seleccionada (no a "ahora"),
+          // para que las citas no se corran al día siguiente según la hora en que se cargue la página.
+          const dayStart = businessDateStart(selectedKey).getTime();
+          const at = (hour) => new Date(dayStart + hour * 60 * 60000).toISOString();
           const demoAppts = [
             {
               id: 'demo-1', client_id: '1', staff_id: staff[0]?.id || 'demo-staff-1',
               clients: { name: 'María Fernández', phone: '04121234567' },
               services: { name: 'Extensión de Pestañas', price: 600 },
-              scheduled_at: new Date(selectedDate.getTime() + 9 * 60 * 60000).toISOString(),
+              scheduled_at: at(9),
               status: 'En Silla'
             },
             {
               id: 'demo-2', client_id: '2', staff_id: staff[1]?.id || 'demo-staff-2',
               clients: { name: 'Valentina Gómez', phone: '04149876543' },
               services: { name: 'Diseño de Cejas', price: 400 },
-              scheduled_at: new Date(selectedDate.getTime() + 9.5 * 60 * 60000).toISOString(),
+              scheduled_at: at(9.5),
               status: 'En Proceso'
             },
             {
               id: 'demo-3', client_id: '3', staff_id: staff[2]?.id || 'demo-staff-3',
               clients: { name: 'Camila Torres', phone: '04162341234' },
               services: { name: 'Corte y Color', price: 800 },
-              scheduled_at: new Date(selectedDate.getTime() + 10 * 60 * 60000).toISOString(),
+              scheduled_at: at(10),
               status: 'En Silla'
             },
             {
               id: 'demo-4', client_id: '4', staff_id: staff[3]?.id || 'demo-staff-4',
               clients: { name: 'Daniela Rojas', phone: '04125678901' },
               services: { name: 'Manicura + Pedicura', price: 500 },
-              scheduled_at: new Date(selectedDate.getTime() + 10.5 * 60 * 60000).toISOString(),
+              scheduled_at: at(10.5),
               status: 'En Tratamiento'
             },
             {
               id: 'demo-5', client_id: '5', staff_id: staff[4]?.id || 'demo-staff-5',
               clients: { name: 'Andrea Castillo', phone: '04149234567' },
               services: { name: 'Microblading', price: 1200 },
-              scheduled_at: new Date(selectedDate.getTime() + 11 * 60 * 60000).toISOString(),
+              scheduled_at: at(11),
               status: 'Completado'
             },
             {
               id: 'demo-6', client_id: '6', staff_id: staff[5]?.id || 'demo-staff-6',
               clients: { name: 'Lucía Méndez', phone: '04128765432' },
               services: { name: 'Tratamiento Facial', price: 550 },
-              scheduled_at: new Date(selectedDate.getTime() + 11.5 * 60 * 60000).toISOString(),
+              scheduled_at: at(11.5),
               status: 'Agendado'
             },
             {
               id: 'demo-7', client_id: '7', staff_id: staff[0]?.id || 'demo-staff-1',
               clients: { name: 'Paula Martínez', phone: '04141234567' },
               services: { name: 'Extensión de Pestañas', price: 600 },
-              scheduled_at: new Date(selectedDate.getTime() + 14.5 * 60 * 60000).toISOString(),
+              scheduled_at: at(14.5),
               status: 'Agendado'
             },
             {
               id: 'demo-8', client_id: '8', staff_id: staff[1]?.id || 'demo-staff-2',
               clients: { name: 'Sofía López', phone: '04169876543' },
               services: { name: 'Diseño de Cejas', price: 400 },
-              scheduled_at: new Date(selectedDate.getTime() + 15 * 60 * 60000).toISOString(),
+              scheduled_at: at(15),
               status: 'Agendado'
             },
             {
               id: 'demo-9', client_id: '9', staff_id: staff[2]?.id || 'demo-staff-3',
               clients: { name: 'Valentina Ruiz', phone: '04162341234' },
               services: { name: 'Corte y Arreglo', price: 450 },
-              scheduled_at: new Date(selectedDate.getTime() + 15.5 * 60 * 60000).toISOString(),
+              scheduled_at: at(15.5),
               status: 'Agendado'
             },
             {
               id: 'demo-10', client_id: '10', staff_id: staff[3]?.id || 'demo-staff-4',
               clients: { name: 'Karla Sánchez', phone: '04125678901' },
               services: { name: 'Pedicura Decorada', price: 350 },
-              scheduled_at: new Date(selectedDate.getTime() + 16 * 60 * 60000).toISOString(),
+              scheduled_at: at(16),
               status: 'Agendado'
             }
           ];
@@ -1420,7 +1442,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               </button>
             </div>
           )}
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : isTablet ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '24px', width: '100%', alignItems: 'start', marginTop: '0' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '24px', width: '100%', alignItems: 'start', marginTop: '0' }}>
 
             {/* Column 1 - Próximas Citas */}
             <div style={{ display: (!isMobile || leftTab === 'citas') ? 'flex' : 'none', flexDirection: 'column', gap: '24px', minWidth: 0, animation: (isMobile && leftTab === 'citas') ? 'fadeInUpWow 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards' : 'none' }}>
@@ -1430,7 +1452,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 
                 {/* Header of Timeline */}
                 <div style={{
-                  padding: '20px 20px 15px', display: 'flex',
+                  padding: '20px 20px 15px', display: 'flex', flexWrap: 'wrap',
                   flexDirection: isMobile ? 'column' : 'row',
                   justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center',
                   gap: isMobile ? '12px' : '14px',
@@ -1440,18 +1462,43 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     <Clock size={16} color="#c97282" />
                     CITAS DE HOY
                   </h4>
-                  {isMobile && visibleStaff.length > 0 && (
-                    <div style={{ width: isMobile ? '100%' : '130px', flexShrink: 0 }}>
+                  {visibleStaff.length > 0 && (
+                    <div style={{ width: isMobile ? '100%' : '150px', minWidth: '120px', flexShrink: 1 }}>
                       <JanaSelect
                         variant="light"
                         label=""
-                        value={mobileStaffFilter === 'all' ? visibleStaff[0].id : mobileStaffFilter}
+                        value={mobileStaffFilter || visibleStaff[0].id}
                         onChange={(val) => setMobileStaffFilter(val)}
-                        options={visibleStaff.map(s => ({ value: s.id, label: s.name.split(' ')[0], image: s.image_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100' }))}
+                        options={[
+                          { value: 'all', label: 'Todos' },
+                          ...visibleStaff.map(s => ({ value: s.id, label: s.name.split(' ')[0], image: s.image_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100' }))
+                        ]}
                       />
                     </div>
                   )}
                 </div>
+
+                {/* Filtro de franja horaria */}
+                {dayApps.length > 0 && (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(85px, 1fr))', gap: '6px', padding: '12px 20px', borderBottom: '1px solid rgba(223, 178, 140, 0.15)', background: 'rgba(255,255,255,0.3)' }}>
+                    {TIME_PERIODS.map(period => (
+                      <button
+                        key={period.key}
+                        onClick={() => setTimeOfDayFilter(period.key)}
+                        style={{
+                          padding: '7px 10px', borderRadius: '10px', cursor: 'pointer',
+                          fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap', textAlign: 'center',
+                          background: timeOfDayFilter === period.key ? '#c97282' : '#faf3f2',
+                          color: timeOfDayFilter === period.key ? '#fff' : '#a0506a',
+                          border: '1px solid ' + (timeOfDayFilter === period.key ? '#c97282' : 'rgba(160,80,106,0.15)'),
+                          transition: 'all 0.2s'
+                        }}
+                      >
+                        {period.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
 
                 {/* Empty State Override if NO appointments for the WHOLE DAY (across all selected staff) */}
                 {dayApps.length === 0 ? (
@@ -1484,134 +1531,118 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     </button>
                   </div>
                 ) : (
-                  /* Timeline Grid */
-                  <div style={{ position: 'relative', flex: 1, overflowY: 'auto', overflowX: 'hidden', background: '#fff' }} className="jana-scrollbar">
-                    
-                    {/* Timeline Content Wrapper */}
-                    <div style={{ position: 'relative', minHeight: `${(20 - 8 + 1) * 80}px`, display: 'flex' }}>
-                      
-                      {/* Time Column (Left) */}
-                      <div style={{ width: '60px', flexShrink: 0, borderRight: '1px solid rgba(223, 178, 140, 0.2)', position: 'relative', background: '#fcf6f7', zIndex: 10 }}>
-                        {Array.from({length: 20 - 8 + 1}).map((_, i) => {
-                          const h = 8 + i;
-                          const ampm = h >= 12 ? 'PM' : 'AM';
-                          const h12 = h % 12 || 12;
-                          return (
-                            <div key={h} style={{ position: 'absolute', top: `${i * 80}px`, width: '100%', height: '80px', display: 'flex', justifyContent: 'center', paddingTop: '8px' }}>
-                              <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#a0909a' }}>{h12}:00 {ampm}</span>
-                            </div>
-                          )
-                        })}
-                      </div>
+                  /* Chronological single-column agenda list — one appointment below the other,
+                     grouped by time so it's obvious when several staff have a cita at the same hour. */
+                  <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: '#fff', padding: '16px' }} className="jana-scrollbar">
+                    {(() => {
+                      const activeFilter = mobileStaffFilter || visibleStaff[0]?.id;
+                      const activePeriod = TIME_PERIODS.find(p => p.key === timeOfDayFilter);
+                      const filteredApps = dayApps
+                        .filter(app => activeFilter === 'all' ? true : app.staff_id === activeFilter)
+                        .filter(app => {
+                          if (!activePeriod || activePeriod.key === 'all') return true;
+                          const start = new Date(app.scheduled_at || app.created_at);
+                          const startMin = start.getHours() * 60 + start.getMinutes();
+                          return startMin >= activePeriod.startMin && startMin < activePeriod.endMin;
+                        })
+                        .slice()
+                        .sort((a, b) => new Date(a.scheduled_at || a.created_at) - new Date(b.scheduled_at || b.created_at));
 
-                      {/* Columns Wrapper */}
-                      <div style={{ flex: 1, position: 'relative', display: 'flex' }}>
-                        {/* Grid Lines Background */}
-                        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-                           {Array.from({length: 20 - 8 + 1}).map((_, i) => (
-                             <React.Fragment key={`grid-${i}`}>
-                               <div style={{ position: 'absolute', top: `${i * 80}px`, left: 0, right: 0, height: '1px', background: 'rgba(223, 178, 140, 0.2)' }} />
-                               {/* Half-hour dashed line */}
-                               <div style={{ position: 'absolute', top: `${i * 80 + 40}px`, left: 0, right: 0, height: '1px', borderTop: '1px dashed rgba(223, 178, 140, 0.1)' }} />
-                             </React.Fragment>
-                           ))}
-                        </div>
-
-                        {/* Now Line */}
-                        {nowMinutes >= 8 * 60 && nowMinutes <= 20 * 60 && isToday && (
-                          <div style={{ position: 'absolute', top: `${((nowMinutes - (8 * 60)) / 60) * 80}px`, left: 0, right: 0, height: '2px', background: '#e11d48', zIndex: 5, pointerEvents: 'none', display: 'flex', alignItems: 'center' }}>
-                             <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#e11d48', marginLeft: '-4px' }} />
+                      if (filteredApps.length === 0) {
+                        return (
+                          <div style={{ padding: '30px 10px', textAlign: 'center', fontSize: '0.8rem', color: '#a0909a', fontWeight: 600 }}>
+                            No hay citas en esta franja horaria.
                           </div>
-                        )}
+                        );
+                      }
 
-                        {/* Staff Columns */}
-                        {visibleStaff.filter(s => {
-                          if (!isMobile) return true;
-                          const activeFilter = mobileStaffFilter === 'all' ? visibleStaff[0]?.id : mobileStaffFilter;
-                          return s.id === activeFilter;
-                        }).map((staffMember, colIdx, filteredStaff) => {
-                          
-                          const colApps = dayApps.filter(app => app.staff_id === staffMember.id);
-                          
-                          return (
-                            <div key={staffMember.id} style={{ flex: 1, position: 'relative', borderRight: colIdx < filteredStaff.length - 1 ? '1px solid rgba(223, 178, 140, 0.15)' : 'none' }}>
-                              {/* Column Header for Desktop / Tablets */}
-                              {!isMobile && (
-                                <div style={{ position: 'sticky', top: 0, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)', padding: '12px 4px', textAlign: 'center', borderBottom: '1px solid rgba(223, 178, 140, 0.2)', zIndex: 10, fontSize: '0.75rem', fontWeight: 800, color: '#2d1b22', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
-                                  {staffMember.name.split(' ')[0]}
+                      // Agrupar por hora exacta para mostrar juntas las citas que coinciden en horario
+                      const groups = [];
+                      filteredApps.forEach(app => {
+                        const start = new Date(app.scheduled_at || app.created_at);
+                        const timeKey = `${start.getHours()}:${start.getMinutes()}`;
+                        const lastGroup = groups[groups.length - 1];
+                        if (!lastGroup || lastGroup.timeKey !== timeKey) {
+                          groups.push({ timeKey, start, apps: [app] });
+                        } else {
+                          lastGroup.apps.push(app);
+                        }
+                      });
+
+                      return groups.map(group => {
+                        const h12 = group.start.getHours() % 12 || 12;
+                        const ampm = group.start.getHours() >= 12 ? 'PM' : 'AM';
+                        return (
+                          <div key={group.timeKey} style={{ marginBottom: '18px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                              <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#c97282', flexShrink: 0 }}>
+                                {h12}:{group.start.getMinutes().toString().padStart(2, '0')} {ampm}
+                              </div>
+                              {group.apps.length > 1 && (
+                                <div style={{ fontSize: '0.6rem', fontWeight: 800, color: '#a0506a', background: 'rgba(201, 114, 130, 0.1)', padding: '2px 9px', borderRadius: '999px', flexShrink: 0 }}>
+                                  {group.apps.length} citas a la misma hora
                                 </div>
                               )}
+                              <div style={{ flex: 1, height: '1px', background: 'rgba(223, 178, 140, 0.2)' }} />
+                            </div>
 
-                              {/* Appointments Blocks */}
-                              {colApps.map(app => {
-                                 const start = new Date(app.scheduled_at || app.created_at);
-                                 const startMins = start.getHours() * 60 + start.getMinutes();
-                                 const duration = getAppointmentDuration(app) || 60;
-                                 
-                                 if (startMins < 8 * 60 || startMins >= 21 * 60) return null; // out of bounds
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                              {group.apps.map(app => {
+                                const start = new Date(app.scheduled_at || app.created_at);
+                                const staffMember = visibleStaff.find(s => s.id === app.staff_id);
+                                const isRetrasada = Math.floor((new Date().getTime() - start.getTime()) / 60000) > 15 && app.status !== 'Completado' && app.status !== 'Cancelada';
 
-                                 const topPx = ((startMins - (8 * 60)) / 60) * 80;
-                                 const heightPx = (duration / 60) * 80;
+                                let bgColor = '#fcfaf9';
+                                let borderColor = 'rgba(201, 114, 130, 0.3)';
+                                let accentColor = '#c97282';
+                                if (app.status === 'Completado') {
+                                  bgColor = 'rgba(34, 197, 94, 0.05)'; borderColor = 'rgba(34, 197, 94, 0.3)'; accentColor = '#16a34a';
+                                } else if (isRetrasada) {
+                                  bgColor = 'rgba(239, 68, 68, 0.05)'; borderColor = 'rgba(239, 68, 68, 0.3)'; accentColor = '#dc2626';
+                                } else if (app.status === 'En Curso') {
+                                  bgColor = 'rgba(245, 158, 11, 0.05)'; borderColor = 'rgba(245, 158, 11, 0.3)'; accentColor = '#d97706';
+                                }
 
-                                 const isRetrasada = Math.floor((new Date().getTime() - start.getTime()) / 60000) > 15 && app.status !== 'Completado' && app.status !== 'Cancelada';
-                                 
-                                 let bgColor = '#fff';
-                                 let borderColor = 'rgba(201, 114, 130, 0.4)';
-                                 let accentColor = '#c97282';
-                                 if (app.status === 'Completado') {
-                                   bgColor = 'rgba(34, 197, 94, 0.05)'; borderColor = 'rgba(34, 197, 94, 0.3)'; accentColor = '#16a34a';
-                                 } else if (isRetrasada) {
-                                   bgColor = 'rgba(239, 68, 68, 0.05)'; borderColor = 'rgba(239, 68, 68, 0.3)'; accentColor = '#dc2626';
-                                 } else if (app.status === 'En Curso') {
-                                   bgColor = 'rgba(245, 158, 11, 0.05)'; borderColor = 'rgba(245, 158, 11, 0.3)'; accentColor = '#d97706';
-                                 }
-
-                                 return (
-                                   <div key={app.id} style={{
-                                     position: 'absolute',
-                                     top: `${topPx}px`,
-                                     height: `${heightPx - 2}px`, // subtract 2px for gap
-                                     left: '4px',
-                                     right: '4px',
-                                     background: bgColor,
-                                     border: `1px solid ${borderColor}`,
-                                     borderLeft: `4px solid ${accentColor}`,
-                                     borderRadius: '8px',
-                                     padding: '6px 8px',
-                                     overflow: 'hidden',
-                                     boxShadow: '0 2px 8px rgba(74, 48, 54, 0.05)',
-                                     cursor: 'pointer',
-                                     transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s',
-                                     zIndex: 4,
-                                     display: 'flex',
-                                     flexDirection: 'column'
-                                   }}
-                                   onClick={() => {
-                                     // Dispatch custom event if there's a modal, or just select it
-                                     setSelectedAppointmentDrawer(app);
-                                   }}
-                                   onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.zIndex = 20; e.currentTarget.style.boxShadow = '0 6px 16px rgba(74, 48, 54, 0.1)'; }}
-                                   onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.zIndex = 4; e.currentTarget.style.boxShadow = '0 2px 8px rgba(74, 48, 54, 0.05)'; }}
-                                   >
-                                     <div style={{ fontSize: '0.65rem', fontWeight: 800, color: accentColor, marginBottom: '4px', lineHeight: 1 }}>
-                                        {start.getHours() % 12 || 12}:{start.getMinutes().toString().padStart(2, '0')} {start.getHours() >= 12 ? 'PM' : 'AM'}
-                                     </div>
-                                     <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#2d1b22', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.2 }}>
+                                return (
+                                  <div key={app.id}
+                                    onClick={() => setSelectedAppointmentDrawer(app)}
+                                    style={{
+                                      display: 'flex', alignItems: 'center', gap: '12px',
+                                      background: bgColor, border: `1px solid ${borderColor}`,
+                                      borderLeft: `4px solid ${accentColor}`, borderRadius: '12px',
+                                      padding: '10px 14px', cursor: 'pointer',
+                                      boxShadow: '0 2px 8px rgba(74, 48, 54, 0.04)',
+                                      transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s'
+                                    }}
+                                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(74, 48, 54, 0.1)'; }}
+                                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(74, 48, 54, 0.04)'; }}
+                                  >
+                                    {staffMember && (
+                                      <img
+                                        src={staffMember.image_url || staffMember.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(staffMember.name || '')}`}
+                                        alt={staffMember.name || ''}
+                                        style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1.5px solid rgba(223,178,140,0.25)' }}
+                                      />
+                                    )}
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                      <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#2d1b22', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                         {app.clients?.name || 'Cliente'}
-                                     </div>
-                                     {heightPx > 40 && (
-                                       <div style={{ fontSize: '0.65rem', color: '#8c767b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: '2px', fontWeight: 600 }}>
-                                          {app.services?.name || 'Servicio'}
-                                       </div>
-                                     )}
-                                   </div>
-                                 );
+                                      </div>
+                                      <div style={{ fontSize: '0.68rem', color: '#8c767b', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                        {app.services?.name || 'Servicio'}{staffMember ? ` · ${staffMember.name.split(' ')[0]}` : ''}
+                                      </div>
+                                    </div>
+                                    <div style={{ fontSize: '0.62rem', fontWeight: 800, color: accentColor, background: `${accentColor}18`, padding: '4px 10px', borderRadius: '999px', flexShrink: 0, whiteSpace: 'nowrap' }}>
+                                      {app.status}
+                                    </div>
+                                  </div>
+                                );
                               })}
                             </div>
-                          );
-                        })}
-                      </div>
-                    </div>
+                          </div>
+                        );
+                      });
+                    })()}
                   </div>
                 )}
               </div>
@@ -1625,21 +1656,21 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 14px 0', letterSpacing: '0.5px' }}>
                   ESTADO DEL EQUIPO
                 </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: isMobile ? '8px' : '16px' }}>
-                  <div style={{ background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(34, 197, 94, 0.02) 100%)', border: '2px solid rgba(34, 197, 94, 0.25)', borderRadius: '16px', padding: isMobile ? '12px 8px' : '20px', textAlign: 'center', transition: 'all 0.3s ease' }}>
-                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: isMobile ? '6px' : '10px' }}><Users size={isMobile ? 20 : 24} color="#16a34a" strokeWidth={1.5} /></div>
-                    <div style={{ fontSize: isMobile ? '0.58rem' : '0.68rem', fontWeight: 700, color: '#16a34a', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: isMobile ? '4px' : '8px' }}>Disponibles</div>
-                    <div style={{ fontSize: isMobile ? '1.6rem' : '2.2rem', fontWeight: 900, color: '#16a34a', lineHeight: 1 }}>{staffByStatus.libres.length}</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: (isMobile || isTablet) ? '8px' : '16px' }}>
+                  <div style={{ background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(34, 197, 94, 0.02) 100%)', border: '2px solid rgba(34, 197, 94, 0.25)', borderRadius: '16px', padding: (isMobile || isTablet) ? '12px 6px' : '20px', textAlign: 'center', transition: 'all 0.3s ease', minWidth: 0 }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: (isMobile || isTablet) ? '6px' : '10px' }}><Users size={(isMobile || isTablet) ? 20 : 24} color="#16a34a" strokeWidth={1.5} /></div>
+                    <div style={{ fontSize: (isMobile || isTablet) ? '0.56rem' : '0.68rem', fontWeight: 700, color: '#16a34a', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: (isMobile || isTablet) ? '4px' : '8px' }}>Disponibles</div>
+                    <div style={{ fontSize: (isMobile || isTablet) ? '1.4rem' : '2.2rem', fontWeight: 900, color: '#16a34a', lineHeight: 1 }}>{staffByStatus.libres.length}</div>
                   </div>
-                  <div style={{ background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(239, 68, 68, 0.02) 100%)', border: '2px solid rgba(239, 68, 68, 0.25)', borderRadius: '16px', padding: isMobile ? '12px 8px' : '20px', textAlign: 'center', transition: 'all 0.3s ease' }}>
-                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: isMobile ? '6px' : '10px' }}><Scissors size={isMobile ? 20 : 24} color="#dc2626" strokeWidth={1.5} /></div>
-                    <div style={{ fontSize: isMobile ? '0.58rem' : '0.68rem', fontWeight: 700, color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: isMobile ? '4px' : '8px' }}>En Cita</div>
-                    <div style={{ fontSize: isMobile ? '1.6rem' : '2.2rem', fontWeight: 900, color: '#dc2626', lineHeight: 1 }}>{staffByStatus.ocupadas.length}</div>
+                  <div style={{ background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(239, 68, 68, 0.02) 100%)', border: '2px solid rgba(239, 68, 68, 0.25)', borderRadius: '16px', padding: (isMobile || isTablet) ? '12px 6px' : '20px', textAlign: 'center', transition: 'all 0.3s ease', minWidth: 0 }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: (isMobile || isTablet) ? '6px' : '10px' }}><Scissors size={(isMobile || isTablet) ? 20 : 24} color="#dc2626" strokeWidth={1.5} /></div>
+                    <div style={{ fontSize: (isMobile || isTablet) ? '0.56rem' : '0.68rem', fontWeight: 700, color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: (isMobile || isTablet) ? '4px' : '8px' }}>En Cita</div>
+                    <div style={{ fontSize: (isMobile || isTablet) ? '1.4rem' : '2.2rem', fontWeight: 900, color: '#dc2626', lineHeight: 1 }}>{staffByStatus.ocupadas.length}</div>
                   </div>
-                  <div style={{ background: 'linear-gradient(135deg, rgba(212, 160, 154, 0.08) 0%, rgba(212, 160, 154, 0.02) 100%)', border: '2px solid rgba(212, 160, 154, 0.3)', borderRadius: '16px', padding: isMobile ? '12px 8px' : '20px', textAlign: 'center', transition: 'all 0.3s ease' }}>
-                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: isMobile ? '6px' : '10px' }}><Clock size={isMobile ? 20 : 24} color="#a0506a" strokeWidth={1.5} /></div>
-                    <div style={{ fontSize: isMobile ? '0.58rem' : '0.68rem', fontWeight: 700, color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: isMobile ? '4px' : '8px' }}>Almuerzo</div>
-                    <div style={{ fontSize: isMobile ? '1.6rem' : '2.2rem', fontWeight: 900, color: '#a0506a', lineHeight: 1 }}>1</div>
+                  <div style={{ background: 'linear-gradient(135deg, rgba(212, 160, 154, 0.08) 0%, rgba(212, 160, 154, 0.02) 100%)', border: '2px solid rgba(212, 160, 154, 0.3)', borderRadius: '16px', padding: (isMobile || isTablet) ? '12px 6px' : '20px', textAlign: 'center', transition: 'all 0.3s ease', minWidth: 0 }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: (isMobile || isTablet) ? '6px' : '10px' }}><Clock size={(isMobile || isTablet) ? 20 : 24} color="#a0506a" strokeWidth={1.5} /></div>
+                    <div style={{ fontSize: (isMobile || isTablet) ? '0.56rem' : '0.68rem', fontWeight: 700, color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: (isMobile || isTablet) ? '4px' : '8px' }}>Almuerzo</div>
+                    <div style={{ fontSize: (isMobile || isTablet) ? '1.4rem' : '2.2rem', fontWeight: 900, color: '#a0506a', lineHeight: 1 }}>1</div>
                   </div>
                 </div>
               </div>
@@ -1704,7 +1735,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         >
                           <div style={{ position: 'relative', width: '48px', height: '48px', marginBottom: '8px' }}>
                             <img
-                              src={s.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(s.name)}&backgroundColor=e8a2a9,f7d4d7,fce4e8&radius=50`}
+                              src={s.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(s.name)}`}
                               alt={s.name}
                               style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(223,178,140,0.15)', filter: 'grayscale(100%)' }}
                             />
@@ -1762,7 +1793,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         {/* Avatar photo */}
                         <div style={{ position: 'relative', width: '48px', height: '48px', marginBottom: '8px' }}>
                           <img
-                            src={s.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(s.name)}&backgroundColor=e8a2a9,f7d4d7,fce4e8&radius=50`}
+                            src={s.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(s.name)}`}
                             alt={s.name}
                             style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: `2px solid ${statusColor}` }}
                           />
@@ -1800,162 +1831,6 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   </div>
                 )}
               </div>
-            </div>
-
-            {/* Column 3 - Calendario */}
-            <div style={{ display: !isMobile ? 'flex' : 'none', flexDirection: 'column', gap: '24px', minWidth: 0 }}>
-
-              {/* Mini Calendar */}
-              <div className="agenda-glass-card" style={{ padding: '20px', overflow: 'visible' }}>
-                {/* Header with navigation */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <button
-                    onClick={() => {
-                      const prev = new Date(selectedDate);
-                      prev.setMonth(prev.getMonth() - 1);
-                      setSelectedDate(prev);
-                    }}
-                    style={{
-                      width: '28px', height: '28px', borderRadius: '8px',
-                      background: 'rgba(201, 114, 130, 0.08)',
-                      border: '1px solid rgba(201, 114, 130, 0.2)',
-                      color: '#c97282', cursor: 'pointer',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: '14px', transition: 'all 0.2s'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(201, 114, 130, 0.15)';
-                      e.currentTarget.style.borderColor = 'rgba(201, 114, 130, 0.4)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)';
-                      e.currentTarget.style.borderColor = 'rgba(201, 114, 130, 0.2)';
-                    }}
-                  >
-                    ←
-                  </button>
-                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22', margin: 0 }}>
-                    {selectedDate.toLocaleDateString('es-VE', { month: 'long', year: 'numeric' })}
-                  </h4>
-                  <button
-                    onClick={() => {
-                      const next = new Date(selectedDate);
-                      next.setMonth(next.getMonth() + 1);
-                      setSelectedDate(next);
-                    }}
-                    style={{
-                      width: '28px', height: '28px', borderRadius: '8px',
-                      background: 'rgba(201, 114, 130, 0.08)',
-                      border: '1px solid rgba(201, 114, 130, 0.2)',
-                      color: '#c97282', cursor: 'pointer',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: '14px', transition: 'all 0.2s'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(201, 114, 130, 0.15)';
-                      e.currentTarget.style.borderColor = 'rgba(201, 114, 130, 0.4)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)';
-                      e.currentTarget.style.borderColor = 'rgba(201, 114, 130, 0.2)';
-                    }}
-                  >
-                    →
-                  </button>
-                </div>
-
-                {/* Day names */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '8px' }}>
-                  {['L', 'M', 'X', 'J', 'V', 'S', 'D'].map((day, i) => (
-                    <div key={i} style={{ textAlign: 'center', fontSize: '0.6rem', fontWeight: 700, color: '#a0909a', padding: '4px 0' }}>
-                      {day}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Calendar days */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
-                  {(() => {
-                    const year = selectedDate.getFullYear();
-                    const month = selectedDate.getMonth();
-                    const firstDay = new Date(year, month, 1).getDay();
-                    const daysInMonth = new Date(year, month + 1, 0).getDate();
-                    const days = [];
-
-                    // Empty cells before month starts
-                    for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) {
-                      days.push(<div key={`empty-${i}`} />);
-                    }
-
-                    // Days of month
-                    for (let day = 1; day <= daysInMonth; day++) {
-                      const dateObj = new Date(year, month, day);
-                      const dateKey = getBusinessDateKey(dateObj);
-                      const dayAppsCount = appointments.filter(app => {
-                        const appDate = new Date(app.scheduled_at || app.created_at);
-                        return getBusinessDateKey(appDate) === dateKey;
-                      }).length;
-                      const isSelected = dateKey === getBusinessDateKey(selectedDate);
-                      const isToday = dateKey === getBusinessDateKey(new Date());
-
-                      days.push(
-                        <button
-                          key={day}
-                          onClick={() => setSelectedDate(dateObj)}
-                          style={{
-                            padding: '6px 0',
-                            borderRadius: '8px',
-                            border: isSelected ? 'none' : isToday ? '1px solid var(--magenta-primary)' : '1px solid rgba(223, 178, 140, 0.1)',
-                            background: isSelected ? 'var(--magenta-primary)' : isToday ? 'rgba(201, 114, 130, 0.05)' : '#fff',
-                            color: isSelected ? '#fff' : '#2d1b22',
-                            fontSize: '0.75rem',
-                            fontWeight: isSelected || isToday ? 700 : 500,
-                            cursor: 'pointer',
-                            position: 'relative',
-                            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: isSelected ? '0 4px 12px rgba(160, 80, 106, 0.25)' : 'none',
-                            transform: isSelected ? 'scale(1.05)' : 'scale(1)',
-                            zIndex: isSelected ? 2 : 1
-                          }}
-                          onMouseEnter={(e) => {
-                            if (!isSelected) {
-                              e.currentTarget.style.background = 'rgba(201, 114, 130, 0.1)';
-                              e.currentTarget.style.borderColor = 'rgba(201, 114, 130, 0.3)';
-                            }
-                          }}
-                          onMouseLeave={(e) => {
-                            if (!isSelected) {
-                              e.currentTarget.style.background = isToday ? 'rgba(201, 114, 130, 0.05)' : '#fff';
-                              e.currentTarget.style.borderColor = isToday ? 'var(--magenta-primary)' : 'rgba(223, 178, 140, 0.1)';
-                            }
-                          }}
-                        >
-                          {day}
-                          {dayAppsCount > 0 && (
-                            <div style={{
-                              position: 'absolute',
-                              bottom: '3px',
-                              width: '4px',
-                              height: '4px',
-                              borderRadius: '50%',
-                              background: isSelected ? '#fff' : 'var(--magenta-primary)',
-                              opacity: isSelected ? 1 : 0.8
-                            }} />
-                          )}
-                        </button>
-                      );
-                    }
-
-                    return days;
-                  })()}
-                </div>
-              </div>
-
-
             </div>
 
           </div>
@@ -2307,7 +2182,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 </div>
                 <div style={{ width: '38px', height: '38px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #c97282' }}>
                   <img 
-                    src={user?.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=Admin&backgroundColor=f7d4d7`}
+                    src={user?.photo_url || `https://i.pravatar.cc/150?u=Admin`}
                     alt="User profile"
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
@@ -2336,7 +2211,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
                 <div style={{ width: '90px', height: '90px', borderRadius: '50%', overflow: 'hidden', border: '3px solid #fce4e8', flexShrink: 0, boxShadow: '0 4px 12px rgba(201, 114, 130,0.15)' }}>
                   <img 
-                    src={selectedStaffDrawer.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(selectedStaffDrawer.name)}&backgroundColor=e8a2a9,f7d4d7,fce4e8&radius=50`}
+                    src={selectedStaffDrawer.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(selectedStaffDrawer.name)}`}
                     alt={selectedStaffDrawer.name}
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
@@ -2789,7 +2664,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                       <div style={{ width: '42px', height: '42px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #c97282', flexShrink: 0 }}>
                         <img 
-                          src={`https://api.dicebear.com/9.x/lorelei/svg?seed=Valentina&backgroundColor=f7d4d7`}
+                          src={`https://i.pravatar.cc/150?u=Valentina`}
                           alt="Valentina Pérez"
                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         />
@@ -3115,7 +2990,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     boxShadow: '0 4px 12px rgba(74, 48, 54, 0.03)'
                   }}>
                     <img 
-                      src={`https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(selectedDetailedApp.clients?.name || '')}&radius=50`} 
+                      src={`https://i.pravatar.cc/150?u=${encodeURIComponent(selectedDetailedApp.clients?.name || '')}`}
                       alt={selectedDetailedApp.clients?.name || ''} 
                       style={{ width: '46px', height: '46px', borderRadius: '50%', backgroundColor: '#fff0f2', border: '2px solid #fff' }} 
                     />
@@ -3148,7 +3023,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     {/* Specialist Row */}
                     <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                       <img 
-                        src={activeStaff?.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(staffNameOnly)}&radius=50`} 
+                        src={activeStaff?.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(staffNameOnly)}`}
                         alt={staffNameOnly} 
                         style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#fff', border: '1px solid rgba(223,178,140,0.2)', objectFit: 'cover' }} 
                       />

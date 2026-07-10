@@ -739,7 +739,7 @@ const ScheduleModal = ({
                           display: 'flex', alignItems: 'center', gap: '12px', background: '#faf8f7',
                           marginTop: '8px'
                         }}>
-                          <img src={localStaff.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(localStaff.name || '')}&radius=50`} alt={localStaff.name || ''} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+                          <img src={localStaff.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(localStaff.name || '')}`} alt={localStaff.name || ''} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
                           <div>
                             <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#2d1b22' }}>{localStaff.name || ''}</div>
                             <div style={{ fontSize: '0.68rem', color: '#a0909a', fontWeight: 600 }}>{String(localStaff.role || 'Especialista').split('|')[0]}</div>
@@ -906,7 +906,7 @@ const ScheduleModal = ({
                       </div>
 
                       {serviceCategories.length > 0 && (
-                        <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '2px', flexShrink: 0, animation: 'fadeInUp 0.4s ease-out 0.15s both' }} className="jana-scrollbar">
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', paddingBottom: '2px', flexShrink: 0, animation: 'fadeInUp 0.4s ease-out 0.15s both' }}>
                           <button
                             onClick={() => setServiceCategoryFilter('Todas')}
                             style={{
@@ -964,7 +964,7 @@ const ScheduleModal = ({
                               key={svc.id}
                               onClick={() => toggleServiceSelection(svc)}
                               style={{
-                                display: 'flex', alignItems: 'center', gap: '10px',
+                                display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px 10px',
                                 padding: '10px 14px', borderRadius: '12px', textAlign: 'left', cursor: 'pointer',
                                 border: isSel ? '1.5px solid #c97282' : '1px solid rgba(223,178,140,0.16)',
                                 background: isSel ? 'rgba(201, 114, 130,0.06)' : '#ffffff',
@@ -1000,7 +1000,7 @@ const ScheduleModal = ({
                               </div>
 
                               {/* Service Info */}
-                              <div style={{ flex: 1, minWidth: 0, paddingRight: '8px', zIndex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <div style={{ flex: '1 1 140px', minWidth: 0, paddingRight: '8px', zIndex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                 <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#2d1b22', lineHeight: '1.2', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{svc.name}</div>
                                 <div style={{ fontSize: '0.7rem', color: '#a0909a', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
                                   <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={12} /> {formatDuration(svc.duration_minutes || 60)}</span>
@@ -1009,7 +1009,7 @@ const ScheduleModal = ({
                               </div>
 
                               {/* Price & Check */}
-                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', gap: '6px', zIndex: 1, flexShrink: 0 }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', gap: '6px', zIndex: 1, flexShrink: 0, marginLeft: 'auto' }}>
                                 <div style={{ color: isSel ? '#c97282' : '#4a3036', fontWeight: 900, fontSize: '0.9rem' }}>
                                   ${Number(svc.price || 0).toFixed(2)}
                                 </div>

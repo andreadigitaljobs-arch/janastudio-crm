@@ -64,19 +64,19 @@ function App() {
   const [activeTab, setActiveTab] = useState(() => localStorage.getItem('jana_active_tab') || 'dashboard');
   const [isMobile, setIsMobile] = useState(() => {
     if (typeof window !== 'undefined') {
-      return window.innerWidth < 768 || window.screen.width < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      return window.innerWidth < 600 || window.screen.width < 600;
     }
     return false;
   });
   const [isTablet, setIsTablet] = useState(() => {
     if (typeof window !== 'undefined') {
-      return (window.innerWidth >= 768 && window.innerWidth < 1024) || /iPad/i.test(navigator.userAgent);
+      return window.innerWidth >= 600 && window.innerWidth < 1024;
     }
     return false;
   });
   const [isCollapsed, setIsCollapsed] = useState(() => {
     if (typeof window !== 'undefined') {
-      return (window.innerWidth >= 768 && window.innerWidth < 1024) || /iPad/i.test(navigator.userAgent);
+      return window.innerWidth >= 600 && window.innerWidth < 1024;
     }
     return false;
   });
@@ -90,6 +90,7 @@ function App() {
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [showFabHint, setShowFabHint] = useState(false);
   const [isQuickScheduleOpen, setIsQuickScheduleOpen] = useState(false);
+  const [hasQuickScheduleMounted, setHasQuickScheduleMounted] = useState(false);
   const { isModalOpen } = useModal();
 
   useEffect(() => {
@@ -247,12 +248,12 @@ function App() {
     if (!user) return;
     const handleResize = () => {
       const width = window.innerWidth;
-      setIsMobile(width < 768);
-      setIsTablet(width >= 768 && width < 1024);
+      setIsMobile(width < 600);
+      setIsTablet(width >= 600 && width < 1024);
       if (width >= 1024) {
         setIsCollapsed(false);
         setIsSidebarOpen(false);
-      } else if (width < 768) {
+      } else if (width < 600) {
         setIsSidebarOpen(false);
       } else {
         setIsCollapsed(true);
@@ -631,8 +632,10 @@ function App() {
         isMobile={isMobile}
       />
 
-      {/* Quick "agendar cita" modal — opens as an overlay from the FAB without leaving the current tab */}
-      {isQuickScheduleOpen && (
+      {/* Quick "agendar cita" modal — opens as an overlay from the FAB without leaving the current tab.
+          Stays mounted once opened (instead of `isQuickScheduleOpen &&`) so AnimatedModal
+          can play its exit animation instead of being yanked out instantly on close. */}
+      {hasQuickScheduleMounted && (
         <Suspense fallback={null}>
           <ScheduleModal
             isOpen={isQuickScheduleOpen}
@@ -709,6 +712,7 @@ function App() {
             <button
               onClick={() => {
                 dismissFabHint();
+                setHasQuickScheduleMounted(true);
                 setIsQuickScheduleOpen(true);
                 setIsMoreOpen(false);
               }}
