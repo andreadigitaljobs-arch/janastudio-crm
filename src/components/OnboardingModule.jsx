@@ -386,23 +386,50 @@ export default function OnboardingModule({ onComplete }) {
           }
         }
 
-        /* iPad / tablet portrait only — crop the photo higher to free up room for bigger text */
-        @media (min-width: 700px) and (max-width: 900px) {
+        /* Any tablet portrait (iPad Mini through iPad Pro / Galaxy Tab) — crop the photo higher and scale up text to match the larger canvas */
+        @media (min-width: 700px) and (max-width: 1400px) and (orientation: portrait) {
           .onboarding-mobile-img {
             object-position: center 22%;
           }
 
           .onboarding-title {
-            font-size: clamp(2.6rem, 5.8vw, 3.1rem);
+            font-size: clamp(2.6rem, 5.8vw, 3.6rem);
           }
 
           .onboarding-subtitle {
-            font-size: 1.25rem;
+            font-size: clamp(1.25rem, 1.8vw, 1.5rem);
           }
 
           .onboarding-btn {
-            font-size: 1.2rem;
+            font-size: clamp(1.2rem, 1.6vw, 1.35rem);
             padding: 20px 45px;
+          }
+
+          .onboarding-logo {
+            width: clamp(120px, 9vw, 160px);
+          }
+        }
+
+        /* Short phones (e.g. iPhone SE) — crop the photo higher so text has room and never touches the curve */
+        @media (max-height: 700px) and (orientation: portrait) {
+          .onboarding-mobile-img {
+            object-position: center 16%;
+          }
+
+          .onboarding-content-panel {
+            padding-top: 16px;
+          }
+
+          .onboarding-divider {
+            margin: 10px 0 14px;
+          }
+
+          .onboarding-subtitle {
+            margin-bottom: 0;
+          }
+
+          .onboarding-controls {
+            gap: 20px;
           }
         }
       `}</style>
