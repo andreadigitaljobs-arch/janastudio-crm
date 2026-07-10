@@ -18,7 +18,9 @@ import {
   Percent,
   FileText,
   Plus,
-  Home
+  Home,
+  Crown,
+  ChevronRight
 } from 'lucide-react';
 import { dataService } from './services/dataService';
 
@@ -764,28 +766,18 @@ function App() {
           }} onClick={() => setIsMoreOpen(false)} />
 
           {/* User profile */}
-          <div className="mobile-more-profile" style={{
-            display: 'flex', alignItems: 'center', gap: '14px',
-            padding: '16px 18px', borderRadius: '20px',
-            background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)',
-            boxShadow: '0 8px 22px rgba(160, 80, 106, 0.28)',
-          }}>
+          <div className="mobile-more-profile">
+            <Crown size={18} className="mobile-more-crown" />
             {user?.image_url ? (
-              <img src={user.image_url} alt="" className="mobile-more-avatar" style={{ borderRadius: '50%', objectFit: 'cover', border: '2.5px solid rgba(255,255,255,0.8)' }} />
+              <img src={user.image_url} alt="" className="mobile-more-avatar" />
             ) : (
-              <div className="mobile-more-avatar" style={{
-                borderRadius: '50%',
-                background: 'rgba(255,255,255,0.22)',
-                border: '2.5px solid rgba(255,255,255,0.8)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'white', fontWeight: 700, fontSize: '1.15rem'
-              }}>
+              <div className="mobile-more-avatar mobile-more-avatar-fallback">
                 {user?.name?.charAt(0) || 'A'}
               </div>
             )}
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontWeight: 700, color: '#fff', fontSize: '0.98rem' }}>{user?.name || 'Jana'}</div>
-              <div style={{ fontSize: '0.74rem', color: 'rgba(255,255,255,0.85)', fontWeight: 600 }}>{user?.role || 'Admin'}</div>
+              <div className="mobile-more-profile-name">{user?.name || 'Jana'}</div>
+              <div className="mobile-more-profile-role">{user?.role || 'Admin'}</div>
             </div>
           </div>
 
@@ -810,11 +802,12 @@ function App() {
                   <div className="mobile-more-tile-icon" style={{
                     background: isActive
                       ? 'linear-gradient(135deg, #e8a2a9 0%, #a0506a 100%)'
-                      : 'linear-gradient(135deg, rgba(232,162,169,0.14) 0%, rgba(223,178,140,0.14) 100%)',
+                      : 'rgba(232,162,169,0.14)',
                   }}>
-                    <Icon size={22} style={{ color: isActive ? '#fff' : 'var(--magenta-primary)' }} />
+                    <Icon size={20} strokeWidth={1.75} style={{ color: isActive ? '#fff' : 'var(--magenta-primary)' }} />
                   </div>
-                  <span style={{ fontSize: '0.8rem', fontWeight: isActive ? 700 : 600, color: isActive ? 'var(--magenta-primary)' : 'var(--text-secondary)' }}>{item.label}</span>
+                  <span className="mobile-more-tile-label" style={{ color: isActive ? 'var(--magenta-primary)' : '#3d2b30' }}>{item.label}</span>
+                  <ChevronRight size={16} className="mobile-more-tile-chevron" />
                 </button>
               );
             })}
@@ -831,6 +824,13 @@ function App() {
             <LogOut size={18} />
             <span>Cerrar Sesión</span>
           </button>
+
+          {/* Brand signature */}
+          <div className="mobile-more-brand">
+            <span className="mobile-more-brand-arrow">—</span>
+            <span className="mobile-more-brand-mark">JANA<em>Studio</em></span>
+            <span className="mobile-more-brand-arrow">—</span>
+          </div>
         </div>
       )}
     </div>

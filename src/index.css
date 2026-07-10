@@ -1859,17 +1859,76 @@ input:focus { outline: none; }
   to { transform: translateX(-50%) translateY(-4px); }
 }
 
+/* "Más" drawer — user profile card */
+.mobile-more-profile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 20px;
+  border-radius: 22px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.5) 0%, transparent 40%),
+    linear-gradient(135deg, #fffaf9 0%, #fdf1f2 100%);
+  border: 1px solid rgba(212, 160, 154, 0.2);
+  box-shadow: 0 6px 20px rgba(74, 48, 54, 0.06);
+  overflow: hidden;
+}
+
+.mobile-more-crown {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  color: #c97282;
+  opacity: 0.75;
+}
+
+.mobile-more-avatar {
+  width: 58px;
+  height: 58px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2.5px solid rgba(223, 178, 140, 0.55);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.7);
+}
+
+.mobile-more-avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #c97282 0%, #a0506a 100%);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.mobile-more-profile-name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #3d2b30;
+}
+
+.mobile-more-profile-role {
+  font-size: 0.82rem;
+  color: #c97282;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
 /* "Más" drawer tiles */
 .mobile-more-tile {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  gap: 10px;
-  padding: 20px 14px;
-  border-radius: 20px;
+  gap: 12px;
+  padding: 18px 16px;
+  border-radius: 18px;
   box-shadow: 0 4px 14px rgba(74, 48, 54, 0.05);
   cursor: pointer;
+  position: relative;
   -webkit-tap-highlight-color: transparent;
   transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
 }
@@ -1880,13 +1939,26 @@ input:focus { outline: none; }
 }
 
 .mobile-more-tile-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+}
+
+.mobile-more-tile-label {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.mobile-more-tile-chevron {
+  position: absolute;
+  top: 22px;
+  right: 14px;
+  color: rgba(201, 114, 130, 0.5);
 }
 
 .mobile-more-logout {
@@ -1895,27 +1967,50 @@ input:focus { outline: none; }
   justify-content: center;
   gap: 8px;
   padding: 16px;
-  border-radius: 18px;
-  border: 1px solid rgba(255, 107, 107, 0.18);
-  background: rgba(255, 107, 107, 0.08);
-  color: #ff6b6b;
+  border-radius: 100px;
+  border: 1.5px solid rgba(201, 114, 130, 0.35);
+  background: transparent;
+  color: #a0506a;
   cursor: pointer;
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   font-weight: 700;
-  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease;
   margin-top: 4px;
   -webkit-tap-highlight-color: transparent;
 }
 
 .mobile-more-logout:active {
   transform: scale(0.96);
-  background: rgba(255, 107, 107, 0.14);
+  background: rgba(201, 114, 130, 0.08);
 }
 
-.mobile-more-avatar {
-  width: 50px;
-  height: 50px;
-  flex-shrink: 0;
+.mobile-more-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 2px;
+  color: rgba(201, 114, 130, 0.5);
+}
+
+.mobile-more-brand-arrow {
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+}
+
+.mobile-more-brand-mark {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #a0506a;
+}
+
+.mobile-more-brand-mark em {
+  font-style: italic;
+  font-weight: 600;
+  margin-left: 4px;
+  color: #c97282;
 }
 
 /* Compact the "More" drawer on short screens (e.g. iPhone SE) so everything fits without scrolling */
@@ -1951,6 +2046,10 @@ input:focus { outline: none; }
   .mobile-more-logout {
     padding: 10px !important;
     margin-top: 0 !important;
+  }
+
+  .mobile-more-brand {
+    display: none;
   }
 }
 
