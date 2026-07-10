@@ -198,7 +198,7 @@ const JanaLoader = ({ visible }) => {
           background-color: #f7ebe6; /* Fallback luxury color */
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 768px), (orientation: portrait) and (max-width: 1366px) {
           .loader-container {
             background-image: url(/fondo_carga_mobile.png);
           }
