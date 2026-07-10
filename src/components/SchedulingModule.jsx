@@ -4,7 +4,7 @@ import {
   ChevronDown, Search, Pencil,
   CheckCircle2, Users,
   CalendarDays, StickyNote, BarChart3, XCircle, Bell,
-  DollarSign, Info, AlertTriangle, Coffee, Sliders, Check, HelpCircle, Scissors
+  DollarSign, Info, AlertTriangle, Coffee, Sliders, Check, HelpCircle, Scissors, Sparkles
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
