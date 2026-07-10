@@ -201,7 +201,7 @@ export default function OnboardingModule({ onComplete }) {
             display: block;
             position: absolute;
             inset: 0;
-            background: linear-gradient(to bottom, rgba(252,249,248,0) 0%, rgba(252,249,248,0.4) 40%, rgba(252,249,248,0.95) 70%, #fcf9f8 100%);
+            background: linear-gradient(to bottom, rgba(252,249,248,0) 0%, rgba(252,249,248,0) 55%, rgba(252,249,248,0.9) 80%, #fcf9f8 100%);
             z-index: 5;
           }
 
