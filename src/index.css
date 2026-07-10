@@ -1687,6 +1687,133 @@ input:focus { outline: none; }
   font-weight: 600 !important;
 }
 
+/* Icon "draw" micro-interaction: plays whenever a nav icon becomes active */
+.mobile-nav-icon-container svg path,
+.mobile-nav-icon-container svg circle,
+.mobile-nav-icon-container svg line,
+.mobile-nav-icon-container svg rect,
+.mobile-nav-icon-container svg polyline {
+  stroke-dasharray: 60;
+  stroke-dashoffset: 0;
+}
+
+.mobile-nav-btn.active .mobile-nav-icon-container svg path,
+.mobile-nav-btn.active .mobile-nav-icon-container svg circle,
+.mobile-nav-btn.active .mobile-nav-icon-container svg line,
+.mobile-nav-btn.active .mobile-nav-icon-container svg rect,
+.mobile-nav-btn.active .mobile-nav-icon-container svg polyline {
+  animation: navIconDraw 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes navIconDraw {
+  from { stroke-dashoffset: 60; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* Floating central "+" CTA button (agendar cita) */
+.mobile-fab-btn {
+  position: absolute;
+  top: -22px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e8a2a9 0%, #c97282 55%, #a0506a 100%);
+  border: 4px solid #ffffff;
+  box-shadow: 0 8px 24px rgba(160, 80, 106, 0.45);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+  z-index: 2;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-fab-btn:active {
+  transform: scale(0.92);
+  box-shadow: 0 4px 14px rgba(160, 80, 106, 0.4);
+}
+
+.mobile-fab-ring {
+  position: absolute;
+  top: -22px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid rgba(201, 114, 130, 0.55);
+  animation: fabRingPulse 2.4s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes fabRingPulse {
+  0% { transform: scale(1); opacity: 0.7; }
+  70% { transform: scale(1.35); opacity: 0; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+.mobile-fab-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--magenta-primary);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+/* "Más" drawer tiles */
+.mobile-more-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px 14px;
+  border-radius: 20px;
+  box-shadow: 0 4px 14px rgba(74, 48, 54, 0.05);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+}
+
+.mobile-more-tile:active {
+  transform: scale(0.94);
+  box-shadow: 0 2px 8px rgba(74, 48, 54, 0.06);
+}
+
+.mobile-more-tile-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.mobile-more-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 107, 107, 0.18);
+  background: rgba(255, 107, 107, 0.08);
+  color: #ff6b6b;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 700;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin-top: 4px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-more-logout:active {
+  transform: scale(0.96);
+  background: rgba(255, 107, 107, 0.14);
+}
+
 /* ── Tooltip de íconos del sidebar (menú colapsado en compu) ── */
 /* Se pinta vía portal en <body>, así nunca se corta por el overflow:hidden del sidebar */
 .sidebar-tooltip-portal {

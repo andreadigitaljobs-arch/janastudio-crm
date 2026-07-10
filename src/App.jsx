@@ -649,17 +649,18 @@ function App() {
             <span>Agenda</span>
           </button>
 
-          {/* Floating Central Plus (+) Button */}
+          {/* Floating Central Plus (+) Button — main CTA to book an appointment */}
           <div style={{
             position: 'relative',
-            width: '56px',
-            height: '56px',
+            width: '72px',
+            height: '64px',
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'flex-end',
             flexShrink: 0,
-            marginTop: '-20px'
           }}>
+            <div className="mobile-fab-ring" />
             <button
               onClick={() => {
                 if (activeTab !== 'scheduling') {
@@ -670,26 +671,12 @@ function App() {
                 }
                 setIsMoreOpen(false);
               }}
-              style={{
-                width: '50px',
-                height: '50px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)',
-                border: '4px solid #ffffff',
-                boxShadow: '0 4px 16px rgba(160, 80, 106, 0.4)',
-                color: '#ffffff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                outline: 'none',
-                transition: 'all 0.2s ease-in-out'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+              className="mobile-fab-btn"
+              aria-label="Agendar nueva cita"
             >
-              <Plus size={24} strokeWidth={2.5} />
+              <Plus size={28} strokeWidth={2.5} />
             </button>
+            <span className="mobile-fab-label">Agendar</span>
           </div>
 
           {/* Clientes */}
@@ -735,51 +722,52 @@ function App() {
       {isMobile && (
         <div style={{
           position: 'fixed', left: 0, right: 0, bottom: 0,
-          background: 'rgba(255, 255, 255, 0.95)',
+          background: 'linear-gradient(180deg, #fffbfa 0%, #fff2f4 55%, #fce8ea 100%)',
           backdropFilter: 'blur(20px)',
           borderTopLeftRadius: '32px', borderTopRightRadius: '32px',
-          borderTop: '1px solid rgba(212, 160, 154, 0.25)',
-          boxShadow: '0 -10px 40px rgba(74, 48, 54, 0.1)',
+          borderTop: '1px solid rgba(212, 160, 154, 0.3)',
+          boxShadow: '0 -10px 40px rgba(74, 48, 54, 0.12)',
           zIndex: 2000,
-          padding: '24px 20px calc(24px + env(safe-area-inset-bottom, 12px)) 20px',
+          padding: '20px 18px calc(24px + env(safe-area-inset-bottom, 12px)) 18px',
           transform: isMoreOpen ? 'translateY(0)' : 'translateY(100%)',
           transition: 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
-          display: 'flex', flexDirection: 'column', gap: '20px',
-          maxHeight: '75vh', overflowY: 'auto'
+          display: 'flex', flexDirection: 'column', gap: '18px',
+          maxHeight: '78vh', overflowY: 'auto'
         }}>
           {/* Header indicator bar */}
           <div style={{
-            width: '40px', height: '4px', background: 'rgba(74, 48, 54, 0.15)',
-            borderRadius: '10px', alignSelf: 'center', marginBottom: '8px'
+            width: '40px', height: '4px', background: 'rgba(160, 80, 106, 0.25)',
+            borderRadius: '10px', alignSelf: 'center', marginBottom: '4px'
           }} onClick={() => setIsMoreOpen(false)} />
 
           {/* User profile */}
           <div style={{
-            display: 'flex', alignItems: 'center', gap: '12px',
-            padding: '12px 16px', borderRadius: '18px',
-            backgroundColor: 'var(--bg-tertiary)',
-            border: '1px solid rgba(212, 160, 154, 0.15)',
+            display: 'flex', alignItems: 'center', gap: '14px',
+            padding: '16px 18px', borderRadius: '20px',
+            background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)',
+            boxShadow: '0 8px 22px rgba(160, 80, 106, 0.28)',
           }}>
             {user?.image_url ? (
-              <img src={user.image_url} alt="" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover' }} />
+              <img src={user.image_url} alt="" style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover', border: '2.5px solid rgba(255,255,255,0.8)' }} />
             ) : (
               <div style={{
-                width: '44px', height: '44px', borderRadius: '50%',
-                background: 'var(--pink-gradient)',
+                width: '50px', height: '50px', borderRadius: '50%',
+                background: 'rgba(255,255,255,0.22)',
+                border: '2.5px solid rgba(255,255,255,0.8)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'white', fontWeight: 700, fontSize: '1rem'
+                color: 'white', fontWeight: 700, fontSize: '1.15rem'
               }}>
                 {user?.name?.charAt(0) || 'A'}
               </div>
             )}
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.9rem' }}>{user?.name || 'Jana'}</div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>{user?.role || 'Admin'}</div>
+              <div style={{ fontWeight: 700, color: '#fff', fontSize: '0.98rem' }}>{user?.name || 'Jana'}</div>
+              <div style={{ fontSize: '0.74rem', color: 'rgba(255,255,255,0.85)', fontWeight: 600 }}>{user?.role || 'Admin'}</div>
             </div>
           </div>
 
           {/* Remaining menu items */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
             {mobileHiddenItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -790,18 +778,20 @@ function App() {
                     handleTabChange(item.id, {});
                     setIsMoreOpen(false);
                   }}
+                  className="mobile-more-tile"
                   style={{
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                    gap: '8px', padding: '14px', borderRadius: '16px',
-                    background: isActive ? 'var(--pink-secondary)' : '#ffffff',
-                    color: isActive ? 'var(--magenta-primary)' : 'var(--text-secondary)',
-                    boxShadow: '0 2px 8px rgba(74, 48, 54, 0.03)',
-                    cursor: 'pointer', transition: 'all 0.2s',
-                    border: '1px solid rgba(212, 160, 154, 0.1)'
+                    background: isActive ? 'linear-gradient(135deg, #fff0f2 0%, #ffe4e8 100%)' : '#ffffff',
+                    border: isActive ? '1.5px solid rgba(201, 114, 130, 0.35)' : '1px solid rgba(212, 160, 154, 0.14)',
                   }}
                 >
-                  <Icon size={20} style={{ color: isActive ? 'var(--magenta-primary)' : 'var(--text-muted)' }} />
-                  <span style={{ fontSize: '0.75rem', fontWeight: isActive ? 700 : 600 }}>{item.label}</span>
+                  <div className="mobile-more-tile-icon" style={{
+                    background: isActive
+                      ? 'linear-gradient(135deg, #e8a2a9 0%, #a0506a 100%)'
+                      : 'linear-gradient(135deg, rgba(232,162,169,0.14) 0%, rgba(223,178,140,0.14) 100%)',
+                  }}>
+                    <Icon size={22} style={{ color: isActive ? '#fff' : 'var(--magenta-primary)' }} />
+                  </div>
+                  <span style={{ fontSize: '0.8rem', fontWeight: isActive ? 700 : 600, color: isActive ? 'var(--magenta-primary)' : 'var(--text-secondary)' }}>{item.label}</span>
                 </button>
               );
             })}
@@ -813,13 +803,7 @@ function App() {
               setIsMoreOpen(false);
               logout();
             }}
-            style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-              padding: '14px', borderRadius: '16px', border: 'none',
-              background: 'rgba(255, 107, 107, 0.08)', color: '#ff6b6b',
-              cursor: 'pointer', fontSize: '0.85rem', fontWeight: 700,
-              transition: 'all 0.2s', marginTop: '8px'
-            }}
+            className="mobile-more-logout"
           >
             <LogOut size={18} />
             <span>Cerrar Sesión</span>
