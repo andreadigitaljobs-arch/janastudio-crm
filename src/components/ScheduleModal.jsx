@@ -541,13 +541,13 @@ const ScheduleModal = ({
 
               .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar { display: block !important; width: 6px !important; }
               .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-track { background: transparent; }
-              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-thumb { background: rgba(219,140,149,0.3); border-radius: 10px; }
-              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(219,140,149,0.5); }
-              .jana-schedule-modal-card .jana-scrollbar { scrollbar-width: thin; scrollbar-color: rgba(219,140,149,0.3) transparent; }
+              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-thumb { background: rgba(201, 114, 130,0.3); border-radius: 10px; }
+              .jana-schedule-modal-card .jana-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(201, 114, 130,0.5); }
+              .jana-schedule-modal-card .jana-scrollbar { scrollbar-width: thin; scrollbar-color: rgba(201, 114, 130,0.3) transparent; }
               .jana-summary-panel::-webkit-scrollbar { display: block !important; width: 4px !important; }
               .jana-summary-panel::-webkit-scrollbar-track { background: transparent; }
-              .jana-summary-panel::-webkit-scrollbar-thumb { background: rgba(219,140,149,0.25); border-radius: 10px; }
-              .jana-summary-panel { scrollbar-width: thin; scrollbar-color: rgba(219,140,149,0.2) transparent; }
+              .jana-summary-panel::-webkit-scrollbar-thumb { background: rgba(201, 114, 130,0.25); border-radius: 10px; }
+              .jana-summary-panel { scrollbar-width: thin; scrollbar-color: rgba(201, 114, 130,0.2) transparent; }
 
               @media (max-width: 1250px) {
                 .jana-summary-panel { display: none !important; }
@@ -577,13 +577,13 @@ const ScheduleModal = ({
                 }}>
                   <Check size={40} strokeWidth={3} />
                 </div>
-                <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#3d2b30', margin: '0 0 8px 0' }}>
+                <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 8px 0' }}>
                   {isEditMode ? '¡Cita Actualizada!' : '¡Orden Confirmada!'}
                 </h3>
-                <p style={{ fontSize: '0.86rem', color: '#a0868c', fontWeight: 500, margin: 0 }}>
+                <p style={{ fontSize: '0.86rem', color: '#a0909a', fontWeight: 500, margin: 0 }}>
                   {isEditMode ? 'Los cambios han sido guardados correctamente.' : 'La orden ha sido registrada exitosamente en la agenda.'}
                 </p>
-                <div style={{ marginTop: '20px', fontSize: '0.78rem', color: '#db8c95', fontWeight: 700 }}>Redirigiendo...</div>
+                <div style={{ marginTop: '20px', fontSize: '0.78rem', color: '#c97282', fontWeight: 700 }}>Redirigiendo...</div>
 
                 <style>{`
                   @keyframes successPulse {
@@ -598,8 +598,8 @@ const ScheduleModal = ({
                 {/* Header with Step indicator (sticky, full-width strip) */}
                 <div style={{
                   flexShrink: 0, position: 'sticky', top: 0, zIndex: 10,
-                  background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
-                  boxShadow: '0 4px 20px rgba(219,140,149,0.35)'
+                  background: 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)',
+                  boxShadow: '0 4px 20px rgba(201, 114, 130,0.35)'
                 }}>
                   <div className="jana-schedule-header-inner" style={{ padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div style={{ flex: 1 }}>
@@ -613,7 +613,7 @@ const ScheduleModal = ({
                         )}
                       </h2>
                       {!isReprogramOnly && (
-                        <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#db8c95', backgroundColor: '#fff', padding: '4px 12px', borderRadius: '8px', display: 'inline-block', marginTop: '10px', letterSpacing: '0.3px' }}>
+                        <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#c97282', backgroundColor: '#fff', padding: '4px 12px', borderRadius: '8px', display: 'inline-block', marginTop: '10px', letterSpacing: '0.3px' }}>
                           Paso {currentStep} de {totalSteps}
                         </div>
                       )}
@@ -651,11 +651,11 @@ const ScheduleModal = ({
                   {currentStep === 1 && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out' }}>
                       <div style={{ textAlign: 'center', marginBottom: '8px' }}>
-                        <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
+                        <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#c97282' }}>
                           <User size={24} />
                         </div>
-                        <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#3d2b30' }}>¿Para qué cliente es la orden?</h3>
-                        <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Selecciona una clienta registrada en el sistema.</p>
+                        <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#2d1b22' }}>¿Para qué cliente es la orden?</h3>
+                        <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0909a' }}>Selecciona una clienta registrada en el sistema.</p>
                       </div>
                       <JanaSelect
                         variant="light"
@@ -676,11 +676,11 @@ const ScheduleModal = ({
                   {isEditMode && currentStep === 2 && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out' }}>
                       <div style={{ textAlign: 'center', marginBottom: '8px' }}>
-                        <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
+                        <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#c97282' }}>
                           <Scissors size={24} />
                         </div>
-                        <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#3d2b30' }}>¿Qué servicio va a realizarse?</h3>
-                        <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Escoge uno de los servicios vigentes.</p>
+                        <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#2d1b22' }}>¿Qué servicio va a realizarse?</h3>
+                        <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0909a' }}>Escoge uno de los servicios vigentes.</p>
                       </div>
                       <JanaSelect
                         variant="light"
@@ -705,11 +705,11 @@ const ScheduleModal = ({
                   {isEditMode && currentStep === 3 && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out' }}>
                       <div style={{ textAlign: 'center', marginBottom: '8px' }}>
-                        <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
+                        <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#c97282' }}>
                           <Sparkles size={24} />
                         </div>
-                        <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#3d2b30' }}>¿Con qué profesional prefiere atenderse?</h3>
-                        <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Selecciona una estilista o especialista asignada.</p>
+                        <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#2d1b22' }}>¿Con qué profesional prefiere atenderse?</h3>
+                        <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0909a' }}>Selecciona una estilista o especialista asignada.</p>
                       </div>
                       <JanaSelect
                         variant="light"
@@ -733,8 +733,8 @@ const ScheduleModal = ({
                         }}>
                           <img src={localStaff.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(localStaff.name || '')}&radius=50`} alt={localStaff.name || ''} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
                           <div>
-                            <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#3d2b30' }}>{localStaff.name || ''}</div>
-                            <div style={{ fontSize: '0.68rem', color: '#a0868c', fontWeight: 600 }}>{String(localStaff.role || 'Especialista').split('|')[0]}</div>
+                            <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#2d1b22' }}>{localStaff.name || ''}</div>
+                            <div style={{ fontSize: '0.68rem', color: '#a0909a', fontWeight: 600 }}>{String(localStaff.role || 'Especialista').split('|')[0]}</div>
                           </div>
                         </div>
                       )}
@@ -744,20 +744,20 @@ const ScheduleModal = ({
                   {isEditMode && currentStep === 4 && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out' }}>
                       <div>
-                        <label style={{ fontSize: '0.65rem', fontWeight: 800, color: '#a0868c', display: 'block', marginBottom: '7px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Fecha de Reserva</label>
+                        <label style={{ fontSize: '0.65rem', fontWeight: 800, color: '#a0909a', display: 'block', marginBottom: '7px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Fecha de Reserva</label>
                         <JanaDatePicker
                           variant="light"
                           value={dateToISO(selectedDate)}
                           onChange={(e) => e.target.value && setSelectedDate(isoToDate(e.target.value))}
-                          inputStyle={{ borderRadius: '12px', height: '44px', fontSize: '0.82rem', fontWeight: 600, paddingLeft: '38px', background: '#fff', border: '1.5px solid rgba(212,160,154,0.3)', color: '#3d2b30' }}
+                          inputStyle={{ borderRadius: '12px', height: '44px', fontSize: '0.82rem', fontWeight: 600, paddingLeft: '38px', background: '#fff', border: '1.5px solid rgba(212,160,154,0.3)', color: '#2d1b22' }}
                         />
                       </div>
 
-                      <div style={{ display: 'flex', gap: '10px', background: '#f5ebec', padding: '5px', borderRadius: '14px', border: '1px solid rgba(219,140,149,0.12)' }}>
-                        <button onClick={() => setIsCustomMode(false)} style={{ flex: 1, height: '36px', borderRadius: '10px', fontSize: '0.72rem', fontWeight: 800, border: 'none', cursor: 'pointer', transition: 'all 0.2s', backgroundColor: !isCustomMode ? '#db8c95' : 'transparent', color: !isCustomMode ? '#fff' : '#8c767b' }}>
+                      <div style={{ display: 'flex', gap: '10px', background: '#f5ebec', padding: '5px', borderRadius: '14px', border: '1px solid rgba(201, 114, 130,0.12)' }}>
+                        <button onClick={() => setIsCustomMode(false)} style={{ flex: 1, height: '36px', borderRadius: '10px', fontSize: '0.72rem', fontWeight: 800, border: 'none', cursor: 'pointer', transition: 'all 0.2s', backgroundColor: !isCustomMode ? '#c97282' : 'transparent', color: !isCustomMode ? '#fff' : '#8c767b' }}>
                           DISPONIBLES
                         </button>
-                        <button onClick={() => setIsCustomMode(true)} style={{ flex: 1, height: '36px', borderRadius: '10px', fontSize: '0.72rem', fontWeight: 800, border: 'none', cursor: 'pointer', transition: 'all 0.2s', backgroundColor: isCustomMode ? '#db8c95' : 'transparent', color: isCustomMode ? '#fff' : '#8c767b' }}>
+                        <button onClick={() => setIsCustomMode(true)} style={{ flex: 1, height: '36px', borderRadius: '10px', fontSize: '0.72rem', fontWeight: 800, border: 'none', cursor: 'pointer', transition: 'all 0.2s', backgroundColor: isCustomMode ? '#c97282' : 'transparent', color: isCustomMode ? '#fff' : '#8c767b' }}>
                           PERSONALIZADO
                         </button>
                       </div>
@@ -778,9 +778,9 @@ const ScheduleModal = ({
                         ) : (
                           <div>
                             {!localStaff ? (
-                              <div style={{ padding: '16px', borderRadius: '12px', backgroundColor: '#faf7f5', textAlign: 'center', fontSize: '0.76rem', color: '#a0868c' }}>Selecciona estilista primero</div>
+                              <div style={{ padding: '16px', borderRadius: '12px', backgroundColor: '#faf7f5', textAlign: 'center', fontSize: '0.76rem', color: '#a0909a' }}>Selecciona estilista primero</div>
                             ) : loading ? (
-                              <div style={{ textAlign: 'center', padding: '20px', color: '#a0868c', fontSize: '0.76rem', fontWeight: 600 }}>Cargando disponibilidad...</div>
+                              <div style={{ textAlign: 'center', padding: '20px', color: '#a0909a', fontSize: '0.76rem', fontWeight: 600 }}>Cargando disponibilidad...</div>
                             ) : (
                               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: '6px', maxHeight: '160px', overflowY: 'auto' }} className="jana-scrollbar">
                                 {availableSlots.map(slot => {
@@ -792,9 +792,9 @@ const ScheduleModal = ({
                                       onClick={() => setSelectedSlot(slot.time)}
                                       style={{
                                         padding: '8px 0', borderRadius: '8px', fontSize: '0.72rem', fontWeight: '750', cursor: slot.isAvailable ? 'pointer' : 'not-allowed',
-                                        backgroundColor: isSel ? '#db8c95' : slot.isAvailable ? '#fff' : '#faf7f5',
-                                        border: isSel ? '1px solid #db8c95' : '1px solid rgba(223,178,140,0.18)',
-                                        color: isSel ? '#fff' : slot.isAvailable ? '#3d2b30' : '#c8b6ba',
+                                        backgroundColor: isSel ? '#c97282' : slot.isAvailable ? '#fff' : '#faf7f5',
+                                        border: isSel ? '1px solid #c97282' : '1px solid rgba(223,178,140,0.18)',
+                                        color: isSel ? '#fff' : slot.isAvailable ? '#2d1b22' : '#c8b6ba',
                                         opacity: slot.isAvailable ? 1 : 0.6
                                       }}
                                     >
@@ -816,12 +816,12 @@ const ScheduleModal = ({
                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#e2fbe9', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#16a34a' }}>
                           <Check size={26} strokeWidth={2.5} />
                         </div>
-                        <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#3d2b30' }}>Resumen del Servicio</h3>
-                        <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Verifica que todos los datos sean correctos.</p>
+                        <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#2d1b22' }}>Resumen del Servicio</h3>
+                        <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0909a' }}>Verifica que todos los datos sean correctos.</p>
                       </div>
                       <div style={{
                         background: 'linear-gradient(135deg, #fffcfb 0%, #fff6f7 100%)',
-                        border: '1.5px solid rgba(219,140,149,0.15)',
+                        border: '1.5px solid rgba(201, 114, 130,0.15)',
                         borderRadius: '20px',
                         padding: '20px',
                         boxShadow: '0 10px 30px rgba(74,48,54,0.04)',
@@ -830,30 +830,30 @@ const ScheduleModal = ({
                         gap: '12px'
                       }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px dashed rgba(223,178,140,0.25)', paddingBottom: '10px' }}>
-                          <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.5px' }}>CLIENTA</span>
-                          <span style={{ fontSize: '0.76rem', fontWeight: 700, color: '#3d2b30' }}>{localClient?.name}</span>
+                          <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#a0909a', letterSpacing: '0.5px' }}>CLIENTA</span>
+                          <span style={{ fontSize: '0.76rem', fontWeight: 700, color: '#2d1b22' }}>{localClient?.name}</span>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px dashed rgba(223,178,140,0.25)', paddingBottom: '10px' }}>
-                          <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.5px' }}>SERVICIO</span>
-                          <button onClick={() => setCurrentStep(2)} style={{ fontSize: '0.76rem', fontWeight: 700, color: '#3d2b30', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}>{localService?.name}</button>
+                          <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#a0909a', letterSpacing: '0.5px' }}>SERVICIO</span>
+                          <button onClick={() => setCurrentStep(2)} style={{ fontSize: '0.76rem', fontWeight: 700, color: '#2d1b22', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}>{localService?.name}</button>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px dashed rgba(223,178,140,0.25)', paddingBottom: '10px' }}>
-                          <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.5px' }}>ESPECIALISTA</span>
-                          <button onClick={() => setCurrentStep(3)} style={{ fontSize: '0.76rem', fontWeight: 700, color: '#3d2b30', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}>{getStaffDisplayName(localStaff)}</button>
+                          <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#a0909a', letterSpacing: '0.5px' }}>ESPECIALISTA</span>
+                          <button onClick={() => setCurrentStep(3)} style={{ fontSize: '0.76rem', fontWeight: 700, color: '#2d1b22', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}>{getStaffDisplayName(localStaff)}</button>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px dashed rgba(223,178,140,0.25)', paddingBottom: '10px' }}>
-                          <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.5px' }}>FECHA</span>
-                          <button onClick={() => setCurrentStep(4)} style={{ fontSize: '0.76rem', fontWeight: 700, color: '#3d2b30', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}>{selectedDate.toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'short' })}</button>
+                          <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#a0909a', letterSpacing: '0.5px' }}>FECHA</span>
+                          <button onClick={() => setCurrentStep(4)} style={{ fontSize: '0.76rem', fontWeight: 700, color: '#2d1b22', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}>{selectedDate.toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'short' })}</button>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.5px' }}>HORARIO</span>
+                          <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#a0909a', letterSpacing: '0.5px' }}>HORARIO</span>
                           <button onClick={() => setCurrentStep(4)} style={{ fontSize: '0.76rem', fontWeight: 700, color: '#a0506a', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}>
-                            <Clock size={12} color="#db8c95" />
+                            <Clock size={12} color="#c97282" />
                             {getDisplayTime(isCustomMode ? customTime : selectedSlot)}
                           </button>
                         </div>
-                        <div style={{ marginTop: '8px', padding: '10px 12px', background: 'rgba(219,140,149,0.06)', borderRadius: '10px', border: '1px dashed rgba(219,140,149,0.2)' }}>
-                          <p style={{ margin: 0, fontSize: '0.7rem', color: '#a0868c', fontWeight: 600, textAlign: 'center' }}>
+                        <div style={{ marginTop: '8px', padding: '10px 12px', background: 'rgba(201, 114, 130,0.06)', borderRadius: '10px', border: '1px dashed rgba(201, 114, 130,0.2)' }}>
+                          <p style={{ margin: 0, fontSize: '0.7rem', color: '#a0909a', fontWeight: 600, textAlign: 'center' }}>
                             💡 Toca cualquier campo para cambiarlo
                           </p>
                         </div>
@@ -866,30 +866,33 @@ const ScheduleModal = ({
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out', position: 'relative', flex: 1, minHeight: 0 }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1, minHeight: 0 }}>
                       <div style={{ textAlign: 'center', marginBottom: '8px', flexShrink: 0 }}>
-                        <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
+                        <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#c97282' }}>
                           <Scissors size={24} />
                         </div>
-                        <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#3d2b30' }}>¿Qué servicios va a realizarse?</h3>
-                        <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Puede elegir uno o varios — cada uno con su propia profesional.</p>
+                        <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#2d1b22' }}>¿Qué servicios va a realizarse?</h3>
+                        <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0909a' }}>Puede elegir uno o varios — cada uno con su propia profesional.</p>
                       </div>
 
                       <div style={{ position: 'relative', flexShrink: 0 }}>
-                        <Search size={15} color="#a0868c" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
+                        <Search size={18} color="#a0909a" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
                         <input
                           type="text"
                           placeholder="Buscar servicio..."
                           value={serviceSearchQuery}
                           onChange={(e) => setServiceSearchQuery(e.target.value)}
                           style={{
-                            width: '100%', padding: '11px 14px 11px 38px', borderRadius: '12px',
+                            width: '100%', padding: '15px 16px 15px 46px', borderRadius: '16px',
                             border: '1.5px solid rgba(212,160,154,0.3)', background: '#fff',
-                            fontSize: '0.8rem', fontWeight: 600, color: '#3d2b30', outline: 'none'
+                            fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22', outline: 'none',
+                            boxShadow: '0 2px 8px rgba(212,160,154,0.05)', transition: 'all 0.2s'
                           }}
+                          onFocus={e => e.currentTarget.style.borderColor = '#c97282'}
+                          onBlur={e => e.currentTarget.style.borderColor = 'rgba(212,160,154,0.3)'}
                         />
                         {serviceSearchQuery && (
                           <button
                             onClick={() => setServiceSearchQuery('')}
-                            style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#a0868c', cursor: 'pointer', fontSize: '1.1rem', lineHeight: 1, padding: '4px' }}
+                            style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#a0909a', cursor: 'pointer', fontSize: '1.1rem', lineHeight: 1, padding: '4px' }}
                           >×</button>
                         )}
                       </div>
@@ -901,16 +904,16 @@ const ScheduleModal = ({
                             style={{
                               flexShrink: 0, padding: '8px 14px', borderRadius: '10px', cursor: 'pointer',
                               fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap',
-                              background: serviceCategoryFilter === 'Todas' ? '#db8c95' : '#faf3f2',
+                              background: serviceCategoryFilter === 'Todas' ? '#c97282' : '#faf3f2',
                               color: serviceCategoryFilter === 'Todas' ? '#fff' : '#a0506a',
-                              border: '1px solid ' + (serviceCategoryFilter === 'Todas' ? '#db8c95' : 'rgba(160,80,106,0.15)'),
+                              border: '1px solid ' + (serviceCategoryFilter === 'Todas' ? '#c97282' : 'rgba(160,80,106,0.15)'),
                               transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                               transform: 'scale(1)',
                               display: 'flex',
                               alignItems: 'center',
                               gap: '5px'
                             }}
-                            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(219,140,149,0.2)'; }}
+                            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(201, 114, 130,0.2)'; }}
                             onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none'; }}
                           >
                             <Zap size={14} style={{ color: 'inherit' }} /> Todas
@@ -922,9 +925,9 @@ const ScheduleModal = ({
                               style={{
                                 flexShrink: 0, padding: '8px 14px', borderRadius: '10px', cursor: 'pointer',
                                 fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap',
-                                background: serviceCategoryFilter === cat ? '#db8c95' : '#faf3f2',
+                                background: serviceCategoryFilter === cat ? '#c97282' : '#faf3f2',
                                 color: serviceCategoryFilter === cat ? '#fff' : '#a0506a',
-                                border: '1px solid ' + (serviceCategoryFilter === cat ? '#db8c95' : 'rgba(160,80,106,0.15)'),
+                                border: '1px solid ' + (serviceCategoryFilter === cat ? '#c97282' : 'rgba(160,80,106,0.15)'),
                                 transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                                 transform: 'scale(1)',
                                 animation: `fadeInUp 0.4s ease-out ${0.2 + idx * 0.05}s both`,
@@ -932,7 +935,7 @@ const ScheduleModal = ({
                                 alignItems: 'center',
                                 gap: '5px'
                               }}
-                              onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(219,140,149,0.2)'; }}
+                              onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(201, 114, 130,0.2)'; }}
                               onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none'; }}
                             >
                               {getCategoryIcon(cat)} {cat}
@@ -941,7 +944,7 @@ const ScheduleModal = ({
                         </div>
                       )}
 
-                      <div className="svc-select-grid jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: showSummaryPanel ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '8px', paddingBottom: '8px', flex: 1, minHeight: '120px', overflowY: 'auto', overflowX: 'hidden', alignContent: 'start' }}>
+                      <div className="svc-select-grid jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '8px', paddingBottom: '8px', flex: 1, minHeight: '120px', overflowY: 'auto', overflowX: 'hidden', alignContent: 'start' }}>
                         {services
                           .filter(svc => serviceCategoryFilter === 'Todas' || svc.category === serviceCategoryFilter)
                           .filter(svc => !serviceSearchQuery || normalizeForSearch(svc.name || '').includes(normalizeForSearch(serviceSearchQuery)))
@@ -955,8 +958,8 @@ const ScheduleModal = ({
                               style={{
                                 display: 'flex', alignItems: 'center', gap: '10px',
                                 padding: '10px 14px', borderRadius: '12px', textAlign: 'left', cursor: 'pointer',
-                                border: isSel ? '1.5px solid #db8c95' : '1px solid rgba(223,178,140,0.16)',
-                                background: isSel ? 'rgba(219,140,149,0.06)' : '#ffffff',
+                                border: isSel ? '1.5px solid #c97282' : '1px solid rgba(223,178,140,0.16)',
+                                background: isSel ? 'rgba(201, 114, 130,0.06)' : '#ffffff',
                                 transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
                                 animation: 'fadeInUp 0.25s ease-out',
                                 transform: 'translateY(0)',
@@ -965,53 +968,56 @@ const ScheduleModal = ({
                                 minHeight: '52px'
                               }}
                               onMouseEnter={(e) => {
-                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(219,140,149,0.1)';
-                                e.currentTarget.style.borderColor = '#db8c95';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(201, 114, 130,0.1)';
+                                e.currentTarget.style.borderColor = '#c97282';
                               }}
                               onMouseLeave={(e) => {
                                 e.currentTarget.style.boxShadow = 'none';
-                                e.currentTarget.style.borderColor = isSel ? '#db8c95' : 'rgba(223,178,140,0.16)';
+                                e.currentTarget.style.borderColor = isSel ? '#c97282' : 'rgba(223,178,140,0.16)';
                               }}
                             >
                               {/* Category Icon */}
                               <div style={{ 
-                                color: isSel ? '#db8c95' : '#a0868c', 
+                                color: isSel ? '#c97282' : '#a0909a', 
                                 display: 'flex', 
                                 alignItems: 'center', 
                                 justifyContent: 'center', 
                                 width: '32px', 
                                 height: '32px', 
                                 borderRadius: '8px', 
-                                background: isSel ? 'rgba(219, 140, 149, 0.12)' : 'rgba(223, 178, 140, 0.08)',
+                                background: isSel ? 'rgba(201, 114, 130, 0.12)' : 'rgba(223, 178, 140, 0.08)',
                                 flexShrink: 0 
                               }}>
                                 {getCategoryIcon(svc.category)}
                               </div>
 
                               {/* Service Info */}
-                              <div style={{ flex: 1, minWidth: 0, paddingRight: '8px' }}>
-                                <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#3d2b30', lineHeight: '1.25', wordBreak: 'break-word' }}>{svc.name}</div>
-                                <div style={{ fontSize: '0.65rem', color: '#a0868c', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
-                                  <span style={{ color: '#db8c95', fontWeight: 800 }}>${Number(svc.price || 0).toFixed(2)}</span>
-                                  <span style={{ color: '#e2d5d7' }}>·</span>
-                                  <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}><Clock size={11} /> {formatDuration(svc.duration_minutes || 60)}</span>
-                                  {pkg && <span style={{ color: '#16a34a', fontWeight: 700 }}>✓ Paquete</span>}
+                              <div style={{ flex: 1, minWidth: 0, paddingRight: '8px', zIndex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#2d1b22', lineHeight: '1.2', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{svc.name}</div>
+                                <div style={{ fontSize: '0.7rem', color: '#a0909a', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
+                                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={12} /> {formatDuration(svc.duration_minutes || 60)}</span>
+                                  {pkg && <span style={{ color: '#16a34a', fontWeight: 800, background: 'rgba(34,197,94,0.1)', padding: '2px 6px', borderRadius: '4px' }}>✓ Paquete</span>}
                                 </div>
                               </div>
 
-                              {/* Checkbox indicator */}
-                              <div style={{ 
-                                width: '16px', 
-                                height: '16px', 
-                                borderRadius: '4px', 
-                                border: isSel ? 'none' : '1.5px solid rgba(223, 178, 140, 0.3)', 
-                                background: isSel ? '#db8c95' : 'transparent',
-                                display: 'flex', 
-                                alignItems: 'center', 
-                                justifyContent: 'center',
-                                flexShrink: 0
-                              }}>
-                                {isSel && <Check size={12} color="#fff" strokeWidth={3} />}
+                              {/* Price & Check */}
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', gap: '6px', zIndex: 1, flexShrink: 0 }}>
+                                <div style={{ color: isSel ? '#c97282' : '#4a3036', fontWeight: 900, fontSize: '0.9rem' }}>
+                                  ${Number(svc.price || 0).toFixed(2)}
+                                </div>
+                                <div style={{ 
+                                  width: '20px', 
+                                  height: '20px', 
+                                  borderRadius: '6px', 
+                                  border: isSel ? 'none' : '2px solid rgba(223, 178, 140, 0.4)', 
+                                  background: isSel ? '#c97282' : 'transparent',
+                                  display: 'flex', 
+                                  alignItems: 'center', 
+                                  justifyContent: 'center',
+                                  transition: 'all 0.2s'
+                                }}>
+                                  {isSel && <Check size={14} color="#fff" strokeWidth={3} />}
+                                </div>
                               </div>
                             </button>
                           );
@@ -1020,7 +1026,7 @@ const ScheduleModal = ({
                           .filter(svc => serviceCategoryFilter === 'Todas' || svc.category === serviceCategoryFilter)
                           .filter(svc => !serviceSearchQuery || normalizeForSearch(svc.name || '').includes(normalizeForSearch(serviceSearchQuery)))
                           .length === 0 && (
-                          <div style={{ padding: '20px', textAlign: 'center', fontSize: '0.76rem', color: '#a0868c' }}>
+                          <div style={{ padding: '20px', textAlign: 'center', fontSize: '0.76rem', color: '#a0909a' }}>
                             {serviceSearchQuery ? `No se encontró ningún servicio con "${serviceSearchQuery}"` : 'No hay servicios en esta categoría'}
                           </div>
                         )}
@@ -1032,35 +1038,44 @@ const ScheduleModal = ({
                    {!isEditMode && currentStep === 3 && (
                      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', animation: 'fadeInUp 0.4s ease-out' }}>
                        <div style={{ textAlign: 'center', marginBottom: '8px' }}>
-                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
+                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#c97282' }}>
                            <Calendar size={24} />
                          </div>
-                         <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#3d2b30' }}>¿Cuándo será la cita?</h3>
-                         <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Define la fecha y hora base de los servicios de esta orden.</p>
+                         <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#2d1b22' }}>¿Cuándo será la cita?</h3>
+                         <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0909a' }}>Define la fecha y hora base de los servicios de esta orden.</p>
                        </div>
 
-                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', alignItems: 'start', marginTop: '10px' }}>
-                         {/* Left Column: Date Selector */}
-                         <div style={{ background: '#ffffff', padding: '20px', borderRadius: '20px', border: '1px solid rgba(223, 178, 140, 0.15)', boxShadow: '0 4px 15px rgba(74,48,54,0.01)' }}>
-                           <label style={{ fontSize: '0.65rem', fontWeight: 800, color: '#db8c95', display: 'block', marginBottom: '10px', letterSpacing: '0.8px', textTransform: 'uppercase' }}>1. Seleccionar Fecha</label>
+                       <div style={{ background: '#ffffff', borderRadius: '24px', border: '1px solid rgba(223, 178, 140, 0.25)', boxShadow: '0 8px 24px rgba(74,48,54,0.04)', overflow: 'hidden', marginTop: '10px' }}>
+                         {/* Fecha Row */}
+                         <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                           <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#2d1b22', display: 'flex', alignItems: 'center', gap: '6px', letterSpacing: '0.3px', textTransform: 'uppercase' }}>
+                             <Calendar size={14} color="#c97282" /> 1. Seleccionar Fecha
+                           </label>
                            <JanaDatePicker
                              variant="light"
                              value={dateToISO(selectedDate)}
                              onChange={(e) => e.target.value && setSelectedDate(isoToDate(e.target.value))}
                              autoComplete="off"
-                             inputStyle={{ borderRadius: '12px', height: '44px', fontSize: '0.82rem', fontWeight: 650, paddingLeft: '48px', background: '#fff', border: '1.5px solid rgba(212,160,154,0.25)', color: '#3d2b30' }}
+                             inputStyle={{ borderRadius: '16px', height: '48px', fontSize: '0.85rem', fontWeight: 700, paddingLeft: '48px', background: '#faf3f2', border: 'none', color: '#2d1b22' }}
                            />
-                           <div style={{ fontSize: '0.68rem', color: '#a0868c', marginTop: '10px', fontWeight: 500, lineHeight: '1.4' }}>
+                           <div style={{ fontSize: '0.68rem', color: '#a0909a', fontWeight: 500, lineHeight: '1.4' }}>
                              Elige el día en el que se agendarán todas las citas del grupo.
                            </div>
                          </div>
 
-                         {/* Right Column: Time Selector */}
-                         <div style={{ background: '#ffffff', padding: '20px', borderRadius: '20px', border: '1px solid rgba(223, 178, 140, 0.15)', boxShadow: '0 4px 15px rgba(74,48,54,0.01)' }}>
-                           <label style={{ fontSize: '0.65rem', fontWeight: 800, color: '#db8c95', display: 'block', marginBottom: '10px', letterSpacing: '0.8px', textTransform: 'uppercase' }}>2. Hora de Inicio General</label>
-                           <JanaTimePicker variant="light" label="" value={generalTime} onChange={applyGeneralTime} placement="top" />
-                           <div style={{ fontSize: '0.68rem', color: '#a0868c', marginTop: '10px', fontWeight: 500, lineHeight: '1.4' }}>
-                             Se aplicará por defecto a todos los servicios seleccionados. Podrás ajustar la hora de cada uno de forma individual en el paso siguiente.
+                         {/* Divider */}
+                         <div style={{ height: '1.5px', background: 'rgba(223, 178, 140, 0.15)', marginLeft: '20px', marginRight: '20px' }} />
+
+                         {/* Hora Row */}
+                         <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                           <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#2d1b22', display: 'flex', alignItems: 'center', gap: '6px', letterSpacing: '0.3px', textTransform: 'uppercase' }}>
+                             <Clock size={14} color="#c97282" /> 2. Hora de Inicio General
+                           </label>
+                           <div style={{ borderRadius: '16px', overflow: 'hidden' }}>
+                             <JanaTimePicker variant="light" label="" value={generalTime} onChange={applyGeneralTime} placement="top" />
+                           </div>
+                           <div style={{ fontSize: '0.68rem', color: '#a0909a', fontWeight: 500, lineHeight: '1.4' }}>
+                             Se aplicará por defecto a todos los servicios seleccionados.
                            </div>
                          </div>
                        </div>
@@ -1070,16 +1085,16 @@ const ScheduleModal = ({
                    {!isEditMode && currentStep === 4 && (
                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fadeInUp 0.4s ease-out', flex: 1, minHeight: 0 }}>
                        <div style={{ textAlign: 'center', marginBottom: '4px', flexShrink: 0 }}>
-                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#db8c95' }}>
+                         <div style={{ width: '56px', height: '56px', borderRadius: '18px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#c97282' }}>
                            <Sparkles size={24} />
                          </div>
-                         <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#3d2b30' }}>Asigna profesional y horario</h3>
-                         <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Asigna una estilista y confirma el horario para cada servicio.</p>
+                         <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#2d1b22' }}>Asigna profesional y horario</h3>
+                         <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0909a' }}>Asigna una estilista y confirma el horario para cada servicio.</p>
                        </div>
 
                        {selectedServices.length > 1 && (
-                         <div style={{ padding: '12px 16px', borderRadius: '18px', background: 'rgba(219,140,149,0.04)', border: '1px solid rgba(219,140,149,0.12)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
-                           <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.3px' }}>⚡ ¿MISMA ESPECIALISTA PARA TODOS LOS SERVICIOS?</span>
+                         <div style={{ padding: '12px 16px', borderRadius: '18px', background: 'rgba(201, 114, 130,0.04)', border: '1px solid rgba(201, 114, 130,0.12)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
+                           <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#a0909a', letterSpacing: '0.3px' }}>⚡ ¿MISMA ESPECIALISTA PARA TODOS LOS SERVICIOS?</span>
                            <div style={{ width: '220px' }}>
                              <JanaSelect
                                variant="light"
@@ -1142,10 +1157,10 @@ const ScheduleModal = ({
                              }}>
                                {/* Service Header Info */}
                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
-                                 <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#3d2b30', lineHeight: '1.3', flex: 1 }}>{svc.name}</div>
+                                 <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#2d1b22', lineHeight: '1.3', flex: 1 }}>{svc.name}</div>
                                  <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
                                    {svc.customized && (
-                                     <button onClick={() => resetRowToGeneralTime(svc._uid)} title="Restablecer hora general" style={{ background: 'rgba(219,140,149,0.08)', border: 'none', color: '#db8c95', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px', borderRadius: '6px', transition: 'all 0.2s' }}>
+                                     <button onClick={() => resetRowToGeneralTime(svc._uid)} title="Restablecer hora general" style={{ background: 'rgba(201, 114, 130,0.08)', border: 'none', color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px', borderRadius: '6px', transition: 'all 0.2s' }}>
                                        <RotateCcw size={12} />
                                      </button>
                                    )}
@@ -1226,40 +1241,40 @@ const ScheduleModal = ({
                          <div style={{ width: '60px', height: '60px', borderRadius: '20px', backgroundColor: '#e2fbe9', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#16a34a', boxShadow: '0 8px 20px rgba(22,163,74,0.15)' }}>
                            <Check size={28} strokeWidth={2.5} />
                          </div>
-                         <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#3d2b30' }}>Resumen de la Cita</h3>
-                         <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0868c' }}>Verifica los datos detallados antes de registrar el turno.</p>
+                         <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#2d1b22' }}>Resumen de la Cita</h3>
+                         <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0909a' }}>Verifica los datos detallados antes de registrar el turno.</p>
                        </div>
 
                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                            <div style={{ padding: '14px 16px', background: '#ffffff', borderRadius: '18px', border: '1px solid rgba(223, 178, 140, 0.18)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-                               <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(219,140,149,0.1)', color: '#db8c95', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem', flexShrink: 0 }}>
+                               <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(201, 114, 130,0.1)', color: '#c97282', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem', flexShrink: 0 }}>
                                  {localClient?.name?.charAt(0).toUpperCase() || 'C'}
                                </div>
                                <div style={{ minWidth: 0 }}>
-                                 <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Clienta</div>
-                                 <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#3d2b30', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{localClient?.name}</div>
+                                 <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0909a', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Clienta</div>
+                                 <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#2d1b22', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{localClient?.name}</div>
                                </div>
                              </div>
-                             <button onClick={() => setCurrentStep(1)} style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(219,140,149,0.06)', border: 'none', color: '#db8c95', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', flexShrink: 0 }} title="Editar clienta">
+                             <button onClick={() => setCurrentStep(1)} style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(201, 114, 130,0.06)', border: 'none', color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', flexShrink: 0 }} title="Editar clienta">
                                <Pen size={12} />
                              </button>
                            </div>
 
                            <div style={{ padding: '14px 16px', background: '#ffffff', borderRadius: '18px', border: '1px solid rgba(223, 178, 140, 0.18)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-                               <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(219,140,149,0.1)', color: '#db8c95', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                               <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(201, 114, 130,0.1)', color: '#c97282', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                  <Calendar size={16} />
                                </div>
                                <div style={{ minWidth: 0 }}>
-                                 <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Fecha Base</div>
-                                 <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#3d2b30', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textTransform: 'capitalize' }}>
+                                 <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0909a', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Fecha Base</div>
+                                 <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#2d1b22', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textTransform: 'capitalize' }}>
                                    {selectedDate.toLocaleDateString('es-VE', { weekday: 'short', day: 'numeric', month: 'short' })}
                                  </div>
                                </div>
                              </div>
-                             <button onClick={() => setCurrentStep(3)} style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(219,140,149,0.06)', border: 'none', color: '#db8c95', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', flexShrink: 0 }} title="Editar fecha">
+                             <button onClick={() => setCurrentStep(3)} style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(201, 114, 130,0.06)', border: 'none', color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', flexShrink: 0 }} title="Editar fecha">
                                <Pen size={12} />
                              </button>
                            </div>
@@ -1267,8 +1282,8 @@ const ScheduleModal = ({
 
                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '4px' }}>
-                             <span style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.8px', textTransform: 'uppercase' }}>Servicios Asignados</span>
-                             <button onClick={() => setCurrentStep(2)} style={{ background: 'none', border: 'none', color: '#db8c95', fontSize: '0.68rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'underline dotted', textUnderlineOffset: '2px' }} title="Agregar o quitar servicios">
+                             <span style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0909a', letterSpacing: '0.8px', textTransform: 'uppercase' }}>Servicios Asignados</span>
+                             <button onClick={() => setCurrentStep(2)} style={{ background: 'none', border: 'none', color: '#c97282', fontSize: '0.68rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'underline dotted', textUnderlineOffset: '2px' }} title="Agregar o quitar servicios">
                                <Pen size={10} /> Editar Lista
                              </button>
                            </div>
@@ -1287,7 +1302,7 @@ const ScheduleModal = ({
                                  boxShadow: '0 2px 8px rgba(74,48,54,0.01)'
                                }}>
                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0, flex: 1 }}>
-                                   <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#3d2b30' }}>{svc.name}</div>
+                                   <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#2d1b22' }}>{svc.name}</div>
                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
                                      {/* Fila de la especialista asignada */}
                                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
@@ -1297,15 +1312,15 @@ const ScheduleModal = ({
                                          style={{ width: '18px', height: '18px', borderRadius: '50%', objectFit: 'cover' }}
                                        />
                                        <span style={{ fontSize: '0.68rem', color: '#8b7076', fontWeight: 650, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                         {getStaffDisplayName(staffObj)} · <span style={{ color: '#db8c95', fontWeight: 700 }}>{getDisplayTime(svc.time)}</span>
+                                         {getStaffDisplayName(staffObj)} · <span style={{ color: '#c97282', fontWeight: 700 }}>{getDisplayTime(svc.time)}</span>
                                        </span>
                                      </div>
-                                     <button onClick={() => setCurrentStep(4)} style={{ width: '22px', height: '22px', borderRadius: '6px', background: 'rgba(219,140,149,0.04)', border: 'none', color: '#db8c95', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', flexShrink: 0 }} title="Reasignar especialista u hora">
+                                     <button onClick={() => setCurrentStep(4)} style={{ width: '22px', height: '22px', borderRadius: '6px', background: 'rgba(201, 114, 130,0.04)', border: 'none', color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', flexShrink: 0 }} title="Reasignar especialista u hora">
                                        <Pen size={9} />
                                      </button>
                                    </div>
                                  </div>
-                                 <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#3d2b30', flexShrink: 0 }}>
+                                 <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#2d1b22', flexShrink: 0 }}>
                                    ${Number(svc.price || 0).toFixed(2)}
                                  </div>
                                </div>
@@ -1318,16 +1333,16 @@ const ScheduleModal = ({
                            padding: '16px 20px',
                            borderRadius: '20px',
                            background: 'linear-gradient(135deg, #fffcfb 0%, #fff2f4 100%)',
-                           border: '1.5px dashed rgba(219,140,149,0.25)',
+                           border: '1.5px dashed rgba(201, 114, 130,0.25)',
                            display: 'flex',
                            justifyContent: 'space-between',
                            alignItems: 'center'
                          }}>
                            <div>
-                             <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Valor Total</div>
-                             <div style={{ fontSize: '0.68rem', color: '#db8c95', fontWeight: 700, marginTop: '2px' }}>{selectedServices.length} servicios</div>
+                             <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0909a', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Valor Total</div>
+                             <div style={{ fontSize: '0.68rem', color: '#c97282', fontWeight: 700, marginTop: '2px' }}>{selectedServices.length} servicios</div>
                            </div>
-                           <div style={{ fontSize: '1.6rem', fontWeight: 950, color: '#db8c95', fontFamily: 'var(--font-heading)', letterSpacing: '-0.5px' }}>
+                           <div style={{ fontSize: '1.6rem', fontWeight: 950, color: '#c97282', fontFamily: 'var(--font-heading)', letterSpacing: '-0.5px' }}>
                              ${cartTotal.toFixed(2)}
                            </div>
                          </div>
@@ -1346,9 +1361,9 @@ const ScheduleModal = ({
                       style={{
                         height: '52px',
                         borderRadius: '16px',
-                        border: '1.5px solid rgba(219,140,149,0.3)',
+                        border: '1.5px solid rgba(201, 114, 130,0.3)',
                         background: '#fff',
-                        color: '#db8c95',
+                        color: '#c97282',
                         fontSize: '0.86rem',
                         fontWeight: 700,
                         cursor: 'pointer',
@@ -1362,7 +1377,7 @@ const ScheduleModal = ({
                       onMouseEnter={e => {
                         e.currentTarget.style.background = '#fff8fa';
                         e.currentTarget.style.transform = 'translateX(-2px)';
-                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(219,140,149,0.15)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(201, 114, 130,0.15)';
                       }}
                       onMouseLeave={e => {
                         e.currentTarget.style.background = '#fff';
@@ -1383,7 +1398,7 @@ const ScheduleModal = ({
                         height: '56px',
                         borderRadius: '16px',
                         border: 'none',
-                        background: isStepValid(currentStep) ? 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)' : '#ebdcd0',
+                        background: isStepValid(currentStep) ? 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)' : '#ebdcd0',
                         color: isStepValid(currentStep) ? '#fff' : '#b29c9e',
                         fontSize: '0.9rem',
                         fontWeight: 800,
@@ -1393,19 +1408,19 @@ const ScheduleModal = ({
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: '8px',
-                        boxShadow: isStepValid(currentStep) ? '0 10px 28px rgba(219,140,149,0.3)' : 'none',
+                        boxShadow: isStepValid(currentStep) ? '0 10px 28px rgba(201, 114, 130,0.3)' : 'none',
                         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                         textTransform: 'uppercase'
                       }}
                       onMouseEnter={e => {
                         if (isStepValid(currentStep)) {
                           e.currentTarget.style.transform = 'translateX(2px)';
-                          e.currentTarget.style.boxShadow = '0 12px 32px rgba(219,140,149,0.4)';
+                          e.currentTarget.style.boxShadow = '0 12px 32px rgba(201, 114, 130,0.4)';
                         }
                       }}
                       onMouseLeave={e => {
                         e.currentTarget.style.transform = 'translateX(0)';
-                        e.currentTarget.style.boxShadow = isStepValid(currentStep) ? '0 10px 28px rgba(219,140,149,0.3)' : 'none';
+                        e.currentTarget.style.boxShadow = isStepValid(currentStep) ? '0 10px 28px rgba(201, 114, 130,0.3)' : 'none';
                       }}
                     >
                       Siguiente <ArrowRight size={18} strokeWidth={2.5} />
@@ -1421,7 +1436,7 @@ const ScheduleModal = ({
                         flexShrink: 0,
                         borderRadius: '16px',
                         border: 'none',
-                        background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
+                        background: 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)',
                         color: '#fff',
                         fontSize: '1rem',
                         fontWeight: 800,
@@ -1431,7 +1446,7 @@ const ScheduleModal = ({
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: '10px',
-                        boxShadow: '0 10px 28px rgba(219,140,149,0.4)',
+                        boxShadow: '0 10px 28px rgba(201, 114, 130,0.4)',
                         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                         letterSpacing: '0.5px',
                         animation: 'slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both'
@@ -1439,12 +1454,12 @@ const ScheduleModal = ({
                       onMouseEnter={e => {
                         if (!loading) {
                           e.currentTarget.style.transform = 'translateY(-3px)';
-                          e.currentTarget.style.boxShadow = '0 14px 36px rgba(219,140,149,0.5)';
+                          e.currentTarget.style.boxShadow = '0 14px 36px rgba(201, 114, 130,0.5)';
                         }
                       }}
                       onMouseLeave={e => {
                         e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = '0 10px 28px rgba(219,140,149,0.4)';
+                        e.currentTarget.style.boxShadow = '0 10px 28px rgba(201, 114, 130,0.4)';
                       }}
                     >
                       <Check size={20} strokeWidth={3} style={{ animation: loading ? 'none' : 'scaleIn 0.3s ease-out' }} /> {isReprogramOnly ? 'Reprogramar Turno' : isEditMode ? 'Guardar Cambios' : 'Confirmar Orden'}
@@ -1470,7 +1485,7 @@ const ScheduleModal = ({
             }}>
             {/* Header Rosado */}
             <div style={{
-              background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
+              background: 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)',
               padding: '24px',
               color: '#fff',
               display: 'flex',
@@ -1489,7 +1504,7 @@ const ScheduleModal = ({
             {/* Contenedor de Servicios */}
             <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px', borderBottom: '2px solid #fcf8f7' }}>
 
-              <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#db8c95', textTransform: 'uppercase', letterSpacing: '0.8px', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+              <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#c97282', textTransform: 'uppercase', letterSpacing: '0.8px', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                 <Scissors size={14} /> Servicios
               </div>
               {selectedServices.map((svc, idx) => {
@@ -1498,18 +1513,18 @@ const ScheduleModal = ({
                 return (
                   <div key={svc._uid} style={{
                     padding: '14px', borderRadius: '12px',
-                    background: '#f9f6f5', border: '1px solid rgba(219,140,149,0.2)',
+                    background: '#f9f6f5', border: '1px solid rgba(201, 114, 130,0.2)',
                     animation: `fadeInUp 0.3s ease-out ${0.3 + idx * 0.05}s both`
                   }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '10px' }}>
-                      <div style={{ color: '#db8c95', minWidth: '20px', fontSize: '18px', flexShrink: 0 }}>
+                      <div style={{ color: '#c97282', minWidth: '20px', fontSize: '18px', flexShrink: 0 }}>
                         {getCategoryIcon(svcData?.category)}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#3d2b30', lineHeight: '1.3' }}>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22', lineHeight: '1.3' }}>
                           {svc.name}
                         </div>
-                        <div style={{ fontSize: '0.75rem', color: '#a0868c', marginTop: '3px', fontWeight: 600 }}>
+                        <div style={{ fontSize: '0.75rem', color: '#a0909a', marginTop: '3px', fontWeight: 600 }}>
                           ${Number(svc.price || 0).toFixed(2)}
                         </div>
                       </div>
@@ -1526,16 +1541,16 @@ const ScheduleModal = ({
                     </div>
 
                     {/* Detalles por servicio */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.75rem', color: '#a0868c', paddingTop: '10px', borderTop: '1px solid rgba(219,140,149,0.2)' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.75rem', color: '#a0909a', paddingTop: '10px', borderTop: '1px solid rgba(201, 114, 130,0.2)' }}>
                       {svc.staffId && staffData && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Sparkles size={13} style={{ color: '#db8c95', flexShrink: 0 }} />
+                          <Sparkles size={13} style={{ color: '#c97282', flexShrink: 0 }} />
                           <span style={{ fontWeight: 600 }}>{getStaffDisplayName(staffData)}</span>
                         </div>
                       )}
                       {svc.time && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Clock size={13} style={{ color: '#db8c95', flexShrink: 0 }} />
+                          <Clock size={13} style={{ color: '#c97282', flexShrink: 0 }} />
                           <span style={{ fontWeight: 600 }}>{getDisplayTime(svc.time)}</span>
                         </div>
                       )}
@@ -1558,8 +1573,8 @@ const ScheduleModal = ({
               borderTop: '2px solid #f0e0e5',
               textAlign: 'center'
             }}>
-              <div style={{ fontSize: '0.7rem', color: '#a0868c', fontWeight: 700, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total de la Orden</div>
-              <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#db8c95', lineHeight: 1 }}>
+              <div style={{ fontSize: '0.7rem', color: '#a0909a', fontWeight: 700, marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total de la Orden</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#c97282', lineHeight: 1 }}>
                 ${cartTotal.toFixed(2)}
               </div>
             </div>

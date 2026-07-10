@@ -56,26 +56,38 @@ const JanaSelect = ({
       const spaceBelow = window.innerHeight - rect.bottom;
       const dropdownMaxH = 300;
       const margin = 20; // 20px padding from the viewport bottom (accounts for Taskbar)
+      const dropdownWidth = Math.max(rect.width, 220);
+      
+      let finalLeft = rect.left;
+      let finalRight = 'auto';
+
+      // Check for horizontal overflow
+      if (rect.left + dropdownWidth > window.innerWidth - 10) {
+        finalLeft = 'auto';
+        finalRight = window.innerWidth - rect.right;
+      }
+
+      const baseStyle = {
+        position: 'fixed',
+        left: finalLeft,
+        right: finalRight,
+        width: dropdownWidth,
+        zIndex: 999999,
+      };
 
       if (spaceBelow >= dropdownMaxH + margin) {
         // Normal open downward
         setDropdownStyle({
-          position: 'fixed',
+          ...baseStyle,
           top: rect.bottom + 8,
-          left: rect.left,
-          width: Math.max(rect.width, 220),
-          zIndex: 999999,
           bottom: 'auto',
           maxHeight: `${dropdownMaxH}px`
         });
       } else if (rect.top >= dropdownMaxH + margin) {
         // Open upward since there is enough space above
         setDropdownStyle({
-          position: 'fixed',
+          ...baseStyle,
           bottom: window.innerHeight - rect.top + 8,
-          left: rect.left,
-          width: Math.max(rect.width, 220),
-          zIndex: 999999,
           top: 'auto',
           maxHeight: `${dropdownMaxH}px`
         });
@@ -83,11 +95,8 @@ const JanaSelect = ({
         // Open downward but limit the max-height to fit remaining viewport space dynamically
         const restrictedHeight = Math.max(120, spaceBelow - margin);
         setDropdownStyle({
-          position: 'fixed',
+          ...baseStyle,
           top: rect.bottom + 8,
-          left: rect.left,
-          width: Math.max(rect.width, 220),
-          zIndex: 999999,
           bottom: 'auto',
           maxHeight: `${restrictedHeight}px`
         });

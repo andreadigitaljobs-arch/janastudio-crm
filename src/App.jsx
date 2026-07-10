@@ -57,9 +57,24 @@ function App() {
   const { alert, confirm } = useDialog();
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(() => localStorage.getItem('jana_active_tab') || 'dashboard');
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [isTablet, setIsTablet] = useState(window.innerWidth >= 768 && window.innerWidth < 1024);
-  const [isCollapsed, setIsCollapsed] = useState(window.innerWidth >= 768 && window.innerWidth < 1024);
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 768 || window.screen.width < 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+    return false;
+  });
+  const [isTablet, setIsTablet] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return (window.innerWidth >= 768 && window.innerWidth < 1024) || /iPad/i.test(navigator.userAgent);
+    }
+    return false;
+  });
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return (window.innerWidth >= 768 && window.innerWidth < 1024) || /iPad/i.test(navigator.userAgent);
+    }
+    return false;
+  });
   const [refreshKey, setRefreshKey] = useState(0);
   const [isAppLoading, setIsAppLoading] = useState(true);
   const [isTabLoading, setIsTabLoading] = useState(false);
@@ -221,6 +236,7 @@ function App() {
       }
     };
     window.addEventListener('resize', handleResize);
+    handleResize();
 
     let cancelled = false;
     const initApp = async () => {
@@ -636,7 +652,13 @@ function App() {
           }}>
             <button
               onClick={() => {
-                setIsSaleModalOpen(true);
+                if (activeTab !== 'scheduling') {
+                  handleTabChange('scheduling', {});
+                  setTimeout(() => window.dispatchEvent(new CustomEvent('jana:open-new-appointment')), 100);
+                } else {
+                  window.dispatchEvent(new CustomEvent('jana:open-new-appointment'));
+                }
+                setIsMoreOpen(false);
               }}
               style={{
                 width: '50px',

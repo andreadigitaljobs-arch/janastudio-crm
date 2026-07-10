@@ -4,7 +4,7 @@ import {
   ChevronDown, Search, Pencil,
   CheckCircle2, Users,
   CalendarDays, StickyNote, BarChart3, XCircle, Bell,
-  DollarSign, Info, AlertTriangle, Coffee, Sliders, Check, HelpCircle, Scissors, Sparkles
+  DollarSign, Info, AlertTriangle, Coffee, Sliders, Check, HelpCircle, Scissors, Sparkles, Sun
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
@@ -125,7 +125,7 @@ const CalendarComponent = ({ selectedDate, onSelectDate }) => {
   return (
     <div className="agenda-glass-card" style={{ padding: '18px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#4a3036', margin: 0, textTransform: 'capitalize' }}>
+        <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22', margin: 0, textTransform: 'capitalize' }}>
           {monthName}
         </h3>
         <div style={{ display: 'flex', gap: '6px' }}>
@@ -191,16 +191,16 @@ const CalendarComponent = ({ selectedDate, onSelectDate }) => {
                 borderRadius: '10px',
                 border: 'none',
                 background: selected
-                  ? 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)'
+                  ? 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)'
                   : todayMark
                     ? 'rgba(232, 162, 169, 0.15)'
                     : 'transparent',
                 color: selected
                   ? '#fff'
                   : todayMark
-                    ? '#db8c95'
+                    ? '#c97282'
                     : d.currentMonth
-                      ? '#4a3036'
+                      ? '#2d1b22'
                       : '#e2d7d9',
                 fontWeight: selected || todayMark ? 700 : 500,
                 fontSize: '0.75rem',
@@ -313,16 +313,16 @@ const StaffDayColumn = ({
           width: '30px', height: '30px', borderRadius: '50%', flexShrink: 0,
           background: checkingTime != null 
             ? (isCheckingFree ? 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)' : 'linear-gradient(135deg, #f87171 0%, #ef4444 100%)')
-            : 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
+            : 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           color: '#fff', fontWeight: 700, fontSize: '0.72rem',
           boxShadow: checkingTime != null && isCheckingFree ? '0 0 8px #22c55e' : 'none'
         }}>{initial}</div>
         <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#4a3036', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#2d1b22', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {staffMember.name}
           </div>
-          <div style={{ fontSize: '0.62rem', color: '#a07880', fontWeight: 600 }}>
+          <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 600 }}>
             {workingWindow.isWorking ? `${formatMinutes(workingWindow.startMinutes)} – ${formatMinutes(workingWindow.endMinutes)}` : 'Día libre'}
           </div>
         </div>
@@ -400,7 +400,7 @@ const StaffDayColumn = ({
         {isToday && nowMinutes >= VIEW_START_MIN && nowMinutes <= VIEW_END_MIN && (
           <div style={{
             position: 'absolute', left: 0, right: 0, top: `${minutesToY(nowMinutes)}px`,
-            height: '2px', background: '#db8c95', zIndex: 5, boxShadow: '0 0 4px rgba(219,140,149,0.6)'
+            height: '2px', background: '#c97282', zIndex: 5, boxShadow: '0 0 4px rgba(201, 114, 130,0.6)'
           }} />
         )}
 
@@ -494,11 +494,11 @@ const StaffDayColumn = ({
                 e.currentTarget.style.zIndex = '2';
               }}
             >
-              <div style={{ fontSize: '0.66rem', fontWeight: 700, color: '#4a3036', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '2px' }}>
+              <div style={{ fontSize: '0.66rem', fontWeight: 700, color: '#2d1b22', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '2px' }}>
                 {isMultipleApp && <span>🔗</span>}
                 {clientName}
               </div>
-              {height > 32 && <div style={{ fontSize: '0.58rem', color: '#a07880', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{app.services?.name || 'Servicio'}</div>}
+              {height > 32 && <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{app.services?.name || 'Servicio'}</div>}
             </div>
           );
         })}
@@ -593,7 +593,9 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
   const [staffActiveTab, setStaffActiveTab] = useState('agenda');
   const [rankingTab, setRankingTab] = useState('revenue');
   const [leftTab, setLeftTab] = useState('citas');
+  const [mobileStaffFilter, setMobileStaffFilter] = useState('all');
   const [staffSearchQuery, setStaffSearchQuery] = useState('');
+  const [showHeaderCalendar, setShowHeaderCalendar] = useState(false);
 
   const handleCloseStaffDrawer = () => {
     setIsClosingStaffDrawer(true);
@@ -667,11 +669,19 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
       setSchedules(loadStoredSchedules(staff));
       setTimeOff(loadStoredTimeOff());
     };
+    const handleOpenNewAppointment = () => {
+      setScheduleModalPreset(null);
+      setShowScheduleModal(true);
+    };
+
     window.addEventListener('jana:data-changed', refreshOnAppointmentChange);
     window.addEventListener('jana:mock-schedule-changed', refreshOnScheduleChange);
+    window.addEventListener('jana:open-new-appointment', handleOpenNewAppointment);
+    
     return () => {
       window.removeEventListener('jana:data-changed', refreshOnAppointmentChange);
       window.removeEventListener('jana:mock-schedule-changed', refreshOnScheduleChange);
+      window.removeEventListener('jana:open-new-appointment', handleOpenNewAppointment);
     };
   }, [selectedDate, filterType, staff]);
 
@@ -1083,16 +1093,16 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
       {/* HEADER EXACTLY LIKE THE MOCKUP */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
         <div>
-          <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#4a3036', margin: 0, fontFamily: "'Playfair Display', Georgia, serif" }}>
+          <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#2d1b22', margin: 0, fontFamily: "'Playfair Display', Georgia, serif" }}>
             Agenda
           </h1>
-          <p style={{ fontSize: '0.82rem', color: '#a07880', margin: '4px 0 0 0', fontWeight: 500 }}>
+          <p style={{ fontSize: '0.82rem', color: '#a0909a', margin: '4px 0 0 0', fontWeight: 500 }}>
             Controla el rendimiento y la disponibilidad de tu equipo.
           </p>
         </div>
 
         {/* Date Selector and Buttons on Right */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', width: isMobile ? '100%' : 'auto' }}>
           {/* Simplified Date Navigation Group */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#fff', borderRadius: '12px', border: '1px solid rgba(223, 178, 140, 0.3)', padding: '4px 8px', boxShadow: '0 2px 8px rgba(74, 48, 54, 0.03)' }}>
             {/* Hoy button */}
@@ -1100,22 +1110,153 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               onClick={() => setSelectedDate(new Date())}
               style={{
                 padding: '6px 12px', borderRadius: '8px', border: 'none', background: 'transparent',
-                cursor: 'pointer', fontSize: '0.78rem', fontWeight: '600', color: '#4a3036',
+                cursor: 'pointer', fontSize: '0.78rem', fontWeight: '600', color: '#2d1b22',
                 transition: 'all 0.2s ease'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = 'rgba(212, 160, 154, 0.1)';
-                e.currentTarget.style.color = '#db8c95';
+                e.currentTarget.style.color = '#c97282';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.color = '#4a3036';
+                e.currentTarget.style.color = '#2d1b22';
               }}
             >
               Hoy
             </button>
 
-            <div style={{ width: '1px', height: '20px', background: 'rgba(223, 178, 140, 0.2)' }} />
+            {/* Divider */}
+            <div style={{ width: '1px', height: '20px', background: 'rgba(223, 178, 140, 0.2)', marginLeft: '4px', marginRight: '4px' }} />
+
+            {/* Custom Date Picker Trigger (Calendar Icon) */}
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', marginRight: '4px' }}>
+              <button
+                title="Elegir fecha"
+                onClick={(e) => {
+                  setShowHeaderCalendar(!showHeaderCalendar);
+                }}
+                style={{
+                  padding: '6px 10px', borderRadius: '10px', border: 'none', background: 'rgba(201, 114, 130, 0.1)',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                  transition: 'all 0.2s ease', color: '#c97282'
+                }}
+                onMouseEnter={(e) => {
+                  if (!showHeaderCalendar) e.currentTarget.style.background = 'rgba(201, 114, 130, 0.2)';
+                }}
+                onMouseLeave={(e) => {
+                  if (!showHeaderCalendar) e.currentTarget.style.background = 'rgba(201, 114, 130, 0.1)';
+                }}
+              >
+                <CalendarDays size={16} strokeWidth={2.5} />
+                <span style={{ fontSize: '0.65rem', fontWeight: 800 }}>Mes</span>
+              </button>
+              
+              {/* Custom Dropdown Calendar */}
+              {showHeaderCalendar && (
+                <>
+                  <div 
+                    style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 999 }} 
+                    onClick={() => setShowHeaderCalendar(false)}
+                  />
+                  <div 
+                    style={{
+                      position: 'absolute', top: 'calc(100% + 12px)', left: '50%', transform: 'translateX(-50%)',
+                      width: '280px', background: 'rgba(252, 249, 248, 0.95)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+                      borderRadius: '16px', boxShadow: '0 16px 40px rgba(74, 48, 54, 0.12)',
+                      border: '1px solid rgba(223, 178, 140, 0.3)', padding: '16px', zIndex: 1000,
+                      animation: 'fadeInUpWow 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const prev = new Date(selectedDate);
+                          prev.setMonth(prev.getMonth() - 1);
+                          setSelectedDate(prev);
+                        }}
+                        style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(201, 114, 130, 0.08)', border: 'none', color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.15)' }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)' }}
+                      >
+                        <ChevronLeft size={16} />
+                      </button>
+                      <h4 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#2d1b22', margin: 0, textTransform: 'capitalize' }}>
+                        {selectedDate.toLocaleDateString('es-VE', { month: 'long', year: 'numeric' })}
+                      </h4>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const next = new Date(selectedDate);
+                          next.setMonth(next.getMonth() + 1);
+                          setSelectedDate(next);
+                        }}
+                        style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(201, 114, 130, 0.08)', border: 'none', color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.15)' }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)' }}
+                      >
+                        <ChevronRight size={16} />
+                      </button>
+                    </div>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '8px' }}>
+                      {['L', 'M', 'X', 'J', 'V', 'S', 'D'].map((day, i) => (
+                        <div key={i} style={{ textAlign: 'center', fontSize: '0.65rem', fontWeight: 800, color: '#a0909a', padding: '4px 0' }}>{day}</div>
+                      ))}
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
+                      {(() => {
+                        const year = selectedDate.getFullYear();
+                        const month = selectedDate.getMonth();
+                        const firstDay = new Date(year, month, 1).getDay();
+                        const daysInMonth = new Date(year, month + 1, 0).getDate();
+                        const offset = firstDay === 0 ? 6 : firstDay - 1;
+                        const days = [];
+
+                        for (let i = 0; i < offset; i++) {
+                          days.push(<div key={`empty-${i}`} />);
+                        }
+
+                        for (let day = 1; day <= daysInMonth; day++) {
+                          const dateObj = new Date(year, month, day);
+                          const dateKey = getBusinessDateKey(dateObj);
+                          const isSelected = dateKey === getBusinessDateKey(selectedDate);
+                          const isToday = dateKey === getBusinessDateKey(new Date());
+
+                          days.push(
+                            <button
+                              key={day}
+                              onClick={() => {
+                                setSelectedDate(dateObj);
+                                setShowHeaderCalendar(false);
+                              }}
+                              style={{
+                                padding: '8px 0', borderRadius: '8px', border: 'none',
+                                background: isSelected ? 'var(--magenta-primary)' : isToday ? 'rgba(201, 114, 130, 0.15)' : 'transparent',
+                                color: isSelected ? '#fff' : isToday ? '#c97282' : '#2d1b22',
+                                fontWeight: isSelected || isToday ? 800 : 600,
+                                cursor: 'pointer', fontSize: '0.75rem',
+                                transition: 'all 0.2s',
+                                outline: isToday && !isSelected ? '1px solid rgba(201, 114, 130, 0.5)' : 'none'
+                              }}
+                              onMouseEnter={(e) => {
+                                if (!isSelected) e.currentTarget.style.background = 'rgba(201, 114, 130, 0.1)';
+                              }}
+                              onMouseLeave={(e) => {
+                                if (!isSelected) e.currentTarget.style.background = isToday ? 'rgba(201, 114, 130, 0.15)' : 'transparent';
+                              }}
+                            >
+                              {day}
+                            </button>
+                          );
+                        }
+                        return days;
+                      })()}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
 
             {/* Navigator Arrows with Date */}
             <button
@@ -1123,7 +1264,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               style={{
                 width: '28px', height: '28px', borderRadius: '8px', background: 'transparent',
                 border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#db8c95', cursor: 'pointer',
+                color: '#c97282', cursor: 'pointer',
                 transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)'
               }}
               onMouseEnter={(e) => {
@@ -1138,7 +1279,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               <ChevronLeft size={14} />
             </button>
 
-            <span style={{ fontSize: '0.78rem', fontWeight: '600', color: '#4a3036', minWidth: '65px', textAlign: 'center' }}>
+            <span style={{ fontSize: '0.78rem', fontWeight: '600', color: '#2d1b22', minWidth: '65px', textAlign: 'center' }}>
               {selectedDate.toLocaleDateString('es-VE', { day: 'numeric', month: 'short' })}
             </span>
 
@@ -1147,7 +1288,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               style={{
                 width: '28px', height: '28px', borderRadius: '8px', background: 'transparent',
                 border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#db8c95', cursor: 'pointer',
+                color: '#c97282', cursor: 'pointer',
                 transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)'
               }}
               onMouseEnter={(e) => {
@@ -1171,7 +1312,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               background: '#ffffff', border: '1px solid rgba(223, 178, 140, 0.3)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', position: 'relative',
-              color: '#4a3036',
+              color: '#2d1b22',
               boxShadow: '0 2px 8px rgba(74, 48, 54, 0.03)', transition: 'all 0.2s'
             }}
           >
@@ -1179,7 +1320,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             {unreadNotifsCount > 0 && (
               <div style={{
                 position: 'absolute', top: '10px', right: '10px',
-                backgroundColor: '#db8c95', width: '7px', height: '7px',
+                backgroundColor: '#c97282', width: '7px', height: '7px',
                 borderRadius: '50%',
               }} />
             )}
@@ -1189,20 +1330,21 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           <button
             onClick={() => { setScheduleModalPreset(null); setShowScheduleModal(true); }}
             style={{
-              padding: '8px 18px', borderRadius: '12px', border: 'none',
-              background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
-              color: '#fff', fontSize: '0.82rem', fontWeight: 600,
-              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
-              boxShadow: '0 4px 15px rgba(219,140,149,0.25)',
+              padding: isMobile ? '12px 20px' : '8px 18px', borderRadius: '12px', border: 'none',
+              background: 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)',
+              color: '#fff', fontSize: isMobile ? '0.95rem' : '0.82rem', fontWeight: 700,
+              cursor: 'pointer', display: isMobile ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+              flex: isMobile ? '1 1 100%' : 'none',
+              boxShadow: '0 4px 15px rgba(201, 114, 130,0.25)',
               transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)'
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'translateY(-3px) scale(1.03)';
-              e.currentTarget.style.boxShadow = '0 12px 28px rgba(219,140,149,0.35)';
+              e.currentTarget.style.boxShadow = '0 12px 28px rgba(201, 114, 130,0.35)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'translateY(0) scale(1)';
-              e.currentTarget.style.boxShadow = '0 4px 15px rgba(219,140,149,0.25)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(201, 114, 130,0.25)';
             }}
           >
             <Plus size={15} /> Nueva cita
@@ -1222,281 +1364,261 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
       {/* RENDER MODE: OPERACIÓN DE HOY */}
       {viewMode === 'operation' && (
         <div className="staff-control-container">
-          {/* KPIs Row */}
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
-            {[
-              { label: 'Ingresos de hoy', value: `$ ${totalSalonRevenue.toLocaleString()}`, sub: '↑ 18% vs ayer', subColor: '#16a34a', icon: <DollarSign size={18} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.12)', color: '#16a34a' },
-              { label: 'Citas del día', value: totalCitas, sub: `${confirmadas} completadas  ·  ${pendientes} pendientes`, subColor: '#8c767b', icon: <CalendarIcon size={18} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.12)', color: '#0284c7' },
-              { label: 'Ocupación del equipo', value: `${occupancyPct}%`, sub: 'Meta diaria: 80%', subColor: '#8c767b', icon: <BarChart3 size={18} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.12)', progress: occupancyPct, color: '#db8c95' },
-              { label: 'Especialistas disponibles', value: staffByStatus.libres.length, sub: 'Ahora mismo', subColor: '#16a34a', icon: <Users size={18} color="#db8c95" />, iconBg: 'rgba(219, 140, 149, 0.12)', color: '#d97706' }
-            ].map((kpi, idx) => (
-              <div
-                key={idx}
-                className="agenda-glass-card animate-card-enter"
-                style={{
-                  padding: '20px',
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: '14px',
-                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.6) 100%)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.8)',
-                  boxShadow: '0 8px 32px rgba(74, 48, 54, 0.035)',
-                  borderRadius: '20px',
-                  transition: 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease',
-                  animation: `cardEnter 0.4s var(--transition-smooth) ${idx * 0.1}s forwards`
-                }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 36px rgba(74, 48, 54, 0.1)'; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(74, 48, 54, 0.035)'; }}
-              >
-                <div style={{ width: '42px', height: '42px', borderRadius: '14px', background: kpi.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(219, 140, 149, 0.08)' }}>{kpi.icon}</div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: '0.7rem', color: '#a07880', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{kpi.label}</div>
-                  <div style={{ fontSize: '1.55rem', fontWeight: 900, color: '#4a3036', margin: '4px 0 2px 0', letterSpacing: '-0.5px' }}>{kpi.value}</div>
-                  <div style={{ fontSize: '0.68rem', color: kpi.subColor, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{kpi.sub}</div>
-                  {kpi.progress != null && (
-                    <div style={{ height: '3px', background: 'rgba(223, 178, 140, 0.15)', borderRadius: '2px', overflow: 'hidden', marginTop: '8px' }}>
-                      <div style={{ height: '100%', background: 'linear-gradient(90deg, #e8a2a9, #db8c95)', width: `${kpi.progress}%` }} />
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* ESTADO ACTUAL DEL SALÓN - DISEÑO PREMIUM */}
-          <div style={{ marginBottom: '24px' }}>
-            <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#4a3036', margin: '0 0 14px 0', letterSpacing: '0.5px' }}>
-              ESTADO DEL EQUIPO
-            </h3>
-
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '16px' }}>
-              {/* Disponibles */}
-              <div
-                style={{
-                  background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(34, 197, 94, 0.02) 100%)',
-                  border: '2px solid rgba(34, 197, 94, 0.25)',
-                  borderRadius: '16px',
-                  padding: '20px',
-                  textAlign: 'center',
-                  transition: 'all 0.3s ease',
-                  cursor: 'default'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(34, 197, 94, 0.4)';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(34, 197, 94, 0.25)';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
-                  <Users size={24} color="#16a34a" strokeWidth={1.5} />
-                </div>
-                <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#16a34a', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '8px' }}>
-                  Disponibles
-                </div>
-                <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#16a34a', lineHeight: 1 }}>
-                  {staffByStatus.libres.length}
-                </div>
-              </div>
-
-              {/* En Cita */}
-              <div
-                style={{
-                  background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(239, 68, 68, 0.02) 100%)',
-                  border: '2px solid rgba(239, 68, 68, 0.25)',
-                  borderRadius: '16px',
-                  padding: '20px',
-                  textAlign: 'center',
-                  transition: 'all 0.3s ease',
-                  cursor: 'default'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.4)';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.25)';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
-                  <Scissors size={24} color="#dc2626" strokeWidth={1.5} />
-                </div>
-                <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '8px' }}>
-                  En Cita
-                </div>
-                <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#dc2626', lineHeight: 1 }}>
-                  {staffByStatus.ocupadas.length}
-                </div>
-              </div>
-
-              {/* Almuerzo */}
-              <div
-                style={{
-                  background: 'linear-gradient(135deg, rgba(212, 160, 154, 0.08) 0%, rgba(212, 160, 154, 0.02) 100%)',
-                  border: '2px solid rgba(212, 160, 154, 0.3)',
-                  borderRadius: '16px',
-                  padding: '20px',
-                  textAlign: 'center',
-                  transition: 'all 0.3s ease',
-                  cursor: 'default'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(212, 160, 154, 0.5)';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(212, 160, 154, 0.3)';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
-                  <Clock size={24} color="#a0506a" strokeWidth={1.5} />
-                </div>
-                <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '8px' }}>
-                  Almuerzo
-                </div>
-                <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#a0506a', lineHeight: 1 }}>
-                  1
-                </div>
-              </div>
-            </div>
-          </div>
 
           {/* THREE-COLUMN CONTENT GRID */}
+          {isMobile && (
+            <div style={{ 
+              display: 'flex', position: 'relative', marginBottom: '24px', 
+              background: 'rgba(252, 249, 248, 0.7)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+              padding: '6px', borderRadius: '18px', border: '1px solid rgba(223, 178, 140, 0.25)', 
+              flexShrink: 0, boxShadow: '0 8px 32px rgba(74, 48, 54, 0.04)'
+            }}>
+              {/* Sliding Pill Background */}
+              <div style={{
+                position: 'absolute', top: '6px', bottom: '6px', left: '6px',
+                width: 'calc((100% - 12px) / 2)', background: '#ffffff',
+                borderRadius: '14px', boxShadow: '0 4px 12px rgba(201, 114, 130, 0.15), 0 1px 2px rgba(0,0,0,0.02)',
+                border: '1px solid rgba(201, 114, 130, 0.1)',
+                transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                transform: `translateX(${leftTab === 'citas' ? '0%' : '100%'})`
+              }} />
+
+              {/* Buttons */}
+              <button onClick={() => setLeftTab('citas')} style={{ flex: 1, position: 'relative', padding: '12px 4px', borderRadius: '14px', border: 'none', background: 'transparent', color: leftTab === 'citas' ? '#c97282' : '#a0909a', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer', transition: 'color 0.3s, transform 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onTouchStart={(e) => e.currentTarget.style.transform = 'scale(0.95)'} onTouchEnd={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+                <Scissors size={16} strokeWidth={leftTab === 'citas' ? 2.5 : 2} /> Citas
+              </button>
+              <button onClick={() => setLeftTab('especialistas')} style={{ flex: 1, position: 'relative', padding: '12px 4px', borderRadius: '14px', border: 'none', background: 'transparent', color: leftTab === 'especialistas' ? '#c97282' : '#a0909a', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer', transition: 'color 0.3s, transform 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onTouchStart={(e) => e.currentTarget.style.transform = 'scale(0.95)'} onTouchEnd={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+                <Users size={16} strokeWidth={leftTab === 'especialistas' ? 2.5 : 2} /> Personal
+              </button>
+            </div>
+          )}
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : isTablet ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '24px', width: '100%', alignItems: 'start', marginTop: '0' }}>
 
             {/* Column 1 - Próximas Citas */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', minWidth: 0 }}>
+            <div style={{ display: (!isMobile || leftTab === 'citas') ? 'flex' : 'none', flexDirection: 'column', gap: '24px', minWidth: 0, animation: (isMobile && leftTab === 'citas') ? 'fadeInUpWow 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards' : 'none' }}>
 
-              {/* PRÓXIMAS CITAS IMPORTANTES */}
-              <div className="agenda-glass-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', minHeight: '400px', overflow: 'hidden' }}>
-              <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#4a3036', margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-                <CalendarIcon size={16} color="#db8c95" />
-                PRÓXIMAS CITAS HOY
-              </h4>
-
-              {dayApps.length === 0 ? (
-                <div style={{ padding: '20px', textAlign: 'center', color: '#a07880', fontSize: '0.78rem' }}>
-                  No hay citas agendadas para hoy
+              {/* TIMELINE AGENDA - PREMIUM */}
+              <div className="agenda-glass-card" style={{ padding: '0', display: 'flex', flexDirection: 'column', minHeight: '600px', overflow: 'hidden' }}>
+                
+                {/* Header of Timeline */}
+                <div style={{ padding: '20px 20px 15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(223, 178, 140, 0.2)', background: 'rgba(255,255,255,0.5)' }}>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Clock size={16} color="#c97282" />
+                    LÍNEA DE TIEMPO
+                  </h4>
+                  {isMobile && visibleStaff.length > 0 && (
+                    <div style={{ width: '130px' }}>
+                      <JanaSelect
+                        variant="light"
+                        label=""
+                        value={mobileStaffFilter === 'all' ? visibleStaff[0].id : mobileStaffFilter}
+                        onChange={(val) => setMobileStaffFilter(val)}
+                        options={visibleStaff.map(s => ({ value: s.id, label: s.name.split(' ')[0] }))}
+                      />
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', overflowY: 'auto', flex: 1, paddingRight: '8px' }} className="jana-scrollbar">
-                {dayApps.map((app, idx) => {
-                  const start = new Date(app.scheduled_at || app.created_at);
-                  const now = new Date();
-                  const hours24 = start.getHours();
-                  const minutes = start.getMinutes();
-                  const hours12 = hours24 % 12 || 12;
-                  const ampm = hours24 >= 12 ? 'PM' : 'AM';
-                  const startHour = hours12.toString().padStart(2, '0');
-                  const startMin = minutes.toString().padStart(2, '0');
-                  const staffName = staff.find(s => s.id === app.staff_id)?.name || 'Especialista';
-                  const duration = getAppointmentDuration(app);
 
-                  // Detectar si está retrasada (más de 15 minutos después de la hora de inicio)
-                  const minutosRetraso = Math.floor((now.getTime() - start.getTime()) / 60000);
-                  const isRetrasada = minutosRetraso > 15 && app.status !== 'Completado' && app.status !== 'Cancelada';
-
-                  const staffPhoto = staff.find(s => s.id === app.staff_id)?.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(staffName)}&backgroundColor=e8a2a9,f7d4d7,fce4e8&radius=50`;
-
-                  return (
-                    <div
-                      key={app.id}
-                      style={{
-                        display: 'flex',
-                        gap: '12px',
-                        padding: '10px',
-                        background: isRetrasada ? 'rgba(239, 68, 68, 0.08)' : '#faf3f2',
-                        borderRadius: '10px',
-                        border: isRetrasada ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(223, 178, 140, 0.15)',
-                        transition: 'all 0.2s ease',
-                        cursor: 'pointer',
-                        alignItems: 'flex-start'
+                {/* Empty State Override if NO appointments for the WHOLE DAY (across all selected staff) */}
+                {dayApps.length === 0 ? (
+                  <div style={{ padding: '40px 20px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, background: 'rgba(252, 249, 248, 0.5)' }}>
+                    <div style={{
+                      width: '90px', height: '90px', borderRadius: '50%', background: 'linear-gradient(135deg, #fdf4f5 0%, #fae6e9 100%)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px',
+                      boxShadow: '0 8px 24px rgba(201, 114, 130, 0.15), inset 0 0 20px rgba(255,255,255,1)'
+                    }}>
+                      <Sun size={42} strokeWidth={1.5} color="#c97282" />
+                    </div>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 8px 0', letterSpacing: '-0.3px' }}>Día Libre</h3>
+                    <p style={{ fontSize: '0.85rem', color: '#a0909a', margin: '0 0 24px 0', maxWidth: '240px', lineHeight: 1.5 }}>
+                      No hay citas programadas para hoy. Aprovecha el día o agrega una nueva cita.
+                    </p>
+                    <button 
+                      onClick={() => window.dispatchEvent(new Event('jana:open-new-appointment'))}
+                      style={{ 
+                        background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)', 
+                        color: '#fff', border: 'none', padding: '14px 28px', borderRadius: '14px', 
+                        fontWeight: 800, fontSize: '0.9rem', cursor: 'pointer', 
+                        boxShadow: '0 8px 20px rgba(201, 114, 130, 0.35), 0 2px 4px rgba(201, 114, 130, 0.2)', 
+                        transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                        display: 'flex', alignItems: 'center', gap: '8px'
                       }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = isRetrasada ? 'rgba(239, 68, 68, 0.12)' : '#fff';
-                        e.currentTarget.style.borderColor = isRetrasada ? 'rgba(239, 68, 68, 0.5)' : 'rgba(219, 140, 149, 0.3)';
-                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(219, 140, 149, 0.2)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = isRetrasada ? 'rgba(239, 68, 68, 0.08)' : '#faf3f2';
-                        e.currentTarget.style.borderColor = isRetrasada ? 'rgba(239, 68, 68, 0.3)' : 'rgba(223, 178, 140, 0.15)';
-                        e.currentTarget.style.boxShadow = 'none';
-                      }}
+                      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(201, 114, 130, 0.4), 0 4px 8px rgba(201, 114, 130, 0.3)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(201, 114, 130, 0.35), 0 2px 4px rgba(201, 114, 130, 0.2)'; }}
                     >
-                      {/* Foto Especialista */}
-                      <div style={{ position: 'relative', width: '50px', height: '50px', flexShrink: 0 }}>
-                        <img
-                          src={staffPhoto}
-                          alt={staffName}
-                          style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(219, 140, 149, 0.3)' }}
-                          onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
-                        />
-                        <div style={{ display: 'none', position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '1.2rem', borderRadius: '50%' }}>
-                          {staffName.charAt(0).toUpperCase()}
-                        </div>
+                      <Plus size={18} strokeWidth={2.5} /> Agendar Primera Cita
+                    </button>
+                  </div>
+                ) : (
+                  /* Timeline Grid */
+                  <div style={{ position: 'relative', flex: 1, overflowY: 'auto', overflowX: 'hidden', background: '#fff' }} className="jana-scrollbar">
+                    
+                    {/* Timeline Content Wrapper */}
+                    <div style={{ position: 'relative', minHeight: `${(20 - 8 + 1) * 80}px`, display: 'flex' }}>
+                      
+                      {/* Time Column (Left) */}
+                      <div style={{ width: '60px', flexShrink: 0, borderRight: '1px solid rgba(223, 178, 140, 0.2)', position: 'relative', background: '#fcf6f7', zIndex: 10 }}>
+                        {Array.from({length: 20 - 8 + 1}).map((_, i) => {
+                          const h = 8 + i;
+                          const ampm = h >= 12 ? 'PM' : 'AM';
+                          const h12 = h % 12 || 12;
+                          return (
+                            <div key={h} style={{ position: 'absolute', top: `${i * 80}px`, width: '100%', height: '80px', display: 'flex', justifyContent: 'center', paddingTop: '8px' }}>
+                              <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#a0909a' }}>{h12}:00 {ampm}</span>
+                            </div>
+                          )
+                        })}
                       </div>
 
-                      {/* Info */}
-                      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        {/* Hora */}
-                        <div style={{ fontWeight: 900, color: isRetrasada ? '#dc2626' : '#db8c95', fontSize: '0.75rem' }}>
-                          {startHour}:{startMin} {ampm}
+                      {/* Columns Wrapper */}
+                      <div style={{ flex: 1, position: 'relative', display: 'flex' }}>
+                        {/* Grid Lines Background */}
+                        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+                           {Array.from({length: 20 - 8 + 1}).map((_, i) => (
+                             <React.Fragment key={`grid-${i}`}>
+                               <div style={{ position: 'absolute', top: `${i * 80}px`, left: 0, right: 0, height: '1px', background: 'rgba(223, 178, 140, 0.2)' }} />
+                               {/* Half-hour dashed line */}
+                               <div style={{ position: 'absolute', top: `${i * 80 + 40}px`, left: 0, right: 0, height: '1px', borderTop: '1px dashed rgba(223, 178, 140, 0.1)' }} />
+                             </React.Fragment>
+                           ))}
                         </div>
 
-                        {/* Cliente */}
-                        <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#4a3036', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          👤 {app.clients?.name || 'Cliente'}
-                        </div>
+                        {/* Now Line */}
+                        {nowMinutes >= 8 * 60 && nowMinutes <= 20 * 60 && isToday && (
+                          <div style={{ position: 'absolute', top: `${((nowMinutes - (8 * 60)) / 60) * 80}px`, left: 0, right: 0, height: '2px', background: '#e11d48', zIndex: 5, pointerEvents: 'none', display: 'flex', alignItems: 'center' }}>
+                             <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#e11d48', marginLeft: '-4px' }} />
+                          </div>
+                        )}
 
-                        {/* Servicio */}
-                        <div style={{ fontSize: '0.68rem', color: '#a07880', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {app.services?.name || 'Servicio'}
-                        </div>
+                        {/* Staff Columns */}
+                        {visibleStaff.filter(s => {
+                          if (!isMobile) return true;
+                          const activeFilter = mobileStaffFilter === 'all' ? visibleStaff[0]?.id : mobileStaffFilter;
+                          return s.id === activeFilter;
+                        }).map((staffMember, colIdx, filteredStaff) => {
+                          
+                          const colApps = dayApps.filter(app => app.staff_id === staffMember.id);
+                          
+                          return (
+                            <div key={staffMember.id} style={{ flex: 1, position: 'relative', borderRight: colIdx < filteredStaff.length - 1 ? '1px solid rgba(223, 178, 140, 0.15)' : 'none' }}>
+                              {/* Column Header for Desktop / Tablets */}
+                              {!isMobile && (
+                                <div style={{ position: 'sticky', top: 0, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)', padding: '12px 4px', textAlign: 'center', borderBottom: '1px solid rgba(223, 178, 140, 0.2)', zIndex: 10, fontSize: '0.75rem', fontWeight: 800, color: '#2d1b22', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+                                  {staffMember.name.split(' ')[0]}
+                                </div>
+                              )}
 
-                        {/* Especialista */}
-                        <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#db8c95', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          ✨ {staffName}
-                        </div>
-                      </div>
+                              {/* Appointments Blocks */}
+                              {colApps.map(app => {
+                                 const start = new Date(app.scheduled_at || app.created_at);
+                                 const startMins = start.getHours() * 60 + start.getMinutes();
+                                 const duration = getAppointmentDuration(app) || 60;
+                                 
+                                 if (startMins < 8 * 60 || startMins >= 21 * 60) return null; // out of bounds
 
-                      {/* Status */}
-                      <div style={{ flexShrink: 0 }}>
-                        <span style={{
-                          fontSize: '0.65rem',
-                          fontWeight: 700,
-                          padding: '2px 6px',
-                          borderRadius: '5px',
-                          background: isRetrasada ? 'rgba(239, 68, 68, 0.2)' : (app.status === 'Completado' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(245, 158, 11, 0.15)'),
-                          color: isRetrasada ? '#dc2626' : (app.status === 'Completado' ? '#16a34a' : '#d97706'),
-                          whiteSpace: 'nowrap'
-                        }}>
-                          {isRetrasada ? '⚠️' : (app.status === 'Completado' ? '✓' : '●')}
-                        </span>
+                                 const topPx = ((startMins - (8 * 60)) / 60) * 80;
+                                 const heightPx = (duration / 60) * 80;
+
+                                 const isRetrasada = Math.floor((new Date().getTime() - start.getTime()) / 60000) > 15 && app.status !== 'Completado' && app.status !== 'Cancelada';
+                                 
+                                 let bgColor = '#fff';
+                                 let borderColor = 'rgba(201, 114, 130, 0.4)';
+                                 let accentColor = '#c97282';
+                                 if (app.status === 'Completado') {
+                                   bgColor = 'rgba(34, 197, 94, 0.05)'; borderColor = 'rgba(34, 197, 94, 0.3)'; accentColor = '#16a34a';
+                                 } else if (isRetrasada) {
+                                   bgColor = 'rgba(239, 68, 68, 0.05)'; borderColor = 'rgba(239, 68, 68, 0.3)'; accentColor = '#dc2626';
+                                 } else if (app.status === 'En Curso') {
+                                   bgColor = 'rgba(245, 158, 11, 0.05)'; borderColor = 'rgba(245, 158, 11, 0.3)'; accentColor = '#d97706';
+                                 }
+
+                                 return (
+                                   <div key={app.id} style={{
+                                     position: 'absolute',
+                                     top: `${topPx}px`,
+                                     height: `${heightPx - 2}px`, // subtract 2px for gap
+                                     left: '4px',
+                                     right: '4px',
+                                     background: bgColor,
+                                     border: `1px solid ${borderColor}`,
+                                     borderLeft: `4px solid ${accentColor}`,
+                                     borderRadius: '8px',
+                                     padding: '6px 8px',
+                                     overflow: 'hidden',
+                                     boxShadow: '0 2px 8px rgba(74, 48, 54, 0.05)',
+                                     cursor: 'pointer',
+                                     transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s',
+                                     zIndex: 4,
+                                     display: 'flex',
+                                     flexDirection: 'column'
+                                   }}
+                                   onClick={() => {
+                                     // Dispatch custom event if there's a modal, or just select it
+                                     setSelectedAppointmentDrawer(app);
+                                   }}
+                                   onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.zIndex = 20; e.currentTarget.style.boxShadow = '0 6px 16px rgba(74, 48, 54, 0.1)'; }}
+                                   onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.zIndex = 4; e.currentTarget.style.boxShadow = '0 2px 8px rgba(74, 48, 54, 0.05)'; }}
+                                   >
+                                     <div style={{ fontSize: '0.65rem', fontWeight: 800, color: accentColor, marginBottom: '4px', lineHeight: 1 }}>
+                                        {start.getHours() % 12 || 12}:{start.getMinutes().toString().padStart(2, '0')} {start.getHours() >= 12 ? 'PM' : 'AM'}
+                                     </div>
+                                     <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#2d1b22', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.2 }}>
+                                        {app.clients?.name || 'Cliente'}
+                                     </div>
+                                     {heightPx > 40 && (
+                                       <div style={{ fontSize: '0.65rem', color: '#8c767b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: '2px', fontWeight: 600 }}>
+                                          {app.services?.name || 'Servicio'}
+                                       </div>
+                                     )}
+                                   </div>
+                                 );
+                              })}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-              )}
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Column 2 - Especialistas */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', minWidth: 0 }}>
+            <div style={{ display: (!isMobile || leftTab === 'especialistas') ? 'flex' : 'none', flexDirection: 'column', gap: '24px', minWidth: 0, animation: (isMobile && leftTab === 'especialistas') ? 'fadeInUpWow 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards' : 'none' }}>
+
+              {/* ESTADO DEL EQUIPO (Moved to Personal Tab) */}
+              <div style={{ marginBottom: '0' }}>
+                <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 14px 0', letterSpacing: '0.5px' }}>
+                  ESTADO DEL EQUIPO
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: isMobile ? '8px' : '16px' }}>
+                  <div style={{ background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(34, 197, 94, 0.02) 100%)', border: '2px solid rgba(34, 197, 94, 0.25)', borderRadius: '16px', padding: isMobile ? '12px 8px' : '20px', textAlign: 'center', transition: 'all 0.3s ease' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: isMobile ? '6px' : '10px' }}><Users size={isMobile ? 20 : 24} color="#16a34a" strokeWidth={1.5} /></div>
+                    <div style={{ fontSize: isMobile ? '0.58rem' : '0.68rem', fontWeight: 700, color: '#16a34a', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: isMobile ? '4px' : '8px' }}>Disponibles</div>
+                    <div style={{ fontSize: isMobile ? '1.6rem' : '2.2rem', fontWeight: 900, color: '#16a34a', lineHeight: 1 }}>{staffByStatus.libres.length}</div>
+                  </div>
+                  <div style={{ background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(239, 68, 68, 0.02) 100%)', border: '2px solid rgba(239, 68, 68, 0.25)', borderRadius: '16px', padding: isMobile ? '12px 8px' : '20px', textAlign: 'center', transition: 'all 0.3s ease' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: isMobile ? '6px' : '10px' }}><Scissors size={isMobile ? 20 : 24} color="#dc2626" strokeWidth={1.5} /></div>
+                    <div style={{ fontSize: isMobile ? '0.58rem' : '0.68rem', fontWeight: 700, color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: isMobile ? '4px' : '8px' }}>En Cita</div>
+                    <div style={{ fontSize: isMobile ? '1.6rem' : '2.2rem', fontWeight: 900, color: '#dc2626', lineHeight: 1 }}>{staffByStatus.ocupadas.length}</div>
+                  </div>
+                  <div style={{ background: 'linear-gradient(135deg, rgba(212, 160, 154, 0.08) 0%, rgba(212, 160, 154, 0.02) 100%)', border: '2px solid rgba(212, 160, 154, 0.3)', borderRadius: '16px', padding: isMobile ? '12px 8px' : '20px', textAlign: 'center', transition: 'all 0.3s ease' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: isMobile ? '6px' : '10px' }}><Clock size={isMobile ? 20 : 24} color="#a0506a" strokeWidth={1.5} /></div>
+                    <div style={{ fontSize: isMobile ? '0.58rem' : '0.68rem', fontWeight: 700, color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: isMobile ? '4px' : '8px' }}>Almuerzo</div>
+                    <div style={{ fontSize: isMobile ? '1.6rem' : '2.2rem', fontWeight: 900, color: '#a0506a', lineHeight: 1 }}>1</div>
+                  </div>
+                </div>
+              </div>
+
               <div className="agenda-glass-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', minHeight: '400px' }}>
-                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#4a3036', margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-                  <Sparkles size={16} color="#db8c95" />
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22', margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                  <Sparkles size={16} color="#c97282" />
                   ESTADO DE ESPECIALISTAS
                 </h4>
 
                 {/* Search Bar for Specialists */}
                 <div style={{ position: 'relative', marginBottom: '16px', flexShrink: 0 }}>
-                  <Search size={14} color="#a07880" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                  <Search size={14} color="#a0909a" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
                   <input
                     type="text"
                     placeholder="Buscar especialista..."
@@ -1506,8 +1628,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       width: '100%',
                       padding: '10px 12px 10px 34px',
                       fontSize: '0.78rem',
-                      color: '#4a3036',
-                      background: '#faf3f2',
+                      color: '#2d1b22',
+                      background: '#fcf6f7',
                       border: '1px solid rgba(223, 178, 140, 0.15)',
                       borderRadius: '12px',
                       outline: 'none',
@@ -1543,7 +1665,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                             opacity: 0.8,
                             transition: 'all 0.2s ease',
                           }}
-                          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.borderColor = '#db8c95'; }}
+                          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.borderColor = '#c97282'; }}
                           onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(223,178,140,0.2)'; }}
                         >
                           <div style={{ position: 'relative', width: '48px', height: '48px', marginBottom: '8px' }}>
@@ -1554,7 +1676,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                             />
                           </div>
                           <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#8c767b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{s.name}</div>
-                          <div style={{ fontSize: '0.58rem', color: '#a07880', fontWeight: 700, marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.3px' }}>NO TRABAJA</div>
+                          <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 700, marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.3px' }}>NO TRABAJA</div>
                         </div>
                       );
                     }
@@ -1575,8 +1697,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
                     if (isLunch) {
                       statusText = 'ALMUERZO';
-                      statusBg = 'rgba(219, 140, 149, 0.08)';
-                      statusColor = '#db8c95';
+                      statusBg = 'rgba(201, 114, 130, 0.08)';
+                      statusColor = '#c97282';
                     } else if (activeApp) {
                       statusText = 'EN CITA';
                       statusBg = 'rgba(239, 68, 68, 0.06)';
@@ -1614,8 +1736,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         </div>
 
                         {/* Name and role */}
-                        <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#3d2b30', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{s.name}</div>
-                        <div style={{ fontSize: '0.58rem', color: '#a07880', fontWeight: 600, marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{getStaffRole(s.name)}</div>
+                        <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#2d1b22', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{s.name}</div>
+                        <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 600, marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{getStaffRole(s.name)}</div>
 
                         {/* Status tag */}
                         <div style={{ marginTop: '6px', fontSize: '0.56rem', fontWeight: 800, color: statusColor, background: statusBg, padding: '2px 8px', borderRadius: '6px', letterSpacing: '0.3px' }}>
@@ -1624,7 +1746,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
                         {/* Occupancy Mini bar */}
                         <div style={{ width: '100%', marginTop: '10px' }}>
-                          <div style={{ height: '3px', background: '#faf3f2', borderRadius: '2px', overflow: 'hidden' }}>
+                          <div style={{ height: '3px', background: '#fcf6f7', borderRadius: '2px', overflow: 'hidden' }}>
                             <div style={{ height: '100%', background: statusColor, width: `${metrics.occupancy}%` }} />
                           </div>
                           <div style={{ fontSize: '0.55rem', color: '#8c767b', fontWeight: 700, marginTop: '2px', display: 'flex', justifyContent: 'space-between' }}>
@@ -1638,8 +1760,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 </div>
 
                 {visibleStaff.length === 0 && (
-                  <div style={{ textAlign: 'center', padding: '40px 20px', color: '#a07880', fontSize: '0.8rem', border: '1px dashed rgba(223,178,140,0.25)', borderRadius: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flex: 1, justifyContent: 'center' }}>
-                    <Search size={24} color="#db8c95" style={{ opacity: 0.5 }} />
+                  <div style={{ textAlign: 'center', padding: '40px 20px', color: '#a0909a', fontSize: '0.8rem', border: '1px dashed rgba(223,178,140,0.25)', borderRadius: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flex: 1, justifyContent: 'center' }}>
+                    <Search size={24} color="#c97282" style={{ opacity: 0.5 }} />
                     <div style={{ fontWeight: 700 }}>No se encontraron especialistas</div>
                   </div>
                 )}
@@ -1647,7 +1769,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             </div>
 
             {/* Column 3 - Calendario */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', minWidth: 0 }}>
+            <div style={{ display: !isMobile ? 'flex' : 'none', flexDirection: 'column', gap: '24px', minWidth: 0 }}>
 
               {/* Mini Calendar */}
               <div className="agenda-glass-card" style={{ padding: '20px', overflow: 'visible' }}>
@@ -1661,24 +1783,24 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     }}
                     style={{
                       width: '28px', height: '28px', borderRadius: '8px',
-                      background: 'rgba(219, 140, 149, 0.08)',
-                      border: '1px solid rgba(219, 140, 149, 0.2)',
-                      color: '#db8c95', cursor: 'pointer',
+                      background: 'rgba(201, 114, 130, 0.08)',
+                      border: '1px solid rgba(201, 114, 130, 0.2)',
+                      color: '#c97282', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: '14px', transition: 'all 0.2s'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(219, 140, 149, 0.15)';
-                      e.currentTarget.style.borderColor = 'rgba(219, 140, 149, 0.4)';
+                      e.currentTarget.style.background = 'rgba(201, 114, 130, 0.15)';
+                      e.currentTarget.style.borderColor = 'rgba(201, 114, 130, 0.4)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'rgba(219, 140, 149, 0.08)';
-                      e.currentTarget.style.borderColor = 'rgba(219, 140, 149, 0.2)';
+                      e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)';
+                      e.currentTarget.style.borderColor = 'rgba(201, 114, 130, 0.2)';
                     }}
                   >
                     ←
                   </button>
-                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#4a3036', margin: 0 }}>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22', margin: 0 }}>
                     {selectedDate.toLocaleDateString('es-VE', { month: 'long', year: 'numeric' })}
                   </h4>
                   <button
@@ -1689,19 +1811,19 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     }}
                     style={{
                       width: '28px', height: '28px', borderRadius: '8px',
-                      background: 'rgba(219, 140, 149, 0.08)',
-                      border: '1px solid rgba(219, 140, 149, 0.2)',
-                      color: '#db8c95', cursor: 'pointer',
+                      background: 'rgba(201, 114, 130, 0.08)',
+                      border: '1px solid rgba(201, 114, 130, 0.2)',
+                      color: '#c97282', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: '14px', transition: 'all 0.2s'
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(219, 140, 149, 0.15)';
-                      e.currentTarget.style.borderColor = 'rgba(219, 140, 149, 0.4)';
+                      e.currentTarget.style.background = 'rgba(201, 114, 130, 0.15)';
+                      e.currentTarget.style.borderColor = 'rgba(201, 114, 130, 0.4)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'rgba(219, 140, 149, 0.08)';
-                      e.currentTarget.style.borderColor = 'rgba(219, 140, 149, 0.2)';
+                      e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)';
+                      e.currentTarget.style.borderColor = 'rgba(201, 114, 130, 0.2)';
                     }}
                   >
                     →
@@ -1711,7 +1833,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 {/* Day names */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '8px' }}>
                   {['L', 'M', 'X', 'J', 'V', 'S', 'D'].map((day, i) => (
-                    <div key={i} style={{ textAlign: 'center', fontSize: '0.6rem', fontWeight: 700, color: '#a07880', padding: '4px 0' }}>
+                    <div key={i} style={{ textAlign: 'center', fontSize: '0.6rem', fontWeight: 700, color: '#a0909a', padding: '4px 0' }}>
                       {day}
                     </div>
                   ))}
@@ -1749,29 +1871,32 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                           style={{
                             padding: '6px 0',
                             borderRadius: '8px',
-                            border: isSelected ? '2px solid #db8c95' : '1px solid rgba(223, 178, 140, 0.1)',
-                            background: isSelected ? 'rgba(219, 140, 149, 0.15)' : isToday ? 'rgba(219, 140, 149, 0.08)' : '#fff',
-                            color: isSelected ? '#db8c95' : '#4a3036',
-                            fontSize: '0.72rem',
-                            fontWeight: isSelected || isToday ? 700 : 600,
+                            border: isSelected ? 'none' : isToday ? '1px solid var(--magenta-primary)' : '1px solid rgba(223, 178, 140, 0.1)',
+                            background: isSelected ? 'var(--magenta-primary)' : isToday ? 'rgba(201, 114, 130, 0.05)' : '#fff',
+                            color: isSelected ? '#fff' : '#2d1b22',
+                            fontSize: '0.75rem',
+                            fontWeight: isSelected || isToday ? 700 : 500,
                             cursor: 'pointer',
                             position: 'relative',
-                            transition: 'all 0.2s',
+                            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
-                            justifyContent: 'center'
+                            justifyContent: 'center',
+                            boxShadow: isSelected ? '0 4px 12px rgba(160, 80, 106, 0.25)' : 'none',
+                            transform: isSelected ? 'scale(1.05)' : 'scale(1)',
+                            zIndex: isSelected ? 2 : 1
                           }}
                           onMouseEnter={(e) => {
                             if (!isSelected) {
-                              e.currentTarget.style.background = 'rgba(219, 140, 149, 0.1)';
-                              e.currentTarget.style.borderColor = 'rgba(219, 140, 149, 0.3)';
+                              e.currentTarget.style.background = 'rgba(201, 114, 130, 0.1)';
+                              e.currentTarget.style.borderColor = 'rgba(201, 114, 130, 0.3)';
                             }
                           }}
                           onMouseLeave={(e) => {
                             if (!isSelected) {
-                              e.currentTarget.style.background = '#fff';
-                              e.currentTarget.style.borderColor = 'rgba(223, 178, 140, 0.1)';
+                              e.currentTarget.style.background = isToday ? 'rgba(201, 114, 130, 0.05)' : '#fff';
+                              e.currentTarget.style.borderColor = isToday ? 'var(--magenta-primary)' : 'rgba(223, 178, 140, 0.1)';
                             }
                           }}
                         >
@@ -1779,12 +1904,12 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                           {dayAppsCount > 0 && (
                             <div style={{
                               position: 'absolute',
-                              bottom: '2px',
+                              bottom: '3px',
                               width: '4px',
                               height: '4px',
                               borderRadius: '50%',
-                              background: '#db8c95',
-                              opacity: 0.8
+                              background: isSelected ? '#fff' : 'var(--magenta-primary)',
+                              opacity: isSelected ? 1 : 0.8
                             }} />
                           )}
                         </button>
@@ -1802,6 +1927,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           </div>
         </div>
       )}
+
+      {/* (FAB removed in favor of central bottom nav button) */}
 
 {/* PORTAL/MODAL DIALOG: DISPONIBILIDAD RÁPIDA */}
 <AnimatedModal isOpen={showQuickAvailModal}>
@@ -1838,13 +1965,13 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
         }}>
           <div>
             <h3 style={{
-              margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#3d2b30',
+              margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#2d1b22',
               letterSpacing: '-0.3px'
             }}>
               Buscador rápido de disponibilidad
             </h3>
             <p style={{
-              margin: '4px 0 0', fontSize: '0.76rem', color: '#a0868c', fontWeight: 500
+              margin: '4px 0 0', fontSize: '0.76rem', color: '#a0909a', fontWeight: 500
             }}>
               Encuentra especialistas disponibles según la fecha, hora, duración y servicio.
             </p>
@@ -1859,7 +1986,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               fontSize: '16px', lineHeight: 1, transition: 'all 0.2s',
               flexShrink: 0, marginTop: '2px'
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(219,140,149,0.12)'; e.currentTarget.style.color = '#db8c95'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(201, 114, 130,0.12)'; e.currentTarget.style.color = '#c97282'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(74,48,54,0.05)'; e.currentTarget.style.color = '#8c767b'; }}
           >
             ✕
@@ -1872,17 +1999,17 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           {/* ── FILTER ROW 1: Fecha | Hora | Duración ── */}
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '16px', marginBottom: '16px' }}>
             <div>
-              <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a0868c', display: 'block', marginBottom: '7px', letterSpacing: '0.3px' }}>Fecha</label>
+              <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a0909a', display: 'block', marginBottom: '7px', letterSpacing: '0.3px' }}>Fecha</label>
               <JanaDatePicker
                 value={availDate}
                 onChange={e => setAvailDate(e.target.value)}
                 variant="light"
                 inputClassName="agenda-input"
-                inputStyle={{ borderRadius: '12px', height: '44px', fontSize: '0.82rem', fontWeight: 600, paddingLeft: '38px', background: '#fff', border: '1.5px solid rgba(212,160,154,0.3)', color: '#3d2b30' }}
+                inputStyle={{ borderRadius: '12px', height: '44px', fontSize: '0.82rem', fontWeight: 600, paddingLeft: '38px', background: '#fff', border: '1.5px solid rgba(212,160,154,0.3)', color: '#2d1b22' }}
               />
             </div>
             <div>
-              <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a0868c', display: 'block', marginBottom: '7px', letterSpacing: '0.3px' }}>Hora de inicio</label>
+              <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a0909a', display: 'block', marginBottom: '7px', letterSpacing: '0.3px' }}>Hora de inicio</label>
               <JanaSelect variant="light" value={availTimeStr} onChange={val => setAvailTimeStr(val)}
                 options={[
                   { value: "07:00", label: "07:00 AM" },
@@ -1920,7 +2047,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             </div>
 
             <div>
-              <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a0868c', display: 'block', marginBottom: '7px', letterSpacing: '0.3px' }}>Duración</label>
+              <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a0909a', display: 'block', marginBottom: '7px', letterSpacing: '0.3px' }}>Duración</label>
               <JanaSelect variant="light" value={availDuration} onChange={val => setAvailDuration(val)}
                 options={[
                   { value: "15", label: "15 minutos" },
@@ -1941,7 +2068,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           {/* ── FILTER ROW 2: Servicio | Especialista ── */}
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '16px', marginBottom: '20px' }}>
             <div>
-              <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a0868c', display: 'block', marginBottom: '7px', letterSpacing: '0.3px' }}>Servicio</label>
+              <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a0909a', display: 'block', marginBottom: '7px', letterSpacing: '0.3px' }}>Servicio</label>
               <JanaSelect variant="light" value={availServiceId} onChange={val => setAvailServiceId(val)}
                 options={[{ value: "all", label: "Cualquier servicio" }, ...services.map(s => ({ value: s.id, label: `${s.name} (${s.duration || 60}m)` }))]}
                 style={{ width: '100%' }}
@@ -1949,7 +2076,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               />
             </div>
             <div>
-              <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a0868c', display: 'block', marginBottom: '7px', letterSpacing: '0.3px' }}>Especialista</label>
+              <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a0909a', display: 'block', marginBottom: '7px', letterSpacing: '0.3px' }}>Especialista</label>
               <JanaSelect variant="light" value={availStaffId} onChange={val => setAvailStaffId(val)}
                 options={[{ value: "all", label: "Todas las especialistas" }, ...staff.map(s => ({ value: s.id, label: s.name }))]}
                 style={{ width: '100%' }}
@@ -1961,13 +2088,13 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           {/* ── ACTION ROW ── */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px' }}>
             <button onClick={() => { setAvailTimeStr('09:00'); setAvailDuration('60'); setAvailServiceId('all'); setAvailStaffId('all'); }}
-              style={{ background: 'none', border: 'none', color: '#db8c95', fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', padding: '4px 0', transition: 'opacity 0.2s' }}
+              style={{ background: 'none', border: 'none', color: '#c97282', fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', padding: '4px 0', transition: 'opacity 0.2s' }}
               onMouseEnter={e => e.currentTarget.style.opacity = '0.7'} onMouseLeave={e => e.currentTarget.style.opacity = '1'}
             >✦ Limpiar filtros</button>
             <button
-              style={{ padding: '12px 28px', borderRadius: '14px', border: 'none', background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)', color: '#fff', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 6px 20px rgba(219,140,149,0.3)', transition: 'all 0.2s', letterSpacing: '0.2px' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(219,140,149,0.4)'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(219,140,149,0.3)'; }}
+              style={{ padding: '12px 28px', borderRadius: '14px', border: 'none', background: 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)', color: '#fff', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 6px 20px rgba(201, 114, 130,0.3)', transition: 'all 0.2s', letterSpacing: '0.2px' }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(201, 114, 130,0.4)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(201, 114, 130,0.3)'; }}
             ><Search size={15} /> Buscar disponibilidad</button>
           </div>
 
@@ -2015,7 +2142,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {/* Header */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#3d2b30' }}>Especialistas disponibles ({disponibles.length})</h4>
+                  <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#2d1b22' }}>Especialistas disponibles ({disponibles.length})</h4>
                   {disponibles.length > 0 && (
                     <span style={{ display: 'flex', alignItems: 'center', gap: '5px', background: '#f0fdf4', color: '#16a34a', padding: '5px 12px', borderRadius: '20px', fontSize: '0.68rem', fontWeight: 700, border: '1px solid #bbf7d0' }}>
                       <CheckCircle2 size={13} /> {disponibles.length} disponibles
@@ -2025,7 +2152,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
                 {/* Cards */}
                 {disponibles.length === 0 ? (
-                  <div style={{ padding: '24px', borderRadius: '16px', background: '#faf7f5', border: '1px dashed rgba(223,178,140,0.3)', textAlign: 'center', color: '#a0868c', fontSize: '0.82rem' }}>
+                  <div style={{ padding: '24px', borderRadius: '16px', background: '#faf7f5', border: '1px dashed rgba(223,178,140,0.3)', textAlign: 'center', color: '#a0909a', fontSize: '0.82rem' }}>
                     Ninguna especialista disponible con estos criterios.
                   </div>
                 ) : (
@@ -2079,7 +2206,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               style={{
                 background: 'transparent',
                 border: 'none',
-                color: '#a07880',
+                color: '#a0909a',
                 fontSize: '0.88rem',
                 fontWeight: 700,
                 cursor: 'pointer',
@@ -2089,11 +2216,11 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 transition: 'all 0.2s ease'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.color = '#db8c95';
+                e.currentTarget.style.color = '#c97282';
                 e.currentTarget.style.transform = 'translateX(-4px)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = '#a07880';
+                e.currentTarget.style.color = '#a0909a';
                 e.currentTarget.style.transform = 'translateX(0)';
               }}
             >
@@ -2110,7 +2237,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   background: '#ffffff', border: '1px solid rgba(223, 178, 140, 0.2)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   cursor: 'pointer', position: 'relative',
-                  color: '#4a3036',
+                  color: '#2d1b22',
                   boxShadow: '0 2px 8px rgba(74, 48, 54, 0.03)',
                   transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)'
                 }}
@@ -2126,7 +2253,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 <Bell size={16} />
                 <span style={{
                   position: 'absolute', top: '-4px', right: '-4px',
-                  backgroundColor: '#db8c95', width: '16px', height: '16px',
+                  backgroundColor: '#c97282', width: '16px', height: '16px',
                   borderRadius: '50%', color: '#fff', fontSize: '0.62rem',
                   fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
@@ -2137,14 +2264,14 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               {/* User Profile */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <div style={{ textAlign: 'right', display: isMobile ? 'none' : 'block' }}>
-                  <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#4a3036' }}>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#2d1b22' }}>
                     {user?.name || 'Admin'}
                   </div>
-                  <div style={{ fontSize: '0.65rem', color: '#a07880', fontWeight: 600 }}>
+                  <div style={{ fontSize: '0.65rem', color: '#a0909a', fontWeight: 600 }}>
                     {getRoleName(user?.role) || 'Dueña'}
                   </div>
                 </div>
-                <div style={{ width: '38px', height: '38px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #db8c95' }}>
+                <div style={{ width: '38px', height: '38px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #c97282' }}>
                   <img 
                     src={user?.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=Admin&backgroundColor=f7d4d7`}
                     alt="User profile"
@@ -2173,7 +2300,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             }}>
               {/* Left Side: Photo & Name & Specialty */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
-                <div style={{ width: '90px', height: '90px', borderRadius: '50%', overflow: 'hidden', border: '3px solid #fce4e8', flexShrink: 0, boxShadow: '0 4px 12px rgba(219,140,149,0.15)' }}>
+                <div style={{ width: '90px', height: '90px', borderRadius: '50%', overflow: 'hidden', border: '3px solid #fce4e8', flexShrink: 0, boxShadow: '0 4px 12px rgba(201, 114, 130,0.15)' }}>
                   <img 
                     src={selectedStaffDrawer.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(selectedStaffDrawer.name)}&backgroundColor=e8a2a9,f7d4d7,fce4e8&radius=50`}
                     alt={selectedStaffDrawer.name}
@@ -2182,14 +2309,14 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 </div>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                    <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#4a3036', margin: 0, fontFamily: "'Playfair Display', Georgia, serif" }}>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#2d1b22', margin: 0, fontFamily: "'Playfair Display', Georgia, serif" }}>
                       {selectedStaffDrawer.name}
                     </h2>
-                    <span style={{ fontSize: '0.72rem', color: '#db8c95', background: 'rgba(219,140,149,0.1)', padding: '3px 10px', borderRadius: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px' }}>
+                    <span style={{ fontSize: '0.72rem', color: '#c97282', background: 'rgba(201, 114, 130,0.1)', padding: '3px 10px', borderRadius: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px' }}>
                       {getStaffRole(selectedStaffDrawer.name)}
                     </span>
                   </div>
-                  <p style={{ fontSize: '0.8rem', color: '#a07880', margin: '8px 0 0', fontWeight: 600 }}>
+                  <p style={{ fontSize: '0.8rem', color: '#a0909a', margin: '8px 0 0', fontWeight: 600 }}>
                     Especialidad: {selectedStaffDrawer.role || 'Extensiones de pestañas'}  ·  Teléfono: 0412 345 6789
                   </p>
                 </div>
@@ -2211,7 +2338,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     padding: '8px 16px', 
                     fontSize: '0.82rem', 
                     fontWeight: 700, 
-                    color: '#4a3036',
+                    color: '#2d1b22',
                     textTransform: 'capitalize'
                   }}>
                     {selectedDate.toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).replace(' de', '').replace(' de', '')}
@@ -2221,7 +2348,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() - 1))}
                       style={{
                         width: '32px', height: '32px', borderRadius: '8px', border: 'none', background: 'transparent',
-                        color: '#db8c95', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                        color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
                       }}
                       className="btn-hover-scale"
                     >
@@ -2231,7 +2358,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + 1))}
                       style={{
                         width: '32px', height: '32px', borderRadius: '8px', border: 'none', background: 'transparent',
-                        color: '#db8c95', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                        color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
                       }}
                       className="btn-hover-scale"
                     >
@@ -2245,8 +2372,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   onClick={() => showToast?.('Abriendo editor de horarios...', 'info')}
                   style={{
                     background: '#fff', 
-                    border: '1px solid #db8c95', 
-                    color: '#db8c95',
+                    border: '1px solid #c97282', 
+                    color: '#c97282',
                     padding: '10px 20px', 
                     borderRadius: '12px', 
                     fontSize: '0.82rem', 
@@ -2255,7 +2382,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
-                    boxShadow: '0 2px 8px rgba(219,140,149,0.05)'
+                    boxShadow: '0 2px 8px rgba(201, 114, 130,0.05)'
                   }}
                   className="btn-hover-scale"
                 >
@@ -2270,8 +2397,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '20px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
                 <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#22c55e', flexShrink: 0, boxShadow: '0 0 8px #22c55e' }} />
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '0.62rem', color: '#a07880', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado actual</div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#22c55e', marginTop: '2px' }}>Ocupada <span style={{ color: '#a07880', fontSize: '0.78rem', fontWeight: 500 }}>Hasta 11:30 AM</span></div>
+                  <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado actual</div>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#22c55e', marginTop: '2px' }}>Ocupada <span style={{ color: '#a0909a', fontSize: '0.78rem', fontWeight: 500 }}>Hasta 11:30 AM</span></div>
                 </div>
               </div>
 
@@ -2281,23 +2408,23 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   <CalendarIcon size={16} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '0.62rem', color: '#a07880', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Próxima cita</div>
+                  <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Próxima cita</div>
                   <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#d97706', marginTop: '2px' }}>
-                    12:00 PM <span style={{ color: '#a07880', fontSize: '0.78rem', fontWeight: 500 }}>· Volumen 3D</span>
+                    12:00 PM <span style={{ color: '#a0909a', fontSize: '0.78rem', fontWeight: 500 }}>· Volumen 3D</span>
                   </div>
                 </div>
               </div>
 
               {/* Card 3: Horario de Hoy */}
               <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '20px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(219, 140, 149, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#db8c95', flexShrink: 0 }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(201, 114, 130, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c97282', flexShrink: 0 }}>
                   <Clock size={16} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '0.62rem', color: '#a07880', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Horario de hoy</div>
-                  <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#4a3036', marginTop: '2px', lineHeight: '1.2' }}>
+                  <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Horario de hoy</div>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#2d1b22', marginTop: '2px', lineHeight: '1.2' }}>
                     9:00 AM - 6:00 PM <br />
-                    <span style={{ color: '#a07880', fontSize: '0.68rem', fontWeight: 500 }}>1:00 PM - 2:00 PM (descanso)</span>
+                    <span style={{ color: '#a0909a', fontSize: '0.68rem', fontWeight: 500 }}>1:00 PM - 2:00 PM (descanso)</span>
                   </div>
                 </div>
               </div>
@@ -2320,8 +2447,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                      style={{ 
                        fontSize: '0.85rem', 
                        fontWeight: isActive ? 800 : 600, 
-                       color: isActive ? '#db8c95' : '#a07880', 
-                       borderBottom: isActive ? '3px solid #db8c95' : '3px solid transparent', 
+                       color: isActive ? '#c97282' : '#a0909a', 
+                       borderBottom: isActive ? '3px solid #c97282' : '3px solid transparent', 
                        paddingBottom: '10px', 
                        cursor: 'pointer',
                        transition: 'all 0.15s',
@@ -2340,7 +2467,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 
                 {/* Column 1: Daily Agenda Timeline (50% width on Desktop) */}
                 <div style={{ flex: 1.5, background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '24px', minWidth: 0, width: '100%', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#4a3036', margin: '0 0 20px 0' }}>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 20px 0' }}>
                     Agenda del {selectedDate.toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'long' })}
                   </h3>
 
@@ -2437,7 +2564,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                             <div style={{ 
                               fontSize: '0.78rem', 
                               fontWeight: 800, 
-                              color: '#a07880', 
+                              color: '#a0909a', 
                               width: '65px', 
                               textAlign: 'right', 
                               paddingTop: '12px' 
@@ -2462,26 +2589,26 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                 <div style={{
                                   padding: '14px 18px',
                                   background: '#fff0f2',
-                                  border: '1px solid rgba(219, 140, 149, 0.15)',
+                                  border: '1px solid rgba(201, 114, 130, 0.15)',
                                   borderRadius: '16px',
                                   display: 'flex',
                                   justifyContent: 'space-between',
                                   alignItems: 'center',
-                                  boxShadow: '0 2px 8px rgba(219,140,149,0.03)'
+                                  boxShadow: '0 2px 8px rgba(201, 114, 130,0.03)'
                                 }}>
                                   <div>
-                                    <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#4a3036' }}>
+                                    <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#2d1b22' }}>
                                       {app.clients?.name || 'Cliente sin nombre'}
                                     </div>
-                                    <div style={{ fontSize: '0.7rem', color: '#a07880', marginTop: '3px', fontWeight: 600 }}>
+                                    <div style={{ fontSize: '0.7rem', color: '#a0909a', marginTop: '3px', fontWeight: 600 }}>
                                       {app.services?.name || 'Servicio General'} (1h 30m)
                                     </div>
                                   </div>
                                   <span style={{ 
                                     fontSize: '0.62rem', 
                                     fontWeight: 800, 
-                                    background: 'rgba(219,140,149,0.12)', 
-                                    color: '#db8c95', 
+                                    background: 'rgba(201, 114, 130,0.12)', 
+                                    color: '#c97282', 
                                     padding: '4px 10px', 
                                     borderRadius: '20px', 
                                     textTransform: 'uppercase',
@@ -2500,9 +2627,9 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                   display: 'flex',
                                   alignItems: 'center',
                                   gap: '10px',
-                                  color: '#a07880'
+                                  color: '#a0909a'
                                 }}>
-                                  <Coffee size={15} color="#db8c95" />
+                                  <Coffee size={15} color="#c97282" />
                                   <span style={{ fontSize: '0.78rem', fontWeight: 700 }}>Descanso</span>
                                 </div>
                               ) : (
@@ -2510,13 +2637,13 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                 <div style={{
                                   padding: '12px 18px',
                                   background: 'rgba(255, 255, 255, 0.5)',
-                                  border: '1px dashed rgba(219, 140, 149, 0.2)',
+                                  border: '1px dashed rgba(201, 114, 130, 0.2)',
                                   borderRadius: '16px',
                                   display: 'flex',
                                   justifyContent: 'space-between',
                                   alignItems: 'center'
                                 }}>
-                                  <span style={{ fontSize: '0.78rem', color: '#a07880', fontWeight: 650 }}>Disponible</span>
+                                  <span style={{ fontSize: '0.78rem', color: '#a0909a', fontWeight: 650 }}>Disponible</span>
                                   <button 
                                     onClick={() => {
                                       setScheduleModalPreset({ 
@@ -2527,8 +2654,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                     }}
                                     style={{
                                       width: '28px', height: '28px', borderRadius: '8px', border: 'none',
-                                      background: '#db8c95', color: '#fff', display: 'flex', alignItems: 'center',
-                                      justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(219,140,149,0.2)'
+                                      background: '#c97282', color: '#fff', display: 'flex', alignItems: 'center',
+                                      justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(201, 114, 130,0.2)'
                                     }}
                                     className="btn-hover-scale"
                                   >
@@ -2547,41 +2674,41 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 {/* Column 2: Performance Summary & Top Metrics (28% width on Desktop) */}
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
                   <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                    <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#4a3036', margin: '0 0 20px 0' }}>
+                    <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 20px 0' }}>
                       Resumen del día
                     </h3>
 
                     {/* Metrics grid */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px' }}>
-                      <div style={{ background: '#faf3f2', padding: '14px', borderRadius: '16px', border: '1px solid rgba(223,178,140,0.06)' }}>
-                        <div style={{ fontSize: '0.62rem', color: '#a07880', fontWeight: 700, textTransform: 'uppercase' }}>Citas programadas</div>
-                        <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#4a3036', marginTop: '4px' }}>
+                      <div style={{ background: '#fcf6f7', padding: '14px', borderRadius: '16px', border: '1px solid rgba(223,178,140,0.06)' }}>
+                        <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase' }}>Citas programadas</div>
+                        <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#2d1b22', marginTop: '4px' }}>
                           {getStaffMetrics(selectedStaffDrawer.id).citasCount}
                         </div>
                       </div>
-                      <div style={{ background: '#faf3f2', padding: '14px', borderRadius: '16px', border: '1px solid rgba(223,178,140,0.06)' }}>
-                        <div style={{ fontSize: '0.62rem', color: '#a07880', fontWeight: 700, textTransform: 'uppercase' }}>Citas completadas</div>
+                      <div style={{ background: '#fcf6f7', padding: '14px', borderRadius: '16px', border: '1px solid rgba(223,178,140,0.06)' }}>
+                        <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase' }}>Citas completadas</div>
                         <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#22c55e', marginTop: '4px' }}>
                           {getStaffMetrics(selectedStaffDrawer.id).citasCount}
                         </div>
                       </div>
-                      <div style={{ background: '#faf3f2', padding: '14px', borderRadius: '16px', border: '1px solid rgba(223,178,140,0.06)', gridColumn: 'span 2' }}>
-                        <div style={{ fontSize: '0.62rem', color: '#a07880', fontWeight: 700, textTransform: 'uppercase' }}>Ingresos generados</div>
-                        <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#db8c95', marginTop: '4px' }}>
+                      <div style={{ background: '#fcf6f7', padding: '14px', borderRadius: '16px', border: '1px solid rgba(223,178,140,0.06)', gridColumn: 'span 2' }}>
+                        <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase' }}>Ingresos generados</div>
+                        <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#c97282', marginTop: '4px' }}>
                           $ {getStaffMetrics(selectedStaffDrawer.id).revenue.toLocaleString()}
                         </div>
                       </div>
                       
                       {/* Occupancy with visual progress bar */}
-                      <div style={{ background: '#faf3f2', padding: '14px', borderRadius: '16px', border: '1px solid rgba(223,178,140,0.06)', gridColumn: 'span 2' }}>
+                      <div style={{ background: '#fcf6f7', padding: '14px', borderRadius: '16px', border: '1px solid rgba(223,178,140,0.06)', gridColumn: 'span 2' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: '0.62rem', color: '#a07880', fontWeight: 700, textTransform: 'uppercase' }}>Ocupación del día</span>
-                          <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#4a3036' }}>{getStaffMetrics(selectedStaffDrawer.id).occupancy}%</span>
+                          <span style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase' }}>Ocupación del día</span>
+                          <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#2d1b22' }}>{getStaffMetrics(selectedStaffDrawer.id).occupancy}%</span>
                         </div>
                         <div style={{ height: '6px', background: 'rgba(223, 178, 140, 0.15)', borderRadius: '3px', overflow: 'hidden', marginTop: '8px' }}>
-                          <div style={{ height: '100%', background: 'linear-gradient(90deg, #e8a2a9, #db8c95)', width: `${getStaffMetrics(selectedStaffDrawer.id).occupancy}%` }} />
+                          <div style={{ height: '100%', background: 'linear-gradient(90deg, #c48b9f, #c97282)', width: `${getStaffMetrics(selectedStaffDrawer.id).occupancy}%` }} />
                         </div>
-                        <div style={{ fontSize: '0.58rem', color: '#a07880', marginTop: '6px', fontWeight: 600 }}>Meta: 80%</div>
+                        <div style={{ fontSize: '0.58rem', color: '#a0909a', marginTop: '6px', fontWeight: 600 }}>Meta: 80%</div>
                       </div>
                     </div>
 
@@ -2591,14 +2718,14 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         <Clock size={16} />
                       </div>
                       <div>
-                        <div style={{ fontSize: '0.58rem', color: '#a07880', fontWeight: 700, textTransform: 'uppercase' }}>Tiempo libre entre citas</div>
-                        <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#d97706', marginTop: '2px' }}>1h 30m <span style={{ fontSize: '0.65rem', color: '#a07880', fontWeight: 500 }}>acumulado</span></div>
+                        <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase' }}>Tiempo libre entre citas</div>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#d97706', marginTop: '2px' }}>1h 30m <span style={{ fontSize: '0.65rem', color: '#a0909a', fontWeight: 500 }}>acumulado</span></div>
                       </div>
                     </div>
 
                     {/* Most sold services list */}
                     <div style={{ borderTop: '1px solid rgba(223, 178, 140, 0.12)', paddingTop: '16px' }}>
-                      <div style={{ fontSize: '0.68rem', color: '#a07880', fontWeight: 700, textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.3px' }}>
+                      <div style={{ fontSize: '0.68rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', marginBottom: '12px', letterSpacing: '0.3px' }}>
                         Servicios más vendidos hoy
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -2607,9 +2734,9 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                           { rank: 2, name: 'Extensiones Clásicas', qty: 1, rev: 28 },
                           { rank: 3, name: 'Retoque Clásico', qty: 1, rev: 6 }
                         ].map(srv => (
-                          <div key={srv.rank} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: '#4a3036', alignItems: 'center' }}>
-                            <span style={{ fontWeight: 650, color: '#4a3036' }}>{srv.rank}. {srv.name}</span>
-                            <span style={{ fontWeight: 800, color: '#db8c95' }}>{srv.qty} cita(s) · $ {srv.rev}</span>
+                          <div key={srv.rank} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: '#2d1b22', alignItems: 'center' }}>
+                            <span style={{ fontWeight: 650, color: '#2d1b22' }}>{srv.rank}. {srv.name}</span>
+                            <span style={{ fontWeight: 800, color: '#c97282' }}>{srv.qty} cita(s) · $ {srv.rev}</span>
                           </div>
                         ))}
                       </div>
@@ -2622,11 +2749,11 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   
                   {/* Next Client Card */}
                   <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                    <h3 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#a07880', margin: '0 0 14px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    <h3 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#a0909a', margin: '0 0 14px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                       Cliente Siguiente
                     </h3>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                      <div style={{ width: '42px', height: '42px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #db8c95', flexShrink: 0 }}>
+                      <div style={{ width: '42px', height: '42px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #c97282', flexShrink: 0 }}>
                         <img 
                           src={`https://api.dicebear.com/9.x/lorelei/svg?seed=Valentina&backgroundColor=f7d4d7`}
                           alt="Valentina Pérez"
@@ -2634,8 +2761,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         />
                       </div>
                       <div>
-                        <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#4a3036' }}>Valentina Pérez</div>
-                        <div style={{ fontSize: '0.68rem', color: '#a07880', fontWeight: 600 }}>0414 789 4563</div>
+                        <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#2d1b22' }}>Valentina Pérez</div>
+                        <div style={{ fontSize: '0.68rem', color: '#a0909a', fontWeight: 600 }}>0414 789 4563</div>
                       </div>
                     </div>
                     <button 
@@ -2644,8 +2771,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         window.location.hash = '#clients';
                       }}
                       style={{
-                        width: '100%', background: 'transparent', border: '1px solid rgba(219,140,149,0.25)',
-                        color: '#db8c95', padding: '8px', borderRadius: '10px', fontSize: '0.72rem',
+                        width: '100%', background: 'transparent', border: '1px solid rgba(201, 114, 130,0.25)',
+                        color: '#c97282', padding: '8px', borderRadius: '10px', fontSize: '0.72rem',
                         fontWeight: 700, cursor: 'pointer'
                       }}
                       className="btn-hover-scale"
@@ -2655,18 +2782,18 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   </div>
 
                   {/* Internal Notes container */}
-                  <div style={{ background: '#fff0f2', border: '1px solid rgba(219,140,149,0.12)', borderRadius: '24px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.01)' }}>
+                  <div style={{ background: '#fff0f2', border: '1px solid rgba(201, 114, 130,0.12)', borderRadius: '24px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.01)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                       <h3 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#a0506a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                         Notas rápidas
                       </h3>
-                      <Pencil size={12} color="#db8c95" style={{ cursor: 'pointer' }} />
+                      <Pencil size={12} color="#c97282" style={{ cursor: 'pointer' }} />
                     </div>
                     <textarea 
                       placeholder="Escribe notas de seguimiento..."
                       style={{
                         width: '100%', height: '70px', border: 'none',
-                        background: 'transparent', fontSize: '0.76rem', color: '#4a3036', outline: 'none',
+                        background: 'transparent', fontSize: '0.76rem', color: '#2d1b22', outline: 'none',
                         resize: 'none', fontWeight: 550, lineHeight: '1.4'
                       }}
                       defaultValue="Prefiere rizo C. Productos hipoalergénicos. No usar adhesivo fuerte."
@@ -2682,8 +2809,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       }}
                       style={{
                         width: '100%', padding: '12px', borderRadius: '12px', border: 'none',
-                        background: 'linear-gradient(135deg, #e8a2a9, #db8c95)', color: '#fff',
-                        fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 15px rgba(219,140,149,0.2)'
+                        background: 'linear-gradient(135deg, #c48b9f, #c97282)', color: '#fff',
+                        fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 15px rgba(201, 114, 130,0.2)'
                       }}
                       className="btn-hover-scale"
                     >
@@ -2695,8 +2822,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         setShowQuickAvailModal?.(true) || showToast?.('Abriendo disponibilidad...', 'info');
                       }}
                       style={{
-                        width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid rgba(219, 140, 149, 0.25)',
-                        background: '#fff', color: '#db8c95',
+                        width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid rgba(201, 114, 130, 0.25)',
+                        background: '#fff', color: '#c97282',
                         fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer'
                       }}
                       className="btn-hover-scale"
@@ -2711,7 +2838,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       }}
                       style={{
                         width: '100%', padding: '12px', borderRadius: '12px', border: 'none',
-                        background: 'rgba(74, 48, 54, 0.06)', color: '#4a3036',
+                        background: 'rgba(74, 48, 54, 0.06)', color: '#2d1b22',
                         fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer'
                       }}
                       className="btn-hover-scale"
@@ -2722,8 +2849,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
                   {/* Day Comparison widget */}
                   <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                    <h3 style={{ fontSize: '0.78rem', fontWeight: 800, color: '#a07880', margin: '0 0 14px 0', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
-                      Comparativo del día <br /><span style={{ fontSize: '0.62rem', color: '#a07880', fontWeight: 500, textTransform: 'none' }}>vs. día anterior</span>
+                    <h3 style={{ fontSize: '0.78rem', fontWeight: 800, color: '#a0909a', margin: '0 0 14px 0', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
+                      Comparativo del día <br /><span style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 500, textTransform: 'none' }}>vs. día anterior</span>
                     </h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                       {[
@@ -2737,7 +2864,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                             <span style={{ color: cmp.isUp ? '#16a34a' : '#dc2626', fontWeight: 850, marginRight: '6px' }}>
                               {cmp.isUp ? '↑' : '↓'} {cmp.pct}
                             </span>
-                            <span style={{ color: '#4a3036', fontWeight: 800 }}>{cmp.val}</span>
+                            <span style={{ color: '#2d1b22', fontWeight: 800 }}>{cmp.val}</span>
                           </div>
                         </div>
                       ))}
@@ -2752,44 +2879,44 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             {staffActiveTab === 'resumen' && (
               <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '24px', width: '100%' }} className="animate-fade-in">
                 <div style={{ flex: 2, background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#4a3036', margin: '0 0 20px 0' }}>Análisis de Rendimiento (Hoy)</h3>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 20px 0' }}>Análisis de Rendimiento (Hoy)</h3>
                   
                   {/* Visual Chart Bars Mockup */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', fontWeight: 700, color: '#4a3036', marginBottom: '6px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', fontWeight: 700, color: '#2d1b22', marginBottom: '6px' }}>
                         <span>Progreso de meta de ingresos diarios ($150.00)</span>
                         <span>{Math.min(100, Math.round((getStaffMetrics(selectedStaffDrawer.id).revenue / 150) * 100))}%</span>
                       </div>
-                      <div style={{ height: '14px', background: '#faf3f2', borderRadius: '10px', overflow: 'hidden' }}>
-                        <div style={{ height: '100%', background: 'linear-gradient(90deg, #db8c95, #e8a2a9)', width: `${Math.min(100, Math.round((getStaffMetrics(selectedStaffDrawer.id).revenue / 150) * 100))}%`, transition: 'width 0.8s ease' }} />
+                      <div style={{ height: '14px', background: '#fcf6f7', borderRadius: '10px', overflow: 'hidden' }}>
+                        <div style={{ height: '100%', background: 'linear-gradient(90deg, #c97282, #c48b9f)', width: `${Math.min(100, Math.round((getStaffMetrics(selectedStaffDrawer.id).revenue / 150) * 100))}%`, transition: 'width 0.8s ease' }} />
                       </div>
                     </div>
 
                     <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', fontWeight: 700, color: '#4a3036', marginBottom: '6px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', fontWeight: 700, color: '#2d1b22', marginBottom: '6px' }}>
                         <span>Tiempo activo trabajando (Horas de Servicio)</span>
                         <span>{(getStaffMetrics(selectedStaffDrawer.id).citasCount * 1.5).toFixed(1)} hrs / 8 hrs turno</span>
                       </div>
-                      <div style={{ height: '14px', background: '#faf3f2', borderRadius: '10px', overflow: 'hidden' }}>
+                      <div style={{ height: '14px', background: '#fcf6f7', borderRadius: '10px', overflow: 'hidden' }}>
                         <div style={{ height: '100%', background: 'linear-gradient(90deg, #16a34a, #22c55e)', width: `${(getStaffMetrics(selectedStaffDrawer.id).citasCount * 1.5 / 8) * 100}%`, transition: 'width 0.8s ease' }} />
                       </div>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginTop: '20px' }}>
                       <div style={{ border: '1px solid rgba(223,178,140,0.15)', borderRadius: '16px', padding: '16px', textAlign: 'center' }}>
-                        <span style={{ fontSize: '0.62rem', color: '#a07880', fontWeight: 700, textTransform: 'uppercase' }}>Ticket Promedio</span>
-                        <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#4a3036', marginTop: '4px' }}>
+                        <span style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase' }}>Ticket Promedio</span>
+                        <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#2d1b22', marginTop: '4px' }}>
                           $ {getStaffMetrics(selectedStaffDrawer.id).citasCount > 0 ? Math.round(getStaffMetrics(selectedStaffDrawer.id).revenue / getStaffMetrics(selectedStaffDrawer.id).citasCount) : 0}
                         </div>
                       </div>
                       <div style={{ border: '1px solid rgba(223,178,140,0.15)', borderRadius: '16px', padding: '16px', textAlign: 'center' }}>
-                        <span style={{ fontSize: '0.62rem', color: '#a07880', fontWeight: 700, textTransform: 'uppercase' }}>Eficiencia</span>
+                        <span style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase' }}>Eficiencia</span>
                         <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#22c55e', marginTop: '4px' }}>96%</div>
                       </div>
                       <div style={{ border: '1px solid rgba(223,178,140,0.15)', borderRadius: '16px', padding: '16px', textAlign: 'center' }}>
-                        <span style={{ fontSize: '0.62rem', color: '#a07880', fontWeight: 700, textTransform: 'uppercase' }}>Retención Clientes</span>
-                        <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#db8c95', marginTop: '4px' }}>88%</div>
+                        <span style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase' }}>Retención Clientes</span>
+                        <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#c97282', marginTop: '4px' }}>88%</div>
                       </div>
                     </div>
                   </div>
@@ -2798,8 +2925,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 {/* Right Side: Quick info */}
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '20px' }}>
                   <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                    <h4 style={{ margin: '0 0 10px 0', fontSize: '0.85rem', color: '#a07880', fontWeight: 750 }}>PRODUCTIVIDAD SEMANAL</h4>
-                    <p style={{ fontSize: '0.78rem', color: '#4a3036', lineHeight: '1.4' }}>Isabella se encuentra en el <strong>top 3 de productividad</strong> de esta semana en el salón, logrando cubrir el 92% de sus horarios habilitados con citas completadas.</p>
+                    <h4 style={{ margin: '0 0 10px 0', fontSize: '0.85rem', color: '#a0909a', fontWeight: 750 }}>PRODUCTIVIDAD SEMANAL</h4>
+                    <p style={{ fontSize: '0.78rem', color: '#2d1b22', lineHeight: '1.4' }}>Isabella se encuentra en el <strong>top 3 de productividad</strong> de esta semana en el salón, logrando cubrir el 92% de sus horarios habilitados con citas completadas.</p>
                   </div>
                 </div>
               </div>
@@ -2814,13 +2941,13 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   { name: 'Retoque Clásico', duration: '45 min', price: '$ 6.00', qty: 1, icon: '🌸' }
                 ].map((srv, idx) => (
                   <div key={idx} style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.15)', borderRadius: '20px', padding: '20px', display: 'flex', gap: '14px', alignItems: 'center', boxShadow: '0 4px 15px rgba(74,48,54,0.02)' }}>
-                    <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(219,140,149,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>
+                    <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(201, 114, 130,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>
                       {srv.icon}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <h4 style={{ margin: 0, fontSize: '0.88rem', fontWeight: 800, color: '#3d2b30' }}>{srv.name}</h4>
-                      <div style={{ fontSize: '0.68rem', color: '#a0868c', fontWeight: 650, marginTop: '2px' }}>{srv.duration} · {srv.price} c/u</div>
-                      <div style={{ fontSize: '0.72rem', color: '#db8c95', fontWeight: 800, marginTop: '6px' }}>Completados hoy: {srv.qty}</div>
+                      <h4 style={{ margin: 0, fontSize: '0.88rem', fontWeight: 800, color: '#2d1b22' }}>{srv.name}</h4>
+                      <div style={{ fontSize: '0.68rem', color: '#a0909a', fontWeight: 650, marginTop: '2px' }}>{srv.duration} · {srv.price} c/u</div>
+                      <div style={{ fontSize: '0.72rem', color: '#c97282', fontWeight: 800, marginTop: '6px' }}>Completados hoy: {srv.qty}</div>
                     </div>
                   </div>
                 ))}
@@ -2830,7 +2957,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             {/* TAB CONTENT: HISTORIAL */}
             {staffActiveTab === 'historial' && (
               <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '24px', width: '100%', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }} className="animate-fade-in">
-                <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#4a3036', margin: '0 0 20px 0' }}>Historial del Día (Operación de Hoy)</h3>
+                <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 20px 0' }}>Historial del Día (Operación de Hoy)</h3>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', position: 'relative', paddingLeft: '20px', borderLeft: '2px solid rgba(223, 178, 140, 0.12)' }}>
                   {[
@@ -2840,9 +2967,9 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   ].map((item, idx) => (
                     <div key={idx} style={{ position: 'relative' }}>
                       {/* Timeline node dot */}
-                      <div style={{ position: 'absolute', left: '-25px', top: '4px', width: '8px', height: '8px', borderRadius: '50%', background: '#db8c95', border: '2px solid #fff', boxShadow: '0 0 0 3px rgba(219,140,149,0.15)' }} />
-                      <div style={{ fontSize: '0.65rem', color: '#a07880', fontWeight: 800 }}>{item.time}</div>
-                      <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#4a3036', marginTop: '2px' }}>{item.action}</div>
+                      <div style={{ position: 'absolute', left: '-25px', top: '4px', width: '8px', height: '8px', borderRadius: '50%', background: '#c97282', border: '2px solid #fff', boxShadow: '0 0 0 3px rgba(201, 114, 130,0.15)' }} />
+                      <div style={{ fontSize: '0.65rem', color: '#a0909a', fontWeight: 800 }}>{item.time}</div>
+                      <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#2d1b22', marginTop: '2px' }}>{item.action}</div>
                       <div style={{ fontSize: '0.7rem', color: '#8c767b', marginTop: '1px' }}>{item.details}</div>
                     </div>
                   ))}
@@ -2854,12 +2981,12 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             {staffActiveTab === 'notas' && (
               <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '24px', width: '100%' }} className="animate-fade-in">
                 <div style={{ flex: 1.5, background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#4a3036', margin: '0 0 16px 0' }}>Bloc de Notas Internas</h3>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 16px 0' }}>Bloc de Notas Internas</h3>
                   <textarea 
                     placeholder="Escribe notas generales sobre el desempeño, preferencias de materiales o avisos para esta especialista..."
                     style={{
                       width: '100%', height: '180px', border: '1px solid rgba(223,178,140,0.15)', borderRadius: '16px',
-                      background: '#faf6f5', padding: '16px', fontSize: '0.82rem', color: '#4a3036', outline: 'none',
+                      background: '#faf6f5', padding: '16px', fontSize: '0.82rem', color: '#2d1b22', outline: 'none',
                       resize: 'none', fontWeight: 550, lineHeight: '1.5'
                     }}
                     defaultValue="Nota de cabina: Isabella prefiere utilizar el adhesivo de secado rápido (0.5s) en cabinas con humedad controlada de 50%. En el turno de tarde, requiere asistencia de recepción para la preparación de pestañas pre-armadas."
@@ -2869,9 +2996,9 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       onClick={() => showToast?.('Notas guardadas correctamente', 'success')}
                       style={{
                         padding: '10px 24px', borderRadius: '12px', border: 'none',
-                        background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)',
+                        background: 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)',
                         color: '#ffffff', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer',
-                        boxShadow: '0 4px 12px rgba(219, 140, 149, 0.2)'
+                        boxShadow: '0 4px 12px rgba(201, 114, 130, 0.2)'
                       }}
                       className="btn-hover-scale"
                     >
@@ -2881,9 +3008,9 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 </div>
 
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                  <div style={{ background: '#fff0f2', border: '1px solid rgba(219,140,149,0.12)', borderRadius: '24px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.01)' }}>
+                  <div style={{ background: '#fff0f2', border: '1px solid rgba(201, 114, 130,0.12)', borderRadius: '24px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.01)' }}>
                     <h4 style={{ margin: '0 0 10px 0', fontSize: '0.85rem', color: '#a0506a', fontWeight: 750 }}>RECORDATORIO</h4>
-                    <p style={{ fontSize: '0.78rem', color: '#4a3036', lineHeight: '1.4' }}>Las notas son privadas y solo visibles para administradoras y dueñas del salón en esta consola de CRM.</p>
+                    <p style={{ fontSize: '0.78rem', color: '#2d1b22', lineHeight: '1.4' }}>Las notas son privadas y solo visibles para administradoras y dueñas del salón en esta consola de CRM.</p>
                   </div>
                 </div>
               </div>
@@ -2930,16 +3057,16 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               {/* Header */}
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid rgba(223, 178, 140, 0.15)', paddingBottom: '14px' }}>
-                  <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#3d2b30', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '-0.3px' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#db8c95' }}>
+                  <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#2d1b22', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '-0.3px' }}>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c97282' }}>
                       <CalendarIcon size={16} />
                     </div>
-                    Detalle del <span style={{ color: '#db8c95' }}>Turno</span>
+                    Detalle del <span style={{ color: '#c97282' }}>Turno</span>
                   </h4>
                   <button 
                     onClick={triggerCloseDetailedApp}
                     style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'rgba(74,48,54,0.05)', border: 'none', color: '#8c767b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', transition: 'all 0.2s' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(219,140,149,0.12)'; e.currentTarget.style.color = '#db8c95'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(201, 114, 130,0.12)'; e.currentTarget.style.color = '#c97282'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'rgba(74,48,54,0.05)'; e.currentTarget.style.color = '#8c767b'; }}
                   >
                     ✕
@@ -2959,9 +3086,9 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       style={{ width: '46px', height: '46px', borderRadius: '50%', backgroundColor: '#fff0f2', border: '2px solid #fff' }} 
                     />
                     <div>
-                      <div style={{ fontSize: '0.62rem', color: '#a0868c', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Clienta</div>
-                      <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#3d2b30' }}>{selectedDetailedApp.clients?.name || 'Cliente'}</div>
-                      <div style={{ fontSize: '0.74rem', color: '#db8c95', fontWeight: 600, marginTop: '1px' }}>{selectedDetailedApp.clients?.phone || 'Sin número'}</div>
+                      <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Clienta</div>
+                      <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#2d1b22' }}>{selectedDetailedApp.clients?.name || 'Cliente'}</div>
+                      <div style={{ fontSize: '0.74rem', color: '#c97282', fontWeight: 600, marginTop: '1px' }}>{selectedDetailedApp.clients?.phone || 'Sin número'}</div>
                     </div>
                   </div>
 
@@ -2972,13 +3099,13 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   }}>
                     {/* Service Row */}
                     <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                      <div style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#db8c95', border: '1px solid rgba(223,178,140,0.2)', flexShrink: 0 }}>
+                      <div style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c97282', border: '1px solid rgba(223,178,140,0.2)', flexShrink: 0 }}>
                         <Scissors size={14} />
                       </div>
                       <div>
-                        <div style={{ fontSize: '0.58rem', color: '#a0868c', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Servicio contratado</div>
-                        <div style={{ fontSize: '0.8rem', fontWeight: 850, color: '#3d2b30', marginTop: '1px' }}>{selectedDetailedApp.services?.name || 'Servicio'}</div>
-                        <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#db8c95', marginTop: '2px' }}>${Number(selectedDetailedApp.total_price || selectedDetailedApp.services?.price || 0).toFixed(2)}</div>
+                        <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Servicio contratado</div>
+                        <div style={{ fontSize: '0.8rem', fontWeight: 850, color: '#2d1b22', marginTop: '1px' }}>{selectedDetailedApp.services?.name || 'Servicio'}</div>
+                        <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#c97282', marginTop: '2px' }}>${Number(selectedDetailedApp.total_price || selectedDetailedApp.services?.price || 0).toFixed(2)}</div>
                       </div>
                     </div>
 
@@ -2992,9 +3119,9 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#fff', border: '1px solid rgba(223,178,140,0.2)', objectFit: 'cover' }} 
                       />
                       <div>
-                        <div style={{ fontSize: '0.58rem', color: '#a0868c', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Profesional a cargo</div>
-                        <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#3d2b30', marginTop: '1px' }}>{staffNameOnly}</div>
-                        <div style={{ fontSize: '0.68rem', color: '#a0868c', fontWeight: 600 }}>{staffRoleOnly}</div>
+                        <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Profesional a cargo</div>
+                        <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#2d1b22', marginTop: '1px' }}>{staffNameOnly}</div>
+                        <div style={{ fontSize: '0.68rem', color: '#a0909a', fontWeight: 600 }}>{staffRoleOnly}</div>
                       </div>
                     </div>
                   </div>
@@ -3007,7 +3134,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: '0.72rem', color: '#8c767b', fontWeight: 600 }}>Fecha:</span>
-                      <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#3d2b30', textTransform: 'capitalize' }}>{formattedDate}</span>
+                      <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#2d1b22', textTransform: 'capitalize' }}>{formattedDate}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: '0.72rem', color: '#8c767b', fontWeight: 600 }}>Hora reservada:</span>
@@ -3032,10 +3159,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       padding: '14px', 
                       borderRadius: '16px', 
                       border: '1.5px solid rgba(223, 178, 140, 0.12)', 
-                      borderLeft: '4px solid #db8c95' 
+                      borderLeft: '4px solid #c97282' 
                     }}>
                       <span style={{ fontWeight: 800, color: '#6b4a52', display: 'block', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Notas o Comentarios:</span>
-                      <span style={{ color: '#4a3036', fontStyle: 'italic', fontSize: '0.74rem', lineHeight: '1.4', display: 'block' }}>"{selectedDetailedApp.notes}"</span>
+                      <span style={{ color: '#2d1b22', fontStyle: 'italic', fontSize: '0.74rem', lineHeight: '1.4', display: 'block' }}>"{selectedDetailedApp.notes}"</span>
                     </div>
                   )}
                 </div>
@@ -3193,7 +3320,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             gap: '2px',
             animation: 'fadeIn 0.12s ease-out'
           }}>
-            <div style={{ padding: '6px 8px', fontSize: '0.62rem', fontWeight: 700, color: '#a07880', borderBottom: '1px solid #f5ebe8', marginBottom: '4px' }}>
+            <div style={{ padding: '6px 8px', fontSize: '0.62rem', fontWeight: 700, color: '#a0909a', borderBottom: '1px solid #f5ebe8', marginBottom: '4px' }}>
               ⚡ Acciones: {quickContextMenu.app.clients?.name || 'Cita'}
             </div>
             
@@ -3222,7 +3349,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     style={{
                       padding: '5px 8px', fontSize: '0.68rem', textAlign: 'left', border: 'none', borderRadius: '6px',
                       background: isCurrent ? 'rgba(232, 162, 169, 0.15)' : 'transparent',
-                      color: isCurrent ? '#a0506a' : '#4a3036', fontWeight: isCurrent ? 750 : 500, cursor: 'pointer',
+                      color: isCurrent ? '#a0506a' : '#2d1b22', fontWeight: isCurrent ? 750 : 500, cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between'
                     }}
                     className="btn-hover-scale"
@@ -3267,7 +3394,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               }}
               style={{
                 padding: '6px 8px', fontSize: '0.68rem', textAlign: 'left', border: 'none', borderRadius: '6px',
-                background: 'transparent', color: '#db8c95', fontWeight: 650, cursor: 'pointer',
+                background: 'transparent', color: '#c97282', fontWeight: 650, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: '6px'
               }}
               className="btn-hover-scale"
@@ -3338,7 +3465,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               padding: '5px 8px 6px 8px', 
               fontSize: '0.58rem', 
               fontWeight: 800, 
-              color: '#db8c95', 
+              color: '#c97282', 
               borderBottom: '1px solid #fcf7f6', 
               marginBottom: '3px',
               textTransform: 'uppercase',
@@ -3378,8 +3505,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     textAlign: 'left',
                     border: 'none',
                     borderRadius: '10px',
-                    background: isCurrent ? 'rgba(219, 140, 149, 0.08)' : 'transparent',
-                    color: isCurrent ? '#db8c95' : '#4a3036',
+                    background: isCurrent ? 'rgba(201, 114, 130, 0.08)' : 'transparent',
+                    color: isCurrent ? '#c97282' : '#2d1b22',
                     fontWeight: isCurrent ? 800 : 600,
                     cursor: 'pointer',
                     display: 'flex',
@@ -3393,15 +3520,15 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     e.currentTarget.style.color = st.color;
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = isCurrent ? 'rgba(219, 140, 149, 0.08)' : 'transparent';
-                    e.currentTarget.style.color = isCurrent ? '#db8c95' : '#4a3036';
+                    e.currentTarget.style.background = isCurrent ? 'rgba(201, 114, 130, 0.08)' : 'transparent';
+                    e.currentTarget.style.color = isCurrent ? '#c97282' : '#2d1b22';
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '14px', height: '14px', flexShrink: 0 }}>
                     {st.icon}
                   </div>
                   <span style={{ flex: 1 }}>{st.label}</span>
-                  {isCurrent && <span style={{ fontSize: '0.62rem', color: '#db8c95', fontWeight: 900 }}>✓</span>}
+                  {isCurrent && <span style={{ fontSize: '0.62rem', color: '#c97282', fontWeight: 900 }}>✓</span>}
                 </button>
               );
             })}

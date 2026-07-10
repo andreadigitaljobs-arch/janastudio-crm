@@ -53,7 +53,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 table, th, td { color: inherit; }
@@ -452,7 +452,7 @@ html, body {
 }
 
 .salon-form-title {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Manrope', sans-serif;
   font-size: 1.45rem;
   font-weight: 500;
   color: #4a3036;
@@ -1850,7 +1850,7 @@ input:focus { outline: none; }
   border-radius: 16px;
   box-shadow: 0 10px 25px -5px rgba(74, 48, 54, 0.15);
   padding: 14px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Manrope', sans-serif;
   animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
