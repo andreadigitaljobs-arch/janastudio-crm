@@ -85,7 +85,24 @@ function App() {
   const [hideSidebar, setHideSidebar] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const [showFabHint, setShowFabHint] = useState(false);
   const { isModalOpen } = useModal();
+
+  useEffect(() => {
+    if (!isMobile || !user) return;
+    if (localStorage.getItem('jana_fab_hint_seen')) return;
+    const showTimer = setTimeout(() => setShowFabHint(true), 600);
+    const hideTimer = setTimeout(() => {
+      setShowFabHint(false);
+      localStorage.setItem('jana_fab_hint_seen', 'true');
+    }, 5600);
+    return () => { clearTimeout(showTimer); clearTimeout(hideTimer); };
+  }, [isMobile, user]);
+
+  const dismissFabHint = () => {
+    setShowFabHint(false);
+    localStorage.setItem('jana_fab_hint_seen', 'true');
+  };
 
   const allMenuItems = useMemo(() => [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
@@ -657,12 +674,19 @@ function App() {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'flex-end',
+            justifyContent: 'center',
             flexShrink: 0,
           }}>
+            {showFabHint && (
+              <div className="mobile-fab-hint" onClick={dismissFabHint}>
+                Toca aquí para agendar una cita ✨
+                <div className="mobile-fab-hint-arrow" />
+              </div>
+            )}
             <div className="mobile-fab-ring" />
             <button
               onClick={() => {
+                dismissFabHint();
                 if (activeTab !== 'scheduling') {
                   handleTabChange('scheduling', {});
                   setTimeout(() => window.dispatchEvent(new CustomEvent('jana:open-new-appointment')), 100);
@@ -676,7 +700,6 @@ function App() {
             >
               <Plus size={28} strokeWidth={2.5} />
             </button>
-            <span className="mobile-fab-label">Agendar</span>
           </div>
 
           {/* Clientes */}
