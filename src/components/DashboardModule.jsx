@@ -1257,11 +1257,11 @@ const DashboardModule = ({
           background: 'linear-gradient(90deg, rgba(252,249,248,0.97) 0%, rgba(253,243,244,0.88) 45%, rgba(251,230,235,0.2) 80%)',
           borderRadius: '28px', zIndex: 1
         }} />
-        <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '45%', padding: '36px 48px', height: '100%', justifyContent: 'center' }}>
-          <h2 style={{ fontSize: '1.9rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0, lineHeight: '1.2' }}>
+        <div className="dashboard-hero-text" style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', gap: '10px', padding: '36px 48px', height: '100%', justifyContent: 'center' }}>
+          <h2 style={{ fontSize: 'clamp(1.25rem, 2.2vw, 1.9rem)', fontWeight: '700', color: 'var(--text-primary)', margin: 0, lineHeight: '1.2', textWrap: 'balance' }}>
             Bienvenida de nuevo, {(!user || user.role?.toLowerCase().includes('admin')) ? 'Jana' : (user.name?.split(' ')[0] || 'Jana')} <span style={{ color: '#c97282' }}>♡</span>
           </h2>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '500', margin: 0, lineHeight: 1.5 }}>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '500', margin: 0, lineHeight: 1.5, textWrap: 'balance' }}>
             Aquí tienes un resumen de tu estudio hoy.
           </p>
           <button

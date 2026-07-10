@@ -2321,6 +2321,26 @@ input:focus { outline: none; }
   }
 }
 
+/* Hero banner welcome text: give it more of the banner's width as the
+   screen narrows, so "Bienvenida de nuevo, Jana" and the subtitle don't
+   leave a lone word stranded on its own line. */
+.dashboard-hero-text {
+  max-width: 60%;
+}
+
+@media (max-width: 1300px) {
+  .dashboard-hero-text {
+    max-width: 72%;
+    padding: 28px 32px !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboard-hero-text {
+    max-width: 85%;
+  }
+}
+
 /* Columna de Estado (Libres, Ocupadas, Fuera de Horario) */
 .staff-status-column {
   background: rgba(255, 255, 255, 0.45);
