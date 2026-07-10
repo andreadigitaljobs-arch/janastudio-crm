@@ -1,23 +1,46 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 
 const slides = [
   {
-    image: '/assets/onboarding/slide1.png',
-    title: 'Tu estudio, en la palma de tu mano.',
+    image: '/assets/onboarding/desktop1.png',
+    mobileImage: '/assets/onboarding/mobile1.png',
+    desktopDark: ['Tu estudio,', 'en la palma de'],
+    titleLine1: 'Tu estudio, en la',
+    titlePrefix: 'palma de ',
+    titleAccent: 'tu mano.',
     subtitle: 'Bienvenida al nuevo sistema de gestión de Jana Studio. Todo lo que necesitas, ahora en un solo lugar.',
   },
   {
-    image: '/assets/onboarding/slide2.png',
-    title: 'Control total de tus citas.',
+    image: '/assets/onboarding/desktop2.png',
+    mobileImage: '/assets/onboarding/mobile2.png',
+    desktopDark: ['Control total de'],
+    titleLine1: 'Control total',
+    titlePrefix: 'de ',
+    titleAccent: 'tus citas.',
     subtitle: 'Organiza tu agenda, revisa tus comisiones y bríndale la mejor experiencia de lujo a cada clienta.',
   },
   {
-    image: '/assets/onboarding/slide3.png',
-    title: 'Eleva el nivel de tu trabajo.',
+    image: '/assets/onboarding/desktop3.png',
+    mobileImage: '/assets/onboarding/mobile3.png',
+    desktopDark: ['Eleva el nivel de'],
+    titleLine1: 'Eleva el nivel',
+    titlePrefix: 'de ',
+    titleAccent: 'tu trabajo.',
     subtitle: 'Diseñado exclusivamente para el equipo de Jana Studio. Inicia sesión y comencemos a brillar.',
   }
 ];
+
+function renderSubtitle(text) {
+  const parts = text.split('Jana Studio');
+  if (parts.length === 1) return text;
+  return parts.map((part, i) => (
+    <React.Fragment key={i}>
+      {part}
+      {i < parts.length - 1 && <strong className="onboarding-subtitle-strong">Jana Studio</strong>}
+    </React.Fragment>
+  ));
+}
 
 export default function OnboardingModule({ onComplete }) {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -46,16 +69,21 @@ export default function OnboardingModule({ onComplete }) {
           position: fixed;
           inset: 0;
           z-index: 9999;
-          background: #fcf9f8;
+          background: #f1e9e3;
           display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
           overflow: hidden;
         }
 
-        .onboarding-image-panel {
-          flex: 1;
+        .onboarding-card {
           position: relative;
-          background: #fcf9f8;
-          display: flex;
+          width: 100%;
+          height: 100%;
+          border-radius: 36px;
+          overflow: hidden;
+          box-shadow: 0 40px 100px rgba(61, 27, 34, 0.18);
           opacity: 0;
           animation: fadeImageIn 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
@@ -63,7 +91,7 @@ export default function OnboardingModule({ onComplete }) {
         @keyframes fadeImageIn {
           0% {
             opacity: 0;
-            transform: scale(1.05);
+            transform: scale(1.02);
           }
           100% {
             opacity: 1;
@@ -92,70 +120,94 @@ export default function OnboardingModule({ onComplete }) {
           opacity: 1;
         }
 
-        .onboarding-gradient {
-          display: none;
-        }
-
-        .onboarding-content-panel {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          padding: 40px;
-          position: relative;
+        .onboarding-logo {
+          position: absolute;
+          top: 5%;
+          left: 6%;
+          width: clamp(120px, 11vw, 180px);
+          height: auto;
           z-index: 10;
         }
 
+        .onboarding-content-panel {
+          position: absolute;
+          left: 6%;
+          right: 44%;
+          top: 0;
+          bottom: 0;
+          padding-top: clamp(140px, 22%, 240px);
+          padding-bottom: 40px;
+          z-index: 10;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: flex-start;
+        }
+
         .onboarding-content-inner {
-          max-width: 450px;
-          text-align: center;
+          max-width: 560px;
+          text-align: left;
+        }
+
+        .onboarding-title-mobile {
+          display: none;
         }
 
         .onboarding-title {
           font-family: 'Playfair Display', Georgia, serif;
-          font-size: 3.5rem;
+          font-size: clamp(2.9rem, 4.6vw, 4.1rem);
           letter-spacing: -1px;
           color: #2d1b22;
           font-weight: 800;
-          line-height: 1.1;
-          margin-bottom: 20px;
+          line-height: 1.16;
+          margin-bottom: 0;
           opacity: 0;
           transform: translateY(20px);
           animation: fadeUp 0.6s forwards 0.2s;
         }
 
-        .onboarding-eyebrow {
-          font-family: 'Manrope', sans-serif;
-          font-size: 0.75rem;
-          letter-spacing: 5px;
+        .onboarding-title-accent {
           color: #c97282;
-          font-weight: 700;
-          text-transform: uppercase;
-          display: block;
-          margin-bottom: 15px;
+        }
+
+        .onboarding-divider {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin: 20px 0 24px 0;
           opacity: 0;
           transform: translateY(20px);
-          animation: fadeUp 0.6s forwards 0.1s;
+          animation: fadeUp 0.6s forwards 0.25s;
+        }
+
+        .onboarding-divider-line {
+          width: 44px;
+          height: 1px;
+          background: rgba(201, 114, 130, 0.35);
         }
 
         .onboarding-subtitle {
-          font-size: 1.15rem;
+          font-size: clamp(1.15rem, 1.35vw, 1.4rem);
           color: #7a6065;
           line-height: 1.6;
-          font-weight: 300;
-          max-width: 380px;
-          margin: 0 auto 50px auto;
+          font-weight: 400;
+          max-width: 460px;
+          margin: 0 0 34px 0;
           opacity: 0;
           transform: translateY(20px);
           animation: fadeUp 0.6s forwards 0.3s;
         }
 
+        .onboarding-subtitle-strong {
+          font-weight: 800;
+          color: #2d1b22;
+        }
+
         .onboarding-controls {
           display: flex;
           flex-direction: column;
-          align-items: center;
-          gap: 40px;
+          align-items: flex-start;
+          gap: 20px;
           opacity: 0;
           transform: translateY(20px);
           animation: fadeUp 0.6s forwards 0.4s;
@@ -164,18 +216,20 @@ export default function OnboardingModule({ onComplete }) {
         .onboarding-dots {
           display: flex;
           gap: 8px;
+          order: 2;
         }
 
         .onboarding-dot {
-          width: 15px;
-          height: 3px;
-          border-radius: 2px;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
           background: #e8cac5;
           transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .onboarding-dot.active {
-          width: 35px;
+          width: 11px;
+          height: 11px;
           background: #c97282;
         }
 
@@ -185,7 +239,7 @@ export default function OnboardingModule({ onComplete }) {
           border: none;
           padding: 18px 45px;
           border-radius: 100px;
-          font-size: 1.1rem;
+          font-size: clamp(1.05rem, 1.1vw, 1.2rem);
           font-weight: 700;
           display: flex;
           align-items: center;
@@ -193,6 +247,7 @@ export default function OnboardingModule({ onComplete }) {
           cursor: pointer;
           box-shadow: 0 10px 25px rgba(212, 160, 154, 0.4);
           transition: transform 0.3s, box-shadow 0.3s;
+          order: 1;
         }
 
         .onboarding-btn:hover {
@@ -207,62 +262,152 @@ export default function OnboardingModule({ onComplete }) {
           }
         }
 
+        .onboarding-mobile-images { display: none; }
+        .onboarding-subtitle-strong { font-weight: 800; }
+        .onboarding-scrim { display: none; }
+
         /* Mobile specific styles */
         @media (max-width: 900px) {
           .onboarding-wrapper {
-            flex-direction: column;
+            padding: 0;
+            background: #fcf9f8;
           }
-          
-          .onboarding-image-panel {
+
+          .onboarding-card {
+            border-radius: 0;
+            box-shadow: none;
+          }
+
+          .onboarding-images { display: none; }
+
+          .onboarding-mobile-images {
+            display: block;
             position: absolute;
             inset: 0;
-            height: 65vh; /* Limit image height to allow solid cream at bottom */
+            width: 100%;
+            height: 100%;
+          }
+
+          .onboarding-mobile-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            opacity: 0;
+            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          }
+
+          .onboarding-mobile-img.active {
+            opacity: 1;
+          }
+
+          .onboarding-logo {
+            top: calc(24px + env(safe-area-inset-top, 0px));
+            left: 24px;
+            width: 92px;
           }
 
           .onboarding-content-panel {
             position: absolute;
-            inset: 0;
+            left: 0;
+            right: 0;
+            top: auto;
+            bottom: 0;
+            transform: none;
+            max-width: none;
             justify-content: flex-end;
-            padding: 30px 20px 50px 20px;
-            background: transparent;
+            align-items: center;
+            padding: 30px 24px calc(28px + env(safe-area-inset-bottom, 0px)) 24px;
           }
 
-          .onboarding-gradient {
+          .onboarding-content-inner {
+            max-width: 450px;
+            text-align: center;
+          }
+
+          .onboarding-title-mobile {
             display: block;
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to bottom, rgba(252,249,248,0) 0%, rgba(252,249,248,0) 75%, rgba(252,249,248,0.9) 90%, #fcf9f8 100%);
-            z-index: 5;
+          }
+
+          .onboarding-title-desktop {
+            display: none;
           }
 
           .onboarding-title {
             color: #2d1b22;
-            font-size: 2.2rem;
+            font-size: clamp(1.9rem, 4.6vw, 2.35rem);
             text-shadow: none;
+            text-wrap: balance;
+          }
+
+          .onboarding-divider {
+            justify-content: center;
+            margin: 14px 0 18px;
+          }
+
+          .onboarding-divider-line {
+            width: 34px;
           }
 
           .onboarding-subtitle {
             color: #7a6065;
             text-shadow: none;
             font-weight: 500;
+            max-width: 380px;
+            margin: 0 auto 0 auto;
+          }
+
+          .onboarding-controls {
+            align-items: center;
+            gap: 40px;
+          }
+
+          .onboarding-dots {
+            gap: 7px;
+            order: 1;
           }
 
           .onboarding-dot {
-            background: #e8cac5;
+            width: 7px;
+            height: 7px;
           }
-          
+
           .onboarding-dot.active {
-            background: #c97282;
+            width: 10px;
+            height: 10px;
           }
-          
+
           .onboarding-btn {
             width: 100%;
             justify-content: center;
+            order: 2;
+          }
+        }
+
+        /* iPad / tablet portrait only — crop the photo higher to free up room for bigger text */
+        @media (min-width: 700px) and (max-width: 900px) {
+          .onboarding-mobile-img {
+            object-position: center 22%;
+          }
+
+          .onboarding-title {
+            font-size: clamp(2.6rem, 5.8vw, 3.1rem);
+          }
+
+          .onboarding-subtitle {
+            font-size: 1.25rem;
+          }
+
+          .onboarding-btn {
+            font-size: 1.2rem;
+            padding: 20px 45px;
           }
         }
       `}</style>
 
-      <div className="onboarding-image-panel">
+      <div className="onboarding-card">
         <div className="onboarding-images">
           {slides.map((slide, index) => (
             <img
@@ -273,29 +418,58 @@ export default function OnboardingModule({ onComplete }) {
             />
           ))}
         </div>
-        <div className="onboarding-gradient" />
-      </div>
+        <div className="onboarding-mobile-images">
+          {slides.map((slide, index) => (
+            <img
+              key={index}
+              src={slide.mobileImage}
+              alt="Jana Studio"
+              className={`onboarding-mobile-img ${index === currentSlide ? 'active' : ''}`}
+            />
+          ))}
+        </div>
+        <img src="/logo.png" alt="Jana Studio" className="onboarding-logo" />
+        <div className="onboarding-scrim" />
 
-      <div className="onboarding-content-panel">
-        <div className="onboarding-content-inner" key={currentSlide}>
-          <span className="onboarding-eyebrow">Jana Studio</span>
-          <h1 className="onboarding-title">{slides[currentSlide].title}</h1>
-          <p className="onboarding-subtitle">{slides[currentSlide].subtitle}</p>
-          
-          <div className="onboarding-controls">
-            <div className="onboarding-dots">
-              {slides.map((_, index) => (
-                <div
-                  key={index}
-                  className={`onboarding-dot ${index === currentSlide ? 'active' : ''}`}
-                />
+        <div className="onboarding-content-panel">
+          <div className="onboarding-content-inner" key={currentSlide}>
+            <h1 className="onboarding-title onboarding-title-desktop">
+              {slides[currentSlide].desktopDark.map((line, i) => (
+                <React.Fragment key={i}>
+                  {line}
+                  <br />
+                </React.Fragment>
               ))}
+              <span className="onboarding-title-accent">{slides[currentSlide].titleAccent}</span>
+            </h1>
+            <h1 className="onboarding-title onboarding-title-mobile">
+              {slides[currentSlide].titleLine1}{' '}
+              <span className="onboarding-title-accent">{slides[currentSlide].titlePrefix}{slides[currentSlide].titleAccent}</span>
+            </h1>
+
+            <div className="onboarding-divider">
+              <span className="onboarding-divider-line" />
+              <Sparkles size={13} color="#c97282" />
+              <span className="onboarding-divider-line" />
             </div>
-            
-            <button className="onboarding-btn" onClick={handleNext}>
-              {currentSlide === slides.length - 1 ? 'Empezar' : 'Siguiente'}
-              <ArrowRight size={20} />
-            </button>
+
+            <p className="onboarding-subtitle">{renderSubtitle(slides[currentSlide].subtitle)}</p>
+
+            <div className="onboarding-controls">
+              <div className="onboarding-dots">
+                {slides.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`onboarding-dot ${index === currentSlide ? 'active' : ''}`}
+                  />
+                ))}
+              </div>
+
+              <button className="onboarding-btn" onClick={handleNext}>
+                {currentSlide === slides.length - 1 ? 'Empezar' : 'Siguiente'}
+                <ArrowRight size={20} />
+              </button>
+            </div>
           </div>
         </div>
       </div>
