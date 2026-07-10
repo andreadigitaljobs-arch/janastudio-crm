@@ -1252,7 +1252,7 @@ const ScheduleModal = ({
                   {!isEditMode && currentStep === 5 && (
                      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', animation: 'fadeInUp 0.4s ease-out' }}>
                        <div style={{ textAlign: 'center', marginBottom: '4px' }}>
-                         <div style={{ width: '60px', height: '60px', borderRadius: '20px', backgroundColor: '#e2fbe9', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#16a34a', boxShadow: '0 8px 20px rgba(22,163,74,0.15)' }}>
+                         <div style={{ width: '60px', height: '60px', borderRadius: '20px', background: 'linear-gradient(135deg, #fffcfb 0%, #fff2f4 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', color: '#c97282', boxShadow: '0 8px 24px rgba(201,114,130,0.15)', border: '1px solid rgba(201,114,130,0.2)' }}>
                            <Check size={28} strokeWidth={2.5} />
                          </div>
                          <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#2d1b22' }}>Resumen de la Cita</h3>
@@ -1261,7 +1261,7 @@ const ScheduleModal = ({
 
                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                           <div style={{ padding: '14px 16px', background: '#ffffff', borderRadius: '18px', border: '1px solid rgba(223, 178, 140, 0.18)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                           <div style={{ padding: '14px 16px', background: '#ffffff', borderRadius: '18px', border: '1px solid rgba(201, 114, 130, 0.12)', boxShadow: '0 4px 16px rgba(74,48,54,0.02)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
                                <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(201, 114, 130,0.1)', color: '#c97282', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem', flexShrink: 0 }}>
                                  {localClient?.name?.charAt(0).toUpperCase() || 'C'}
@@ -1271,12 +1271,12 @@ const ScheduleModal = ({
                                  <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#2d1b22', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{localClient?.name}</div>
                                </div>
                              </div>
-                             <button onClick={() => setCurrentStep(1)} style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(201, 114, 130,0.06)', border: 'none', color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', flexShrink: 0 }} title="Editar clienta">
+                             <button onClick={() => setCurrentStep(1)} style={{ width: '28px', height: '28px', borderRadius: '8px', background: '#fff2f4', border: '1px solid rgba(201,114,130,0.15)', color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', flexShrink: 0 }} title="Editar clienta">
                                <Pen size={12} />
                              </button>
                            </div>
 
-                           <div style={{ padding: '14px 16px', background: '#ffffff', borderRadius: '18px', border: '1px solid rgba(223, 178, 140, 0.18)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                           <div style={{ padding: '14px 16px', background: '#ffffff', borderRadius: '18px', border: '1px solid rgba(201, 114, 130, 0.12)', boxShadow: '0 4px 16px rgba(74,48,54,0.02)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
                                <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(201, 114, 130,0.1)', color: '#c97282', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                  <Calendar size={16} />
@@ -1288,7 +1288,7 @@ const ScheduleModal = ({
                                  </div>
                                </div>
                              </div>
-                             <button onClick={() => setCurrentStep(3)} style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(201, 114, 130,0.06)', border: 'none', color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', flexShrink: 0 }} title="Editar fecha">
+                             <button onClick={() => setCurrentStep(3)} style={{ width: '28px', height: '28px', borderRadius: '8px', background: '#fff2f4', border: '1px solid rgba(201,114,130,0.15)', color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', flexShrink: 0 }} title="Editar fecha">
                                <Pen size={12} />
                              </button>
                            </div>
@@ -1306,14 +1306,14 @@ const ScheduleModal = ({
                              return (
                                <div key={svc._uid} style={{
                                  background: '#ffffff',
-                                 border: '1px solid rgba(223, 178, 140, 0.18)',
+                                 border: '1px solid rgba(201, 114, 130, 0.12)',
                                  borderRadius: '16px',
-                                 padding: '12px 16px',
+                                 padding: '14px 18px',
                                  display: 'flex',
                                  justifyContent: 'space-between',
                                  alignItems: 'center',
                                  gap: '16px',
-                                 boxShadow: '0 2px 8px rgba(74,48,54,0.01)'
+                                 boxShadow: '0 4px 12px rgba(74,48,54,0.02)'
                                }}>
                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0, flex: 1 }}>
                                    <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#2d1b22' }}>{svc.name}</div>
@@ -1329,7 +1329,7 @@ const ScheduleModal = ({
                                          {getStaffDisplayName(staffObj)} · <span style={{ color: '#c97282', fontWeight: 700 }}>{getDisplayTime(svc.time)}</span>
                                        </span>
                                      </div>
-                                     <button onClick={() => setCurrentStep(4)} style={{ width: '22px', height: '22px', borderRadius: '6px', background: 'rgba(201, 114, 130,0.04)', border: 'none', color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', flexShrink: 0 }} title="Reasignar especialista u hora">
+                                     <button onClick={() => setCurrentStep(4)} style={{ width: '24px', height: '24px', borderRadius: '8px', background: '#fff2f4', border: '1px solid rgba(201,114,130,0.15)', color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', flexShrink: 0 }} title="Reasignar especialista u hora">
                                        <Pen size={9} />
                                      </button>
                                    </div>
@@ -1343,20 +1343,20 @@ const ScheduleModal = ({
                          </div>
 
                          <div style={{
-                           marginTop: '8px',
-                           padding: '16px 20px',
+                           marginTop: '12px',
+                           padding: '20px 24px',
                            borderRadius: '20px',
-                           background: 'linear-gradient(135deg, #fffcfb 0%, #fff2f4 100%)',
-                           border: '1.5px dashed rgba(201, 114, 130,0.25)',
+                           background: 'linear-gradient(135deg, #2d1b22 0%, #4a2c37 100%)',
+                           boxShadow: '0 12px 30px rgba(45,27,34,0.25)',
                            display: 'flex',
                            justifyContent: 'space-between',
                            alignItems: 'center'
                          }}>
                            <div>
-                             <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0909a', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Valor Total</div>
-                             <div style={{ fontSize: '0.68rem', color: '#c97282', fontWeight: 700, marginTop: '2px' }}>{selectedServices.length} servicios</div>
+                             <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>Valor Total</div>
+                             <div style={{ fontSize: '0.75rem', color: '#e8cac5', fontWeight: 600, marginTop: '4px' }}>{selectedServices.length} {selectedServices.length === 1 ? 'servicio' : 'servicios'}</div>
                            </div>
-                           <div style={{ fontSize: '1.6rem', fontWeight: 950, color: '#c97282', letterSpacing: '-0.5px' }}>
+                           <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.5px' }}>
                              ${cartTotal.toFixed(2)}
                            </div>
                          </div>
