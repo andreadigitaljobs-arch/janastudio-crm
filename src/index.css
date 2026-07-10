@@ -396,10 +396,10 @@ html, body {
 
 .salon-login-form-wrapper {
   width: 100%;
-  max-width: 420px;
+  max-width: clamp(420px, 24vw, 620px);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: clamp(24px, 1.6vw, 36px);
   position: relative;
   z-index: 5;
   opacity: 0;
@@ -437,7 +437,7 @@ html, body {
 }
 
 .salon-logo-image {
-  max-width: 180px;
+  max-width: clamp(180px, 11vw, 260px);
   width: 75%;
   object-fit: contain;
   filter: drop-shadow(0 2px 8px rgba(167, 102, 115, 0.08));
@@ -459,7 +459,7 @@ html, body {
 
 .salon-form-title {
   font-family: 'Manrope', sans-serif;
-  font-size: 1.45rem;
+  font-size: clamp(1.45rem, 1.3vw, 2.1rem);
   font-weight: 500;
   color: #4a3036;
   margin: 0;
@@ -479,7 +479,7 @@ html, body {
 
 .salon-form-subtitle {
   color: #8c767b;
-  font-size: 0.85rem;
+  font-size: clamp(0.85rem, 0.8vw, 1.15rem);
   line-height: 1.4;
   margin: 0;
   font-weight: 400;
@@ -535,12 +535,12 @@ html, body {
 
 .salon-field-input {
   width: 100%;
-  padding: 18px 16px 18px 48px;
+  padding: clamp(18px, 1.1vw, 24px) 16px clamp(18px, 1.1vw, 24px) 48px;
   border-radius: 14px;
   border: none;
   background: transparent;
   color: #4a3036;
-  font-size: 0.92rem;
+  font-size: clamp(0.92rem, 0.85vw, 1.15rem);
   transition: all 0.2s ease;
   position: relative;
   z-index: 1;
@@ -575,7 +575,7 @@ html, body {
 
 .salon-field-label {
   display: block;
-  font-size: 0.82rem;
+  font-size: clamp(0.82rem, 0.7vw, 1.05rem);
   font-weight: 600;
   color: #6b4a52;
   text-align: left;
@@ -613,13 +613,13 @@ html, body {
 
 /* ── SUBMIT BUTTON: Premium with Ripple ── */
 .salon-submit-button {
-  padding: 15px;
+  padding: clamp(15px, 1vw, 22px);
   border-radius: 14px;
   border: none;
   background: linear-gradient(135deg, #e8a2a9 0%, #db8c95 50%, #c97282 100%);
   background-size: 200% 200%;
   color: white;
-  font-size: 0.95rem;
+  font-size: clamp(0.95rem, 0.85vw, 1.2rem);
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -725,8 +725,8 @@ html, body {
 }
 
 .salon-decorative-icon-wrapper {
-  width: 48px;
-  height: 48px;
+  width: clamp(48px, 3vw, 68px);
+  height: clamp(48px, 3vw, 68px);
   border-radius: 14px;
   background: linear-gradient(135deg, rgba(232,162,169,0.08) 0%, rgba(223,178,140,0.08) 100%);
   border: 1px solid rgba(223, 178, 140, 0.2);
@@ -751,13 +751,13 @@ html, body {
 }
 
 .salon-decorative-label {
-  font-size: 11px;
+  font-size: clamp(11px, 0.6vw, 15px);
   font-weight: 600;
   color: #6b4a52;
 }
 
 .salon-decorative-sub {
-  font-size: 10px;
+  font-size: clamp(10px, 0.55vw, 13px);
   color: #a07880;
   font-weight: 400;
 }
