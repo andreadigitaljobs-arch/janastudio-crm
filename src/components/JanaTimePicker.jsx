@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Clock, ChevronUp, ChevronDown } from 'lucide-react';
 
 /**
@@ -6,7 +7,9 @@ import { Clock, ChevronUp, ChevronDown } from 'lucide-react';
  */
 const JanaTimePicker = ({ value, onChange, label = "", variant = "dark", placement = "bottom" }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [dropdownStyle, setDropdownStyle] = useState({});
   const containerRef = useRef(null);
+  const triggerRef = useRef(null);
   const inputRef = useRef(null);
   const isLight = variant === 'light';
 
@@ -68,12 +71,45 @@ const JanaTimePicker = ({ value, onChange, label = "", variant = "dark", placeme
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (containerRef.current && !containerRef.current.contains(event.target)) {
+        // Also check if clicked inside portal dropdown
+        const portalEl = document.getElementById('jana-timepicker-portal');
+        if (portalEl && portalEl.contains(event.target)) return;
         setIsOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Calculate fixed placement dropdown coordinates
+  useEffect(() => {
+    if (isOpen && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const dropdownH = 160; // Approximate height of the scroll container
+      const margin = 20;
+
+      if (spaceBelow >= dropdownH + margin) {
+        // Normal open downward
+        setDropdownStyle({
+          position: 'fixed',
+          top: rect.bottom + 8,
+          left: rect.left + rect.width - 210, // Align right with the trigger
+          zIndex: 9999999,
+          transformOrigin: 'top right'
+        });
+      } else {
+        // Open upward
+        setDropdownStyle({
+          position: 'fixed',
+          bottom: window.innerHeight - rect.top + 8,
+          left: rect.left + rect.width - 210, // Align right with the trigger
+          zIndex: 9999999,
+          transformOrigin: 'bottom right'
+        });
+      }
+    }
+  }, [isOpen]);
 
   // Format typing (mask "XX:XX AM" or "XX:XX PM")
   const handleInputChange = (e) => {
@@ -120,13 +156,67 @@ const JanaTimePicker = ({ value, onChange, label = "", variant = "dark", placeme
 
   // Display hour representation
   const displayHour = hours === '00' ? '12' : (parseInt(hours) > 12 ? (parseInt(hours) - 12).toString().padStart(2, '0') : hours);
-  const isTop = placement === 'top';
+
+  const dropdown = isOpen ? (
+    <div 
+      id="jana-timepicker-portal"
+      className="animate-scale-in" 
+      style={{
+        ...dropdownStyle,
+        backgroundColor: isLight ? 'rgba(255, 255, 255, 0.98)' : 'rgba(28, 28, 30, 0.95)',
+        backdropFilter: 'blur(20px)',
+        border: isLight ? '1px solid rgba(196, 139, 159, 0.22)' : '1.5px solid rgba(196, 139, 159, 0.3)',
+        borderRadius: '24px',
+        padding: '20px',
+        display: 'flex',
+        gap: '20px',
+        alignItems: 'center',
+        boxShadow: isLight ? '0 18px 45px rgba(93, 57, 67, 0.18)' : '0 20px 40px rgba(0,0,0,0.6)',
+        animation: 'scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
+      }}
+    >
+      {/* Hours */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+        <button type="button" onClick={() => adjustHour(1)} style={{ ...scrollBtnStyle, color: isLight ? '#c97282' : scrollBtnStyle.color }}><ChevronUp size={20} /></button>
+        <div style={{ ...timeValueStyle, color: isLight ? 'var(--text-primary)' : timeValueStyle.color }}>{displayHour}</div>
+        <button type="button" onClick={() => adjustHour(-1)} style={{ ...scrollBtnStyle, color: isLight ? '#c97282' : scrollBtnStyle.color }}><ChevronDown size={20} /></button>
+      </div>
+
+      <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--pink-primary)', marginTop: '-4px' }}>:</div>
+
+      {/* Minutes */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+        <button type="button" onClick={() => adjustMinute(5)} style={{ ...scrollBtnStyle, color: isLight ? '#c97282' : scrollBtnStyle.color }}><ChevronUp size={20} /></button>
+        <div style={{ ...timeValueStyle, color: isLight ? 'var(--text-primary)' : timeValueStyle.color }}>{minutes}</div>
+        <button type="button" onClick={() => adjustMinute(-5)} style={{ ...scrollBtnStyle, color: isLight ? '#c97282' : scrollBtnStyle.color }}><ChevronDown size={20} /></button>
+      </div>
+
+      {/* AM/PM Toggle */}
+      <div
+        onClick={toggleAmPm}
+        style={{
+          backgroundColor: 'rgba(196, 139, 159, 0.1)',
+          padding: '10px 14px',
+          borderRadius: '12px',
+          color: 'var(--pink-primary)',
+          fontWeight: '900',
+          fontSize: '14px',
+          cursor: 'pointer',
+          border: '1px solid rgba(196,139,159,0.2)',
+          marginLeft: '10px'
+        }}
+      >
+        {ampm}
+      </div>
+    </div>
+  ) : null;
 
   return (
     <div ref={containerRef} style={{ position: 'relative', width: '100%' }}>
       {label && <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</label>}
       
       <div
+        ref={triggerRef}
         style={{
           height: '48px',
           background: isLight ? 'linear-gradient(135deg, #fff 0%, #fff8fa 100%)' : 'rgba(255, 255, 255, 0.05)',
@@ -183,60 +273,7 @@ const JanaTimePicker = ({ value, onChange, label = "", variant = "dark", placeme
         />
       </div>
 
-      {isOpen && (
-        <div className="animate-scale-in" style={{
-          position: 'absolute',
-          bottom: isTop ? '58px' : 'auto',
-          top: isTop ? 'auto' : '60px',
-          right: 0,
-          backgroundColor: isLight ? 'rgba(255, 255, 255, 0.98)' : 'rgba(28, 28, 30, 0.95)',
-          backdropFilter: 'blur(20px)',
-          border: isLight ? '1px solid rgba(196, 139, 159, 0.22)' : '1.5px solid rgba(196, 139, 159, 0.3)',
-          borderRadius: '24px',
-          padding: '20px',
-          zIndex: 1000,
-          display: 'flex',
-          gap: '20px',
-          alignItems: 'center',
-          boxShadow: isLight ? '0 18px 45px rgba(93, 57, 67, 0.18)' : '0 20px 40px rgba(0,0,0,0.6)',
-          animation: 'scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
-          transformOrigin: isTop ? 'bottom right' : 'top right'
-        }}>
-          {/* Hours */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-            <button type="button" onClick={() => adjustHour(1)} style={{ ...scrollBtnStyle, color: isLight ? '#c97282' : scrollBtnStyle.color }}><ChevronUp size={20} /></button>
-            <div style={{ ...timeValueStyle, color: isLight ? 'var(--text-primary)' : timeValueStyle.color }}>{displayHour}</div>
-            <button type="button" onClick={() => adjustHour(-1)} style={{ ...scrollBtnStyle, color: isLight ? '#c97282' : scrollBtnStyle.color }}><ChevronDown size={20} /></button>
-          </div>
-
-          <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--pink-primary)', marginTop: '-4px' }}>:</div>
-
-          {/* Minutes */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-            <button type="button" onClick={() => adjustMinute(5)} style={{ ...scrollBtnStyle, color: isLight ? '#c97282' : scrollBtnStyle.color }}><ChevronUp size={20} /></button>
-            <div style={{ ...timeValueStyle, color: isLight ? 'var(--text-primary)' : timeValueStyle.color }}>{minutes}</div>
-            <button type="button" onClick={() => adjustMinute(-5)} style={{ ...scrollBtnStyle, color: isLight ? '#c97282' : scrollBtnStyle.color }}><ChevronDown size={20} /></button>
-          </div>
-
-          {/* AM/PM Toggle */}
-          <div
-            onClick={toggleAmPm}
-            style={{
-              backgroundColor: 'rgba(196, 139, 159, 0.1)',
-              padding: '10px 14px',
-              borderRadius: '12px',
-              color: 'var(--pink-primary)',
-              fontWeight: '900',
-              fontSize: '14px',
-              cursor: 'pointer',
-              border: '1px solid rgba(196,139,159,0.2)',
-              marginLeft: '10px'
-            }}
-          >
-            {ampm}
-          </div>
-        </div>
-      )}
+      {createPortal(dropdown, document.body)}
 
       <style>{`
         @keyframes scaleIn {
