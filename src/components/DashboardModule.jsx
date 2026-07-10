@@ -1462,9 +1462,9 @@ const DashboardModule = ({
           {/* Photo banner directly below progress bars */}
           <div
             onClick={() => onNavigate('services')}
+            className="dashboard-featured-photo"
             style={{
               width: '100%',
-              height: '140px',
               borderRadius: '20px',
               overflow: 'hidden',
               position: 'relative',
@@ -1482,7 +1482,7 @@ const DashboardModule = ({
               <img 
                 src="/peinado_maquillaje.png" 
                 alt="Adicional de Ondas" 
-                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 15%', filter: 'saturate(1.05)' }} 
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', filter: 'saturate(1.05)' }}
               />
               {/* Minimal fade — only on the left edge where photo meets text */}
               <div style={{ 
@@ -1588,7 +1588,7 @@ const DashboardModule = ({
         </div>
 
         {/* TOP ESPECIALISTAS + REPORTES */}
-        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '22px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', gap: '0' }}>
+        <div className="dashboard-specialists-card" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '22px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', gap: '0' }}>
           {/* Top Especialistas header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
             <h3 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>Top especialistas</h3>

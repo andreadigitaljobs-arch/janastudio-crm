@@ -2293,7 +2293,12 @@ input:focus { outline: none; }
 
 @media (max-width: 1300px) {
   .dashboard-main-row {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  /* Odd one out: let it take the full second row instead of leaving an
+     empty gap next to it. */
+  .dashboard-specialists-card {
+    grid-column: 1 / -1;
   }
 }
 
@@ -2338,6 +2343,22 @@ input:focus { outline: none; }
 @media (max-width: 900px) {
   .dashboard-hero-text {
     max-width: 85%;
+  }
+}
+
+/* "Más reservado" featured photo card: fixed at 140px tall, which was
+   tuned for the narrow 1-of-3-column layout. Once the row stacks to a
+   single full-width column below 1300px, that same height makes the
+   photo area extremely wide/short, forcing object-fit: cover to crop
+   away most of the vertical frame — cutting off the model's head.
+   Taller on narrow layouts keeps the crop reasonable. */
+.dashboard-featured-photo {
+  height: 140px;
+}
+
+@media (max-width: 1300px) {
+  .dashboard-featured-photo {
+    height: 200px;
   }
 }
 
