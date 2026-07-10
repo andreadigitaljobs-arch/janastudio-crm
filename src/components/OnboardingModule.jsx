@@ -266,8 +266,8 @@ export default function OnboardingModule({ onComplete }) {
         .onboarding-subtitle-strong { font-weight: 800; }
         .onboarding-scrim { display: none; }
 
-        /* Mobile specific styles — also applies to any portrait screen (e.g. iPad Pro 1024x1366) regardless of width */
-        @media (max-width: 900px), (orientation: portrait) and (max-width: 1366px) {
+        /* Mobile specific styles — any portrait screen, phone through iPad Pro. Landscape phones use the desktop side-by-side layout instead (see compact-landscape block below), since they're wide and short rather than tall and narrow. */
+        @media (orientation: portrait) and (max-width: 1366px) {
           .onboarding-wrapper {
             padding: 0;
             background: #fcf9f8;
@@ -436,6 +436,49 @@ export default function OnboardingModule({ onComplete }) {
 
           .onboarding-controls {
             gap: 20px;
+          }
+        }
+
+        /* Landscape phones (short + wide) — use the desktop side-by-side layout, but compacted to fit the short viewport height */
+        @media (orientation: landscape) and (max-height: 500px) {
+          .onboarding-logo {
+            top: 4%;
+            left: 4%;
+            width: clamp(70px, 8vw, 110px);
+          }
+
+          .onboarding-content-panel {
+            padding-top: 56px;
+            padding-bottom: 16px;
+          }
+
+          .onboarding-title {
+            font-size: clamp(1.4rem, 4vw, 2.1rem);
+            line-height: 1.1;
+          }
+
+          .onboarding-divider {
+            margin: 8px 0 10px;
+          }
+
+          .onboarding-divider-line {
+            width: 28px;
+          }
+
+          .onboarding-subtitle {
+            font-size: clamp(0.8rem, 1.8vw, 1rem);
+            max-width: 380px;
+            margin-bottom: 14px;
+            line-height: 1.4;
+          }
+
+          .onboarding-controls {
+            gap: 10px;
+          }
+
+          .onboarding-btn {
+            padding: 12px 28px;
+            font-size: clamp(0.85rem, 1.6vw, 1rem);
           }
         }
       `}</style>
