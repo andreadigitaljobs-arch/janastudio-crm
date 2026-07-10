@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Calendar as CalendarIcon, Search, Plus, CreditCard, Clock, User, ChevronRight, PlayCircle, Package } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, TrendingUp, Plus, Search, Filter, AlertCircle, X, ChevronRight, CheckCircle2, User, Trash2, CalendarClock, Package, PlayCircle } from 'lucide-react';
 import LaserPackageModal from './LaserPackageModal';
 import LaserSessionModal from './LaserSessionModal';
 import AnimatedModal from './AnimatedModal';
@@ -20,6 +20,26 @@ const LaserModule = ({ isMobile }) => {
   // New states for calendar mockups
   const [isBlockTimeOpen, setIsBlockTimeOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
+
+  const [calendarSlots, setCalendarSlots] = useState([
+    { time: '08:00 AM', status: 'available' },
+    { time: '09:00 AM', status: 'booked', client: 'María Fernández', package: 'Piernas + Brasilera', session: '4/8', debt: 0, tag: 'Al día', tagColor: '#16a34a' },
+    { time: '10:00 AM', status: 'available' },
+    { time: '11:00 AM', status: 'booked', client: 'Ana López', package: 'Axilas', session: '2/5', debt: 40, tag: 'Debe $40', tagColor: '#dc2626' },
+    { time: '12:00 PM', status: 'blocked', reason: 'Mantenimiento' },
+    { time: '01:00 PM', status: 'available' },
+    { time: '02:00 PM', status: 'available' },
+    { time: '03:00 PM', status: 'booked', client: 'Sofía Rodríguez', package: 'Cuerpo Completo', session: '1/10', debt: 0, tag: 'Al día', tagColor: '#16a34a' },
+    { time: '04:00 PM', status: 'available' },
+    { time: '05:00 PM', status: 'available' },
+    { time: '06:00 PM', status: 'available' },
+  ]);
+
+  const handleUnblock = (index) => {
+    const newSlots = [...calendarSlots];
+    newSlots[index] = { ...newSlots[index], status: 'available', reason: null };
+    setCalendarSlots(newSlots);
+  };
 
   const handlePrevDay = () => {
     setCurrentDate(prev => {
@@ -240,24 +260,12 @@ const LaserModule = ({ isMobile }) => {
 
               {/* Timeline slots dynamically generated */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1, paddingRight: '4px', overflowY: 'auto', maxHeight: isMobile ? 'none' : '500px' }}>
-                {[
-                  { time: '08:00 AM', status: 'available' },
-                  { time: '09:00 AM', status: 'booked', client: 'María Fernández', package: 'Piernas + Brasilera', session: '4/8', debt: 0, tag: 'Al día', tagColor: '#16a34a' },
-                  { time: '10:00 AM', status: 'available' },
-                  { time: '11:00 AM', status: 'booked', client: 'Ana López', package: 'Axilas', session: '2/5', debt: 40, tag: 'Debe $40', tagColor: '#dc2626' },
-                  { time: '12:00 PM', status: 'blocked', reason: 'Mantenimiento' },
-                  { time: '01:00 PM', status: 'available' },
-                  { time: '02:00 PM', status: 'available' },
-                  { time: '03:00 PM', status: 'booked', client: 'Sofía Rodríguez', package: 'Cuerpo Completo', session: '1/10', debt: 0, tag: 'Al día', tagColor: '#16a34a' },
-                  { time: '04:00 PM', status: 'available' },
-                  { time: '05:00 PM', status: 'available' },
-                  { time: '06:00 PM', status: 'available' },
-                ].map((slot, idx) => (
+                {calendarSlots.map((slot, idx) => (
                   <div key={idx} className="fade-in-stagger" style={{ display: 'flex', gap: '16px', alignItems: 'stretch' }}>
                     <div style={{ width: '70px', textAlign: 'right', fontSize: '0.85rem', fontWeight: 700, color: '#a0909a', paddingTop: '12px', flexShrink: 0 }}>{slot.time}</div>
                     
                     {slot.status === 'booked' && (
-                      <div className="hover-lift" style={{ flex: 1, background: slot.debt > 0 ? 'linear-gradient(135deg, #fff 0%, #fef2f2 100%)' : 'linear-gradient(135deg, #fff 0%, #fff0f2 100%)', borderRadius: '16px', padding: '16px', borderLeft: `4px solid ${slot.debt > 0 ? '#dc2626' : '#c97282'}`, boxShadow: `0 2px 10px ${slot.debt > 0 ? 'rgba(220,38,38,0.05)' : 'rgba(201,114,130,0.05)'}`, position: 'relative', overflow: 'hidden' }}>
+                      <div className="hover-lift booked-slot" style={{ flex: 1, background: slot.debt > 0 ? 'linear-gradient(135deg, #fff 0%, #fef2f2 100%)' : 'linear-gradient(135deg, #fff 0%, #fff0f2 100%)', borderRadius: '16px', padding: '16px', borderLeft: `4px solid ${slot.debt > 0 ? '#dc2626' : '#c97282'}`, boxShadow: `0 2px 10px ${slot.debt > 0 ? 'rgba(220,38,38,0.05)' : 'rgba(201,114,130,0.05)'}`, position: 'relative', overflow: 'hidden' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                           <div>
                             <div style={{ fontSize: '1rem', fontWeight: 800, color: '#2d1b22' }}>{slot.client}</div>
@@ -267,6 +275,33 @@ const LaserModule = ({ isMobile }) => {
                             </div>
                           </div>
                           <div style={{ background: '#fff', padding: '6px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 800, color: slot.tagColor, border: `1px solid ${slot.tagColor}33`, whiteSpace: 'nowrap', flexShrink: 0 }}>{slot.tag}</div>
+                        </div>
+                        
+                        {/* Hover Actions */}
+                        <div 
+                          className="unlock-overlay"
+                          style={{ position: 'absolute', inset: 0, background: 'rgba(255, 255, 255, 0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', transition: 'all 0.2s ease', backdropFilter: 'blur(2px)' }}
+                        >
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              alert('La funcionalidad de posponer cita abrirá el calendario principal.');
+                            }}
+                            className="btn-press"
+                            style={{ background: '#fff', border: '1px solid rgba(223, 178, 140, 0.5)', color: '#dfb28c', padding: '8px 16px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(223, 178, 140, 0.1)' }}
+                          >
+                            <CalendarClock size={16} /> Posponer
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleUnblock(idx);
+                            }}
+                            className="btn-press"
+                            style={{ background: '#fff', border: '1px solid rgba(201, 114, 130, 0.5)', color: '#c97282', padding: '8px 16px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(201, 114, 130, 0.1)' }}
+                          >
+                            <Trash2 size={16} /> Eliminar
+                          </button>
                         </div>
                       </div>
                     )}
@@ -284,8 +319,20 @@ const LaserModule = ({ isMobile }) => {
                     )}
               
                     {slot.status === 'blocked' && (
-                      <div style={{ flex: 1, background: '#f5f0f2', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0909a', fontSize: '0.85rem', fontWeight: 700, minHeight: '60px', border: '1px solid rgba(160, 144, 154, 0.1)' }}>
-                        Bloqueado: {slot.reason}
+                      <div 
+                        className="blocked-slot"
+                        style={{ flex: 1, background: '#f5f0f2', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0909a', fontSize: '0.85rem', fontWeight: 700, minHeight: '60px', border: '1px solid rgba(160, 144, 154, 0.1)', position: 'relative', overflow: 'hidden' }}
+                      >
+                        <span>Bloqueado: {slot.reason}</span>
+                        <div 
+                          className="unlock-overlay"
+                          onClick={() => handleUnblock(idx)}
+                          style={{ position: 'absolute', inset: 0, background: 'rgba(201, 114, 130, 0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.85rem', fontWeight: 800, cursor: 'pointer', transition: 'all 0.3s ease' }}
+                        >
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <X size={16} /> Desbloquear
+                          </span>
+                        </div>
                       </div>
                     )}
                   </div>
