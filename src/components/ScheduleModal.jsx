@@ -15,7 +15,8 @@ import {
   Trash2,
   Search,
   Zap,
-  Paintbrush
+  Paintbrush,
+  Pen
 } from 'lucide-react';
 import { GiEyelashes } from 'react-icons/gi';
 import { PiHairDryer } from 'react-icons/pi';
