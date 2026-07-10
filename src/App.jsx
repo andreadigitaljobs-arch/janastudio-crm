@@ -653,7 +653,7 @@ function App() {
           <div style={{
             position: 'relative',
             width: '72px',
-            height: '64px',
+            height: '54px',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
