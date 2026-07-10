@@ -356,7 +356,7 @@ export default function OnboardingModule({ onComplete }) {
             text-shadow: none;
             font-weight: 500;
             max-width: 380px;
-            margin: 0 auto 0 auto;
+            margin: 0 auto 22px auto;
           }
 
           .onboarding-controls {
@@ -425,7 +425,7 @@ export default function OnboardingModule({ onComplete }) {
           }
 
           .onboarding-subtitle {
-            margin-bottom: 0;
+            margin-bottom: 14px;
           }
 
           .onboarding-controls {
