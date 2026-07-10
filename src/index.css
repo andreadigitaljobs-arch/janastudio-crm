@@ -879,7 +879,7 @@ html, body {
 }
 
 /* ── TABLET: Layout optimizado ── */
-@media (min-width: 769px) and (max-width: 1024px), (max-width: 768px) and (min-aspect-ratio: 3/4) {
+@media (min-width: 600px) and (max-width: 1024px), (max-width: 768px) and (min-aspect-ratio: 3/4) {
   .salon-login-outer {
     padding: 20px;
   }
@@ -919,7 +919,7 @@ html, body {
 
 /* ── DISEÑO MOBILE: Foto arriba, tarjeta blanca abajo ── */
 /* Solo para pantallas altas/angostas; las "gruesas" (aspect ratio cuadrado) usan el diseño tablet de arriba */
-@media (max-width: 768px) and (max-aspect-ratio: 0.74) {
+@media (max-width: 599px) {
 
   .salon-login-outer {
     padding: 0;
