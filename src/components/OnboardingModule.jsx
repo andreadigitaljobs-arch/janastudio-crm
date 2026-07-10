@@ -415,8 +415,8 @@ export default function OnboardingModule({ onComplete }) {
           }
         }
 
-        /* Short phones (e.g. iPhone SE) — crop the photo higher so text has room and never touches the curve */
-        @media (max-height: 700px) and (orientation: portrait) {
+        /* Short/squarish portrait screens (e.g. iPhone SE, resized browser windows) — crop the photo higher so text has room and never touches the curve */
+        @media (max-height: 780px) and (orientation: portrait) {
           .onboarding-mobile-img {
             object-position: center 16%;
           }
@@ -475,7 +475,8 @@ export default function OnboardingModule({ onComplete }) {
               <span className="onboarding-title-accent">{slides[currentSlide].titleAccent}</span>
             </h1>
             <h1 className="onboarding-title onboarding-title-mobile">
-              {slides[currentSlide].titleLine1}{' '}
+              {slides[currentSlide].titleLine1}
+              <br />
               <span className="onboarding-title-accent">{slides[currentSlide].titlePrefix}{slides[currentSlide].titleAccent}</span>
             </h1>
 
