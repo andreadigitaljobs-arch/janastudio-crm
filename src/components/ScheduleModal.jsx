@@ -112,15 +112,36 @@ const ScheduleModal = ({
   const [localService, setLocalService] = useState(service || null);
   const [localStaff, setLocalStaff] = useState(initialStaff || null);
   const [availableSlots, setAvailableSlots] = useState([]);
+  const getDefaultTime = () => {
+    const now = new Date();
+    const startHour = 8;
+    const endHour = 20;
+    
+    let h = now.getHours();
+    let m = now.getMinutes();
+
+    if (m < 30) {
+      m = 30;
+    } else {
+      h += 1;
+      m = 0;
+    }
+
+    if (h < startHour) return `${startHour.toString().padStart(2, '0')}:00`;
+    if (h >= endHour) return '08:00'; // Default to morning if today is over
+
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+  };
+
   const [selectedSlot, setSelectedSlot] = useState(null);
-  const [customTime, setCustomTime] = useState('10:00');
+  const [customTime, setCustomTime] = useState(getDefaultTime());
   const [isCustomMode, setIsCustomMode] = useState(false);
   const [customConflict, setCustomConflict] = useState(null);
   const [dayAvailabilityCtx, setDayAvailabilityCtx] = useState({ schedules: [], timeOff: [], appointmentsForDay: [] });
 
   // ── Estado modo CREACIÓN (orden con varios servicios) ───────────────────
   const [selectedServices, setSelectedServices] = useState([]); // [{ _uid, service_id, name, price, duration_minutes, staffId, time, customized }]
-  const [generalTime, setGeneralTime] = useState('10:00');
+  const [generalTime, setGeneralTime] = useState(getDefaultTime());
   const [staffAvailability, setStaffAvailability] = useState({}); // { [staffId]: { schedules, timeOff, appointmentsForDay, dateKey } }
   const [serviceSearchQuery, setServiceSearchQuery] = useState('');
   const [serviceCategoryFilter, setServiceCategoryFilter] = useState('Todas');
