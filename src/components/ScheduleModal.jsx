@@ -497,16 +497,24 @@ const ScheduleModal = ({
   return createPortal(
     <AnimatedModal isOpen={isOpen}>
       {(overlayClass, cardClass) => (
-        <div className={`${overlayClass} jana-schedule-modal-overlay`} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(30, 30, 30, 0.45)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', zIndex: 20000, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: showSummaryPanel ? '24px' : '0', padding: '24px', animation: 'fadeIn 0.25s ease-out' }}>
-          <div className={`${cardClass} jana-schedule-modal-card`} style={{ width: modalSize.width, maxWidth: modalSize.maxWidth, flexShrink: 0, height: '90vh', maxHeight: '860px', backgroundColor: '#fcf8f7', borderRadius: '32px', boxShadow: '0 25px 60px rgba(74,48,54,0.2), 0 8px 24px rgba(0,0,0,0.06)', overflow: 'hidden', display: 'flex', flexDirection: 'column', animation: 'slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)', position: 'relative', transition: 'width 0.35s cubic-bezier(0.16, 1, 0.3, 1), max-width 0.35s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+        <div className={`${overlayClass} jana-schedule-modal-overlay`} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(30, 30, 30, 0.45)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', zIndex: 20000, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: showSummaryPanel ? '24px' : '0', padding: '24px', animation: overlayClass === 'modal-overlay-exit' ? 'fadeOutDown 0.32s cubic-bezier(0.4, 0, 1, 1) forwards' : 'fadeIn 0.25s ease-out' }}>
+          <div className={`${cardClass} jana-schedule-modal-card`} style={{ width: modalSize.width, maxWidth: modalSize.maxWidth, flexShrink: 0, height: '90vh', maxHeight: '860px', backgroundColor: '#fcf8f7', borderRadius: '32px', boxShadow: '0 25px 60px rgba(74,48,54,0.2), 0 8px 24px rgba(0,0,0,0.06)', overflow: 'hidden', display: 'flex', flexDirection: 'column', animation: cardClass === 'modal-card-exit' ? 'slideDown 0.32s cubic-bezier(0.4, 0, 1, 1) forwards' : 'slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)', position: 'relative', transition: 'width 0.35s cubic-bezier(0.16, 1, 0.3, 1), max-width 0.35s cubic-bezier(0.16, 1, 0.3, 1)' }}>
             <style>{`
               @keyframes fadeIn {
                 from { opacity: 0; }
                 to { opacity: 1; }
               }
+              @keyframes fadeOutDown {
+                from { opacity: 1; }
+                to { opacity: 0; }
+              }
               @keyframes slideUp {
                 from { transform: translateY(60px); opacity: 0; }
                 to { transform: translateY(0); opacity: 1; }
+              }
+              @keyframes slideDown {
+                from { transform: translateY(0) scale(1); opacity: 1; }
+                to { transform: translateY(90px) scale(0.88); opacity: 0; }
               }
               @keyframes slideInRight {
                 from { transform: translateX(80px); opacity: 0; }
