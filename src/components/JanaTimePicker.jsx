@@ -250,6 +250,8 @@ const JanaTimePicker = ({ value, onChange, label = "", variant = "dark", placeme
           ref={inputRef}
           type="text"
           value={textInput}
+          onClick={() => setIsOpen(true)}
+          onFocus={() => setIsOpen(true)}
           onChange={handleInputChange}
           placeholder="HH:MM AM"
           maxLength={8}

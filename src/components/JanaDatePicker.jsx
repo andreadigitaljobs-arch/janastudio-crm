@@ -417,6 +417,8 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
           type="text"
           placeholder={placeholder}
           value={textInput}
+          onClick={openCalendar}
+          onFocus={openCalendar}
           onChange={handleTextChange}
           onKeyDown={handleKeyDown}
           maxLength={10}
