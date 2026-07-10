@@ -906,47 +906,49 @@ const ScheduleModal = ({
                       </div>
 
                       {serviceCategories.length > 0 && (
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', paddingBottom: '2px', flexShrink: 0, animation: 'fadeInUp 0.4s ease-out 0.15s both' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '6px', paddingBottom: '2px', flexShrink: 0, animation: 'fadeInUp 0.4s ease-out 0.15s both' }}>
                           <button
                             onClick={() => setServiceCategoryFilter('Todas')}
                             style={{
-                              flexShrink: 0, padding: '8px 14px', borderRadius: '10px', cursor: 'pointer',
-                              fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap',
+                              padding: '8px 10px', borderRadius: '10px', cursor: 'pointer',
+                              fontSize: '0.7rem', fontWeight: 700, minWidth: 0,
                               background: serviceCategoryFilter === 'Todas' ? '#c97282' : '#faf3f2',
                               color: serviceCategoryFilter === 'Todas' ? '#fff' : '#a0506a',
                               border: '1px solid ' + (serviceCategoryFilter === 'Todas' ? '#c97282' : 'rgba(160,80,106,0.15)'),
                               transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                              transform: 'scale(1)',
                               display: 'flex',
                               alignItems: 'center',
+                              justifyContent: 'center',
                               gap: '5px'
                             }}
-                            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(201, 114, 130,0.2)'; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none'; }}
+                            onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 4px 12px rgba(201, 114, 130,0.2)'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
                           >
-                            <Zap size={14} style={{ color: 'inherit' }} /> Todas
+                            <span style={{ display: 'flex', flexShrink: 0 }}><Zap size={14} style={{ color: 'inherit' }} /></span>
+                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>Todas</span>
                           </button>
                           {serviceCategories.map((cat, idx) => (
                             <button
                               key={cat}
                               onClick={() => setServiceCategoryFilter(cat)}
                               style={{
-                                flexShrink: 0, padding: '8px 14px', borderRadius: '10px', cursor: 'pointer',
-                                fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap',
+                                padding: '8px 10px', borderRadius: '10px', cursor: 'pointer',
+                                fontSize: '0.7rem', fontWeight: 700, minWidth: 0,
                                 background: serviceCategoryFilter === cat ? '#c97282' : '#faf3f2',
                                 color: serviceCategoryFilter === cat ? '#fff' : '#a0506a',
                                 border: '1px solid ' + (serviceCategoryFilter === cat ? '#c97282' : 'rgba(160,80,106,0.15)'),
                                 transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                                transform: 'scale(1)',
                                 animation: `fadeInUp 0.4s ease-out ${0.2 + idx * 0.05}s both`,
                                 display: 'flex',
                                 alignItems: 'center',
+                                justifyContent: 'center',
                                 gap: '5px'
                               }}
-                              onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(201, 114, 130,0.2)'; }}
-                              onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = 'none'; }}
+                              onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 4px 12px rgba(201, 114, 130,0.2)'; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
                             >
-                              {getCategoryIcon(cat)} {cat}
+                              <span style={{ display: 'flex', flexShrink: 0 }}>{getCategoryIcon(cat)}</span>
+                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>{cat}</span>
                             </button>
                           ))}
                         </div>
@@ -973,15 +975,19 @@ const ScheduleModal = ({
                                 transform: 'translateY(0)',
                                 opacity: 1,
                                 width: '100%',
-                                minHeight: '52px'
+                                minHeight: '52px',
+                                position: 'relative',
+                                zIndex: 1
                               }}
                               onMouseEnter={(e) => {
                                 e.currentTarget.style.boxShadow = '0 4px 12px rgba(201, 114, 130,0.1)';
                                 e.currentTarget.style.borderColor = '#c97282';
+                                e.currentTarget.style.zIndex = 2;
                               }}
                               onMouseLeave={(e) => {
                                 e.currentTarget.style.boxShadow = 'none';
                                 e.currentTarget.style.borderColor = isSel ? '#c97282' : 'rgba(223,178,140,0.16)';
+                                e.currentTarget.style.zIndex = 1;
                               }}
                             >
                               {/* Category Icon */}
