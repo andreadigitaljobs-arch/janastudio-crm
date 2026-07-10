@@ -3,7 +3,7 @@ import {
   Users, Clock, Calendar, Sparkles, RefreshCw,
   Flower2, Plus, Star, ChevronRight,
   Percent, Scissors, DollarSign, Activity, Award,
-  Bell, ChevronDown, ShoppingBag, Package, UserPlus, BellRing, X
+  Bell, ChevronDown, Package, UserPlus, BellRing, X
 } from 'lucide-react';
 import {
   Chart as ChartJS, CategoryScale, LinearScale, PointElement,
@@ -891,115 +891,6 @@ const DashboardModule = ({
           </div>
         </div>
 
-        {/* Acciones Rápidas */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <h3 style={{
-            fontSize: '0.9rem',
-            fontWeight: '700',
-            color: 'var(--text-primary)',
-            margin: '4px 0 0 0'
-          }}>
-            Acciones rápidas
-          </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '10px' }}>
-            {/* Nueva Cita */}
-            <div 
-              onClick={() => onOpenSale()}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
-            >
-              <div style={{
-                width: '100%',
-                aspectRatio: '1',
-                borderRadius: '16px',
-                background: '#fdf2f3',
-                border: '1px solid rgba(160, 80, 106, 0.05)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#a0506a',
-                boxShadow: '0 4px 12px rgba(201, 114, 130, 0.04)'
-              }}>
-                <Calendar size={22} />
-              </div>
-              <span style={{ fontSize: '0.62rem', fontWeight: '600', color: 'var(--text-primary)', textAlign: 'center', whiteSpace: 'nowrap' }}>
-                Nueva cita
-              </span>
-            </div>
-
-            {/* Agregar Clienta */}
-            <div 
-              onClick={() => onNavigate('clients')}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
-            >
-              <div style={{
-                width: '100%',
-                aspectRatio: '1',
-                borderRadius: '16px',
-                background: '#fdf2f3',
-                border: '1px solid rgba(160, 80, 106, 0.05)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#a0506a',
-                boxShadow: '0 4px 12px rgba(201, 114, 130, 0.04)'
-              }}>
-                <UserPlus size={22} />
-              </div>
-              <span style={{ fontSize: '0.62rem', fontWeight: '600', color: 'var(--text-primary)', textAlign: 'center', whiteSpace: 'nowrap' }}>
-                Agregar clienta
-              </span>
-            </div>
-
-            {/* Punto de venta */}
-            <div 
-              onClick={() => onNavigate('checkout')}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
-            >
-              <div style={{
-                width: '100%',
-                aspectRatio: '1',
-                borderRadius: '16px',
-                background: '#fdf2f3',
-                border: '1px solid rgba(160, 80, 106, 0.05)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#a0506a',
-                boxShadow: '0 4px 12px rgba(201, 114, 130, 0.04)'
-              }}>
-                <ShoppingBag size={22} />
-              </div>
-              <span style={{ fontSize: '0.62rem', fontWeight: '600', color: 'var(--text-primary)', textAlign: 'center', whiteSpace: 'nowrap' }}>
-                Punto de venta
-              </span>
-            </div>
-
-            {/* Inventario */}
-            <div 
-              onClick={() => onNavigate('inventory')}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
-            >
-              <div style={{
-                width: '100%',
-                aspectRatio: '1',
-                borderRadius: '16px',
-                background: '#fdf2f3',
-                border: '1px solid rgba(160, 80, 106, 0.05)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#a0506a',
-                boxShadow: '0 4px 12px rgba(201, 114, 130, 0.04)'
-              }}>
-                <Package size={22} />
-              </div>
-              <span style={{ fontSize: '0.62rem', fontWeight: '600', color: 'var(--text-primary)', textAlign: 'center', whiteSpace: 'nowrap' }}>
-                Inventario
-              </span>
-            </div>
-          </div>
-        </div>
-
         {/* Top Servicios */}
         <div style={{
           background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)',
@@ -1419,7 +1310,7 @@ const DashboardModule = ({
       </div>
 
       {/* ── WIDGETS OPERATIVOS ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: isTablet ? 'repeat(2, minmax(0, 1fr))' : 'repeat(4, minmax(0, 1fr))', gap: '16px' }}>
+      <div className="dashboard-kpi-row">
         {/* Card 1: Citas del día */}
         <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', transition: 'all 0.3s ease' }}>
           <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'linear-gradient(135deg, #fdf3f4 0%, #fce8ec 100%)', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
@@ -1475,7 +1366,7 @@ const DashboardModule = ({
       </div>
 
       {/* ── MAIN CONTENT ROW: Agenda + Top Servicios + Top Especialistas (ALINEACIÓN STRETCH) ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: isTablet ? 'minmax(0, 1fr)' : 'repeat(3, minmax(0, 1fr))', gap: '16px', alignItems: 'stretch' }}>
+      <div className="dashboard-main-row">
 
         {/* AGENDA DE HOY */}
         <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '24px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
@@ -1807,7 +1698,7 @@ const DashboardModule = ({
             Ver todos <ChevronRight size={13} />
           </span>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: isTablet ? 'repeat(3, minmax(0, 1fr))' : 'repeat(6, minmax(0, 1fr))', gap: '14px' }}>
+        <div className="dashboard-services-row">
           {SERVICES_LIST.map((serv, idx) => (
             <div
               key={idx}

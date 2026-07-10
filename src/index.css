@@ -2280,6 +2280,47 @@ input:focus { outline: none; }
   }
 }
 
+/* Dashboard: Agenda de hoy + Top servicios + Top especialistas.
+   Driven by a real media query (not the JS isTablet flag, which only
+   covers up to 1024px) so it stacks on any iPad size, including
+   landscape orientations that are wider than that JS breakpoint. */
+.dashboard-main-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: stretch;
+}
+
+@media (max-width: 1300px) {
+  .dashboard-main-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.dashboard-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 1300px) {
+  .dashboard-kpi-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.dashboard-services-row {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 1300px) {
+  .dashboard-services-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 /* Columna de Estado (Libres, Ocupadas, Fuera de Horario) */
 .staff-status-column {
   background: rgba(255, 255, 255, 0.45);
