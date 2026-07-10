@@ -1,5 +1,5 @@
 // Service Worker para la PWA de Jana Studio CRM
-const CACHE_NAME = 'jana-studio-assets-v2';
+const CACHE_NAME = 'jana-studio-assets-v3';
 const ASSETS_TO_CACHE = [
   '/',
   '/favicon.webp',
@@ -44,10 +44,28 @@ self.addEventListener('fetch', (event) => {
   }
 
   const url = new URL(event.request.url);
-  
+
+  // El documento HTML siempre se pide primero a la red, para que las
+  // actualizaciones de la app se vean de inmediato en vez de servir una
+  // versión vieja cacheada. Solo se recurre a la caché si no hay conexión.
+  if (event.request.mode === 'navigate' || event.request.destination === 'document') {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
   // Solo interceptar peticiones del mismo origen para imágenes y recursos estáticos
-  const isStaticAsset = 
-    event.request.destination === 'image' || 
+  const isStaticAsset =
+    event.request.destination === 'image' ||
     ASSETS_TO_CACHE.includes(url.pathname) ||
     url.pathname.match(/\.(webp|png|jpg|jpeg|svg|css|js|woff2)$/);
 
