@@ -28,18 +28,11 @@ export default function Login() {
 
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const [config, setConfig] = useState({
-    0: { x: 60, y: 55 },
-    1: { x: 70, y: 50 },
-    2: { x: 10, y: 45 }
+  const [config] = useState({
+    0: { x: 80, y: 55 },
+    1: { x: 74, y: 50 },
+    2: { x: 59, y: 45 }
   });
-
-  const updateActiveConfig = useCallback((axis, value) => {
-    setConfig(prev => ({
-      ...prev,
-      [activeIndex]: { ...prev[activeIndex], [axis]: value }
-    }));
-  }, [activeIndex]);
 
   const { login } = useAuth();
 
@@ -56,12 +49,11 @@ export default function Login() {
   }, []);
 
   useEffect(() => {
-    if (showSettings) return; // pause carousel while adjusting photo position
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % images.length);
     }, 3800);
     return () => clearInterval(interval);
-  }, [showSettings]);
+  }, []);
 
   useEffect(() => {
     const nextImage = new Image();
@@ -205,41 +197,6 @@ export default function Login() {
                     <button onClick={() => setCardRadius(72)} className={cardRadius === 72 ? 'active' : ''}>72</button>
                     <button onClick={() => setCardRadius(100)} className={cardRadius === 100 ? 'active' : ''}>100</button>
                   </div>
-                </div>
-
-                <div className="salon-settings-row">
-                  <span className="salon-settings-label">
-                    Foto {activeIndex + 1} de {images.length} — X: {activeImageConfig.x}% · Y: {activeImageConfig.y}%
-                  </span>
-                  <div className="salon-settings-presets" style={{ marginBottom: 8 }}>
-                    {images.map((_, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setActiveIndex(i)}
-                        className={activeIndex === i ? 'active' : ''}
-                      >
-                        {i + 1}
-                      </button>
-                    ))}
-                  </div>
-                  <span className="salon-settings-label">Horizontal (X)</span>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={activeImageConfig.x}
-                    onChange={(e) => updateActiveConfig('x', Number(e.target.value))}
-                    className="salon-settings-slider"
-                  />
-                  <span className="salon-settings-label">Vertical (Y)</span>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={activeImageConfig.y}
-                    onChange={(e) => updateActiveConfig('y', Number(e.target.value))}
-                    className="salon-settings-slider"
-                  />
                 </div>
               </div>
             )}
