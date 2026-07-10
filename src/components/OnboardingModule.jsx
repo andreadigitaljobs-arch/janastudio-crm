@@ -266,8 +266,8 @@ export default function OnboardingModule({ onComplete }) {
         .onboarding-subtitle-strong { font-weight: 800; }
         .onboarding-scrim { display: none; }
 
-        /* Mobile specific styles */
-        @media (max-width: 900px) {
+        /* Mobile specific styles — also applies to any portrait screen (e.g. iPad Pro 1024x1366) regardless of width */
+        @media (max-width: 900px), (orientation: portrait) and (max-width: 1366px) {
           .onboarding-wrapper {
             padding: 0;
             background: #fcf9f8;
