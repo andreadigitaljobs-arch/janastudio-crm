@@ -125,6 +125,8 @@ const DashboardModule = ({
       // Map and sort upcoming appointments
       list = dbData.appointments
         .filter(apt => apt.status !== 'Completado' && apt.status !== 'Cancelado')
+        .slice()
+        .sort((a, b) => new Date(a.scheduled_at || 0) - new Date(b.scheduled_at || 0))
         .map(apt => {
           const clientName = apt.clients?.name || 'Cliente';
           const timeString = apt.scheduled_at
@@ -780,7 +782,7 @@ const DashboardModule = ({
           </div>
 
           {/* Timeline entries */}
-          <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', paddingLeft: '8px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
 
             {upcomingAppointments.length === 0 ? (
               <div style={{
@@ -793,100 +795,78 @@ const DashboardModule = ({
                 No hay más citas programadas para hoy.
               </div>
             ) : (
-              upcomingAppointments.map((apt, idx) => (
-                <div key={idx} style={{
-                  display: 'flex',
-                  gap: '10px',
-                  marginBottom: idx < upcomingAppointments.length - 1 ? '12px' : '0',
-                  position: 'relative',
-                  paddingBottom: idx < upcomingAppointments.length - 1 ? '12px' : '0',
-                  borderBottom: idx < upcomingAppointments.length - 1 ? '1px solid rgba(212, 160, 154, 0.12)' : 'none'
-                }}>
-                  {/* Custom dot */}
-                  <div style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    backgroundColor: '#c97282',
-                    border: '2px solid #ffffff',
-                    boxShadow: '0 0 0 2px rgba(201, 114, 130, 0.25)',
-                    zIndex: 2,
-                    marginLeft: '-4px',
-                    marginTop: '6px',
-                    flexShrink: 0
-                  }} />
-
-                  {/* Clock Time */}
-                  <span style={{
-                    fontSize: '0.72rem',
-                    fontWeight: '700',
-                    color: 'var(--text-primary)',
-                    width: '62px',
-                    flexShrink: 0,
-                    paddingTop: '2px'
-                  }}>
-                    {apt.time}
-                  </span>
-
-                  {/* Avatar */}
-                  <div style={{
-                    width: '34px',
-                    height: '34px',
-                    borderRadius: '50%',
-                    background: 'var(--pink-gradient)',
+              upcomingAppointments.map((apt, idx) => {
+                const sStyle = getStatusStyle(apt.status);
+                const isNext = idx === 0;
+                return (
+                  <div key={idx} style={{
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#ffffff',
-                    fontWeight: '700',
-                    fontSize: '0.75rem',
-                    flexShrink: 0
+                    gap: '10px',
+                    padding: '8px',
+                    borderRadius: '14px',
+                    background: isNext ? 'rgba(201, 114, 130, 0.06)' : 'transparent',
+                    border: isNext ? '1px solid rgba(201, 114, 130, 0.18)' : '1px solid transparent'
                   }}>
-                    {apt.initial}
-                  </div>
-
-                  {/* Details: service + client + badge stacked */}
-                  <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    <span style={{
-                      fontSize: '0.78rem',
-                      fontWeight: '700',
-                      color: 'var(--text-primary)',
-                      lineHeight: '1.2'
+                    {/* Time chip — the first, most scannable thing in an agenda */}
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '64px',
+                      padding: '6px 2px',
+                      borderRadius: '10px',
+                      background: isNext ? 'rgba(201, 114, 130, 0.14)' : '#faf3f2',
+                      flexShrink: 0
                     }}>
-                      {apt.service}
-                    </span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: '500' }}>
-                        {apt.client}
+                      <span style={{ fontSize: '0.68rem', fontWeight: '800', color: isNext ? '#a0506a' : 'var(--text-primary)', lineHeight: 1.15, whiteSpace: 'nowrap' }}>
+                        {apt.time}
                       </span>
+                      {isNext && (
+                        <span style={{ fontSize: '0.5rem', fontWeight: '800', color: '#c97282', textTransform: 'uppercase', letterSpacing: '0.4px', marginTop: '2px' }}>
+                          Siguiente
+                        </span>
+                      )}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '2px' }}>
-                      <span style={{
-                        padding: '3px 10px',
-                        borderRadius: '20px',
-                        fontSize: '0.65rem',
-                        fontWeight: '700',
-                        background: getStatusStyle(apt.status).bg,
-                        color: getStatusStyle(apt.status).text,
-                        border: `1.5px solid ${getStatusStyle(apt.status).border}`,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px'
-                      }}>
-                        <span style={{
-                          width: '6px',
-                          height: '6px',
-                          borderRadius: '50%',
-                          background: getStatusStyle(apt.status).text,
-                          display: 'inline-block',
-                          flexShrink: 0
-                        }} />
-                        {apt.status}
-                      </span>
+
+                    {/* Avatar — ring color reflects appointment status */}
+                    <div style={{
+                      width: '38px',
+                      height: '38px',
+                      borderRadius: '50%',
+                      background: 'var(--pink-gradient)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: '#ffffff',
+                      fontWeight: '700',
+                      fontSize: '0.8rem',
+                      flexShrink: 0,
+                      border: `2px solid ${sStyle.border}`,
+                      boxShadow: '0 0 0 2px #ffffff'
+                    }}>
+                      {apt.initial}
+                    </div>
+
+                    {/* Client (primary) + service & status (secondary) */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '0.82rem', fontWeight: '700', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {apt.client}
+                      </div>
+                      <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', fontWeight: '500', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {apt.service}
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '3px' }}>
+                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: sStyle.text, display: 'inline-block', flexShrink: 0 }} />
+                        <span style={{ fontSize: '0.64rem', fontWeight: '700', color: sStyle.text, whiteSpace: 'nowrap' }}>
+                          {apt.status}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
