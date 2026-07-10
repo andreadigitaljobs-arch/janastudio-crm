@@ -101,21 +101,38 @@ export default function OnboardingModule({ onComplete }) {
 
         .onboarding-title {
           font-family: 'Playfair Display', Georgia, serif;
-          font-size: 2.5rem;
+          font-size: 3.5rem;
+          letter-spacing: -1px;
           color: #2d1b22;
-          font-weight: 700;
-          line-height: 1.2;
+          font-weight: 800;
+          line-height: 1.1;
           margin-bottom: 20px;
           opacity: 0;
           transform: translateY(20px);
           animation: fadeUp 0.6s forwards 0.2s;
         }
 
+        .onboarding-eyebrow {
+          font-family: 'Manrope', sans-serif;
+          font-size: 0.75rem;
+          letter-spacing: 5px;
+          color: #c97282;
+          font-weight: 700;
+          text-transform: uppercase;
+          display: block;
+          margin-bottom: 15px;
+          opacity: 0;
+          transform: translateY(20px);
+          animation: fadeUp 0.6s forwards 0.1s;
+        }
+
         .onboarding-subtitle {
-          font-size: 1.1rem;
+          font-size: 1.15rem;
           color: #7a6065;
           line-height: 1.6;
-          margin-bottom: 40px;
+          font-weight: 300;
+          max-width: 380px;
+          margin: 0 auto 50px auto;
           opacity: 0;
           transform: translateY(20px);
           animation: fadeUp 0.6s forwards 0.3s;
@@ -125,7 +142,7 @@ export default function OnboardingModule({ onComplete }) {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 30px;
+          gap: 40px;
           opacity: 0;
           transform: translateY(20px);
           animation: fadeUp 0.6s forwards 0.4s;
@@ -133,19 +150,19 @@ export default function OnboardingModule({ onComplete }) {
 
         .onboarding-dots {
           display: flex;
-          gap: 10px;
+          gap: 8px;
         }
 
         .onboarding-dot {
-          width: 10px;
-          height: 10px;
-          border-radius: 5px;
-          background: #f6e6e2;
-          transition: all 0.4s ease;
+          width: 15px;
+          height: 3px;
+          border-radius: 2px;
+          background: #e8cac5;
+          transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .onboarding-dot.active {
-          width: 30px;
+          width: 35px;
           background: #c97282;
         }
 
@@ -153,7 +170,7 @@ export default function OnboardingModule({ onComplete }) {
           background: linear-gradient(135deg, #c97282 0%, #a0506a 100%);
           color: white;
           border: none;
-          padding: 16px 40px;
+          padding: 18px 45px;
           border-radius: 100px;
           font-size: 1.1rem;
           font-weight: 700;
@@ -161,13 +178,13 @@ export default function OnboardingModule({ onComplete }) {
           align-items: center;
           gap: 12px;
           cursor: pointer;
-          box-shadow: 0 4px 15px rgba(212, 160, 154, 0.3);
-          transition: transform 0.2s, box-shadow 0.2s;
+          box-shadow: 0 10px 25px rgba(212, 160, 154, 0.4);
+          transition: transform 0.3s, box-shadow 0.3s;
         }
 
         .onboarding-btn:hover {
-          transform: scale(1.05);
-          box-shadow: 0 6px 20px rgba(212, 160, 154, 0.4);
+          transform: translateY(-2px);
+          box-shadow: 0 15px 30px rgba(212, 160, 154, 0.5);
         }
 
         @keyframes fadeUp {
@@ -248,6 +265,7 @@ export default function OnboardingModule({ onComplete }) {
 
       <div className="onboarding-content-panel">
         <div className="onboarding-content-inner" key={currentSlide}>
+          <span className="onboarding-eyebrow">Jana Studio</span>
           <h1 className="onboarding-title">{slides[currentSlide].title}</h1>
           <p className="onboarding-subtitle">{slides[currentSlide].subtitle}</p>
           
