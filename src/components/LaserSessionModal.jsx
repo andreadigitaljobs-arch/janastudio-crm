@@ -79,7 +79,7 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
                   {/* Date & Time Selection */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.95rem', fontWeight: 800, color: '#2d1b22', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <label style={{ fontSize: '0.95rem', fontWeight: 800, color: '#2d1b22', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <Calendar size={16} color="#c97282" /> Fecha de la Sesión
                       </label>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
@@ -134,7 +134,7 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
                     </div>
                     
                     <div style={{ opacity: selectedDate ? 1 : 0.5, pointerEvents: selectedDate ? 'auto' : 'none', transition: 'opacity 0.3s' }}>
-                      <label style={{ display: 'block', fontSize: '0.95rem', fontWeight: 800, color: '#2d1b22', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <label style={{ fontSize: '0.95rem', fontWeight: 800, color: '#2d1b22', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <Clock size={16} color="#c97282" /> Hora (Disponibilidad Máquina)
                       </label>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
