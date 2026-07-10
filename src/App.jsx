@@ -828,7 +828,7 @@ function App() {
           {/* Brand signature */}
           <div className="mobile-more-brand">
             <span className="mobile-more-brand-arrow">—</span>
-            <span className="mobile-more-brand-mark">JANA<em>Studio</em></span>
+            <img src="/logo.png" alt="Jana Studio" className="mobile-more-brand-logo" />
             <span className="mobile-more-brand-arrow">—</span>
           </div>
         </div>

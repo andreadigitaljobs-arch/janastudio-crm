@@ -1959,19 +1959,10 @@ input:focus { outline: none; }
   letter-spacing: 2px;
 }
 
-.mobile-more-brand-mark {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: #a0506a;
-}
-
-.mobile-more-brand-mark em {
-  font-style: italic;
-  font-weight: 600;
-  margin-left: 4px;
-  color: #c97282;
+.mobile-more-brand-logo {
+  height: 34px;
+  width: auto;
+  object-fit: contain;
 }
 
 /* Compact the "More" drawer on short screens (e.g. iPhone SE) so everything fits without scrolling */
