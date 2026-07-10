@@ -48,6 +48,7 @@ const SchedulingModule = lazy(() => import('./components/SchedulingModule'));
 const CheckoutPOS = lazy(() => import('./components/CheckoutPOS'));
 const ReceptionModule = lazy(() => import('./components/ReceptionModule'));
 const ReportsModule = lazy(() => import('./components/ReportsModule'));
+const ScheduleModal = lazy(() => import('./components/ScheduleModal'));
 
 const ModuleFallback = () => (
   <div style={{ minHeight: '240px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontWeight: 800 }}>
@@ -88,6 +89,7 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [showFabHint, setShowFabHint] = useState(false);
+  const [isQuickScheduleOpen, setIsQuickScheduleOpen] = useState(false);
   const { isModalOpen } = useModal();
 
   useEffect(() => {
@@ -621,11 +623,27 @@ function App() {
           )}
         </div>
       </div>
-      <NotificationsDrawer 
-        isOpen={isNotificationsOpen} 
+      <NotificationsDrawer
+        isOpen={isNotificationsOpen}
         onClose={() => setIsNotificationsOpen(false)}
         isMobile={isMobile}
       />
+
+      {/* Quick "agendar cita" modal — opens as an overlay from the FAB without leaving the current tab */}
+      {isQuickScheduleOpen && (
+        <Suspense fallback={null}>
+          <ScheduleModal
+            isOpen={isQuickScheduleOpen}
+            onClose={() => setIsQuickScheduleOpen(false)}
+            clients={dbData.clients}
+            services={dbData.services}
+            staff={dbData.staff}
+            rates={effectiveRates}
+            defaultDate={new Date()}
+            onSave={() => setIsQuickScheduleOpen(false)}
+          />
+        </Suspense>
+      )}
 
       {/* Mobile Bottom Navigation Bar */}
       {isMobile && user && (
@@ -689,12 +707,7 @@ function App() {
             <button
               onClick={() => {
                 dismissFabHint();
-                if (activeTab !== 'scheduling') {
-                  handleTabChange('scheduling', {});
-                  setTimeout(() => window.dispatchEvent(new CustomEvent('jana:open-new-appointment')), 100);
-                } else {
-                  window.dispatchEvent(new CustomEvent('jana:open-new-appointment'));
-                }
+                setIsQuickScheduleOpen(true);
                 setIsMoreOpen(false);
               }}
               className="mobile-fab-btn"
