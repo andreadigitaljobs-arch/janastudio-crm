@@ -1106,7 +1106,7 @@ const ScheduleModal = ({
                          <p style={{ margin: '4px 0 0', fontSize: '0.74rem', color: '#a0909a' }}>Asigna una estilista y confirma el horario para cada servicio.</p>
                        </div>
 
-                       {selectedServices.length > 1 && (
+                       {false && selectedServices.length > 1 && (
                          <div style={{ padding: '12px 16px', borderRadius: '18px', background: 'rgba(201, 114, 130,0.04)', border: '1px solid rgba(201, 114, 130,0.12)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
                            <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#a0909a', letterSpacing: '0.3px' }}>⚡ ¿MISMA ESPECIALISTA PARA TODOS LOS SERVICIOS?</span>
                            <div style={{ width: '220px' }}>
