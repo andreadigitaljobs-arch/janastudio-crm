@@ -393,25 +393,25 @@ export default function OnboardingModule({ onComplete }) {
           }
 
           .onboarding-title {
-            font-size: clamp(2.6rem, 6.4vw, 4.2rem);
+            font-size: clamp(2.6rem, 7.2vw, 5rem);
           }
 
           .onboarding-subtitle {
-            font-size: clamp(1.25rem, 2vw, 1.65rem);
-            max-width: 560px;
+            font-size: clamp(1.25rem, 2.3vw, 1.85rem);
+            max-width: 640px;
           }
 
           .onboarding-btn {
-            font-size: clamp(1.2rem, 1.8vw, 1.5rem);
-            padding: 22px 50px;
+            font-size: clamp(1.2rem, 2vw, 1.6rem);
+            padding: 24px 55px;
           }
 
           .onboarding-logo {
-            width: clamp(120px, 9vw, 160px);
+            width: clamp(120px, 9vw, 170px);
           }
 
           .onboarding-content-inner {
-            max-width: 680px;
+            max-width: 760px;
           }
         }
 
