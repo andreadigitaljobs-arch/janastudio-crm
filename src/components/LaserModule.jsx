@@ -230,7 +230,7 @@ const LaserModule = ({ isMobile }) => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <div style={{ padding: '16px', background: 'linear-gradient(135deg, rgba(201, 114, 130, 0.05) 0%, rgba(201, 114, 130, 0.15) 100%)', borderRadius: '16px', border: '1px solid rgba(201,114,130,0.1)' }}>
                   <div style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Hoy</div>
-                  <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#2d1b22', letterSpacing: '-0.5px', marginTop: '4px' }}>8 Citas</div>
+                  <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#2d1b22', letterSpacing: '-0.5px', marginTop: '4px', whiteSpace: 'nowrap' }}>8 Citas</div>
                   <div style={{ fontSize: '0.85rem', color: '#a0909a', fontWeight: 600, marginTop: '4px' }}>4 horas de uso estimado</div>
                 </div>
                 

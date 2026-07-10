@@ -9,6 +9,10 @@ class NotificationService {
 
   scheduleServiceWorkerRegistration() {
     if (!('serviceWorker' in navigator)) return;
+    // El SW usa una estrategia cache-first pensada para los assets con hash
+    // del build de producción; en `vite dev` pisa las peticiones de HMR y
+    // módulos dinámicos, causando "Failed to fetch" en consola.
+    if (!import.meta.env.PROD) return;
 
     const register = () => {
       if ('requestIdleCallback' in window) {

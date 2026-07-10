@@ -1210,10 +1210,11 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 999 }} 
                     onClick={() => setShowHeaderCalendar(false)}
                   />
-                  <div 
+                  <div
                     style={{
-                      position: 'absolute', top: 'calc(100% + 12px)', left: '50%', transform: 'translateX(-50%)',
-                      width: '280px', background: 'rgba(252, 249, 248, 0.95)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+                      position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+                      width: '280px', maxWidth: 'calc(100vw - 32px)', maxHeight: 'calc(100vh - 32px)', overflowY: 'auto',
+                      background: 'rgba(252, 249, 248, 0.95)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
                       borderRadius: '16px', boxShadow: '0 16px 40px rgba(74, 48, 54, 0.12)',
                       border: '1px solid rgba(223, 178, 140, 0.3)', padding: '16px', zIndex: 1000,
                       animation: 'fadeInUpWow 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards'
