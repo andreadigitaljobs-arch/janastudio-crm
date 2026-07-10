@@ -501,17 +501,19 @@ function App() {
           display: 'flex',
           flexDirection: 'column'
         }}>
-          <TopBar
-            activeTab={activeTab}
-            rates={effectiveRates}
-            onOpenSale={() => setIsReceptionModalOpen(true)}
-            activeRateType={activeRateType}
-            onToggleRateType={handleSetActiveRateType}
-            onOpenNotifications={() => setIsNotificationsOpen(true)}
-            isMobile={isMobile}
-            dbData={dbData}
-            onNavigate={handleTabChange}
-          />
+          {!(isMobile && activeTab === 'dashboard') && (
+            <TopBar
+              activeTab={activeTab}
+              rates={effectiveRates}
+              onOpenSale={() => setIsReceptionModalOpen(true)}
+              activeRateType={activeRateType}
+              onToggleRateType={handleSetActiveRateType}
+              onOpenNotifications={() => setIsNotificationsOpen(true)}
+              isMobile={isMobile}
+              dbData={dbData}
+              onNavigate={handleTabChange}
+            />
+          )}
           <Suspense fallback={<ModuleFallback />}>
             {renderContent()}
           </Suspense>
