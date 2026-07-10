@@ -472,7 +472,7 @@ const ScheduleModal = ({
     }
   };
 
-  const showSummaryPanel = !showSuccess && !isEditMode && selectedServices.length > 0 && currentStep !== 1;
+  const showSummaryPanel = !showSuccess && !isEditMode && selectedServices.length > 0 && currentStep !== 1 && currentStep !== 5;
 
   const getModalDimensions = () => {
     if (isEditMode) {
