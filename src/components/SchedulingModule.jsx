@@ -1429,13 +1429,19 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               <div className="agenda-glass-card" style={{ padding: '0', display: 'flex', flexDirection: 'column', minHeight: '600px', overflow: 'hidden' }}>
                 
                 {/* Header of Timeline */}
-                <div style={{ padding: '20px 20px 15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(223, 178, 140, 0.2)', background: 'rgba(255,255,255,0.5)' }}>
-                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{
+                  padding: '20px 20px 15px', display: 'flex',
+                  flexDirection: isMobile ? 'column' : 'row',
+                  justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center',
+                  gap: isMobile ? '12px' : '14px',
+                  borderBottom: '1px solid rgba(223, 178, 140, 0.2)', background: 'rgba(255,255,255,0.5)'
+                }}>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                     <Clock size={16} color="#c97282" />
                     LÍNEA DE TIEMPO
                   </h4>
                   {isMobile && visibleStaff.length > 0 && (
-                    <div style={{ width: '130px' }}>
+                    <div style={{ width: isMobile ? '100%' : '130px', flexShrink: 0 }}>
                       <JanaSelect
                         variant="light"
                         label=""
