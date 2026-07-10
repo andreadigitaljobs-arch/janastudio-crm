@@ -1821,6 +1821,17 @@ input:focus { outline: none; }
 }
 
 /* "Más" drawer — user profile card */
+@keyframes mobileMoreFadeIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes mobileMoreCrownPop {
+  0% { opacity: 0; transform: scale(0) rotate(-20deg); }
+  60% { transform: scale(1.15) rotate(4deg); }
+  100% { opacity: 0.75; transform: scale(1) rotate(0deg); }
+}
+
 .mobile-more-profile {
   position: relative;
   display: flex;
@@ -1834,6 +1845,13 @@ input:focus { outline: none; }
   border: 1px solid rgba(212, 160, 154, 0.2);
   box-shadow: 0 6px 20px rgba(74, 48, 54, 0.06);
   overflow: hidden;
+  animation: mobileMoreFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.mobile-more-profile:active {
+  transform: scale(0.985);
+  box-shadow: 0 3px 12px rgba(74, 48, 54, 0.05);
 }
 
 .mobile-more-crown {
@@ -1842,6 +1860,7 @@ input:focus { outline: none; }
   right: 18px;
   color: #c97282;
   opacity: 0.75;
+  animation: mobileMoreCrownPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
 }
 
 .mobile-more-avatar {
@@ -1852,6 +1871,11 @@ input:focus { outline: none; }
   object-fit: cover;
   border: 2.5px solid rgba(223, 178, 140, 0.55);
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.7);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.mobile-more-profile:active .mobile-more-avatar {
+  transform: scale(0.92);
 }
 
 .mobile-more-avatar-fallback {
@@ -1891,7 +1915,14 @@ input:focus { outline: none; }
   cursor: pointer;
   position: relative;
   -webkit-tap-highlight-color: transparent;
-  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+  animation: mobileMoreFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--tile-delay, 0s);
+}
+
+.mobile-more-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(74, 48, 54, 0.09);
 }
 
 .mobile-more-tile:active {
@@ -1906,7 +1937,15 @@ input:focus { outline: none; }
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.mobile-more-tile:hover .mobile-more-tile-icon {
+  transform: scale(1.08) rotate(-4deg);
+}
+
+.mobile-more-tile:active .mobile-more-tile-icon {
+  transform: scale(0.92);
 }
 
 .mobile-more-tile-label {
@@ -1920,6 +1959,12 @@ input:focus { outline: none; }
   top: 22px;
   right: 14px;
   color: rgba(201, 114, 130, 0.5);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.mobile-more-tile:hover .mobile-more-tile-chevron,
+.mobile-more-tile:active .mobile-more-tile-chevron {
+  transform: translateX(4px);
 }
 
 .mobile-more-logout {
@@ -1935,14 +1980,28 @@ input:focus { outline: none; }
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 700;
-  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, box-shadow 0.2s ease;
   margin-top: 4px;
   -webkit-tap-highlight-color: transparent;
+  animation: mobileMoreFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+
+.mobile-more-logout:hover {
+  background: rgba(201, 114, 130, 0.06);
+  box-shadow: 0 4px 14px rgba(201, 114, 130, 0.12);
 }
 
 .mobile-more-logout:active {
   transform: scale(0.96);
   background: rgba(201, 114, 130, 0.08);
+}
+
+.mobile-more-logout svg {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.mobile-more-logout:hover svg {
+  transform: translateX(-3px);
 }
 
 .mobile-more-brand {
@@ -1952,6 +2011,7 @@ input:focus { outline: none; }
   gap: 10px;
   margin-top: 2px;
   color: rgba(201, 114, 130, 0.5);
+  animation: mobileMoreFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
 }
 
 .mobile-more-brand-arrow {
@@ -1963,6 +2023,15 @@ input:focus { outline: none; }
   height: 34px;
   width: auto;
   object-fit: contain;
+}
+
+.mobile-more-handle {
+  transition: background 0.2s ease, width 0.2s ease;
+}
+
+.mobile-more-handle:hover {
+  background: rgba(160, 80, 106, 0.4) !important;
+  width: 52px !important;
 }
 
 /* Compact the "More" drawer on short screens (e.g. iPhone SE) so everything fits without scrolling */

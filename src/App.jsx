@@ -790,10 +790,14 @@ function App() {
           display: 'flex', flexDirection: 'column', gap: '12px'
         }}>
           {/* Header indicator bar */}
-          <div style={{
-            width: '40px', height: '4px', background: 'rgba(160, 80, 106, 0.25)',
-            borderRadius: '10px', alignSelf: 'center', marginBottom: '4px'
-          }} onClick={() => setIsMoreOpen(false)} />
+          <div
+            className="mobile-more-handle btn-press"
+            style={{
+              width: '40px', height: '4px', background: 'rgba(160, 80, 106, 0.25)',
+              borderRadius: '10px', alignSelf: 'center', marginBottom: '4px', cursor: 'pointer'
+            }}
+            onClick={() => setIsMoreOpen(false)}
+          />
 
           {/* User profile */}
           <div className="mobile-more-profile">
@@ -813,7 +817,7 @@ function App() {
 
           {/* Remaining menu items */}
           <div className="mobile-more-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-            {mobileHiddenItems.map((item) => {
+            {mobileHiddenItems.map((item, itemIdx) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
               return (
@@ -827,6 +831,7 @@ function App() {
                   style={{
                     background: isActive ? 'linear-gradient(135deg, #fff0f2 0%, #ffe4e8 100%)' : '#ffffff',
                     border: isActive ? '1.5px solid rgba(201, 114, 130, 0.35)' : '1px solid rgba(212, 160, 154, 0.14)',
+                    '--tile-delay': `${0.06 + itemIdx * 0.05}s`,
                   }}
                 >
                   <div className="mobile-more-tile-icon" style={{
