@@ -95,6 +95,12 @@ const ScheduleModal = ({
   const staffArray = Array.isArray(staff) ? staff : [];
 
   const [currentStep, setCurrentStep] = useState(1);
+  const [returnToStep, setReturnToStep] = useState(null);
+
+  const handleEditFromSummary = (stepTarget) => {
+    setReturnToStep(5);
+    setCurrentStep(stepTarget);
+  };
   const [selectedDate, setSelectedDate] = useState(defaultDate || new Date());
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -1271,7 +1277,7 @@ const ScheduleModal = ({
                                  <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#2d1b22', wordBreak: 'break-word', lineHeight: '1.2' }}>{localClient?.name}</div>
                                </div>
                              </div>
-                             <button onClick={() => setCurrentStep(1)} style={{ width: '28px', height: '28px', borderRadius: '8px', background: '#fff2f4', border: '1px solid rgba(201,114,130,0.15)', color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', flexShrink: 0 }} title="Editar clienta">
+                             <button onClick={() => handleEditFromSummary(1)} style={{ width: '28px', height: '28px', borderRadius: '8px', background: '#fff2f4', border: '1px solid rgba(201,114,130,0.15)', color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', flexShrink: 0 }} title="Editar clienta">
                                <Pen size={12} />
                              </button>
                            </div>
@@ -1288,7 +1294,7 @@ const ScheduleModal = ({
                                  </div>
                                </div>
                              </div>
-                             <button onClick={() => setCurrentStep(3)} style={{ width: '28px', height: '28px', borderRadius: '8px', background: '#fff2f4', border: '1px solid rgba(201,114,130,0.15)', color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', flexShrink: 0 }} title="Editar fecha">
+                             <button onClick={() => handleEditFromSummary(3)} style={{ width: '28px', height: '28px', borderRadius: '8px', background: '#fff2f4', border: '1px solid rgba(201,114,130,0.15)', color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', flexShrink: 0 }} title="Editar fecha">
                                <Pen size={12} />
                              </button>
                            </div>
@@ -1297,7 +1303,7 @@ const ScheduleModal = ({
                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '4px' }}>
                              <span style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0909a', letterSpacing: '0.8px', textTransform: 'uppercase' }}>Servicios Asignados</span>
-                             <button onClick={() => setCurrentStep(2)} style={{ background: 'none', border: 'none', color: '#c97282', fontSize: '0.68rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'underline dotted', textUnderlineOffset: '2px' }} title="Agregar o quitar servicios">
+                             <button onClick={() => handleEditFromSummary(2)} style={{ background: 'none', border: 'none', color: '#c97282', fontSize: '0.68rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'underline dotted', textUnderlineOffset: '2px' }} title="Agregar o quitar servicios">
                                <Pen size={10} /> Editar Lista
                              </button>
                            </div>
@@ -1329,7 +1335,7 @@ const ScheduleModal = ({
                                          {getStaffDisplayName(staffObj)} · <span style={{ color: '#c97282', fontWeight: 700 }}>{getDisplayTime(svc.time)}</span>
                                        </span>
                                      </div>
-                                     <button onClick={() => setCurrentStep(4)} style={{ width: '24px', height: '24px', borderRadius: '8px', background: '#fff2f4', border: '1px solid rgba(201,114,130,0.15)', color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', flexShrink: 0 }} title="Reasignar especialista u hora">
+                                     <button onClick={() => handleEditFromSummary(4)} style={{ width: '24px', height: '24px', borderRadius: '8px', background: '#fff2f4', border: '1px solid rgba(201,114,130,0.15)', color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', flexShrink: 0 }} title="Reasignar especialista u hora">
                                        <Pen size={9} />
                                      </button>
                                    </div>
@@ -1371,7 +1377,14 @@ const ScheduleModal = ({
                  <div className="jana-schedule-footer-inner" style={{ padding: '16px 32px', display: 'flex', gap: '12px' }}>
                   {currentStep > 1 && !isReprogramOnly && (
                     <button
-                      onClick={() => setCurrentStep(prev => prev - 1)}
+                      onClick={() => {
+                        if (returnToStep) {
+                          setCurrentStep(returnToStep);
+                          setReturnToStep(null);
+                        } else {
+                          setCurrentStep(prev => prev - 1);
+                        }
+                      }}
                       style={{
                         height: '52px',
                         borderRadius: '16px',
@@ -1406,7 +1419,14 @@ const ScheduleModal = ({
                   {currentStep < totalSteps && !isReprogramOnly ? (
                     <button
                       disabled={!isStepValid(currentStep)}
-                      onClick={() => setCurrentStep(prev => prev + 1)}
+                      onClick={() => {
+                        if (returnToStep) {
+                          setCurrentStep(returnToStep);
+                          setReturnToStep(null);
+                        } else {
+                          setCurrentStep(prev => prev + 1);
+                        }
+                      }}
                       style={{
                         flex: 1,
                         height: '56px',
@@ -1437,7 +1457,9 @@ const ScheduleModal = ({
                         e.currentTarget.style.boxShadow = isStepValid(currentStep) ? '0 10px 28px rgba(201, 114, 130,0.3)' : 'none';
                       }}
                     >
-                      Siguiente <ArrowRight size={18} strokeWidth={2.5} />
+                      {returnToStep ? 'Guardar y Volver' : (
+                        <>Siguiente <ArrowRight size={18} strokeWidth={2.5} /></>
+                      )}
                     </button>
                   ) : (
                     <button
