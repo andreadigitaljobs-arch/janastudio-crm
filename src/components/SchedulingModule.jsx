@@ -508,7 +508,7 @@ const StaffDayColumn = ({
 };
 
 
-const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleModal = false, modalKey = null }) => {
+const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rates, openScheduleModal = false, modalKey = null }) => {
   const { user } = useAuth();
   const { showToast } = useNotifs();
 
@@ -1367,7 +1367,7 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
           </div>
 
           {/* THREE-COLUMN CONTENT GRID */}
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '24px', width: '100%', alignItems: 'start', marginTop: '0' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : isTablet ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '24px', width: '100%', alignItems: 'start', marginTop: '0' }}>
 
             {/* Column 1 - Próximas Citas */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', minWidth: 0 }}>
@@ -1488,70 +1488,36 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
 
             {/* Column 2 - Especialistas */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', minWidth: 0 }}>
-              {/* Rendimiento Grid (Sin tabs) */}
-              <div className="agenda-glass-card" style={{ padding: '20px', overflow: 'visible' }}>
+              <div className="agenda-glass-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', minHeight: '400px' }}>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#4a3036', margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                  <Sparkles size={16} color="#db8c95" />
+                  ESTADO DE ESPECIALISTAS
+                </h4>
 
-                {/* Tab: Rendimiento - Always Shown */}
-                <div>
+                {/* Search Bar for Specialists */}
+                <div style={{ position: 'relative', marginBottom: '16px', flexShrink: 0 }}>
+                  <Search size={14} color="#a07880" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                  <input
+                    type="text"
+                    placeholder="Buscar especialista..."
+                    value={staffSearchQuery}
+                    onChange={e => setStaffSearchQuery(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px 10px 34px',
+                      fontSize: '0.78rem',
+                      color: '#4a3036',
+                      background: '#faf3f2',
+                      border: '1px solid rgba(223, 178, 140, 0.15)',
+                      borderRadius: '12px',
+                      outline: 'none',
+                      transition: 'all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                    }}
+                  />
+                </div>
 
-                  {/* Search Bar for Specialists */}
-                  <div style={{ position: 'relative', marginBottom: '16px' }}>
-                    <Search size={14} color="#a07880" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-                    <input
-                      type="text"
-                      placeholder="Buscar especialista por nombre o especialidad..."
-                      value={staffSearchQuery}
-                      onChange={e => setStaffSearchQuery(e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '10px 12px 10px 34px',
-                        fontSize: '0.78rem',
-                        color: '#4a3036',
-                        background: '#faf3f2',
-                        border: '1px solid rgba(223, 178, 140, 0.15)',
-                        borderRadius: '12px',
-                        outline: 'none',
-                        transition: 'all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                      }}
-                      onFocus={(e) => {
-                        e.target.style.background = '#fff';
-                        e.target.style.borderColor = 'rgba(219, 140, 149, 0.5)';
-                        e.target.style.boxShadow = '0 0 0 3px rgba(219, 140, 149, 0.12)';
-                        e.target.style.transform = 'scale(1.01)';
-                      }}
-                      onBlur={(e) => {
-                        e.target.style.background = '#faf3f2';
-                        e.target.style.borderColor = 'rgba(223, 178, 140, 0.15)';
-                        e.target.style.boxShadow = 'none';
-                        e.target.style.transform = 'scale(1)';
-                      }}
-                    />
-                    {staffSearchQuery && (
-                      <button
-                        onClick={() => setStaffSearchQuery('')}
-                        style={{
-                          position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)',
-                          border: 'none', background: 'transparent', color: '#a07880', cursor: 'pointer',
-                          fontSize: '0.85rem', padding: '4px',
-                          transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                          animation: 'checkmarkBounce 0.3s ease forwards'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.color = '#db8c95';
-                          e.currentTarget.style.transform = 'translateY(-50%) scale(1.2) rotate(90deg)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.color = '#a07880';
-                          e.currentTarget.style.transform = 'translateY(-50%) scale(1) rotate(0deg)';
-                        }}
-                      >
-                        ×
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Stylists Grid */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '14px' }}>
+                {/* Stylists Compact Grid */}
+                <div className="jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px', overflowY: 'auto', flex: 1, paddingRight: '4px' }}>
                   {visibleStaff.map(s => {
                     const window = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
                     const metrics = getStaffMetrics(s.id);
@@ -1560,29 +1526,35 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
 
                     if (!window.isWorking) {
                       return (
-                        <div key={s.id} className="staff-metric-card animate-fade-in" style={{ opacity: 0.75, display: 'flex', flexDirection: 'column', height: '100%' }}>
-                          {/* Header */}
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#8c767b', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '0.75rem' }}>{initial}</div>
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#4a3036', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name}</div>
-                              <div style={{ fontSize: '0.62rem', color: '#8c767b', fontWeight: 600 }}>{getStaffRole(s.name)}</div>
-                            </div>
+                        <div
+                          key={s.id}
+                          onClick={() => setSelectedStaffDrawer(s)}
+                          style={{
+                            padding: '12px',
+                            background: '#fcfaf9',
+                            border: '1.5px dashed rgba(223,178,140,0.2)',
+                            borderRadius: '16px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            textAlign: 'center',
+                            cursor: 'pointer',
+                            opacity: 0.8,
+                            transition: 'all 0.2s ease',
+                          }}
+                          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.borderColor = '#db8c95'; }}
+                          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(223,178,140,0.2)'; }}
+                        >
+                          <div style={{ position: 'relative', width: '48px', height: '48px', marginBottom: '8px' }}>
+                            <img
+                              src={s.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(s.name)}&backgroundColor=e8a2a9,f7d4d7,fce4e8&radius=50`}
+                              alt={s.name}
+                              style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(223,178,140,0.15)', filter: 'grayscale(100%)' }}
+                            />
                           </div>
-                          
-                          {/* Status Badge */}
-                          <div style={{ marginBottom: '16px' }}>
-                            <span style={{ fontSize: '0.6rem', color: '#6b4a52', background: '#e2d7d9', padding: '2px 6px', borderRadius: '8px', fontWeight: 700 }}>
-                              No trabaja hoy
-                            </span>
-                          </div>
-
-                          {/* Placeholder Illustration */}
-                          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '16px 0', borderTop: '1px solid rgba(223,178,140,0.1)' }}>
-                            <Coffee size={28} color="#db8c95" style={{ opacity: 0.4, marginBottom: '4px' }} />
-                            <div style={{ fontSize: '0.65rem', color: '#a07880', fontWeight: 600, marginTop: '6px' }}>No trabaja hoy</div>
-                            <div style={{ fontSize: '0.58rem', color: '#8c767b' }}>{selectedDate.toLocaleDateString('es-VE', { weekday: 'short', day: 'numeric', month: 'short' })}</div>
-                          </div>
+                          <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#8c767b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{s.name}</div>
+                          <div style={{ fontSize: '0.58rem', color: '#a07880', fontWeight: 700, marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.3px' }}>NO TRABAJA</div>
                         </div>
                       );
                     }
@@ -1597,124 +1569,80 @@ const SchedulingModule = ({ isMobile, isCollapsed = false, rates, openScheduleMo
                       return a.staff_id === s.id && refMin >= startM && refMin < (startM + duration);
                     });
 
-                    let statusText = 'Libre ahora';
-                    let statusBg = 'rgba(34, 197, 94, 0.1)';
+                    let statusText = 'LIBRE';
+                    let statusBg = 'rgba(34, 197, 94, 0.08)';
                     let statusColor = '#16a34a';
 
                     if (isLunch) {
-                      statusText = 'Almuerzo';
-                      statusBg = 'rgba(219, 140, 149, 0.1)';
+                      statusText = 'ALMUERZO';
+                      statusBg = 'rgba(219, 140, 149, 0.08)';
                       statusColor = '#db8c95';
                     } else if (activeApp) {
-                      const start = new Date(activeApp.scheduled_at || activeApp.created_at);
-                      const startM = start.getHours() * 60 + start.getMinutes();
-                      const endM = startM + 60;
-                      statusText = `Ocupada hasta ${formatMinutes(endM)}`;
-                      statusBg = 'rgba(239, 68, 68, 0.08)';
+                      statusText = 'EN CITA';
+                      statusBg = 'rgba(239, 68, 68, 0.06)';
                       statusColor = '#dc2626';
                     }
 
                     return (
                       <div
                         key={s.id}
-                        className="animate-fade-in"
                         onClick={() => setSelectedStaffDrawer(s)}
                         style={{
-                          background: '#fff',
-                          border: '1px solid rgba(223,178,140,0.2)',
-                          borderRadius: '14px',
-                          overflow: 'hidden',
-                          cursor: 'pointer',
-                          boxShadow: '0 2px 8px rgba(74,48,54,0.05)',
-                          transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                          padding: '12px',
+                          background: '#ffffff',
+                          border: '1px solid rgba(223,178,140,0.18)',
+                          borderRadius: '16px',
                           display: 'flex',
-                          flexDirection: 'row',
-                          height: '100%'
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          textAlign: 'center',
+                          cursor: 'pointer',
+                          boxShadow: '0 2px 8px rgba(74,48,54,0.01)',
+                          transition: 'all 0.2s ease',
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(212,160,154,0.15)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(74,48,54,0.05)'; }}
+                        onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 15px rgba(212,160,154,0.12)'; e.currentTarget.style.borderColor = 'rgba(212,160,154,0.3)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(74,48,54,0.01)'; e.currentTarget.style.borderColor = 'rgba(223,178,140,0.18)'; }}
                       >
-                        {/* Photo - Left Side with Gradient Overlay */}
-                        <div style={{ position: 'relative', width: '110px', height: 'auto', minHeight: '140px', flexShrink: 0, overflow: 'hidden' }}>
+                        {/* Avatar photo */}
+                        <div style={{ position: 'relative', width: '48px', height: '48px', marginBottom: '8px' }}>
                           <img
-                            src={s.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(s.name)}&backgroundColor=e8a2a9,f7d4d7,fce4e8&radius=0`}
+                            src={s.photo_url || `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(s.name)}&backgroundColor=e8a2a9,f7d4d7,fce4e8&radius=50`}
                             alt={s.name}
-                            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
-                            onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                            style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: `2px solid ${statusColor}` }}
                           />
-                          {/* Fallback gradient */}
-                          <div style={{ display: 'none', position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #e8a2a9 0%, #db8c95 100%)', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: '2.5rem' }}>
-                            {initial}
-                          </div>
-                          {/* Gradient Overlay - Bottom */}
-                          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.15) 100%)' }} />
+                          <span style={{ position: 'absolute', right: '1px', bottom: '1px', width: '10px', height: '10px', borderRadius: '50%', background: statusColor, border: '2px solid #fff' }} />
                         </div>
 
-                        {/* Content - Right Side */}
-                        <div style={{ padding: '14px 14px', display: 'flex', flexDirection: 'column', gap: '10px', flex: 1, justifyContent: 'space-between' }}>
-                          {/* Nombre + Especialidad + Status */}
-                          <div>
-                            <div style={{ fontSize: '0.85rem', fontWeight: 900, color: '#4a3036', letterSpacing: '0.3px' }}>
-                              {s.name}
-                            </div>
-                            <div style={{ fontSize: '0.62rem', color: '#a07880', fontWeight: 600, marginTop: '2px' }}>
-                              {getStaffRole(s.name)}
-                            </div>
+                        {/* Name and role */}
+                        <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#3d2b30', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{s.name}</div>
+                        <div style={{ fontSize: '0.58rem', color: '#a07880', fontWeight: 600, marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{getStaffRole(s.name)}</div>
 
-                            {/* Status badge */}
-                            <div style={{ marginTop: '6px' }}>
-                              <span style={{
-                                fontSize: '0.62rem',
-                                color: statusColor,
-                                background: statusBg,
-                                padding: '3px 8px',
-                                borderRadius: '6px',
-                                fontWeight: 700,
-                              }}>
-                                {statusText === 'Libre ahora' ? '● LIBRE' : statusText.includes('Almuerzo') ? '● ALMUERZO' : '● EN CITA'}
-                              </span>
-                            </div>
+                        {/* Status tag */}
+                        <div style={{ marginTop: '6px', fontSize: '0.56rem', fontWeight: 800, color: statusColor, background: statusBg, padding: '2px 8px', borderRadius: '6px', letterSpacing: '0.3px' }}>
+                          {statusText}
+                        </div>
+
+                        {/* Occupancy Mini bar */}
+                        <div style={{ width: '100%', marginTop: '10px' }}>
+                          <div style={{ height: '3px', background: '#faf3f2', borderRadius: '2px', overflow: 'hidden' }}>
+                            <div style={{ height: '100%', background: statusColor, width: `${metrics.occupancy}%` }} />
                           </div>
-
-                          {/* Próxima cita + Ocupación + Indicador */}
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1 }}>
-                            {/* Próxima cita */}
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.68rem' }}>
-                              <span style={{ color: '#8c767b', fontWeight: 600 }}>Próx cita:</span>
-                              <span style={{ fontWeight: 800, color: '#4a3036' }}>
-                                {nextApp ? nextApp.timeStr : 'Ninguna'}
-                              </span>
-                            </div>
-
-                            {/* Ocupación barra */}
-                            <div>
-                              <div style={{ height: '3px', background: '#faf3f2', borderRadius: '2px', overflow: 'hidden' }}>
-                                <div style={{ height: '100%', background: `linear-gradient(90deg, ${statusColor === '#db8c95' ? '#db8c95 0%, #e8a2a9' : statusColor === '#dc2626' ? '#dc2626 0%, #f87171' : '#16a34a 0%, #86efac'} 100%)`, width: `${metrics.occupancy}%`, transition: 'width 0.6s ease' }} />
-                              </div>
-                              <div style={{ fontSize: '0.6rem', color: '#8c767b', fontWeight: 600, marginTop: '2px', textAlign: 'right' }}>
-                                {metrics.occupancy}%
-                              </div>
-                            </div>
-
-                            {/* Indicador clickeable */}
-                            <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid rgba(223,178,140,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px', fontSize: '0.65rem', fontWeight: 700, color: '#db8c95', opacity: 0.8, transition: 'all 0.3s ease' }} className="hover-indicator">
-                              Ver detalles →
-                            </div>
+                          <div style={{ fontSize: '0.55rem', color: '#8c767b', fontWeight: 700, marginTop: '2px', display: 'flex', justifyContent: 'space-between' }}>
+                            <span>Ocupación:</span>
+                            <span>{metrics.occupancy}%</span>
                           </div>
                         </div>
                       </div>
                     );
                   })}
                 </div>
+
                 {visibleStaff.length === 0 && (
-                  <div style={{ textAlign: 'center', padding: '40px 20px', color: '#a07880', fontSize: '0.8rem', border: '1px dashed rgba(223,178,140,0.25)', borderRadius: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ textAlign: 'center', padding: '40px 20px', color: '#a07880', fontSize: '0.8rem', border: '1px dashed rgba(223,178,140,0.25)', borderRadius: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flex: 1, justifyContent: 'center' }}>
                     <Search size={24} color="#db8c95" style={{ opacity: 0.5 }} />
                     <div style={{ fontWeight: 700 }}>No se encontraron especialistas</div>
-                    <div style={{ fontSize: '0.7rem', opacity: 0.8 }}>Prueba a buscar con otros términos o limpia el buscador.</div>
                   </div>
                 )}
-                </div>
-
               </div>
             </div>
 
