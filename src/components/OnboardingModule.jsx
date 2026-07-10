@@ -426,6 +426,10 @@ export default function OnboardingModule({ onComplete }) {
             padding-top: 16px;
           }
 
+          .onboarding-title {
+            font-size: clamp(1.7rem, 7vw, 2.1rem);
+          }
+
           .onboarding-divider {
             margin: 10px 0 14px;
           }
