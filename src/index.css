@@ -1045,15 +1045,15 @@ html, body {
 
   /* Logo */
   .salon-logo-header {
-    margin-bottom: 12px;
+    margin-bottom: clamp(16px, 5vh, 32px);
     margin-top: 0;
     position: relative;
     z-index: 15;
   }
 
   .salon-logo-image {
-    max-width: 80px;
-    width: 35%;
+    width: clamp(80px, 24vw, 130px);
+    max-width: none;
   }
 
   .salon-form-header {
