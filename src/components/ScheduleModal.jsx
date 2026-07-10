@@ -1266,7 +1266,12 @@ const ScheduleModal = ({
                          </div>
 
                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                           <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.8px', textTransform: 'uppercase', paddingLeft: '4px' }}>Servicios Asignados</div>
+                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '4px' }}>
+                             <span style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0868c', letterSpacing: '0.8px', textTransform: 'uppercase' }}>Servicios Asignados</span>
+                             <button onClick={() => setCurrentStep(2)} style={{ background: 'none', border: 'none', color: '#db8c95', fontSize: '0.68rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'underline dotted', textUnderlineOffset: '2px' }} title="Agregar o quitar servicios">
+                               <Pen size={10} /> Editar Lista
+                             </button>
+                           </div>
                            {selectedServices.map(svc => {
                              const staffObj = staffArray.find(s => s.id === svc.staffId);
                              return (
@@ -1283,15 +1288,21 @@ const ScheduleModal = ({
                                }}>
                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0, flex: 1 }}>
                                    <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#3d2b30' }}>{svc.name}</div>
-                                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                     <img 
-                                       src={staffObj?.image_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100'} 
-                                       alt={staffObj?.name}
-                                       style={{ width: '18px', height: '18px', borderRadius: '50%', objectFit: 'cover' }}
-                                     />
-                                     <span style={{ fontSize: '0.68rem', color: '#8b7076', fontWeight: 650 }}>
-                                       {getStaffDisplayName(staffObj)} · <span style={{ color: '#db8c95', fontWeight: 700 }}>{getDisplayTime(svc.time)}</span>
-                                     </span>
+                                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                                     {/* Fila de la especialista asignada */}
+                                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
+                                       <img 
+                                         src={staffObj?.image_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100'} 
+                                         alt={staffObj?.name}
+                                         style={{ width: '18px', height: '18px', borderRadius: '50%', objectFit: 'cover' }}
+                                       />
+                                       <span style={{ fontSize: '0.68rem', color: '#8b7076', fontWeight: 650, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                         {getStaffDisplayName(staffObj)} · <span style={{ color: '#db8c95', fontWeight: 700 }}>{getDisplayTime(svc.time)}</span>
+                                       </span>
+                                     </div>
+                                     <button onClick={() => setCurrentStep(4)} style={{ width: '22px', height: '22px', borderRadius: '6px', background: 'rgba(219,140,149,0.04)', border: 'none', color: '#db8c95', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: '0.2s', flexShrink: 0 }} title="Reasignar especialista u hora">
+                                       <Pen size={9} />
+                                     </button>
                                    </div>
                                  </div>
                                  <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#3d2b30', flexShrink: 0 }}>
