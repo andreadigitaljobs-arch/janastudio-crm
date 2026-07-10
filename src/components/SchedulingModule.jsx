@@ -1548,14 +1548,6 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         .slice()
                         .sort((a, b) => new Date(a.scheduled_at || a.created_at) - new Date(b.scheduled_at || b.created_at));
 
-                      if (filteredApps.length === 0) {
-                        return (
-                          <div style={{ padding: '30px 10px', textAlign: 'center', fontSize: '0.8rem', color: '#a0909a', fontWeight: 600 }}>
-                            No hay citas en esta franja horaria.
-                          </div>
-                        );
-                      }
-
                       // Agrupar por hora exacta para mostrar juntas las citas que coinciden en horario
                       const groups = [];
                       filteredApps.forEach(app => {
@@ -1569,7 +1561,70 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         }
                       });
 
-                      return groups.map(group => {
+                      // Rellenar los huecos sin citas con placeholders "+ Agendar cita",
+                      // igual que en el calendario del Centro Láser.
+                      const SLOT_STEP = 30;
+                      const bucketOf = (mins) => Math.floor(mins / SLOT_STEP) * SLOT_STEP;
+                      const groupsByBucket = new Map();
+                      groups.forEach(group => {
+                        const mins = group.start.getHours() * 60 + group.start.getMinutes();
+                        const bucket = bucketOf(mins);
+                        if (!groupsByBucket.has(bucket)) groupsByBucket.set(bucket, []);
+                        groupsByBucket.get(bucket).push(group);
+                      });
+
+                      let loopStart = (!activePeriod || activePeriod.key === 'all') ? VIEW_START_MIN : Math.max(VIEW_START_MIN, activePeriod.startMin);
+                      let loopEnd = (!activePeriod || activePeriod.key === 'all') ? VIEW_END_MIN : Math.min(VIEW_END_MIN, activePeriod.endMin);
+                      groupsByBucket.forEach((_, bucket) => {
+                        if (bucket < loopStart) loopStart = bucket;
+                        if (bucket + SLOT_STEP > loopEnd) loopEnd = bucket + SLOT_STEP;
+                      });
+
+                      const items = [];
+                      for (let m = loopStart; m < loopEnd; m += SLOT_STEP) {
+                        const bucketGroups = groupsByBucket.get(m);
+                        if (bucketGroups) bucketGroups.forEach(g => items.push({ type: 'booked', group: g }));
+                        else items.push({ type: 'empty', minutes: m });
+                      }
+
+                      if (items.length === 0) {
+                        return (
+                          <div style={{ padding: '30px 10px', textAlign: 'center', fontSize: '0.8rem', color: '#a0909a', fontWeight: 600 }}>
+                            No hay citas en esta franja horaria.
+                          </div>
+                        );
+                      }
+
+                      const filterStaffMember = (activeFilter && activeFilter !== 'all') ? visibleStaff.find(s => s.id === activeFilter) : undefined;
+
+                      return items.map(item => {
+                        if (item.type === 'empty') {
+                          const h = Math.floor(item.minutes / 60);
+                          const mm = item.minutes % 60;
+                          const h12 = h % 12 || 12;
+                          const ampm = h >= 12 ? 'PM' : 'AM';
+                          return (
+                            <div key={`empty-${item.minutes}`} style={{ marginBottom: '18px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#c97282', flexShrink: 0 }}>
+                                  {h12}:{mm.toString().padStart(2, '0')} {ampm}
+                                </div>
+                                <div style={{ flex: 1, height: '1px', background: 'rgba(223, 178, 140, 0.2)' }} />
+                              </div>
+                              <div
+                                onClick={() => openScheduleFor(filterStaffMember, item.minutes)}
+                                className="btn-press"
+                                style={{ background: 'rgba(252, 249, 248, 0.6)', borderRadius: '12px', border: '1px dashed rgba(201,114,130,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c97282', fontSize: '0.8rem', fontWeight: 700, padding: '12px', cursor: 'pointer', transition: 'background 0.2s' }}
+                                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.9)'}
+                                onMouseLeave={e => e.currentTarget.style.background = 'rgba(252, 249, 248, 0.6)'}
+                              >
+                                <Plus size={14} strokeWidth={2.5} style={{ marginRight: '6px' }} /> Agendar cita
+                              </div>
+                            </div>
+                          );
+                        }
+
+                        const group = item.group;
                         const h12 = group.start.getHours() % 12 || 12;
                         const ampm = group.start.getHours() >= 12 ? 'PM' : 'AM';
                         return (
