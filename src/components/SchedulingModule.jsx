@@ -1438,7 +1438,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 }}>
                   <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                     <Clock size={16} color="#c97282" />
-                    LÍNEA DE TIEMPO
+                    CITAS DE HOY
                   </h4>
                   {isMobile && visibleStaff.length > 0 && (
                     <div style={{ width: isMobile ? '100%' : '130px', flexShrink: 0 }}>
