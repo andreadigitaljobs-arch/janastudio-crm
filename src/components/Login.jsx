@@ -143,7 +143,7 @@ export default function Login() {
                 style={{
                   backgroundImage: `url(${activeImage})`,
                   backgroundPosition: `${activeImageConfig.x}% ${activeImageConfig.y}%`,
-                  backgroundSize: `${activeImageConfig.z}%`,
+                  backgroundSize: 'cover',
                   position: 'absolute',
                   inset: 0,
                   opacity: 1,
