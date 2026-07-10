@@ -1260,7 +1260,7 @@ const ScheduleModal = ({
                        </div>
 
                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
                            <div style={{ padding: '14px 16px', background: '#ffffff', borderRadius: '18px', border: '1px solid rgba(201, 114, 130, 0.12)', boxShadow: '0 4px 16px rgba(74,48,54,0.02)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
                                <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(201, 114, 130,0.1)', color: '#c97282', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem', flexShrink: 0 }}>
