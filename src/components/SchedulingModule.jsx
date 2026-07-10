@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar as CalendarIcon, Clock, User, Plus, ChevronLeft, ChevronRight,
@@ -548,6 +548,23 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [dateNavDir, setDateNavDir] = useState('next');
   const goToDate = (newDate, dir) => { setDateNavDir(dir); setSelectedDate(newDate); };
+  const calendarBtnRef = useRef(null);
+  const [calendarPos, setCalendarPos] = useState({ top: 0, left: 0 });
+  const CALENDAR_POPUP_WIDTH = 280;
+
+  const openHeaderCalendar = () => {
+    const rect = calendarBtnRef.current?.getBoundingClientRect();
+    if (rect) {
+      const margin = 12;
+      const idealLeft = rect.left + rect.width / 2 - CALENDAR_POPUP_WIDTH / 2;
+      const clampedLeft = Math.min(
+        Math.max(idealLeft, margin),
+        window.innerWidth - CALENDAR_POPUP_WIDTH - margin
+      );
+      setCalendarPos({ top: rect.bottom + 12, left: clampedLeft });
+    }
+    setShowHeaderCalendar(prev => !prev);
+  };
   const [loading, setLoading] = useState(true);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [scheduleModalPreset, setScheduleModalPreset] = useState(null);
@@ -1183,10 +1200,9 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             {/* Custom Date Picker Trigger (Calendar Icon) */}
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center', marginRight: '4px' }}>
               <button
+                ref={calendarBtnRef}
                 title="Elegir fecha"
-                onClick={(e) => {
-                  setShowHeaderCalendar(!showHeaderCalendar);
-                }}
+                onClick={openHeaderCalendar}
                 style={{
                   padding: '6px 10px', borderRadius: '10px', border: 'none', background: 'rgba(201, 114, 130, 0.1)',
                   cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
@@ -1212,8 +1228,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   />
                   <div
                     style={{
-                      position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-                      width: '280px', maxWidth: 'calc(100vw - 32px)', maxHeight: 'calc(100vh - 32px)', overflowY: 'auto',
+                      position: 'fixed', top: `${calendarPos.top}px`, left: `${calendarPos.left}px`,
+                      width: '280px', maxWidth: 'calc(100vw - 24px)', maxHeight: 'calc(100vh - 24px)', overflowY: 'auto',
                       background: 'rgba(252, 249, 248, 0.95)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
                       borderRadius: '16px', boxShadow: '0 16px 40px rgba(74, 48, 54, 0.12)',
                       border: '1px solid rgba(223, 178, 140, 0.3)', padding: '16px', zIndex: 1000,
