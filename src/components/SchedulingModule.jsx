@@ -1605,7 +1605,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
                                 return (
                                   <div key={app.id}
-                                    onClick={() => setSelectedAppointmentDrawer(app)}
+                                    onClick={() => setSelectedDetailedApp(app)}
                                     style={{
                                       display: 'flex', alignItems: 'center', gap: '12px',
                                       background: bgColor, border: `1px solid ${borderColor}`,
