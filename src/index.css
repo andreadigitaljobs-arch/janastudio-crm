@@ -917,7 +917,7 @@ html, body {
 
 /* ── DISEÑO MOBILE: Foto arriba, tarjeta blanca abajo ── */
 /* Solo para pantallas altas/angostas; las "gruesas" (aspect ratio cuadrado) usan el diseño tablet de arriba */
-@media (max-width: 768px) and (max-aspect-ratio: 3/4) {
+@media (max-width: 768px) and (max-aspect-ratio: 0.74) {
 
   .salon-login-outer {
     padding: 0;
