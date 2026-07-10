@@ -1346,8 +1346,8 @@ const ScheduleModal = ({
                            marginTop: '12px',
                            padding: '20px 24px',
                            borderRadius: '20px',
-                           background: 'linear-gradient(135deg, #2d1b22 0%, #4a2c37 100%)',
-                           boxShadow: '0 12px 30px rgba(45,27,34,0.25)',
+                           background: 'linear-gradient(135deg, #d48b99 0%, #c97282 100%)',
+                           boxShadow: '0 12px 30px rgba(201,114,130,0.3)',
                            display: 'flex',
                            justifyContent: 'space-between',
                            alignItems: 'center'
