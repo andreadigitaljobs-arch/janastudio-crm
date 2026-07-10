@@ -186,6 +186,7 @@ export default function OnboardingModule({ onComplete }) {
           .onboarding-image-panel {
             position: absolute;
             inset: 0;
+            height: 65vh; /* Limit image height to allow solid cream at bottom */
           }
 
           .onboarding-content-panel {
@@ -200,23 +201,24 @@ export default function OnboardingModule({ onComplete }) {
             display: block;
             position: absolute;
             inset: 0;
-            background: linear-gradient(to bottom, rgba(74,48,54,0) 0%, rgba(74,48,54,0.2) 40%, rgba(74,48,54,0.85) 80%, #4a3036 100%);
+            background: linear-gradient(to bottom, rgba(252,249,248,0) 0%, rgba(252,249,248,0.4) 40%, rgba(252,249,248,0.95) 70%, #fcf9f8 100%);
             z-index: 5;
           }
 
           .onboarding-title {
-            color: #ffffff;
+            color: #2d1b22;
             font-size: 2.2rem;
-            text-shadow: 0 2px 10px rgba(74,48,54,0.5);
+            text-shadow: none;
           }
 
           .onboarding-subtitle {
-            color: rgba(255, 255, 255, 0.9);
-            text-shadow: 0 1px 5px rgba(74,48,54,0.5);
+            color: #7a6065;
+            text-shadow: none;
+            font-weight: 500;
           }
 
           .onboarding-dot {
-            background: rgba(255, 255, 255, 0.3);
+            background: #e8cac5;
           }
           
           .onboarding-dot.active {
