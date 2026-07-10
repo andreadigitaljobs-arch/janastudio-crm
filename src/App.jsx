@@ -48,6 +48,7 @@ const SchedulingModule = lazy(() => import('./components/SchedulingModule'));
 const CheckoutPOS = lazy(() => import('./components/CheckoutPOS'));
 const ReceptionModule = lazy(() => import('./components/ReceptionModule'));
 const ReportsModule = lazy(() => import('./components/ReportsModule'));
+const LaserModule = lazy(() => import('./components/LaserModule'));
 const ScheduleModal = lazy(() => import('./components/ScheduleModal'));
 
 const ModuleFallback = () => (
@@ -424,6 +425,7 @@ function App() {
         /></div>;
       case 'scheduling': return <div className="p-container p-container-agenda"><SchedulingModule isMobile={isMobile} isTablet={isTablet} isCollapsed={isCollapsed} rates={effectiveRates} openScheduleModal={tabParams.openScheduleModal} modalKey={tabParams.modalKey} /></div>;
       case 'reception': return <div className="p-container"><ReceptionModule isMobile={isMobile} /></div>;
+      case 'laser': return <div className="p-container"><LaserModule isMobile={isMobile} /></div>;
       case 'checkout': return <div className="p-container"><CheckoutPOS isMobile={isMobile} rates={effectiveRates} onOpenSale={() => setIsSaleModalOpen(true)} onNavigate={handleTabChange} /></div>;
       case 'services': return <div className="p-container"><ServicesModule isMobile={isMobile} currency={currency} rates={effectiveRates} /></div>;
       case 'costing': return <div className="p-container"><CostingModule isMobile={isMobile} services={dbData.services} inventory={dbData.inventory} /></div>;
