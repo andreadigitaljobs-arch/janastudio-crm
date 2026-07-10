@@ -20,7 +20,8 @@ import {
   Plus,
   Home,
   Crown,
-  ChevronRight
+  ChevronRight,
+  Zap
 } from 'lucide-react';
 import { dataService } from './services/dataService';
 
@@ -114,6 +115,7 @@ function App() {
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { id: 'scheduling', label: 'Agenda', icon: Calendar },
     { id: 'reception', label: 'Recepción', icon: UserCircle },
+    { id: 'laser', label: 'Centro Láser', icon: Zap },
     { id: 'clients', label: 'Clientes', icon: Users },
     { id: 'services', label: 'Servicios', icon: Star },
     { id: 'personnel', label: 'Equipo', icon: Sparkles },
