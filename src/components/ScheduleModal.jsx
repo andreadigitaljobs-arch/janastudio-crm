@@ -612,28 +612,30 @@ const ScheduleModal = ({
             {showSuccess ? (
               <div className="animate-scale-up" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', textAlign: 'center', flex: 1 }}>
                 <div style={{
-                  width: '80px', height: '80px', borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)',
+                  width: '90px', height: '90px', borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #e3a8b3 0%, #c97282 100%)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: '#fff', boxShadow: '0 12px 30px rgba(34, 197, 94, 0.35)',
-                  marginBottom: '24px',
-                  animation: 'successPulse 1.8s infinite'
+                  color: '#ffffff', boxShadow: '0 16px 40px rgba(201,114,130,0.35)',
+                  marginBottom: '28px',
+                  animation: 'successPulse 2s cubic-bezier(0.4, 0, 0.2, 1) infinite'
                 }}>
-                  <Check size={40} strokeWidth={3} />
+                  <Check size={44} strokeWidth={3} />
                 </div>
-                <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 8px 0' }}>
+                <h3 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#2d1b22', margin: '0 0 10px 0', letterSpacing: '-0.5px' }}>
                   {isEditMode ? '¡Cita Actualizada!' : '¡Orden Confirmada!'}
                 </h3>
-                <p style={{ fontSize: '0.86rem', color: '#a0909a', fontWeight: 500, margin: 0 }}>
-                  {isEditMode ? 'Los cambios han sido guardados correctamente.' : 'La orden ha sido registrada exitosamente en la agenda.'}
+                <p style={{ fontSize: '0.9rem', color: '#a0909a', fontWeight: 500, margin: 0, maxWidth: '280px', lineHeight: '1.5' }}>
+                  {isEditMode ? 'Los cambios han sido guardados correctamente.' : 'La orden ha sido registrada exitosamente en tu agenda.'}
                 </p>
-                <div style={{ marginTop: '20px', fontSize: '0.78rem', color: '#c97282', fontWeight: 700 }}>Redirigiendo...</div>
+                <div style={{ marginTop: '28px', padding: '8px 16px', background: '#fff2f4', borderRadius: '20px', fontSize: '0.75rem', color: '#c97282', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>
+                  Redirigiendo...
+                </div>
 
                 <style>{`
                   @keyframes successPulse {
-                    0% { transform: scale(1); }
-                    50% { transform: scale(1.06); box-shadow: 0 16px 36px rgba(34, 197, 94, 0.45); }
-                    100% { transform: scale(1); }
+                    0% { transform: scale(1); box-shadow: 0 16px 40px rgba(201,114,130,0.35); }
+                    50% { transform: scale(1.04); box-shadow: 0 20px 50px rgba(201,114,130,0.5); }
+                    100% { transform: scale(1); box-shadow: 0 16px 40px rgba(201,114,130,0.35); }
                   }
                 `}</style>
               </div>
