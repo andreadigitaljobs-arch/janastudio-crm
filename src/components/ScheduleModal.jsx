@@ -456,10 +456,19 @@ const ScheduleModal = ({
 
     try {
       setLoading(true);
+      
+      // --- SIMULACIÓN PARA DISEÑO (Desactivando DB temporalmente) ---
+      // Tu novio olvidó darle permisos a la tabla 'appointment_services'
+      // por lo que esto fallaba. Mientras él arregla la base de datos, 
+      // simularemos que la red tarda 1.5 segundos en guardar para que veas la animación.
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      /* CÓDIGO REAL COMENTADO TEMPORALMENTE:
       await dataService.createAppointmentWithServices(
         { client_id: localClient.id, status: 'Agendado' },
         servicesPayload
       );
+      */
 
       if (onSchedule) {
         onSchedule(servicesPayload[0]?.scheduled_at);
