@@ -1092,13 +1092,39 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
       
       {/* HEADER EXACTLY LIKE THE MOCKUP */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
-        <div>
-          <h1 className="jana-page-title">
-            Agenda
-          </h1>
-          <p style={{ fontSize: '0.82rem', color: '#a0909a', margin: '6px 0 0 0', fontWeight: 500 }}>
-            Controla el rendimiento y la disponibilidad de tu equipo.
-          </p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: isMobile ? '100%' : 'auto', gap: '12px' }}>
+          <div>
+            <h1 className="jana-page-title">
+              Agenda
+            </h1>
+            <p style={{ fontSize: '0.82rem', color: '#a0909a', margin: '6px 0 0 0', fontWeight: 500 }}>
+              Controla el rendimiento y la disponibilidad de tu equipo.
+            </p>
+          </div>
+
+          {/* On mobile the bell moves up here, next to the title, instead of wrapping alone below the date selector */}
+          {isMobile && (
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent('jana:open-notifications'))}
+              style={{
+                width: '40px', height: '40px', borderRadius: '12px', flexShrink: 0,
+                background: '#ffffff', border: '1px solid rgba(223, 178, 140, 0.3)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', position: 'relative',
+                color: '#2d1b22',
+                boxShadow: '0 2px 8px rgba(74, 48, 54, 0.03)', transition: 'all 0.2s'
+              }}
+            >
+              <Bell size={18} />
+              {unreadNotifsCount > 0 && (
+                <div style={{
+                  position: 'absolute', top: '10px', right: '10px',
+                  backgroundColor: '#c97282', width: '7px', height: '7px',
+                  borderRadius: '50%',
+                }} />
+              )}
+            </button>
+          )}
         </div>
 
         {/* Date Selector and Buttons on Right */}
@@ -1304,27 +1330,29 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             </button>
           </div>
 
-          {/* Bell Notifications */}
-          <button
-            onClick={() => window.dispatchEvent(new CustomEvent('jana:open-notifications'))}
-            style={{
-              width: '40px', height: '40px', borderRadius: '12px',
-              background: '#ffffff', border: '1px solid rgba(223, 178, 140, 0.3)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', position: 'relative',
-              color: '#2d1b22',
-              boxShadow: '0 2px 8px rgba(74, 48, 54, 0.03)', transition: 'all 0.2s'
-            }}
-          >
-            <Bell size={18} />
-            {unreadNotifsCount > 0 && (
-              <div style={{
-                position: 'absolute', top: '10px', right: '10px',
-                backgroundColor: '#c97282', width: '7px', height: '7px',
-                borderRadius: '50%',
-              }} />
-            )}
-          </button>
+          {/* Bell Notifications (desktop only — on mobile it moved up next to the title) */}
+          {!isMobile && (
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent('jana:open-notifications'))}
+              style={{
+                width: '40px', height: '40px', borderRadius: '12px',
+                background: '#ffffff', border: '1px solid rgba(223, 178, 140, 0.3)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', position: 'relative',
+                color: '#2d1b22',
+                boxShadow: '0 2px 8px rgba(74, 48, 54, 0.03)', transition: 'all 0.2s'
+              }}
+            >
+              <Bell size={18} />
+              {unreadNotifsCount > 0 && (
+                <div style={{
+                  position: 'absolute', top: '10px', right: '10px',
+                  backgroundColor: '#c97282', width: '7px', height: '7px',
+                  borderRadius: '50%',
+                }} />
+              )}
+            </button>
+          )}
 
           {/* + Nueva cita */}
           <button
