@@ -1093,10 +1093,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
       {/* HEADER EXACTLY LIKE THE MOCKUP */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
         <div>
-          <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#2d1b22', margin: 0, }}>
+          <h1 className="jana-page-title">
             Agenda
           </h1>
-          <p style={{ fontSize: '0.82rem', color: '#a0909a', margin: '4px 0 0 0', fontWeight: 500 }}>
+          <p style={{ fontSize: '0.82rem', color: '#a0909a', margin: '6px 0 0 0', fontWeight: 500 }}>
             Controla el rendimiento y la disponibilidad de tu equipo.
           </p>
         </div>

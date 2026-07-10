@@ -1787,6 +1787,40 @@ input:focus { outline: none; }
   border-top: 8px solid #a0506a;
 }
 
+/* Premium gradient page titles (Agenda, Clientes, etc.) */
+.jana-page-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin: 0;
+  padding-bottom: 6px;
+  display: inline-block;
+  position: relative;
+  background: linear-gradient(120deg, #7a4452 0%, #c97282 45%, #e8a2a9 75%, #a0506a 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: janaTitleShimmer 6s ease-in-out infinite;
+}
+
+.jana-page-title::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  bottom: 0;
+  width: 46px;
+  height: 4px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #c97282, #a0506a);
+}
+
+@keyframes janaTitleShimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
 @keyframes fabHintIn {
   from { opacity: 0; transform: translateX(-50%) translateY(8px) scale(0.9); }
   to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
