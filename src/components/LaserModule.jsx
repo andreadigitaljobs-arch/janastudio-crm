@@ -278,9 +278,9 @@ const LaserModule = ({ isMobile }) => {
                         </div>
                         
                         {/* Hover Actions */}
-                        <div 
+                        <div
                           className="unlock-overlay"
-                          style={{ position: 'absolute', inset: 0, background: 'rgba(255, 255, 255, 0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', transition: 'all 0.2s ease', backdropFilter: 'blur(2px)' }}
+                          style={{ position: 'absolute', inset: 0, background: 'rgba(255, 255, 255, 0.95)', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: isMobile ? '8px' : '16px', padding: '8px', transition: 'all 0.2s ease', backdropFilter: 'blur(2px)' }}
                         >
                           <button
                             onClick={(e) => {
@@ -288,7 +288,7 @@ const LaserModule = ({ isMobile }) => {
                               alert('La funcionalidad de posponer cita abrirá el calendario principal.');
                             }}
                             className="btn-press"
-                            style={{ background: '#fff', border: '1px solid rgba(223, 178, 140, 0.5)', color: '#dfb28c', padding: '8px 16px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(223, 178, 140, 0.1)' }}
+                            style={{ background: '#fff', border: '1px solid rgba(223, 178, 140, 0.5)', color: '#dfb28c', padding: isMobile ? '8px 12px' : '8px 16px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, fontSize: isMobile ? '0.75rem' : '0.8rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(223, 178, 140, 0.1)', whiteSpace: 'nowrap' }}
                           >
                             <CalendarClock size={16} /> Posponer
                           </button>
@@ -298,7 +298,7 @@ const LaserModule = ({ isMobile }) => {
                               handleUnblock(idx);
                             }}
                             className="btn-press"
-                            style={{ background: '#fff', border: '1px solid rgba(201, 114, 130, 0.5)', color: '#c97282', padding: '8px 16px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(201, 114, 130, 0.1)' }}
+                            style={{ background: '#fff', border: '1px solid rgba(201, 114, 130, 0.5)', color: '#c97282', padding: isMobile ? '8px 12px' : '8px 16px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, fontSize: isMobile ? '0.75rem' : '0.8rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(201, 114, 130, 0.1)', whiteSpace: 'nowrap' }}
                           >
                             <Trash2 size={16} /> Eliminar
                           </button>

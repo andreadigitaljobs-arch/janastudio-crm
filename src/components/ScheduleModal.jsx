@@ -15,13 +15,13 @@ import {
   Trash2,
   Search,
   Zap,
-  Paintbrush,
   Pen
 } from 'lucide-react';
 import { GiEyelashes } from 'react-icons/gi';
 import { PiHairDryer } from 'react-icons/pi';
-import { FaSprayCanSparkles } from 'react-icons/fa6';
 import { normalizeForSearch } from '../utils/stringUtils';
+import NailsIcon from './NailsIcon';
+import LaserGunIcon from './LaserGunIcon';
 import { dataService } from '../services/dataService';
 import AnimatedModal from './AnimatedModal';
 import JanaSelect from './JanaSelect';
@@ -67,9 +67,9 @@ const getCategoryIcon = (category) => {
   const iconMap = {
     'Cabello': <Scissors size={16} />,
     'Cejas & Pestañas': <GiEyelashes size={16} />,
-    'Depilación': <FaSprayCanSparkles size={16} />,
+    'Depilación': <LaserGunIcon size={16} />,
     'Peinados': <PiHairDryer size={16} />,
-    'Uñas': <Paintbrush size={16} />,
+    'Uñas': <NailsIcon size={16} />,
     'Pestañas': <GiEyelashes size={16} />
   };
   return iconMap[category] || <Zap size={16} />;

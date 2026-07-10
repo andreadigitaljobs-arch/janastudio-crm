@@ -13,29 +13,8 @@ import { useDialog } from '../context/DialogContext';
 import { useNotifs } from '../context/NotificationContext';
 import JanaSelect from './JanaSelect';
 import AnimatedModal from './AnimatedModal';
-
-// Custom SVG: nail polish bottle
-const NailPolishIcon = ({ size = 20 }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    {/* Cap */}
-    <rect x="8" y="2" width="8" height="4" rx="1" />
-    {/* Neck */}
-    <rect x="10" y="6" width="4" height="3" />
-    {/* Bottle body */}
-    <rect x="6" y="9" width="12" height="11" rx="2" />
-    {/* Brush line at bottom */}
-    <line x1="12" y1="20" x2="12" y2="23" />
-  </svg>
-);
+import NailsIcon from './NailsIcon';
+import LaserGunIcon from './LaserGunIcon';
 
 const AVAILABLE_ICONS = [
   { name: 'Scissors',    label: 'Corte general' },
@@ -48,7 +27,8 @@ const AVAILABLE_ICONS = [
   { name: 'Sparkles',    label: 'Estilismo / Peinados' },
   { name: 'Flower2',     label: 'Spa / Masajes' },
   { name: 'Feather',     label: 'Tratamientos suaves' },
-  { name: 'Heart',       label: 'Depilación / Bienestar' },
+  { name: 'Heart',       label: 'Bienestar' },
+  { name: 'Laser',       label: 'Depilación Láser' },
   { name: 'Waves',       label: 'Keratina / Alaciado' },
   { name: 'Crown',       label: 'VIP / Jana Elite' },
   { name: 'Smile',       label: 'Faciales / Afeitado' },
@@ -61,13 +41,14 @@ const getIconComponent = (iconName, size = 20) => {
     case 'UserRound':   return <UserRound size={size} />;
     case 'Wind':        return <Wind size={size} />;
     case 'Palette':     return <Palette size={size} />;
-    case 'NailPolish':  return <NailPolishIcon size={size} />;
+    case 'NailPolish':  return <NailsIcon size={size} />;
     case 'Droplets':    return <Droplets size={size} />;
     case 'Brush':       return <Brush size={size} />;
     case 'Sparkles':    return <Sparkles size={size} />;
     case 'Flower2':     return <Flower2 size={size} />;
     case 'Feather':     return <Feather size={size} />;
     case 'Heart':       return <Heart size={size} />;
+    case 'Laser':       return <LaserGunIcon size={size} />;
     case 'Waves':       return <Waves size={size} />;
     case 'Crown':       return <Crown size={size} />;
     case 'Star':        return <Star size={size} />;
@@ -427,6 +408,8 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
       case 'Estilismo': return 'Scissors';
       case 'Pestañas': return 'Sparkles';
       case 'Tratamientos': return 'Droplets';
+      case 'Uñas': return 'NailPolish';
+      case 'Depilación': return 'Laser';
       default: return 'Wind';
     }
   };
