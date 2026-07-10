@@ -720,7 +720,7 @@ function App() {
       )}
 
       {isMobile && (
-        <div style={{
+        <div className="mobile-more-drawer" style={{
           position: 'fixed', left: 0, right: 0, bottom: 0,
           background: 'linear-gradient(180deg, #fffbfa 0%, #fff2f4 55%, #fce8ea 100%)',
           backdropFilter: 'blur(20px)',
@@ -732,7 +732,7 @@ function App() {
           transform: isMoreOpen ? 'translateY(0)' : 'translateY(100%)',
           transition: 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
           display: 'flex', flexDirection: 'column', gap: '18px',
-          maxHeight: '78vh', overflowY: 'auto'
+          maxHeight: '85vh', overflowY: 'auto'
         }}>
           {/* Header indicator bar */}
           <div style={{
@@ -741,17 +741,17 @@ function App() {
           }} onClick={() => setIsMoreOpen(false)} />
 
           {/* User profile */}
-          <div style={{
+          <div className="mobile-more-profile" style={{
             display: 'flex', alignItems: 'center', gap: '14px',
             padding: '16px 18px', borderRadius: '20px',
             background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)',
             boxShadow: '0 8px 22px rgba(160, 80, 106, 0.28)',
           }}>
             {user?.image_url ? (
-              <img src={user.image_url} alt="" style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover', border: '2.5px solid rgba(255,255,255,0.8)' }} />
+              <img src={user.image_url} alt="" className="mobile-more-avatar" style={{ borderRadius: '50%', objectFit: 'cover', border: '2.5px solid rgba(255,255,255,0.8)' }} />
             ) : (
-              <div style={{
-                width: '50px', height: '50px', borderRadius: '50%',
+              <div className="mobile-more-avatar" style={{
+                borderRadius: '50%',
                 background: 'rgba(255,255,255,0.22)',
                 border: '2.5px solid rgba(255,255,255,0.8)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -767,7 +767,7 @@ function App() {
           </div>
 
           {/* Remaining menu items */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+          <div className="mobile-more-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
             {mobileHiddenItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;

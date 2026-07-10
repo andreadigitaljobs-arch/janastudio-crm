@@ -1814,6 +1814,48 @@ input:focus { outline: none; }
   background: rgba(255, 107, 107, 0.14);
 }
 
+.mobile-more-avatar {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+}
+
+/* Compact the "More" drawer on short screens (e.g. iPhone SE) so everything fits without scrolling */
+@media (max-height: 700px) {
+  .mobile-more-drawer {
+    gap: 10px !important;
+    padding-top: 14px !important;
+  }
+
+  .mobile-more-profile {
+    padding: 10px 14px !important;
+  }
+
+  .mobile-more-avatar {
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  .mobile-more-grid {
+    gap: 8px !important;
+  }
+
+  .mobile-more-tile {
+    padding: 12px 10px !important;
+    gap: 6px !important;
+  }
+
+  .mobile-more-tile-icon {
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  .mobile-more-logout {
+    padding: 10px !important;
+    margin-top: 0 !important;
+  }
+}
+
 /* ── Tooltip de íconos del sidebar (menú colapsado en compu) ── */
 /* Se pinta vía portal en <body>, así nunca se corta por el overflow:hidden del sidebar */
 .sidebar-tooltip-portal {
