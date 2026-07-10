@@ -1368,18 +1368,42 @@ const DashboardModule = ({
                 </div>
               ) : upcomingAppointments.map((apt, idx) => {
                 const sStyle = getStatusStyle(apt.status);
+                const isNext = idx === 0;
                 return (
-                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '10px 12px', borderRadius: '14px', background: idx % 2 === 0 ? '#faf3f2' : 'transparent', transition: 'background 0.2s' }}>
-                    <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'var(--pink-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontWeight: '700', fontSize: '0.9rem', flexShrink: 0 }}>
+                  <div key={idx} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '10px',
+                    borderRadius: '14px',
+                    background: isNext ? 'rgba(201, 114, 130, 0.06)' : 'transparent',
+                    border: isNext ? '1px solid rgba(201, 114, 130, 0.18)' : '1px solid transparent'
+                  }}>
+                    {/* Time chip */}
+                    <div style={{
+                      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                      width: '64px', padding: '6px 2px', borderRadius: '10px', flexShrink: 0,
+                      background: isNext ? 'rgba(201, 114, 130, 0.14)' : '#faf3f2'
+                    }}>
+                      <span style={{ fontSize: '0.72rem', fontWeight: '800', color: isNext ? '#a0506a' : 'var(--text-primary)', lineHeight: 1.15, whiteSpace: 'nowrap' }}>{apt.time}</span>
+                      {isNext && (
+                        <span style={{ fontSize: '0.5rem', fontWeight: '800', color: '#c97282', textTransform: 'uppercase', letterSpacing: '0.4px', marginTop: '2px' }}>Siguiente</span>
+                      )}
+                    </div>
+
+                    {/* Avatar — ring color reflects status */}
+                    <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'var(--pink-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontWeight: '700', fontSize: '0.9rem', flexShrink: 0, border: `2px solid ${sStyle.border}`, boxShadow: '0 0 0 2px #ffffff' }}>
                       {apt.initial}
                     </div>
+
+                    {/* Client (primary) + service & status (secondary) */}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '0.88rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{apt.client}</div>
-                      <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '1px' }}>{apt.service}</div>
-                    </div>
-                    <div style={{ flexShrink: 0, textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-                      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: '600' }}>{apt.time}</span>
-                      <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '0.65rem', fontWeight: '700', background: sStyle.bg, color: sStyle.text, border: `1px solid ${sStyle.border}` }}>{apt.status}</span>
+                      <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '2px' }}>{apt.service}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '3px' }}>
+                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: sStyle.text, display: 'inline-block', flexShrink: 0 }} />
+                        <span style={{ fontSize: '0.66rem', fontWeight: '700', color: sStyle.text, whiteSpace: 'nowrap' }}>{apt.status}</span>
+                      </div>
                     </div>
                   </div>
                 );
