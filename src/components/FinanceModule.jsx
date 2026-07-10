@@ -980,9 +980,9 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
         marginBottom: '32px'
       }}>
         <div>
-          <h2 style={{ fontSize: isMobile ? '28px' : '32px', fontWeight: '800', letterSpacing: '-0.5px' }}>
+          <h1 className="jana-page-title">
             Finanzas
-          </h2>
+          </h1>
           <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>Control de flujo, pagos y rentabilidad.</p>
         </div>
         <div style={{ 

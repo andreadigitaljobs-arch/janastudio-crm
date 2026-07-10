@@ -196,8 +196,8 @@ const ReceptionModule = ({ isMobile }) => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '18px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h1 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#2d2d2d', margin: 0 }}>
-            Recepción <span className="text-gradient">Jana</span>
+          <h1 className="jana-page-title">
+            Recepción Jana
           </h1>
           <p style={{ fontSize: '0.75rem', color: '#9e9e9e', margin: '4px 0 0 0' }}>Módulo de atención y agendamiento rápido.</p>
         </div>

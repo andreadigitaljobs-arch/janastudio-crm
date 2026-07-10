@@ -1825,9 +1825,9 @@ input:focus { outline: none; }
   position: relative;
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 20px 20px;
-  border-radius: 22px;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 20px;
   background:
     linear-gradient(135deg, rgba(255,255,255,0.5) 0%, transparent 40%),
     linear-gradient(135deg, #fffaf9 0%, #fdf1f2 100%);
@@ -1845,8 +1845,8 @@ input:focus { outline: none; }
 }
 
 .mobile-more-avatar {
-  width: 58px;
-  height: 58px;
+  width: 52px;
+  height: 52px;
   flex-shrink: 0;
   border-radius: 50%;
   object-fit: cover;
@@ -1867,7 +1867,7 @@ input:focus { outline: none; }
 .mobile-more-profile-name {
   font-family: 'Playfair Display', Georgia, serif;
   font-weight: 700;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   color: #3d2b30;
 }
 
@@ -1884,9 +1884,9 @@ input:focus { outline: none; }
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  gap: 12px;
-  padding: 18px 16px;
-  border-radius: 18px;
+  gap: 10px;
+  padding: 14px 14px;
+  border-radius: 16px;
   box-shadow: 0 4px 14px rgba(74, 48, 54, 0.05);
   cursor: pointer;
   position: relative;
@@ -2994,3 +2994,32 @@ button, [role="button"], a[href] {
   transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 
+
+
+/* --- New Animation & Micro-interaction Classes --- */
+
+.btn-press {
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-press:active {
+  transform: scale(0.96);
+}
+
+.hover-lift {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(201,114,130,0.1);
+}
+
+.fade-in-stagger {
+  opacity: 0;
+  animation: fadeInUpWow 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.fade-in-stagger:nth-child(1) { animation-delay: 0.05s; }
+.fade-in-stagger:nth-child(2) { animation-delay: 0.1s; }
+.fade-in-stagger:nth-child(3) { animation-delay: 0.15s; }
+.fade-in-stagger:nth-child(4) { animation-delay: 0.2s; }
+.fade-in-stagger:nth-child(5) { animation-delay: 0.25s; }

@@ -274,9 +274,9 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
         <>
           {/* Header */}
           <div style={{ marginBottom: '28px' }}>
-            <h2 style={{ fontSize: isMobile ? '26px' : '30px', fontWeight: '800', letterSpacing: '-0.5px', lineHeight: '1.2' }}>
-              Archivo de <span className="text-pink">Clientes</span>
-            </h2>
+            <h1 className="jana-page-title">
+              Archivo de Clientes
+            </h1>
             <p style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: isMobile ? '13px' : '15px' }}>
               Fichas técnicas, historial y seguimiento personalizado.
             </p>

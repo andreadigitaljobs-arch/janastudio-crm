@@ -598,7 +598,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
             
             {/* Header */}
             <div>
-              <h2 style={{ fontSize: isMobile ? '28px' : '34px', fontWeight: '800', letterSpacing: '-0.5px', color: 'var(--text-primary)', margin: 0 }}>Servicios</h2>
+              <h1 className="jana-page-title">Servicios</h1>
               <p style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: '0.85rem' }}>Define tu oferta y servicios adicionales.</p>
             </div>
             

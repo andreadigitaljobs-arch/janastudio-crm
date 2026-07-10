@@ -737,9 +737,9 @@ const HistoryModule = ({ isMobile, rates, onNavigate }) => {
     <div className="animate-fade-in" style={{ maxWidth: '1100px', margin: '0 auto', paddingBottom: '40px' }}>
       <header className="animate-slide-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
         <div>
-          <h2 style={{ fontSize: '32px', fontWeight: '900', letterSpacing: '-0.5px' }}>
-            {isAdmin ? 'Historial' : 'Mi Historial'} <span className="text-gold">Jana</span>
-          </h2>
+          <h1 className="jana-page-title">
+            {isAdmin ? 'Historial' : 'Mi Historial'} Jana
+          </h1>
           <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>
             {isAdmin ? 'Registro completo de servicios y transacciones.' : 'Consulta tus servicios realizados y propinas.'}
           </p>

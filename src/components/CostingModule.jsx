@@ -143,15 +143,7 @@ const CostingModule = ({ isMobile, services = [], inventory = [] }) => {
   return (
     <div style={{ padding: isMobile ? '16px' : '24px' }}>
       <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ 
-          fontSize: isMobile ? '1.5rem' : '2rem', 
-          fontWeight: 800, 
-          color: 'var(--text-primary)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px'
-        }}>
-          <Receipt size={28} style={{ color: 'var(--pink-primary)' }} />
+        <h1 className="jana-page-title">
           Costeo de Servicios
         </h1>
         <p style={{ color: 'var(--text-muted)', marginTop: '4px' }}>

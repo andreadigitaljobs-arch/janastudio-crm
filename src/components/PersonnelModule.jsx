@@ -435,7 +435,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
           {/* Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', flexDirection: isMobile ? 'column' : 'row', gap: '16px' }}>
             <div>
-              <h2 style={{ fontSize: isMobile ? '28px' : '32px', fontWeight: '800', letterSpacing: '-0.5px', color: 'var(--text-primary)' }}>Jana <span className="text-pink">Team</span></h2>
+              <h1 className="jana-page-title">Jana Team</h1>
               <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>Gestión de talento y desempeño.</p>
             </div>
             <div style={{ display: 'flex', gap: '12px', width: isMobile ? '100%' : 'auto', flexWrap: 'wrap' }}>

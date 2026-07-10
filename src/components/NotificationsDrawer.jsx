@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, X, Trash2, CheckCheck, Sparkles, Smartphone, BellRing, Inbox, Heart } from 'lucide-react';
+import { Bell, X, Trash2, CheckCheck, Sparkles, Smartphone, BellRing, Inbox, Heart, Calendar, DollarSign, User } from 'lucide-react';
 import { notificationService } from '../services/notificationService';
 
 const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
@@ -46,55 +46,8 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
   const unreadDot = { position: 'absolute', top: '-2px', right: '-2px', width: '10px', height: '10px', borderRadius: '50%', background: 'linear-gradient(135deg, #c97282, #d4a0ae)', boxShadow: '0 0 10px rgba(201, 114, 130, 0.6)', border: '2px solid #fff' };
 
   // ─── Shared Permission Banner ──────────────────────────────
-  const permissionBanner = permission !== 'granted' && (
-    <div className="ntf-banner" style={{
-      margin: isMobile ? '0 20px 14px' : '0 0 16px',
-      padding: '18px', borderRadius: '20px',
-              background: 'linear-gradient(135deg, #fdf2f4 0%, #f8e8ec 50%, #f5e1e7 100%)',
-              border: '1px solid rgba(201, 114, 130, 0.2)',
-      display: 'flex', flexDirection: 'column', gap: '12px',
-      position: 'relative', overflow: 'hidden',
-      animation: 'ntfItemIn 0.4s ease 0.1s both',
-      transition: 'all 0.3s ease'
-    }}
-    onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(244, 114, 146, 0.12)'; }}
-    onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
-    >
-      <div style={{
-        position: 'absolute', top: '-20px', right: '-20px', width: '80px', height: '80px',
-        borderRadius: '50%', background: 'linear-gradient(135deg, rgba(244,114,146,0.08), rgba(251,113,133,0.05))',
-        filter: 'blur(10px)'
-      }} />
-      <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', position: 'relative' }}>
-        <div style={{
-          width: '40px', height: '40px', borderRadius: '14px',
-          background: 'linear-gradient(135deg, #c97282, #a0506a)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', flexShrink: 0,
-          boxShadow: '0 4px 16px rgba(201, 114, 130, 0.3)',
-          transition: 'all 0.3s ease'
-        }}><Smartphone size={18} /></div>
-        <div style={{ flex: 1 }}>
-          <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#1f1215', display: 'block' }}>Activa las notificaciones</span>
-          {!isSecure ? (
-            <span style={{ fontSize: '0.68rem', color: '#a0506a', display: 'block', marginTop: '3px', fontWeight: '600' }}>Requiere HTTPS para funcionar.</span>
-          ) : isIOS && !isStandalone ? (
-            <span style={{ fontSize: '0.68rem', color: '#8a4560', display: 'block', marginTop: '3px', fontWeight: '600' }}>iPhone: Compartir → Agregar a pantalla de inicio.</span>
-          ) : (
-            <span style={{ fontSize: '0.68rem', color: '#6b5b6b', display: 'block', marginTop: '3px', lineHeight: 1.4 }}>Recibe alertas instantáneas como un WhatsApp.</span>
-          )}
-        </div>
-      </div>
-      <button onClick={handleRequestPermission} style={{
-        padding: '11px 0', borderRadius: '14px', fontSize: '0.78rem', fontWeight: '700',
-        background: 'linear-gradient(135deg, #c97282, #a0506a, #8a4560)', color: 'white',
-        border: 'none', cursor: 'pointer', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.3)',
-        transition: 'all 0.3s ease', letterSpacing: '0.03em', position: 'relative'
-      }}
-      onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'; e.currentTarget.style.boxShadow = '0 6px 24px rgba(244, 63, 94, 0.4)'; }}
-      onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(244, 63, 94, 0.3)'; }}
-      >{!isSecure ? 'Ver requisitos' : isIOS && !isStandalone ? 'Ver guía' : '✨ Activar ahora'}</button>
-    </div>
-  );
+  const permissionBanner = null;
+
 
   // ─── Shared Actions Bar ────────────────────────────────────
   const actionsBar = notifications.length > 0 && (
@@ -131,20 +84,7 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
       padding: isMobile ? '4px 16px 20px' : '4px 20px 20px',
       display: 'flex', flexDirection: 'column', gap: '10px'
     }}>
-      {permission === 'granted' && (
-        <button onClick={handleSendTestNotification} style={{
-          width: '100%', padding: '12px', borderRadius: '14px',
-          background: 'linear-gradient(135deg, #fdf2f8, #fce7f3)',
-          border: '1.5px dashed rgba(236, 72, 153, 0.3)',
-          color: '#db2777', fontSize: '0.74rem', fontWeight: '700', cursor: 'pointer',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-          transition: 'all 0.3s ease', animation: 'ntfItemIn 0.4s ease 0.2s both',
-          position: 'relative', overflow: 'hidden'
-        }}
-        onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #fce7f3, #fbcfe8)'; e.currentTarget.style.transform = 'translateY(-2px) scale(1.01)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(236, 72, 153, 0.15)'; e.currentTarget.style.borderColor = 'rgba(236, 72, 153, 0.4)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #fdf2f8, #fce7f3)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = 'rgba(236, 72, 153, 0.3)'; }}
-        ><Sparkles size={14} /> Probar notificación push</button>
-      )}
+
       {notifications.length === 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 20px', gap: '16px' }}>
           <div style={{
@@ -169,84 +109,119 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
             <span style={{ fontSize: '0.72rem', color: '#9ca3af', display: 'block', marginTop: '6px', lineHeight: '1.5' }}>No hay notificaciones nuevas.<br/>Vuelve más tarde 💕</span>
           </div>
         </div>
-      ) : (
-        notifications.map((n, idx) => (
-          <div key={n.id} className="ntf-card" style={{
-            padding: '14px 16px', borderRadius: '16px',
-            background: n.read
-              ? 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)'
-              : 'linear-gradient(135deg, #fdf2f4 0%, #f8e8ec 40%, #f5e1e7 100%)',
-            border: n.read
-              ? '1px solid rgba(212, 160, 154, 0.1)'
-              : '1.5px solid rgba(201, 114, 130, 0.25)',
-            position: 'relative', transition: 'all 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
-            animation: `ntfItemIn 0.4s ease ${0.1 + idx * 0.06}s both`,
-            cursor: 'default'
-          }}
-          onMouseEnter={(e) => {
-            if (!n.read) {
-              e.currentTarget.style.background = 'linear-gradient(135deg, #f5e1e7 0%, #edcdd6 40%, #f0d9e1 100%)';
-              e.currentTarget.style.transform = 'translateY(-2px) scale(1.01)';
-              e.currentTarget.style.boxShadow = '0 8px 24px rgba(201, 114, 130, 0.12)';
-            } else {
-              e.currentTarget.style.transform = 'translateY(-1px)';
-              e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.04)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = n.read
-              ? 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)'
-              : 'linear-gradient(135deg, #fdf2f4 0%, #f8e8ec 40%, #f5e1e7 100%)';
-            e.currentTarget.style.transform = 'none';
-            e.currentTarget.style.boxShadow = 'none';
-          }}
-          >
-            {/* Unread glow */}
-            {!n.read && <div style={{ position: 'absolute', top: 0, left: 0, width: '3px', height: '100%', background: 'linear-gradient(180deg, #c97282, #d4a0ae)', borderRadius: '0 4px 4px 0' }} />}
-            {!n.read && (
-              <div style={{
-                position: 'absolute', top: '16px', right: '14px',
-                width: '8px', height: '8px', borderRadius: '50%',
-                background: 'linear-gradient(135deg, #c97282, #d4a0ae)',
-                  boxShadow: '0 0 10px rgba(201, 114, 130, 0.5)',
-                animation: 'ntfPulse 2s ease-in-out infinite'
-              }} />
-            )}
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-              <div style={{
-                width: '36px', height: '36px', borderRadius: '12px',
-                background: n.read
-                  ? 'linear-gradient(135deg, #fdf2f4, #f8e8ec)'
-                  : 'linear-gradient(135deg, #c97282, #a0506a)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: n.read ? '#d4a0ae' : '#ffffff', flexShrink: 0,
-                boxShadow: n.read ? 'none' : '0 4px 14px rgba(201, 114, 130, 0.25)',
-                transition: 'all 0.3s ease'
-              }}><Bell size={15} /></div>
-              <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
-                <h4 style={{ fontSize: '0.8rem', fontWeight: '700', color: '#1f1215', margin: '0 0 4px 0', lineHeight: '1.3', wordBreak: 'break-word' }}>{n.title}</h4>
-                <p style={{ fontSize: '0.7rem', color: '#6b5b6b', margin: '0 0 6px 0', lineHeight: '1.5', wordBreak: 'break-word', overflowWrap: 'break-word' }}>{n.body}</p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{
-                    fontSize: '0.6rem', color: '#9ca3af', fontWeight: '600',
-                    background: 'rgba(0,0,0,0.03)', padding: '2px 8px', borderRadius: '6px'
-                  }}>
-                    {new Date(n.date).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                  {!n.read && (
-                    <span style={{
-                      fontSize: '0.55rem', fontWeight: '700', color: '#c97282',
-                      background: 'linear-gradient(135deg, #fdf2f4, #f8e8ec)',
-                      padding: '2px 7px', borderRadius: '6px',
-                      border: '1px solid rgba(201,114,130,0.15)'
-                    }}>Nuevo</span>
-                  )}
+      ) : (() => {
+          const today = new Date();
+          today.setHours(0,0,0,0);
+          const yesterday = new Date(today);
+          yesterday.setDate(yesterday.getDate() - 1);
+
+          const grouped = { 'Hoy': [], 'Ayer': [], 'Anteriores': [] };
+          notifications.forEach(n => {
+            const d = new Date(n.date);
+            d.setHours(0,0,0,0);
+            if (d.getTime() === today.getTime()) grouped['Hoy'].push(n);
+            else if (d.getTime() === yesterday.getTime()) grouped['Ayer'].push(n);
+            else grouped['Anteriores'].push(n);
+          });
+
+          return Object.entries(grouped).map(([groupName, items]) => {
+            if (items.length === 0) return null;
+            return (
+              <div key={groupName} style={{ marginBottom: '8px' }}>
+                <h4 style={{ fontSize: '0.75rem', fontWeight: 800, color: '#a0506a', marginBottom: '8px', paddingLeft: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{groupName}</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {items.map((n, idx) => {
+                    let IconComponent = Bell;
+                    const titleLower = n.title.toLowerCase();
+                    if (titleLower.includes('cita') || titleLower.includes('reserva')) IconComponent = Calendar;
+                    else if (titleLower.includes('pago') || titleLower.includes('cobro')) IconComponent = DollarSign;
+                    else if (titleLower.includes('client')) IconComponent = User;
+
+                    return (
+                      <div key={n.id} className="ntf-card" style={{
+                        padding: '14px 16px', borderRadius: '16px',
+                        opacity: n.read ? 0.7 : 1,
+                        background: n.read
+                          ? 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)'
+                          : 'linear-gradient(135deg, #fdf2f4 0%, #f8e8ec 40%, #f5e1e7 100%)',
+                        border: n.read
+                          ? '1px solid rgba(212, 160, 154, 0.1)'
+                          : '1.5px solid rgba(201, 114, 130, 0.25)',
+                        position: 'relative', transition: 'all 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
+                        animation: `ntfItemIn 0.4s ease ${0.1 + idx * 0.06}s both`,
+                        cursor: 'default'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!n.read) {
+                          e.currentTarget.style.background = 'linear-gradient(135deg, #f5e1e7 0%, #edcdd6 40%, #f0d9e1 100%)';
+                          e.currentTarget.style.transform = 'translateY(-2px) scale(1.01)';
+                          e.currentTarget.style.boxShadow = '0 8px 24px rgba(201, 114, 130, 0.12)';
+                        } else {
+                          e.currentTarget.style.transform = 'translateY(-1px)';
+                          e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.04)';
+                          e.currentTarget.style.opacity = '1';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = n.read
+                          ? 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)'
+                          : 'linear-gradient(135deg, #fdf2f4 0%, #f8e8ec 40%, #f5e1e7 100%)';
+                        e.currentTarget.style.transform = 'none';
+                        e.currentTarget.style.boxShadow = 'none';
+                        if (n.read) e.currentTarget.style.opacity = '0.7';
+                      }}
+                      >
+                        {/* Unread glow */}
+                        {!n.read && <div style={{ position: 'absolute', top: 0, left: 0, width: '3px', height: '100%', background: 'linear-gradient(180deg, #c97282, #d4a0ae)', borderRadius: '0 4px 4px 0' }} />}
+                        {!n.read && (
+                          <div style={{
+                            position: 'absolute', top: '16px', right: '14px',
+                            width: '8px', height: '8px', borderRadius: '50%',
+                            background: 'linear-gradient(135deg, #c97282, #d4a0ae)',
+                              boxShadow: '0 0 10px rgba(201, 114, 130, 0.5)',
+                            animation: 'ntfPulse 2s ease-in-out infinite'
+                          }} />
+                        )}
+                        <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                          <div style={{
+                            width: '36px', height: '36px', borderRadius: '12px',
+                            background: n.read
+                              ? 'linear-gradient(135deg, #fdf2f4, #f8e8ec)'
+                              : 'linear-gradient(135deg, #c97282, #a0506a)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            color: n.read ? '#d4a0ae' : '#ffffff', flexShrink: 0,
+                            boxShadow: n.read ? 'none' : '0 4px 14px rgba(201, 114, 130, 0.25)',
+                            transition: 'all 0.3s ease'
+                          }}><IconComponent size={16} /></div>
+                          <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+                            <h4 style={{ fontSize: n.read ? '0.78rem' : '0.85rem', fontWeight: n.read ? '600' : '800', color: n.read ? '#4a3f44' : '#1f1215', margin: '0 0 4px 0', lineHeight: '1.3', wordBreak: 'break-word' }}>{n.title}</h4>
+                            <p style={{ fontSize: '0.7rem', color: n.read ? '#8a8086' : '#5b4b5b', margin: '0 0 6px 0', lineHeight: '1.5', wordBreak: 'break-word', overflowWrap: 'break-word' }}>{n.body}</p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <span style={{
+                                fontSize: '0.6rem', color: '#9ca3af', fontWeight: '600',
+                                background: 'rgba(0,0,0,0.03)', padding: '2px 8px', borderRadius: '6px'
+                              }}>
+                                {new Date(n.date).toLocaleDateString('es-VE', { hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                              {!n.read && (
+                                <span style={{
+                                  fontSize: '0.55rem', fontWeight: '700', color: '#c97282',
+                                  background: 'linear-gradient(135deg, #fdf2f4, #f8e8ec)',
+                                  padding: '2px 7px', borderRadius: '6px',
+                                  border: '1px solid rgba(201,114,130,0.15)'
+                                }}>Nuevo</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-            </div>
-          </div>
-        ))
-      )}
+            );
+          });
+      })()}
     </div>
   );
 
@@ -434,7 +409,7 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
             ><X size={17} strokeWidth={2.5} /></button>
           </div>
 
-          <div style={{ padding: '16px 24px 0' }}>{permissionBanner}</div>
+          {/* <div style={{ padding: '16px 24px 0' }}>{permissionBanner}</div> */}
           <div style={{ padding: '0 24px' }}>{actionsBar}</div>
           {listContent}
         </div>

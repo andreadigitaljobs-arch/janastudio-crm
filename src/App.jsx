@@ -20,9 +20,9 @@ import {
   Plus,
   Home,
   Crown,
-  ChevronRight,
-  Zap
+  ChevronRight
 } from 'lucide-react';
+import LaserGunIcon from './components/LaserGunIcon';
 import { dataService } from './services/dataService';
 
 import ParticleBackground from './components/ParticleBackground';
@@ -115,7 +115,7 @@ function App() {
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { id: 'scheduling', label: 'Agenda', icon: Calendar },
     { id: 'reception', label: 'Recepción', icon: UserCircle },
-    { id: 'laser', label: 'Centro Láser', icon: Zap },
+    { id: 'laser', label: 'Centro Láser', icon: LaserGunIcon },
     { id: 'clients', label: 'Clientes', icon: Users },
     { id: 'services', label: 'Servicios', icon: Star },
     { id: 'personnel', label: 'Equipo', icon: Sparkles },
@@ -138,10 +138,8 @@ function App() {
   }, [allowedMenuItems]);
 
   const mobileHiddenItems = useMemo(() => {
-    if (allowedMenuItems.length <= 5) {
-      return [];
-    }
-    return allowedMenuItems.slice(4);
+    const bottomBarIds = ['dashboard', 'scheduling', 'clients'];
+    return allowedMenuItems.filter(item => !bottomBarIds.includes(item.id));
   }, [allowedMenuItems]);
 
   useScrollLock(isReceptionModalOpen);
@@ -776,11 +774,10 @@ function App() {
           borderTop: '1px solid rgba(212, 160, 154, 0.3)',
           boxShadow: '0 -10px 40px rgba(74, 48, 54, 0.12)',
           zIndex: 2000,
-          padding: '20px 18px calc(24px + env(safe-area-inset-bottom, 12px)) 18px',
+          padding: '16px 16px calc(20px + env(safe-area-inset-bottom, 12px)) 16px',
           transform: isMoreOpen ? 'translateY(0)' : 'translateY(100%)',
           transition: 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
-          display: 'flex', flexDirection: 'column', gap: '18px',
-          maxHeight: '85vh', overflowY: 'auto'
+          display: 'flex', flexDirection: 'column', gap: '12px'
         }}>
           {/* Header indicator bar */}
           <div style={{
@@ -805,7 +802,7 @@ function App() {
           </div>
 
           {/* Remaining menu items */}
-          <div className="mobile-more-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+          <div className="mobile-more-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
             {mobileHiddenItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;

@@ -1265,7 +1265,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
         gap: isMobile ? '12px' : '0'
       }}>
         <div>
-          <h1 style={{ fontSize: '32px', fontWeight: '900' }}>Caja <span className="text-pink">Jana Pro</span></h1>
+          <h1 className="jana-page-title">Caja Jana Pro</h1>
           <p style={{ color: 'var(--text-secondary)' }}>Liquidación de servicios y venta de productos.</p>
         </div>
         {pendingSyncCount > 0 ? (

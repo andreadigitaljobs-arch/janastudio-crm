@@ -206,7 +206,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', flexDirection: isMobile ? 'column' : 'row', gap: '16px' }}>
               <div>
-                <h2 style={{ fontSize: isMobile ? '28px' : '32px', fontWeight: '800', letterSpacing: '-0.5px', color: 'var(--text-primary)' }}>Control de <span className="text-pink">Stock</span></h2>
+                <h1 className="jana-page-title">Control de Stock</h1>
                 <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>Gestión de productos y suministros críticos.</p>
               </div>
               <div style={{ display: 'flex', gap: '12px', width: isMobile ? '100%' : 'auto' }}>

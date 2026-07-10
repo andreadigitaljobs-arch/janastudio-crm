@@ -199,7 +199,7 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
     <div style={{ padding: isMobile ? '16px' : '32px', maxWidth: '1400px', margin: '0 auto' }}>
       <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '16px' : '0', marginBottom: '28px' }}>
         <div>
-          <h2 style={{ fontSize: isMobile ? '22px' : '28px', fontWeight: '900', color: 'var(--text-primary)', marginBottom: '4px' }}>Reportes</h2>
+          <h1 className="jana-page-title">Reportes</h1>
           <p style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '500' }}>Métricas, análisis y decisiones para el crecimiento del salón.</p>
         </div>
         <div style={{ display: 'flex', gap: '10px', width: isMobile ? '100%' : 'auto' }}>
