@@ -2621,7 +2621,8 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                     className="btn-interactive"
                     style={{
                       aspectRatio: isMobile ? 'none' : '4/3',
-                      height: isMobile ? '86px' : 'auto',
+                      minHeight: isMobile ? '100px' : 'auto',
+                      height: 'auto',
                       backgroundColor: 'rgba(160,80,106,0.02)',
                       borderRadius: '16px',
                       border: '2px dashed var(--pink-primary)',
