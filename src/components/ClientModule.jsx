@@ -353,18 +353,44 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
     <div className="client-module animate-fade-in" style={{ paddingBottom: '60px' }}>
       {!selectedClient ? (
         <>
-          {/* Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap', gap: '16px' }}>
-            <div>
-              <h1 className="jana-page-title" style={{ margin: 0 }}>
-                Archivo de Clientes
-              </h1>
-              <p style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: isMobile ? '13px' : '15px' }}>
-                Fichas técnicas, historial y seguimiento personalizado.
-              </p>
+          {/* Premium Header Toolbar */}
+          <div className="glass-card animate-slide-down" style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            marginBottom: '32px', 
+            padding: windowWidth < 600 ? '16px 20px' : '20px 28px', 
+            borderRadius: '24px', 
+            border: '1px solid rgba(212, 160, 154, 0.25)', 
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.5) 100%)',
+            backdropFilter: 'blur(20px)',
+            boxShadow: '0 8px 32px rgba(160, 80, 106, 0.03)',
+            flexWrap: 'wrap', 
+            gap: '20px',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            {/* Background Ambient Glow */}
+            <div style={{ position: 'absolute', top: '-50px', left: '-50px', width: '150px', height: '150px', background: 'radial-gradient(circle, rgba(212,160,154,0.15) 0%, rgba(212,160,154,0) 70%)', pointerEvents: 'none' }} />
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', zIndex: 1 }}>
+              {!isMobile && (
+                <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: 'var(--magenta-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 20px rgba(160, 80, 106, 0.15)', flexShrink: 0 }}>
+                  <Users size={22} color="white" />
+                </div>
+              )}
+              <div>
+                <h1 className="jana-page-title" style={{ margin: 0, fontSize: windowWidth < 600 ? '20px' : '26px', letterSpacing: '-0.5px' }}>
+                  Archivo de Clientes
+                </h1>
+                <p style={{ color: 'var(--text-secondary)', marginTop: '2px', fontSize: windowWidth < 600 ? '12px' : '14px', fontWeight: '500' }}>
+                  Fichas técnicas, historial y seguimiento personalizado.
+                </p>
+              </div>
             </div>
+            
             {!isMobile && (
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', zIndex: 1 }}>
                 <button 
                   onClick={() => {
                     setNewClient({
@@ -384,7 +410,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                 >
                   <Plus size={16} /> Nueva clienta
                 </button>
-                <button style={{ padding: '10px 16px', borderRadius: '20px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <button style={{ padding: '10px 16px', borderRadius: '20px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }} className="btn-interactive">
                   <Download size={15} /> Exportar
                 </button>
               </div>
