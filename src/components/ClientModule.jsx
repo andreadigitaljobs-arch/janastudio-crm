@@ -2584,18 +2584,22 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
             )}
           </div>
 
-          {/* Mobile Tabs */}
+          {/* Mobile Tabs Segmented Control (Equidistante y sin scroll horizontal) */}
           <div 
             style={{ 
-              display: 'flex', gap: '6px', overflowX: 'auto', 
-              paddingBottom: '8px', marginBottom: '8px',
-              scrollbarWidth: 'none', msOverflowStyle: 'none'
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(4, 1fr)', 
+              gap: '4px', 
+              background: '#f3ecee', 
+              padding: '4px', 
+              borderRadius: '12px',
+              marginBottom: '16px',
+              border: '1px solid var(--border-color)'
             }}
-            className="no-scrollbar"
           >
             {[
-              { id: 'gallery', label: 'Galería', icon: <ImageIcon size={14} /> },
-              { id: 'diagnoses', label: 'Salud Capilar', icon: <Activity size={14} /> },
+              { id: 'gallery', label: 'Fotos', icon: <ImageIcon size={14} /> },
+              { id: 'diagnoses', label: 'Salud', icon: <Activity size={14} /> },
               { id: 'packages', label: 'Paquetes', icon: <Package size={14} /> },
               { id: 'history', label: 'Visitas', icon: <Calendar size={14} /> }
             ].map(tab => {
@@ -2605,19 +2609,25 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   key={tab.id}
                   onClick={() => { setActiveSubTab(tab.id); setShowCollage(false); }}
                   style={{
-                    display: 'flex', alignItems: 'center', gap: '6px',
-                    padding: '8px 14px', borderRadius: '20px', border: isActive ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)',
-                    background: isActive ? 'linear-gradient(135deg, rgba(196,139,159,0.12) 0%, rgba(212,160,154,0.06) 100%)' : 'white',
+                    display: 'flex', 
+                    flexDirection: 'column',
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    gap: '4px',
+                    padding: '8px 2px', 
+                    borderRadius: '10px', 
+                    border: 'none',
+                    background: isActive ? 'white' : 'transparent',
                     color: isActive ? 'var(--pink-primary)' : 'var(--text-secondary)',
-                    fontWeight: '800',
-                    fontSize: '12px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    transform: isActive ? 'scale(1.02)' : 'scale(1)',
-                    boxShadow: isActive ? '0 4px 10px rgba(212,160,154,0.15)' : 'none'
+                    fontWeight: isActive ? '800' : '600',
+                    fontSize: '11px', 
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    boxShadow: isActive ? '0 2px 6px rgba(160, 80, 106, 0.05)' : 'none'
                   }}
                 >
                   <span style={{ display: 'flex', color: isActive ? 'var(--pink-primary)' : 'var(--text-muted)' }}>{tab.icon}</span>
-                  {tab.label}
+                  <span>{tab.label}</span>
                 </button>
               );
             })}
@@ -2630,9 +2640,18 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 300px) 1fr', gap: '32px' }}>
         {/* Left Sidebar: Info */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div className="glass-card" style={{ textAlign: 'center' }}>
-            <div style={{ width: '120px', height: '120px', borderRadius: '50%', backgroundColor: 'var(--bg-tertiary)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', border: '2px solid var(--border-color)' }}>
-              <User size={64} color="var(--pink-primary)" />
+          <div className="glass-card" style={{ textAlign: 'center', padding: '24px 20px', borderRadius: '24px' }}>
+            <div style={{ 
+              width: '100px', height: '100px', borderRadius: '50%', 
+              backgroundColor: 'white', display: 'flex', alignItems: 'center', 
+              justifyContent: 'center', margin: '0 auto 20px', border: '3px solid var(--pink-primary)',
+              boxShadow: '0 4px 12px rgba(212,160,154,0.2)', overflow: 'hidden'
+            }}>
+              {client.image_url ? (
+                <img src={client.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <User size={48} color="var(--pink-primary)" />
+              )}
             </div>
             {isEditing ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -2705,29 +2724,47 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
         
         {/* Right Content: Tabs */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px' }}>
+          <div style={{ 
+            display: 'inline-flex', 
+            background: 'var(--bg-tertiary)', 
+            padding: '6px', 
+            borderRadius: '16px', 
+            border: '1px solid var(--border-color)',
+            gap: '4px',
+            alignSelf: 'flex-start'
+          }}>
             {[
               { id: 'gallery', label: 'Galería de Trabajos', icon: <ImageIcon size={16} /> },
               { id: 'diagnoses', label: 'Diagnóstico Capilar', icon: <Activity size={16} /> },
               { id: 'packages', label: 'Paquetes y Sesiones', icon: <Package size={16} /> },
               { id: 'history', label: 'Historial de Visitas', icon: <Calendar size={16} /> }
-            ].map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => { setActiveSubTab(tab.id); setShowCollage(false); }}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '6px',
-                  padding: '8px 16px', borderRadius: '10px', border: 'none',
-                  background: activeSubTab === tab.id ? 'rgba(196,139,159,0.1)' : 'transparent',
-                  color: activeSubTab === tab.id ? 'var(--pink-primary)' : 'var(--text-secondary)',
-                  fontWeight: activeSubTab === tab.id ? '700' : '500',
-                  fontSize: '13px', cursor: 'pointer', transition: '0.2s'
-                }}
-              >
-                {tab.icon}
-                {tab.label}
-              </button>
-            ))}
+            ].map(tab => {
+              const isActive = activeSubTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => { setActiveSubTab(tab.id); setShowCollage(false); }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 20px',
+                    borderRadius: '12px',
+                    border: 'none',
+                    background: isActive ? 'white' : 'transparent',
+                    color: isActive ? 'var(--pink-primary)' : 'var(--text-secondary)',
+                    fontWeight: isActive ? '800' : '600',
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    boxShadow: isActive ? '0 4px 12px rgba(160, 80, 106, 0.06)' : 'none',
+                    transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)'
+                  }}
+                >
+                  {tab.icon}
+                  {tab.label}
+                </button>
+              );
+            })}
           </div>
 
           <div>
