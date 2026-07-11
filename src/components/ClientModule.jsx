@@ -403,14 +403,9 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                   style={{ 
                     display: 'flex', 
                     gap: '8px', 
-                    overflowX: isMobile ? 'auto' : 'visible', 
-                    whiteSpace: isMobile ? 'nowrap' : 'normal',
-                    flex: isMobile ? '1' : 'auto',
-                    paddingBottom: isMobile ? '6px' : '0',
-                    scrollbarWidth: 'none',
-                    msOverflowStyle: 'none'
+                    flexWrap: 'wrap',
+                    flex: 1
                   }}
-                  className="no-scrollbar"
                 >
                   {[
                     { key: 'all', label: 'Todas' },
