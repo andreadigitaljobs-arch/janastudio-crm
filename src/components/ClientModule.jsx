@@ -1060,9 +1060,10 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                             <tr
                               key={client.id}
                               onClick={() => {
-                                setSelectedSidebarClient(client);
                                 if (isNarrowScreen) {
-                                  quickViewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                  setSelectedClient(client);
+                                } else {
+                                  setSelectedSidebarClient(client);
                                 }
                               }}
                               style={{
@@ -1258,7 +1259,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
               </div>
 
               {/* Right Column: Ficha Rápida Sidebar */}
-              <div ref={quickViewRef} style={{ display: 'flex', flexDirection: 'column', gap: '24px', position: isNarrowScreen ? 'static' : 'sticky', top: '24px' }}>
+              <div ref={quickViewRef} style={{ display: isNarrowScreen ? 'none' : 'flex', flexDirection: 'column', gap: '24px', position: 'sticky', top: '24px' }}>
                 {/* Ficha Rápida Card */}
                 <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', position: 'relative', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -2668,94 +2669,73 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   <div style={{ 
                     display: 'flex', 
                     flexDirection: 'column', 
-                    gap: '14px', 
+                    gap: isMobile ? '16px' : '20px', 
                     marginBottom: '24px', 
-                    padding: isMobile ? '14px 12px' : '16px', 
-                    background: '#faf5f5', 
+                    padding: isMobile ? '16px' : '20px', 
+                    background: '#ffffff', 
                     borderRadius: '20px',
-                    border: '1px solid rgba(160,80,106,0.06)'
+                    border: '1px solid var(--border-color)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
                   }}>
-                    {/* Row 1: Tipo & Orden */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                        {[
-                          { id: 'all', label: 'Todas' },
-                          { id: 'Antes', label: 'Antes' },
-                          { id: 'Después', label: 'Después' }
-                        ].map(f => (
-                          <button
-                            key={f.id}
-                            onClick={() => setGalleryFilter(f.id)}
-                            className="btn-interactive"
-                            style={{
-                              padding: '8px 16px', borderRadius: '12px', fontSize: '12px', fontWeight: '750', cursor: 'pointer',
-                              border: galleryFilter === f.id ? 'none' : '1px solid var(--border-color)',
-                              background: galleryFilter === f.id ? 'var(--pink-primary)' : 'white',
-                              color: galleryFilter === f.id ? 'white' : 'var(--text-secondary)',
-                              transition: 'all 0.2s'
-                            }}
-                          >
-                            {f.label}
-                          </button>
-                        ))}
-                      </div>
-
-                      <button
-                        onClick={() => setGallerySortOrder(o => o === 'newest' ? 'oldest' : 'newest')}
-                        className="btn-interactive"
-                        style={{ padding: '8px 16px', borderRadius: '12px', fontSize: '12px', fontWeight: '750', cursor: 'pointer', border: '1px solid var(--border-color)', background: 'white', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}
-                      >
-                        {gallerySortOrder === 'newest' ? 'Más recientes' : 'Más antiguas'}
-                      </button>
+                    {/* Segmented Control for Type */}
+                    <div style={{ display: 'flex', width: '100%', background: '#faf5f5', borderRadius: '14px', padding: '4px' }}>
+                      {[
+                        { id: 'all', label: 'Todas' },
+                        { id: 'Antes', label: 'Antes' },
+                        { id: 'Después', label: 'Después' }
+                      ].map(f => (
+                        <button
+                          key={f.id}
+                          onClick={() => setGalleryFilter(f.id)}
+                          style={{
+                            flex: 1,
+                            padding: '10px 0',
+                            borderRadius: '10px',
+                            fontSize: '13px',
+                            fontWeight: '750',
+                            cursor: 'pointer',
+                            border: 'none',
+                            background: galleryFilter === f.id ? 'var(--pink-primary)' : 'transparent',
+                            color: galleryFilter === f.id ? 'white' : 'var(--text-secondary)',
+                            boxShadow: galleryFilter === f.id ? '0 2px 8px rgba(160,80,106,0.3)' : 'none',
+                            transition: 'all 0.25s ease'
+                          }}
+                        >
+                          {f.label}
+                        </button>
+                      ))}
                     </div>
 
-                    <span style={{ width: '100%', height: '1px', background: 'rgba(160,80,106,0.06)' }} />
-
-                    {/* Row 2: Fechas */}
-                    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', gap: '10px' }}>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', width: '100%' }}>
-                        {[
-                          { id: 'all', label: 'Todas fechas' },
-                          { id: 'week', label: 'Esta semana' },
-                          { id: 'month', label: 'Este mes' },
-                          { id: 'year', label: 'Este año' },
-                          { id: 'custom', label: 'Personalizado' }
-                        ].map(f => (
-                          <button
-                            key={f.id}
-                            onClick={() => { setDateFilter(f.id); if (f.id !== 'custom') setCustomDateFilter(''); }}
-                            className="btn-interactive"
-                            style={{
-                              padding: '8px 16px', borderRadius: '12px', fontSize: '12px', fontWeight: '750', cursor: 'pointer',
-                              border: dateFilter === f.id ? 'none' : '1px solid var(--border-color)',
-                              background: dateFilter === f.id ? 'var(--pink-primary)' : 'white',
-                              color: dateFilter === f.id ? 'white' : 'var(--text-secondary)',
-                              transition: 'all 0.2s'
-                            }}
-                          >
-                            {f.label}
-                          </button>
-                        ))}
-                      </div>
-
+                    {/* Dropdowns Row */}
+                    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '12px', alignItems: isMobile ? 'stretch' : 'center' }}>
+                      {/* Date Filter Dropdown */}
+                      <JanaSelect
+                        variant="light"
+                        placeholder="Fecha"
+                        value={dateFilter}
+                        onChange={(val) => { setDateFilter(val); if (val !== 'custom') setCustomDateFilter(''); }}
+                        options={[
+                          { label: 'Todas las fechas', value: 'all' },
+                          { label: 'Esta semana', value: 'week' },
+                          { label: 'Este mes', value: 'month' },
+                          { label: 'Este año', value: 'year' },
+                          { label: 'Personalizado...', value: 'custom' }
+                        ]}
+                        style={{ flex: isMobile ? 'none' : 1, width: isMobile ? '100%' : 'auto' }}
+                      />
+                      
+                      {/* Custom Date Input */}
                       {dateFilter === 'custom' && (
                         <input
                           type="date"
                           value={customDateFilter}
                           onChange={(e) => setCustomDateFilter(e.target.value)}
                           className="form-input"
-                          style={{ padding: '8px 12px', fontSize: '12px', width: isMobile ? '100%' : 'auto', borderRadius: '12px', borderColor: customDateFilter ? 'var(--pink-primary)' : undefined, boxShadow: 'none' }}
+                          style={{ padding: '9px 12px', fontSize: '13px', borderRadius: '12px', borderColor: customDateFilter ? 'var(--pink-primary)' : 'var(--border-color)', flex: isMobile ? 'none' : 1, width: isMobile ? '100%' : 'auto' }}
                         />
                       )}
-                    </div>
 
-                    <span style={{ width: '100%', height: '1px', background: 'rgba(160,80,106,0.06)' }} />
-
-                    {/* Row 3: Servicios */}
-                    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', gap: isMobile ? '6px' : '10px' }}>
-                      <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', marginBottom: isMobile ? '4px' : '0' }}>
-                        Filtrar por Servicio:
-                      </span>
+                      {/* Service Filter Dropdown */}
                       <JanaSelect
                         variant="light"
                         placeholder="Todos los servicios"
@@ -2765,9 +2745,20 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                           { label: 'Todos los servicios', value: 'all' },
                           ...galleryServiceNames.map(name => ({ label: name, value: name }))
                         ]}
-                        style={{ 
-                          width: isMobile ? '100%' : '240px'
-                        }}
+                        style={{ flex: isMobile ? 'none' : 1, width: isMobile ? '100%' : 'auto' }}
+                      />
+
+                      {/* Sort Order Dropdown */}
+                      <JanaSelect
+                        variant="light"
+                        placeholder="Orden"
+                        value={gallerySortOrder}
+                        onChange={(val) => setGallerySortOrder(val)}
+                        options={[
+                          { label: 'Más recientes', value: 'newest' },
+                          { label: 'Más antiguas', value: 'oldest' }
+                        ]}
+                        style={{ flex: isMobile ? 'none' : 1, width: isMobile ? '100%' : 'auto' }}
                       />
                     </div>
                   </div>
