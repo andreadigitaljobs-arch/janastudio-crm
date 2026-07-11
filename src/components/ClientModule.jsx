@@ -3307,25 +3307,41 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                 
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                   {client.phone && (
-                    <a 
-                      href={`tel:${client.phone}`}
-                      style={{ 
-                        textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px', 
-                        fontSize: '11px', color: 'var(--magenta-primary)', fontWeight: '750',
-                        backgroundColor: 'rgba(160,80,106,0.06)', padding: '4px 10px', borderRadius: '20px',
-                        border: '1px solid rgba(160,80,106,0.1)'
-                      }}
-                      className="btn-interactive"
-                    >
-                      <Phone size={10} color="var(--magenta-primary)" /> Llamar
-                    </a>
+                    <>
+                      <a 
+                        href={`tel:${client.phone}`}
+                        style={{ 
+                          textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px', 
+                          fontSize: '11px', color: 'var(--magenta-primary)', fontWeight: '750',
+                          backgroundColor: 'rgba(160,80,106,0.06)', padding: '4px 10px', borderRadius: '20px',
+                          border: '1px solid rgba(160,80,106,0.1)', whiteSpace: 'nowrap'
+                        }}
+                        className="btn-interactive"
+                      >
+                        <Phone size={10} color="var(--magenta-primary)" /> Llamar
+                      </a>
+                      <a 
+                        href={`https://wa.me/${client.phone.replace(/[^0-9]/g, '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ 
+                          textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px', 
+                          fontSize: '11px', color: '#128C7E', fontWeight: '750',
+                          backgroundColor: 'rgba(18,140,126,0.06)', padding: '4px 10px', borderRadius: '20px',
+                          border: '1px solid rgba(18,140,126,0.1)', whiteSpace: 'nowrap'
+                        }}
+                        className="btn-interactive"
+                      >
+                        <MessageCircle size={10} color="#128C7E" /> WhatsApp
+                      </a>
+                    </>
                   )}
                   <div 
                     style={{ 
                       display: 'flex', alignItems: 'center', gap: '4px', 
                       fontSize: '11px', color: 'var(--magenta-primary)', fontWeight: '750',
                       backgroundColor: 'rgba(160,80,106,0.06)', padding: '4px 10px', borderRadius: '20px',
-                      border: '1px solid rgba(160,80,106,0.1)'
+                      border: '1px solid rgba(160,80,106,0.1)', whiteSpace: 'nowrap'
                     }}
                   >
                     <Sparkles size={10} color="var(--magenta-primary)" /> {history.length} visitas
@@ -3366,15 +3382,46 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   </div>
                 </div>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                  <div style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>CUMPLE</span>
-                    <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '750' }}>{client.birth_date ? new Date(client.birth_date + 'T00:00:00').toLocaleDateString([], {day: '2-digit', month: 'short'}) : 'N/A'}</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                    <div style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>CUMPLE</span>
+                      <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '750' }}>{client.birth_date ? new Date(client.birth_date + 'T00:00:00').toLocaleDateString([], {day: '2-digit', month: 'short'}) : 'N/A'}</span>
+                    </div>
+                    <div style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>REGISTRO</span>
+                      <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '750' }}>{client.created_at ? new Date(client.created_at).toLocaleDateString([], {day: '2-digit', month: '2-digit'}) : 'N/A'}</span>
+                    </div>
                   </div>
-                  <div style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>REGISTRO</span>
-                    <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '750' }}>{client.created_at ? new Date(client.created_at).toLocaleDateString([], {day: '2-digit', month: '2-digit'}) : 'N/A'}</span>
-                  </div>
+
+                  {/* Mobile Stats Block */}
+                  {(() => {
+                    const totalSpend = history.reduce((sum, h) => sum + (Number(h.amount) || 0), 0);
+                    return (
+                      <>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                          <div style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>PRÓX. CITA</span>
+                            <span style={{ fontSize: '11px', color: upcomingAppointment ? 'var(--magenta-primary)' : 'var(--text-primary)', fontWeight: '750' }}>
+                              {upcomingAppointment 
+                                ? new Date(upcomingAppointment.scheduled_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'short' })
+                                : 'Ninguna'}
+                            </span>
+                          </div>
+                          <div style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>FACTURADO</span>
+                            <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '750' }}>
+                              ${totalSpend.toLocaleString('es-VE', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                            </span>
+                          </div>
+                        </div>
+                        <div style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>ÚLT. VISITA</span>
+                          <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '750' }}>{lastVisitLabel}</span>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
               )}
             </div>
