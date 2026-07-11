@@ -247,15 +247,15 @@ const JanaLoader = ({ visible }) => {
           animation: fadeInScale 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         .loader-logo {
-          width: 100%;
-          max-width: 320px;
+          width: 280px;
+          max-width: 80%;
           height: auto;
           object-fit: contain;
           filter: drop-shadow(0 4px 10px rgba(122, 88, 83, 0.08));
         }
-        @media (max-width: 480px) {
+        @media (max-width: 768px), (orientation: portrait) and (max-width: 1366px) {
           .loader-logo {
-            max-width: 250px;
+            width: 220px;
           }
         }
 
