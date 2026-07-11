@@ -2618,7 +2618,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                     borderRadius: '10px', 
                     border: 'none',
                     background: isActive ? 'white' : 'transparent',
-                    color: isActive ? 'var(--pink-primary)' : 'var(--text-secondary)',
+                    color: isActive ? 'var(--magenta-primary)' : 'var(--text-secondary)',
                     fontWeight: isActive ? '800' : '600',
                     fontSize: '11px', 
                     cursor: 'pointer',
@@ -2626,7 +2626,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                     boxShadow: isActive ? '0 2px 6px rgba(160, 80, 106, 0.05)' : 'none'
                   }}
                 >
-                  <span style={{ display: 'flex', color: isActive ? 'var(--pink-primary)' : 'var(--text-muted)' }}>{tab.icon}</span>
+                  <span style={{ display: 'flex', color: isActive ? 'var(--magenta-primary)' : 'var(--text-muted)' }}>{tab.icon}</span>
                   <span>{tab.label}</span>
                 </button>
               );
@@ -2644,13 +2644,13 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
             <div style={{ 
               width: '100px', height: '100px', borderRadius: '50%', 
               backgroundColor: 'white', display: 'flex', alignItems: 'center', 
-              justifyContent: 'center', margin: '0 auto 20px', border: '3px solid var(--pink-primary)',
+              justifyContent: 'center', margin: '0 auto 20px', border: '3px solid var(--magenta-primary)',
               boxShadow: '0 4px 12px rgba(212,160,154,0.2)', overflow: 'hidden'
             }}>
               {client.image_url ? (
                 <img src={client.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
-                <User size={48} color="var(--pink-primary)" />
+                <User size={48} color="var(--magenta-primary)" />
               )}
             </div>
             {isEditing ? (
@@ -2694,10 +2694,10 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                 <h3 style={{ fontSize: '20px', marginBottom: '4px' }}>{client.name}</h3>
                 <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '16px' }}>V-{client.id_card || '00.000.000'}</p>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                  <Phone size={14} color="var(--pink-primary)" /> {client.phone}
+                  <Phone size={14} color="var(--magenta-primary)" /> {client.phone}
                 </p>
                 <div style={{ backgroundColor: 'var(--bg-tertiary)', padding: '12px', borderRadius: '8px', fontSize: '14px' }}>
-                  <span style={{ color: 'var(--pink-primary)', fontWeight: '700' }}>{history.length}</span> Visitas registradas
+                  <span style={{ color: 'var(--magenta-primary)', fontWeight: '700' }}>{history.length}</span> Visitas registradas
                 </div>
               </>
             )}
@@ -2714,7 +2714,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
             {!isEditing && (
               <button 
                 onClick={() => setIsEditing(true)}
-                style={{ width: '100%', marginTop: '20px', background: 'none', border: '1px solid var(--pink-primary)', color: 'var(--pink-primary)', padding: '8px', borderRadius: '6px', cursor: 'pointer' }}
+                style={{ width: '100%', marginTop: '20px', background: 'none', border: '1px solid var(--magenta-primary)', color: 'var(--magenta-primary)', padding: '8px', borderRadius: '6px', cursor: 'pointer' }}
               >
                 Editar Perfil
               </button>
@@ -2752,7 +2752,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                     borderRadius: '12px',
                     border: 'none',
                     background: isActive ? 'white' : 'transparent',
-                    color: isActive ? 'var(--pink-primary)' : 'var(--text-secondary)',
+                    color: isActive ? 'var(--magenta-primary)' : 'var(--text-secondary)',
                     fontWeight: isActive ? '800' : '600',
                     fontSize: '13px',
                     cursor: 'pointer',
