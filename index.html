@@ -21,15 +21,201 @@
     <title>Jana Studio</title>
     <style>
       html, body { background: #f7ebe6 !important; margin: 0; padding: 0; overflow: hidden; }
+
+      .loader-container {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        background-image: url(/fondo_carga.png);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-color: #f7ebe6;
+        font-family: 'Playfair Display', Georgia, serif;
+      }
+      @media (max-width: 768px), (orientation: portrait) and (max-width: 1366px) {
+        .loader-container {
+          background-image: url(/fondo_carga_mobile.png);
+        }
+      }
+
+      .loader-content {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 90%;
+        max-width: 600px;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .loader-logo-wrapper {
+        margin-bottom: 25px;
+      }
+      .loader-logo {
+        width: 280px;
+        max-width: 80%;
+        height: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 4px 10px rgba(122, 88, 83, 0.08));
+      }
+      .loader-logo.animate-first-load {
+        animation: fadeInScale 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      @media (max-width: 768px), (orientation: portrait) and (max-width: 1366px) {
+        .loader-logo {
+          width: 220px;
+        }
+      }
+
+      .loader-spinner-wrapper {
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: center;
+      }
+      .rose-gold-spinner {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        border: 3.5px solid rgba(179, 130, 121, 0.15);
+        border-top: 3.5px solid #b38279;
+        animation: luxurySpin 1.2s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+        box-shadow: 0 0 15px rgba(179, 130, 121, 0.2);
+      }
+
+      .loader-info-wrapper {
+        margin-bottom: 25px;
+      }
+      .loader-title {
+        font-size: 21px;
+        font-weight: 500;
+        color: #7a5853;
+        margin: 0 0 8px 0;
+        letter-spacing: 0.02em;
+        text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+      }
+      .loader-subtitle {
+        font-family: 'Manrope', sans-serif;
+        font-size: 13px;
+        font-weight: 400;
+        color: #9e7f7b;
+        margin: 0;
+        letter-spacing: 0.03em;
+      }
+      @media (max-width: 480px) {
+        .loader-title { font-size: 18px; }
+        .loader-subtitle { font-size: 12px; }
+      }
+
+      .loader-progress-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        width: 100%;
+        max-width: 320px;
+        margin-bottom: 70px;
+      }
+      .custom-progress-track {
+        flex: 1;
+        height: 3px;
+        background: rgba(122, 88, 83, 0.12);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .custom-progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #d4a39b, #b38279, #d4a39b);
+        background-size: 200% 100%;
+        border-radius: 10px;
+      }
+      .loader-percent {
+        font-size: 13px;
+        font-style: italic;
+        color: #7a5853;
+        min-width: 32px;
+        text-align: right;
+      }
+
+      .loader-footer {
+        position: absolute;
+        bottom: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+      @media (max-height: 600px) {
+        .loader-footer {
+          position: relative;
+          bottom: auto;
+          margin-top: 20px;
+        }
+        .loader-progress-row {
+          margin-bottom: 30px;
+        }
+      }
+      .loader-heart-icon {
+        color: #b38279;
+        font-size: 16px;
+      }
+      .loader-slogan {
+        font-size: 13px;
+        font-style: italic;
+        color: #7a5853;
+        margin: 0;
+        letter-spacing: 0.05em;
+        text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.4);
+        padding: 6px 16px;
+        border-radius: 20px;
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+      }
+
+      @keyframes luxurySpin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      @keyframes fadeInScale {
+        0% { opacity: 0; transform: scale(0.96); }
+        100% { opacity: 1; transform: scale(1); }
+      }
     </style>
   </head>
   <body>
-    <div id="splash-loader" style="position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background-size:cover;background-position:center;background-color:#f7ebe6;font-family:'Playfair Display',Georgia,serif;">
-      <img src="/logo.webp" alt="Jana Studio" style="margin-bottom:30px;filter:drop-shadow(0 4px 10px rgba(122,88,83,0.08));animation:fadeInScale 1.2s cubic-bezier(0.16,1,0.3,1) forwards;" />
-      <div style="width:46px;height:46px;border-radius:50%;border:3.5px solid rgba(179,130,121,0.15);border-top:3.5px solid #b38279;box-shadow:0 0 15px rgba(179,130,121,0.2);animation:luxurySpin 1.2s cubic-bezier(0.5,0.1,0.5,0.9) infinite;margin-bottom:30px;"></div>
-      <h2 style="font-size:21px;font-weight:500;color:#7a5853;margin:0 0 8px;text-shadow:0 1px 1px rgba(255, 255, 255, 0.5);letter-spacing:0.02em;">Preparando tu experiencia...</h2>
-      <p style="font-family:'Manrope',sans-serif;font-size:13px;color:#9e7f7b;margin:0;letter-spacing:0.03em;" id="splash-subtitle">Cargando citas, clientes y servicios...</p>
-      <style>#splash-loader{background-image:url(/fondo_carga.png)}#splash-loader img{width:280px;max-width:80%}@keyframes luxurySpin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}@keyframes fadeInScale{0%{opacity:0;transform:scale(0.96)}100%{opacity:1;transform:scale(1)}}@media (max-width:768px),(orientation:portrait) and (max-width:1366px){#splash-loader{background-image:url(/fondo_carga_mobile.png) !important}#splash-loader img{width:220px}}</style>
+    <div id="splash-loader" class="loader-container">
+      <div class="loader-content">
+        <div class="loader-logo-wrapper">
+          <img src="/logo.webp" alt="Jana Studio" class="loader-logo animate-first-load" />
+        </div>
+        <div class="loader-spinner-wrapper">
+          <div class="rose-gold-spinner"></div>
+        </div>
+        <div class="loader-info-wrapper">
+          <h2 class="loader-title">Preparando tu experiencia...</h2>
+          <p class="loader-subtitle" id="splash-subtitle">Cargando citas, clientes y servicios...</p>
+        </div>
+        <!-- Spacer placeholders to align layout exactly with React loader -->
+        <div class="loader-progress-row" style="opacity: 0; pointer-events: none;">
+          <div class="custom-progress-track">
+            <div class="custom-progress-bar" style="width: 0%;"></div>
+          </div>
+          <span class="loader-percent">0%</span>
+        </div>
+        <div class="loader-footer" style="opacity: 0; pointer-events: none;">
+          <div class="loader-heart-icon">♡</div>
+          <p class="loader-slogan">Empodera tu confianza. Eleva tu belleza.</p>
+        </div>
+      </div>
     </div>
     <div id="root"></div>
     <script>
@@ -41,7 +227,6 @@
         var iv=setInterval(function(){i++;if(i<steps.length&&el)el.textContent=steps[i];else clearInterval(iv);},500);
       })();
     </script>
-
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
