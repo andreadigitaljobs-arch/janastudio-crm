@@ -242,6 +242,30 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
     return diff >= 0 && diff <= 7;
   }).length;
 
+  const upcomingBirthdays = clients
+    .filter(c => c.birth_date)
+    .map(c => {
+      const bday = new Date(c.birth_date + 'T00:00:00');
+      const today = new Date();
+      const thisYearBday = new Date(today.getFullYear(), bday.getMonth(), bday.getDate());
+      
+      let targetBday = thisYearBday;
+      if (thisYearBday < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+        targetBday = new Date(today.getFullYear() + 1, bday.getMonth(), bday.getDate());
+      }
+      
+      const diffTime = targetBday - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      return {
+        ...c,
+        daysLeft: diffDays,
+        targetDate: targetBday
+      };
+    })
+    .sort((a, b) => a.daysLeft - b.daysLeft)
+    .slice(0, 3);
+
   // Filter state
   const [activeFilter, setActiveFilter] = useState('all');
 
@@ -663,6 +687,53 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* Próximos cumpleañeros */}
+              <div style={{ marginTop: '28px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                  <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Cake size={18} color="var(--pink-primary)" /> Próximos cumpleañeros
+                  </h3>
+                </div>
+                {upcomingBirthdays.length === 0 ? (
+                  <div className="glass-card" style={{ padding: '20px', borderRadius: '12px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+                    <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>No hay fechas de cumpleaños registradas.</p>
+                  </div>
+                ) : (
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '12px' }}>
+                    {upcomingBirthdays.map((c, i) => (
+                      <div key={i} className="glass-card" style={{ padding: '14px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.2s' }}>
+                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'rgba(212, 160, 154, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Cake size={16} color="var(--pink-primary)" />
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.name}</div>
+                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                            {c.daysLeft === 0 ? '¡Hoy cumple años! 🎂' : c.daysLeft === 1 ? 'Mañana 🎈' : `En ${c.daysLeft} días (${new Date(c.birth_date + 'T00:00:00').toLocaleDateString('es-VE', { day: 'numeric', month: 'short' })})`}
+                          </div>
+                        </div>
+                        {c.phone && (
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const msg = `¡Hola ${c.name}! 🎉 Te deseamos un muy feliz cumpleaños de parte de todo el equipo de Jana Studio. Que pases un excelente día.`;
+                              window.open(`https://wa.me/${c.phone}?text=${encodeURIComponent(msg)}`, '_blank');
+                            }}
+                            style={{
+                              border: 'none', background: 'none', cursor: 'pointer', color: 'var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px', borderRadius: '8px', transition: 'background-color 0.2s'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(212, 160, 154, 0.1)'}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                            title="Enviar felicitación por WhatsApp"
+                          >
+                            <MessageCircle size={16} />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
