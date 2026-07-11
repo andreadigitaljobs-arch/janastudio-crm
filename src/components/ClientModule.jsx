@@ -1087,7 +1087,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                 </div>
 
                 {/* Próximos cumpleaños Card (with cute cake drawing) */}
-                <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)', position: 'relative', overflow: 'hidden' }}>
+                <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.82)), url(/cumpleanos_jana.png)', backgroundSize: 'cover', backgroundPosition: 'center', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)', position: 'relative', overflow: 'hidden' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
                       Próximos cumpleaños
@@ -1109,11 +1109,6 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                         </div>
                       </div>
                     ))}
-                  </div>
-
-                  {/* Custom Birthday Cake Image placed on the bottom-right */}
-                  <div style={{ position: 'absolute', bottom: 0, right: 0, width: '110px', height: '95px', pointerEvents: 'none', display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end' }}>
-                    <img src="/cumpleanos_jana.png" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} alt="Cumpleaños" />
                   </div>
                 </div>
 
