@@ -1128,9 +1128,9 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
                     {[
-                      { text: 'Confirmar cita de Valentina P.', date: '12 may 2025 • 11:30 AM', icon: Calendar, color: '#e08b98', bg: '#fdf2f4' },
-                      { text: 'Enviar rutina post cuidado', date: 'Laura Martínez • 18 may 2025', icon: Mail, color: '#e08b98', bg: '#fdf2f4' },
-                      { text: 'Recordatorio de evaluación', date: 'Andrea Rodríguez • 20 may 2025', icon: Bell, color: '#e08b98', bg: '#fdf2f4' }
+                      { text: 'Confirmar cita de Valentina P.', line1: '12 may 2025', line2: '11:30 AM', icon: Calendar, color: '#e08b98', bg: '#fdf2f4' },
+                      { text: 'Enviar rutina post cuidado', line1: 'Laura Martínez', line2: '18 may 2025', icon: Mail, color: '#e08b98', bg: '#fdf2f4' },
+                      { text: 'Recordatorio de evaluación', line1: 'Andrea Rodríguez', line2: '20 may 2025', icon: Bell, color: '#e08b98', bg: '#fdf2f4' }
                     ].map((item, i) => (
                       <div key={i} style={{ padding: '14px 16px', borderRadius: '16px', border: '1px solid #fae8eb', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', transition: 'all 0.2s', background: 'white' }} className="btn-interactive">
                         <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -1138,7 +1138,10 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.text}</div>
-                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>{item.date}</div>
+                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                            <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.line1}</div>
+                            <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.line2}</div>
+                          </div>
                         </div>
                         <ChevronRight size={14} color="var(--text-muted)" style={{ marginLeft: '4px' }} />
                       </div>
