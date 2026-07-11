@@ -519,7 +519,7 @@ const StaffDayColumn = ({
 };
 
 
-const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rates, openScheduleModal = false, modalKey = null }) => {
+const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rates, openScheduleModal = false, modalKey = null, onOpenNotifications }) => {
   const { user } = useAuth();
   const { showToast } = useNotifs();
 
@@ -1148,7 +1148,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           {/* On mobile the bell moves up here, next to the title, instead of wrapping alone below the date selector */}
           {isMobile && (
             <button
-              onClick={() => window.dispatchEvent(new CustomEvent('jana:open-notifications'))}
+              onClick={onOpenNotifications}
               style={{
                 width: '40px', height: '40px', borderRadius: '12px', flexShrink: 0,
                 background: '#ffffff', border: '1px solid rgba(223, 178, 140, 0.3)',
@@ -1376,7 +1376,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           {/* Bell Notifications (desktop only — on mobile it moved up next to the title) */}
           {!isMobile && (
             <button
-              onClick={() => window.dispatchEvent(new CustomEvent('jana:open-notifications'))}
+              onClick={onOpenNotifications}
               style={{
                 width: '40px', height: '40px', borderRadius: '12px',
                 background: '#ffffff', border: '1px solid rgba(223, 178, 140, 0.3)',
@@ -2184,7 +2184,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               {/* Bell Icon */}
               <button
-                onClick={() => window.dispatchEvent(new CustomEvent('jana:open-notifications'))}
+                onClick={onOpenNotifications}
                 style={{
                   width: '38px', height: '38px', borderRadius: '12px',
                   background: '#ffffff', border: '1px solid rgba(223, 178, 140, 0.2)',
