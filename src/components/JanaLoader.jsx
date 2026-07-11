@@ -317,7 +317,7 @@ const JanaLoader = ({ visible }) => {
           width: 100%;
           max-width: 320px;
           margin-bottom: 70px;
-          animation: luxurySlideUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+          animation: luxuryFadeIn 0.8s ease-out 0.2s both;
         }
         .custom-progress-track {
           flex: 1;
@@ -355,7 +355,7 @@ const JanaLoader = ({ visible }) => {
           flex-direction: column;
           align-items: center;
           gap: 6px;
-          animation: fadeInScale 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+          animation: luxuryFadeIn 0.8s ease-out 0.4s both;
         }
         @media (max-height: 600px) {
           .loader-footer {
@@ -393,47 +393,19 @@ const JanaLoader = ({ visible }) => {
         }
 
         /* --- Entry Animations --- */
-        @keyframes fadeInScale {
-          0% { opacity: 0; transform: scale(0.96); }
-          100% { opacity: 1; transform: scale(1); }
-        }
-        @keyframes luxurySlideUp {
-          from { opacity: 0; transform: translateY(24px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes luxuryScaleIn {
-          from { opacity: 0; transform: scale(0.85); }
-          to { opacity: 1; transform: scale(1); }
+        @keyframes luxuryFadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
 
         /* --- Exit Animations --- */
-        .loader-exiting .loader-logo-wrapper {
-          animation: luxurySlideUpOut 0.5s cubic-bezier(0.4, 0, 1, 1) forwards !important;
-        }
-        .loader-exiting .loader-spinner-wrapper {
-          animation: luxuryScaleOut 0.5s cubic-bezier(0.4, 0, 1, 1) forwards !important;
-        }
-        .loader-exiting .loader-info-wrapper {
-          animation: luxurySlideDownOut 0.5s cubic-bezier(0.4, 0, 1, 1) forwards !important;
-        }
-        .loader-exiting .loader-progress-row {
-          animation: luxuryScaleOut 0.5s cubic-bezier(0.4, 0, 1, 1) forwards !important;
-        }
-        .loader-exiting .loader-footer {
-          animation: luxurySlideDownOut 0.5s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+        .loader-exiting .loader-content {
+          animation: luxuryContentExit 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        @keyframes luxurySlideUpOut {
-          from { opacity: 1; transform: translateY(0); }
-          to { opacity: 0; transform: translateY(-24px); }
-        }
-        @keyframes luxurySlideDownOut {
-          from { opacity: 1; transform: translateY(0); }
-          to { opacity: 0; transform: translateY(24px); }
-        }
-        @keyframes luxuryScaleOut {
-          from { opacity: 1; transform: scale(1); }
-          to { opacity: 0; transform: scale(0.85); }
+        @keyframes luxuryContentExit {
+          from { opacity: 1; transform: scale(1) translateY(0); }
+          to { opacity: 0; transform: scale(0.97) translateY(12px); }
         }
       `}</style>
     </div>
