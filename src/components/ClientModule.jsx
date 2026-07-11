@@ -70,7 +70,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const isNarrowScreen = windowWidth < 1250;
+  const isNarrowScreen = windowWidth < 1300;
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedClient, setSelectedClient] = useState(null);
   const [showMessageModal, setShowMessageModal] = useState(false);
@@ -776,13 +776,13 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                       <thead>
                         <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'rgba(212, 160, 154, 0.08)' }}>
-                          <th style={{ padding: '14px 12px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Cliente</th>
-                          <th style={{ padding: '14px 12px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Cédula / ID</th>
-                          <th style={{ padding: '14px 12px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Contacto</th>
-                          <th style={{ padding: '14px 12px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Última visita</th>
-                          <th style={{ padding: '14px 12px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Próxima cita</th>
-                          <th style={{ padding: '14px 12px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Historial</th>
-                          <th style={{ padding: '14px 12px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Estado</th>
+                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Cliente</th>
+                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Cédula / ID</th>
+                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Contacto</th>
+                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Última visita</th>
+                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Próxima cita</th>
+                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Historial</th>
+                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Estado</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -801,70 +801,70 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                               }}
                               className="table-row-hover"
                             >
-                               <td style={{ padding: '12px 12px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(212,160,154,0.12)', border: '1.5px solid var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
+                               <td style={{ padding: '10px 6px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <div style={{ width: '30px', height: '30px', borderRadius: '50%', backgroundColor: 'rgba(212,160,154,0.12)', border: '1.5px solid var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
                                     {client.image_url ? (
                                       <img src={client.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                     ) : (
-                                      <User size={16} color="var(--pink-primary)" />
+                                      <User size={14} color="var(--pink-primary)" />
                                     )}
                                   </div>
                                   <div style={{ minWidth: 0 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                      <span style={{ fontWeight: '700', fontSize: '13px', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
+                                      <span style={{ fontWeight: '700', fontSize: '12px', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '120px' }}>
                                         {client.name}
                                       </span>
-                                      {(client.total_visits || 0) >= 10 && <span style={{ color: '#b47d49', fontSize: '11px' }}>★</span>}
+                                      {(client.total_visits || 0) >= 10 && <span style={{ color: '#b47d49', fontSize: '10px' }}>★</span>}
                                     </div>
-                                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                                    <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>
                                       {(client.total_visits || 0) >= 10 ? 'VIP' : client.hair_type || 'Normal'}
                                     </div>
                                   </div>
                                 </div>
                               </td>
-                              <td style={{ padding: '12px 12px', fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>
+                              <td style={{ padding: '10px 6px', fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>
                                 V-{client.id_card || '00.000.000'}
                               </td>
-                              <td style={{ padding: '12px 12px', whiteSpace: 'nowrap' }}>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                              <td style={{ padding: '10px 6px', whiteSpace: 'nowrap' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
                                   {client.phone && (
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
-                                      <Phone size={11} color="var(--pink-primary)" /> {client.phone}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
+                                      <Phone size={10} color="var(--pink-primary)" /> {client.phone}
                                     </div>
                                   )}
                                   {client.email && (
-                                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
+                                    <div style={{ fontSize: '10px', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '120px' }}>
                                       {client.email}
                                     </div>
                                   )}
                                 </div>
                               </td>
-                              <td style={{ padding: '12px 12px', fontSize: '12px', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                              <td style={{ padding: '10px 6px', fontSize: '11.5px', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
                                 {client.last_visit ? new Date(client.last_visit).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
                               </td>
-                              <td style={{ padding: '12px 12px', whiteSpace: 'nowrap' }}>
+                              <td style={{ padding: '10px 6px', whiteSpace: 'nowrap' }}>
                                 {client.next_appointment ? (
                                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                    <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
+                                    <span style={{ fontSize: '11.5px', fontWeight: '700', color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
                                       {new Date(client.next_appointment).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' })}
                                     </span>
-                                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--pink-primary)', marginTop: '2px', whiteSpace: 'nowrap' }}>
+                                    <span style={{ fontSize: '10px', fontWeight: '700', color: 'var(--pink-primary)', marginTop: '1px', whiteSpace: 'nowrap' }}>
                                       {new Date(client.next_appointment).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true })}
                                     </span>
                                   </div>
                                 ) : (
-                                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>—</span>
+                                  <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>—</span>
                                 )}
                               </td>
-                              <td style={{ padding: '12px 12px' }}>
-                                <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)' }}>
+                              <td style={{ padding: '10px 6px' }}>
+                                <span style={{ fontSize: '11.5px', fontWeight: '700', color: 'var(--text-secondary)' }}>
                                   {client.total_visits || 0} visitas
                                 </span>
                               </td>
-                              <td style={{ padding: '12px 12px' }}>
+                              <td style={{ padding: '10px 6px' }}>
                                 {status.label === 'VIP' ? (
-                                  <span style={{ fontSize: '10px', fontWeight: '800', color: '#b47d49', backgroundColor: 'rgba(180, 125, 73, 0.1)', border: '1px solid rgba(180, 125, 73, 0.15)', padding: '4px 10px', borderRadius: '6px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                  <span style={{ fontSize: '9px', fontWeight: '800', color: '#b47d49', backgroundColor: 'rgba(180, 125, 73, 0.1)', border: '1px solid rgba(180, 125, 73, 0.15)', padding: '3px 8px', borderRadius: '6px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
                                     👑 VIP
                                   </span>
                                 ) : (
