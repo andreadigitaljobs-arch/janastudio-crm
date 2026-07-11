@@ -641,7 +641,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
               <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
                 
                 {/* Search, Filter Chips and Sort Dropdown Row */}
-                <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
+                 <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
                   {/* Search box */}
                   <div style={{ flex: 1, minWidth: '220px', position: 'relative' }}>
                     <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
@@ -654,7 +654,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                         width: '100%',
                         padding: '10px 14px 10px 40px',
                         borderRadius: '12px',
-                        border: '1px solid var(--border-color)',
+                        border: '1px solid #fae8eb',
                         backgroundColor: 'white',
                         fontSize: '13px',
                         color: 'var(--text-primary)',
@@ -664,7 +664,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                   </div>
 
                   {/* Filter chips */}
-                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                     {[
                       { key: 'all', label: 'Todas' },
                       { key: 'frequent', label: 'Frecuentes' },
@@ -679,13 +679,13 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                           key={f.key}
                           onClick={() => { setActiveFilter(f.key); setCurrentPage(1); }}
                           style={{
-                            padding: '8px 14px',
-                            borderRadius: '20px',
-                            border: isActive ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)',
-                            backgroundColor: isActive ? 'var(--pink-primary)' : 'white',
-                            color: isActive ? 'white' : 'var(--text-secondary)',
+                            padding: '8px 18px',
+                            borderRadius: '14px',
+                            border: isActive ? 'none' : '1px solid #fae8eb',
+                            backgroundColor: isActive ? '#e69fa8' : 'white',
+                            color: isActive ? 'white' : '#6b7280',
                             fontSize: '12px',
-                            fontWeight: '700',
+                            fontWeight: '500',
                             cursor: 'pointer',
                             transition: 'all 0.2s',
                           }}
@@ -701,14 +701,14 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                   <div style={{ position: 'relative' }}>
                     <div 
                       onClick={() => setShowSortDropdown(!showSortDropdown)}
-                      style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700', cursor: 'pointer', padding: '8px 12px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'white' }}
+                      style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#6b7280', fontWeight: '500', cursor: 'pointer', padding: '8px 16px', borderRadius: '12px', border: '1px solid #fae8eb', backgroundColor: 'white' }}
                       className="btn-interactive"
                     >
                       {sortBy === 'recent' && 'Más recientes'}
                       {sortBy === 'oldest' && 'Más antiguos'}
                       {sortBy === 'az' && 'Nombre A-Z'}
                       {sortBy === 'za' && 'Nombre Z-A'}
-                      <ChevronDown size={14} color="var(--pink-primary)" />
+                      <ChevronDown size={14} color="#e69fa8" />
                     </div>
                     {showSortDropdown && (
                       <>
