@@ -707,15 +707,22 @@ function App() {
       {/* Mobile Bottom Navigation Bar */}
       {isMobile && user && (
         <div style={{
-          position: 'fixed', left: 0, right: 0, bottom: 0,
-          height: 'calc(64px + env(safe-area-inset-bottom, 12px))',
-          background: 'rgba(255, 255, 255, 0.96)',
+          position: 'fixed', 
+          left: '16px', 
+          right: '16px', 
+          bottom: 'calc(12px + env(safe-area-inset-bottom, 0px))',
+          height: '66px',
+          background: 'rgba(255, 255, 255, 0.90)',
           backdropFilter: 'blur(20px)',
-          borderTop: '1px solid rgba(212, 160, 154, 0.15)',
-          boxShadow: '0 -4px 20px rgba(74, 48, 54, 0.05)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(212, 160, 154, 0.25)',
+          borderRadius: '24px',
+          boxShadow: '0 8px 32px rgba(160, 80, 106, 0.12)',
           zIndex: 997,
-          display: 'flex', justifyContent: 'space-around', alignItems: 'center',
-          paddingBottom: 'env(safe-area-inset-bottom, 12px)',
+          display: 'flex', 
+          justifyContent: 'space-around', 
+          alignItems: 'center',
+          padding: '0 8px',
         }}>
           {/* Inicio */}
           <button
