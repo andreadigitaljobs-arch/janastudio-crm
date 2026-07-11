@@ -343,7 +343,7 @@ const JanaLoader = ({ visible }) => {
           gap: 15px;
           width: 100%;
           max-width: 420px;
-          margin-bottom: 70px;
+          margin-bottom: clamp(20px, 3vh, 35px);
           animation: luxuryFadeIn 0.8s ease-out 0.2s both;
         }
         .custom-progress-track {
@@ -376,35 +376,24 @@ const JanaLoader = ({ visible }) => {
         @media (max-width: 1200px) {
           .loader-progress-row {
             max-width: 340px;
-            margin-bottom: 60px;
+            margin-bottom: clamp(16px, 2.5vh, 30px);
           }
         }
         @media (max-width: 480px) {
           .loader-progress-row {
             max-width: 280px;
-            margin-bottom: 50px;
+            margin-bottom: clamp(14px, 2vh, 24px);
           }
         }
 
         /* --- Footer --- */
         .loader-footer {
-          position: absolute;
-          bottom: 30px;
+          margin-top: clamp(20px, 4vh, 45px);
           display: flex;
           flex-direction: column;
           align-items: center;
           gap: 6px;
           animation: luxuryFadeIn 0.8s ease-out 0.4s both;
-        }
-        @media (max-height: 600px) {
-          .loader-footer {
-            position: relative;
-            bottom: auto;
-            margin-top: 20px;
-          }
-          .loader-progress-row {
-            margin-bottom: 30px;
-          }
         }
         .loader-heart-icon {
           color: #b38279;
