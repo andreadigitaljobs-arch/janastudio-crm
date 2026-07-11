@@ -1111,9 +1111,9 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                     ))}
                   </div>
 
-                  {/* Cute CSS Pink Cake drawing placement on the bottom-right */}
-                  <div style={{ position: 'absolute', bottom: '-5px', right: '-5px', width: '80px', height: '80px', opacity: 0.18, pointerEvents: 'none' }}>
-                    <span style={{ fontSize: '64px' }}>🎂</span>
+                  {/* Custom Birthday Cake Image placed on the bottom-right */}
+                  <div style={{ position: 'absolute', bottom: 0, right: 0, width: '110px', height: '95px', pointerEvents: 'none', display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end' }}>
+                    <img src="/cumpleanos_jana.png" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} alt="Cumpleaños" />
                   </div>
                 </div>
 
