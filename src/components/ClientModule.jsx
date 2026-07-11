@@ -1366,27 +1366,48 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
               {/* Right Column: Próximos cumpleaños */}
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 {/* Próximos cumpleaños Card (with cute cake drawing) */}
-                <div className="glass-card animate-slide-up delay-3 interactive-hover-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', backgroundImage: 'linear-gradient(90deg, #f8dbd9 45%, rgba(248, 219, 217, 0) 90%), url(/cumpleanos_jana.png)', backgroundSize: 'contain', backgroundPosition: 'right center', backgroundRepeat: 'no-repeat', backgroundColor: '#f8dbd9', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)', position: 'relative', overflow: 'hidden', flex: 1, display: 'flex', flexDirection: 'column', minHeight: '230px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                    <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      Próximos cumpleaños
-                    </h3>
-                  </div>
+                <div className="glass-card animate-slide-up delay-3 interactive-hover-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', backgroundColor: '#f8dbd9', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)', position: 'relative', overflow: 'hidden', flex: 1, display: 'flex', flexDirection: 'column', minHeight: '230px' }}>
+                  {/* Blending Gradient Overlay */}
+                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundImage: 'linear-gradient(90deg, #f8dbd9 45%, rgba(248, 219, 217, 0) 95%)', zIndex: 1, pointerEvents: 'none' }} />
+                  
+                  {/* Birthday Cake Image */}
+                  <img 
+                    src="/cumpleanos_jana.png" 
+                    alt="" 
+                    style={{ 
+                      position: 'absolute', 
+                      right: 0, 
+                      top: 0, 
+                      height: '100%', 
+                      width: 'auto', 
+                      objectFit: 'contain', 
+                      pointerEvents: 'none',
+                      zIndex: 0
+                    }} 
+                  />
+                  
+                  <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', height: '100%', flex: 1 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                      <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        Próximos cumpleaños
+                      </h3>
+                    </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '20px' }}>
-                    {upcomingBirthdays.map((c, i) => (
-                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(212, 160, 154, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <Gift size={12} color="var(--pink-primary)" />
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{c.name}</div>
-                          <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                            {c.birth_date ? new Date(c.birth_date + 'T00:00:00').toLocaleDateString('es-VE', { day: '2-digit', month: 'short' }) : '—'}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '20px', justifyContent: 'center', flex: 1 }}>
+                      {upcomingBirthdays.map((c, i) => (
+                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(212, 160, 154, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <Gift size={12} color="var(--pink-primary)" />
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{c.name}</div>
+                            <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                              {c.birth_date ? new Date(c.birth_date + 'T00:00:00').toLocaleDateString('es-VE', { day: '2-digit', month: 'short' }) : '—'}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
