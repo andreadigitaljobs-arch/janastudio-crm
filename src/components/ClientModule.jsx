@@ -974,40 +974,10 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                     </button>
                   </div>
                 </div>
-
-                {/* Seguimientos pendientes Container Card */}
-                <div className="glass-card" style={{ marginTop: '28px', padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.03)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                    <h3 style={{ fontSize: '15.5px', fontWeight: '850', color: 'var(--text-primary)', margin: 0 }}>
-                      Seguimientos pendientes
-                    </h3>
-                    <span style={{ fontSize: '12px', color: '#e08b98', fontWeight: '750', cursor: 'pointer' }}>Ver todos</span>
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-                    {[
-                      { text: 'Confirmar cita de Valentina P.', date: '12 may 2025 • 11:30 AM', icon: Calendar, color: '#e08b98', bg: '#fdf2f4' },
-                      { text: 'Enviar rutina post cuidado', date: 'Laura Martínez • 18 may 2025', icon: Mail, color: '#e08b98', bg: '#fdf2f4' },
-                      { text: 'Recordatorio de evaluación', date: 'Andrea Rodríguez • 20 may 2025', icon: Bell, color: '#e08b98', bg: '#fdf2f4' }
-                    ].map((item, i) => (
-                      <div key={i} style={{ padding: '14px 16px', borderRadius: '16px', border: '1px solid #fae8eb', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', transition: 'all 0.2s', background: 'white' }} className="btn-interactive">
-                        <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <item.icon size={16} color={item.color} />
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.text}</div>
-                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>{item.date}</div>
-                        </div>
-                        <ChevronRight size={14} color="var(--text-muted)" style={{ marginLeft: '4px' }} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
               </div>
 
-              {/* Right Column: Ficha Rápida + Próximos Cumpleaños Sidebar */}
+              {/* Right Column: Ficha Rápida Sidebar */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', position: 'sticky', top: '24px' }}>
-                
                 {/* Ficha Rápida Card */}
                 <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', position: 'relative', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -1141,7 +1111,44 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                     </div>
                   )}
                 </div>
+              </div>
+            </div>
 
+            {/* Row 2: Bottom aligned widgets */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', marginTop: '28px', alignItems: 'start' }}>
+              {/* Left Column: Seguimientos pendientes */}
+              <div style={{ minWidth: 0 }}>
+                {/* Seguimientos pendientes Container Card */}
+                <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.03)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                    <h3 style={{ fontSize: '15.5px', fontWeight: '850', color: 'var(--text-primary)', margin: 0 }}>
+                      Seguimientos pendientes
+                    </h3>
+                    <span style={{ fontSize: '12px', color: '#e08b98', fontWeight: '750', cursor: 'pointer' }}>Ver todos</span>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+                    {[
+                      { text: 'Confirmar cita de Valentina P.', date: '12 may 2025 • 11:30 AM', icon: Calendar, color: '#e08b98', bg: '#fdf2f4' },
+                      { text: 'Enviar rutina post cuidado', date: 'Laura Martínez • 18 may 2025', icon: Mail, color: '#e08b98', bg: '#fdf2f4' },
+                      { text: 'Recordatorio de evaluación', date: 'Andrea Rodríguez • 20 may 2025', icon: Bell, color: '#e08b98', bg: '#fdf2f4' }
+                    ].map((item, i) => (
+                      <div key={i} style={{ padding: '14px 16px', borderRadius: '16px', border: '1px solid #fae8eb', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', transition: 'all 0.2s', background: 'white' }} className="btn-interactive">
+                        <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <item.icon size={16} color={item.color} />
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.text}</div>
+                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>{item.date}</div>
+                        </div>
+                        <ChevronRight size={14} color="var(--text-muted)" style={{ marginLeft: '4px' }} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Próximos cumpleaños */}
+              <div>
                 {/* Próximos cumpleaños Card (with cute cake drawing) */}
                 <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)), url(/cumpleanos_jana.png)', backgroundSize: 'cover', backgroundPosition: 'center', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)', position: 'relative', overflow: 'hidden', height: '154px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -1167,9 +1174,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                     ))}
                   </div>
                 </div>
-
               </div>
-
             </div>
           </>
         )}
