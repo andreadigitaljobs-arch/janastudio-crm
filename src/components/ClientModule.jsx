@@ -413,7 +413,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
           )}
 
           {/* Stat Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px', marginBottom: '28px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: windowWidth < 600 ? '1fr 1fr' : (windowWidth < 1200 ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)'), gap: '16px', marginBottom: '28px' }}>
             {[
               { label: 'Clientes activas', value: activeClients, icon: Users, trend: '↑ 12%', trendSub: 'vs. mes anterior', iconBg: 'rgba(212, 160, 154, 0.12)', iconColor: 'var(--pink-primary)' },
               { label: 'Nuevas este mes', value: newThisMonth, icon: UserPlus, trend: '↑ 15%', trendSub: 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.08)', iconColor: 'var(--magenta-primary)' },
