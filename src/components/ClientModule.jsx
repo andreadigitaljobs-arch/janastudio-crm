@@ -3602,9 +3602,10 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                       className="form-input"
                       value={editData.notes}
                       onChange={e => setEditData({...editData, notes: e.target.value})}
+                      onInput={(e) => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }}
                       placeholder="Notas sobre la clienta..."
-                      rows={3}
-                      style={{ width: '100%', padding: '8px 12px', resize: 'vertical', fontFamily: 'inherit' }}
+                      rows={4}
+                      style={{ width: '100%', padding: '10px 12px', resize: 'none', fontFamily: 'inherit', minHeight: '80px', overflow: 'hidden' }}
                     />
                   </div>
                   <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
@@ -3634,9 +3635,10 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                           className="form-input"
                           value={localNotes}
                           onChange={e => setLocalNotes(e.target.value)}
-                          placeholder="Notas rápidas..."
-                          rows={2}
-                          style={{ fontSize: '12px', padding: '6px 10px', resize: 'vertical' }}
+                          onInput={(e) => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }}
+                          placeholder="Escribe todo lo que necesites..."
+                          rows={3}
+                          style={{ fontSize: '12px', padding: '8px 10px', resize: 'none', minHeight: '60px', width: '100%', fontFamily: 'inherit', overflow: 'hidden' }}
                         />
                         <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
                           <button
@@ -3660,7 +3662,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                         </div>
                       </div>
                     ) : (
-                      <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-primary)', fontWeight: '600', lineHeight: 1.5 }}>
+                      <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-primary)', fontWeight: '600', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
                         {client.notes || 'Sin notas registradas.'}
                       </p>
                     )}
