@@ -197,10 +197,34 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
 
   return (
     <div style={{ padding: isMobile ? '16px' : '32px', maxWidth: '1400px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '16px' : '0', marginBottom: '28px' }}>
-        <div>
-          <h1 className="jana-page-title">Reportes</h1>
-          <p style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '500' }}>Métricas, análisis y decisiones para el crecimiento del salón.</p>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginBottom: '28px', 
+        padding: '12px 0 16px 0', 
+        flexWrap: 'wrap', 
+        gap: '20px',
+        position: 'relative',
+        width: '100%'
+      }}>
+        {/* Background Ambient Glow */}
+        <div style={{ position: 'absolute', top: '-60px', left: '-60px', width: '180px', height: '180px', background: 'radial-gradient(circle, rgba(212,160,154,0.18) 0%, rgba(212,160,154,0) 70%)', pointerEvents: 'none', zIndex: 0 }} />
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', zIndex: 1 }}>
+          {!isMobile && (
+            <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'var(--magenta-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 20px rgba(160, 80, 106, 0.15)', flexShrink: 0 }}>
+              <BarChart3 size={20} color="white" />
+            </div>
+          )}
+          <div>
+            <h1 className="jana-page-title" style={{ margin: 0, fontSize: isMobile ? '20px' : '28px', letterSpacing: '-0.6px', fontWeight: '850', color: 'var(--text-primary)' }}>
+              Reportes
+            </h1>
+            <p style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: isMobile ? '12px' : '14px', fontWeight: '500' }}>
+              Métricas, análisis y decisiones para el crecimiento del salón.
+            </p>
+          </div>
         </div>
         <div style={{ display: 'flex', gap: '10px', width: isMobile ? '100%' : 'auto' }}>
           <button style={{ padding: '10px 20px', borderRadius: '12px', border: '2px solid var(--pink-primary)', background: 'white', color: 'var(--pink-primary)', fontWeight: '800', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', flex: isMobile ? 1 : 'none', justifyContent: 'center' }}>

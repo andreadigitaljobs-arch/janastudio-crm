@@ -974,17 +974,32 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
       {/* Header Section */}
       <div style={{
         display: 'flex',
-        flexDirection: isMobile ? 'column' : 'row',
         justifyContent: 'space-between',
-        alignItems: isMobile ? 'flex-start' : 'center',
-        gap: isMobile ? '20px' : '0',
-        marginBottom: '32px'
+        alignItems: 'center',
+        marginBottom: '32px',
+        padding: '12px 0 16px 0',
+        flexWrap: 'wrap',
+        gap: '20px',
+        position: 'relative',
+        width: '100%'
       }}>
-        <div>
-          <h1 className="jana-page-title">
-            Finanzas
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>Control de flujo, pagos y rentabilidad.</p>
+        {/* Background Ambient Glow */}
+        <div style={{ position: 'absolute', top: '-60px', left: '-60px', width: '180px', height: '180px', background: 'radial-gradient(circle, rgba(212,160,154,0.18) 0%, rgba(212,160,154,0) 70%)', pointerEvents: 'none', zIndex: 0 }} />
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', zIndex: 1 }}>
+          {!isMobile && (
+            <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'var(--magenta-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 20px rgba(160, 80, 106, 0.15)', flexShrink: 0 }}>
+              <Wallet size={20} color="white" />
+            </div>
+          )}
+          <div>
+            <h1 className="jana-page-title" style={{ margin: 0, fontSize: isMobile ? '20px' : '28px', letterSpacing: '-0.6px', fontWeight: '850', color: 'var(--text-primary)' }}>
+              Finanzas
+            </h1>
+            <p style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: isMobile ? '12px' : '14px', fontWeight: '500' }}>
+              Control de flujo, pagos y rentabilidad.
+            </p>
+          </div>
         </div>
         <div style={{ 
           display: 'flex', 

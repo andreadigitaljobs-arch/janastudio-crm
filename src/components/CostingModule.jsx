@@ -144,13 +144,35 @@ const CostingModule = ({ isMobile, services = [], inventory = [] }) => {
 
   return (
     <div style={{ padding: isMobile ? '16px' : '24px' }}>
-      <div style={{ marginBottom: '24px' }}>
-        <h1 className="jana-page-title">
-          Costeo de Servicios
-        </h1>
-        <p style={{ color: 'var(--text-muted)', marginTop: '4px' }}>
-          Analiza la rentabilidad de cada servicio
-        </p>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginBottom: '28px', 
+        padding: '12px 0 16px 0', 
+        flexWrap: 'wrap', 
+        gap: '20px',
+        position: 'relative',
+        width: '100%'
+      }}>
+        {/* Background Ambient Glow */}
+        <div style={{ position: 'absolute', top: '-60px', left: '-60px', width: '180px', height: '180px', background: 'radial-gradient(circle, rgba(212,160,154,0.18) 0%, rgba(212,160,154,0) 70%)', pointerEvents: 'none', zIndex: 0 }} />
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', zIndex: 1 }}>
+          {!isMobile && (
+            <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'var(--magenta-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 20px rgba(160, 80, 106, 0.15)', flexShrink: 0 }}>
+              <Calculator size={20} color="white" />
+            </div>
+          )}
+          <div>
+            <h1 className="jana-page-title" style={{ margin: 0, fontSize: isMobile ? '20px' : '28px', letterSpacing: '-0.6px', fontWeight: '850', color: 'var(--text-primary)' }}>
+              Costeo de Servicios
+            </h1>
+            <p style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: isMobile ? '12px' : '14px', fontWeight: '500' }}>
+              Analiza la rentabilidad de cada servicio.
+            </p>
+          </div>
+        </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '300px 1fr', gap: '24px' }}>

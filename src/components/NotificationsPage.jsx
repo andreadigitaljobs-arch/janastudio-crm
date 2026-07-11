@@ -99,8 +99,21 @@ const NotificationsPage = ({ isMobile, onNavigate }) => {
       `}</style>
 
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginBottom: '28px', 
+        padding: '12px 0 16px 0', 
+        flexWrap: 'wrap', 
+        gap: '20px',
+        position: 'relative',
+        width: '100%'
+      }}>
+        {/* Background Ambient Glow */}
+        <div style={{ position: 'absolute', top: '-60px', left: '-60px', width: '180px', height: '180px', background: 'radial-gradient(circle, rgba(212,160,154,0.18) 0%, rgba(212,160,154,0) 70%)', pointerEvents: 'none', zIndex: 0 }} />
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', zIndex: 1 }}>
           <button 
             onClick={() => onNavigate('dashboard')} 
             style={{
@@ -108,16 +121,22 @@ const NotificationsPage = ({ isMobile, onNavigate }) => {
               width: '36px', height: '36px', borderRadius: '12px',
               color: '#1f1215', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.02)'
+              boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+              flexShrink: 0
             }}
           >
             <ArrowLeft size={18} />
           </button>
+          {!isMobile && (
+            <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'var(--magenta-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 20px rgba(160, 80, 106, 0.15)', flexShrink: 0 }}>
+              <Bell size={20} color="white" />
+            </div>
+          )}
           <div>
-            <h1 className="jana-page-title" style={{ margin: 0 }}>
+            <h1 className="jana-page-title" style={{ margin: 0, fontSize: isMobile ? '20px' : '28px', letterSpacing: '-0.6px', fontWeight: '850', color: 'var(--text-primary)' }}>
               Notificaciones
             </h1>
-            <p style={{ fontSize: '0.75rem', color: '#9e9e9e', margin: '4px 0 0 0' }}>
+            <p style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: isMobile ? '12px' : '14px', fontWeight: '500' }}>
               Historial y configuración de alertas de tu salón.
             </p>
           </div>
