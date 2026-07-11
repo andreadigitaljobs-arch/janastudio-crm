@@ -4009,8 +4009,8 @@ const ComparisonCard = ({ comparison, onDelete, onShare }) => {
     : '';
 
   return (
-    <div style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-color)', backgroundColor: 'white', position: 'relative' }}>
-      <div style={{ display: 'flex', aspectRatio: '4/3' }}>
+    <div style={{ borderRadius: '16px', border: '1px solid var(--border-color)', backgroundColor: 'white', position: 'relative' }}>
+      <div style={{ display: 'flex', aspectRatio: '4/3', borderTopLeftRadius: '15px', borderTopRightRadius: '15px', overflow: 'hidden' }}>
         <div style={{ flex: 1, position: 'relative' }}>
           <img src={comparison.beforeUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           <span style={{ position: 'absolute', bottom: '8px', left: '8px', backgroundColor: 'rgba(74,26,46,0.85)', padding: '3px 8px', borderRadius: '4px', fontSize: '9px', fontWeight: '900', color: 'white' }}>ANTES</span>
