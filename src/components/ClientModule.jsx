@@ -2343,12 +2343,19 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
       case 'gallery':
         return (
           <div className="glass-card" style={{ padding: '24px', background: 'white', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', gap: '16px' }}>
+            <div style={{
+              display: 'flex',
+              flexDirection: isMobile ? 'column' : 'row',
+              justifyContent: 'space-between',
+              alignItems: isMobile ? 'stretch' : 'flex-start',
+              marginBottom: '20px',
+              gap: '12px'
+            }}>
               <div>
                 <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '850', margin: 0, color: 'var(--text-primary)' }}>
                   <Sparkles size={18} color="var(--pink-primary)" /> Galería de trabajos
                 </h4>
-                <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--text-muted)' }}>
+                <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.4 }}>
                   Documenta los resultados y transforma cada cambio en inspiración.
                 </p>
               </div>
@@ -2364,10 +2371,13 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   fontSize: '13px',
                   display: 'flex',
                   alignItems: 'center',
+                  justifyContent: 'center',
                   gap: '8px',
                   cursor: 'pointer',
                   fontWeight: '750',
-                  whiteSpace: 'nowrap'
+                  whiteSpace: 'nowrap',
+                  width: isMobile ? '100%' : 'auto',
+                  marginTop: isMobile ? '6px' : '0'
                 }}
               >
                 <ColumnsIcon size={14} /> {showCollage ? 'Ver Galería' : 'Crear Comparativa'}
@@ -2565,34 +2575,41 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                     onClick={() => fileInputRef.current?.click()}
                     className="btn-interactive"
                     style={{
-                      aspectRatio: '4/3',
+                      aspectRatio: isMobile ? 'none' : '4/3',
+                      height: isMobile ? '86px' : 'auto',
                       backgroundColor: 'rgba(160,80,106,0.02)',
                       borderRadius: '16px',
                       border: '2px dashed var(--pink-primary)',
                       display: 'flex',
-                      flexDirection: 'column',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: '10px',
                       cursor: 'pointer',
-                      textAlign: 'center',
-                      padding: '16px'
+                      padding: isMobile ? '12px 20px' : '16px',
+                      gridColumn: isMobile ? '1 / -1' : 'auto'
                     }}
                   >
-                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(160,80,106,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {processingBulkUpload ? <Loader2 size={20} color="var(--pink-primary)" className="animate-spin" /> : <Plus size={20} color="var(--pink-primary)" />}
+                    <div style={{ display: 'flex', flexDirection: isMobile ? 'row' : 'column', alignItems: 'center', gap: isMobile ? '16px' : '10px', justifyContent: 'center', width: '100%' }}>
+                      <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(160,80,106,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        {processingBulkUpload ? <Loader2 size={20} color="var(--pink-primary)" className="animate-spin" /> : <Plus size={20} color="var(--pink-primary)" />}
+                      </div>
+                      <div style={{ textAlign: isMobile ? 'left' : 'center', display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ fontSize: '13px', fontWeight: '750', color: 'var(--text-primary)' }}>
+                          {processingBulkUpload ? 'Procesando...' : 'Subir nuevas imágenes'}
+                        </span>
+                        <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                          JPG, PNG &bull; Puedes elegir varias {isMobile ? '' : 'o usar la cámara'}
+                        </span>
+                        {isMobile && (
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); setShowCamera(true); }}
+                            style={{ fontSize: '11px', color: 'var(--pink-primary)', background: 'none', border: 'none', fontWeight: '700', cursor: 'pointer', textDecoration: 'underline', width: 'fit-content', marginTop: '2px', padding: 0 }}
+                          >
+                            o usar la cámara
+                          </button>
+                        )}
+                      </div>
                     </div>
-                    <span style={{ fontSize: '13px', fontWeight: '750', color: 'var(--text-primary)' }}>
-                      {processingBulkUpload ? 'Procesando...' : 'Subir nuevas imágenes'}
-                    </span>
-                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>JPG, PNG &bull; Puedes elegir varias</span>
-                    <button
-                      type="button"
-                      onClick={(e) => { e.stopPropagation(); setShowCamera(true); }}
-                      style={{ fontSize: '11px', color: 'var(--pink-primary)', background: 'none', border: 'none', fontWeight: '700', cursor: 'pointer', textDecoration: 'underline' }}
-                    >
-                      o usar la cámara
-                    </button>
                   </div>
 
                   {comparisons.map(comp => (
