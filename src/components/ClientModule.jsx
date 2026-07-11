@@ -413,7 +413,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
           )}
 
           {/* Stat Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: windowWidth < 1200 ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: '16px', marginBottom: '28px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: windowWidth < 1200 ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: windowWidth < 600 ? '10px' : '16px', marginBottom: '28px' }}>
             {[
               { label: 'Clientes activas', value: activeClients, icon: Users, trend: '↑ 12%', trendSub: 'vs. mes anterior', iconBg: 'rgba(212, 160, 154, 0.12)', iconColor: 'var(--pink-primary)' },
               { label: 'Nuevas este mes', value: newThisMonth, icon: UserPlus, trend: '↑ 15%', trendSub: 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.08)', iconColor: 'var(--magenta-primary)' },
@@ -424,12 +424,13 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                 key={i} 
                 className="glass-card animate-scale-in" 
                 style={{ 
-                  padding: windowWidth < 600 ? '10px 12px' : '16px 20px', 
+                  padding: windowWidth < 600 ? '10px 8px' : '16px 20px', 
                   borderRadius: '24px', 
                   border: '1px solid rgba(212,160,154,0.25)', 
                   background: 'white',
                   boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)',
-                  animationDelay: `${i * 80}ms`
+                  animationDelay: `${i * 80}ms`,
+                  minWidth: 0
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: windowWidth < 600 ? '8px' : '14px' }}>
