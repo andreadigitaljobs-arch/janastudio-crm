@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import JanaDatePicker from './JanaDatePicker';
 import { useNotifs } from '../context/NotificationContext';
 import { 
   Search, 
@@ -2726,13 +2727,14 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                       
                       {/* Custom Date Input */}
                       {dateFilter === 'custom' && (
-                        <input
-                          type="date"
-                          value={customDateFilter}
-                          onChange={(e) => setCustomDateFilter(e.target.value)}
-                          className="form-input"
-                          style={{ padding: '9px 12px', fontSize: '13px', borderRadius: '12px', borderColor: customDateFilter ? 'var(--pink-primary)' : 'var(--border-color)', flex: isMobile ? 'none' : 1, width: isMobile ? '100%' : 'auto' }}
-                        />
+                        <div style={{ flex: isMobile ? 'none' : 1, width: isMobile ? '100%' : 'auto' }}>
+                          <JanaDatePicker
+                            value={customDateFilter}
+                            onChange={(e) => setCustomDateFilter(e.target.value)}
+                            variant="light"
+                            inputStyle={{ padding: '9px 12px', fontSize: '13px', borderRadius: '12px', borderColor: customDateFilter ? 'var(--pink-primary)' : 'var(--border-color)', width: '100%' }}
+                          />
+                        </div>
                       )}
 
                       {/* Service Filter Dropdown */}
