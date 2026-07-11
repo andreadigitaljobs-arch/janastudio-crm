@@ -2649,23 +2649,23 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                             type="button"
                             onClick={(e) => { e.stopPropagation(); setShowCamera(true); }}
                             style={{ 
-                              fontSize: '11px', 
+                              fontSize: '12px', 
                               color: 'var(--magenta-primary)', 
                               backgroundColor: 'rgba(160,80,106,0.06)', 
                               border: '1px solid rgba(160,80,106,0.15)', 
                               fontWeight: '750', 
                               cursor: 'pointer', 
-                              padding: '5px 12px', 
+                              padding: '7px 16px', 
                               borderRadius: '20px',
                               width: 'fit-content', 
-                              marginTop: '6px', 
+                              marginTop: '8px', 
                               display: 'flex',
                               alignItems: 'center',
-                              gap: '4px'
+                              gap: '6px'
                             }}
                             className="btn-interactive"
                           >
-                            <Camera size={11} color="var(--magenta-primary)" /> Usar cámara
+                            <Camera size={13} color="var(--magenta-primary)" /> Usar cámara
                           </button>
                         )}
                       </div>
