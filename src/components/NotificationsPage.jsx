@@ -289,17 +289,23 @@ const NotificationsPage = ({ isMobile, onNavigate }) => {
                                   )}
                                 </h4>
                                 <span style={{ fontSize: '0.72rem', color: '#9ca3af', fontWeight: '500' }}>
-                                  {new Date(n.date).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' })}
+                                  {(() => {
+                                    const date = new Date(n.date);
+                                    const now = new Date();
+                                    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                                    const yesterday = new Date(today);
+                                    yesterday.setDate(yesterday.getDate() - 1);
+                                    const compareDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+                                    const timeStr = date.toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true });
+                                    if (compareDate.getTime() === today.getTime()) return `Hoy, ${timeStr}`;
+                                    if (compareDate.getTime() === yesterday.getTime()) return `Ayer, ${timeStr}`;
+                                    return `${date.toLocaleDateString('es-VE', { day: 'numeric', month: 'short' })}, ${timeStr}`;
+                                  })()}
                                 </span>
                               </div>
                               <p style={{ fontSize: '0.8rem', color: '#5c5457', margin: 0, lineHeight: 1.5 }}>
                                 {n.body}
                               </p>
-                              {n.date && (
-                                <div style={{ fontSize: '0.68rem', color: '#9ca3af', marginTop: '6px', fontWeight: '500' }}>
-                                  {new Date(n.date).toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' })}
-                                </div>
-                              )}
                             </div>
                           </div>
                         );

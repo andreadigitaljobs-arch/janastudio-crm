@@ -241,7 +241,18 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
                                 fontSize: '0.6rem', color: '#9ca3af', fontWeight: '600',
                                 background: 'rgba(0,0,0,0.03)', padding: '2px 8px', borderRadius: '6px'
                               }}>
-                                {new Date(n.date).toLocaleDateString('es-VE', { hour: '2-digit', minute: '2-digit' })}
+                                {(() => {
+                                  const date = new Date(n.date);
+                                  const now = new Date();
+                                  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                                  const yesterday = new Date(today);
+                                  yesterday.setDate(yesterday.getDate() - 1);
+                                  const compareDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+                                  const timeStr = date.toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true });
+                                  if (compareDate.getTime() === today.getTime()) return `Hoy, ${timeStr}`;
+                                  if (compareDate.getTime() === yesterday.getTime()) return `Ayer, ${timeStr}`;
+                                  return `${date.toLocaleDateString('es-VE', { day: 'numeric', month: 'short' })}, ${timeStr}`;
+                                })()}
                               </span>
                               {!n.read && (
                                 <span style={{
