@@ -1,21 +1,21 @@
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
 :root {
-  /* Core Palette — Premium Warm Blush & Cream */
+  /* Core Palette â€” Premium Warm Blush & Cream */
   --bg-primary: #fcf9f8;      /* Cream background */
   --bg-secondary: #ffffff;    /* White cards */
   --bg-tertiary: #f6eee9;     /* Light warm beige */
 
-  --pink-primary: #d4a09a;    /* Rose Gold */
-  --pink-secondary: #f6e6e2;  /* Soft blush active pill */
-  --pink-gradient: linear-gradient(135deg, #fbcada 0%, #d4a09a 50%, #a0506a 100%);
-  --pink-glow: 0 4px 15px rgba(212, 160, 154, 0.2);
+  --pink-primary: #a0506a;    /* â†’ Magenta unificado */
+  --pink-secondary: rgba(160, 80, 106, 0.08);  /* â†’ Magenta claro unificado */
+  --pink-gradient: linear-gradient(135deg, #c97282 0%, #a0506a 100%);
+  --pink-glow: 0 4px 15px rgba(160, 80, 106, 0.2);
 
   --magenta-primary: #a0506a; /* Deep rose */
   --magenta-secondary: #c97282;
   --magenta-gradient: linear-gradient(135deg, #c97282 0%, #a0506a 100%);
 
-  --rose-gold: #d4a09a;
+  --rose-gold: #a0506a;
   --blush: #f4ece9;
   --dark-plum: #4a3036;       /* Deep warm plum text/accent */
   --plum-mid: #6b4d53;
@@ -25,8 +25,8 @@
   --text-secondary: #7a6065;  /* Soft brown-plum */
   --text-muted: #b0999e;
 
-  --border-color: rgba(212, 160, 154, 0.2);
-  --accent-color: #d4a09a;
+  --border-color: rgba(160, 80, 106, 0.2);
+  --accent-color: #a0506a;
 
   --spacing-xs: 3px;
   --spacing-sm: 6px;
@@ -81,7 +81,7 @@ html, body {
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, #d4a09a 0%, #a0506a 100%);
+  background: linear-gradient(135deg, #a0506a 0%, #a0506a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -130,11 +130,11 @@ html, body {
 .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
-/* ═══════════════════════════════════════════════════════════
-   LUXURY LOGIN — Premium Design System
-   ═══════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   LUXURY LOGIN â€” Premium Design System
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
-/* ── Stagger Entrance Animations ── */
+/* â”€â”€ Stagger Entrance Animations â”€â”€ */
 @keyframes salonSlideUp {
   from { opacity: 0; transform: translateY(24px); }
   to { opacity: 1; transform: translateY(0); }
@@ -171,9 +171,9 @@ html, body {
 }
 
 @keyframes salonBorderShimmer {
-  0% { border-color: rgba(212, 160, 154, 0.35); }
-  50% { border-color: rgba(212, 160, 154, 0.7); }
-  100% { border-color: rgba(212, 160, 154, 0.35); }
+  0% { border-color: rgba(160, 80, 106, 0.35); }
+  50% { border-color: rgba(160, 80, 106, 0.7); }
+  100% { border-color: rgba(160, 80, 106, 0.35); }
 }
 
 @keyframes salonGradientFlow {
@@ -187,7 +187,7 @@ html, body {
   50% { transform: translateY(-3px); }
 }
 
-/* ── Outer Container ── */
+/* â”€â”€ Outer Container â”€â”€ */
 .salon-login-outer {
   width: 100vw;
   height: 100vh;
@@ -258,7 +258,7 @@ html, body {
   position: relative;
 }
 
-/* ── LEFT: Photo Section ── */
+/* â”€â”€ LEFT: Photo Section â”€â”€ */
 .salon-login-left {
   flex: 1.1;
   display: flex;
@@ -324,7 +324,7 @@ html, body {
 .salon-photo-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(201, 114, 130, 0.06) 0%, rgba(212, 160, 154, 0.1) 100%);
+  background: linear-gradient(180deg, rgba(201, 114, 130, 0.06) 0%, rgba(160, 80, 106, 0.1) 100%);
   z-index: 3;
   pointer-events: none;
   animation: salonFadeIn 0.8s ease both;
@@ -381,7 +381,7 @@ html, body {
   background: rgba(255,255,255,0.7);
 }
 
-/* ── RIGHT: Form Section ── */
+/* â”€â”€ RIGHT: Form Section â”€â”€ */
 .salon-login-right {
   flex: 1;
   display: flex;
@@ -471,7 +471,7 @@ html, body {
   font-weight: 300;
   display: inline-block;
   animation: salonHeartPulse 2.5s ease-in-out infinite;
-  background: linear-gradient(135deg, #c97282 0%, #d4a09a 50%, #dfb28c 100%);
+  background: linear-gradient(135deg, #c97282 0%, #a0506a 50%, #dfb28c 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -485,7 +485,7 @@ html, body {
   font-weight: 400;
 }
 
-/* ── INPUTS: Floating Label + Micro-interactions ── */
+/* â”€â”€ INPUTS: Floating Label + Micro-interactions â”€â”€ */
 .salon-main-form {
   display: flex;
   flex-direction: column;
@@ -502,7 +502,7 @@ html, body {
   display: flex;
   align-items: center;
   border-radius: 14px;
-  border: 1.5px solid rgba(212, 160, 154, 0.3);
+  border: 1.5px solid rgba(160, 80, 106, 0.3);
   background: #ffffff;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -514,7 +514,7 @@ html, body {
 }
 
 .salon-field-hover:not(:focus-within):hover {
-  border-color: rgba(212, 160, 154, 0.5);
+  border-color: rgba(160, 80, 106, 0.5);
   box-shadow: 0 4px 12px rgba(167, 102, 115, 0.08);
 }
 
@@ -611,7 +611,7 @@ html, body {
   transform: scale(0.9) rotate(0deg);
 }
 
-/* ── SUBMIT BUTTON: Premium with Ripple ── */
+/* â”€â”€ SUBMIT BUTTON: Premium with Ripple â”€â”€ */
 .salon-submit-button {
   padding: clamp(15px, 1vw, 22px);
   border-radius: 14px;
@@ -688,7 +688,7 @@ html, body {
   animation: salonSpinPremium 0.7s linear infinite;
 }
 
-/* ── ERROR ── */
+/* â”€â”€ ERROR â”€â”€ */
 .salon-error-banner {
   padding: 12px 16px;
   border-radius: 12px;
@@ -704,7 +704,7 @@ html, body {
   animation: salonShake 0.5s ease;
 }
 
-/* ── DECORATIVE ICONS ── */
+/* â”€â”€ DECORATIVE ICONS â”€â”€ */
 .salon-decorative-section {
   margin-top: 12px;
   padding-top: 20px;
@@ -762,11 +762,11 @@ html, body {
   font-weight: 400;
 }
 
-/* ── SETTINGS PANEL: Toca el logo 5 veces ── */
+/* â”€â”€ SETTINGS PANEL: Toca el logo 5 veces â”€â”€ */
 .salon-settings-panel {
   width: 100%;
-  background: linear-gradient(135deg, rgba(212,160,154,0.06) 0%, rgba(201,114,130,0.06) 100%);
-  border: 1px solid rgba(212, 160, 154, 0.25);
+  background: linear-gradient(135deg, rgba(160, 80, 106, 0.06) 0%, rgba(201,114,130,0.06) 100%);
+  border: 1px solid rgba(160, 80, 106, 0.25);
   border-radius: 12px;
   padding: 12px 14px;
   animation: salonSlideUp 0.3s ease both;
@@ -816,7 +816,7 @@ html, body {
   height: 4px;
   -webkit-appearance: none;
   appearance: none;
-  background: rgba(212, 160, 154, 0.25);
+  background: rgba(160, 80, 106, 0.25);
   border-radius: 2px;
   outline: none;
   cursor: pointer;
@@ -857,7 +857,7 @@ html, body {
 .salon-settings-presets button {
   flex: 1;
   padding: 5px;
-  border: 1px solid rgba(212, 160, 154, 0.25);
+  border: 1px solid rgba(160, 80, 106, 0.25);
   border-radius: 6px;
   background: #fff;
   color: #6b4d53;
@@ -878,7 +878,7 @@ html, body {
   border-color: transparent;
 }
 
-/* ── TABLET: Layout optimizado ── */
+/* â”€â”€ TABLET: Layout optimizado â”€â”€ */
 @media (min-width: 600px) and (max-width: 1024px), (max-width: 768px) and (min-aspect-ratio: 3/4) {
   .salon-login-outer {
     padding: 20px;
@@ -917,8 +917,8 @@ html, body {
   }
 }
 
-/* ── DISEÑO MOBILE: Foto arriba, tarjeta blanca abajo ── */
-/* Solo para pantallas altas/angostas; las "gruesas" (aspect ratio cuadrado) usan el diseño tablet de arriba */
+/* â”€â”€ DISEÃ‘O MOBILE: Foto arriba, tarjeta blanca abajo â”€â”€ */
+/* Solo para pantallas altas/angostas; las "gruesas" (aspect ratio cuadrado) usan el diseÃ±o tablet de arriba */
 @media (max-width: 599px) {
 
   .salon-login-outer {
@@ -946,7 +946,7 @@ html, body {
     overflow: hidden;
   }
 
-  /* ── FOTO: Se extiende detrás del Dynamic Island ── */
+  /* â”€â”€ FOTO: Se extiende detrÃ¡s del Dynamic Island â”€â”€ */
   .salon-login-left {
     flex: none;
     width: 100%;
@@ -988,7 +988,7 @@ html, body {
     transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* ── TARJETA BLANCA: Contenido distribuido ── */
+  /* â”€â”€ TARJETA BLANCA: Contenido distribuido â”€â”€ */
   .salon-login-right {
     flex: 1;
     width: 100%;
@@ -1028,7 +1028,7 @@ html, body {
     right: 5px;
     bottom: 0;
     border-radius: calc(var(--login-radius, 24px) - 5px) calc(var(--login-radius, 24px) - 5px) 0 0;
-    border: 1.5px solid rgba(212, 160, 154, 0.45);
+    border: 1.5px solid rgba(160, 80, 106, 0.45);
     border-bottom: none;
     pointer-events: none;
     z-index: 21;
@@ -1136,7 +1136,7 @@ html, body {
     font-size: 9px;
   }
 
-  /* Ajustes específicos para teléfonos compactos (como Mobile S 320px o pantallas cortas) */
+  /* Ajustes especÃ­ficos para telÃ©fonos compactos (como Mobile S 320px o pantallas cortas) */
   @media (max-height: 670px) or (max-width: 340px) {
     .salon-login-left {
       height: 25vh !important;
@@ -1201,7 +1201,7 @@ input:focus { outline: none; }
 ::selection { background: rgba(196, 139, 159, 0.2); color: var(--text-primary); }
 
 .btn-pink {
-  background: linear-gradient(135deg, #d4a09a 0%, #c48b9f 50%, #a0506a 100%);
+  background: linear-gradient(135deg, #a0506a 0%, #c48b9f 50%, #a0506a 100%);
   color: white; border: none; border-radius: 12px; padding: 10px 20px;
   font-weight: 600; cursor: pointer; transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(196, 139, 159, 0.25);
@@ -1224,7 +1224,7 @@ input:focus { outline: none; }
 .jana-client-input {
   width: 100%;
   height: 50px;
-  border: 1px solid rgba(212,160,154,0.35);
+  border: 1px solid rgba(160, 80, 106, 0.35);
   border-radius: 14px;
   background: linear-gradient(135deg, #fff 0%, #fff8fa 100%);
   box-shadow: 0 8px 22px rgba(93, 57, 67, 0.06);
@@ -1253,7 +1253,7 @@ input:focus { outline: none; }
 }
 .jana-client-secondary-btn {
   height: 56px;
-  border: 1px solid rgba(212,160,154,0.35);
+  border: 1px solid rgba(160, 80, 106, 0.35);
   border-radius: 16px;
   background: #fff;
   box-shadow: 0 8px 22px rgba(93, 57, 67, 0.05);
@@ -1268,7 +1268,7 @@ input:focus { outline: none; }
   transform: translateY(-1px);
 }
 .text-pink {
-  background: linear-gradient(135deg, #d4a09a 0%, #a0506a 100%);
+  background: linear-gradient(135deg, #a0506a 0%, #a0506a 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 
@@ -1283,10 +1283,10 @@ input:focus { outline: none; }
 /* Luxury Pink Salon Styles */
 :root {
   --blush-bg: #fff5f6;
-  --luxury-pink: #fbcada;
+  --luxury-pink: #c97282;
   --gold-accent: #dfb28c;
   --gold-gradient: linear-gradient(135deg, #f7d6c1 0%, #dfb28c 50%, #c4966e 100%);
-  --rose-gradient-premium: linear-gradient(135deg, #fbcada 0%, #e099ae 50%, #a0506a 100%);
+  --rose-gradient-premium: linear-gradient(135deg, #c97282 0%, #e099ae 50%, #a0506a 100%);
   --luxury-card-shadow: 0 10px 30px rgba(160, 80, 106, 0.05), 0 1px 3px rgba(160, 80, 106, 0.02);
   --luxury-card-shadow-hover: 0 20px 40px rgba(160, 80, 106, 0.12), 0 0 25px rgba(251, 202, 218, 0.35);
 }
@@ -1413,8 +1413,8 @@ input:focus { outline: none; }
 
 .wow-card:hover {
   transform: translateY(-5px) !important;
-  border-color: rgba(212, 160, 154, 0.45) !important;
-  box-shadow: 0 16px 36px rgba(160, 80, 106, 0.08), 0 2px 8px rgba(212, 160, 154, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.95) !important;
+  border-color: rgba(160, 80, 106, 0.45) !important;
+  box-shadow: 0 16px 36px rgba(160, 80, 106, 0.08), 0 2px 8px rgba(160, 80, 106, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.95) !important;
 }
 
 .wow-oval {
@@ -1424,7 +1424,7 @@ input:focus { outline: none; }
 .wow-card:hover .wow-oval {
   transform: scale(1.08) rotate(2deg);
   box-shadow: 0 8px 24px rgba(160, 80, 106, 0.25) !important;
-  border-color: rgba(212, 160, 154, 0.5) !important;
+  border-color: rgba(160, 80, 106, 0.5) !important;
 }
 
 /* Staggered entrance animations */
@@ -1445,7 +1445,7 @@ input:focus { outline: none; }
 .wow-animate-4 { animation: fadeInUpWow 0.5s cubic-bezier(0.25, 1, 0.5, 1) both; animation-delay: 0.25s; }
 .wow-animate-5 { animation: fadeInUpWow 0.5s cubic-bezier(0.25, 1, 0.5, 1) both; animation-delay: 0.32s; }
 
-/* ── ESTILOS PREMIUM PARA LA AGENDA (SchedulingModule) ── */
+/* â”€â”€ ESTILOS PREMIUM PARA LA AGENDA (SchedulingModule) â”€â”€ */
 
 .agenda-main-container {
   display: grid;
@@ -1477,7 +1477,7 @@ input:focus { outline: none; }
   }
 }
 
-/* Tarjetas base con estética Glassmorphism pulida */
+/* Tarjetas base con estÃ©tica Glassmorphism pulida */
 .agenda-glass-card {
   background: rgba(255, 255, 255, 0.8) !important;
   backdrop-filter: blur(16px) saturate(120%);
@@ -1555,7 +1555,7 @@ input:focus { outline: none; }
   align-items: center;
 }
 
-/* Tarjetas de citas súper pro */
+/* Tarjetas de citas sÃºper pro */
 .agenda-appointment-card {
   width: 100%;
   background: #ffffff;
@@ -1578,7 +1578,7 @@ input:focus { outline: none; }
   border-color: rgba(196, 139, 159, 0.3);
 }
 
-/* Píldora de estado elegante */
+/* PÃ­ldora de estado elegante */
 .agenda-status-badge {
   padding: 4px 10px;
   border-radius: 20px;
@@ -1588,7 +1588,7 @@ input:focus { outline: none; }
   text-transform: uppercase;
 }
 
-/* Botón discreto para agendar en horas libres */
+/* BotÃ³n discreto para agendar en horas libres */
 .agenda-free-slot-btn {
   width: 100%;
   height: 48px;
@@ -1612,7 +1612,7 @@ input:focus { outline: none; }
   color: #c97282;
 }
 
-/* Barra de pestañas (Tabs) */
+/* Barra de pestaÃ±as (Tabs) */
 .agenda-view-tab {
   flex: 1;
   padding: 8px 10px;
@@ -1820,7 +1820,7 @@ input:focus { outline: none; }
   to { transform: translateX(-50%) translateY(-4px); }
 }
 
-/* "Más" drawer — user profile card */
+/* "MÃ¡s" drawer â€” user profile card */
 @keyframes mobileMoreFadeIn {
   from { opacity: 0; transform: translateY(14px) scale(0.97); }
   to { opacity: 1; transform: translateY(0) scale(1); }
@@ -1842,7 +1842,7 @@ input:focus { outline: none; }
   background:
     linear-gradient(135deg, rgba(255,255,255,0.5) 0%, transparent 40%),
     linear-gradient(135deg, #fffaf9 0%, #fdf1f2 100%);
-  border: 1px solid rgba(212, 160, 154, 0.2);
+  border: 1px solid rgba(160, 80, 106, 0.2);
   box-shadow: 0 6px 20px rgba(74, 48, 54, 0.06);
   overflow: hidden;
   animation: mobileMoreFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -1902,7 +1902,7 @@ input:focus { outline: none; }
   margin-top: 2px;
 }
 
-/* "Más" drawer tiles */
+/* "MÃ¡s" drawer tiles */
 .mobile-more-tile {
   display: flex;
   flex-direction: column;
@@ -2074,8 +2074,8 @@ input:focus { outline: none; }
   }
 }
 
-/* ── Tooltip de íconos del sidebar (menú colapsado en compu) ── */
-/* Se pinta vía portal en <body>, así nunca se corta por el overflow:hidden del sidebar */
+/* â”€â”€ Tooltip de Ã­conos del sidebar (menÃº colapsado en compu) â”€â”€ */
+/* Se pinta vÃ­a portal en <body>, asÃ­ nunca se corta por el overflow:hidden del sidebar */
 .sidebar-tooltip-portal {
   animation: sidebarTooltipIn 0.12s ease both;
 }
@@ -2095,7 +2095,7 @@ input:focus { outline: none; }
   to { opacity: 1; transform: translateY(-50%) translateX(0); }
 }
 
-/* NUEVOS ESTILOS PARA LA AGENDA DE ACORDEÓN SIN COLUMNAS */
+/* NUEVOS ESTILOS PARA LA AGENDA DE ACORDEÃ“N SIN COLUMNAS */
 .agenda-accordion-list {
   display: flex;
   flex-direction: column;
@@ -2147,7 +2147,7 @@ input:focus { outline: none; }
   padding: 16px;
 }
 
-/* Cronograma del Día Unificado */
+/* Cronograma del DÃ­a Unificado */
 .cronograma-container {
   display: flex;
   flex-direction: column;
@@ -2186,7 +2186,7 @@ input:focus { outline: none; }
   white-space: nowrap;
 }
 
-/* Modo disponible / ¿Quién está libre ahorita? */
+/* Modo disponible / Â¿QuiÃ©n estÃ¡ libre ahorita? */
 .agenda-slot-highlight-free {
   box-shadow: inset 0 0 0 2px rgba(22, 163, 74, 0.6) !important;
   background: rgba(22, 163, 74, 0.04) !important;
@@ -2220,7 +2220,7 @@ input:focus { outline: none; }
   opacity: 0.85;
 }
 
-/* Bordes animados para cita múltiple seleccionada */
+/* Bordes animados para cita mÃºltiple seleccionada */
 .agenda-appointment-multiple-selected {
   outline: 2px dashed #a0506a !important;
   outline-offset: 1px;
@@ -2252,7 +2252,7 @@ input:focus { outline: none; }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* ── CENTRO DE CONTROL DE TRABAJADORAS (STAFF CONTROL CENTER) ── */
+/* â”€â”€ CENTRO DE CONTROL DE TRABAJADORAS (STAFF CONTROL CENTER) â”€â”€ */
 
 .staff-control-container {
   display: flex;
@@ -2285,7 +2285,7 @@ input:focus { outline: none; }
    covers up to 1024px) so it stacks on any iPad size, including
    landscape orientations that are wider than that JS breakpoint. */
 /* Agenda de hoy, Top servicios, Top especialistas and Reportes as four
-   cards in a 2x2 grid — gives Agenda/Top servicios more room than the
+   cards in a 2x2 grid â€” gives Agenda/Top servicios more room than the
    old 3-equal-column layout, and Top especialistas/Reportes each get
    their own card instead of sharing one. */
 .dashboard-main-row {
@@ -2320,11 +2320,11 @@ input:focus { outline: none; }
 }
 
 /* Top bar: search + rates/bell/date row. Keep everything on one line on
-   tablets — shrink the pieces instead of wrapping/stacking.
+   tablets â€” shrink the pieces instead of wrapping/stacking.
    !important is required on flex-wrap/flex here because the component
    sets those same properties inline (React style prop), and inline
    styles always beat external stylesheet rules regardless of
-   selector — without !important these rules are silently ignored. */
+   selector â€” without !important these rules are silently ignored. */
 @media (max-width: 1300px) {
   .topbar-header-row {
     flex-wrap: nowrap !important;
@@ -2356,7 +2356,7 @@ input:focus { outline: none; }
 
 @media (max-width: 700px) {
   /* No room left for the rates pill without crowding the search bar
-     into single-character width — hide it here, keep bell + date. */
+     into single-character width â€” hide it here, keep bell + date. */
   .topbar-rates-pill {
     display: none;
   }
@@ -2382,11 +2382,11 @@ input:focus { outline: none; }
   }
 }
 
-/* "Más reservado" featured photo card: fixed at 140px tall, which was
+/* "MÃ¡s reservado" featured photo card: fixed at 140px tall, which was
    tuned for the narrow 1-of-3-column layout. Once the row stacks to a
    single full-width column below 1300px, that same height makes the
    photo area extremely wide/short, forcing object-fit: cover to crop
-   away most of the vertical frame — cutting off the model's head.
+   away most of the vertical frame â€” cutting off the model's head.
    Taller on narrow layouts keeps the crop reasonable. */
 .dashboard-featured-photo {
   height: 140px;
@@ -2573,7 +2573,7 @@ input:focus { outline: none; }
   transform: scale(0.94);
 }
 
-/* Botón Editar - Elegante con Borde */
+/* BotÃ³n Editar - Elegante con Borde */
 .drawer-btn-edit {
   border: 1.5px solid rgba(223, 178, 140, 0.5);
   background: #ffffff;
@@ -2586,7 +2586,7 @@ input:focus { outline: none; }
   transform: translateY(-2px) scale(1.02);
 }
 
-/* Botón Completar - Verde Lleno Premium */
+/* BotÃ³n Completar - Verde Lleno Premium */
 .drawer-btn-complete {
   border: none;
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
@@ -2599,7 +2599,7 @@ input:focus { outline: none; }
   transform: translateY(-3px) scale(1.03);
 }
 
-/* Botón Eliminar - Rojo de Borde */
+/* BotÃ³n Eliminar - Rojo de Borde */
 .drawer-btn-delete {
   border: 1.5px solid rgba(239, 68, 68, 0.25);
   background: rgba(239, 68, 68, 0.02);
@@ -2612,7 +2612,7 @@ input:focus { outline: none; }
   transform: translateY(-2px) scale(1.02);
 }
 
-/* Botón Cancelar - Rosa/Rojo suave */
+/* BotÃ³n Cancelar - Rosa/Rojo suave */
 .drawer-btn-cancel {
   border: 1.5px solid rgba(220, 38, 38, 0.25);
   background: rgba(220, 38, 38, 0.02);
@@ -2625,7 +2625,7 @@ input:focus { outline: none; }
   transform: translateY(-2px) scale(1.02);
 }
 
-/* Botón No-show - Naranja elegante */
+/* BotÃ³n No-show - Naranja elegante */
 .drawer-btn-noshow {
   border: 1.5px solid rgba(245, 158, 11, 0.25);
   background: rgba(245, 158, 11, 0.02);
@@ -2638,7 +2638,7 @@ input:focus { outline: none; }
   transform: translateY(-2px) scale(1.02);
 }
 
-/* Botón Reprogramar - Degradado Púrpura/Rosa Premium */
+/* BotÃ³n Reprogramar - Degradado PÃºrpura/Rosa Premium */
 .drawer-btn-reprogram {
   border: none;
   background: linear-gradient(135deg, #ba82a0 0%, #a0506a 100%);
@@ -2651,7 +2651,7 @@ input:focus { outline: none; }
   transform: translateY(-3px) scale(1.03);
 }
 
-/* Botón Unificado Eliminar/Cancelar - Peligro */
+/* BotÃ³n Unificado Eliminar/Cancelar - Peligro */
 .drawer-btn-danger {
   border: 1.5px solid rgba(220, 38, 38, 0.25);
   background: rgba(255, 255, 255, 0.9);
@@ -2664,7 +2664,7 @@ input:focus { outline: none; }
   transform: translateY(-1px);
 }
 
-/* Rankings de Rendimiento del Día */
+/* Rankings de Rendimiento del DÃ­a */
 .rankings-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -2749,7 +2749,7 @@ input:focus { outline: none; }
   transform: scale(0.95);
 }
 
-/* Agenda module — universal microinteractions so every button/control reacts,
+/* Agenda module â€” universal microinteractions so every button/control reacts,
    even ones that don't set their own onMouseEnter/onMouseLeave handlers.
    Inline styles set by JS hover handlers always win over these (higher
    specificity), so this only fills in the gaps rather than fighting them. */
@@ -2834,9 +2834,9 @@ input:focus { outline: none; }
   }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   SCHEDULING MODULE — Elegant Animations
-   ═══════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   SCHEDULING MODULE â€” Elegant Animations
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 /* Card Animations */
 @keyframes cardEnter {
@@ -2875,7 +2875,7 @@ input:focus { outline: none; }
 /* Hover Effects */
 @keyframes buttonHoverPulse {
   0%, 100% { box-shadow: 0 2px 8px rgba(74, 48, 54, 0.08); }
-  50% { box-shadow: 0 8px 20px rgba(212, 160, 154, 0.2); }
+  50% { box-shadow: 0 8px 20px rgba(160, 80, 106, 0.2); }
 }
 
 @keyframes cardHoverLift {
@@ -2885,7 +2885,7 @@ input:focus { outline: none; }
   }
   to {
     transform: translateY(-4px);
-    box-shadow: 0 12px 28px rgba(212, 160, 154, 0.12);
+    box-shadow: 0 12px 28px rgba(160, 80, 106, 0.12);
   }
 }
 
@@ -2902,11 +2902,11 @@ input:focus { outline: none; }
 @keyframes pulseGlow {
   0%, 100% {
     opacity: 1;
-    box-shadow: 0 0 0 0 rgba(212, 160, 154, 0.7);
+    box-shadow: 0 0 0 0 rgba(160, 80, 106, 0.7);
   }
   50% {
     opacity: 0.8;
-    box-shadow: 0 0 0 8px rgba(212, 160, 154, 0);
+    box-shadow: 0 0 0 8px rgba(160, 80, 106, 0);
   }
 }
 
@@ -2991,29 +2991,29 @@ input:focus { outline: none; }
 /* Glow Effects */
 @keyframes glowPulse {
   0%, 100% {
-    filter: drop-shadow(0 0 0px rgba(212, 160, 154, 0));
+    filter: drop-shadow(0 0 0px rgba(160, 80, 106, 0));
   }
   50% {
-    filter: drop-shadow(0 0 6px rgba(212, 160, 154, 0.4));
+    filter: drop-shadow(0 0 6px rgba(160, 80, 106, 0.4));
   }
 }
 
 @keyframes highlightGlow {
   from {
-    box-shadow: 0 0 0 0 rgba(212, 160, 154, 0.4);
+    box-shadow: 0 0 0 0 rgba(160, 80, 106, 0.4);
   }
   to {
-    box-shadow: 0 0 0 8px rgba(212, 160, 154, 0);
+    box-shadow: 0 0 0 8px rgba(160, 80, 106, 0);
   }
 }
 
 /* Input & Control Animations */
 @keyframes inputFocus {
   from {
-    box-shadow: 0 0 0 0 rgba(212, 160, 154, 0.3);
+    box-shadow: 0 0 0 0 rgba(160, 80, 106, 0.3);
   }
   to {
-    box-shadow: 0 0 0 3px rgba(212, 160, 154, 0.15);
+    box-shadow: 0 0 0 3px rgba(160, 80, 106, 0.15);
   }
 }
 
@@ -3132,7 +3132,7 @@ input:focus { outline: none; }
 
 .hover-lift:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 28px rgba(212, 160, 154, 0.12);
+  box-shadow: 0 12px 28px rgba(160, 80, 106, 0.12);
 }
 
 .hover-scale {
@@ -3141,7 +3141,7 @@ input:focus { outline: none; }
 
 .hover-scale:hover {
   transform: scale(1.02);
-  box-shadow: 0 8px 20px rgba(212, 160, 154, 0.15);
+  box-shadow: 0 8px 20px rgba(160, 80, 106, 0.15);
 }
 
 .hover-glow {
@@ -3149,7 +3149,7 @@ input:focus { outline: none; }
 }
 
 .hover-glow:hover {
-  box-shadow: 0 0 12px rgba(212, 160, 154, 0.3);
+  box-shadow: 0 0 12px rgba(160, 80, 106, 0.3);
   color: #a0506a;
 }
 
@@ -3160,7 +3160,7 @@ input, textarea, select {
 
 input:focus, textarea:focus, select:focus {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(212, 160, 154, 0.15) !important;
+  box-shadow: 0 4px 12px rgba(160, 80, 106, 0.15) !important;
 }
 
 /* Smooth transitions for all interactive elements */
@@ -3184,7 +3184,7 @@ button, [role="button"], a[href] {
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 28px rgba(212, 160, 154, 0.15);
+  box-shadow: 0 12px 28px rgba(160, 80, 106, 0.15);
 }
 
 /* Status Badge Animations */
@@ -3261,13 +3261,13 @@ button, [role="button"], a[href] {
 /* Custom Pink Animations & Microinteractions for mobile modal/details */
 @keyframes pulsePink {
   0% {
-    box-shadow: 0 0 0 0 rgba(212, 160, 154, 0.5);
+    box-shadow: 0 0 0 0 rgba(160, 80, 106, 0.5);
   }
   70% {
-    box-shadow: 0 0 0 8px rgba(212, 160, 154, 0);
+    box-shadow: 0 0 0 8px rgba(160, 80, 106, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(212, 160, 154, 0);
+    box-shadow: 0 0 0 0 rgba(160, 80, 106, 0);
   }
 }
 
@@ -3294,4 +3294,5 @@ button, [role="button"], a[href] {
   transform: scale(0.95) !important;
   opacity: 0.9;
 }
+
 
