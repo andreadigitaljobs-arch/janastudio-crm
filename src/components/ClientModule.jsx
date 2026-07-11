@@ -748,9 +748,9 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', alignItems: 'start' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', alignItems: 'stretch' }}>
                   {/* Left Column: Table + Pagination + Pending Actions */}
-                  <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', height: '100%' }}>
 
                     {/* Clients Table */}
                 {loading ? (
@@ -910,7 +910,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                 )}
 
                 {/* Seguimientos pendientes Container Card */}
-                <div className="glass-card" style={{ marginTop: '28px', padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.03)' }}>
+                <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.03)', marginTop: 'auto' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <h3 style={{ fontSize: '15.5px', fontWeight: '850', color: 'var(--text-primary)', margin: 0 }}>
                       Seguimientos pendientes
@@ -940,7 +940,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
               </div>
 
               {/* Right Column: Ficha Rápida + Próximos Cumpleaños Sidebar */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', position: 'sticky', top: '24px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', position: 'sticky', top: '24px', height: '100%' }}>
                 
                 {/* Ficha Rápida Card */}
                 <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', position: 'relative', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)' }}>
@@ -1064,7 +1064,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                 </div>
 
                 {/* Próximos cumpleaños Card (with cute cake drawing) */}
-                <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)), url(/cumpleanos_jana.png)', backgroundSize: 'cover', backgroundPosition: 'center', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)', position: 'relative', overflow: 'hidden' }}>
+                <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)), url(/cumpleanos_jana.png)', backgroundSize: 'cover', backgroundPosition: 'center', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)', position: 'relative', overflow: 'hidden', marginTop: 'auto' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
                       Próximos cumpleaños
