@@ -142,7 +142,10 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
 
         {!isMobile && (
           <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
+            onClick={() => {
+              setIsCollapsed(!isCollapsed);
+              hideTooltip();
+            }}
             aria-label={effectiveCollapsed ? 'Expandir menú' : 'Contraer menú'}
             style={{
               position: effectiveCollapsed ? 'relative' : 'absolute',
