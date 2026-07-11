@@ -210,11 +210,11 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
         background: isLight ? 'rgba(255, 255, 255, 0.98)' : 'rgba(20, 20, 24, 0.99)',
         backdropFilter: 'blur(30px)',
         WebkitBackdropFilter: 'blur(30px)',
-        border: isLight ? '1px solid rgba(196, 139, 159, 0.22)' : '1.5px solid rgba(196, 139, 159, 0.35)',
+        border: isLight ? '1px solid var(--border-color)' : '1.5px solid rgba(196, 139, 159, 0.35)',
         borderRadius: '20px',
         padding: '16px',
         zIndex: 999999,
-        boxShadow: isLight ? '0 18px 45px rgba(93, 57, 67, 0.18)' : '0 24px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(196,139,159,0.1)'
+        boxShadow: isLight ? '0 12px 36px rgba(0,0,0,0.08)' : '0 24px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(196,139,159,0.1)'
       }}
     >
       {/* Month + Year selectors */}
@@ -230,7 +230,7 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
             style={{
               height: '36px',
               background: isLight ? '#fff' : '#1c1c1e',
-              border: isLight ? '1px solid rgba(212,160,154,0.35)' : '1px solid rgba(255,255,255,0.1)',
+              border: isLight ? '1px solid var(--border-color)' : '1px solid rgba(255,255,255,0.1)',
               borderRadius: '10px',
               color: isLight ? 'var(--text-primary)' : 'white',
               padding: '0 12px',
@@ -288,7 +288,7 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
             style={{
               height: '36px',
               background: isLight ? '#fff' : '#1c1c1e',
-              border: isLight ? '1px solid rgba(212,160,154,0.35)' : '1px solid rgba(255,255,255,0.1)',
+              border: isLight ? '1px solid var(--border-color)' : '1px solid rgba(255,255,255,0.1)',
               borderRadius: '10px',
               color: isLight ? 'var(--text-primary)' : 'white',
               padding: '0 12px',
@@ -432,8 +432,8 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
             paddingLeft: '48px',
             paddingRight: value ? '40px' : '16px',
             cursor: 'text',
-            background: isLight ? 'linear-gradient(135deg, #fff 0%, #fff8fa 100%)' : 'rgba(255,255,255,0.05)',
-            border: isOpen ? '1.5px solid var(--pink-primary)' : isLight ? '1px solid rgba(212,160,154,0.35)' : '1px solid rgba(255,255,255,0.15)',
+            background: isLight ? 'white' : 'rgba(255,255,255,0.05)',
+            border: isOpen ? '1.5px solid var(--pink-primary)' : isLight ? '1px solid var(--border-color)' : '1px solid rgba(255,255,255,0.15)',
             color: isLight ? 'var(--text-primary)' : 'white',
             outline: 'none',
             boxShadow: 'none',
