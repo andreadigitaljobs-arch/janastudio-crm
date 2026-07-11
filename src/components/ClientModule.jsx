@@ -362,10 +362,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
             ))}
           </div>
 
-          {/* Main Content: Table */}
-          <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
-            {/* Left: Table Section */}
-            <div style={{ flex: 1, minWidth: 0 }}>
+          {/* Main Content */}
               {/* Search & Actions Bar */}
               <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <div style={{ flex: 1, minWidth: isMobile ? '100%' : '200px', position: 'relative' }}>
@@ -774,9 +771,6 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                   </div>
                 )}
               </div>
-            </div>
-
-          </div>
         </>
       ) : (
         <ClientDetail 
