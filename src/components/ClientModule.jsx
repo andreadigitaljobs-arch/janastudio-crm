@@ -639,7 +639,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
               {/* Search, Filter Chips and Sort Dropdown Row */}
               <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
                   {/* Search box */}
-                  <div style={{ flex: 1, minWidth: '220px', position: 'relative' }}>
+                  <div style={{ width: '280px', position: 'relative', flexShrink: 0 }}>
                     <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                     <input
                       type="text"
@@ -694,7 +694,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                   </div>
 
                   {/* Sort dropdown */}
-                  <div style={{ position: 'relative' }}>
+                  <div style={{ position: 'relative', marginLeft: 'auto' }}>
                     <div 
                       onClick={() => setShowSortDropdown(!showSortDropdown)}
                       style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#6b7280', fontWeight: '500', cursor: 'pointer', padding: '8px 16px', borderRadius: '12px', border: '1px solid #fae8eb', backgroundColor: 'white' }}
