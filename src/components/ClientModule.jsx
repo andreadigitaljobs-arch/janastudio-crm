@@ -645,7 +645,8 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
             /* Desktop Split Layout (Master-Detail Columns) */
             <>
               {/* Search, Filter Chips and Sort Dropdown Row */}
-              <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', alignItems: 'center', flexWrap: 'nowrap' }}>
+              {windowWidth >= 1350 ? (
+                <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', alignItems: 'center', flexWrap: 'nowrap' }}>
                   {/* Search box */}
                   <div style={{ width: '220px', position: 'relative', flexShrink: 0 }}>
                     <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
@@ -658,7 +659,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                         width: '100%',
                         padding: '10px 14px 10px 40px',
                         borderRadius: '12px',
-                        border: '1px solid #fae8eb',
+                        border: '1px solid var(--border-color)',
                         backgroundColor: 'white',
                         fontSize: '13px',
                         color: 'var(--text-primary)',
@@ -668,7 +669,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                   </div>
 
                   {/* Filter chips */}
-                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'nowrap' }}>
                     {[
                       { key: 'all', label: 'Todas' },
                       { key: 'frequent', label: 'Frecuentes' },
@@ -754,6 +755,131 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                     )}
                   </div>
                 </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+                  {/* Row 1: Search box and Sort dropdown */}
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center', justifyContent: 'space-between' }}>
+                    {/* Search box (wider) */}
+                    <div style={{ flex: 1, maxWidth: '400px', position: 'relative' }}>
+                      <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                      <input
+                        type="text"
+                        placeholder="Buscar por nombre, cédula, teléfono o email..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '10px 14px 10px 40px',
+                          borderRadius: '12px',
+                          border: '1px solid var(--border-color)',
+                          backgroundColor: 'white',
+                          fontSize: '13px',
+                          color: 'var(--text-primary)',
+                          outline: 'none'
+                        }}
+                      />
+                    </div>
+
+                    {/* Sort dropdown */}
+                    <div style={{ position: 'relative' }}>
+                      <div 
+                        onClick={() => setShowSortDropdown(!showSortDropdown)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#6b7280', fontWeight: '500', cursor: 'pointer', padding: '8px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'white' }}
+                        className="btn-interactive"
+                      >
+                        {sortBy === 'recent' && 'Más recientes'}
+                        {sortBy === 'oldest' && 'Más antiguos'}
+                        {sortBy === 'az' && 'Nombre A-Z'}
+                        {sortBy === 'za' && 'Nombre Z-A'}
+                        <ChevronDown size={14} color="var(--pink-primary)" />
+                      </div>
+                      {showSortDropdown && (
+                        <>
+                          <div 
+                            onClick={() => setShowSortDropdown(false)}
+                            style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 998 }}
+                          />
+                          <div 
+                            style={{ 
+                              position: 'absolute', right: 0, top: 'calc(100% + 4px)', minWidth: '150px',
+                              backgroundColor: 'white', border: '1px solid var(--border-color)', borderRadius: '12px',
+                              boxShadow: 'var(--shadow-card)', padding: '6px', zIndex: 999, display: 'flex', flexDirection: 'column', gap: '2px'
+                            }}
+                          >
+                            {[
+                              { key: 'recent', label: 'Más recientes' },
+                              { key: 'oldest', label: 'Más antiguos' },
+                              { key: 'az', label: 'Nombre A-Z' },
+                              { key: 'za', label: 'Nombre Z-A' }
+                            ].map(opt => (
+                              <div 
+                                key={opt.key}
+                                onClick={() => {
+                                  setSortBy(opt.key);
+                                  setShowSortDropdown(false);
+                                }}
+                                style={{
+                                  padding: '8px 12px', fontSize: '12px', borderRadius: '8px', cursor: 'pointer',
+                                  fontWeight: '600', color: sortBy === opt.key ? 'var(--pink-primary)' : 'var(--text-primary)',
+                                  backgroundColor: sortBy === opt.key ? 'rgba(196,139,159,0.06)' : 'transparent',
+                                  transition: 'all 0.15s'
+                                }}
+                              >
+                                {opt.label}
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Row 2: Filter chips (single scrollable row with hidden scrollbars) */}
+                  <div 
+                    style={{ 
+                      display: 'flex', 
+                      gap: '8px', 
+                      overflowX: 'auto', 
+                      paddingBottom: '4px',
+                      scrollbarWidth: 'none',
+                      msOverflowStyle: 'none'
+                    }}
+                    className="hide-scrollbar"
+                  >
+                    {[
+                      { key: 'all', label: 'Todas' },
+                      { key: 'frequent', label: 'Frecuentes' },
+                      { key: 'active', label: 'Activas' },
+                      { key: 'no Appointment', label: 'Sin cita' },
+                      { key: 'consent', label: 'Con consentimiento' },
+                      { key: 'vip', label: 'VIP' }
+                    ].map(f => {
+                      const isActive = activeFilter === f.key;
+                      return (
+                        <button
+                          key={f.key}
+                          onClick={() => { setActiveFilter(f.key); setCurrentPage(1); }}
+                          style={{
+                            padding: '8px 18px',
+                            borderRadius: '14px',
+                            border: isActive ? 'none' : '1px solid var(--border-color)',
+                            background: isActive ? 'var(--magenta-gradient)' : 'white',
+                            color: isActive ? 'white' : '#6b7280',
+                            fontSize: '12px',
+                            fontWeight: '500',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                            whiteSpace: 'nowrap'
+                          }}
+                          className="btn-interactive"
+                        >
+                          {f.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
                 <div style={{ display: 'grid', gridTemplateColumns: isNarrowScreen ? '1fr' : '1fr 340px', gap: '24px', alignItems: 'start' }}>
                   {/* Left Column: Table + Pagination + Pending Actions */}
