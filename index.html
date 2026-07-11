@@ -12,6 +12,7 @@
     <meta name="description" content="Jana Studio - Sistema de gestión para salón de belleza" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.webp" />
     <link rel="manifest" href="/manifest.json" />
+    <!-- Preload critical images at highest priority -->
     <link rel="preload" as="image" href="/logo.webp" fetchpriority="high" />
     <link rel="preload" as="image" href="/fondo_carga.png" fetchpriority="high" />
     <link rel="preload" as="image" href="/fondo_carga_mobile.png" fetchpriority="high" />
@@ -32,17 +33,25 @@
         justify-content: center;
         align-items: center;
         overflow: hidden;
-        background-image: url(/fondo_carga.png);
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
+        /* Solid color shown instantly while bg image loads */
         background-color: #f7ebe6;
         font-family: 'Playfair Display', Georgia, serif;
       }
-      @media (max-width: 768px), (orientation: portrait) and (max-width: 1366px) {
-        .loader-container {
-          background-image: url(/fondo_carga_mobile.png);
-        }
+
+      /* Background rendered as <img> so browser fires onload and we crossfade in */
+      .loader-bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 0;
+      }
+      .loader-bg.loaded {
+        opacity: 1;
       }
 
       .loader-content {
@@ -58,9 +67,7 @@
         padding: 20px;
       }
 
-      .loader-logo-wrapper {
-        margin-bottom: 25px;
-      }
+      .loader-logo-wrapper { margin-bottom: 25px; }
       .loader-logo {
         width: 420px;
         max-width: 85%;
@@ -72,155 +79,75 @@
         animation: fadeInScale 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
       }
 
-      .loader-spinner-wrapper {
-        margin-bottom: 30px;
-        display: flex;
-        justify-content: center;
-      }
+      .loader-spinner-wrapper { margin-bottom: 30px; display: flex; justify-content: center; }
       .rose-gold-spinner {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
+        width: 60px; height: 60px; border-radius: 50%;
         border: 4.5px solid rgba(179, 130, 121, 0.15);
         border-top: 4.5px solid #b38279;
         animation: luxurySpin 1.2s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
         box-shadow: 0 0 15px rgba(179, 130, 121, 0.2);
       }
 
-      .loader-info-wrapper {
-        margin-bottom: 25px;
-      }
+      .loader-info-wrapper { margin-bottom: 25px; }
       .loader-title {
-        font-size: 30px;
-        font-weight: 500;
-        color: #7a5853;
-        margin: 0 0 8px 0;
-        letter-spacing: 0.02em;
+        font-size: 30px; font-weight: 500; color: #7a5853;
+        margin: 0 0 8px 0; letter-spacing: 0.02em;
         text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
       }
       .loader-subtitle {
-        font-family: 'Manrope', sans-serif;
-        font-size: 17px;
-        font-weight: 500;
-        color: #9e7f7b;
-        margin: 0;
-        letter-spacing: 0.03em;
+        font-family: 'Manrope', sans-serif; font-size: 17px;
+        font-weight: 500; color: #9e7f7b; margin: 0; letter-spacing: 0.03em;
       }
 
       .loader-progress-row {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 15px;
-        width: 100%;
-        max-width: 420px;
-        margin-bottom: 70px;
+        display: flex; align-items: center; justify-content: center;
+        gap: 15px; width: 100%; max-width: 420px; margin-bottom: 70px;
       }
       .custom-progress-track {
-        flex: 1;
-        height: 3px;
-        background: rgba(122, 88, 83, 0.12);
-        border-radius: 10px;
-        overflow: hidden;
+        flex: 1; height: 3px; background: rgba(122, 88, 83, 0.12);
+        border-radius: 10px; overflow: hidden;
       }
       .custom-progress-bar {
         height: 100%;
         background: linear-gradient(90deg, #d4a39b, #b38279, #d4a39b);
-        background-size: 200% 100%;
-        border-radius: 10px;
+        background-size: 200% 100%; border-radius: 10px;
       }
       .loader-percent {
-        font-size: 13px;
-        font-style: italic;
-        color: #7a5853;
-        min-width: 32px;
-        text-align: right;
+        font-size: 13px; font-style: italic; color: #7a5853;
+        min-width: 32px; text-align: right;
       }
 
       .loader-footer {
-        position: absolute;
-        bottom: 30px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
+        position: absolute; bottom: 30px;
+        display: flex; flex-direction: column; align-items: center; gap: 6px;
       }
       @media (max-height: 600px) {
-        .loader-footer {
-          position: relative;
-          bottom: auto;
-          margin-top: 20px;
-        }
-        .loader-progress-row {
-          margin-bottom: 30px;
-        }
+        .loader-footer { position: relative; bottom: auto; margin-top: 20px; }
+        .loader-progress-row { margin-bottom: 30px; }
       }
-      .loader-heart-icon {
-        color: #b38279;
-        font-size: 16px;
-      }
+      .loader-heart-icon { color: #b38279; font-size: 16px; }
       .loader-slogan {
-        font-size: 16px;
-        font-style: italic;
-        color: #7a5853;
-        margin: 0;
-        letter-spacing: 0.05em;
-        text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
-        background: rgba(255, 255, 255, 0.4);
-        padding: 6px 16px;
-        border-radius: 20px;
-        backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
+        font-size: 16px; font-style: italic; color: #7a5853; margin: 0;
+        letter-spacing: 0.05em; text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.4); padding: 6px 16px;
+        border-radius: 20px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
       }
 
-      /* Tablet/IPad / Medium screen Breakpoint (<= 1200px) */
       @media (max-width: 1200px) {
-        .loader-logo {
-          width: 340px;
-        }
-        .rose-gold-spinner {
-          width: 50px;
-          height: 50px;
-          border-width: 3.5px;
-        }
-        .loader-title {
-          font-size: 25px;
-        }
-        .loader-subtitle {
-          font-size: 15px;
-        }
-        .loader-progress-row {
-          max-width: 340px;
-          margin-bottom: 60px;
-        }
-        .loader-slogan {
-          font-size: 14px;
-        }
+        .loader-logo { width: 340px; }
+        .rose-gold-spinner { width: 50px; height: 50px; border-width: 3.5px; }
+        .loader-title { font-size: 25px; }
+        .loader-subtitle { font-size: 15px; }
+        .loader-progress-row { max-width: 340px; margin-bottom: 60px; }
+        .loader-slogan { font-size: 14px; }
       }
-
-      /* Mobile Breakpoint (<= 480px) */
       @media (max-width: 480px) {
-        .loader-logo {
-          width: 220px;
-        }
-        .rose-gold-spinner {
-          width: 40px;
-          height: 40px;
-          border-width: 3px;
-        }
-        .loader-title {
-          font-size: 18px;
-        }
-        .loader-subtitle {
-          font-size: 12px;
-        }
-        .loader-progress-row {
-          max-width: 280px;
-          margin-bottom: 50px;
-        }
-        .loader-slogan {
-          font-size: 12px;
-        }
+        .loader-logo { width: 220px; }
+        .rose-gold-spinner { width: 40px; height: 40px; border-width: 3px; }
+        .loader-title { font-size: 18px; }
+        .loader-subtitle { font-size: 12px; }
+        .loader-progress-row { max-width: 280px; margin-bottom: 50px; }
+        .loader-slogan { font-size: 12px; }
       }
 
       @keyframes luxurySpin {
@@ -235,9 +162,32 @@
   </head>
   <body>
     <div id="splash-loader" class="loader-container">
+      <!--
+        Background as <img> instead of CSS background-image.
+        Benefits:
+        - Browser fires onload event → we fade it in with CSS transition
+        - fetchpriority="high" + decoding="sync" ensures it gets decoded immediately
+        - Solid background-color #f7ebe6 shows instantly as fallback
+      -->
+      <img
+        id="loader-bg-img"
+        class="loader-bg"
+        src="/fondo_carga.png"
+        fetchpriority="high"
+        decoding="sync"
+        alt=""
+        onload="this.classList.add('loaded')"
+        onerror="this.style.display='none'"
+      />
       <div class="loader-content">
         <div class="loader-logo-wrapper">
-          <img src="/logo.webp" alt="Jana Studio" class="loader-logo animate-first-load" />
+          <img
+            src="/logo.webp"
+            alt="Jana Studio"
+            class="loader-logo animate-first-load"
+            fetchpriority="high"
+            decoding="sync"
+          />
         </div>
         <div class="loader-spinner-wrapper">
           <div class="rose-gold-spinner"></div>
@@ -246,7 +196,6 @@
           <h2 class="loader-title">Preparando tu experiencia...</h2>
           <p class="loader-subtitle" id="splash-subtitle">Cargando citas, clientes y servicios...</p>
         </div>
-        <!-- Spacer placeholders to align layout exactly with React loader -->
         <div class="loader-progress-row" style="opacity: 0; pointer-events: none;">
           <div class="custom-progress-track">
             <div class="custom-progress-bar" style="width: 0%;"></div>
@@ -254,19 +203,39 @@
           <span class="loader-percent">0%</span>
         </div>
         <div class="loader-footer" style="opacity: 0; pointer-events: none;">
-          <div class="loader-heart-icon">♡</div>
+          <div class="loader-heart-icon">&#9825;</div>
           <p class="loader-slogan">Empodera tu confianza. Eleva tu belleza.</p>
         </div>
       </div>
     </div>
     <div id="root"></div>
     <script>
+      // Switch background for mobile/portrait screens before image loads
+      (function() {
+        var isMobile = window.matchMedia('(max-width: 768px)').matches ||
+          (window.matchMedia('(orientation: portrait)').matches && window.innerWidth <= 1366);
+        if (isMobile) {
+          var bg = document.getElementById('loader-bg-img');
+          if (bg) { bg.src = '/fondo_carga_mobile.png'; }
+        }
+      })();
+
       window.isJanaAppLoading = true;
       window.isJanaLoaderVisible = true;
       (function(){
-        var steps=["Cargando citas, clientes y servicios...","Conectando con la base de datos segura...","Configurando diseño y elementos personalizados...","Preparando tu espacio de lujo..."];
-        var i=0;var el=document.getElementById("splash-subtitle");
-        var iv=setInterval(function(){i++;if(i<steps.length&&el)el.textContent=steps[i];else clearInterval(iv);},500);
+        var steps = [
+          "Cargando citas, clientes y servicios...",
+          "Conectando con la base de datos segura...",
+          "Configurando dise\u00f1o y elementos personalizados...",
+          "Preparando tu espacio de lujo..."
+        ];
+        var i = 0;
+        var el = document.getElementById("splash-subtitle");
+        var iv = setInterval(function() {
+          i++;
+          if (i < steps.length && el) el.textContent = steps[i];
+          else clearInterval(iv);
+        }, 500);
       })();
     </script>
     <script type="module" src="/src/main.jsx"></script>
