@@ -348,19 +348,31 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
           {/* Stat Cards */}
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px', marginBottom: '28px' }}>
             {[
-              { label: 'Clientas activas', value: activeClients, icon: Users, trend: '+12%', trendSub: 'vs. mes anterior', iconBg: 'rgba(212, 160, 154, 0.12)', iconColor: 'var(--pink-primary)' },
-              { label: 'Nuevas este mes', value: newThisMonth, icon: UserPlus, trend: `+${newThisMonth}`, trendSub: 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.1)', iconColor: 'var(--magenta-primary)' },
-              { label: 'Con próxima cita', value: upcomingCount, icon: Calendar, trend: '+8%', trendSub: 'vs. mes anterior', iconBg: 'rgba(74, 48, 54, 0.06)', iconColor: 'var(--text-secondary)' },
-              { label: 'Cumpleaños cercanos', value: birthdaySoon, icon: Cake, trend: '', trendSub: 'En los próximos 7 días', iconBg: 'rgba(212, 160, 154, 0.15)', iconColor: 'var(--pink-primary)' }
+              { label: 'Clientas activas', value: activeClients, icon: Users, trend: '+12%', trendSub: 'vs. mes anterior', iconBg: 'linear-gradient(135deg, #fdf2f4 0%, #fce8ec 100%)', iconColor: 'var(--magenta-primary)' },
+              { label: 'Nuevas este mes', value: newThisMonth, icon: UserPlus, trend: `+${newThisMonth}`, trendSub: 'vs. mes anterior', iconBg: 'linear-gradient(135deg, #fce8ec 0%, #fbcada 100%)', iconColor: 'var(--magenta-primary)' },
+              { label: 'Con próxima cita', value: upcomingCount, icon: Calendar, trend: '+8%', trendSub: 'vs. mes anterior', iconBg: 'linear-gradient(135deg, rgba(212,160,154,0.15) 0%, rgba(212,160,154,0.05) 100%)', iconColor: 'var(--pink-primary)' },
+              { label: 'Cumpleaños cercanos', value: birthdaySoon, icon: Cake, trend: '', trendSub: 'En los próximos 7 días', iconBg: 'linear-gradient(135deg, #fdf2f4 0%, #fce8ec 100%)', iconColor: 'var(--pink-primary)' }
             ].map((stat, i) => (
-              <div key={i} className="glass-card" style={{ padding: isMobile ? '12px 10px' : '20px', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+              <div 
+                key={i} 
+                className="glass-card" 
+                style={{ 
+                  padding: isMobile ? '12px 10px' : '20px', 
+                  borderRadius: '16px', 
+                  border: '1px solid rgba(212,160,154,0.3)', 
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(253,243,244,0.9) 100%)',
+                  boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)',
+                  transition: 'transform 0.2s',
+                  cursor: 'default'
+                }}
+              >
                 <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'center' : 'flex-start', gap: '10px', textAlign: isMobile ? 'center' : 'left' }}>
-                  <div style={{ width: isMobile ? '36px' : '44px', height: isMobile ? '36px' : '44px', borderRadius: '12px', backgroundColor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div style={{ width: isMobile ? '36px' : '44px', height: isMobile ? '36px' : '44px', borderRadius: '12px', background: stat.iconBg, border: '1px solid rgba(212,160,154,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <stat.icon size={isMobile ? 18 : 20} color={stat.iconColor} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0, width: '100%' }}>
-                    <div style={{ fontSize: isMobile ? '10px' : '12px', color: 'var(--text-muted)', fontWeight: '600', marginBottom: '4px', textOverflow: 'ellipsis', overflow: 'hidden' }}>{stat.label}</div>
-                    <div style={{ fontSize: isMobile ? '20px' : '28px', fontWeight: '800', color: 'var(--text-primary)', lineHeight: '1' }}>{stat.value}</div>
+                    <div style={{ fontSize: isMobile ? '10px' : '12px', color: 'var(--text-secondary)', fontWeight: '600', marginBottom: '4px', textOverflow: 'ellipsis', overflow: 'hidden' }}>{stat.label}</div>
+                    <div style={{ fontSize: isMobile ? '20px' : '28px', fontWeight: '850', color: 'var(--text-primary)', lineHeight: '1' }}>{stat.value}</div>
                     {stat.trend && (
                       <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '600', marginTop: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2px', flexWrap: 'wrap' }}>
                         <ArrowUpRight size={10} /> {stat.trend} <span style={{ color: 'var(--text-muted)', display: isMobile ? 'none' : 'inline' }}>{stat.trendSub}</span>
@@ -609,18 +621,18 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                 </div>
               ) : (
                 /* Desktop Table view */
-                <div className="glass-card" style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)', background: 'var(--bg-secondary)' }}>
+                <div className="glass-card" style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)', background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(253,243,244,0.7) 100%)' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                     <thead>
-                      <tr style={{ backgroundColor: 'var(--bg-tertiary)', borderBottom: '1px solid var(--border-color)' }}>
-                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '700', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cliente</th>
-                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '700', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cédula / ID</th>
-                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '700', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contacto</th>
-                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '700', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Última visita</th>
-                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '700', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Próxima cita</th>
-                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '700', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Historial</th>
-                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '700', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado</th>
-                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '700', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>Acciones</th>
+                      <tr style={{ background: 'linear-gradient(90deg, rgba(212,160,154,0.18) 0%, rgba(160,80,106,0.08) 100%)', borderBottom: '1px solid var(--border-color)' }}>
+                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cliente</th>
+                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cédula / ID</th>
+                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contacto</th>
+                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Última visita</th>
+                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Próxima cita</th>
+                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Historial</th>
+                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado</th>
+                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>Acciones</th>
                       </tr>
                     </thead>
                     <tbody>
