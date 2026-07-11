@@ -2753,29 +2753,22 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
 
                     {/* Row 3: Servicios */}
                     <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', gap: isMobile ? '6px' : '10px' }}>
-                      <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
+                      <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', marginBottom: isMobile ? '4px' : '0' }}>
                         Filtrar por Servicio:
                       </span>
-                      <select
+                      <JanaSelect
+                        variant="light"
+                        placeholder="Todos los servicios"
                         value={serviceFilter}
-                        onChange={e => setServiceFilter(e.target.value)}
-                        className="form-input"
+                        onChange={(val) => setServiceFilter(val)}
+                        options={[
+                          { label: 'Todos los servicios', value: 'all' },
+                          ...galleryServiceNames.map(name => ({ label: name, value: name }))
+                        ]}
                         style={{ 
-                          width: isMobile ? '100%' : '240px', 
-                          fontSize: '12px', 
-                          padding: '8px 12px', 
-                          borderRadius: '12px',
-                          border: '1px solid var(--border-color)',
-                          background: 'white',
-                          cursor: 'pointer',
-                          fontWeight: '600'
+                          width: isMobile ? '100%' : '240px'
                         }}
-                      >
-                        <option value="all">Todos los servicios</option>
-                        {galleryServiceNames.map((name, idx) => (
-                          <option key={idx} value={name}>{name}</option>
-                        ))}
-                      </select>
+                      />
                     </div>
                   </div>
 
