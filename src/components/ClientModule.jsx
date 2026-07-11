@@ -413,37 +413,38 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
           )}
 
           {/* Stat Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: windowWidth < 500 ? '1fr' : (windowWidth < 1200 ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)'), gap: '16px', marginBottom: '28px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: windowWidth < 1200 ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: '16px', marginBottom: '28px' }}>
             {[
               { label: 'Clientes activas', value: activeClients, icon: Users, trend: '↑ 12%', trendSub: 'vs. mes anterior', iconBg: 'rgba(212, 160, 154, 0.12)', iconColor: 'var(--pink-primary)' },
               { label: 'Nuevas este mes', value: newThisMonth, icon: UserPlus, trend: '↑ 15%', trendSub: 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.08)', iconColor: 'var(--magenta-primary)' },
               { label: 'Con próxima cita', value: upcomingCount, icon: Calendar, trend: '↑ 8%', trendSub: 'vs. mes anterior', iconBg: 'rgba(74, 48, 54, 0.06)', iconColor: 'var(--text-secondary)' },
-              { label: 'Cumpleaños cercanos', value: birthdaySoon, icon: Cake, trend: '', trendSub: 'En los próximos 7 días', iconBg: 'rgba(212, 160, 154, 0.15)', iconColor: 'var(--pink-primary)' }
+              { label: 'Cumpleaños cercanos', value: birthdaySoon, icon: Cake, trend: '', trendSub: 'Próximos 7 días', iconBg: 'rgba(212, 160, 154, 0.15)', iconColor: 'var(--pink-primary)' }
             ].map((stat, i) => (
               <div 
                 key={i} 
-                className="glass-card" 
+                className="glass-card animate-scale-in" 
                 style={{ 
-                  padding: '16px 20px', 
+                  padding: windowWidth < 600 ? '10px 12px' : '16px 20px', 
                   borderRadius: '24px', 
                   border: '1px solid rgba(212,160,154,0.25)', 
                   background: 'white',
                   boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)',
+                  animationDelay: `${i * 80}ms`
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                  <div style={{ width: '48px', height: '48px', borderRadius: '16px', backgroundColor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <stat.icon size={22} color={stat.iconColor} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: windowWidth < 600 ? '8px' : '14px' }}>
+                  <div style={{ width: windowWidth < 600 ? '34px' : '48px', height: windowWidth < 600 ? '34px' : '48px', borderRadius: windowWidth < 600 ? '10px' : '16px', backgroundColor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <stat.icon size={windowWidth < 600 ? 16 : 22} color={stat.iconColor} />
                   </div>
-                  <div>
-                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600', marginBottom: '2px' }}>{stat.label}</div>
-                    <div style={{ fontSize: '24px', fontWeight: '850', color: 'var(--text-primary)', lineHeight: '1.1' }}>{stat.value}</div>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ fontSize: windowWidth < 600 ? '10px' : '12px', color: 'var(--text-secondary)', fontWeight: '600', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{stat.label}</div>
+                    <div style={{ fontSize: windowWidth < 600 ? '18px' : '24px', fontWeight: '850', color: 'var(--text-primary)', lineHeight: '1.1' }}>{stat.value}</div>
                     {stat.trend ? (
-                      <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '600', marginTop: '2px' }}>
+                      <div style={{ fontSize: windowWidth < 600 ? '8px' : '10px', color: 'var(--pink-primary)', fontWeight: '600', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {stat.trend} <span style={{ color: 'var(--text-muted)' }}>{stat.trendSub}</span>
                       </div>
                     ) : (
-                      <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '500', marginTop: '2px' }}>{stat.trendSub}</div>
+                      <div style={{ fontSize: windowWidth < 600 ? '8px' : '10px', color: 'var(--text-muted)', fontWeight: '500', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{stat.trendSub}</div>
                     )}
                   </div>
                 </div>
