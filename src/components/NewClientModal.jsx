@@ -195,7 +195,8 @@ const NewClientModal = ({ isOpen, onClose, onSuccess, onClientCreated }) => {
                     onClick={onClose} 
                     className="jana-client-secondary-btn"
                     style={{ 
-                      flex: 1, 
+                      flex: 1,
+                      whiteSpace: 'nowrap'
                     }}
                   >
                     CANCELAR
@@ -204,9 +205,9 @@ const NewClientModal = ({ isOpen, onClose, onSuccess, onClientCreated }) => {
                     type="submit"
                     disabled={loading}
                     className="btn-pink" 
-                    style={{ flex: 1.5, height: '50px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontWeight: 700 }}
+                    style={{ flex: 1.5, height: '50px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontWeight: 700, whiteSpace: 'nowrap' }}
                   >
-                    {loading ? <Loader2 className="animate-spin" size={20} /> : 'REGISTRAR CLIENTE'}
+                    {loading ? <Loader2 className="animate-spin" size={20} /> : 'REGISTRAR'}
                   </button>
                 </div>
               </form>
