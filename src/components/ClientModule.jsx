@@ -2648,9 +2648,24 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                           <button
                             type="button"
                             onClick={(e) => { e.stopPropagation(); setShowCamera(true); }}
-                            style={{ fontSize: '11px', color: 'var(--pink-primary)', background: 'none', border: 'none', fontWeight: '700', cursor: 'pointer', textDecoration: 'underline', width: 'fit-content', marginTop: '2px', padding: 0 }}
+                            style={{ 
+                              fontSize: '11px', 
+                              color: 'var(--magenta-primary)', 
+                              backgroundColor: 'rgba(160,80,106,0.06)', 
+                              border: '1px solid rgba(160,80,106,0.15)', 
+                              fontWeight: '750', 
+                              cursor: 'pointer', 
+                              padding: '5px 12px', 
+                              borderRadius: '20px',
+                              width: 'fit-content', 
+                              marginTop: '6px', 
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}
+                            className="btn-interactive"
                           >
-                            o usar la cámara
+                            <Camera size={11} color="var(--magenta-primary)" /> Usar cámara
                           </button>
                         )}
                       </div>
