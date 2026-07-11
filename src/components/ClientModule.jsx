@@ -1709,6 +1709,28 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
   const isCompact = isMobile || detailWidth < 1000;
   const [showCollage, setShowCollage] = useState(false);
   const [isSavingComparison, setIsSavingComparison] = useState(false);
+  
+  // Pagination / Infinite Scroll
+  const [visiblePhotosCount, setVisiblePhotosCount] = useState(12);
+  const [visibleCompsCount, setVisibleCompsCount] = useState(4);
+  const photosObserverRef = useRef(null);
+  const compsObserverRef = useRef(null);
+
+  useEffect(() => {
+    const pObserver = new IntersectionObserver(
+      (entries) => { if (entries[0].isIntersecting) setVisiblePhotosCount(p => p + 12); },
+      { threshold: 0.1, rootMargin: '400px' }
+    );
+    const cObserver = new IntersectionObserver(
+      (entries) => { if (entries[0].isIntersecting) setVisibleCompsCount(c => c + 4); },
+      { threshold: 0.1, rootMargin: '400px' }
+    );
+    
+    if (photosObserverRef.current) pObserver.observe(photosObserverRef.current);
+    if (compsObserverRef.current) cObserver.observe(compsObserverRef.current);
+    
+    return () => { pObserver.disconnect(); cObserver.disconnect(); };
+  }, [activeSubTab, showCollage, gallery]);
   const [showAllHistory, setShowAllHistory] = useState(false);
   const [photoA, setPhotoA] = useState(null);
   const [photoB, setPhotoB] = useState(null);
@@ -2623,9 +2645,12 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                     </div>
                   </div>
 
-                  {comparisons.map(comp => (
+                  {comparisons.slice(0, visibleCompsCount).map(comp => (
                     <ComparisonCard key={comp.id} comparison={comp} onDelete={() => handleDeleteComparison(comp.id)} onShare={() => handleShareComparison(comp)} />
                   ))}
+                  {visibleCompsCount < comparisons.length && (
+                    <div ref={compsObserverRef} style={{ height: '20px', width: '100%' }} />
+                  )}
                 </div>
 
                 {unpairedAntes && unpairedDespues && (
@@ -2781,7 +2806,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '20px' }}>
-                    {filteredIndexedGallery.map(({ img, i }) => {
+                    {filteredIndexedGallery.slice(0, visiblePhotosCount).map(({ img, i }) => {
                       const isSelected = selectedPhotoIndices.includes(i);
                       return (
                       <div
@@ -2825,6 +2850,11 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                       </div>
                     );})}
                   </div>
+                  {visiblePhotosCount < filteredIndexedGallery.length && (
+                    <div ref={photosObserverRef} style={{ height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', marginTop: '20px' }}>
+                      <Loader2 size={24} color="var(--pink-primary)" className="animate-spin" />
+                    </div>
+                  )}
                 </div>
 
                 <input
