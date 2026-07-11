@@ -2677,7 +2677,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   }}>
                     {/* Row 1: Tipo & Orden */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-                      <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: isMobile ? '4px' : '0', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                         {[
                           { id: 'all', label: 'Todas' },
                           { id: 'Antes', label: 'Antes' },
@@ -2692,8 +2692,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                               border: galleryFilter === f.id ? 'none' : '1px solid var(--border-color)',
                               background: galleryFilter === f.id ? 'var(--pink-primary)' : 'white',
                               color: galleryFilter === f.id ? 'white' : 'var(--text-secondary)',
-                              transition: 'all 0.2s',
-                              whiteSpace: 'nowrap'
+                              transition: 'all 0.2s'
                             }}
                           >
                             {f.label}
@@ -2714,7 +2713,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
 
                     {/* Row 2: Fechas */}
                     <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', gap: '10px' }}>
-                      <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: isMobile ? '4px' : '0', scrollbarWidth: 'none', msOverflowStyle: 'none', width: '100%' }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', width: '100%' }}>
                         {[
                           { id: 'all', label: 'Todas fechas' },
                           { id: 'week', label: 'Esta semana' },
@@ -2731,8 +2730,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                               border: dateFilter === f.id ? 'none' : '1px solid var(--border-color)',
                               background: dateFilter === f.id ? 'var(--pink-primary)' : 'white',
                               color: dateFilter === f.id ? 'white' : 'var(--text-secondary)',
-                              transition: 'all 0.2s',
-                              whiteSpace: 'nowrap'
+                              transition: 'all 0.2s'
                             }}
                           >
                             {f.label}
