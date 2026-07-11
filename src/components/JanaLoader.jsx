@@ -163,7 +163,7 @@ const JanaLoader = ({ visible }) => {
       <div className="loader-content">
         {/* Rose Gold Logo */}
         <div className="loader-logo-wrapper">
-          <img src="/logo.png" alt="Jana Studio" className="loader-logo" />
+          <img src="/logo.webp" alt="Jana Studio" className="loader-logo" />
         </div>
 
         {/* Custom Rose Gold Spinner */}

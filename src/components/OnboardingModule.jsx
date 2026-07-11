@@ -508,7 +508,7 @@ export default function OnboardingModule({ onComplete }) {
             />
           ))}
         </div>
-        <img src="/logo.png" alt="Jana Studio" className="onboarding-logo" />
+        <img src="/logo.webp" alt="Jana Studio" className="onboarding-logo" />
         <div className="onboarding-scrim" />
 
         <div className="onboarding-content-panel">
