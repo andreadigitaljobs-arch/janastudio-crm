@@ -33,12 +33,14 @@
     </div>
     <div id="root"></div>
     <script>
+      window.isJanaAppLoading = true;
       (function(){
         var steps=["Cargando citas, clientes y servicios...","Conectando con la base de datos segura...","Configurando diseño y elementos personalizados...","Preparando tu espacio de lujo..."];
         var i=0;var el=document.getElementById("splash-subtitle");
         var iv=setInterval(function(){i++;if(i<steps.length&&el)el.textContent=steps[i];else clearInterval(iv);},500);
       })();
     </script>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
