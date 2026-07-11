@@ -1734,6 +1734,9 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
   const [pendingBulkPhotos, setPendingBulkPhotos] = useState([]);
   const [bulkPhotoMeta, setBulkPhotoMeta] = useState({ type: 'Normal', serviceId: null });
   const [processingBulkUpload, setProcessingBulkUpload] = useState(false);
+  const [upcomingAppointment, setUpcomingAppointment] = useState(null);
+  const [editingNotes, setEditingNotes] = useState(false);
+  const [localNotes, setLocalNotes] = useState(client.notes || '');
   const [activeSubTab, setActiveSubTab] = useState('gallery'); // 'gallery', 'diagnoses', 'packages', 'history'
 
   // Switching sub-tabs (Fotos/Salud/Paquetes/Visitas) should also start at the top.
@@ -1821,6 +1824,10 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
   });
 
   useEffect(() => {
+    setLocalNotes(client.notes || '');
+  }, [client.notes]);
+
+  useEffect(() => {
     const loadHistory = async () => {
       try {
         setLoadingHistory(true);
@@ -1832,7 +1839,30 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
         setLoadingHistory(false);
       }
     };
+
+    const loadUpcoming = async () => {
+      try {
+        const todayStr = new Date().toISOString();
+        const { data, error } = await supabase
+          .from('appointments')
+          .select('*, services(name)')
+          .eq('client_id', client.id)
+          .gte('scheduled_at', todayStr)
+          .neq('status', 'Cancelado')
+          .order('scheduled_at', { ascending: true })
+          .limit(1);
+        if (!error && data && data.length > 0) {
+          setUpcomingAppointment(data[0]);
+        } else {
+          setUpcomingAppointment(null);
+        }
+      } catch (err) {
+        console.error('Error loading upcoming appointment:', err);
+      }
+    };
+
     loadHistory();
+    loadUpcoming();
   }, [client.id]);
 
   const findPhotoDate = (url) => {
@@ -3327,26 +3357,111 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
 
               <h2 style={{ margin: 0, fontSize: '19px', fontWeight: '850', color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>{client.name}</h2>
 
-              <div style={{ margin: '8px 0 6px', display: 'inline-block', fontSize: '12px', fontWeight: '750', color: 'var(--magenta-primary)', background: 'rgba(160,80,106,0.08)', padding: '4px 12px', borderRadius: '20px' }}>
-                V-{client.id_card || '00.000.000'}
-              </div>
+              {/* Status Badge & Cédula */}
+              {(() => {
+                let statusText = 'Nueva';
+                let statusColor = '#007aff';
+                let statusBg = 'rgba(0,122,255,0.06)';
+                let statusBorder = 'rgba(0,122,255,0.12)';
+
+                if (history.length >= 6) {
+                  statusText = 'VIP';
+                  statusColor = '#d4af37';
+                  statusBg = 'rgba(212,175,55,0.06)';
+                  statusBorder = 'rgba(212,175,55,0.15)';
+                } else if (history.length >= 2) {
+                  statusText = 'Frecuente';
+                  statusColor = 'var(--magenta-primary)';
+                  statusBg = 'rgba(160,80,106,0.06)';
+                  statusBorder = 'rgba(160,80,106,0.12)';
+                }
+
+                return (
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', alignItems: 'center', margin: '8px 0 10px' }}>
+                    <span style={{ fontSize: '11px', fontWeight: '750', color: 'var(--magenta-primary)', background: 'rgba(160,80,106,0.08)', padding: '3px 10px', borderRadius: '20px' }}>
+                      V-{client.id_card || '00.000.000'}
+                    </span>
+                    <span style={{ 
+                      fontSize: '10px', fontWeight: '800', color: statusColor, 
+                      backgroundColor: statusBg, border: `1px solid ${statusBorder}`,
+                      padding: '2.5px 8px', borderRadius: '20px', textTransform: 'uppercase', letterSpacing: '0.5px'
+                    }}>
+                      {statusText}
+                    </span>
+                  </div>
+                );
+              })()}
 
               <div style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: '600' }}>
-                <Phone size={13} color="var(--magenta-primary)" /> {client.phone}
+                <Phone size={13} color="var(--magenta-primary)" /> {client.phone || 'Sin teléfono'}
               </div>
 
-              <div style={{ borderTop: '1px solid var(--border-color)', marginTop: '18px', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px', textAlign: 'left' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
-                  <Users size={14} color="var(--magenta-primary)" />
-                  Total de visitas
-                  <span style={{ marginLeft: 'auto', fontWeight: '800', color: 'var(--text-primary)' }}>{history.length}</span>
+              {/* Quick Communication Actions (WhatsApp & Call) */}
+              {client.phone && (
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '14px' }}>
+                  <a 
+                    href={`tel:${client.phone}`}
+                    className="btn-interactive"
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11.5px', fontWeight: '750',
+                      color: 'var(--magenta-primary)', backgroundColor: 'rgba(160,80,106,0.06)', 
+                      border: '1px solid rgba(160,80,106,0.12)', padding: '7px 14px', borderRadius: '12px',
+                      textDecoration: 'none', transition: 'all 0.2s'
+                    }}
+                  >
+                    <Phone size={11} /> Llamar
+                  </a>
+                  <a 
+                    href={`https://wa.me/${client.phone.replace(/[^0-9]/g, '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-interactive"
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11.5px', fontWeight: '750',
+                      color: '#128C7E', backgroundColor: 'rgba(18,140,126,0.06)', 
+                      border: '1px solid rgba(18,140,126,0.15)', padding: '7px 14px', borderRadius: '12px',
+                      textDecoration: 'none', transition: 'all 0.2s'
+                    }}
+                  >
+                    <MessageCircle size={11} color="#128C7E" fill="rgba(18,140,126,0.1)" /> WhatsApp
+                  </a>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
-                  <Calendar size={14} color="var(--magenta-primary)" />
-                  Última visita
-                  <span style={{ marginLeft: 'auto', fontWeight: '800', color: 'var(--text-primary)' }}>{lastVisitLabel}</span>
-                </div>
-              </div>
+              )}
+
+              {/* Detailed Client Stats Block (Visits, Last Visit, Next Appointment, Total Spend) */}
+              {(() => {
+                const totalSpend = history.reduce((sum, h) => sum + (Number(h.amount) || 0), 0);
+                return (
+                  <div style={{ borderTop: '1px solid var(--border-color)', marginTop: '18px', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px', textAlign: 'left' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                      <Users size={14} color="var(--magenta-primary)" />
+                      Total de visitas
+                      <span style={{ marginLeft: 'auto', fontWeight: '800', color: 'var(--text-primary)' }}>{history.length}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                      <Calendar size={14} color="var(--magenta-primary)" />
+                      Última visita
+                      <span style={{ marginLeft: 'auto', fontWeight: '800', color: 'var(--text-primary)' }}>{lastVisitLabel}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                      <Sparkles size={14} color="var(--magenta-primary)" />
+                      Próxima cita
+                      <span style={{ marginLeft: 'auto', fontWeight: '800', color: upcomingAppointment ? 'var(--magenta-primary)' : 'var(--text-muted)' }}>
+                        {upcomingAppointment 
+                          ? new Date(upcomingAppointment.scheduled_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'short' }) + ' ' + new Date(upcomingAppointment.scheduled_at).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true })
+                          : 'Ninguna'}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                      <TrendingUp size={14} color="var(--magenta-primary)" />
+                      Total facturado
+                      <span style={{ marginLeft: 'auto', fontWeight: '800', color: 'var(--text-primary)' }}>
+                        ${totalSpend.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
 
               {!isEditing && (
                 <button
@@ -3407,10 +3522,53 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   <DetailItem label="Cumpleaños" value={client.birth_date ? new Date(client.birth_date + 'T00:00:00').toLocaleDateString([], {day: '2-digit', month: 'long', year: 'numeric'}) : 'No registrado'} />
                   <DetailItem label="Fecha de registro" value={client.created_at ? new Date(client.created_at).toLocaleDateString() : 'N/A'} />
                   <div>
-                    <p style={{ margin: '0 0 4px', fontSize: '13px', color: 'var(--text-secondary)' }}>Notas rápidas</p>
-                    <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-primary)', fontWeight: '600', lineHeight: 1.5 }}>
-                      {client.notes || 'Sin notas registradas.'}
-                    </p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                      <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>Notas rápidas</p>
+                      {!editingNotes && (
+                        <button
+                          onClick={() => setEditingNotes(true)}
+                          style={{ background: 'none', border: 'none', color: 'var(--magenta-primary)', cursor: 'pointer', padding: '2px 4px', display: 'flex', alignItems: 'center' }}
+                        >
+                          <Pencil size={11} />
+                        </button>
+                      )}
+                    </div>
+                    {editingNotes ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <textarea
+                          className="form-input"
+                          value={localNotes}
+                          onChange={e => setLocalNotes(e.target.value)}
+                          placeholder="Notas rápidas..."
+                          rows={2}
+                          style={{ fontSize: '12px', padding: '6px 10px', resize: 'vertical' }}
+                        />
+                        <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                          <button
+                            onClick={() => setEditingNotes(false)}
+                            style={{ background: 'none', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '3px 8px', fontSize: '10px', fontWeight: '700', color: 'var(--text-secondary)', cursor: 'pointer' }}
+                          >
+                            Cancelar
+                          </button>
+                          <button
+                            onClick={async () => {
+                              const success = await onUpdate({ ...client, notes: localNotes });
+                              if (success) {
+                                showToast('Nota actualizada');
+                                setEditingNotes(false);
+                              }
+                            }}
+                            style={{ background: 'var(--magenta-gradient)', border: 'none', borderRadius: '6px', padding: '3px 10px', fontSize: '10px', fontWeight: '800', color: 'white', cursor: 'pointer' }}
+                          >
+                            Guardar
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-primary)', fontWeight: '600', lineHeight: 1.5 }}>
+                        {client.notes || 'Sin notas registradas.'}
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
