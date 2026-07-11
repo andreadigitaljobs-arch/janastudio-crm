@@ -39,7 +39,8 @@ const NotificationsPage = ({ isMobile, onNavigate }) => {
   };
 
   const handleSendTestNotification = () => {
-    notificationService.sendNotification('Jana Beauty CRM 🚀', '¡Funciona de maravilla! La prueba de notificaciones está activa.');
+    notificationService.injectTestNotifications();
+    loadNotifications();
   };
 
   const handleMarkAllRead = () => {

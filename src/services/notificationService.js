@@ -130,6 +130,59 @@ class NotificationService {
     window.dispatchEvent(new Event('jana_new_notification'));
   }
 
+  // Inyectar notificaciones realistas de prueba (Hoy, Ayer, Anteriores)
+  injectTestNotifications() {
+    const now = new Date();
+    
+    const yesterday = new Date();
+    yesterday.setDate(now.getDate() - 1);
+    
+    const older = new Date();
+    older.setDate(now.getDate() - 3);
+
+    const testNotifs = [
+      {
+        title: "Nueva Cita Registrada 📅",
+        body: "María Corina reservó Extensiones de Pestañas con Isabella R. para mañana a las 3:00 PM.",
+        date: now.toISOString()
+      },
+      {
+        title: "Pago Confirmado 💳",
+        body: "Se registró un cobro exitoso por $65.00 a nombre de Valentina S. vía Transferencia.",
+        date: now.toISOString()
+      },
+      {
+        title: "Alerta de Inventario ⚠️",
+        body: "El producto 'Pestañas Clásicas 0.15 C' ha bajado del stock mínimo establecido. Quedan 2 unidades.",
+        date: yesterday.toISOString()
+      },
+      {
+        title: "Cumpleaños de Cliente 🎉",
+        body: "Hoy cumple años tu cliente consentida Laura G. ¡Envíale una felicitación o una oferta especial!",
+        date: yesterday.toISOString()
+      },
+      {
+        title: "Copia de Seguridad Lista ✅",
+        body: "La base de datos segura se ha respaldado automáticamente a la nube con éxito.",
+        date: older.toISOString()
+      }
+    ];
+
+    const list = this.getHistory();
+    testNotifs.forEach((n, idx) => {
+      list.unshift({
+        id: (Date.now() + idx).toString(),
+        title: n.title,
+        body: n.body,
+        date: n.date,
+        read: false
+      });
+    });
+
+    localStorage.setItem(this.notificationsKey, JSON.stringify(list.slice(0, 50)));
+    window.dispatchEvent(new Event('jana_new_notification'));
+  }
+
   // Enviar una notificación broadcast a través de Supabase Realtime
   broadcastNotification(supabase, title, body, options = {}) {
     try {
