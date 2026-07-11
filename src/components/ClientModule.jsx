@@ -38,7 +38,8 @@ import {
   Activity,
   Package,
   Maximize2,
-  Edit2
+  Edit2,
+  Mail
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { supabase } from '../lib/supabase';
@@ -908,29 +909,29 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                   </div>
                 )}
 
-                {/* Seguimientos pendientes */}
-                <div style={{ marginTop: '28px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                    <h3 style={{ fontSize: '16px', fontWeight: '850', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
-                      <Bell size={18} color="var(--pink-primary)" /> Seguimientos pendientes
+                {/* Seguimientos pendientes Container Card */}
+                <div className="glass-card" style={{ marginTop: '28px', padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.03)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                    <h3 style={{ fontSize: '15.5px', fontWeight: '850', color: 'var(--text-primary)', margin: 0 }}>
+                      Seguimientos pendientes
                     </h3>
-                    <span style={{ fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '750', cursor: 'pointer' }}>Ver todos</span>
+                    <span style={{ fontSize: '12px', color: '#e08b98', fontWeight: '750', cursor: 'pointer' }}>Ver todos</span>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
                     {[
-                      { text: 'Confirmar cita de Valentina P.', date: '12 may 2025 · 11:30 AM', icon: Calendar, color: '#b47d49', bg: 'rgba(180, 125, 73, 0.08)' },
-                      { text: 'Enviar rutina post cuidado', date: 'Laura Martínez · 18 may 2025', icon: FileText, color: '#d4a09a', bg: 'rgba(212, 160, 154, 0.12)' },
-                      { text: 'Recordatorio de evaluación', date: 'Andrea Rodríguez · 20 may 2025', icon: Bell, color: '#a0506a', bg: 'rgba(160, 80, 106, 0.08)' }
+                      { text: 'Confirmar cita de Valentina P.', date: '12 may 2025 • 11:30 AM', icon: Calendar, color: '#e08b98', bg: '#fdf2f4' },
+                      { text: 'Enviar rutina post cuidado', date: 'Laura Martínez • 18 may 2025', icon: Mail, color: '#e08b98', bg: '#fdf2f4' },
+                      { text: 'Recordatorio de evaluación', date: 'Andrea Rodríguez • 20 may 2025', icon: Bell, color: '#e08b98', bg: '#fdf2f4' }
                     ].map((item, i) => (
-                      <div key={i} className="glass-card btn-interactive" style={{ padding: '14px 16px', borderRadius: '16px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', transition: 'all 0.2s', background: 'white' }}>
-                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <div key={i} style={{ padding: '14px 16px', borderRadius: '16px', border: '1px solid #fae8eb', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', transition: 'all 0.2s', background: 'white' }} className="btn-interactive">
+                        <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           <item.icon size={16} color={item.color} />
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.text}</div>
-                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>{item.date}</div>
+                          <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.text}</div>
+                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>{item.date}</div>
                         </div>
-                        <ChevronRight size={14} color="var(--text-muted)" />
+                        <ChevronRight size={14} color="var(--text-muted)" style={{ marginLeft: '4px' }} />
                       </div>
                     ))}
                   </div>
