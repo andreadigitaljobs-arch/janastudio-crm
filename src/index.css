@@ -1252,6 +1252,31 @@ input:focus { outline: none; }
   letter-spacing: 1px;
   text-transform: uppercase;
 }
+.form-input {
+  width: 100%;
+  border: 1px solid rgba(212,160,154,0.35);
+  border-radius: 12px;
+  background: linear-gradient(135deg, #fff 0%, #fff8fa 100%);
+  box-shadow: 0 4px 14px rgba(93, 57, 67, 0.05);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 14px;
+  outline: none;
+}
+.form-input::placeholder {
+  color: rgba(93, 57, 67, 0.4);
+  font-weight: 500;
+}
+.form-input:focus {
+  border-color: var(--pink-primary);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(196, 139, 159, 0.12), 0 8px 20px rgba(93, 57, 67, 0.08);
+}
+.form-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 .jana-client-input {
   width: 100%;
   height: 50px;

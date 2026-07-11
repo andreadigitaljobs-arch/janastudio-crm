@@ -122,9 +122,9 @@ export default function OnboardingModule({ onComplete }) {
 
         .onboarding-logo {
           position: absolute;
-          top: 5%;
+          top: clamp(20px, 4%, 40px);
           left: 6%;
-          width: clamp(120px, 11vw, 180px);
+          width: clamp(110px, 9vw, 160px);
           height: auto;
           z-index: 10;
         }
@@ -133,10 +133,8 @@ export default function OnboardingModule({ onComplete }) {
           position: absolute;
           left: 6%;
           right: 44%;
-          top: 0;
-          bottom: 0;
-          padding-top: clamp(140px, 22%, 240px);
-          padding-bottom: 40px;
+          top: clamp(80px, 12vh, 160px);
+          bottom: 30px;
           z-index: 10;
           display: flex;
           flex-direction: column;
@@ -147,6 +145,9 @@ export default function OnboardingModule({ onComplete }) {
         .onboarding-content-inner {
           max-width: 560px;
           text-align: left;
+          display: flex;
+          flex-direction: column;
+          height: auto;
         }
 
         .onboarding-title-mobile {
@@ -155,7 +156,7 @@ export default function OnboardingModule({ onComplete }) {
 
         .onboarding-title {
           font-family: 'Playfair Display', Georgia, serif;
-          font-size: clamp(2.9rem, 4.6vw, 4.1rem);
+          font-size: clamp(2.2rem, 3.8vw, 3.6rem);
           letter-spacing: -1px;
           color: #2d1b22;
           font-weight: 800;
@@ -174,7 +175,7 @@ export default function OnboardingModule({ onComplete }) {
           display: flex;
           align-items: center;
           gap: 10px;
-          margin: 20px 0 24px 0;
+          margin: clamp(10px, 2vh, 20px) 0;
           opacity: 0;
           transform: translateY(20px);
           animation: fadeUp 0.6s forwards 0.25s;
@@ -187,12 +188,12 @@ export default function OnboardingModule({ onComplete }) {
         }
 
         .onboarding-subtitle {
-          font-size: clamp(1.15rem, 1.35vw, 1.4rem);
+          font-size: clamp(1rem, 1.1vw, 1.25rem);
           color: #7a6065;
-          line-height: 1.6;
+          line-height: 1.5;
           font-weight: 400;
           max-width: 460px;
-          margin: 0 0 34px 0;
+          margin: 0 0 clamp(16px, 3vh, 28px) 0;
           opacity: 0;
           transform: translateY(20px);
           animation: fadeUp 0.6s forwards 0.3s;
@@ -207,7 +208,7 @@ export default function OnboardingModule({ onComplete }) {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          gap: 20px;
+          gap: clamp(12px, 2vh, 18px);
           opacity: 0;
           transform: translateY(20px);
           animation: fadeUp 0.6s forwards 0.4s;
@@ -237,9 +238,9 @@ export default function OnboardingModule({ onComplete }) {
           background: linear-gradient(135deg, #c97282 0%, #a0506a 100%);
           color: white;
           border: none;
-          padding: 18px 45px;
+          padding: clamp(12px, 1.6vh, 16px) clamp(30px, 3vw, 42px);
           border-radius: 100px;
-          font-size: clamp(1.05rem, 1.1vw, 1.2rem);
+          font-size: clamp(0.95rem, 1vw, 1.1rem);
           font-weight: 700;
           display: flex;
           align-items: center;

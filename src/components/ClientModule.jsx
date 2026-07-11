@@ -40,7 +40,8 @@ import {
   Maximize2,
   Edit2,
   Mail,
-  Scissors
+  Scissors,
+  Share2
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { supabase } from '../lib/supabase';
@@ -1710,6 +1711,8 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
   const [photoB, setPhotoB] = useState(null);
   const [selectingFor, setSelectingFor] = useState(null); // 'A' or 'B'
   const [sliderPos, setSliderPos] = useState(50);
+  const [downloadOrientation, setDownloadOrientation] = useState('horizontal'); // 'horizontal' or 'vertical'
+  const [includeBranding, setIncludeBranding] = useState(true);
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -1717,9 +1720,20 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
   const [gallery, setGallery] = useState([]);
   const [comparisons, setComparisons] = useState([]);
   const [comparisonTitle, setComparisonTitle] = useState('');
+  const [lightboxPhoto, setLightboxPhoto] = useState(null);
+  const [galleryFilter, setGalleryFilter] = useState('all'); // 'all', 'Antes', 'Después'
+  const [dateFilter, setDateFilter] = useState('all'); // 'all', 'week', 'month', 'year', 'custom'
+  const [customDateFilter, setCustomDateFilter] = useState('');
+  const [serviceFilter, setServiceFilter] = useState('all');
+  const [gallerySortOrder, setGallerySortOrder] = useState('newest'); // 'newest' or 'oldest'
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedPhotoIndices, setSelectedPhotoIndices] = useState([]);
   const [selectedVisit, setSelectedVisit] = useState(null);
   const [pendingPhoto, setPendingPhoto] = useState(null);
   const [photoMeta, setPhotoMeta] = useState({ type: 'Normal', serviceId: null });
+  const [pendingBulkPhotos, setPendingBulkPhotos] = useState([]);
+  const [bulkPhotoMeta, setBulkPhotoMeta] = useState({ type: 'Normal', serviceId: null });
+  const [processingBulkUpload, setProcessingBulkUpload] = useState(false);
   const [activeSubTab, setActiveSubTab] = useState('gallery'); // 'gallery', 'diagnoses', 'packages', 'history'
 
   // Switching sub-tabs (Fotos/Salud/Paquetes/Visitas) should also start at the top.
@@ -1821,45 +1835,172 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
     loadHistory();
   }, [client.id]);
 
+  const findPhotoDate = (url) => {
+    const item = gallery.find(img => img.url === url);
+    if (!item?.date) return null;
+    return new Date(item.date).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' });
+  };
+
+  const unpairedAntes = gallery.find(img => img.type === 'Antes');
+  const unpairedDespues = gallery.find(img => img.type === 'Después');
+
+  const handleUseSuggestedPair = () => {
+    if (!unpairedAntes || !unpairedDespues) return;
+    setPhotoA(unpairedAntes.url);
+    setPhotoB(unpairedDespues.url);
+    setComparisonTitle('');
+    setShowCollage(true);
+  };
+
+  const matchesDateFilter = (dateStr) => {
+    if (dateFilter === 'all') return true;
+    if (!dateStr) return false;
+    const d = new Date(dateStr);
+    const now = new Date();
+    if (dateFilter === 'week') {
+      const weekAgo = new Date(now);
+      weekAgo.setDate(now.getDate() - 7);
+      return d >= weekAgo && d <= now;
+    }
+    if (dateFilter === 'month') {
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    }
+    if (dateFilter === 'year') {
+      return d.getFullYear() === now.getFullYear();
+    }
+    if (dateFilter === 'custom') {
+      if (!customDateFilter) return true;
+      const target = new Date(`${customDateFilter}T00:00:00`);
+      return d.getFullYear() === target.getFullYear() && d.getMonth() === target.getMonth() && d.getDate() === target.getDate();
+    }
+    return true;
+  };
+
+  const galleryServiceNames = [...new Set(gallery.map(img => img.service_name).filter(Boolean))];
+
+  const filteredIndexedGallery = gallery
+    .map((img, i) => ({ img, i }))
+    .filter(({ img }) => galleryFilter === 'all' || img.type === galleryFilter)
+    .filter(({ img }) => matchesDateFilter(img.date))
+    .filter(({ img }) => serviceFilter === 'all' || img.service_name === serviceFilter)
+    .sort((a, b) => {
+      const da = a.img.date ? new Date(a.img.date).getTime() : 0;
+      const db = b.img.date ? new Date(b.img.date).getTime() : 0;
+      return gallerySortOrder === 'newest' ? db - da : da - db;
+    });
+
+  const togglePhotoSelection = (index) => {
+    setSelectedPhotoIndices(prev => prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]);
+  };
+
+  const handleBulkDeletePhotos = async () => {
+    if (selectedPhotoIndices.length === 0) return;
+    if (!await confirm(`¿Eliminar ${selectedPhotoIndices.length} foto(s) seleccionadas?`)) return;
+    try {
+      const newGallery = gallery.filter((_, i) => !selectedPhotoIndices.includes(i));
+      setGallery(newGallery);
+      await onUpdate({ work_gallery: newGallery });
+      setSelectedPhotoIndices([]);
+      setSelectionMode(false);
+      showToast('Fotos eliminadas');
+    } catch (e) {
+      showToast('Error al eliminar fotos', 'error');
+    }
+  };
+
   const handleDownloadComparison = () => {
     if (!photoA || !photoB) return;
-    
+
     const canvas = document.createElement('canvas');
     const imgA = new Image();
     const imgB = new Image();
-    
+    const logo = new Image();
+
     imgA.src = photoA;
     imgB.src = photoB;
-    
+    logo.src = '/logo.webp';
+
+    // Crop-to-fill (like CSS object-fit: cover) instead of stretching the source image.
+    const drawCover = (ctx, img, x, y, w, h) => {
+      const imgRatio = img.width / img.height;
+      const boxRatio = w / h;
+      let sx, sy, sWidth, sHeight;
+      if (imgRatio > boxRatio) {
+        sHeight = img.height;
+        sWidth = sHeight * boxRatio;
+        sx = (img.width - sWidth) / 2;
+        sy = 0;
+      } else {
+        sWidth = img.width;
+        sHeight = sWidth / boxRatio;
+        sx = 0;
+        sy = (img.height - sHeight) / 2;
+      }
+      ctx.drawImage(img, sx, sy, sWidth, sHeight, x, y, w, h);
+    };
+
+    const isVertical = downloadOrientation === 'vertical';
+
     Promise.all([
-      new Promise(res => imgA.onload = res),
-      new Promise(res => imgB.onload = res)
+      new Promise(res => { imgA.onload = res; }),
+      new Promise(res => { imgB.onload = res; }),
+      new Promise(res => { logo.onload = res; logo.onerror = res; })
     ]).then(() => {
-      const width = 1200;
-      const height = 800;
+      const width = isVertical ? 800 : 1200;
+      const height = isVertical ? 1200 : 800;
       canvas.width = width;
       canvas.height = height;
       const ctx = canvas.getContext('2d');
-      
-      // Draw images side by side
-      ctx.drawImage(imgA, 0, 0, width/2, height);
-      ctx.drawImage(imgB, width/2, 0, width/2, height);
-      
-      // Add overlay labels
-      ctx.fillStyle = 'rgba(74,26,46,0.6)';
-      ctx.fillRect(20, height - 60, 100, 40);
-      ctx.fillRect(width/2 + 20, height - 60, 120, 40);
-      
-      ctx.fillStyle = '#d946a8';
-      ctx.font = 'bold 20px Inter, sans-serif';
-      ctx.fillText('ANTES', 35, height - 33);
-      ctx.fillText('DESPUÉS', width/2 + 35, height - 33);
-      
-      // Add Branding
+
+      const halfW = isVertical ? width : width / 2;
+      const halfH = isVertical ? height / 2 : height;
+      const boxA = { x: 0, y: 0 };
+      const boxB = isVertical ? { x: 0, y: height / 2 } : { x: width / 2, y: 0 };
+
+      drawCover(ctx, imgA, boxA.x, boxA.y, halfW, halfH);
+      drawCover(ctx, imgB, boxB.x, boxB.y, halfW, halfH);
+
       ctx.fillStyle = 'white';
-      ctx.font = '16px Inter, sans-serif';
-      ctx.fillText('JANA STUDIO', width - 200, 30);
-      
+      if (isVertical) {
+        ctx.fillRect(0, height / 2 - 1, width, 2);
+      } else {
+        ctx.fillRect(width / 2 - 1, 0, 2, height);
+      }
+
+      if (includeBranding) {
+        const dateA = findPhotoDate(photoA);
+        const dateB = findPhotoDate(photoB);
+
+        const drawLabel = (text, date, x, y) => {
+          const boxHeight = date ? 66 : 40;
+          ctx.font = 'bold 20px Inter, sans-serif';
+          const boxWidth = Math.max(100, ctx.measureText(text).width + 30);
+          ctx.fillStyle = 'rgba(74,26,46,0.75)';
+          ctx.fillRect(x, y - 20 - boxHeight, boxWidth, boxHeight);
+          ctx.fillStyle = 'white';
+          ctx.fillText(text, x + 15, date ? y - 55 : y - 33);
+          if (date) {
+            ctx.font = '14px Inter, sans-serif';
+            ctx.fillStyle = 'rgba(255,255,255,0.85)';
+            ctx.fillText(date, x + 15, y - 33);
+          }
+        };
+
+        drawLabel('ANTES', dateA, boxA.x + 20, boxA.y + halfH);
+        drawLabel('DESPUÉS', dateB, boxB.x + 20, boxB.y + halfH);
+
+        // Branding: use the real logo when it loaded, otherwise fall back to text.
+        if (logo.naturalWidth > 0) {
+          const logoHeight = 34;
+          const logoWidth = (logo.naturalWidth / logo.naturalHeight) * logoHeight;
+          ctx.drawImage(logo, width - logoWidth - 24, 20, logoWidth, logoHeight);
+        } else {
+          ctx.fillStyle = 'white';
+          ctx.font = '16px Inter, sans-serif';
+          ctx.fillText('JANA STUDIO', width - 200, 30);
+        }
+      }
+
       const link = document.createElement('a');
       link.download = `Comparativa_${client.name}.jpg`;
       link.href = canvas.toDataURL('image/jpeg', 0.9);
@@ -1868,26 +2009,133 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
     });
   };
 
-  const handlePhotoCaptured = async (image) => {
-    try {
-      // Small but pro optimization
-      const img = new Image();
-      img.src = image;
-      await new Promise(r => img.onload = r);
+  const handleShareComparison = (comparison) => {
+    const imgA = new Image();
+    const imgB = new Image();
+    const logo = new Image();
+
+    imgA.src = comparison.beforeUrl;
+    imgB.src = comparison.afterUrl;
+    logo.src = '/logo.webp';
+
+    const drawCover = (ctx, img, x, y, w, h) => {
+      const imgRatio = img.width / img.height;
+      const boxRatio = w / h;
+      let sx, sy, sWidth, sHeight;
+      if (imgRatio > boxRatio) {
+        sHeight = img.height;
+        sWidth = sHeight * boxRatio;
+        sx = (img.width - sWidth) / 2;
+        sy = 0;
+      } else {
+        sWidth = img.width;
+        sHeight = sWidth / boxRatio;
+        sx = 0;
+        sy = (img.height - sHeight) / 2;
+      }
+      ctx.drawImage(img, sx, sy, sWidth, sHeight, x, y, w, h);
+    };
+
+    Promise.all([
+      new Promise(res => { imgA.onload = res; }),
+      new Promise(res => { imgB.onload = res; }),
+      new Promise(res => { logo.onload = res; logo.onerror = res; })
+    ]).then(() => {
+      const width = 1200;
+      const height = 800;
       const canvas = document.createElement('canvas');
-      const MAX_WIDTH = 800;
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+
+      drawCover(ctx, imgA, 0, 0, width / 2, height);
+      drawCover(ctx, imgB, width / 2, 0, width / 2, height);
+      ctx.fillStyle = 'white';
+      ctx.fillRect(width / 2 - 1, 0, 2, height);
+
+      const drawLabel = (text, x) => {
+        ctx.font = 'bold 20px Inter, sans-serif';
+        const boxWidth = Math.max(100, ctx.measureText(text).width + 30);
+        ctx.fillStyle = 'rgba(74,26,46,0.75)';
+        ctx.fillRect(x, height - 60, boxWidth, 40);
+        ctx.fillStyle = 'white';
+        ctx.fillText(text, x + 15, height - 33);
+      };
+      drawLabel('ANTES', 20);
+      drawLabel('DESPUÉS', width / 2 + 20);
+
+      if (comparison.title) {
+        ctx.font = 'bold 18px Inter, sans-serif';
+        ctx.fillStyle = 'white';
+        ctx.shadowColor = 'rgba(0,0,0,0.6)';
+        ctx.shadowBlur = 8;
+        ctx.fillText(comparison.title, 20, 34);
+        ctx.shadowBlur = 0;
+      }
+
+      if (logo.naturalWidth > 0) {
+        const logoHeight = 34;
+        const logoWidth = (logo.naturalWidth / logo.naturalHeight) * logoHeight;
+        ctx.drawImage(logo, width - logoWidth - 24, 20, logoWidth, logoHeight);
+      } else {
+        ctx.fillStyle = 'white';
+        ctx.font = '16px Inter, sans-serif';
+        ctx.fillText('JANA STUDIO', width - 200, 30);
+      }
+
+      canvas.toBlob(async (blob) => {
+        if (!blob) {
+          showToast('Error al generar la imagen', 'error');
+          return;
+        }
+        const fileName = `Comparativa_${client.name}${comparison.title ? '_' + comparison.title : ''}.jpg`.replace(/\s+/g, '_');
+        const file = new File([blob], fileName, { type: 'image/jpeg' });
+        const shareText = `Comparativa de ${client.name}${comparison.title ? ' - ' + comparison.title : ''} · Jana Studio`;
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({ files: [file], title: comparison.title || 'Comparativa', text: shareText });
+          } catch (shareErr) {
+            if (shareErr?.name !== 'AbortError') {
+              showToast('No se pudo compartir', 'error');
+            }
+          }
+        } else {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.download = fileName;
+          link.href = url;
+          link.click();
+          URL.revokeObjectURL(url);
+          showToast('Imagen descargada. Compártela desde tu galería.', 'success');
+        }
+      }, 'image/jpeg', 0.9);
+    });
+  };
+
+  const compressImage = (dataUrl, maxDim = 800, quality = 0.6) => new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
       let width = img.width;
       let height = img.height;
-      if (width > MAX_WIDTH) {
-        height = (MAX_WIDTH / width) * height;
-        width = MAX_WIDTH;
+      if (width > maxDim) {
+        height = (maxDim / width) * height;
+        width = maxDim;
       }
       canvas.width = width;
       canvas.height = height;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, width, height);
-      const optimizedImage = canvas.toDataURL('image/jpeg', 0.6);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = reject;
+    img.src = dataUrl;
+  });
 
+  const handlePhotoCaptured = async (image) => {
+    try {
+      const optimizedImage = await compressImage(image);
       setPendingPhoto(optimizedImage);
       setShowCamera(false);
     } catch (e) {
@@ -1995,14 +2243,68 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
     }
   };
 
-  const handleFileSelect = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        handlePhotoCaptured(reader.result);
-      };
-      reader.readAsDataURL(file);
+  const handleFileSelect = async (e) => {
+    const files = Array.from(e.target.files || []);
+    e.target.value = ''; // allow re-selecting the same file(s) again later
+    if (files.length === 0) return;
+
+    setProcessingBulkUpload(true);
+    try {
+      const readAsDataUrl = (file) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const rawDataUrls = await Promise.all(files.map(readAsDataUrl));
+      const compressed = await Promise.all(rawDataUrls.map(url => compressImage(url)));
+      setBulkPhotoMeta({ type: 'Normal', serviceId: null });
+      setPendingBulkPhotos(compressed);
+    } catch (err) {
+      console.error(err);
+      showToast('Error al procesar las imágenes', 'error');
+    } finally {
+      setProcessingBulkUpload(false);
+    }
+  };
+
+  const confirmSaveBulkPhotos = async () => {
+    if (pendingBulkPhotos.length === 0) return;
+    try {
+      showToast('Guardando en la nube...', 'info');
+      const now = new Date().toISOString();
+      const serviceName = bulkPhotoMeta.serviceId
+        ? history.find(h => h.id === bulkPhotoMeta.serviceId)?.services?.name
+        : 'Subida manual';
+
+      const newPhotoObjs = pendingBulkPhotos.map(url => ({
+        url,
+        type: bulkPhotoMeta.type,
+        date: now,
+        service_id: bulkPhotoMeta.serviceId,
+        service_name: serviceName
+      }));
+
+      const { data: latestClient } = await supabase
+        .from('clients')
+        .select('work_gallery')
+        .eq('id', client.id)
+        .single();
+
+      const currentLatestGallery = Array.isArray(latestClient?.work_gallery) ? latestClient.work_gallery : [];
+      const newGallery = [...newPhotoObjs, ...currentLatestGallery];
+
+      const updatedClient = await onUpdate({ work_gallery: newGallery });
+      if (updatedClient) {
+        setGallery(newGallery);
+        setPendingBulkPhotos([]);
+        setBulkPhotoMeta({ type: 'Normal', serviceId: null });
+        showToast(`${newPhotoObjs.length} foto${newPhotoObjs.length > 1 ? 's' : ''} guardada${newPhotoObjs.length > 1 ? 's' : ''} en galería`, 'success');
+      }
+    } catch (e) {
+      console.error(e);
+      showToast('Error al sincronizar con la nube', 'error');
     }
   };
 
@@ -2100,6 +2402,10 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                       sliderPos={sliderPos}
                       setSliderPos={setSliderPos}
                     />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700' }}>
+                      <span>Antes: {findPhotoDate(photoA) || 'Sin fecha'}</span>
+                      <span>Después: {findPhotoDate(photoB) || 'Sin fecha'}</span>
+                    </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                       <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>NOMBRE DEL TRATAMIENTO</label>
                       <input
@@ -2109,6 +2415,46 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                         placeholder="Ej. Alisado orgánico + hidratación"
                         style={{ width: '100%', padding: '10px 12px' }}
                       />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', padding: '0 4px' }}>
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        <button
+                          type="button"
+                          onClick={() => setDownloadOrientation('horizontal')}
+                          className="btn-interactive"
+                          style={{
+                            padding: '6px 14px', borderRadius: '10px', fontSize: '12px', fontWeight: '700', cursor: 'pointer',
+                            border: downloadOrientation === 'horizontal' ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)',
+                            background: downloadOrientation === 'horizontal' ? 'rgba(160,80,106,0.1)' : 'white',
+                            color: downloadOrientation === 'horizontal' ? 'var(--pink-primary)' : 'var(--text-secondary)'
+                          }}
+                        >
+                          Horizontal
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDownloadOrientation('vertical')}
+                          className="btn-interactive"
+                          style={{
+                            padding: '6px 14px', borderRadius: '10px', fontSize: '12px', fontWeight: '700', cursor: 'pointer',
+                            border: downloadOrientation === 'vertical' ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)',
+                            background: downloadOrientation === 'vertical' ? 'rgba(160,80,106,0.1)' : 'white',
+                            color: downloadOrientation === 'vertical' ? 'var(--pink-primary)' : 'var(--text-secondary)'
+                          }}
+                        >
+                          Vertical
+                        </button>
+                      </div>
+
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={includeBranding}
+                          onChange={e => setIncludeBranding(e.target.checked)}
+                          style={{ accentColor: 'var(--pink-primary)', width: '15px', height: '15px', cursor: 'pointer' }}
+                        />
+                        Incluir logo y texto
+                      </label>
                     </div>
                     <div style={{ display: 'flex', gap: '10px' }}>
                       <button
@@ -2125,6 +2471,14 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                         title="Descargar"
                       >
                         <Download size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleShareComparison({ beforeUrl: photoA, afterUrl: photoB, title: comparisonTitle })}
+                        className="btn-interactive"
+                        style={{ padding: '0 16px', borderRadius: '12px', border: '1px solid var(--border-color)', background: 'white', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        title="Compartir"
+                      >
+                        <Share2 size={18} />
                       </button>
                     </div>
                   </div>
@@ -2146,22 +2500,26 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                           {gallery
                             .filter(img => selectingFor === 'A' ? img.type === 'Antes' : img.type === 'Después')
                             .map((img, i) => (
-                            <div 
-                              key={i} 
-                              onClick={() => {
-                                if (selectingFor === 'A') setPhotoA(img.url);
-                                if (selectingFor === 'B') setPhotoB(img.url);
-                                setSelectingFor(null);
-                              }}
-                              style={{ 
-                                aspectRatio: '1/1', 
-                                borderRadius: '8px', 
-                                overflow: 'hidden', 
-                                cursor: 'pointer',
-                                border: (selectingFor === 'A' ? photoA === img.url : photoB === img.url) ? '3px solid var(--pink-primary)' : 'none'
-                              }}
-                            >
-                              <img src={img.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <div
+                                onClick={() => {
+                                  if (selectingFor === 'A') setPhotoA(img.url);
+                                  if (selectingFor === 'B') setPhotoB(img.url);
+                                  setSelectingFor(null);
+                                }}
+                                style={{
+                                  aspectRatio: '1/1',
+                                  borderRadius: '8px',
+                                  overflow: 'hidden',
+                                  cursor: 'pointer',
+                                  border: (selectingFor === 'A' ? photoA === img.url : photoB === img.url) ? '3px solid var(--pink-primary)' : 'none'
+                                }}
+                              >
+                                <img src={img.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              </div>
+                              <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600', textAlign: 'center' }}>
+                                {img.date ? new Date(img.date).toLocaleDateString('es-VE', { day: '2-digit', month: 'short' }) : 'Sin fecha'}
+                              </span>
                             </div>
                           ))}
                         </div>
@@ -2174,7 +2532,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px' }}>
                   <div
-                    onClick={() => setShowCamera(true)}
+                    onClick={() => fileInputRef.current?.click()}
                     className="btn-interactive"
                     style={{
                       aspectRatio: '4/3',
@@ -2192,49 +2550,186 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                     }}
                   >
                     <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(160,80,106,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Plus size={20} color="var(--pink-primary)" />
+                      {processingBulkUpload ? <Loader2 size={20} color="var(--pink-primary)" className="animate-spin" /> : <Plus size={20} color="var(--pink-primary)" />}
                     </div>
-                    <span style={{ fontSize: '13px', fontWeight: '750', color: 'var(--text-primary)' }}>Subir nuevas imágenes</span>
-                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>JPG, PNG &bull; Máx. 10 MB</span>
+                    <span style={{ fontSize: '13px', fontWeight: '750', color: 'var(--text-primary)' }}>
+                      {processingBulkUpload ? 'Procesando...' : 'Subir nuevas imágenes'}
+                    </span>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>JPG, PNG &bull; Puedes elegir varias</span>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); setShowCamera(true); }}
+                      style={{ fontSize: '11px', color: 'var(--pink-primary)', background: 'none', border: 'none', fontWeight: '700', cursor: 'pointer', textDecoration: 'underline' }}
+                    >
+                      o usar la cámara
+                    </button>
                   </div>
 
                   {comparisons.map(comp => (
-                    <ComparisonCard key={comp.id} comparison={comp} onDelete={() => handleDeleteComparison(comp.id)} />
+                    <ComparisonCard key={comp.id} comparison={comp} onDelete={() => handleDeleteComparison(comp.id)} onShare={() => handleShareComparison(comp)} />
                   ))}
                 </div>
 
-                <div>
-                  <h5 style={{ margin: '0 0 12px', fontSize: '13px', fontWeight: '800', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    Fotos individuales
-                  </h5>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '12px' }}>
-                    {gallery.map((img, i) => (
-                      <div key={i} style={{ aspectRatio: '1/1', backgroundColor: 'var(--bg-tertiary)', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-color)', position: 'relative' }} className="group">
-                        <img src={img.url || img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'linear-gradient(transparent, rgba(74,26,46,0.85))', padding: '8px', fontSize: '9px', fontWeight: '800', color: 'white' }}>
-                          {img.type || 'FOTO'}
-                        </div>
+                {unpairedAntes && unpairedDespues && (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap', padding: '14px 18px', borderRadius: '16px', background: 'rgba(160,80,106,0.06)', border: '1px solid rgba(160,80,106,0.15)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <Sparkles size={16} color="var(--pink-primary)" />
+                      <span style={{ fontSize: '13px', fontWeight: '650', color: 'var(--text-primary)' }}>
+                        Tienes fotos de <strong>antes</strong> y <strong>después</strong> sin combinar en una comparativa.
+                      </span>
+                    </div>
+                    <button onClick={handleUseSuggestedPair} className="btn-pink" style={{ padding: '8px 16px', fontSize: '12px', whiteSpace: 'nowrap' }}>
+                      Crear comparativa con estas
+                    </button>
+                  </div>
+                )}
+
+                <div style={{ marginTop: '24px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
+                    <h5 style={{ margin: 0, fontSize: '15px', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
+                      Galería de Fotos
+                    </h5>
+                    {selectionMode ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '650' }}>{selectedPhotoIndices.length} seleccionada{selectedPhotoIndices.length === 1 ? '' : 's'}</span>
                         <button
-                          onClick={(e) => { e.stopPropagation(); handlePhotoDelete(i); }}
-                          style={{
-                            position: 'absolute', top: '8px', right: '8px',
-                            backgroundColor: 'rgba(255, 69, 58, 0.8)',
-                            border: 'none', borderRadius: '8px', color: 'white',
-                            padding: '6px', cursor: 'pointer',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
-                            transition: '0.2s'
-                          }}
-                          onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#ff453a'}
-                          onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 69, 58, 0.8)'}
+                          onClick={handleBulkDeletePhotos}
+                          disabled={selectedPhotoIndices.length === 0}
+                          style={{ padding: '8px 16px', borderRadius: '12px', fontSize: '12px', fontWeight: '800', cursor: selectedPhotoIndices.length === 0 ? 'not-allowed' : 'pointer', border: 'none', background: '#ff453a', color: 'white', opacity: selectedPhotoIndices.length === 0 ? 0.5 : 1, display: 'flex', alignItems: 'center', gap: '8px' }}
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={14} /> Eliminar
+                        </button>
+                        <button
+                          onClick={() => { setSelectionMode(false); setSelectedPhotoIndices([]); }}
+                          className="btn-interactive"
+                          style={{ padding: '8px 16px', borderRadius: '12px', fontSize: '12px', fontWeight: '700', cursor: 'pointer', border: '1px solid var(--border-color)', background: 'white', color: 'var(--text-secondary)' }}
+                        >
+                          Cancelar
                         </button>
                       </div>
-                    ))}
-                    {gallery.length === 0 && (
-                      <p style={{ color: 'var(--text-muted)', fontSize: '12px', gridColumn: '1 / -1' }}>Aún no hay fotos sueltas. Usa "Subir nuevas imágenes" para agregar la primera.</p>
+                    ) : (
+                      <button
+                        onClick={() => setSelectionMode(true)}
+                        className="btn-interactive"
+                        style={{ padding: '8px 16px', borderRadius: '12px', fontSize: '12px', fontWeight: '700', cursor: 'pointer', border: '1px solid var(--border-color)', background: 'white', color: 'var(--text-secondary)' }}
+                      >
+                        Seleccionar
+                      </button>
                     )}
+                  </div>
+
+                  <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '10px', marginBottom: '24px', padding: '16px', background: '#faf5f5', borderRadius: '16px' }}>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      {[
+                        { id: 'all', label: 'Todas' },
+                        { id: 'Antes', label: 'Antes' },
+                        { id: 'Después', label: 'Después' }
+                      ].map(f => (
+                        <button
+                          key={f.id}
+                          onClick={() => setGalleryFilter(f.id)}
+                          className="btn-interactive"
+                          style={{
+                            padding: '8px 16px', borderRadius: '12px', fontSize: '12px', fontWeight: '750', cursor: 'pointer',
+                            border: galleryFilter === f.id ? 'none' : '1px solid var(--border-color)',
+                            background: galleryFilter === f.id ? 'var(--pink-primary)' : 'white',
+                            color: galleryFilter === f.id ? 'white' : 'var(--text-secondary)',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          {f.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    <span style={{ width: '1px', height: '24px', background: 'var(--border-color)' }} />
+
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      {[
+                        { id: 'all', label: 'Todas fechas' },
+                        { id: 'week', label: 'Esta semana' },
+                        { id: 'month', label: 'Este mes' },
+                        { id: 'year', label: 'Este año' }
+                      ].map(f => (
+                        <button
+                          key={f.id}
+                          onClick={() => { setDateFilter(f.id); if (f.id !== 'custom') setCustomDateFilter(''); }}
+                          className="btn-interactive"
+                          style={{
+                            padding: '8px 16px', borderRadius: '12px', fontSize: '12px', fontWeight: '750', cursor: 'pointer',
+                            border: dateFilter === f.id ? 'none' : '1px solid var(--border-color)',
+                            background: dateFilter === f.id ? 'var(--pink-primary)' : 'white',
+                            color: dateFilter === f.id ? 'white' : 'var(--text-secondary)',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          {f.label}
+                        </button>
+                      ))}
+                      <input
+                        type="date"
+                        value={customDateFilter}
+                        onChange={(e) => { setCustomDateFilter(e.target.value); setDateFilter('custom'); }}
+                        className="form-input"
+                        style={{ padding: '8px 12px', fontSize: '12px', width: 'auto', borderRadius: '12px', borderColor: dateFilter === 'custom' && customDateFilter ? 'var(--pink-primary)' : undefined }}
+                      />
+                    </div>
+
+                    <span style={{ width: '1px', height: '24px', background: 'var(--border-color)' }} />
+
+                    <button
+                      onClick={() => setGallerySortOrder(o => o === 'newest' ? 'oldest' : 'newest')}
+                      className="btn-interactive"
+                      style={{ padding: '8px 16px', borderRadius: '12px', fontSize: '12px', fontWeight: '750', cursor: 'pointer', border: '1px solid var(--border-color)', background: 'white', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '8px' }}
+                    >
+                      {gallerySortOrder === 'newest' ? 'Más recientes' : 'Más antiguas'}
+                    </button>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '20px' }}>
+                    {filteredIndexedGallery.map(({ img, i }) => {
+                      const isSelected = selectedPhotoIndices.includes(i);
+                      return (
+                      <div
+                        key={i}
+                        onClick={() => selectionMode ? togglePhotoSelection(i) : setLightboxPhoto(img)}
+                        style={{ aspectRatio: '1/1', backgroundColor: '#eee', borderRadius: '20px', overflow: 'hidden', position: 'relative', cursor: 'pointer', border: isSelected ? '4px solid var(--pink-primary)' : '1px solid var(--border-color)', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
+                        className="group"
+                      >
+                        <img src={img.url || img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'linear-gradient(transparent, rgba(0,0,0,0.6))', padding: '12px', fontSize: '11px', fontWeight: '850', color: 'white' }}>
+                          {img.type || 'FOTO'}
+                        </div>
+                        {selectionMode ? (
+                          <div style={{
+                            position: 'absolute', top: '12px', right: '12px', width: '28px', height: '28px', borderRadius: '10px',
+                            border: isSelected ? 'none' : '2px solid white', backgroundColor: isSelected ? 'var(--pink-primary)' : 'rgba(0,0,0,0.3)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center'
+                          }}>
+                            {isSelected && <Check size={18} color="white" strokeWidth={3} />}
+                          </div>
+                        ) : (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handlePhotoDelete(i); }}
+                            style={{
+                              position: 'absolute', top: '12px', right: '12px',
+                              backgroundColor: 'rgba(255, 69, 58, 0.9)',
+                              border: 'none', borderRadius: '10px', color: 'white',
+                              padding: '8px', cursor: 'pointer',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+                              transition: '0.2s',
+                              opacity: 0,
+                            }}
+                            className="group-hover:opacity-100"
+                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#ff453a'}
+                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 69, 58, 0.9)'}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        )}
+                      </div>
+                    );})}
                   </div>
                 </div>
 
@@ -2243,6 +2738,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   ref={fileInputRef}
                   onChange={handleFileSelect}
                   accept="image/*"
+                  multiple
                   style={{ display: 'none' }}
                 />
               </div>
@@ -2976,12 +3472,49 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
         )}
       </AnimatedModal>
 
-      <VisitDetailModal 
+      <VisitDetailModal
         isOpen={!!selectedVisit}
-        visit={selectedVisit || {}} 
-        onClose={() => setSelectedVisit(null)} 
+        visit={selectedVisit || {}}
+        onClose={() => setSelectedVisit(null)}
         gallery={gallery}
       />
+
+      <AnimatedModal isOpen={!!lightboxPhoto}>
+        {(overlayClass, cardClass) => (
+          <div
+            className={overlayClass}
+            onClick={() => setLightboxPhoto(null)}
+            style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(74,26,46,0.9)', backdropFilter: 'blur(10px)', zIndex: 100000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}
+          >
+            <div
+              className={cardClass}
+              onClick={(e) => e.stopPropagation()}
+              style={{ maxWidth: '640px', width: '100%', display: 'flex', flexDirection: 'column', gap: '14px' }}
+            >
+              <div style={{ borderRadius: '20px', overflow: 'hidden', maxHeight: '75vh', display: 'flex' }}>
+                <img src={lightboxPhoto?.url || lightboxPhoto} style={{ width: '100%', height: '100%', maxHeight: '75vh', objectFit: 'contain' }} />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'white' }}>
+                <div style={{ fontSize: '13px', fontWeight: '700' }}>
+                  {lightboxPhoto?.type || 'Foto'}
+                  {lightboxPhoto?.date && (
+                    <span style={{ fontWeight: '500', opacity: 0.75 }}> &bull; {new Date(lightboxPhoto.date).toLocaleDateString('es-VE', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
+                  )}
+                  {lightboxPhoto?.service_name && (
+                    <span style={{ fontWeight: '500', opacity: 0.75 }}> &bull; {lightboxPhoto.service_name}</span>
+                  )}
+                </div>
+                <button
+                  onClick={() => setLightboxPhoto(null)}
+                  style={{ background: 'rgba(255,255,255,0.12)', border: 'none', color: 'white', padding: '10px', borderRadius: '50%', cursor: 'pointer', display: 'flex' }}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </AnimatedModal>
 
       <AnimatedModal isOpen={!!pendingPhoto}>
         {(overlayClass, cardClass) => (
@@ -3042,6 +3575,82 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                 <div style={{ display: 'flex', gap: '14px', marginTop: '12px' }}>
                   <button onClick={() => setPendingPhoto(null)} className="btn-interactive" style={{ flex: 1, padding: '16px', borderRadius: '16px', border: '1px solid var(--border-color)', background: 'rgba(255,255,255,0.6)', color: 'var(--text-muted)', fontWeight: '700', fontSize: '14px', cursor: 'pointer' }}>CANCELAR</button>
                   <button onClick={confirmSavePhoto} className="btn-pink" style={{ flex: 1, height: '54px', borderRadius: '16px', fontSize: '14px' }}>GUARDAR FOTO</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </AnimatedModal>
+
+      <AnimatedModal isOpen={pendingBulkPhotos.length > 0}>
+        {(overlayClass, cardClass) => (
+          <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(74,26,46,0.75)', backdropFilter: 'blur(10px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+            <div className={cardClass} style={{
+              width: '100%',
+              maxWidth: 'min(90vw, 560px)',
+              borderRadius: '36px',
+              padding: '36px',
+              background: 'linear-gradient(160deg, #fff3f6 0%, #fbe3ec 100%)',
+              border: '1.5px solid rgba(217,70,168,0.3)',
+              boxShadow: '0 30px 70px rgba(160,80,106,0.25)',
+              maxHeight: '90vh',
+              overflowY: 'auto'
+            }}>
+              <h3 style={{
+                marginBottom: '24px',
+                fontWeight: '900',
+                fontSize: '22px',
+                color: 'var(--text-primary)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px'
+              }}>
+                <Camera size={26} color="var(--pink-primary)" />
+                <span>Configurar <span className="text-pink">{pendingBulkPhotos.length} Foto{pendingBulkPhotos.length > 1 ? 's' : ''}</span></span>
+              </h3>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '10px', marginBottom: '24px' }}>
+                {pendingBulkPhotos.map((url, i) => (
+                  <div key={i} style={{ aspectRatio: '1/1', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(217,70,168,0.2)' }}>
+                    <img src={url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                ))}
+              </div>
+
+              <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '0 0 18px' }}>
+                Este tipo y visita se aplicarán a las {pendingBulkPhotos.length} fotos seleccionadas.
+              </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                <JanaSelect
+                  variant="light"
+                  label="TIPO DE FOTO"
+                  value={bulkPhotoMeta.type}
+                  onChange={(val) => setBulkPhotoMeta({ ...bulkPhotoMeta, type: val })}
+                  options={[
+                    { label: 'Normal / General', value: 'Normal' },
+                    { label: 'Antes (Before)', value: 'Antes' },
+                    { label: 'Después (After)', value: 'Después' }
+                  ]}
+                />
+
+                <JanaSelect
+                  variant="light"
+                  label="ASOCIAR A VISITA (OPCIONAL)"
+                  value={bulkPhotoMeta.serviceId}
+                  onChange={(val) => setBulkPhotoMeta({ ...bulkPhotoMeta, serviceId: val })}
+                  options={[
+                    { label: 'Ninguna', value: null },
+                    ...history.map(h => ({
+                      label: `${new Date(h.created_at).toLocaleDateString()} - ${h.services?.name || h.description.split(' - ')[0].replace('Servicio: ', '')}`,
+                      value: h.id
+                    }))
+                  ]}
+                />
+
+                <div style={{ display: 'flex', gap: '14px', marginTop: '12px' }}>
+                  <button onClick={() => setPendingBulkPhotos([])} className="btn-interactive" style={{ flex: 1, padding: '16px', borderRadius: '16px', border: '1px solid var(--border-color)', background: 'rgba(255,255,255,0.6)', color: 'var(--text-muted)', fontWeight: '700', fontSize: '14px', cursor: 'pointer' }}>CANCELAR</button>
+                  <button onClick={confirmSaveBulkPhotos} className="btn-pink" style={{ flex: 1, height: '54px', borderRadius: '16px', fontSize: '14px' }}>GUARDAR TODAS</button>
                 </div>
               </div>
             </div>
@@ -3180,7 +3789,7 @@ const VisitDetailModal = ({ isOpen, visit, onClose, gallery = [] }) => {
   );
 };
 
-const ComparisonCard = ({ comparison, onDelete }) => {
+const ComparisonCard = ({ comparison, onDelete, onShare }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const formattedDate = comparison.date
     ? new Date(comparison.date).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' })
@@ -3213,7 +3822,13 @@ const ComparisonCard = ({ comparison, onDelete }) => {
           {menuOpen && (
             <>
               <div onClick={() => setMenuOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 10 }} />
-              <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '4px', backgroundColor: 'white', border: '1px solid var(--border-color)', borderRadius: '10px', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', zIndex: 11, overflow: 'hidden', minWidth: '120px' }}>
+              <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '4px', backgroundColor: 'white', border: '1px solid var(--border-color)', borderRadius: '10px', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', zIndex: 11, overflow: 'hidden', minWidth: '140px' }}>
+                <button
+                  onClick={() => { setMenuOpen(false); onShare?.(); }}
+                  style={{ width: '100%', padding: '10px 14px', background: 'none', border: 'none', color: 'var(--text-primary)', fontSize: '12px', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', textAlign: 'left' }}
+                >
+                  <Share2 size={13} /> Compartir
+                </button>
                 <button
                   onClick={() => { setMenuOpen(false); onDelete(); }}
                   style={{ width: '100%', padding: '10px 14px', background: 'none', border: 'none', color: '#d44e6c', fontSize: '12px', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', textAlign: 'left' }}
