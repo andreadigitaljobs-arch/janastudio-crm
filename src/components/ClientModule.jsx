@@ -2637,141 +2637,215 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
           </div>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 300px) 1fr', gap: '32px' }}>
-        {/* Left Sidebar: Info */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div className="glass-card" style={{ textAlign: 'center', padding: '24px 20px', borderRadius: '24px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', animation: 'fadeIn 0.3s ease' }}>
+          {/* Premium Wide Profile Header Banner */}
+          <div className="glass-card" style={{ 
+            padding: '0', 
+            borderRadius: '24px', 
+            overflow: 'hidden', 
+            border: '1px solid var(--border-color)',
+            boxShadow: 'var(--shadow-card)',
+            position: 'relative'
+          }}>
+            {/* Cover background gradient with brand colors */}
             <div style={{ 
-              width: '100px', height: '100px', borderRadius: '50%', 
-              backgroundColor: 'white', display: 'flex', alignItems: 'center', 
-              justifyContent: 'center', margin: '0 auto 20px', border: '3px solid var(--magenta-primary)',
-              boxShadow: '0 4px 12px rgba(212,160,154,0.2)', overflow: 'hidden'
+              height: '110px', 
+              background: 'var(--magenta-gradient)', 
+              opacity: 0.9,
+              position: 'relative'
+            }} />
+            
+            <div style={{ 
+              padding: '24px 32px', 
+              marginTop: '-50px',
+              display: 'flex',
+              alignItems: 'flex-end',
+              justifyContent: 'space-between',
+              gap: '24px',
+              position: 'relative',
+              zIndex: 1
             }}>
-              {client.image_url ? (
-                <img src={client.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                <User size={48} color="var(--magenta-primary)" />
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: '24px' }}>
+                {/* Avatar with White Border */}
+                <div style={{ 
+                  width: '100px', height: '100px', borderRadius: '50%', 
+                  backgroundColor: 'white', display: 'flex', alignItems: 'center', 
+                  justifyContent: 'center', border: '4px solid white',
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.12)', overflow: 'hidden',
+                  flexShrink: 0
+                }}>
+                  {client.image_url ? (
+                    <img src={client.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <User size={48} color="var(--magenta-primary)" />
+                  )}
+                </div>
+                
+                <div style={{ marginBottom: '8px' }}>
+                  <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '850', color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>{client.name}</h2>
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginTop: '6px', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '600' }}>V-{client.id_card || '00.000.000'}</span>
+                    <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--border-color)' }} />
+                    <span style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '500' }}>
+                      <Phone size={14} color="var(--magenta-primary)" /> {client.phone}
+                    </span>
+                    <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--border-color)' }} />
+                    <span style={{ 
+                      fontSize: '12px', 
+                      color: 'var(--magenta-primary)', 
+                      fontWeight: '750',
+                      backgroundColor: 'rgba(160,80,106,0.06)',
+                      padding: '4px 10px',
+                      borderRadius: '12px',
+                      border: '1px solid rgba(160,80,106,0.1)'
+                    }}>
+                      {history.length} visitas
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {!isEditing && (
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '8px' }}>
+                  <button 
+                    onClick={() => setIsEditing(true)}
+                    className="btn-interactive"
+                    style={{
+                      background: 'white',
+                      border: '1px solid var(--border-color)',
+                      color: 'var(--text-primary)',
+                      padding: '10px 18px',
+                      borderRadius: '12px',
+                      fontSize: '13px',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.02)'
+                    }}
+                  >
+                    Editar Perfil
+                  </button>
+                </div>
               )}
             </div>
-            {isEditing ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <input className="form-input" value={editData.name} onChange={e => setEditData({...editData, name: formatName(e.target.value)})} placeholder="Nombre" style={{ width: '100%' }} />
-                <input className="form-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="Cédula" style={{ width: '100%' }} />
-                <input className="form-input" value={editData.phone} onChange={e => setEditData({...editData, phone: e.target.value})} placeholder="Teléfono" style={{ width: '100%' }} />
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', textAlign: 'left', marginBottom: '8px' }}>
-                  <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase' }}>Cumpleaños</label>
-                  <BirthdayTextInput value={editData.birth_date} onChange={e => setEditData({...editData, birth_date: e.target.value})} style={{ width: '100%' }} />
-                </div>
-                <JanaSelect 
-                  label="Tipo de Cabello"
-                  value={editData.hair_type}
-                  onChange={(val) => setEditData({...editData, hair_type: val})}
-                  options={[
-                    { label: 'Normal', value: 'Normal' },
-                    { label: 'Graso', value: 'Graso' },
-                    { label: 'Seco', value: 'Seco' },
-                    { label: 'Mixto', value: 'Mixto' }
-                  ]}
-                  style={{ marginBottom: '12px' }}
-                />
-                <JanaSelect 
-                  label="Cuero Cabelludo"
-                  value={editData.scalp_type}
-                  onChange={(val) => setEditData({...editData, scalp_type: val})}
-                  options={[
-                    { label: 'Sano', value: 'Sano' },
-                    { label: 'Sensible', value: 'Sensible' },
-                    { label: 'Irritado', value: 'Irritado' },
-                    { label: 'Caspa', value: 'Caspa' }
-                  ]}
-                  style={{ marginBottom: '12px' }}
-                />
-                <button className="btn-pink" onClick={() => { onUpdate(editData); setIsEditing(false); }}>Actualizar Ficha</button>
-                <button onClick={() => setIsEditing(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '12px' }}>Cancelar</button>
+          </div>
+
+          {/* Body Columns */}
+          <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '28px', alignItems: 'start' }}>
+            {/* Left Column: Ficha Técnica */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
+                <h4 style={{ margin: '0 0 16px 0', fontSize: '14px', fontWeight: '850', color: 'var(--magenta-primary)', display: 'flex', alignItems: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <Activity size={16} /> Ficha Técnica Capilar
+                </h4>
+                
+                {isEditing ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>NOMBRE</label>
+                      <input className="form-input" value={editData.name} onChange={e => setEditData({...editData, name: formatName(e.target.value)})} placeholder="Nombre" style={{ width: '100%', padding: '8px 12px' }} />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>CÉDULA</label>
+                      <input className="form-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="Cédula" style={{ width: '100%', padding: '8px 12px' }} />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>TELÉFONO</label>
+                      <input className="form-input" value={editData.phone} onChange={e => setEditData({...editData, phone: e.target.value})} placeholder="Teléfono" style={{ width: '100%', padding: '8px 12px' }} />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>CUMPLEANOS</label>
+                      <BirthdayTextInput value={editData.birth_date} onChange={e => setEditData({...editData, birth_date: e.target.value})} style={{ width: '100%' }} />
+                    </div>
+                    
+                    <JanaSelect 
+                      label="Tipo de Cabello"
+                      value={editData.hair_type}
+                      onChange={(val) => setEditData({...editData, hair_type: val})}
+                      options={[
+                        { label: 'Normal', value: 'Normal' },
+                        { label: 'Graso', value: 'Graso' },
+                        { label: 'Seco', value: 'Seco' },
+                        { label: 'Mixto', value: 'Mixto' }
+                      ]}
+                    />
+                    <JanaSelect 
+                      label="Cuero Cabelludo"
+                      value={editData.scalp_type}
+                      onChange={(val) => setEditData({...editData, scalp_type: val})}
+                      options={[
+                        { label: 'Sano', value: 'Sano' },
+                        { label: 'Sensible', value: 'Sensible' },
+                        { label: 'Irritado', value: 'Irritado' },
+                        { label: 'Caspa', value: 'Caspa' }
+                      ]}
+                    />
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                      <button className="btn-pink" style={{ flex: 1, padding: '10px', background: 'var(--magenta-gradient)', border: 'none', fontWeight: '750' }} onClick={() => { onUpdate(editData); setIsEditing(false); }}>Guardar</button>
+                      <button className="btn-interactive" style={{ flex: 1, padding: '10px', background: 'none', border: '1px solid var(--border-color)', color: 'var(--text-muted)', borderRadius: '12px', fontSize: '13px', fontWeight: '600' }} onClick={() => setIsEditing(false)}>Cancelar</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <DetailItem label="Tipo de Cabello" value={client.hair_type || 'Normal'} />
+                    <DetailItem label="Cuero Cabelludo" value={client.scalp_type || 'Normal'} />
+                    <DetailItem label="Cumpleaños" value={client.birth_date ? new Date(client.birth_date + 'T00:00:00').toLocaleDateString([], {day: '2-digit', month: 'long', year: 'numeric'}) : 'No registrado'} />
+                    <DetailItem label="Registrado" value={client.created_at ? new Date(client.created_at).toLocaleDateString() : 'N/A'} />
+                  </div>
+                )}
               </div>
-            ) : (
-              <>
-                <h3 style={{ fontSize: '20px', marginBottom: '4px' }}>{client.name}</h3>
-                <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '16px' }}>V-{client.id_card || '00.000.000'}</p>
-                <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                  <Phone size={14} color="var(--magenta-primary)" /> {client.phone}
-                </p>
-                <div style={{ backgroundColor: 'var(--bg-tertiary)', padding: '12px', borderRadius: '8px', fontSize: '14px' }}>
-                  <span style={{ color: 'var(--magenta-primary)', fontWeight: '700' }}>{history.length}</span> Visitas registradas
-                </div>
-              </>
-            )}
-          </div>
-
-          <div className="glass-card">
-            <h4 style={{ marginBottom: '16px', fontSize: '16px' }}>Ficha Técnica Capilar</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <DetailItem label="Tipo de Cabello" value={client.hair_type || 'Normal'} />
-              <DetailItem label="Cuero Cabelludo" value={client.scalp_type || 'Normal'} />
-              <DetailItem label="Cumpleaños" value={client.birth_date ? new Date(client.birth_date + 'T00:00:00').toLocaleDateString([], {day: '2-digit', month: 'long', year: 'numeric'}) : 'No registrado'} />
-              <DetailItem label="Registrado" value={client.created_at ? new Date(client.created_at).toLocaleDateString() : 'N/A'} />
             </div>
-            {!isEditing && (
-              <button 
-                onClick={() => setIsEditing(true)}
-                style={{ width: '100%', marginTop: '20px', background: 'none', border: '1px solid var(--magenta-primary)', color: 'var(--magenta-primary)', padding: '8px', borderRadius: '6px', cursor: 'pointer' }}
-              >
-                Editar Perfil
-              </button>
-            )}
-          </div>
-        </div>
-        
-        {/* Right Content: Tabs */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div style={{ 
-            display: 'inline-flex', 
-            background: 'var(--bg-tertiary)', 
-            padding: '6px', 
-            borderRadius: '16px', 
-            border: '1px solid var(--border-color)',
-            gap: '4px',
-            alignSelf: 'flex-start'
-          }}>
-            {[
-              { id: 'gallery', label: 'Galería de Trabajos', icon: <ImageIcon size={16} /> },
-              { id: 'diagnoses', label: 'Diagnóstico Capilar', icon: <Activity size={16} /> },
-              { id: 'packages', label: 'Paquetes y Sesiones', icon: <Package size={16} /> },
-              { id: 'history', label: 'Historial de Visitas', icon: <Calendar size={16} /> }
-            ].map(tab => {
-              const isActive = activeSubTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => { setActiveSubTab(tab.id); setShowCollage(false); }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '8px 20px',
-                    borderRadius: '12px',
-                    border: 'none',
-                    background: isActive ? 'white' : 'transparent',
-                    color: isActive ? 'var(--magenta-primary)' : 'var(--text-secondary)',
-                    fontWeight: isActive ? '800' : '600',
-                    fontSize: '13px',
-                    cursor: 'pointer',
-                    boxShadow: isActive ? '0 4px 12px rgba(160, 80, 106, 0.06)' : 'none',
-                    transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)'
-                  }}
-                >
-                  {tab.icon}
-                  {tab.label}
-                </button>
-              );
-            })}
-          </div>
+            
+            {/* Right Column: Tabs Content */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div style={{ 
+                display: 'inline-flex', 
+                background: 'var(--bg-tertiary)', 
+                padding: '6px', 
+                borderRadius: '16px', 
+                border: '1px solid var(--border-color)',
+                gap: '4px',
+                alignSelf: 'flex-start'
+              }}>
+                {[
+                  { id: 'gallery', label: 'Galería de Trabajos', icon: <ImageIcon size={16} /> },
+                  { id: 'diagnoses', label: 'Diagnóstico Capilar', icon: <Activity size={16} /> },
+                  { id: 'packages', label: 'Paquetes y Sesiones', icon: <Package size={16} /> },
+                  { id: 'history', label: 'Historial de Visitas', icon: <Calendar size={16} /> }
+                ].map(tab => {
+                  const isActive = activeSubTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => { setActiveSubTab(tab.id); setShowCollage(false); }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '8px 20px',
+                        borderRadius: '12px',
+                        border: 'none',
+                        background: isActive ? 'white' : 'transparent',
+                        color: isActive ? 'var(--magenta-primary)' : 'var(--text-secondary)',
+                        fontWeight: isActive ? '800' : '600',
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        boxShadow: isActive ? '0 4px 12px rgba(160, 80, 106, 0.06)' : 'none',
+                        transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)'
+                      }}
+                    >
+                      {tab.icon}
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
 
-          <div>
-            {renderSubTabContent()}
+              <div>
+                {renderSubTabContent()}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
       )}
 
       <AnimatedModal isOpen={showCamera}>
