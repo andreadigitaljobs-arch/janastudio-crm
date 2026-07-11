@@ -141,6 +141,8 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
     }
   }, [clients]);
 
+  const [sortBy, setSortBy] = useState('recent');
+  const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
@@ -149,11 +151,22 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
     setCurrentPage(1);
   }, [searchTerm]);
 
-  // Sort clients: newest first (created_at descending)
+  // Sort clients: state-based ordering
   const sortedClients = [...clients].sort((a, b) => {
-    const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
-    const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
-    return dateB - dateA;
+    if (sortBy === 'recent') {
+      const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+      return dateB - dateA;
+    } else if (sortBy === 'oldest') {
+      const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+      return dateA - dateB;
+    } else if (sortBy === 'az') {
+      return (a.name || '').localeCompare(b.name || '');
+    } else if (sortBy === 'za') {
+      return (b.name || '').localeCompare(a.name || '');
+    }
+    return 0;
   });
 
   // Stylists only see clients they created or served
@@ -431,8 +444,55 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                     </button>
                   ))}
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600', cursor: 'pointer' }}>
-                  Más recientes <ChevronDown size={14} />
+                <div style={{ position: 'relative' }}>
+                  <div 
+                    onClick={() => setShowSortDropdown(!showSortDropdown)}
+                    style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700', cursor: 'pointer', padding: '6px 10px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'white' }}
+                  >
+                    {sortBy === 'recent' && 'Más recientes'}
+                    {sortBy === 'oldest' && 'Más antiguos'}
+                    {sortBy === 'az' && 'Nombre A-Z'}
+                    {sortBy === 'za' && 'Nombre Z-A'}
+                    <ChevronDown size={14} color="var(--pink-primary)" />
+                  </div>
+                  {showSortDropdown && (
+                    <>
+                      <div 
+                        onClick={() => setShowSortDropdown(false)}
+                        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 998 }}
+                      />
+                      <div 
+                        style={{ 
+                          position: 'absolute', right: 0, top: 'calc(100% + 4px)', minWidth: '150px',
+                          backgroundColor: 'white', border: '1px solid var(--border-color)', borderRadius: '12px',
+                          boxShadow: 'var(--shadow-card)', padding: '6px', zIndex: 999, display: 'flex', flexDirection: 'column', gap: '2px'
+                        }}
+                      >
+                        {[
+                          { key: 'recent', label: 'Más recientes' },
+                          { key: 'oldest', label: 'Más antiguos' },
+                          { key: 'az', label: 'Nombre A-Z' },
+                          { key: 'za', label: 'Nombre Z-A' }
+                        ].map(opt => (
+                          <div 
+                            key={opt.key}
+                            onClick={() => {
+                              setSortBy(opt.key);
+                              setShowSortDropdown(false);
+                            }}
+                            style={{
+                              padding: '8px 12px', fontSize: '12px', borderRadius: '8px', cursor: 'pointer',
+                              fontWeight: '600', color: sortBy === opt.key ? 'var(--pink-primary)' : 'var(--text-primary)',
+                              backgroundColor: sortBy === opt.key ? 'rgba(196,139,159,0.06)' : 'transparent',
+                              transition: 'all 0.15s'
+                            }}
+                          >
+                            {opt.label}
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
 
