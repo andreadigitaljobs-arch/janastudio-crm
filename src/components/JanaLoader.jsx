@@ -67,6 +67,7 @@ const JanaLoader = ({ visible }) => {
   // Progress bar management
   useEffect(() => {
     if (visible) {
+      window.isJanaLoaderVisible = true;
       setShowLoader(true);
       setProgress(0);
       startTimeRef.current = Date.now();
@@ -99,7 +100,10 @@ const JanaLoader = ({ visible }) => {
       const remaining = Math.max(0, LOADER_MIN_DURATION_MS - elapsed);
       const finishLoading = () => {
         setProgress(100);
-        setTimeout(() => setShowLoader(false), FADE_OUT_MS);
+        setTimeout(() => {
+          setShowLoader(false);
+          window.isJanaLoaderVisible = false;
+        }, FADE_OUT_MS);
       };
       if (remaining > 0) {
         const timeout = setTimeout(finishLoading, remaining);

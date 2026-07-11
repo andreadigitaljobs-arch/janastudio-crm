@@ -2,7 +2,7 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 
 const MiniLoader = ({ text = "Cargando...", fixed = true }) => {
-  if (window.isJanaAppLoading) {
+  if (window.isJanaLoaderVisible || window.isJanaAppLoading) {
     return null;
   }
 
