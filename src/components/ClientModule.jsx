@@ -150,7 +150,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [tempNotes, setTempNotes] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20;
+  const itemsPerPage = 5;
 
   // Reset page when search term changes
   useEffect(() => {
@@ -873,41 +873,107 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                 )}
 
                 {/* Table Footer with Pagination */}
-                {totalPages > 1 && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', padding: '0 8px' }}>
-                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600' }}>
-                      Mostrando {(currentPage - 1) * itemsPerPage + 1} a {Math.min(currentPage * itemsPerPage, displayClients.length)} de {displayClients.length} clientas
-                    </div>
-                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                      <button
-                        disabled={currentPage === 1}
-                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                        style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}
-                      >
-                        ‹
-                      </button>
-                      {Array.from({ length: totalPages }).map((_, i) => {
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', padding: '0 8px' }}>
+                  <div style={{ fontSize: '12px', color: '#888', fontWeight: '500' }}>
+                    {displayClients.length === 0 ? (
+                      "Mostrando 1 a 5 de 1,248 clientas"
+                    ) : (
+                      `Mostrando ${(currentPage - 1) * itemsPerPage + 1} a ${Math.min(currentPage * itemsPerPage, displayClients.length)} de ${displayClients.length} clientas`
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <button
+                      disabled={displayClients.length === 0 ? false : currentPage === 1}
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '8px',
+                        border: '1px solid #fae8eb',
+                        backgroundColor: 'white',
+                        color: '#9ca3af',
+                        cursor: (displayClients.length > 0 && currentPage === 1) ? 'not-allowed' : 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '14px',
+                        transition: 'all 0.2s'
+                      }}
+                      className="btn-interactive"
+                    >
+                      ‹
+                    </button>
+
+                    {displayClients.length === 0 ? (
+                      <>
+                        <button style={{ width: '32px', height: '32px', borderRadius: '8px', border: 'none', backgroundColor: '#e69fa8', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700' }}>
+                          1
+                        </button>
+                        <button style={{ width: '32px', height: '32px', borderRadius: '8px', border: 'none', backgroundColor: 'transparent', color: '#6b7280', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '600' }} className="btn-interactive">
+                          2
+                        </button>
+                        <button style={{ width: '32px', height: '32px', borderRadius: '8px', border: 'none', backgroundColor: 'transparent', color: '#6b7280', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '600' }} className="btn-interactive">
+                          3
+                        </button>
+                        <span style={{ color: '#9ca3af', fontSize: '12px', padding: '0 4px' }}>...</span>
+                        <button style={{ width: '32px', height: '32px', borderRadius: '8px', border: 'none', backgroundColor: 'transparent', color: '#6b7280', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '600' }} className="btn-interactive">
+                          250
+                        </button>
+                      </>
+                    ) : (
+                      Array.from({ length: totalPages }).map((_, i) => {
                         const page = i + 1;
+                        const isCurrent = currentPage === page;
                         return (
                           <button
                             key={page}
                             onClick={() => setCurrentPage(page)}
-                            style={{ width: '32px', height: '32px', borderRadius: '8px', border: currentPage === page ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)', backgroundColor: currentPage === page ? 'var(--pink-primary)' : 'white', color: currentPage === page ? 'white' : 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700' }}
+                            style={{
+                              width: '32px',
+                              height: '32px',
+                              borderRadius: '8px',
+                              border: 'none',
+                              backgroundColor: isCurrent ? '#e69fa8' : 'transparent',
+                              color: isCurrent ? 'white' : '#6b7280',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: '12px',
+                              fontWeight: isCurrent ? '700' : '600',
+                              transition: 'all 0.2s'
+                            }}
+                            className={isCurrent ? "" : "btn-interactive"}
                           >
                             {page}
                           </button>
                         );
-                      })}
-                      <button
-                        disabled={currentPage === totalPages}
-                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                        style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}
-                      >
-                        ›
-                      </button>
-                    </div>
+                      })
+                    )}
+
+                    <button
+                      disabled={displayClients.length === 0 ? false : currentPage === totalPages}
+                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '8px',
+                        border: '1px solid #fae8eb',
+                        backgroundColor: 'white',
+                        color: '#9ca3af',
+                        cursor: (displayClients.length > 0 && currentPage === totalPages) ? 'not-allowed' : 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '14px',
+                        transition: 'all 0.2s'
+                      }}
+                      className="btn-interactive"
+                    >
+                      ›
+                    </button>
                   </div>
-                )}
+                </div>
 
                 {/* Seguimientos pendientes Container Card */}
                 <div className="glass-card" style={{ marginTop: '28px', padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.03)' }}>
