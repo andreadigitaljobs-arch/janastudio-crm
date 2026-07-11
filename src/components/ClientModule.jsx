@@ -158,6 +158,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
   const [selectedSidebarClient, setSelectedSidebarClient] = useState(null);
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [tempNotes, setTempNotes] = useState('');
+  const [showSaveSuccess, setShowSaveSuccess] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -415,10 +416,10 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
           {/* Stat Cards */}
           <div style={{ display: 'grid', gridTemplateColumns: windowWidth < 1200 ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: windowWidth < 600 ? '10px' : '16px', marginBottom: '28px' }}>
             {[
-              { label: 'Clientes activas', value: activeClients, icon: Users, trend: '↑ 12%', trendSub: 'vs. mes anterior', iconBg: 'rgba(212, 160, 154, 0.12)', iconColor: 'var(--pink-primary)' },
-              { label: 'Nuevas este mes', value: newThisMonth, icon: UserPlus, trend: '↑ 15%', trendSub: 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.08)', iconColor: 'var(--magenta-primary)' },
-              { label: 'Con próxima cita', value: upcomingCount, icon: Calendar, trend: '↑ 8%', trendSub: 'vs. mes anterior', iconBg: 'rgba(74, 48, 54, 0.06)', iconColor: 'var(--text-secondary)' },
-              { label: 'Cumpleaños cercanos', value: birthdaySoon, icon: Cake, trend: '', trendSub: 'Próximos 7 días', iconBg: 'rgba(212, 160, 154, 0.15)', iconColor: 'var(--pink-primary)' }
+              { label: windowWidth < 600 ? 'Activas' : 'Clientes activas', value: activeClients, icon: Users, trend: '↑ 12%', trendSub: 'vs. mes anterior', iconBg: 'rgba(212, 160, 154, 0.12)', iconColor: 'var(--pink-primary)' },
+              { label: windowWidth < 600 ? 'Nuevas' : 'Nuevas este mes', value: newThisMonth, icon: UserPlus, trend: '↑ 15%', trendSub: 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.08)', iconColor: 'var(--magenta-primary)' },
+              { label: windowWidth < 600 ? 'Próxima cita' : 'Con próxima cita', value: upcomingCount, icon: Calendar, trend: '↑ 8%', trendSub: 'vs. mes anterior', iconBg: 'rgba(74, 48, 54, 0.06)', iconColor: 'var(--text-secondary)' },
+              { label: windowWidth < 600 ? 'Cumpleaños' : 'Cumpleaños cercanos', value: birthdaySoon, icon: Cake, trend: '', trendSub: 'Próximos 7 días', iconBg: 'rgba(212, 160, 154, 0.15)', iconColor: 'var(--pink-primary)' }
             ].map((stat, i) => (
               <div 
                 key={i} 
