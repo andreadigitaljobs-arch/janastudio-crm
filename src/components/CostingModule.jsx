@@ -12,6 +12,8 @@ import {
   Package
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
+import MiniLoader from './MiniLoader';
+
 
 const CostingModule = ({ isMobile, services = [], inventory = [] }) => {
   const [selectedService, setSelectedService] = useState(null);
@@ -314,9 +316,7 @@ const CostingModule = ({ isMobile, services = [], inventory = [] }) => {
                 </div>
 
                 {loading ? (
-                  <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
-                    Cargando costos...
-                  </div>
+                  <MiniLoader text="Cargando costos..." />
                 ) : serviceCosts.length === 0 ? (
                   <div style={{ 
                     textAlign: 'center', 

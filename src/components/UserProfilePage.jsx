@@ -28,6 +28,8 @@ import {
 import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
 import { useDialog } from '../context/DialogContext';
+import MiniLoader from './MiniLoader';
+
 import {
   businessDateEnd,
   businessDateStart,
@@ -504,7 +506,7 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
   const nextApptIdx = _today.findIndex(a => a.status !== 'Completado' && a.status !== 'Cancelado');
 
   if (!staffMember) {
-    return <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>Cargando información del perfil...</div>;
+    return <MiniLoader text="Cargando información del perfil..." />;
   }
 
   const bdayOverlay = showBdayOverlay ? ReactDOM.createPortal(

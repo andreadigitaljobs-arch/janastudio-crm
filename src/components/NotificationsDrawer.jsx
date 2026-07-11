@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, X, Trash2, CheckCheck, Sparkles, Smartphone, BellRing, Inbox, Heart, Calendar, DollarSign, User } from 'lucide-react';
+import { Bell, X, Trash2, CheckCheck, Sparkles, Smartphone, BellRing, Inbox, Heart, Calendar, DollarSign, User, ArrowLeft } from 'lucide-react';
 import { notificationService } from '../services/notificationService';
 
 const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
@@ -128,14 +128,53 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
             if (items.length === 0) return null;
             return (
               <div key={groupName} style={{ marginBottom: '8px' }}>
-                <h4 style={{ fontSize: '0.75rem', fontWeight: 800, color: '#a0506a', marginBottom: '8px', paddingLeft: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{groupName}</h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <h4 style={isMobile
+                  ? { fontSize: '0.95rem', fontWeight: 800, color: '#1f1215', marginBottom: '8px', paddingLeft: '4px' }
+                  : { fontSize: '0.75rem', fontWeight: 800, color: '#a0506a', marginBottom: '8px', paddingLeft: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }
+                }>{groupName}</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '2px' : '8px' }}>
                   {items.map((n, idx) => {
                     let IconComponent = Bell;
+                    let iconBg = '#8b7cf6';
                     const titleLower = n.title.toLowerCase();
-                    if (titleLower.includes('cita') || titleLower.includes('reserva')) IconComponent = Calendar;
-                    else if (titleLower.includes('pago') || titleLower.includes('cobro')) IconComponent = DollarSign;
-                    else if (titleLower.includes('client')) IconComponent = User;
+                    if (titleLower.includes('cita') || titleLower.includes('reserva')) { IconComponent = Calendar; iconBg = '#c97282'; }
+                    else if (titleLower.includes('pago') || titleLower.includes('cobro') || titleLower.includes('oferta')) { IconComponent = DollarSign; iconBg = '#22c55e'; }
+                    else if (titleLower.includes('client')) { IconComponent = User; iconBg = '#3b82f6'; }
+
+                    if (isMobile) {
+                      return (
+                        <div
+                          key={n.id}
+                          className="ntf-card-flat"
+                          style={{
+                            display: 'flex', gap: '12px', alignItems: 'flex-start',
+                            padding: '14px 4px', cursor: 'default',
+                            animation: `ntfItemIn 0.4s ease ${0.1 + idx * 0.06}s both`
+                          }}
+                        >
+                          <div style={{
+                            width: '38px', height: '38px', borderRadius: '11px', flexShrink: 0,
+                            background: iconBg, color: '#ffffff',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center'
+                          }}><IconComponent size={17} /></div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '8px' }}>
+                              <h4 style={{ fontSize: '0.86rem', fontWeight: 700, color: '#1f1215', margin: 0, lineHeight: '1.3', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                {n.title}
+                                {!n.read && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#c97282', flexShrink: 0 }} />}
+                              </h4>
+                              <span style={{ fontSize: '0.68rem', color: '#9ca3af', fontWeight: '500', flexShrink: 0, whiteSpace: 'nowrap' }}>
+                                {new Date(n.date).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                            </div>
+                            <p style={{
+                              fontSize: '0.76rem', color: '#8a8086', margin: '3px 0 0 0', lineHeight: '1.45',
+                              display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
+                            }}>{n.body}</p>
+                          </div>
+                        </div>
+                      );
+                    }
 
                     return (
                       <div key={n.id} className="ntf-card" style={{
@@ -240,6 +279,8 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
           @keyframes ntfGradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
           .ntf-banner:hover .ntf-banner-icon { transform: rotate(-8deg) scale(1.1); }
           .ntf-banner .ntf-banner-icon { transition: transform 0.3s ease; }
+          .ntf-card-flat { border-radius: 14px; transition: background 0.15s ease; }
+          .ntf-card-flat:active { background: rgba(0,0,0,0.03); }
         `}</style>
         <div style={{
           position: 'fixed', inset: 0,
@@ -267,48 +308,14 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
             <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0 4px' }}>
               <div style={{ width: '40px', height: '4px', borderRadius: '4px', background: 'linear-gradient(90deg, #e8b4be, #d4a0ae)' }} />
             </div>
-            {/* Header */}
-            <div style={{ padding: '4px 24px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <div style={{
-                  width: '48px', height: '48px', borderRadius: '16px',
-                  background: 'linear-gradient(135deg, #c97282 0%, #a0506a 50%, #8a4560 100%)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff',
-                  boxShadow: '0 6px 20px rgba(201, 114, 130, 0.35)',
-                  transition: 'all 0.3s ease', position: 'relative',
-                  backgroundSize: '200% 200%',
-                  animation: 'ntfGradientShift 3s ease infinite'
-                }}>
-                  <BellRing size={22} />
-                  {unreadCount > 0 && (
-                    <div style={{
-                      position: 'absolute', top: '-4px', right: '-4px',
-                      width: '20px', height: '20px', borderRadius: '50%',
-                      background: 'linear-gradient(135deg, #c97282, #d4a0ae)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: '0.6rem', fontWeight: '800', color: '#fff',
-                      border: '2px solid #fff',
-                      boxShadow: '0 2px 8px rgba(201, 114, 130, 0.4)',
-                      animation: 'ntfPulse 2s ease-in-out infinite'
-                    }}>{unreadCount}</div>
-                  )}
-                </div>
-                <div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#1f1215', margin: 0 }}>Notificaciones</h3>
-                  <span style={{ fontSize: '0.68rem', color: '#d4a0ae', fontWeight: '600' }}>
-                    {notifications.length === 0 ? 'Sin novedades' : unreadCount > 0 ? `${unreadCount} sin leer` : 'Todo al día ✨'}
-                  </span>
-                </div>
-              </div>
+            {/* Header — plain back arrow + title, no gradient blob */}
+            <div style={{ padding: '4px 20px 18px', display: 'flex', alignItems: 'center', gap: '14px' }}>
               <button onClick={handleClose} style={{
-                background: 'linear-gradient(135deg, rgba(244,63,94,0.06), rgba(244,63,94,0.03))',
-                border: '1.5px solid rgba(244, 63, 94, 0.1)',
-                borderRadius: '14px', width: '40px', height: '40px', color: '#c97282', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s ease'
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, #c97282, #a0506a)'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.transform = 'rotate(90deg) scale(1.1)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(201,114,130,0.3)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(201,114,130,0.06), rgba(201,114,130,0.03))'; e.currentTarget.style.color = '#c97282'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
-              ><X size={18} strokeWidth={2.5} /></button>
+                background: 'transparent', border: 'none', width: '32px', height: '32px',
+                color: '#1f1215', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+              }}><ArrowLeft size={22} /></button>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: '700', color: '#1f1215', margin: 0 }}>Notificaciones</h3>
             </div>
             {permissionBanner}
             {actionsBar}

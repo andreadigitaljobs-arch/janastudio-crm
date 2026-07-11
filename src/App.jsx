@@ -27,6 +27,7 @@ import { dataService } from './services/dataService';
 
 import ParticleBackground from './components/ParticleBackground';
 import JanaLoader from './components/JanaLoader';
+import MiniLoader from './components/MiniLoader';
 import Login from './components/Login';
 import OnboardingModule from './components/OnboardingModule';
 import { useAuth } from './context/AuthContext';
@@ -53,11 +54,8 @@ const ReportsModule = lazy(() => import('./components/ReportsModule'));
 const LaserModule = lazy(() => import('./components/LaserModule'));
 const ScheduleModal = lazy(() => import('./components/ScheduleModal'));
 
-const ModuleFallback = () => (
-  <div style={{ minHeight: '240px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', fontWeight: 800 }}>
-    Cargando...
-  </div>
-);
+const ModuleFallback = () => <MiniLoader text="Preparando vista..." />;
+
 
 function App() {
   const { user, loading: authLoading, logout } = useAuth();
@@ -95,6 +93,10 @@ function App() {
   const [isQuickScheduleOpen, setIsQuickScheduleOpen] = useState(false);
   const [hasQuickScheduleMounted, setHasQuickScheduleMounted] = useState(false);
   const { isModalOpen } = useModal();
+
+  useEffect(() => {
+    window.isJanaAppLoading = isAppLoading;
+  }, [isAppLoading]);
 
   useEffect(() => {
     if (!isMobile || !user) return;

@@ -28,6 +28,7 @@ import {
 import { dataService } from '../services/dataService';
 import JanaDialog from './JanaDialog';
 import JanaDatePicker from './JanaDatePicker';
+import MiniLoader from './MiniLoader';
 import JanaSelect from './JanaSelect';
 import AnimatedModal from './AnimatedModal';
 const isTreatment = (val) => String(val).toLowerCase().includes('tratamiento') || String(val).toLowerCase().includes('si');
@@ -3011,7 +3012,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
               <span>Planes de Pago Activos</span>
             </h4>
             {loadingPlans ? (
-              <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>Cargando planes de pago...</div>
+              <MiniLoader text="Cargando planes de pago..." />
             ) : paymentPlans.length === 0 ? (
               <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '14px' }}>No hay cuentas por cobrar pendientes.</div>
             ) : (
