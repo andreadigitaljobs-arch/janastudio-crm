@@ -635,13 +635,9 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
             </div>
           ) : (
             /* Desktop Split Layout (Master-Detail Columns) */
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', alignItems: 'start' }}>
-              
-              {/* Left Column: Filters + Table + Pagination + Pending Actions */}
-              <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-                
-                {/* Search, Filter Chips and Sort Dropdown Row */}
-                 <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <>
+              {/* Search, Filter Chips and Sort Dropdown Row */}
+              <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
                   {/* Search box */}
                   <div style={{ flex: 1, minWidth: '220px', position: 'relative' }}>
                     <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
@@ -751,7 +747,11 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                   </div>
                 </div>
 
-                {/* Clients Table */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', alignItems: 'start' }}>
+                  {/* Left Column: Table + Pagination + Pending Actions */}
+                  <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+
+                    {/* Clients Table */}
                 {loading ? (
                   <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
                     <Loader2 className="rose-gold-spinner animate-spin" size={40} />
@@ -1091,8 +1091,9 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
               </div>
 
             </div>
-          )}
-        </>
+          </>
+        )}
+      </>
       ) : (
         <ClientDetail 
           isMobile={isMobile}
