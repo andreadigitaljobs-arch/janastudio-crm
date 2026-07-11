@@ -1,11 +1,11 @@
 const STORAGE_KEY = 'jana_default_bday_message';
 
 export const DEFAULT_BIRTHDAY_MESSAGE = [
-  `¡Hola {name}!`,
+  `┬íHola {name}!`,
   String.fromCodePoint(0x1F389),
-  'Te deseamos un muy feliz cumpleaños de parte de todo el equipo de JanaStudio.',
+  'Te deseamos un muy feliz cumplea├▒os de parte de todo el equipo de JanaStudio.',
   String.fromCodePoint(0x1F488),
-  '¡Que tengas un día excelente!'
+  '┬íQue tengas un d├¡a excelente!'
 ].join(' ');
 
 const hasBrokenSurrogatePair = (value) => (
@@ -16,10 +16,10 @@ export const isCorruptedBirthdayMessage = (value) => {
   if (!value || typeof value !== 'string') return true;
   return (
     value.includes('\uFFFD') ||
-    value.includes('�') ||
-    value.includes('Ã') ||
-    value.includes('Â') ||
-    value.includes('ðŸ') ||
+    value.includes('´┐¢') ||
+    value.includes('├â') ||
+    value.includes('├é') ||
+    value.includes('├░┼©') ||
     hasBrokenSurrogatePair(value)
   );
 };

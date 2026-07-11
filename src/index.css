@@ -1,13 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
 :root {
-  /* Core Palette â€” Premium Warm Blush & Cream */
+  /* Core Palette ÔÇö Premium Warm Blush & Cream */
   --bg-primary: #fcf9f8;      /* Cream background */
   --bg-secondary: #ffffff;    /* White cards */
   --bg-tertiary: #f6eee9;     /* Light warm beige */
 
-  --pink-primary: #a0506a;    /* â†’ Magenta unificado */
-  --pink-secondary: rgba(160, 80, 106, 0.08);  /* â†’ Magenta claro unificado */
+  --pink-primary: #a0506a;    /* → Magenta unificado */
+  --pink-secondary: rgba(160, 80, 106, 0.08);  /* → Magenta claro unificado */
   --pink-gradient: linear-gradient(135deg, #c97282 0%, #a0506a 100%);
   --pink-glow: 0 4px 15px rgba(160, 80, 106, 0.2);
 
@@ -130,11 +130,11 @@ html, body {
 .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   LUXURY LOGIN â€” Premium Design System
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   LUXURY LOGIN ÔÇö Premium Design System
+   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 
-/* â”€â”€ Stagger Entrance Animations â”€â”€ */
+/* ÔöÇÔöÇ Stagger Entrance Animations ÔöÇÔöÇ */
 @keyframes salonSlideUp {
   from { opacity: 0; transform: translateY(24px); }
   to { opacity: 1; transform: translateY(0); }
@@ -187,7 +187,7 @@ html, body {
   50% { transform: translateY(-3px); }
 }
 
-/* â”€â”€ Outer Container â”€â”€ */
+/* ÔöÇÔöÇ Outer Container ÔöÇÔöÇ */
 .salon-login-outer {
   width: 100vw;
   height: 100vh;
@@ -258,7 +258,7 @@ html, body {
   position: relative;
 }
 
-/* â”€â”€ LEFT: Photo Section â”€â”€ */
+/* ÔöÇÔöÇ LEFT: Photo Section ÔöÇÔöÇ */
 .salon-login-left {
   flex: 1.1;
   display: flex;
@@ -381,7 +381,7 @@ html, body {
   background: rgba(255,255,255,0.7);
 }
 
-/* â”€â”€ RIGHT: Form Section â”€â”€ */
+/* ÔöÇÔöÇ RIGHT: Form Section ÔöÇÔöÇ */
 .salon-login-right {
   flex: 1;
   display: flex;
@@ -485,7 +485,7 @@ html, body {
   font-weight: 400;
 }
 
-/* â”€â”€ INPUTS: Floating Label + Micro-interactions â”€â”€ */
+/* ÔöÇÔöÇ INPUTS: Floating Label + Micro-interactions ÔöÇÔöÇ */
 .salon-main-form {
   display: flex;
   flex-direction: column;
@@ -611,7 +611,7 @@ html, body {
   transform: scale(0.9) rotate(0deg);
 }
 
-/* â”€â”€ SUBMIT BUTTON: Premium with Ripple â”€â”€ */
+/* ÔöÇÔöÇ SUBMIT BUTTON: Premium with Ripple ÔöÇÔöÇ */
 .salon-submit-button {
   padding: clamp(15px, 1vw, 22px);
   border-radius: 14px;
@@ -688,7 +688,7 @@ html, body {
   animation: salonSpinPremium 0.7s linear infinite;
 }
 
-/* â”€â”€ ERROR â”€â”€ */
+/* ÔöÇÔöÇ ERROR ÔöÇÔöÇ */
 .salon-error-banner {
   padding: 12px 16px;
   border-radius: 12px;
@@ -704,7 +704,7 @@ html, body {
   animation: salonShake 0.5s ease;
 }
 
-/* â”€â”€ DECORATIVE ICONS â”€â”€ */
+/* ÔöÇÔöÇ DECORATIVE ICONS ÔöÇÔöÇ */
 .salon-decorative-section {
   margin-top: 12px;
   padding-top: 20px;
@@ -762,10 +762,10 @@ html, body {
   font-weight: 400;
 }
 
-/* â”€â”€ SETTINGS PANEL: Toca el logo 5 veces â”€â”€ */
+/* ÔöÇÔöÇ SETTINGS PANEL: Toca el logo 5 veces ÔöÇÔöÇ */
 .salon-settings-panel {
   width: 100%;
-  background: linear-gradient(135deg, rgba(160, 80, 106, 0.06) 0%, rgba(201,114,130,0.06) 100%);
+  background: linear-gradient(135deg, rgba(160, 80, 106,0.06) 0%, rgba(201,114,130,0.06) 100%);
   border: 1px solid rgba(160, 80, 106, 0.25);
   border-radius: 12px;
   padding: 12px 14px;
@@ -878,7 +878,7 @@ html, body {
   border-color: transparent;
 }
 
-/* â”€â”€ TABLET: Layout optimizado â”€â”€ */
+/* ÔöÇÔöÇ TABLET: Layout optimizado ÔöÇÔöÇ */
 @media (min-width: 600px) and (max-width: 1024px), (max-width: 768px) and (min-aspect-ratio: 3/4) {
   .salon-login-outer {
     padding: 20px;
@@ -917,8 +917,8 @@ html, body {
   }
 }
 
-/* â”€â”€ DISEÃ‘O MOBILE: Foto arriba, tarjeta blanca abajo â”€â”€ */
-/* Solo para pantallas altas/angostas; las "gruesas" (aspect ratio cuadrado) usan el diseÃ±o tablet de arriba */
+/* ÔöÇÔöÇ DISE├æO MOBILE: Foto arriba, tarjeta blanca abajo ÔöÇÔöÇ */
+/* Solo para pantallas altas/angostas; las "gruesas" (aspect ratio cuadrado) usan el dise├▒o tablet de arriba */
 @media (max-width: 599px) {
 
   .salon-login-outer {
@@ -946,7 +946,7 @@ html, body {
     overflow: hidden;
   }
 
-  /* â”€â”€ FOTO: Se extiende detrÃ¡s del Dynamic Island â”€â”€ */
+  /* ÔöÇÔöÇ FOTO: Se extiende detr├ís del Dynamic Island ÔöÇÔöÇ */
   .salon-login-left {
     flex: none;
     width: 100%;
@@ -988,7 +988,7 @@ html, body {
     transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* â”€â”€ TARJETA BLANCA: Contenido distribuido â”€â”€ */
+  /* ÔöÇÔöÇ TARJETA BLANCA: Contenido distribuido ÔöÇÔöÇ */
   .salon-login-right {
     flex: 1;
     width: 100%;
@@ -1136,7 +1136,7 @@ html, body {
     font-size: 9px;
   }
 
-  /* Ajustes especÃ­ficos para telÃ©fonos compactos (como Mobile S 320px o pantallas cortas) */
+  /* Ajustes espec├¡ficos para tel├®fonos compactos (como Mobile S 320px o pantallas cortas) */
   @media (max-height: 670px) or (max-width: 340px) {
     .salon-login-left {
       height: 25vh !important;
@@ -1224,7 +1224,7 @@ input:focus { outline: none; }
 .jana-client-input {
   width: 100%;
   height: 50px;
-  border: 1px solid rgba(160, 80, 106, 0.35);
+  border: 1px solid rgba(160, 80, 106,0.35);
   border-radius: 14px;
   background: linear-gradient(135deg, #fff 0%, #fff8fa 100%);
   box-shadow: 0 8px 22px rgba(93, 57, 67, 0.06);
@@ -1253,7 +1253,7 @@ input:focus { outline: none; }
 }
 .jana-client-secondary-btn {
   height: 56px;
-  border: 1px solid rgba(160, 80, 106, 0.35);
+  border: 1px solid rgba(160, 80, 106,0.35);
   border-radius: 16px;
   background: #fff;
   box-shadow: 0 8px 22px rgba(93, 57, 67, 0.05);
@@ -1445,7 +1445,7 @@ input:focus { outline: none; }
 .wow-animate-4 { animation: fadeInUpWow 0.5s cubic-bezier(0.25, 1, 0.5, 1) both; animation-delay: 0.25s; }
 .wow-animate-5 { animation: fadeInUpWow 0.5s cubic-bezier(0.25, 1, 0.5, 1) both; animation-delay: 0.32s; }
 
-/* â”€â”€ ESTILOS PREMIUM PARA LA AGENDA (SchedulingModule) â”€â”€ */
+/* ÔöÇÔöÇ ESTILOS PREMIUM PARA LA AGENDA (SchedulingModule) ÔöÇÔöÇ */
 
 .agenda-main-container {
   display: grid;
@@ -1477,7 +1477,7 @@ input:focus { outline: none; }
   }
 }
 
-/* Tarjetas base con estÃ©tica Glassmorphism pulida */
+/* Tarjetas base con est├®tica Glassmorphism pulida */
 .agenda-glass-card {
   background: rgba(255, 255, 255, 0.8) !important;
   backdrop-filter: blur(16px) saturate(120%);
@@ -1555,7 +1555,7 @@ input:focus { outline: none; }
   align-items: center;
 }
 
-/* Tarjetas de citas sÃºper pro */
+/* Tarjetas de citas s├║per pro */
 .agenda-appointment-card {
   width: 100%;
   background: #ffffff;
@@ -1578,7 +1578,7 @@ input:focus { outline: none; }
   border-color: rgba(196, 139, 159, 0.3);
 }
 
-/* PÃ­ldora de estado elegante */
+/* P├¡ldora de estado elegante */
 .agenda-status-badge {
   padding: 4px 10px;
   border-radius: 20px;
@@ -1588,7 +1588,7 @@ input:focus { outline: none; }
   text-transform: uppercase;
 }
 
-/* BotÃ³n discreto para agendar en horas libres */
+/* Bot├│n discreto para agendar en horas libres */
 .agenda-free-slot-btn {
   width: 100%;
   height: 48px;
@@ -1612,7 +1612,7 @@ input:focus { outline: none; }
   color: #c97282;
 }
 
-/* Barra de pestaÃ±as (Tabs) */
+/* Barra de pesta├▒as (Tabs) */
 .agenda-view-tab {
   flex: 1;
   padding: 8px 10px;
@@ -1820,7 +1820,7 @@ input:focus { outline: none; }
   to { transform: translateX(-50%) translateY(-4px); }
 }
 
-/* "MÃ¡s" drawer â€” user profile card */
+/* "M├ís" drawer ÔÇö user profile card */
 @keyframes mobileMoreFadeIn {
   from { opacity: 0; transform: translateY(14px) scale(0.97); }
   to { opacity: 1; transform: translateY(0) scale(1); }
@@ -1902,7 +1902,7 @@ input:focus { outline: none; }
   margin-top: 2px;
 }
 
-/* "MÃ¡s" drawer tiles */
+/* "M├ís" drawer tiles */
 .mobile-more-tile {
   display: flex;
   flex-direction: column;
@@ -2074,8 +2074,8 @@ input:focus { outline: none; }
   }
 }
 
-/* â”€â”€ Tooltip de Ã­conos del sidebar (menÃº colapsado en compu) â”€â”€ */
-/* Se pinta vÃ­a portal en <body>, asÃ­ nunca se corta por el overflow:hidden del sidebar */
+/* ÔöÇÔöÇ Tooltip de ├¡conos del sidebar (men├║ colapsado en compu) ÔöÇÔöÇ */
+/* Se pinta v├¡a portal en <body>, as├¡ nunca se corta por el overflow:hidden del sidebar */
 .sidebar-tooltip-portal {
   animation: sidebarTooltipIn 0.12s ease both;
 }
@@ -2095,7 +2095,7 @@ input:focus { outline: none; }
   to { opacity: 1; transform: translateY(-50%) translateX(0); }
 }
 
-/* NUEVOS ESTILOS PARA LA AGENDA DE ACORDEÃ“N SIN COLUMNAS */
+/* NUEVOS ESTILOS PARA LA AGENDA DE ACORDE├ôN SIN COLUMNAS */
 .agenda-accordion-list {
   display: flex;
   flex-direction: column;
@@ -2147,7 +2147,7 @@ input:focus { outline: none; }
   padding: 16px;
 }
 
-/* Cronograma del DÃ­a Unificado */
+/* Cronograma del D├¡a Unificado */
 .cronograma-container {
   display: flex;
   flex-direction: column;
@@ -2186,7 +2186,7 @@ input:focus { outline: none; }
   white-space: nowrap;
 }
 
-/* Modo disponible / Â¿QuiÃ©n estÃ¡ libre ahorita? */
+/* Modo disponible / ┬┐Qui├®n est├í libre ahorita? */
 .agenda-slot-highlight-free {
   box-shadow: inset 0 0 0 2px rgba(22, 163, 74, 0.6) !important;
   background: rgba(22, 163, 74, 0.04) !important;
@@ -2220,7 +2220,7 @@ input:focus { outline: none; }
   opacity: 0.85;
 }
 
-/* Bordes animados para cita mÃºltiple seleccionada */
+/* Bordes animados para cita m├║ltiple seleccionada */
 .agenda-appointment-multiple-selected {
   outline: 2px dashed #a0506a !important;
   outline-offset: 1px;
@@ -2252,7 +2252,7 @@ input:focus { outline: none; }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* â”€â”€ CENTRO DE CONTROL DE TRABAJADORAS (STAFF CONTROL CENTER) â”€â”€ */
+/* ÔöÇÔöÇ CENTRO DE CONTROL DE TRABAJADORAS (STAFF CONTROL CENTER) ÔöÇÔöÇ */
 
 .staff-control-container {
   display: flex;
@@ -2285,7 +2285,7 @@ input:focus { outline: none; }
    covers up to 1024px) so it stacks on any iPad size, including
    landscape orientations that are wider than that JS breakpoint. */
 /* Agenda de hoy, Top servicios, Top especialistas and Reportes as four
-   cards in a 2x2 grid â€” gives Agenda/Top servicios more room than the
+   cards in a 2x2 grid ÔÇö gives Agenda/Top servicios more room than the
    old 3-equal-column layout, and Top especialistas/Reportes each get
    their own card instead of sharing one. */
 .dashboard-main-row {
@@ -2320,11 +2320,11 @@ input:focus { outline: none; }
 }
 
 /* Top bar: search + rates/bell/date row. Keep everything on one line on
-   tablets â€” shrink the pieces instead of wrapping/stacking.
+   tablets ÔÇö shrink the pieces instead of wrapping/stacking.
    !important is required on flex-wrap/flex here because the component
    sets those same properties inline (React style prop), and inline
    styles always beat external stylesheet rules regardless of
-   selector â€” without !important these rules are silently ignored. */
+   selector ÔÇö without !important these rules are silently ignored. */
 @media (max-width: 1300px) {
   .topbar-header-row {
     flex-wrap: nowrap !important;
@@ -2356,7 +2356,7 @@ input:focus { outline: none; }
 
 @media (max-width: 700px) {
   /* No room left for the rates pill without crowding the search bar
-     into single-character width â€” hide it here, keep bell + date. */
+     into single-character width ÔÇö hide it here, keep bell + date. */
   .topbar-rates-pill {
     display: none;
   }
@@ -2382,11 +2382,11 @@ input:focus { outline: none; }
   }
 }
 
-/* "MÃ¡s reservado" featured photo card: fixed at 140px tall, which was
+/* "M├ís reservado" featured photo card: fixed at 140px tall, which was
    tuned for the narrow 1-of-3-column layout. Once the row stacks to a
    single full-width column below 1300px, that same height makes the
    photo area extremely wide/short, forcing object-fit: cover to crop
-   away most of the vertical frame â€” cutting off the model's head.
+   away most of the vertical frame ÔÇö cutting off the model's head.
    Taller on narrow layouts keeps the crop reasonable. */
 .dashboard-featured-photo {
   height: 140px;
@@ -2573,7 +2573,7 @@ input:focus { outline: none; }
   transform: scale(0.94);
 }
 
-/* BotÃ³n Editar - Elegante con Borde */
+/* Bot├│n Editar - Elegante con Borde */
 .drawer-btn-edit {
   border: 1.5px solid rgba(223, 178, 140, 0.5);
   background: #ffffff;
@@ -2586,7 +2586,7 @@ input:focus { outline: none; }
   transform: translateY(-2px) scale(1.02);
 }
 
-/* BotÃ³n Completar - Verde Lleno Premium */
+/* Bot├│n Completar - Verde Lleno Premium */
 .drawer-btn-complete {
   border: none;
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
@@ -2599,7 +2599,7 @@ input:focus { outline: none; }
   transform: translateY(-3px) scale(1.03);
 }
 
-/* BotÃ³n Eliminar - Rojo de Borde */
+/* Bot├│n Eliminar - Rojo de Borde */
 .drawer-btn-delete {
   border: 1.5px solid rgba(239, 68, 68, 0.25);
   background: rgba(239, 68, 68, 0.02);
@@ -2612,7 +2612,7 @@ input:focus { outline: none; }
   transform: translateY(-2px) scale(1.02);
 }
 
-/* BotÃ³n Cancelar - Rosa/Rojo suave */
+/* Bot├│n Cancelar - Rosa/Rojo suave */
 .drawer-btn-cancel {
   border: 1.5px solid rgba(220, 38, 38, 0.25);
   background: rgba(220, 38, 38, 0.02);
@@ -2625,7 +2625,7 @@ input:focus { outline: none; }
   transform: translateY(-2px) scale(1.02);
 }
 
-/* BotÃ³n No-show - Naranja elegante */
+/* Bot├│n No-show - Naranja elegante */
 .drawer-btn-noshow {
   border: 1.5px solid rgba(245, 158, 11, 0.25);
   background: rgba(245, 158, 11, 0.02);
@@ -2638,7 +2638,7 @@ input:focus { outline: none; }
   transform: translateY(-2px) scale(1.02);
 }
 
-/* BotÃ³n Reprogramar - Degradado PÃºrpura/Rosa Premium */
+/* Bot├│n Reprogramar - Degradado P├║rpura/Rosa Premium */
 .drawer-btn-reprogram {
   border: none;
   background: linear-gradient(135deg, #ba82a0 0%, #a0506a 100%);
@@ -2651,7 +2651,7 @@ input:focus { outline: none; }
   transform: translateY(-3px) scale(1.03);
 }
 
-/* BotÃ³n Unificado Eliminar/Cancelar - Peligro */
+/* Bot├│n Unificado Eliminar/Cancelar - Peligro */
 .drawer-btn-danger {
   border: 1.5px solid rgba(220, 38, 38, 0.25);
   background: rgba(255, 255, 255, 0.9);
@@ -2664,7 +2664,7 @@ input:focus { outline: none; }
   transform: translateY(-1px);
 }
 
-/* Rankings de Rendimiento del DÃ­a */
+/* Rankings de Rendimiento del D├¡a */
 .rankings-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -2749,7 +2749,7 @@ input:focus { outline: none; }
   transform: scale(0.95);
 }
 
-/* Agenda module â€” universal microinteractions so every button/control reacts,
+/* Agenda module ÔÇö universal microinteractions so every button/control reacts,
    even ones that don't set their own onMouseEnter/onMouseLeave handlers.
    Inline styles set by JS hover handlers always win over these (higher
    specificity), so this only fills in the gaps rather than fighting them. */
@@ -2834,9 +2834,9 @@ input:focus { outline: none; }
   }
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   SCHEDULING MODULE â€” Elegant Animations
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   SCHEDULING MODULE ÔÇö Elegant Animations
+   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 
 /* Card Animations */
 @keyframes cardEnter {
@@ -3294,5 +3294,4 @@ button, [role="button"], a[href] {
   transform: scale(0.95) !important;
   opacity: 0.9;
 }
-
 
