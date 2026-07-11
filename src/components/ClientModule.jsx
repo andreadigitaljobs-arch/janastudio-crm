@@ -2635,12 +2635,18 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
 
                 <div style={{ marginTop: '24px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
-                    <h5 style={{ margin: 0, fontSize: '15px', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
-                      Galería de Fotos
-                    </h5>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <h5 style={{ margin: 0, fontSize: '15px', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
+                        Galería de Fotos
+                      </h5>
+                      {selectionMode && (
+                        <span style={{ fontSize: '11px', color: 'var(--pink-primary)', fontWeight: '750', backgroundColor: 'rgba(160,80,106,0.08)', padding: '4px 10px', borderRadius: '12px' }}>
+                          {selectedPhotoIndices.length} seleccionada{selectedPhotoIndices.length === 1 ? '' : 's'}
+                        </span>
+                      )}
+                    </div>
                     {selectionMode ? (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '650' }}>{selectedPhotoIndices.length} seleccionada{selectedPhotoIndices.length === 1 ? '' : 's'}</span>
                         <button
                           onClick={handleBulkDeletePhotos}
                           disabled={selectedPhotoIndices.length === 0}
