@@ -227,10 +227,10 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
                             width: '36px', height: '36px', borderRadius: '12px',
                             background: n.read
                               ? 'linear-gradient(135deg, #fdf2f4, #f8e8ec)'
-                              : 'linear-gradient(135deg, #c97282, #a0506a)',
+                              : iconBg,
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             color: n.read ? '#d4a0ae' : '#ffffff', flexShrink: 0,
-                            boxShadow: n.read ? 'none' : '0 4px 14px rgba(201, 114, 130, 0.25)',
+                            boxShadow: n.read ? 'none' : `0 4px 12px ${iconBg}40`,
                             transition: 'all 0.3s ease'
                           }}><IconComponent size={16} /></div>
                           <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
