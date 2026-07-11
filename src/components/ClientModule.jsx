@@ -386,9 +386,6 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                 <button style={{ padding: '10px 16px', borderRadius: '20px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <Download size={15} /> Exportar
                 </button>
-                <button style={{ padding: '10px 16px', borderRadius: '20px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Filter size={15} /> Filtros
-                </button>
               </div>
             )}
           </div>
