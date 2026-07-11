@@ -49,6 +49,7 @@ import JanaCamera from './JanaCamera';
 import BirthdayTextInput from './BirthdayTextInput';
 import JanaDialog from './JanaDialog';
 import AnimatedModal from './AnimatedModal';
+import NewClientModal from './NewClientModal';
 import { formatName, normalizeForSearch } from '../utils/stringUtils';
 import {
   getBirthdayMessageTemplate,
@@ -72,6 +73,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
   }, []);
 
   const isNarrowScreen = windowWidth < 1300;
+  const quickViewRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedClient, setSelectedClient] = useState(null);
   const [showMessageModal, setShowMessageModal] = useState(false);
@@ -134,17 +136,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
   }, [initialClientId, clients]);
   const [loading, setLoading] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newClient, setNewClient] = useState({ 
-    name: '', 
-    phone: '', 
-    id_card: '',
-    birth_date: '',
-    hair_type: 'Normal', 
-    scalp_type: 'Normal' 
-  });
   const [viewMode, setViewMode] = useState('table'); // 'grid' or 'table'
-
-  const [creating, setCreating] = useState(false);
 
   // Sync selected client when global list updates (Crucial for persistence visibility)
   useEffect(() => {
@@ -224,27 +216,37 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
     }
   };
 
-  const handleAddClient = async () => {
-    if (!newClient.name) return;
+  const handleExportClients = () => {
     try {
-      setCreating(true);
-      await dataService.addClient(newClient);
-      setNewClient({ 
-        name: '', 
-        phone: '', 
-        id_card: '',
-        birth_date: '',
-        hair_type: 'Normal', 
-        scalp_type: 'Normal' 
-      });
-      setShowAddForm(false);
-      await onRefresh();
-      showToast('¡Ficha de cliente creada con éxito!');
+      const headers = ['Nombre', 'Teléfono', 'Cédula', 'Cumpleaños', 'Tipo de Cabello', 'Cuero Cabelludo', 'Notas', 'Fecha de Registro', 'Total de Visitas'];
+      const rows = filteredClients.map(c => [
+        c.name || '',
+        c.phone || '',
+        c.id_card || '',
+        c.birth_date || '',
+        c.hair_type || '',
+        c.scalp_type || '',
+        c.notes || '',
+        c.created_at ? new Date(c.created_at).toLocaleDateString() : '',
+        c.total_visits || 0
+      ]);
+      const escape = (val) => `"${String(val).replace(/"/g, '""')}"`;
+
+      const csvContent = "data:text/csv;charset=utf-8,"
+        + headers.map(escape).join(",") + "\n"
+        + rows.map(r => r.map(escape).join(",")).join("\n");
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `clientes_janastudio_${new Date().toLocaleDateString()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Exportando clientas...', 'success');
     } catch (error) {
-      console.error('Error addClient:', error);
-      showToast('Error técnico al agregar cliente.', 'error');
-    } finally {
-      setCreating(false);
+      console.error('Error exporting clients:', error);
+      showToast('Error al exportar clientas.', 'error');
     }
   };
 
@@ -384,17 +386,11 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
             
             {!isMobile && (
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center', zIndex: 1 }}>
-                <button 
-                  onClick={() => {
-                    setNewClient({
-                      name: '', phone: '', id_card: '', birth_date: '',
-                      hair_type: 'Normal', scalp_type: 'Normal'
-                    });
-                    setShowAddForm(true);
-                  }}
-                  style={{ 
-                    padding: '10px 20px', borderRadius: '20px', border: 'none', 
-                    background: 'var(--magenta-gradient)', color: 'white', 
+                <button
+                  onClick={() => setShowAddForm(true)}
+                  style={{
+                    padding: '10px 20px', borderRadius: '20px', border: 'none',
+                    background: 'var(--magenta-gradient)', color: 'white',
                     fontSize: '13px', fontWeight: '750', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', gap: '6px',
                     boxShadow: '0 4px 15px rgba(160, 80, 106, 0.25)'
@@ -403,7 +399,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                 >
                   <Plus size={16} /> Nueva clienta
                 </button>
-                <button style={{ padding: '10px 16px', borderRadius: '20px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }} className="btn-interactive">
+                <button onClick={handleExportClients} style={{ padding: '10px 16px', borderRadius: '20px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }} className="btn-interactive">
                   <Download size={15} /> Exportar
                 </button>
               </div>
@@ -411,15 +407,9 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
           </div>
 
           {isMobile && (
-            <button 
-              onClick={() => {
-                setNewClient({
-                  name: '', phone: '', id_card: '', birth_date: '',
-                  hair_type: 'Normal', scalp_type: 'Normal'
-                });
-                setShowAddForm(true);
-              }}
-              style={{ 
+            <button
+              onClick={() => setShowAddForm(true)}
+              style={{
                 width: '100%', padding: '10px', borderRadius: '12px', border: 'none', 
                 background: 'var(--magenta-gradient)', color: 'white', 
                 fontSize: '13px', fontWeight: '750', cursor: 'pointer',
@@ -1063,7 +1053,12 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                           return (
                             <tr
                               key={client.id}
-                              onClick={() => setSelectedSidebarClient(client)}
+                              onClick={() => {
+                                setSelectedSidebarClient(client);
+                                if (isNarrowScreen) {
+                                  quickViewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }
+                              }}
                               style={{
                                 borderBottom: '1px solid var(--border-color)',
                                 backgroundColor: isSelected ? 'rgba(160, 80, 106, 0.08)' : 'transparent',
@@ -1257,7 +1252,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
               </div>
 
               {/* Right Column: Ficha Rápida Sidebar */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', position: 'sticky', top: '24px' }}>
+              <div ref={quickViewRef} style={{ display: 'flex', flexDirection: 'column', gap: '24px', position: isNarrowScreen ? 'static' : 'sticky', top: '24px' }}>
                 {/* Ficha Rápida Card */}
                 <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', position: 'relative', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -1681,12 +1676,19 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
           box-shadow: 0 8px 24px rgba(160, 80, 106,0.15);
         }
       `}</style>
+
+      <NewClientModal
+        isOpen={showAddForm}
+        onClose={() => setShowAddForm(false)}
+        onClientCreated={onRefresh}
+      />
     </div>
   );
 };
 
 const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
   const { showToast } = useNotifs();
+  const { confirm } = useDialog();
   const containerRef = useRef(null);
   const [detailWidth, setDetailWidth] = useState(1200);
   useEffect(() => {

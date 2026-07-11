@@ -119,6 +119,17 @@ export const dataService = {
     return result;
   },
 
+  async checkClientExists(idCard) {
+    if (!idCard) return null;
+    const { data, error } = await supabase
+      .from('clients')
+      .select('id, name')
+      .eq('id_card', idCard)
+      .maybeSingle();
+    if (error) throw error;
+    return data;
+  },
+
   async addClient(client) {
     _cacheInvalidate('clients', 'clients_lite');
     const { data, error } = await supabase
