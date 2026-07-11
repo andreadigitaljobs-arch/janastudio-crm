@@ -1134,15 +1134,35 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
     <div className="animate-fade-in agenda-module" style={{ paddingBottom: isMobile ? 'calc(100px + env(safe-area-inset-bottom, 12px))' : '40px' }}>
       
       {/* HEADER EXACTLY LIKE THE MOCKUP */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: isMobile ? '100%' : 'auto', gap: '12px' }}>
-          <div>
-            <h1 className="jana-page-title">
-              Agenda
-            </h1>
-            <p style={{ fontSize: '0.82rem', color: '#a0909a', margin: '6px 0 0 0', fontWeight: 500 }}>
-              Controla el rendimiento y la disponibilidad de tu equipo.
-            </p>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginBottom: '28px', 
+        padding: '12px 0 16px 0', 
+        flexWrap: 'wrap', 
+        gap: '20px',
+        position: 'relative',
+        width: '100%'
+      }}>
+        {/* Background Ambient Glow */}
+        <div style={{ position: 'absolute', top: '-60px', left: '-60px', width: '180px', height: '180px', background: 'radial-gradient(circle, rgba(212,160,154,0.18) 0%, rgba(212,160,154,0) 70%)', pointerEvents: 'none', zIndex: 0 }} />
+        
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: isMobile ? '100%' : 'auto', gap: '16px', zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            {!isMobile && (
+              <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'var(--magenta-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 20px rgba(160, 80, 106, 0.15)', flexShrink: 0 }}>
+                <CalendarIcon size={20} color="white" />
+              </div>
+            )}
+            <div>
+              <h1 className="jana-page-title" style={{ margin: 0, fontSize: isMobile ? '20px' : '28px', letterSpacing: '-0.6px', fontWeight: '850', color: 'var(--text-primary)' }}>
+                Agenda
+              </h1>
+              <p style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: isMobile ? '12px' : '14px', fontWeight: '500' }}>
+                Controla el rendimiento y la disponibilidad de tu equipo.
+              </p>
+            </div>
           </div>
 
           {/* On mobile the bell moves up here, next to the title, instead of wrapping alone below the date selector */}

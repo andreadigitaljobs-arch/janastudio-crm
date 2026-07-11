@@ -58,7 +58,7 @@ import { useScrollLock } from '../hooks/useScrollLock';
 import { useAuth } from '../context/AuthContext';
 import { getRoleKind } from '../utils/roles';
 
-const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) => {
+const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, onNavigate }) => {
   const { user } = useAuth();
   const { showToast } = useNotifs();
   const { confirm } = useDialog();
@@ -1357,7 +1357,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                     <h3 style={{ fontSize: '15.5px', fontWeight: '850', color: 'var(--text-primary)', margin: 0 }}>
                       Seguimientos pendientes
                     </h3>
-                    <span style={{ fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '750', cursor: 'pointer' }}>Ver todos</span>
+                    <span onClick={() => onNavigate && onNavigate('notifications')} style={{ fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '750', cursor: 'pointer' }}>Ver todos</span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1, justifyContent: 'center' }}>
                     {[

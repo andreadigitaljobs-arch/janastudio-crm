@@ -1257,16 +1257,32 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
   return (
     <div className="animate-fade-in" style={{ paddingBottom: '100px', maxWidth: '100%' }}>
       <header style={{ 
-        marginBottom: isMobile ? '16px' : '40px',
-        display: 'flex',
-        flexDirection: isMobile ? 'column' : 'row',
-        justifyContent: 'space-between',
-        alignItems: isMobile ? 'flex-start' : 'center',
-        gap: isMobile ? '12px' : '0'
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        marginBottom: isMobile ? '20px' : '32px', 
+        padding: '12px 0 16px 0', 
+        flexWrap: 'wrap', 
+        gap: '20px',
+        position: 'relative'
       }}>
-        <div>
-          <h1 className="jana-page-title">Caja Jana Pro</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Liquidación de servicios y venta de productos.</p>
+        {/* Background Ambient Glow */}
+        <div style={{ position: 'absolute', top: '-60px', left: '-60px', width: '180px', height: '180px', background: 'radial-gradient(circle, rgba(212,160,154,0.18) 0%, rgba(212,160,154,0) 70%)', pointerEvents: 'none', zIndex: 0 }} />
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', zIndex: 1 }}>
+          {!isMobile && (
+            <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'var(--magenta-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 20px rgba(160, 80, 106, 0.15)', flexShrink: 0 }}>
+              <CreditCard size={20} color="white" />
+            </div>
+          )}
+          <div>
+            <h1 className="jana-page-title" style={{ margin: 0, fontSize: isMobile ? '20px' : '28px', letterSpacing: '-0.6px', fontWeight: '850', color: 'var(--text-primary)' }}>
+              Caja Jana Pro
+            </h1>
+            <p style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: isMobile ? '12px' : '14px', fontWeight: '500' }}>
+              Liquidación de servicios y venta de productos.
+            </p>
+          </div>
         </div>
         {pendingSyncCount > 0 ? (
           <div style={{ 
