@@ -143,7 +143,7 @@ export default function OnboardingModule({ onComplete }) {
         }
 
         .onboarding-content-inner {
-          max-width: 560px;
+          max-width: 780px;
           text-align: left;
           display: flex;
           flex-direction: column;
@@ -277,6 +277,10 @@ export default function OnboardingModule({ onComplete }) {
           .onboarding-content-panel {
             top: 200px;
             right: 48%;
+          }
+
+          .onboarding-content-inner {
+            max-width: 950px;
           }
 
           .onboarding-title {
