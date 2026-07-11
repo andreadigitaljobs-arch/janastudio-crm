@@ -127,11 +127,9 @@ const NotificationsPage = ({ isMobile, onNavigate }) => {
           >
             <ArrowLeft size={18} />
           </button>
-          {!isMobile && (
-            <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'var(--magenta-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 20px rgba(160, 80, 106, 0.15)', flexShrink: 0 }}>
-              <Bell size={20} color="white" />
-            </div>
-          )}
+          <div style={{ width: isMobile ? '38px' : '46px', height: isMobile ? '38px' : '46px', borderRadius: isMobile ? '12px' : '14px', background: 'var(--magenta-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 20px rgba(160, 80, 106, 0.15)', flexShrink: 0 }}>
+            <Bell size={isMobile ? 16 : 20} color="white" />
+          </div>
           <div>
             <h1 className="jana-page-title" style={{ margin: 0, fontSize: isMobile ? '20px' : '28px', letterSpacing: '-0.6px', fontWeight: '850', color: 'var(--text-primary)' }}>
               Notificaciones
