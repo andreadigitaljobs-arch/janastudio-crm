@@ -1126,7 +1126,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                     </h3>
                     <span style={{ fontSize: '12px', color: '#e08b98', fontWeight: '750', cursor: 'pointer' }}>Ver todos</span>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
                     {[
                       { text: 'Confirmar cita de Valentina P.', date: '12 may 2025 • 11:30 AM', icon: Calendar, color: '#e08b98', bg: '#fdf2f4' },
                       { text: 'Enviar rutina post cuidado', date: 'Laura Martínez • 18 may 2025', icon: Mail, color: '#e08b98', bg: '#fdf2f4' },
