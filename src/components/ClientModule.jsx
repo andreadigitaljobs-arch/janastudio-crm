@@ -763,7 +763,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                     <p style={{ color: 'var(--text-muted)' }}>No se encontraron clientes.</p>
                   </div>
                 ) : (
-                  <div className="glass-card" style={{ borderRadius: '20px', overflowX: 'auto', overflowY: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.03)', background: 'white' }}>
+                  <div className="glass-card" style={{ borderRadius: '20px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.03)', background: 'white' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                       <thead>
                         <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'rgba(212, 160, 154, 0.08)' }}>
@@ -1137,7 +1137,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                           <item.icon size={16} color={item.color} />
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.text}</div>
+                          <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)', lineHeight: '1.3' }}>{item.text}</div>
                           <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
                             <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.line1}</div>
                             <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.line2}</div>
