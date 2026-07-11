@@ -22,3 +22,18 @@ createRoot(document.getElementById('root')).render(
     </AuthProvider>
   </AppErrorBoundary>
 )
+
+// Registrar Service Worker para caché de imágenes y PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/sw.js', { scope: '/' })
+      .then((reg) => {
+        console.log('[Jana SW] Registrado:', reg.scope);
+      })
+      .catch((err) => {
+        console.warn('[Jana SW] Error al registrar:', err);
+      });
+  });
+}
+
