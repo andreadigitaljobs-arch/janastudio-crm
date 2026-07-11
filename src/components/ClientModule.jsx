@@ -2639,7 +2639,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                       Galería de Fotos
                     </h5>
                     {selectionMode ? (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                         <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '650' }}>{selectedPhotoIndices.length} seleccionada{selectedPhotoIndices.length === 1 ? '' : 's'}</span>
                         <button
                           onClick={handleBulkDeletePhotos}
