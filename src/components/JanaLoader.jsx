@@ -244,7 +244,6 @@ const JanaLoader = ({ visible }) => {
         /* --- Logo Styling --- */
         .loader-logo-wrapper {
           margin-bottom: 25px;
-          animation: fadeInScale 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         .loader-logo {
           width: 280px;
@@ -264,7 +263,6 @@ const JanaLoader = ({ visible }) => {
           margin-bottom: 30px;
           display: flex;
           justify-content: center;
-          animation: luxuryScaleIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
         }
         .rose-gold-spinner {
           width: 46px;
@@ -283,7 +281,6 @@ const JanaLoader = ({ visible }) => {
         /* --- Typography --- */
         .loader-info-wrapper {
           margin-bottom: 25px;
-          animation: luxurySlideUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
         }
         .loader-title {
           font-family: 'Playfair Display', Georgia, serif;
@@ -320,7 +317,7 @@ const JanaLoader = ({ visible }) => {
           width: 100%;
           max-width: 320px;
           margin-bottom: 70px;
-          animation: luxurySlideUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
+          animation: luxurySlideUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
         }
         .custom-progress-track {
           flex: 1;
@@ -358,7 +355,7 @@ const JanaLoader = ({ visible }) => {
           flex-direction: column;
           align-items: center;
           gap: 6px;
-          animation: fadeInScale 1s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
+          animation: fadeInScale 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
         }
         @media (max-height: 600px) {
           .loader-footer {
