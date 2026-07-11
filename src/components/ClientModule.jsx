@@ -3375,7 +3375,13 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   <input className="form-input" value={editData.name} onChange={e => setEditData({...editData, name: formatName(e.target.value)})} placeholder="Nombre" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
                   <input className="form-input" value={editData.phone} onChange={e => setEditData({...editData, phone: e.target.value})} placeholder="Teléfono" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
                   <input className="form-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="Cédula" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
-                  <BirthdayTextInput value={editData.birth_date} onChange={e => setEditData({...editData, birth_date: e.target.value})} style={{ width: '100%' }} />
+                  <BirthdayTextInput 
+                    value={editData.birth_date} 
+                    onChange={e => setEditData({...editData, birth_date: e.target.value})} 
+                    style={{ width: '100%' }} 
+                    inputClassName="form-input"
+                    inputStyle={{ paddingLeft: '44px', height: '32px', fontSize: '12px' }}
+                  />
                   <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
                     <button className="btn-pink" onClick={async () => { const r = await onUpdate(editData); if (r) showToast('Datos actualizados'); setIsEditing(false); }} style={{ flex: 1, fontSize: '12px', padding: '8px', fontWeight: '750', background: 'var(--magenta-gradient)', border: 'none' }}>Guardar</button>
                     <button onClick={() => setIsEditing(false)} style={{ flex: 1, background: 'none', border: '1px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '12px', borderRadius: '12px', cursor: 'pointer' }}>Cancelar</button>
@@ -3641,7 +3647,13 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>CUMPLEANOS</label>
-                    <BirthdayTextInput value={editData.birth_date} onChange={e => setEditData({...editData, birth_date: e.target.value})} style={{ width: '100%' }} />
+                    <BirthdayTextInput 
+                      value={editData.birth_date} 
+                      onChange={e => setEditData({...editData, birth_date: e.target.value})} 
+                      style={{ width: '100%' }} 
+                      inputClassName="form-input"
+                      inputStyle={{ paddingLeft: '44px', height: '36px', fontSize: '12px' }}
+                    />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>NOTAS RÁPIDAS</label>

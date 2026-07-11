@@ -396,18 +396,19 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
           style={{
             position: 'absolute',
             left: '16px',
-            top: '12px',
+            top: '50%',
+            transform: 'translateY(-50%)',
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            padding: '2px',
+            padding: 0,
             display: 'flex',
             alignItems: 'center',
             zIndex: 10
           }}
         >
           <Calendar
-            size={18}
+            size={16}
             color="var(--pink-primary)"
           />
         </button>
@@ -429,8 +430,12 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
           spellCheck="false"
           style={{
             width: '100%',
-            paddingLeft: '48px',
+            height: '38px',
+            paddingLeft: '44px',
             paddingRight: value ? '40px' : '16px',
+            paddingTop: '8px',
+            paddingBottom: '8px',
+            borderRadius: '10px',
             cursor: 'text',
             background: isLight ? 'white' : 'rgba(255,255,255,0.05)',
             border: isOpen ? '1.5px solid var(--pink-primary)' : isLight ? '1px solid var(--border-color)' : '1px solid rgba(255,255,255,0.15)',
@@ -438,6 +443,7 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
             outline: 'none',
             boxShadow: 'none',
             transition: 'border-color 0.2s',
+            fontSize: '13px',
             ...inputStyle
           }}
         />
@@ -448,7 +454,8 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
             style={{
               position: 'absolute',
               right: '16px',
-              top: '12px',
+              top: '50%',
+              transform: 'translateY(-50%)',
               background: 'none',
               border: 'none',
               color: 'var(--text-muted)',
