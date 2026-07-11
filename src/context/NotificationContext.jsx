@@ -1,5 +1,12 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import { CheckCircle, AlertCircle } from 'lucide-react';
+import { CheckCircle, AlertCircle, Info, Loader2 } from 'lucide-react';
+
+const TOAST_ICONS = {
+  success: <CheckCircle size={20} color="var(--pink-primary)" />,
+  error: <AlertCircle size={20} color="#ff453a" />,
+  warning: <AlertCircle size={20} color="#e0a030" />,
+  info: <Loader2 size={20} color="var(--pink-primary)" className="animate-spin" />
+};
 
 const NotificationContext = createContext();
 
@@ -24,7 +31,7 @@ export const NotificationProvider = ({ children }) => {
       <div className="toast-container">
         {notifs.toasts.map((t) => (
           <div key={t.id} className="toast animate-scale-in">
-            {t.type === 'success' ? <CheckCircle size={20} color="var(--pink-primary)" /> : <AlertCircle size={20} color="#ff453a" />}
+            {TOAST_ICONS[t.type] || TOAST_ICONS.success}
             <span style={{ fontSize: '14px', fontWeight: '600' }}>{t.message}</span>
           </div>
         ))}

@@ -1523,7 +1523,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
           left: 0,
           width: '100vw',
           height: '100vh',
-          backgroundColor: 'rgba(0, 0, 0, 0.75)',
+          backgroundColor: 'rgba(74, 26, 46, 0.75)',
           backdropFilter: showMessageModal ? 'blur(8px)' : 'blur(0px)',
           zIndex: 99999,
           display: 'flex',
@@ -1687,13 +1687,17 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
 
 const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
   const { showToast } = useNotifs();
-  const [detailWidth, setDetailWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  const containerRef = useRef(null);
+  const [detailWidth, setDetailWidth] = useState(1200);
   useEffect(() => {
-    const handleResize = () => setDetailWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    if (!containerRef.current || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(([entry]) => {
+      setDetailWidth(entry.contentRect.width);
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
   }, []);
-  const isCompact = isMobile || detailWidth < 960;
+  const isCompact = isMobile || detailWidth < 1000;
   const [showCollage, setShowCollage] = useState(false);
   const [showAllHistory, setShowAllHistory] = useState(false);
   const [photoA, setPhotoA] = useState(null);
@@ -1831,7 +1835,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
       ctx.drawImage(imgB, width/2, 0, width/2, height);
       
       // Add overlay labels
-      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillStyle = 'rgba(74,26,46,0.6)';
       ctx.fillRect(20, height - 60, 100, 40);
       ctx.fillRect(width/2 + 20, height - 60, 120, 40);
       
@@ -2050,7 +2054,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                         <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)' }}>FOTO ANTES</span>
                       </div>
                     )}
-                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', backgroundColor: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)' }}>ANTES</div>
+                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', backgroundColor: 'rgba(74,26,46,0.85)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'white' }}>ANTES</div>
                   </div>
 
                   <div 
@@ -2073,7 +2077,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                         <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)' }}>FOTO DESPUÉS</span>
                       </div>
                     )}
-                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', backgroundColor: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)' }}>DESPUÉS</div>
+                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', backgroundColor: 'rgba(74,26,46,0.85)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'white' }}>DESPUÉS</div>
                   </div>
                 </div>
 
@@ -2121,7 +2125,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
 
                 <AnimatedModal isOpen={!!selectingFor}>
                   {(overlayClass, cardClass) => (
-                    <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 99999, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+                    <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(74,26,46,0.75)', backdropFilter: 'blur(10px)', zIndex: 99999, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
                       <div className={`glass-card ${cardClass}`} style={{ maxWidth: '600px', width: '100%', padding: '24px', backgroundColor: 'white' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', alignItems: 'center' }}>
                           <h4 style={{ fontWeight: '900', color: 'var(--text-primary)', margin: 0 }}>Elegir Foto {selectingFor}</h4>
@@ -2196,7 +2200,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                     {gallery.map((img, i) => (
                       <div key={i} style={{ aspectRatio: '1/1', backgroundColor: 'var(--bg-tertiary)', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-color)', position: 'relative' }} className="group">
                         <img src={img.url || img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', padding: '8px', fontSize: '9px', fontWeight: '800', color: 'var(--pink-primary)' }}>
+                        <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'linear-gradient(transparent, rgba(74,26,46,0.85))', padding: '8px', fontSize: '9px', fontWeight: '800', color: 'white' }}>
                           {img.type || 'FOTO'}
                         </div>
                         <button
@@ -2592,7 +2596,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
     : 'Sin visitas';
 
   return (
-    <div className="animate-fade-in" style={{ paddingBottom: '60px' }}>
+    <div ref={containerRef} className="animate-fade-in" style={{ paddingBottom: '60px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <button
@@ -2908,7 +2912,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
 
           {/* Right Column: Tabs Content */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div style={{ display: 'flex', gap: '28px', borderBottom: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: '8px', gap: '20px', borderBottom: '1px solid var(--border-color)' }}>
               {[
                 { id: 'gallery', label: 'Galería de trabajos', icon: <ImageIcon size={16} /> },
                 { id: 'diagnoses', label: 'Diagnóstico capilar', icon: <Activity size={16} /> },
@@ -2970,7 +2974,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
 
       <AnimatedModal isOpen={!!pendingPhoto}>
         {(overlayClass, cardClass) => (
-          <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+          <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(74,26,46,0.75)', backdropFilter: 'blur(10px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
             <div className={cardClass} style={{
               width: '100%',
               maxWidth: 'min(90vw, 560px)',
@@ -3047,7 +3051,7 @@ const VisitDetailModal = ({ isOpen, visit, onClose, gallery = [] }) => {
   return (
     <AnimatedModal isOpen={isOpen}>
       {(overlayClass, cardClass) => (
-        <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+        <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(74,26,46,0.75)', backdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
           <div className={`glass-card ${cardClass}`} style={{ maxWidth: '480px', width: '100%', borderRadius: '28px', padding: '32px', border: '1.5px solid rgba(217,70,168,0.3)', maxHeight: '90vh', overflowY: 'auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <h3 style={{ 
@@ -3176,7 +3180,7 @@ const ComparisonCard = ({ comparison, onDelete }) => {
       <div style={{ display: 'flex', aspectRatio: '4/3' }}>
         <div style={{ flex: 1, position: 'relative' }}>
           <img src={comparison.beforeUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          <span style={{ position: 'absolute', bottom: '8px', left: '8px', backgroundColor: 'rgba(0,0,0,0.7)', padding: '3px 8px', borderRadius: '4px', fontSize: '9px', fontWeight: '900', color: 'white' }}>ANTES</span>
+          <span style={{ position: 'absolute', bottom: '8px', left: '8px', backgroundColor: 'rgba(74,26,46,0.85)', padding: '3px 8px', borderRadius: '4px', fontSize: '9px', fontWeight: '900', color: 'white' }}>ANTES</span>
         </div>
         <div style={{ flex: 1, position: 'relative' }}>
           <img src={comparison.afterUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -3326,8 +3330,8 @@ const BeforeAfterSlider = ({ photoA, photoB, sliderPos, setSliderPos }) => {
       </div>
 
       {/* Labels */}
-      <div style={{ position: 'absolute', top: '12px', left: '12px', backgroundColor: 'rgba(0,0,0,0.6)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'white', pointerEvents: 'none' }}>ANTES</div>
-      <div style={{ position: 'absolute', top: '12px', right: '12px', backgroundColor: 'rgba(217,70,168,0.8)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'black', pointerEvents: 'none' }}>DESPUÉS</div>
+      <div style={{ position: 'absolute', top: '12px', left: '12px', backgroundColor: 'rgba(74,26,46,0.85)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'white', pointerEvents: 'none' }}>ANTES</div>
+      <div style={{ position: 'absolute', top: '12px', right: '12px', backgroundColor: 'var(--magenta-primary)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'white', pointerEvents: 'none' }}>DESPUÉS</div>
     </div>
   );
 };
