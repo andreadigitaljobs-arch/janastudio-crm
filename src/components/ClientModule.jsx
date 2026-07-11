@@ -36,7 +36,9 @@ import {
   UserPlus,
   Bell,
   Activity,
-  Package
+  Package,
+  Maximize2,
+  Edit2
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { supabase } from '../lib/supabase';
