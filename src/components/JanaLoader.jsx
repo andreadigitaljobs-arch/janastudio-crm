@@ -246,15 +246,15 @@ const JanaLoader = ({ visible }) => {
           margin-bottom: 25px;
         }
         .loader-logo {
-          width: 360px;
+          width: 420px;
           max-width: 85%;
           height: auto;
           object-fit: contain;
           filter: drop-shadow(0 4px 10px rgba(122, 88, 83, 0.08));
         }
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
           .loader-logo {
-            width: 280px;
+            width: 340px;
           }
         }
         @media (max-width: 480px) {
@@ -270,11 +270,11 @@ const JanaLoader = ({ visible }) => {
           justify-content: center;
         }
         .rose-gold-spinner {
-          width: 54px;
-          height: 54px;
+          width: 60px;
+          height: 60px;
           border-radius: 50%;
-          border: 4px solid rgba(179, 130, 121, 0.15);
-          border-top: 4px solid #b38279;
+          border: 4.5px solid rgba(179, 130, 121, 0.15);
+          border-top: 4.5px solid #b38279;
           animation: luxurySpin 1.2s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
           box-shadow: 0 0 15px rgba(179, 130, 121, 0.2);
         }
@@ -282,10 +282,10 @@ const JanaLoader = ({ visible }) => {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
         }
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
           .rose-gold-spinner {
-            width: 46px;
-            height: 46px;
+            width: 50px;
+            height: 50px;
             border-width: 3.5px;
           }
         }
@@ -303,7 +303,7 @@ const JanaLoader = ({ visible }) => {
         }
         .loader-title {
           font-family: 'Playfair Display', Georgia, serif;
-          font-size: 26px;
+          font-size: 30px;
           font-weight: 500;
           color: #7a5853;
           margin: 0 0 8px 0;
@@ -312,18 +312,18 @@ const JanaLoader = ({ visible }) => {
         }
         .loader-subtitle {
           font-family: 'Manrope', sans-serif;
-          font-size: 15px;
-          font-weight: 400;
+          font-size: 17px;
+          font-weight: 500;
           color: #9e7f7b;
           margin: 0;
           letter-spacing: 0.03em;
         }
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
           .loader-title {
-            font-size: 22px;
+            font-size: 25px;
           }
           .loader-subtitle {
-            font-size: 14px;
+            font-size: 15px;
           }
         }
         @media (max-width: 480px) {
@@ -342,7 +342,7 @@ const JanaLoader = ({ visible }) => {
           justify-content: center;
           gap: 15px;
           width: 100%;
-          max-width: 360px;
+          max-width: 420px;
           margin-bottom: 70px;
           animation: luxuryFadeIn 0.8s ease-out 0.2s both;
         }
@@ -373,9 +373,9 @@ const JanaLoader = ({ visible }) => {
           0% { background-position: 200% 0; }
           100% { background-position: -200% 0; }
         }
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
           .loader-progress-row {
-            max-width: 320px;
+            max-width: 340px;
             margin-bottom: 60px;
           }
         }
@@ -425,7 +425,7 @@ const JanaLoader = ({ visible }) => {
           backdrop-filter: blur(6px);
           -webkit-backdrop-filter: blur(6px);
         }
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
           .loader-slogan {
             font-size: 13px;
           }
