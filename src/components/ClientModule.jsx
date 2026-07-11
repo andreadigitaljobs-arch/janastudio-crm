@@ -2446,142 +2446,132 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
       </div>
       
       {isMobile ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {/* Mobile: Combined User Info + Ficha Técnica Card */}
-          <div className="glass-card" style={{ padding: '0', overflow: 'hidden', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)', animation: 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)' }}>
-            {/* Header Banner */}
-            <div style={{ height: '70px', background: 'linear-gradient(135deg, var(--pink-secondary) 0%, rgba(212,160,154,0.4) 100%)', position: 'relative' }} />
-            
-            <div style={{ padding: '20px', marginTop: '-35px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '20px' }}>
-                {/* Avatar with Pink Pulse Animation */}
-                <div 
-                  className="pulse-pink"
-                  style={{ 
-                    width: '74px', height: '74px', borderRadius: '50%', 
-                    backgroundColor: 'white', display: 'flex', alignItems: 'center', 
-                    justifyContent: 'center', border: '3px solid var(--pink-primary)', 
-                    boxShadow: '0 4px 12px rgba(212,160,154,0.3)', overflow: 'hidden'
-                  }}
-                >
-                  {client.image_url ? (
-                    <img src={client.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
-                    <User size={38} color="var(--pink-primary)" />
-                  )}
-                </div>
-                
-                {isEditing ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', marginTop: '12px' }}>
-                    <input className="form-input" value={editData.name} onChange={e => setEditData({...editData, name: formatName(e.target.value)})} placeholder="Nombre" style={{ width: '100%', fontSize: '13px', padding: '10px' }} />
-                    <input className="form-input" value={editData.phone} onChange={e => setEditData({...editData, phone: e.target.value})} placeholder="Teléfono" style={{ width: '100%', fontSize: '13px', padding: '10px' }} />
-                    <button className="btn-pink" onClick={() => { onUpdate(editData); setIsEditing(false); }} style={{ fontSize: '13px', padding: '10px', fontWeight: '700' }}>Guardar Cambios</button>
-                    <button onClick={() => setIsEditing(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '12px', cursor: 'pointer' }}>Cancelar</button>
-                  </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {/* Mobile Profile Card */}
+          <div className="glass-card" style={{ padding: '20px', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)', animation: 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
+              {/* Avatar with subtle shadow */}
+              <div style={{ 
+                width: '68px', height: '68px', borderRadius: '50%', 
+                backgroundColor: 'white', display: 'flex', alignItems: 'center', 
+                justifyContent: 'center', border: '2.5px solid var(--magenta-primary)', 
+                boxShadow: '0 4px 12px rgba(160, 80, 106, 0.12)', overflow: 'hidden',
+                flexShrink: 0
+              }}>
+                {client.image_url ? (
+                  <img src={client.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
-                  <>
-                    <h3 style={{ fontSize: '18px', fontWeight: '850', color: 'var(--text-primary)', marginTop: '8px', marginBottom: '2px' }}>{client.name}</h3>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '11px', fontWeight: '600', marginBottom: '8px', letterSpacing: '0.5px' }}>V-{client.id_card || '00.000.000'}</p>
-                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', width: '100%', marginTop: '4px' }}>
-                      {client.phone && (
-                        <a 
-                          href={`tel:${client.phone}`}
-                          style={{ 
-                            textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px', 
-                            fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '700',
-                            backgroundColor: 'rgba(212,160,154,0.1)', padding: '6px 12px', borderRadius: '20px',
-                            border: '1px solid rgba(212,160,154,0.15)', transition: 'transform 0.2s'
-                          }}
-                          className="btn-interactive"
-                        >
-                          <Phone size={12} color="var(--pink-primary)" /> Llamar
-                        </a>
-                      )}
-                      <div 
-                        style={{ 
-                          display: 'flex', alignItems: 'center', gap: '6px', 
-                          fontSize: '12px', color: 'var(--magenta-primary)', fontWeight: '700',
-                          backgroundColor: 'rgba(160,80,106,0.06)', padding: '6px 12px', borderRadius: '20px',
-                          border: '1px solid rgba(160,80,106,0.1)'
-                        }}
-                      >
-                        <Sparkles size={12} color="var(--magenta-primary)" /> {history.length} visitas
-                      </div>
-                    </div>
-                  </>
+                  <User size={32} color="var(--magenta-primary)" />
                 )}
               </div>
 
-              {/* Ficha Técnica Section with Pink Headers & Pink Icons */}
-              <div style={{ borderTop: '1px dashed var(--border-color)', paddingTop: '16px', marginTop: '16px' }}>
-                <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', fontWeight: '850', color: 'var(--magenta-primary)', display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  <Activity size={14} color="var(--pink-primary)" /> Ficha Técnica Capilar
-                </h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                  <div style={{ padding: '10px', borderRadius: '12px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                    <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>CABELLO</span>
-                    <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '700' }}>{client.hair_type || 'Normal'}</span>
-                  </div>
-                  <div style={{ padding: '10px', borderRadius: '12px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                    <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>CUERO</span>
-                    <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '700' }}>{client.scalp_type || 'Normal'}</span>
-                  </div>
-                  <div style={{ padding: '10px', borderRadius: '12px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                    <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>CUMPLE</span>
-                    <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '700' }}>{client.birth_date ? new Date(client.birth_date + 'T00:00:00').toLocaleDateString([], {day: '2-digit', month: 'short'}) : 'N/A'}</span>
-                  </div>
-                  <div style={{ padding: '10px', borderRadius: '12px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                    <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>REGISTRO</span>
-                    <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '700' }}>{client.created_at ? new Date(client.created_at).toLocaleDateString() : 'N/A'}</span>
+              <div style={{ flex: 1 }}>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '850', color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>{client.name}</h3>
+                <p style={{ margin: '2px 0 6px 0', color: 'var(--text-muted)', fontSize: '11px', fontWeight: '600', letterSpacing: '0.5px' }}>V-{client.id_card || '00.000.000'}</p>
+                
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {client.phone && (
+                    <a 
+                      href={`tel:${client.phone}`}
+                      style={{ 
+                        textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px', 
+                        fontSize: '11px', color: 'var(--magenta-primary)', fontWeight: '750',
+                        backgroundColor: 'rgba(160,80,106,0.06)', padding: '4px 10px', borderRadius: '20px',
+                        border: '1px solid rgba(160,80,106,0.1)'
+                      }}
+                      className="btn-interactive"
+                    >
+                      <Phone size={10} color="var(--magenta-primary)" /> Llamar
+                    </a>
+                  )}
+                  <div 
+                    style={{ 
+                      display: 'flex', alignItems: 'center', gap: '4px', 
+                      fontSize: '11px', color: 'var(--magenta-primary)', fontWeight: '750',
+                      backgroundColor: 'rgba(160,80,106,0.06)', padding: '4px 10px', borderRadius: '20px',
+                      border: '1px solid rgba(160,80,106,0.1)'
+                    }}
+                  >
+                    <Sparkles size={10} color="var(--magenta-primary)" /> {history.length} visitas
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Ficha Técnica Section (Minimalist & Compact rows instead of big block boxes) */}
+            <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '14px', marginTop: '14px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <h4 style={{ margin: 0, fontSize: '12px', fontWeight: '850', color: 'var(--magenta-primary)', display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <Activity size={14} color="var(--magenta-primary)" /> Ficha Técnica Capilar
+                </h4>
                 {!isEditing && (
                   <button 
                     onClick={() => setIsEditing(true)}
                     style={{ 
-                      width: '100%', marginTop: '12px', background: 'white', 
-                      border: '1px solid var(--pink-primary)', color: 'var(--pink-primary)', 
-                      padding: '8px', borderRadius: '12px', cursor: 'pointer', 
-                      fontSize: '12px', fontWeight: '700', display: 'flex', 
-                      alignItems: 'center', justifyContent: 'center', gap: '6px',
-                      transition: 'all 0.2s'
+                      background: 'none', border: 'none', color: 'var(--magenta-primary)', 
+                      fontSize: '11px', fontWeight: '750', cursor: 'pointer', padding: '4px 8px',
+                      borderRadius: '8px', backgroundColor: 'rgba(160,80,106,0.05)'
                     }}
-                    className="btn-interactive"
                   >
-                    ✏️ Editar Ficha Capilar
+                    Editar
                   </button>
                 )}
               </div>
+
+              {isEditing ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '10px' }}>
+                  <input className="form-input" value={editData.name} onChange={e => setEditData({...editData, name: formatName(e.target.value)})} placeholder="Nombre" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
+                  <input className="form-input" value={editData.phone} onChange={e => setEditData({...editData, phone: e.target.value})} placeholder="Teléfono" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
+                  <input className="form-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="Cédula" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
+                  <BirthdayTextInput value={editData.birth_date} onChange={e => setEditData({...editData, birth_date: e.target.value})} style={{ width: '100%' }} />
+                  <JanaSelect 
+                    label="Tipo de Cabello"
+                    value={editData.hair_type}
+                    onChange={(val) => setEditData({...editData, hair_type: val})}
+                    options={[
+                      { label: 'Normal', value: 'Normal' },
+                      { label: 'Graso', value: 'Graso' },
+                      { label: 'Seco', value: 'Seco' },
+                      { label: 'Mixto', value: 'Mixto' }
+                    ]}
+                  />
+                  <JanaSelect 
+                    label="Cuero Cabelludo"
+                    value={editData.scalp_type}
+                    onChange={(val) => setEditData({...editData, scalp_type: val})}
+                    options={[
+                      { label: 'Sano', value: 'Sano' },
+                      { label: 'Sensible', value: 'Sensible' },
+                      { label: 'Irritado', value: 'Irritado' },
+                      { label: 'Caspa', value: 'Caspa' }
+                    ]}
+                  />
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
+                    <button className="btn-pink" onClick={() => { onUpdate(editData); setIsEditing(false); }} style={{ flex: 1, fontSize: '12px', padding: '8px', fontWeight: '750', background: 'var(--magenta-gradient)', border: 'none' }}>Guardar</button>
+                    <button onClick={() => setIsEditing(false)} style={{ flex: 1, background: 'none', border: '1px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '12px', borderRadius: '12px', cursor: 'pointer' }}>Cancelar</button>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <div style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>CABELLO</span>
+                    <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '750' }}>{client.hair_type || 'Normal'}</span>
+                  </div>
+                  <div style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>CUERO</span>
+                    <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '750' }}>{client.scalp_type || 'Normal'}</span>
+                  </div>
+                  <div style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>CUMPLE</span>
+                    <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '750' }}>{client.birth_date ? new Date(client.birth_date + 'T00:00:00').toLocaleDateString([], {day: '2-digit', month: 'short'}) : 'N/A'}</span>
+                  </div>
+                  <div style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>REGISTRO</span>
+                    <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '750' }}>{client.created_at ? new Date(client.created_at).toLocaleDateString([], {day: '2-digit', month: '2-digit'}) : 'N/A'}</span>
+                  </div>
+                </div>
+              )}
             </div>
-            
-            {isEditing && (
-              <div style={{ padding: '0 20px 20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <input className="form-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="Cédula" style={{ width: '100%', fontSize: '13px', padding: '10px' }} />
-                <BirthdayTextInput value={editData.birth_date} onChange={e => setEditData({...editData, birth_date: e.target.value})} style={{ width: '100%' }} />
-                <JanaSelect 
-                  label="Tipo de Cabello"
-                  value={editData.hair_type}
-                  onChange={(val) => setEditData({...editData, hair_type: val})}
-                  options={[
-                    { label: 'Normal', value: 'Normal' },
-                    { label: 'Graso', value: 'Graso' },
-                    { label: 'Seco', value: 'Seco' },
-                    { label: 'Mixto', value: 'Mixto' }
-                  ]}
-                />
-                <JanaSelect 
-                  label="Cuero Cabelludo"
-                  value={editData.scalp_type}
-                  onChange={(val) => setEditData({...editData, scalp_type: val})}
-                  options={[
-                    { label: 'Sano', value: 'Sano' },
-                    { label: 'Sensible', value: 'Sensible' },
-                    { label: 'Irritado', value: 'Irritado' },
-                    { label: 'Caspa', value: 'Caspa' }
-                  ]}
-                />
-              </div>
-            )}
           </div>
 
           {/* Mobile Tabs Segmented Control (Equidistante y sin scroll horizontal) */}
