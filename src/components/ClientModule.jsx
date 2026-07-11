@@ -765,7 +765,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                   <div className="glass-card" style={{ borderRadius: '20px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.03)', background: 'white' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                       <thead>
-                        <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'rgba(212,160,154,0.04)' }}>
+                        <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'white' }}>
                           <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cliente</th>
                           <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cédula / ID</th>
                           <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contacto</th>
@@ -773,7 +773,6 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                           <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Próxima cita</th>
                           <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Historial</th>
                           <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado</th>
-                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>Acciones</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -863,29 +862,6 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                                     {status.label}
                                   </span>
                                 )}
-                              </td>
-                              <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                                <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
-                                  <button onClick={(e) => { e.stopPropagation(); setSelectedClient(client); }} style={{ width: '30px', height: '30px', borderRadius: '8px', border: 'none', backgroundColor: 'transparent', color: 'var(--pink-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="btn-interactive" title="Ver Ficha">
-                                    <Eye size={14} />
-                                  </button>
-                                  <button 
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      if (client.phone) {
-                                        window.open(`https://wa.me/${client.phone}`, '_blank');
-                                      }
-                                    }} 
-                                    style={{ width: '30px', height: '30px', borderRadius: '8px', border: 'none', backgroundColor: 'transparent', color: '#25d366', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
-                                    className="btn-interactive"
-                                    title="Enviar WhatsApp"
-                                  >
-                                    <MessageCircle size={14} />
-                                  </button>
-                                  <button onClick={(e) => { e.stopPropagation(); handleEditClick && handleEditClick(client); }} style={{ width: '30px', height: '30px', borderRadius: '8px', border: 'none', backgroundColor: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="btn-interactive" title="Editar">
-                                    <Edit2 size={13} />
-                                  </button>
-                                </div>
                               </td>
                             </tr>
                           );
