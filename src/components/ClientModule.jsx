@@ -78,7 +78,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
   useScrollLock(showMessageModal);
 
   const [defaultBdayMessage, setDefaultBdayMessage] = useState(getBirthdayMessageTemplate());
-  const [defaultFollowupMessage, setDefaultFollowupMessage] = useState('Hola {{nombre}}! Ya es momento de renovar tu servicio ­ƒÆà Te esperamos en Jana Studio.');
+  const [defaultFollowupMessage, setDefaultFollowupMessage] = useState('Hola {{nombre}}! Ya es momento de renovar tu servicio 💅 Te esperamos en Jana Studio.');
   const [messageTemplateTab, setMessageTemplateTab] = useState('birthday');
   const [savingTemplate, setSavingTemplate] = useState(false);
 
@@ -208,7 +208,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
   const startIndex = (currentPage - 1) * itemsPerPage;
 
   const handleDeleteClient = async (id, name) => {
-    if (!await confirm(`┬┐Est├ís seguro de eliminar a ${name}? Esta acci├│n no se puede deshacer.`)) return;
+    if (!await confirm(`¿Estás seguro de eliminar a ${name}? Esta acción no se puede deshacer.`)) return;
     try {
       setLoading(true);
       await dataService.deleteClient(id);
@@ -238,10 +238,10 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
       });
       setShowAddForm(false);
       await onRefresh();
-      showToast('┬íFicha de cliente creada con ├®xito!');
+      showToast('¡Ficha de cliente creada con éxito!');
     } catch (error) {
       console.error('Error addClient:', error);
-      showToast('Error t├®cnico al agregar cliente.', 'error');
+      showToast('Error técnico al agregar cliente.', 'error');
     } finally {
       setCreating(false);
     }
@@ -376,7 +376,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                   Archivo de Clientes
                 </h1>
                 <p style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: windowWidth < 600 ? '12px' : '14px', fontWeight: '500' }}>
-                  Fichas t├®cnicas, historial y seguimiento personalizado.
+                  Fichas técnicas, historial y seguimiento personalizado.
                 </p>
               </div>
             </div>
@@ -434,10 +434,10 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
           {/* Stat Cards */}
           <div style={{ display: 'grid', gridTemplateColumns: windowWidth < 1200 ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: windowWidth < 600 ? '10px' : '16px', marginBottom: '28px' }}>
             {[
-              { label: windowWidth < 600 ? 'Activas' : 'Clientes activas', value: activeClients, icon: Users, trend: 'Ôåæ 12%', trendSub: 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.12)', iconColor: 'var(--pink-primary)' },
-              { label: windowWidth < 600 ? 'Nuevas' : 'Nuevas este mes', value: newThisMonth, icon: UserPlus, trend: 'Ôåæ 15%', trendSub: 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.08)', iconColor: 'var(--magenta-primary)' },
-              { label: windowWidth < 600 ? 'Pr├│xima cita' : 'Con pr├│xima cita', value: upcomingCount, icon: Calendar, trend: 'Ôåæ 8%', trendSub: 'vs. mes anterior', iconBg: 'rgba(74, 48, 54, 0.06)', iconColor: 'var(--text-secondary)' },
-              { label: windowWidth < 600 ? 'Cumplea├▒os' : 'Cumplea├▒os cercanos', value: birthdaySoon, icon: Cake, trend: '', trendSub: 'Pr├│ximos 7 d├¡as', iconBg: 'rgba(160, 80, 106, 0.15)', iconColor: 'var(--pink-primary)' }
+              { label: windowWidth < 600 ? 'Activas' : 'Clientes activas', value: activeClients, icon: Users, trend: '↑ 12%', trendSub: 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.12)', iconColor: 'var(--pink-primary)' },
+              { label: windowWidth < 600 ? 'Nuevas' : 'Nuevas este mes', value: newThisMonth, icon: UserPlus, trend: '↑ 15%', trendSub: 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.08)', iconColor: 'var(--magenta-primary)' },
+              { label: windowWidth < 600 ? 'Próxima cita' : 'Con próxima cita', value: upcomingCount, icon: Calendar, trend: '↑ 8%', trendSub: 'vs. mes anterior', iconBg: 'rgba(74, 48, 54, 0.06)', iconColor: 'var(--text-secondary)' },
+              { label: windowWidth < 600 ? 'Cumpleaños' : 'Cumpleaños cercanos', value: birthdaySoon, icon: Cake, trend: '', trendSub: 'Próximos 7 días', iconBg: 'rgba(160, 80, 106, 0.15)', iconColor: 'var(--pink-primary)' }
             ].map((stat, i) => (
               <div 
                 key={i} 
@@ -482,7 +482,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                   <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                   <input
                     type="text"
-                    placeholder="Buscar cliente por nombre, c├®dula, tel├®fono o servicio..."
+                    placeholder="Buscar cliente por nombre, cédula, teléfono o servicio..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     style={{
@@ -558,7 +558,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
               ) : displayClients.length === 0 ? (
                 <div className="glass-card" style={{ textAlign: 'center', padding: '80px', borderStyle: 'dashed' }}>
                   <User size={48} color="var(--text-muted)" style={{ marginBottom: '20px', opacity: 0.5 }} />
-                  <p style={{ color: 'var(--text-muted)' }}>Archivo vac├¡o.</p>
+                  <p style={{ color: 'var(--text-muted)' }}>Archivo vacío.</p>
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -624,7 +624,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                               <Phone size={12} color="var(--pink-primary)" /> {client.phone}
                             </a>
                           ) : (
-                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Sin tel├®fono</span>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Sin teléfono</span>
                           )}
                           <span style={{ fontSize: '0.75rem', fontWeight: '750', color: 'var(--text-secondary)' }}>
                             {client.total_visits || 0} visitas
@@ -670,9 +670,9 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                       {[
-                        { text: 'Confirmar cita de Valentina P├®rez', line1: '12 may 2025', line2: '11:30 AM', icon: Calendar, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' },
-                        { text: 'Enviar rutina post cuidado', line1: 'Laura Mart├¡nez', line2: '18 may 2025', icon: Mail, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' },
-                        { text: 'Recordatorio de evaluaci├│n', line1: 'Andrea Rodr├¡guez', line2: '20 may 2025', icon: Bell, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' }
+                        { text: 'Confirmar cita de Valentina Pérez', line1: '12 may 2025', line2: '11:30 AM', icon: Calendar, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' },
+                        { text: 'Enviar rutina post cuidado', line1: 'Laura Martínez', line2: '18 may 2025', icon: Mail, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' },
+                        { text: 'Recordatorio de evaluación', line1: 'Andrea Rodríguez', line2: '20 may 2025', icon: Bell, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' }
                       ].map((item, i) => (
                         <div key={i} style={{ padding: '12px 14px', borderRadius: '16px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', background: 'white' }} className="interactive-hover-card stagger-row">
                           <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -692,7 +692,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                   </div>
                 </div>
 
-                {/* Right Column: Pr├│ximos cumplea├▒os */}
+                {/* Right Column: Próximos cumpleaños */}
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <div className="glass-card animate-slide-up interactive-hover-card" style={{ padding: '20px', borderRadius: '24px', border: '1px solid var(--border-color)', backgroundColor: '#f8dbd9', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: '230px' }}>
                     <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundImage: 'linear-gradient(90deg, #f8dbd9 45%, rgba(248, 219, 217, 0) 95%)', zIndex: 1, pointerEvents: 'none' }} />
@@ -713,13 +713,13 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                     <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', height: '100%', flex: 1 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                         <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          Pr├│ximos cumplea├▒os
+                          Próximos cumpleaños
                         </h3>
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingBottom: '20px', justifyContent: 'center', flex: 1 }}>
                         {upcomingBirthdays.length === 0 ? (
                           <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic', padding: '10px 0' }}>
-                            No hay fechas de cumplea├▒os registradas.
+                            No hay fechas de cumpleaños registradas.
                           </div>
                         ) : (
                           upcomingBirthdays.map((c, i) => (
@@ -730,7 +730,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                               <div style={{ flex: 1, minWidth: 0 }}>
                                 <div style={{ fontSize: '11.5px', fontWeight: '700', color: 'var(--text-primary)' }}>{c.name}</div>
                                 <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                                  {c.daysLeft === 0 ? '┬íHoy cumple a├▒os!' : `En ${c.daysLeft} d├¡as`}
+                                  {c.daysLeft === 0 ? '¡Hoy cumple años!' : `En ${c.daysLeft} días`}
                                 </div>
                               </div>
                             </div>
@@ -753,7 +753,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                     <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                     <input
                       type="text"
-                      placeholder="Buscar por nombre, c├®dula, tel├®fono o email..."
+                      placeholder="Buscar por nombre, cédula, teléfono o email..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       style={{
@@ -810,8 +810,8 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                       style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#6b7280', fontWeight: '500', cursor: 'pointer', padding: '8px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'white' }}
                       className="btn-interactive"
                     >
-                      {sortBy === 'recent' && 'M├ís recientes'}
-                      {sortBy === 'oldest' && 'M├ís antiguos'}
+                      {sortBy === 'recent' && 'Más recientes'}
+                      {sortBy === 'oldest' && 'Más antiguos'}
                       {sortBy === 'az' && 'Nombre A-Z'}
                       {sortBy === 'za' && 'Nombre Z-A'}
                       <ChevronDown size={14} color="var(--pink-primary)" />
@@ -830,8 +830,8 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                           }}
                         >
                           {[
-                            { key: 'recent', label: 'M├ís recientes' },
-                            { key: 'oldest', label: 'M├ís antiguos' },
+                            { key: 'recent', label: 'Más recientes' },
+                            { key: 'oldest', label: 'Más antiguos' },
                             { key: 'az', label: 'Nombre A-Z' },
                             { key: 'za', label: 'Nombre Z-A' }
                           ].map(opt => (
@@ -865,7 +865,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                       <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                       <input
                         type="text"
-                        placeholder="Buscar por nombre, c├®dula, tel├®fono o email..."
+                        placeholder="Buscar por nombre, cédula, teléfono o email..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         style={{
@@ -888,8 +888,8 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                         style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#6b7280', fontWeight: '500', cursor: 'pointer', padding: '8px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'white' }}
                         className="btn-interactive"
                       >
-                        {sortBy === 'recent' && 'M├ís recientes'}
-                        {sortBy === 'oldest' && 'M├ís antiguos'}
+                        {sortBy === 'recent' && 'Más recientes'}
+                        {sortBy === 'oldest' && 'Más antiguos'}
                         {sortBy === 'az' && 'Nombre A-Z'}
                         {sortBy === 'za' && 'Nombre Z-A'}
                         <ChevronDown size={14} color="var(--pink-primary)" />
@@ -908,8 +908,8 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                             }}
                           >
                             {[
-                              { key: 'recent', label: 'M├ís recientes' },
-                              { key: 'oldest', label: 'M├ís antiguos' },
+                              { key: 'recent', label: 'Más recientes' },
+                              { key: 'oldest', label: 'Más antiguos' },
                               { key: 'az', label: 'Nombre A-Z' },
                               { key: 'za', label: 'Nombre Z-A' }
                             ].map(opt => (
@@ -993,10 +993,10 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                       <thead>
                         <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'rgba(160, 80, 106, 0.08)' }}>
                           <th style={{ padding: '12px 6px 12px 24px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cliente</th>
-                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>C├®dula / ID</th>
+                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cédula / ID</th>
                           <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contacto</th>
-                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>├Ültima visita</th>
-                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Pr├│xima cita</th>
+                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Última visita</th>
+                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Próxima cita</th>
                           <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Historial</th>
                           <th style={{ padding: '12px 24px 12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado</th>
                         </tr>
@@ -1047,10 +1047,10 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                       <thead>
                         <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'rgba(160, 80, 106, 0.08)' }}>
                           <th style={{ padding: '12px 6px 12px 24px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Cliente</th>
-                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>C├®dula / ID</th>
+                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Cédula / ID</th>
                           <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Contacto</th>
-                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>├Ültima visita</th>
-                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Pr├│xima cita</th>
+                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Última visita</th>
+                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Próxima cita</th>
                           <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Historial</th>
                           <th style={{ padding: '12px 24px 12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Estado</th>
                         </tr>
@@ -1085,7 +1085,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                                       <span style={{ fontWeight: '700', fontSize: '12px', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '120px' }}>
                                         {client.name}
                                       </span>
-                                      {(client.total_visits || 0) >= 10 && <span style={{ color: '#b47d49', fontSize: '10px' }}>Ôÿà</span>}
+                                      {(client.total_visits || 0) >= 10 && <span style={{ color: '#b47d49', fontSize: '10px' }}>★</span>}
                                     </div>
                                     <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>
                                       {(client.total_visits || 0) >= 10 ? 'VIP' : client.hair_type || 'Normal'}
@@ -1111,7 +1111,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                                 </div>
                               </td>
                               <td style={{ padding: '10px 6px', fontSize: '11.5px', color: 'var(--text-muted)', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>
-                                {client.last_visit ? new Date(client.last_visit).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' }) : 'ÔÇö'}
+                                {client.last_visit ? new Date(client.last_visit).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
                               </td>
                               <td style={{ padding: '10px 6px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>
                                 {client.next_appointment ? (
@@ -1124,7 +1124,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                                     </span>
                                   </div>
                                 ) : (
-                                  <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>ÔÇö</span>
+                                  <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>—</span>
                                 )}
                               </td>
                               <td style={{ padding: '10px 6px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>
@@ -1135,7 +1135,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                               <td style={{ padding: '10px 24px 10px 6px' }}>
                                 {status.label === 'VIP' ? (
                                   <span style={{ fontSize: '9px', fontWeight: '800', color: '#b47d49', backgroundColor: 'rgba(180, 125, 73, 0.1)', border: '1px solid rgba(180, 125, 73, 0.15)', padding: '3px 8px', borderRadius: '6px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                                    ­ƒææ VIP
+                                    👑 VIP
                                   </span>
                                 ) : (
                                   <span style={{ fontSize: '10px', fontWeight: '700', color: status.color, backgroundColor: status.bg, border: status.border, padding: '4px 10px', borderRadius: '6px', whiteSpace: 'nowrap' }}>
@@ -1180,7 +1180,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                       }}
                       className="btn-interactive"
                     >
-                      ÔÇ╣
+                      ‹
                     </button>
 
                     {displayClients.length === 0 ? (
@@ -1249,18 +1249,18 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                       }}
                       className="btn-interactive"
                     >
-                      ÔÇ║
+                      ›
                     </button>
                   </div>
                 </div>
               </div>
 
-              {/* Right Column: Ficha R├ípida Sidebar */}
+              {/* Right Column: Ficha Rápida Sidebar */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', position: 'sticky', top: '24px' }}>
-                {/* Ficha R├ípida Card */}
+                {/* Ficha Rápida Card */}
                 <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', position: 'relative', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                    <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0 }}>Ficha r├ípida</h3>
+                    <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0 }}>Ficha rápida</h3>
                     <button 
                       onClick={() => setSelectedClient(sidebarClient)} 
                       style={{ 
@@ -1300,12 +1300,12 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                             <h4 style={{ fontSize: '15px', fontWeight: '850', color: 'var(--text-primary)', margin: 0 }}>{sidebarClient.name}</h4>
                             {(sidebarClient.total_visits || 0) >= 10 && (
                               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '2px', fontSize: '9px', fontWeight: '800', color: '#b47d49', backgroundColor: 'rgba(180, 125, 73, 0.1)', border: '1px solid rgba(180, 125, 73, 0.15)', padding: '2px 6px', borderRadius: '12px' }}>
-                                ­ƒææ VIP
+                                👑 VIP
                               </span>
                             )}
                           </div>
                           <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                            <span>V-{sidebarClient.id_card || '00.000.000'} ┬À {sidebarClient.phone || 'Sin tel├®fono'}</span>
+                            <span>V-{sidebarClient.id_card || '00.000.000'} · {sidebarClient.phone || 'Sin teléfono'}</span>
                             <span style={{ wordBreak: 'break-all' }}>{sidebarClient.email || 'sin.email@janastudio.com'}</span>
                           </div>
                         </div>
@@ -1320,7 +1320,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                             <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>Notas</span>
                             {showSaveSuccess && (
                               <span style={{ fontSize: '10px', color: '#10b981', display: 'flex', alignItems: 'center', gap: '2px', fontWeight: '750', animation: 'scaleIn 0.2s ease-out' }}>
-                                <Check size={11} /> ┬íGuardado!
+                                <Check size={11} /> ¡Guardado!
                               </span>
                             )}
                           </div>
@@ -1350,7 +1350,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                           />
                         ) : (
                           <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.4' }}>
-                            {sidebarClient.notes || 'Piel mixta, sensible. Prefiere sesiones por la ma├▒ana. Excelente adherencia a tratamientos.'}
+                            {sidebarClient.notes || 'Piel mixta, sensible. Prefiere sesiones por la mañana. Excelente adherencia a tratamientos.'}
                           </p>
                         )}
                       </div>
@@ -1361,7 +1361,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                       <div style={{ marginBottom: '14px' }}>
                         <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)', display: 'block', marginBottom: '8px' }}>Servicios frecuentes</span>
                         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                          {['L├íser Diodo', 'Hydrafacial', 'Peeling Qu├¡mico'].map((tag, i) => (
+                          {['Láser Diodo', 'Hydrafacial', 'Peeling Químico'].map((tag, i) => (
                             <span key={i} style={{ fontSize: '10.5px', fontWeight: '700', color: 'var(--pink-primary)', backgroundColor: 'rgba(160, 80, 106, 0.08)', border: '1px solid rgba(160, 80, 106, 0.15)', padding: '4px 10px', borderRadius: '12px' }}>
                               {tag}
                             </span>
@@ -1373,16 +1373,16 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
 
                       {/* Next Appointment Section */}
                       <div>
-                        <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)', display: 'block', marginBottom: '8px' }}>Pr├│xima cita</span>
+                        <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)', display: 'block', marginBottom: '8px' }}>Próxima cita</span>
                         {sidebarClient.next_appointment ? (
                           <div style={{ display: 'flex', gap: '10px', alignItems: 'center', backgroundColor: 'var(--bg-tertiary)', padding: '10px 12px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
                             <Calendar size={15} color="var(--pink-primary)" />
                             <div>
                               <div style={{ fontSize: '11.5px', fontWeight: '700', color: 'var(--text-primary)' }}>
-                                {new Date(sidebarClient.next_appointment).toLocaleDateString('es-VE', { day: '2-digit', month: 'long', year: 'numeric' })} ┬À {new Date(sidebarClient.next_appointment).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                                {new Date(sidebarClient.next_appointment).toLocaleDateString('es-VE', { day: '2-digit', month: 'long', year: 'numeric' })} · {new Date(sidebarClient.next_appointment).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true })}
                               </div>
                               <div style={{ fontSize: '10.5px', color: 'var(--pink-primary)', fontWeight: '600', marginTop: '2px' }}>
-                                L├íser Diodo ÔÇó Axilas
+                                Láser Diodo • Axilas
                               </div>
                             </div>
                           </div>
@@ -1395,7 +1395,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                     </>
                   ) : (
                     <div style={{ textAlign: 'center', padding: '20px 0', color: 'var(--text-muted)', fontSize: '12px' }}>
-                      Selecciona una clienta para ver su vista r├ípida
+                      Selecciona una clienta para ver su vista rápida
                     </div>
                   )}
                 </div>
@@ -1416,9 +1416,9 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1, justifyContent: 'center' }}>
                     {[
-                      { text: 'Confirmar cita de Valentina P├®rez', line1: '12 may 2025', line2: '11:30 AM', icon: Calendar, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' },
-                      { text: 'Enviar rutina post cuidado', line1: 'Laura Mart├¡nez', line2: '18 may 2025', icon: Mail, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' },
-                      { text: 'Recordatorio de evaluaci├│n', line1: 'Andrea Rodr├¡guez', line2: '20 may 2025', icon: Bell, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' }
+                      { text: 'Confirmar cita de Valentina Pérez', line1: '12 may 2025', line2: '11:30 AM', icon: Calendar, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' },
+                      { text: 'Enviar rutina post cuidado', line1: 'Laura Martínez', line2: '18 may 2025', icon: Mail, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' },
+                      { text: 'Recordatorio de evaluación', line1: 'Andrea Rodríguez', line2: '20 may 2025', icon: Bell, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' }
                     ].map((item, i) => (
                       <div key={i} style={{ padding: '14px 16px', borderRadius: '16px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', background: 'white', animationDelay: `${i * 60}ms` }} className="interactive-hover-card stagger-row">
                         <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -1438,9 +1438,9 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                 </div>
               </div>
 
-              {/* Right Column: Pr├│ximos cumplea├▒os */}
+              {/* Right Column: Próximos cumpleaños */}
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                {/* Pr├│ximos cumplea├▒os Card (with cute cake drawing) */}
+                {/* Próximos cumpleaños Card (with cute cake drawing) */}
                 <div className="glass-card animate-slide-up delay-3 interactive-hover-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', backgroundColor: '#f8dbd9', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)', position: 'relative', overflow: 'hidden', flex: 1, display: 'flex', flexDirection: 'column', minHeight: '230px' }}>
                   {/* Blending Gradient Overlay */}
                   <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundImage: 'linear-gradient(90deg, #f8dbd9 45%, rgba(248, 219, 217, 0) 95%)', zIndex: 1, pointerEvents: 'none' }} />
@@ -1464,7 +1464,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                   <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', height: '100%', flex: 1 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                       <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        Pr├│ximos cumplea├▒os
+                        Próximos cumpleaños
                       </h3>
                     </div>
 
@@ -1477,7 +1477,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{c.name}</div>
                             <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                              {c.birth_date ? new Date(c.birth_date + 'T00:00:00').toLocaleDateString('es-VE', { day: '2-digit', month: 'short' }) : 'ÔÇö'}
+                              {c.birth_date ? new Date(c.birth_date + 'T00:00:00').toLocaleDateString('es-VE', { day: '2-digit', month: 'short' }) : '—'}
                             </div>
                           </div>
                         </div>
@@ -1823,7 +1823,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
       ctx.fillStyle = '#d946a8';
       ctx.font = 'bold 20px Inter, sans-serif';
       ctx.fillText('ANTES', 35, height - 33);
-      ctx.fillText('DESPU├ëS', width/2 + 35, height - 33);
+      ctx.fillText('DESPUÉS', width/2 + 35, height - 33);
       
       // Add Branding
       ctx.fillStyle = 'white';
@@ -1893,7 +1893,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
         setGallery(newGallery);
         setPendingPhoto(null);
         setPhotoMeta({ type: 'Normal', serviceId: null });
-        showToast('Foto guardada en galer├¡a', 'success');
+        showToast('Foto guardada en galería', 'success');
       }
     } catch (e) {
       console.error(e);
@@ -1902,7 +1902,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
   };
 
   const handlePhotoDelete = async (index) => {
-    if (!await confirm('┬┐Deseas eliminar esta foto de la galer├¡a?')) return;
+    if (!await confirm('¿Deseas eliminar esta foto de la galería?')) return;
     try {
       const newGallery = gallery.filter((_, i) => i !== index);
       setGallery(newGallery);
@@ -1931,12 +1931,12 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
           <div className="glass-card" style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>
-                <ImageIcon size={18} color="var(--pink-primary)" /> Galer├¡a de Trabajos
+                <ImageIcon size={18} color="var(--pink-primary)" /> Galería de Trabajos
               </h4>
               <button 
                 onClick={() => setShowCollage(!showCollage)}
                 style={{ 
-                  background: showCollage ? 'var(--pink-primary)' : 'rgba(160, 80, 106,0.1)', 
+                  background: showCollage ? 'var(--pink-primary)' : 'rgba(217,70,168,0.1)', 
                   border: '1px solid var(--pink-primary)', 
                   color: showCollage ? 'black' : 'var(--pink-primary)',
                   padding: '6px 12px',
@@ -1949,7 +1949,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   fontWeight: '800'
                 }}
               >
-                <ColumnsIcon size={14} /> {showCollage ? 'Ver Galer├¡a' : 'Crear Comparativa'}
+                <ColumnsIcon size={14} /> {showCollage ? 'Ver Galería' : 'Crear Comparativa'}
               </button>
             </div>
 
@@ -1996,10 +1996,10 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                     ) : (
                       <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                         <ImageIcon size={32} color="var(--text-muted)" />
-                        <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)' }}>FOTO DESPU├ëS</span>
+                        <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)' }}>FOTO DESPUÉS</span>
                       </div>
                     )}
-                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', backgroundColor: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)' }}>DESPU├ëS</div>
+                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', backgroundColor: 'rgba(0,0,0,0.7)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'var(--pink-primary)' }}>DESPUÉS</div>
                   </div>
                 </div>
 
@@ -2035,7 +2035,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '12px', maxHeight: '400px', overflowY: 'auto' }}>
                           {gallery
-                            .filter(img => selectingFor === 'A' ? img.type === 'Antes' : img.type === 'Despu├®s')
+                            .filter(img => selectingFor === 'A' ? img.type === 'Antes' : img.type === 'Después')
                             .map((img, i) => (
                             <div 
                               key={i} 
@@ -2089,9 +2089,9 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                 ))}
                 <div 
                   onClick={() => setShowCamera(true)}
-                  style={{ aspectRatio: '1/1', backgroundColor: 'rgba(160, 80, 106,0.02)', borderRadius: '12px', border: '2px dashed var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: '0.2s' }}
-                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(160, 80, 106,0.05)'}
-                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(160, 80, 106,0.02)'}
+                  style={{ aspectRatio: '1/1', backgroundColor: 'rgba(217,70,168,0.02)', borderRadius: '12px', border: '2px dashed var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: '0.2s' }}
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(217,70,168,0.05)'}
+                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(217,70,168,0.02)'}
                 >
                   <Camera size={24} color="var(--pink-primary)" />
                 </div>
@@ -2111,14 +2111,14 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
           <div className="glass-card" style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>
-                <Activity size={18} color="var(--pink-primary)" /> Historial de Diagn├│sticos Capilares
+                <Activity size={18} color="var(--pink-primary)" /> Historial de Diagnósticos Capilares
               </h4>
               <button 
                 onClick={() => setShowAddDiagnosis(!showAddDiagnosis)}
                 className="btn-pink"
                 style={{ height: '32px', padding: '0 12px', fontSize: '12px' }}
               >
-                {showAddDiagnosis ? 'Cancelar' : 'Nuevo Diagn├│stico'}
+                {showAddDiagnosis ? 'Cancelar' : 'Nuevo Diagnóstico'}
               </button>
             </div>
 
@@ -2147,21 +2147,21 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                     ]}
                   />
                   <JanaSelect 
-                    label="Condici├│n del Cuero"
+                    label="Condición del Cuero"
                     value={newDiagnosis.scalp_condition}
                     onChange={(val) => setNewDiagnosis({ ...newDiagnosis, scalp_condition: val })}
                     options={[
                       { label: 'Sano', value: 'Sano' },
                       { label: 'Seborrea', value: 'Seborrea' },
-                      { label: 'Descamaci├│n', value: 'Descamaci├│n' },
-                      { label: 'Ca├¡da', value: 'Ca├¡da' },
+                      { label: 'Descamación', value: 'Descamación' },
+                      { label: 'Caída', value: 'Caída' },
                       { label: 'Sensible', value: 'Sensible' }
                     ]}
                   />
                 </div>
 
                 <div>
-                  <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Historial Qu├¡mico</label>
+                  <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Historial Químico</label>
                   <textarea 
                     className="form-input" 
                     value={newDiagnosis.chemical_history} 
@@ -2183,7 +2183,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                 </div>
 
                 <div>
-                  <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Notas de Diagn├│stico</label>
+                  <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Notas de Diagnóstico</label>
                   <textarea 
                     className="form-input" 
                     value={newDiagnosis.notes} 
@@ -2197,7 +2197,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   onClick={async () => {
                     try {
                       if (!newDiagnosis.chemical_history && !newDiagnosis.recommended_treatment) {
-                        showToast('Por favor introduce detalles del diagn├│stico', 'warning');
+                        showToast('Por favor introduce detalles del diagnóstico', 'warning');
                         return;
                       }
                       const saved = await dataService.addCapillaryDiagnosis({
@@ -2215,25 +2215,25 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                         notes: '',
                         images: []
                       });
-                      showToast('Diagn├│stico registrado con ├®xito', 'success');
+                      showToast('Diagnóstico registrado con éxito', 'success');
                     } catch (err) {
-                      showToast('Error al registrar diagn├│stico', 'error');
+                      showToast('Error al registrar diagnóstico', 'error');
                     }
                   }}
                   className="btn-pink"
                   style={{ width: '100%', height: '40px' }}
                 >
-                  Guardar Diagn├│stico
+                  Guardar Diagnóstico
                 </button>
               </div>
             )}
 
             {loadingDiagnoses ? (
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
-                <Loader2 className="animate-spin" size={20} /> Cargando diagn├│sticos...
+                <Loader2 className="animate-spin" size={20} /> Cargando diagnósticos...
               </div>
             ) : diagnoses.length === 0 ? (
-              <p style={{ color: 'var(--text-muted)', fontSize: '13px', textAlign: 'center', padding: '30px' }}>No hay diagn├│sticos capilares registrados para esta clienta.</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '13px', textAlign: 'center', padding: '30px' }}>No hay diagnósticos capilares registrados para esta clienta.</p>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 {diagnoses.map(diag => (
@@ -2246,7 +2246,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
                       <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--pink-primary)' }}>
-                        ­ƒ®║ Diagn├│stico del {new Date(diag.created_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        🩺 Diagnóstico del {new Date(diag.created_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' })}
                       </span>
                       <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                         {new Date(diag.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -2261,7 +2261,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
 
                     {diag.chemical_history && (
                       <div style={{ fontSize: '12px', marginBottom: '8px' }}>
-                        <strong>Historial Qu├¡mico:</strong>
+                        <strong>Historial Químico:</strong>
                         <p style={{ margin: '2px 0 0', color: 'var(--text-secondary)' }}>{diag.chemical_history}</p>
                       </div>
                     )}
@@ -2380,7 +2380,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                       style={{ 
                         width: '100%', 
                         padding: '12px', 
-                        background: showAllHistory ? 'rgba(255,255,255,0.03)' : 'rgba(160, 80, 106,0.08)', 
+                        background: showAllHistory ? 'rgba(255,255,255,0.03)' : 'rgba(217,70,168,0.08)', 
                         border: '1px solid var(--pink-primary)', 
                         color: 'var(--pink-primary)', 
                         borderRadius: '10px', 
@@ -2390,7 +2390,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                         marginTop: '4px'
                       }}
                     >
-                      {showAllHistory ? 'Ôåæ Ver menos' : `Ôåô Ver m├ís visitas (${history.length - 5})`}
+                      {showAllHistory ? '↑ Ver menos' : `↓ Ver más visitas (${history.length - 5})`}
                     </button>
                   )}
                 </>
@@ -2498,11 +2498,11 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
               </div>
             </div>
 
-            {/* Ficha T├®cnica Section (Minimalist & Compact rows instead of big block boxes) */}
+            {/* Ficha Técnica Section (Minimalist & Compact rows instead of big block boxes) */}
             <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '14px', marginTop: '14px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                 <h4 style={{ margin: 0, fontSize: '12px', fontWeight: '850', color: 'var(--magenta-primary)', display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  <Activity size={14} color="var(--magenta-primary)" /> Ficha T├®cnica Capilar
+                  <Activity size={14} color="var(--magenta-primary)" /> Ficha Técnica Capilar
                 </h4>
                 {!isEditing && (
                   <button 
@@ -2521,8 +2521,8 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
               {isEditing ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '10px' }}>
                   <input className="form-input" value={editData.name} onChange={e => setEditData({...editData, name: formatName(e.target.value)})} placeholder="Nombre" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
-                  <input className="form-input" value={editData.phone} onChange={e => setEditData({...editData, phone: e.target.value})} placeholder="Tel├®fono" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
-                  <input className="form-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="C├®dula" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
+                  <input className="form-input" value={editData.phone} onChange={e => setEditData({...editData, phone: e.target.value})} placeholder="Teléfono" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
+                  <input className="form-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="Cédula" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
                   <BirthdayTextInput value={editData.birth_date} onChange={e => setEditData({...editData, birth_date: e.target.value})} style={{ width: '100%' }} />
                   <JanaSelect 
                     label="Tipo de Cabello"
@@ -2721,11 +2721,11 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
 
           {/* Body Columns */}
           <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '28px', alignItems: 'start' }}>
-            {/* Left Column: Ficha T├®cnica */}
+            {/* Left Column: Ficha Técnica */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
               <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
                 <h4 style={{ margin: '0 0 16px 0', fontSize: '14px', fontWeight: '850', color: 'var(--magenta-primary)', display: 'flex', alignItems: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  <Activity size={16} /> Ficha T├®cnica Capilar
+                  <Activity size={16} /> Ficha Técnica Capilar
                 </h4>
                 
                 {isEditing ? (
@@ -2735,12 +2735,12 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                       <input className="form-input" value={editData.name} onChange={e => setEditData({...editData, name: formatName(e.target.value)})} placeholder="Nombre" style={{ width: '100%', padding: '8px 12px' }} />
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>C├ëDULA</label>
-                      <input className="form-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="C├®dula" style={{ width: '100%', padding: '8px 12px' }} />
+                      <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>CÉDULA</label>
+                      <input className="form-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="Cédula" style={{ width: '100%', padding: '8px 12px' }} />
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>TEL├ëFONO</label>
-                      <input className="form-input" value={editData.phone} onChange={e => setEditData({...editData, phone: e.target.value})} placeholder="Tel├®fono" style={{ width: '100%', padding: '8px 12px' }} />
+                      <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>TELÉFONO</label>
+                      <input className="form-input" value={editData.phone} onChange={e => setEditData({...editData, phone: e.target.value})} placeholder="Teléfono" style={{ width: '100%', padding: '8px 12px' }} />
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                       <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>CUMPLEANOS</label>
@@ -2778,7 +2778,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <DetailItem label="Tipo de Cabello" value={client.hair_type || 'Normal'} />
                     <DetailItem label="Cuero Cabelludo" value={client.scalp_type || 'Normal'} />
-                    <DetailItem label="Cumplea├▒os" value={client.birth_date ? new Date(client.birth_date + 'T00:00:00').toLocaleDateString([], {day: '2-digit', month: 'long', year: 'numeric'}) : 'No registrado'} />
+                    <DetailItem label="Cumpleaños" value={client.birth_date ? new Date(client.birth_date + 'T00:00:00').toLocaleDateString([], {day: '2-digit', month: 'long', year: 'numeric'}) : 'No registrado'} />
                     <DetailItem label="Registrado" value={client.created_at ? new Date(client.created_at).toLocaleDateString() : 'N/A'} />
                   </div>
                 )}
@@ -2797,8 +2797,8 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                 alignSelf: 'flex-start'
               }}>
                 {[
-                  { id: 'gallery', label: 'Galer├¡a de Trabajos', icon: <ImageIcon size={16} /> },
-                  { id: 'diagnoses', label: 'Diagn├│stico Capilar', icon: <Activity size={16} /> },
+                  { id: 'gallery', label: 'Galería de Trabajos', icon: <ImageIcon size={16} /> },
+                  { id: 'diagnoses', label: 'Diagnóstico Capilar', icon: <Activity size={16} /> },
                   { id: 'packages', label: 'Paquetes y Sesiones', icon: <Package size={16} /> },
                   { id: 'history', label: 'Historial de Visitas', icon: <Calendar size={16} /> }
                 ].map(tab => {
@@ -2859,7 +2859,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
       <AnimatedModal isOpen={!!pendingPhoto}>
         {(overlayClass, cardClass) => (
           <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-            <div className={`glass-card ${cardClass}`} style={{ maxWidth: '400px', width: '100%', borderRadius: '32px', padding: '24px', border: '1.5px solid rgba(160, 80, 106,0.3)' }}>
+            <div className={`glass-card ${cardClass}`} style={{ maxWidth: '400px', width: '100%', borderRadius: '32px', padding: '24px', border: '1.5px solid rgba(217,70,168,0.3)' }}>
               <h3 style={{ 
                 marginBottom: '20px', 
                 fontWeight: '900',
@@ -2883,7 +2883,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   options={[
                     { label: 'Normal / General', value: 'Normal' },
                     { label: 'Antes (Before)', value: 'Antes' },
-                    { label: 'Despu├®s (After)', value: 'Despu├®s' }
+                    { label: 'Después (After)', value: 'Después' }
                   ]}
                 />
 
@@ -2924,7 +2924,7 @@ const VisitDetailModal = ({ isOpen, visit, onClose, gallery = [] }) => {
     <AnimatedModal isOpen={isOpen}>
       {(overlayClass, cardClass) => (
         <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-          <div className={`glass-card ${cardClass}`} style={{ maxWidth: '480px', width: '100%', borderRadius: '28px', padding: '32px', border: '1.5px solid rgba(160, 80, 106,0.3)', maxHeight: '90vh', overflowY: 'auto' }}>
+          <div className={`glass-card ${cardClass}`} style={{ maxWidth: '480px', width: '100%', borderRadius: '28px', padding: '32px', border: '1.5px solid rgba(217,70,168,0.3)', maxHeight: '90vh', overflowY: 'auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <h3 style={{ 
                 fontSize: '20px', 
@@ -2992,7 +2992,7 @@ const VisitDetailModal = ({ isOpen, visit, onClose, gallery = [] }) => {
               </div>
 
               {/* Totals Section */}
-              <div style={{ marginTop: '10px', paddingTop: '16px', borderTop: '2px solid rgba(160, 80, 106,0.2)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+              <div style={{ marginTop: '10px', paddingTop: '16px', borderTop: '2px solid rgba(217,70,168,0.2)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                 <div>
                   <label style={{ fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>TOTAL A PAGAR</label>
                   <div style={{ fontSize: '32px', fontWeight: '900', color: 'var(--pink-primary)', lineHeight: '1' }}>${visit.amount}</div>
@@ -3004,8 +3004,8 @@ const VisitDetailModal = ({ isOpen, visit, onClose, gallery = [] }) => {
               </div>
 
               {/* Payment Method */}
-              <div style={{ padding: '16px', backgroundColor: 'rgba(160, 80, 106,0.05)', borderRadius: '16px', border: '1px solid rgba(160, 80, 106,0.1)' }}>
-                <label style={{ display: 'block', fontSize: '10px', fontWeight: '800', color: 'var(--pink-primary)', marginBottom: '12px', letterSpacing: '1px' }}>M├ëTODO DE PAGO</label>
+              <div style={{ padding: '16px', backgroundColor: 'rgba(217,70,168,0.05)', borderRadius: '16px', border: '1px solid rgba(217,70,168,0.1)' }}>
+                <label style={{ display: 'block', fontSize: '10px', fontWeight: '800', color: 'var(--pink-primary)', marginBottom: '12px', letterSpacing: '1px' }}>MÉTODO DE PAGO</label>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontWeight: '700', fontSize: '16px' }}>{visit.payment_method}</span>
                   <span style={{ fontSize: '11px', fontWeight: '900', color: '#34c759', backgroundColor: 'rgba(52,199,89,0.1)', padding: '4px 8px', borderRadius: '6px' }}>{visit.status?.toUpperCase() || 'PAGADO'}</span>
@@ -3154,7 +3154,7 @@ const BeforeAfterSlider = ({ photoA, photoB, sliderPos, setSliderPos }) => {
 
       {/* Labels */}
       <div style={{ position: 'absolute', top: '12px', left: '12px', backgroundColor: 'rgba(0,0,0,0.6)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'white', pointerEvents: 'none' }}>ANTES</div>
-      <div style={{ position: 'absolute', top: '12px', right: '12px', backgroundColor: 'rgba(160, 80, 106,0.8)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'black', pointerEvents: 'none' }}>DESPU├ëS</div>
+      <div style={{ position: 'absolute', top: '12px', right: '12px', backgroundColor: 'rgba(217,70,168,0.8)', padding: '4px 10px', borderRadius: '4px', fontSize: '10px', fontWeight: '900', color: 'black', pointerEvents: 'none' }}>DESPUÉS</div>
     </div>
   );
 };
