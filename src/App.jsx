@@ -33,6 +33,7 @@ import OnboardingModule from './components/OnboardingModule';
 import { useAuth } from './context/AuthContext';
 import TopBar from './components/TopBar';
 import NotificationsPage from './components/NotificationsPage';
+import NotificationsDrawer from './components/NotificationsDrawer';
 import { notificationService } from './services/notificationService';
 import { useDialog } from './context/DialogContext';
 import { useScrollLock } from './hooks/useScrollLock';
@@ -61,6 +62,7 @@ function App() {
   const { user, loading: authLoading, logout } = useAuth();
   const { alert, confirm } = useDialog();
   const [showOnboarding, setShowOnboarding] = useState(() => localStorage.getItem('jana_onboarding_completed') !== 'true');
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(() => localStorage.getItem('jana_active_tab') || 'dashboard');
   const [isMobile, setIsMobile] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -174,7 +176,11 @@ function App() {
     const interval = setInterval(syncRates, 10 * 60 * 1000);
 
     const handleOpenNotifications = () => {
-      handleTabChange('notifications');
+      if (isMobile) {
+        handleTabChange('notifications');
+      } else {
+        setIsNotificationsOpen(true);
+      }
     };
     const handleHideSidebar = () => setHideSidebar(true);
     const handleShowSidebar = () => setHideSidebar(false);
@@ -432,7 +438,7 @@ function App() {
           rates={effectiveRates}
           onNavigate={handleTabChange}
           onRefresh={fetchInitialData}
-          onOpenNotifications={() => handleTabChange('notifications')}
+          onOpenNotifications={handleOpenNotifications}
         /></div>;
       case 'scheduling': return <div className="p-container p-container-agenda"><SchedulingModule isMobile={isMobile} isTablet={isTablet} isCollapsed={isCollapsed} rates={effectiveRates} openScheduleModal={tabParams.openScheduleModal} modalKey={tabParams.modalKey} /></div>;
       case 'reception': return <div className="p-container"><ReceptionModule isMobile={isMobile} /></div>;
@@ -523,7 +529,7 @@ function App() {
               onOpenSale={() => setIsReceptionModalOpen(true)}
               activeRateType={activeRateType}
               onToggleRateType={handleSetActiveRateType}
-              onOpenNotifications={() => handleTabChange('notifications')}
+              onOpenNotifications={handleOpenNotifications}
               isMobile={isMobile}
               dbData={dbData}
               onNavigate={handleTabChange}
@@ -641,6 +647,13 @@ function App() {
         </div>
       </div>
 
+      {!isMobile && (
+        <NotificationsDrawer
+          isOpen={isNotificationsOpen}
+          onClose={() => setIsNotificationsOpen(false)}
+          isMobile={false}
+        />
+      )}
 
       {/* Quick "agendar cita" modal — opens as an overlay from the FAB without leaving the current tab.
           Stays mounted once opened (instead of `isQuickScheduleOpen &&`) so AnimatedModal

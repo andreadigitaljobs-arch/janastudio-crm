@@ -326,20 +326,19 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
     );
   }
 
-  // ═══════════════════ DESKTOP: Floating Panel ════════════════
+  // ═══════════════════ DESKTOP: Side Panel ════════════════
   return (
     <>
       <style>{`
         @keyframes ntfDesktopFadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes ntfDesktopFadeOut { from { opacity: 1; } to { opacity: 0; } }
-        @keyframes ntfDesktopPopIn { from { opacity: 0; transform: translateY(-50%) translateX(-50%) scale(0.9); } to { opacity: 1; transform: translateY(-50%) translateX(-50%) scale(1); } }
-        @keyframes ntfDesktopPopOut { from { opacity: 1; transform: translateY(-50%) translateX(-50%) scale(1); } to { opacity: 0; transform: translateY(-50%) translateX(-50%) scale(0.9); } }
+        @keyframes ntfDesktopSlideIn { from { transform: translateX(100%); opacity: 0.5; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes ntfDesktopSlideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
         @keyframes ntfItemIn { from { opacity: 0; transform: translateY(16px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes ntfPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
         @keyframes ntfGradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        @keyframes ntfFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
         .ntf-desktop-panel { transition: box-shadow 0.3s ease; }
-        .ntf-desktop-panel:hover { box-shadow: 0 24px 72px rgba(201, 114, 130, 0.15), 0 8px 24px rgba(160, 80, 106, 0.08), 0 0 0 1px rgba(201, 114, 130, 0.15) !important; }
+        .ntf-desktop-panel:hover { box-shadow: -12px 0 48px rgba(201, 114, 130, 0.15) !important; }
       `}</style>
       <div style={{
         position: 'fixed', inset: 0,
@@ -348,22 +347,22 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
         animation: isOpen ? 'ntfDesktopFadeIn 0.25s ease forwards' : 'ntfDesktopFadeOut 0.3s ease forwards',
         pointerEvents: isOpen ? 'auto' : 'none',
         backdropFilter: isOpen ? 'blur(8px) saturate(1.1)' : 'blur(0)',
-        transition: 'backdrop-filter 0.3s ease'
+        transition: 'backdrop-filter 0.3s ease',
+        display: 'flex',
+        justifyContent: 'flex-end'
       }}>
         <div onClick={handleClose} style={{ position: 'absolute', inset: 0 }} />
 
         <div className="ntf-desktop-panel" style={{
-          position: 'absolute', top: '50%', left: '50%',
-          width: '440px', maxHeight: '80vh',
+          position: 'relative',
+          width: '440px', height: '100%',
           background: 'linear-gradient(165deg, #fffafb 0%, #ffffff 25%, #fef8fa 55%, #fdf5f7 100%)',
-          borderRadius: '28px', overflow: 'hidden',
+          overflow: 'hidden',
           display: 'flex', flexDirection: 'column',
           animation: visible
-            ? 'ntfDesktopPopIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards'
-            : 'ntfDesktopPopOut 0.3s cubic-bezier(0.55, 0, 1, 0.45) forwards',
-          boxShadow: '0 20px 64px rgba(201, 114, 130, 0.12), 0 6px 20px rgba(160, 80, 106, 0.06), 0 0 0 1px rgba(201, 114, 130, 0.08)',
-          transform: 'translateY(-50%) translateX(-50%)',
-          transformOrigin: 'center center'
+            ? 'ntfDesktopSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+            : 'ntfDesktopSlideOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+          boxShadow: '-10px 0 40px rgba(201, 114, 130, 0.12), -2px 0 10px rgba(160, 80, 106, 0.04), 0 0 0 1px rgba(201, 114, 130, 0.06)'
         }}>
           {/* Gradient top accent */}
           <div style={{
