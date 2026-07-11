@@ -2732,7 +2732,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                             value={customDateFilter}
                             onChange={(e) => setCustomDateFilter(e.target.value)}
                             variant="light"
-                            inputStyle={{ padding: '9px 12px', fontSize: '13px', borderRadius: '12px', borderColor: customDateFilter ? 'var(--pink-primary)' : 'var(--border-color)', width: '100%' }}
+                            inputStyle={{ padding: '9px 12px 9px 42px', fontSize: '13px', borderRadius: '12px', borderColor: customDateFilter ? 'var(--pink-primary)' : 'var(--border-color)', width: '100%' }}
                           />
                         </div>
                       )}
