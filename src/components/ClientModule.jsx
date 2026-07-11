@@ -62,6 +62,15 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
   const { user } = useAuth();
   const { showToast } = useNotifs();
   const { confirm } = useDialog();
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const isNarrowScreen = windowWidth < 1250;
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedClient, setSelectedClient] = useState(null);
   const [showMessageModal, setShowMessageModal] = useState(false);
@@ -748,7 +757,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', alignItems: 'start' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isNarrowScreen ? '1fr' : '1fr 340px', gap: '24px', alignItems: 'start' }}>
                   {/* Left Column: Table + Pagination + Pending Actions */}
                   <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
 
@@ -1115,7 +1124,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
             </div>
 
             {/* Row 2: Bottom aligned widgets */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', marginTop: '28px', alignItems: 'start' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isNarrowScreen ? '1fr' : '1fr 340px', gap: '24px', marginTop: '28px', alignItems: 'start' }}>
               {/* Left Column: Seguimientos pendientes */}
               <div style={{ minWidth: 0 }}>
                 {/* Seguimientos pendientes Container Card */}
