@@ -267,6 +267,44 @@ export default function OnboardingModule({ onComplete }) {
         .onboarding-subtitle-strong { font-weight: 800; }
         .onboarding-scrim { display: none; }
 
+        /* Super large screens (high res / 1080p+, 2K, 4K) */
+        @media (min-width: 1600px) {
+          .onboarding-logo {
+            width: 220px;
+            top: 50px;
+          }
+
+          .onboarding-content-panel {
+            top: 200px;
+            right: 48%;
+          }
+
+          .onboarding-title {
+            font-size: clamp(3.6rem, 4.5vw, 5rem);
+          }
+
+          .onboarding-subtitle {
+            font-size: clamp(1.4rem, 1.6vw, 1.9rem);
+            max-width: 660px;
+            margin-bottom: 40px;
+          }
+
+          .onboarding-btn {
+            padding: 22px 55px;
+            font-size: clamp(1.15rem, 1.3vw, 1.35rem);
+          }
+
+          .onboarding-dot {
+            width: 10px;
+            height: 10px;
+          }
+
+          .onboarding-dot.active {
+            width: 14px;
+            height: 14px;
+          }
+        }
+
         /* Mobile specific styles — any portrait screen, phone through iPad Pro. Landscape phones use the desktop side-by-side layout instead (see compact-landscape block below), since they're wide and short rather than tall and narrow. */
         @media (orientation: portrait) and (max-width: 1366px) {
           .onboarding-wrapper {
