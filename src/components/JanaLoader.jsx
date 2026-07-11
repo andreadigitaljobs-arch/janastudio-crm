@@ -246,13 +246,18 @@ const JanaLoader = ({ visible }) => {
           margin-bottom: 25px;
         }
         .loader-logo {
-          width: 280px;
-          max-width: 80%;
+          width: 360px;
+          max-width: 85%;
           height: auto;
           object-fit: contain;
           filter: drop-shadow(0 4px 10px rgba(122, 88, 83, 0.08));
         }
-        @media (max-width: 768px), (orientation: portrait) and (max-width: 1366px) {
+        @media (max-width: 1024px) {
+          .loader-logo {
+            width: 280px;
+          }
+        }
+        @media (max-width: 480px) {
           .loader-logo {
             width: 220px;
           }
@@ -265,17 +270,31 @@ const JanaLoader = ({ visible }) => {
           justify-content: center;
         }
         .rose-gold-spinner {
-          width: 46px;
-          height: 46px;
+          width: 54px;
+          height: 54px;
           border-radius: 50%;
-          border: 3.5px solid rgba(179, 130, 121, 0.15);
-          border-top: 3.5px solid #b38279;
+          border: 4px solid rgba(179, 130, 121, 0.15);
+          border-top: 4px solid #b38279;
           animation: luxurySpin 1.2s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
           box-shadow: 0 0 15px rgba(179, 130, 121, 0.2);
         }
         @keyframes luxurySpin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
+        }
+        @media (max-width: 1024px) {
+          .rose-gold-spinner {
+            width: 46px;
+            height: 46px;
+            border-width: 3.5px;
+          }
+        }
+        @media (max-width: 480px) {
+          .rose-gold-spinner {
+            width: 40px;
+            height: 40px;
+            border-width: 3px;
+          }
         }
 
         /* --- Typography --- */
@@ -284,7 +303,7 @@ const JanaLoader = ({ visible }) => {
         }
         .loader-title {
           font-family: 'Playfair Display', Georgia, serif;
-          font-size: 21px;
+          font-size: 26px;
           font-weight: 500;
           color: #7a5853;
           margin: 0 0 8px 0;
@@ -292,12 +311,20 @@ const JanaLoader = ({ visible }) => {
           text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
         }
         .loader-subtitle {
-          font-family: 'Inter', sans-serif;
-          font-size: 13px;
+          font-family: 'Manrope', sans-serif;
+          font-size: 15px;
           font-weight: 400;
           color: #9e7f7b;
           margin: 0;
           letter-spacing: 0.03em;
+        }
+        @media (max-width: 1024px) {
+          .loader-title {
+            font-size: 22px;
+          }
+          .loader-subtitle {
+            font-size: 14px;
+          }
         }
         @media (max-width: 480px) {
           .loader-title {
@@ -315,7 +342,7 @@ const JanaLoader = ({ visible }) => {
           justify-content: center;
           gap: 15px;
           width: 100%;
-          max-width: 320px;
+          max-width: 360px;
           margin-bottom: 70px;
           animation: luxuryFadeIn 0.8s ease-out 0.2s both;
         }
@@ -346,6 +373,18 @@ const JanaLoader = ({ visible }) => {
           0% { background-position: 200% 0; }
           100% { background-position: -200% 0; }
         }
+        @media (max-width: 1024px) {
+          .loader-progress-row {
+            max-width: 320px;
+            margin-bottom: 60px;
+          }
+        }
+        @media (max-width: 480px) {
+          .loader-progress-row {
+            max-width: 280px;
+            margin-bottom: 50px;
+          }
+        }
 
         /* --- Footer --- */
         .loader-footer {
@@ -374,7 +413,7 @@ const JanaLoader = ({ visible }) => {
         }
         .loader-slogan {
           font-family: 'Playfair Display', Georgia, serif;
-          font-size: 13px;
+          font-size: 14px;
           font-style: italic;
           color: #7a5853;
           margin: 0;
@@ -385,6 +424,16 @@ const JanaLoader = ({ visible }) => {
           border-radius: 20px;
           backdrop-filter: blur(6px);
           -webkit-backdrop-filter: blur(6px);
+        }
+        @media (max-width: 1024px) {
+          .loader-slogan {
+            font-size: 13px;
+          }
+        }
+        @media (max-width: 480px) {
+          .loader-slogan {
+            font-size: 12px;
+          }
         }
 
         @keyframes heartbeat {
