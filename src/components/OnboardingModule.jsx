@@ -156,7 +156,7 @@ export default function OnboardingModule({ onComplete }) {
 
         .onboarding-title {
           font-family: 'Playfair Display', Georgia, serif;
-          font-size: clamp(2.2rem, 3.8vw, 3.6rem);
+          font-size: clamp(2.5rem, 4vw, 3.8rem);
           letter-spacing: -1px;
           color: #2d1b22;
           font-weight: 800;
@@ -188,11 +188,11 @@ export default function OnboardingModule({ onComplete }) {
         }
 
         .onboarding-subtitle {
-          font-size: clamp(1rem, 1.1vw, 1.25rem);
+          font-size: clamp(1.15rem, 1.3vw, 1.45rem);
           color: #7a6065;
-          line-height: 1.5;
-          font-weight: 400;
-          max-width: 460px;
+          line-height: 1.6;
+          font-weight: 500;
+          max-width: 520px;
           margin: 0 0 clamp(16px, 3vh, 28px) 0;
           opacity: 0;
           transform: translateY(20px);
@@ -518,7 +518,7 @@ export default function OnboardingModule({ onComplete }) {
               {slides[currentSlide].desktopDark.map((line, i) => (
                 <React.Fragment key={i}>
                   {line}
-                  <br />
+                  {i < slides[currentSlide].desktopDark.length - 1 && <br />}
                 </React.Fragment>
               ))}
               <span className="onboarding-title-accent">{slides[currentSlide].titleAccent}</span>
