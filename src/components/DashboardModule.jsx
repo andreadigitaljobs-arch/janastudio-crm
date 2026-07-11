@@ -1464,7 +1464,6 @@ const DashboardModule = ({
           </div>
 
           {/* Photo banner directly below progress bars */}
-          {/* Photo banner directly below progress bars */}
           <div
             onClick={() => onNavigate('services')}
             className="dashboard-featured-photo"
@@ -1474,6 +1473,7 @@ const DashboardModule = ({
               overflow: 'hidden',
               position: 'relative',
               cursor: 'pointer',
+              background: 'linear-gradient(140deg, #a0506a 0%, #964a63 30%, #8a4560 60%, #7a3f55 100%)',
               boxShadow: '0 10px 30px rgba(160, 80, 106, 0.25), 0 4px 12px rgba(112, 48, 80, 0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
               transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               display: 'flex'
@@ -1481,29 +1481,29 @@ const DashboardModule = ({
             onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-3px) scale(1.005)'; e.currentTarget.style.boxShadow = '0 16px 40px rgba(160, 80, 106, 0.35), 0 6px 16px rgba(112, 48, 80, 0.2), inset 0 1px 0 rgba(255,255,255,0.15)' }}
             onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 10px 30px rgba(160, 80, 106, 0.25), 0 4px 12px rgba(112, 48, 80, 0.15), inset 0 1px 0 rgba(255,255,255,0.1)' }}
           >
-            {/* Background image filling the entire container */}
-            <div style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
+            {/* Peinado y maquillaje photo placed on the right with a fixed width on desktop */}
+            <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: isMobile ? '45%' : '240px', zIndex: 1 }}>
               <img 
                 src="/peinado_maquillaje.png" 
                 alt="Adicional de Ondas" 
-                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '85% center', filter: 'saturate(1.05)' }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', filter: 'saturate(1.05)' }}
               />
-              {/* Fade overlay from left to right: Netflix-style */}
+              {/* Minimal fade — only on the left edge where photo meets text container */}
               <div style={{ 
                 position: 'absolute', 
                 inset: 0, 
-                background: 'linear-gradient(90deg, #964a63 0%, #964a63 35%, rgba(150, 74, 99, 0.95) 45%, rgba(150, 74, 99, 0.8) 55%, rgba(150, 74, 99, 0.3) 75%, transparent 100%)' 
+                background: 'linear-gradient(to right, #964a63 0%, rgba(150, 74, 99, 0.4) 15%, transparent 40%)' 
               }} />
-              {/* Warm filter overlay */}
+              {/* Subtle warm overlay on photo */}
               <div style={{
                 position: 'absolute',
                 inset: 0,
-                background: 'linear-gradient(180deg, rgba(201, 114, 130, 0.08) 0%, rgba(122, 58, 78, 0.12) 100%)',
+                background: 'linear-gradient(180deg, rgba(201, 114, 130, 0.05) 0%, rgba(122, 58, 78, 0.08) 100%)',
                 mixBlendMode: 'soft-light'
               }} />
             </div>
 
-            {/* Content area floating on top */}
+            {/* Content area on the left, takes up the remaining width */}
             <div style={{ 
               position: 'relative', 
               zIndex: 2, 
@@ -1511,7 +1511,7 @@ const DashboardModule = ({
               flexDirection: 'column', 
               justifyContent: 'center', 
               padding: '16px 22px', 
-              width: isMobile ? '70%' : '55%', 
+              width: isMobile ? '55%' : 'calc(100% - 240px)', 
               color: '#ffffff' 
             }}>
               {/* Glassmorphism badge */}
