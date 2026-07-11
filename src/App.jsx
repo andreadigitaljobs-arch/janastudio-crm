@@ -63,7 +63,14 @@ function App() {
   const { alert, confirm } = useDialog();
   const [showOnboarding, setShowOnboarding] = useState(() => localStorage.getItem('jana_onboarding_completed') !== 'true');
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState(() => localStorage.getItem('jana_active_tab') || 'dashboard');
+  const [activeTab, setActiveTab] = useState(() => {
+    const saved = localStorage.getItem('jana_active_tab') || 'dashboard';
+    const isMobileDevice = typeof window !== 'undefined' ? (window.innerWidth < 600 || window.screen.width < 600) : false;
+    if (saved === 'notifications' && !isMobileDevice) {
+      return 'dashboard';
+    }
+    return saved;
+  });
   const [isMobile, setIsMobile] = useState(() => {
     if (typeof window !== 'undefined') {
       return window.innerWidth < 600 || window.screen.width < 600;
@@ -176,6 +183,13 @@ function App() {
   };
 
   useEffect(() => {
+    // Desktop safeguard on mount: if saved tab was notifications, force open the drawer
+    const savedTab = localStorage.getItem('jana_active_tab');
+    if (savedTab === 'notifications' && !isMobile) {
+      setIsNotificationsOpen(true);
+      localStorage.setItem('jana_active_tab', 'dashboard');
+    }
+
     const syncRates = async () => {
       const ratesData = await dataService.getExchangeRates();
       if (ratesData) setRates(ratesData);
@@ -402,6 +416,14 @@ function App() {
 
   const handleTabChange = useCallback((tabId, params = {}) => {
     if (!canAccessModule(user?.role, tabId)) return;
+    
+    // Safeguard: on desktop, never navigate to the full page notifications module.
+    // Instead, trigger the slide-out side drawer and stay on the current view!
+    if (tabId === 'notifications' && !isMobile) {
+      setIsNotificationsOpen(true);
+      return;
+    }
+
     setTabParams(params);
     if (tabId === activeTab) return;
     setActiveTab(tabId);
