@@ -684,8 +684,8 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                           style={{
                             padding: '8px 18px',
                             borderRadius: '14px',
-                            border: isActive ? 'none' : '1px solid #fae8eb',
-                            backgroundColor: isActive ? '#e69fa8' : 'white',
+                            border: isActive ? 'none' : '1px solid var(--border-color)',
+                            backgroundColor: isActive ? 'var(--pink-primary)' : 'white',
                             color: isActive ? 'white' : '#6b7280',
                             fontSize: '12px',
                             fontWeight: '500',
@@ -912,7 +912,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
 
                     {displayClients.length === 0 ? (
                       <>
-                        <button style={{ width: '32px', height: '32px', borderRadius: '8px', border: 'none', backgroundColor: '#e69fa8', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700' }}>
+                        <button style={{ width: '32px', height: '32px', borderRadius: '8px', border: 'none', backgroundColor: 'var(--pink-primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700' }}>
                           1
                         </button>
                         <button style={{ width: '32px', height: '32px', borderRadius: '8px', border: 'none', backgroundColor: 'transparent', color: '#6b7280', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '600' }} className="btn-interactive">
@@ -939,7 +939,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                               height: '32px',
                               borderRadius: '8px',
                               border: 'none',
-                              backgroundColor: isCurrent ? '#e69fa8' : 'transparent',
+                              backgroundColor: isCurrent ? 'var(--pink-primary)' : 'transparent',
                               color: isCurrent ? 'white' : '#6b7280',
                               cursor: 'pointer',
                               display: 'flex',
@@ -1130,15 +1130,15 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                     <h3 style={{ fontSize: '15.5px', fontWeight: '850', color: 'var(--text-primary)', margin: 0 }}>
                       Seguimientos pendientes
                     </h3>
-                    <span style={{ fontSize: '12px', color: '#e08b98', fontWeight: '750', cursor: 'pointer' }}>Ver todos</span>
+                    <span style={{ fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '750', cursor: 'pointer' }}>Ver todos</span>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
                     {[
-                      { text: 'Confirmar cita de Valentina P.', line1: '12 may 2025', line2: '11:30 AM', icon: Calendar, color: '#e08b98', bg: '#fdf2f4' },
-                      { text: 'Enviar rutina post cuidado', line1: 'Laura Martínez', line2: '18 may 2025', icon: Mail, color: '#e08b98', bg: '#fdf2f4' },
-                      { text: 'Recordatorio de evaluación', line1: 'Andrea Rodríguez', line2: '20 may 2025', icon: Bell, color: '#e08b98', bg: '#fdf2f4' }
+                      { text: 'Confirmar cita de Valentina P.', line1: '12 may 2025', line2: '11:30 AM', icon: Calendar, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' },
+                      { text: 'Enviar rutina post cuidado', line1: 'Laura Martínez', line2: '18 may 2025', icon: Mail, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' },
+                      { text: 'Recordatorio de evaluación', line1: 'Andrea Rodríguez', line2: '20 may 2025', icon: Bell, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' }
                     ].map((item, i) => (
-                      <div key={i} style={{ padding: '14px 16px', borderRadius: '16px', border: '1px solid #fae8eb', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', background: 'white', animationDelay: `${i * 60}ms` }} className="interactive-hover-card stagger-row">
+                      <div key={i} style={{ padding: '14px 16px', borderRadius: '16px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', background: 'white', animationDelay: `${i * 60}ms` }} className="interactive-hover-card stagger-row">
                         <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           <item.icon size={16} color={item.color} />
                         </div>
