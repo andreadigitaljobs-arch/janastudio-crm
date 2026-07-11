@@ -772,7 +772,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                     <p style={{ color: 'var(--text-muted)' }}>No se encontraron clientes.</p>
                   </div>
                 ) : (
-                  <div className="glass-card" style={{ borderRadius: '20px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.03)', background: 'white' }}>
+                  <div className="glass-card animate-slide-up delay-2" style={{ borderRadius: '20px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.03)', background: 'white' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                       <thead>
                         <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'rgba(212, 160, 154, 0.08)' }}>
@@ -1128,7 +1128,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
               {/* Left Column: Seguimientos pendientes */}
               <div style={{ minWidth: 0 }}>
                 {/* Seguimientos pendientes Container Card */}
-                <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.03)' }}>
+                <div className="glass-card animate-slide-up delay-3" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.03)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <h3 style={{ fontSize: '15.5px', fontWeight: '850', color: 'var(--text-primary)', margin: 0 }}>
                       Seguimientos pendientes
@@ -1141,7 +1141,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                       { text: 'Enviar rutina post cuidado', line1: 'Laura Martínez', line2: '18 may 2025', icon: Mail, color: '#e08b98', bg: '#fdf2f4' },
                       { text: 'Recordatorio de evaluación', line1: 'Andrea Rodríguez', line2: '20 may 2025', icon: Bell, color: '#e08b98', bg: '#fdf2f4' }
                     ].map((item, i) => (
-                      <div key={i} style={{ padding: '14px 16px', borderRadius: '16px', border: '1px solid #fae8eb', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', transition: 'all 0.2s', background: 'white' }} className="btn-interactive">
+                      <div key={i} style={{ padding: '14px 16px', borderRadius: '16px', border: '1px solid #fae8eb', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', background: 'white', animationDelay: `${i * 60}ms` }} className="interactive-hover-card stagger-row">
                         <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           <item.icon size={16} color={item.color} />
                         </div>
@@ -1162,7 +1162,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
               {/* Right Column: Próximos cumpleaños */}
               <div>
                 {/* Próximos cumpleaños Card (with cute cake drawing) */}
-                <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)), url(/cumpleanos_jana.png)', backgroundSize: 'cover', backgroundPosition: 'center', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)', position: 'relative', overflow: 'hidden', height: '154px' }}>
+                <div className="glass-card animate-slide-up delay-3 interactive-hover-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.45)), url(/cumpleanos_jana.png)', backgroundSize: 'cover', backgroundPosition: 'center', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)', position: 'relative', overflow: 'hidden', height: '154px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
                       Próximos cumpleaños
