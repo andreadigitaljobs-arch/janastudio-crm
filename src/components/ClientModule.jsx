@@ -686,7 +686,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                             padding: '8px 18px',
                             borderRadius: '14px',
                             border: isActive ? 'none' : '1px solid var(--border-color)',
-                            backgroundColor: isActive ? 'var(--pink-primary)' : 'white',
+                            background: isActive ? 'var(--magenta-gradient)' : 'white',
                             color: isActive ? 'white' : '#6b7280',
                             fontSize: '12px',
                             fontWeight: '500',
@@ -793,7 +793,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                               onClick={() => setSelectedSidebarClient(client)}
                               style={{
                                 borderBottom: '1px solid var(--border-color)',
-                                backgroundColor: isSelected ? 'rgba(212,160,154,0.08)' : 'transparent',
+                                backgroundColor: isSelected ? 'rgba(160, 80, 106, 0.08)' : 'transparent',
                                 cursor: 'pointer',
                                 transition: 'background-color 0.15s'
                               }}
@@ -913,7 +913,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
 
                     {displayClients.length === 0 ? (
                       <>
-                        <button style={{ width: '32px', height: '32px', borderRadius: '8px', border: 'none', backgroundColor: 'var(--pink-primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700' }}>
+                        <button style={{ width: '32px', height: '32px', borderRadius: '8px', border: 'none', background: 'var(--magenta-gradient)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700' }}>
                           1
                         </button>
                         <button style={{ width: '32px', height: '32px', borderRadius: '8px', border: 'none', backgroundColor: 'transparent', color: '#6b7280', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '600' }} className="btn-interactive">
@@ -940,7 +940,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                               height: '32px',
                               borderRadius: '8px',
                               border: 'none',
-                              backgroundColor: isCurrent ? 'var(--pink-primary)' : 'transparent',
+                              background: isCurrent ? 'var(--magenta-gradient)' : 'transparent',
                               color: isCurrent ? 'white' : '#6b7280',
                               cursor: 'pointer',
                               display: 'flex',
