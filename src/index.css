@@ -304,6 +304,7 @@ html, body {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+  background-color: #f5e6e8; /* Color de respaldo para evitar flash blanco */
   will-change: transform;
   transform: scale(1);
   animation: photoEnter 1.4s cubic-bezier(0.22, 1, 0.36, 1) both, photoBreathe 8s ease-in-out 1.4s infinite alternate;

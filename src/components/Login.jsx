@@ -49,16 +49,17 @@ export default function Login() {
   }, []);
 
   useEffect(() => {
+    // Preload all images
+    images.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % images.length);
     }, 3800);
     return () => clearInterval(interval);
   }, []);
-
-  useEffect(() => {
-    const nextImage = new Image();
-    nextImage.src = images[(activeIndex + 1) % images.length];
-  }, [activeIndex]);
 
   useEffect(() => {
     if (isMobile && emailRef.current) {
