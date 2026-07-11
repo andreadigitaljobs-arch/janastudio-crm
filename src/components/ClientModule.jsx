@@ -1709,28 +1709,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
   const isCompact = isMobile || detailWidth < 1000;
   const [showCollage, setShowCollage] = useState(false);
   const [isSavingComparison, setIsSavingComparison] = useState(false);
-  
-  // Pagination / Infinite Scroll
-  const [visiblePhotosCount, setVisiblePhotosCount] = useState(12);
-  const [visibleCompsCount, setVisibleCompsCount] = useState(4);
-  const photosObserverRef = useRef(null);
-  const compsObserverRef = useRef(null);
 
-  useEffect(() => {
-    const pObserver = new IntersectionObserver(
-      (entries) => { if (entries[0].isIntersecting) setVisiblePhotosCount(p => p + 12); },
-      { threshold: 0.1, rootMargin: '400px' }
-    );
-    const cObserver = new IntersectionObserver(
-      (entries) => { if (entries[0].isIntersecting) setVisibleCompsCount(c => c + 4); },
-      { threshold: 0.1, rootMargin: '400px' }
-    );
-    
-    if (photosObserverRef.current) pObserver.observe(photosObserverRef.current);
-    if (compsObserverRef.current) cObserver.observe(compsObserverRef.current);
-    
-    return () => { pObserver.disconnect(); cObserver.disconnect(); };
-  }, [activeSubTab, showCollage, gallery]);
   const [showAllHistory, setShowAllHistory] = useState(false);
   const [photoA, setPhotoA] = useState(null);
   const [photoB, setPhotoB] = useState(null);
@@ -1768,6 +1747,28 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
   useEffect(() => {
     document.querySelector('.main-content')?.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeSubTab]);
+
+  // Pagination / Infinite Scroll
+  const [visiblePhotosCount, setVisiblePhotosCount] = useState(12);
+  const [visibleCompsCount, setVisibleCompsCount] = useState(4);
+  const photosObserverRef = useRef(null);
+  const compsObserverRef = useRef(null);
+
+  useEffect(() => {
+    const pObserver = new IntersectionObserver(
+      (entries) => { if (entries[0].isIntersecting) setVisiblePhotosCount(p => p + 12); },
+      { threshold: 0.1, rootMargin: '400px' }
+    );
+    const cObserver = new IntersectionObserver(
+      (entries) => { if (entries[0].isIntersecting) setVisibleCompsCount(c => c + 4); },
+      { threshold: 0.1, rootMargin: '400px' }
+    );
+    
+    if (photosObserverRef.current) pObserver.observe(photosObserverRef.current);
+    if (compsObserverRef.current) cObserver.observe(compsObserverRef.current);
+    
+    return () => { pObserver.disconnect(); cObserver.disconnect(); };
+  }, [activeSubTab, showCollage, gallery]);
   const [diagnoses, setDiagnoses] = useState([]);
   const [loadingDiagnoses, setLoadingDiagnoses] = useState(true);
   const [packages, setPackages] = useState([]);
