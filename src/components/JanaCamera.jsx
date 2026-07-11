@@ -145,7 +145,7 @@ const JanaCamera = ({ onCapture, onClose, overlayClass, cardClass }) => {
     <div className={overlayClass || 'animate-fade-in'} style={{
       position: 'fixed',
       top: 0, left: 0, right: 0, bottom: 0,
-      backgroundColor: 'rgba(0,0,0,0.98)',
+      background: 'linear-gradient(160deg, rgba(107,42,66,0.97) 0%, rgba(58,24,38,0.98) 100%)',
       backdropFilter: 'blur(15px)',
       zIndex: 10000,
       display: 'flex',
@@ -156,8 +156,8 @@ const JanaCamera = ({ onCapture, onClose, overlayClass, cardClass }) => {
     }}>
       {/* Header with Close */}
       <div style={{ position: 'absolute', top: '24px', left: 0, right: 0, padding: '0 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 12 }}>
-        <div style={{ color: 'white', fontWeight: '800', fontSize: '14px', letterSpacing: '1px' }}>JANA STUDIO</div>
-        <button 
+        <img src="/logo.webp" alt="Jana Studio" style={{ height: '56px', objectFit: 'contain' }} />
+        <button
           onClick={onClose}
           style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', padding: '12px', borderRadius: '50%', cursor: 'pointer' }}
         >
@@ -171,9 +171,9 @@ const JanaCamera = ({ onCapture, onClose, overlayClass, cardClass }) => {
         width: '100%', 
         maxWidth: '400px',
         maxHeight: 'calc(100vh - 220px)',
-        aspectRatio: '3/4', 
-        backgroundColor: '#050505', 
-        overflow: 'hidden', 
+        aspectRatio: '3/4',
+        backgroundColor: '#3a1826',
+        overflow: 'hidden',
         borderRadius: '40px', 
         border: '1.5px solid rgba(196,139,159,0.3)',
         boxShadow: '0 40px 100px rgba(0,0,0,0.9)' 
@@ -205,8 +205,8 @@ const JanaCamera = ({ onCapture, onClose, overlayClass, cardClass }) => {
               bottom: '0', 
               left: 0, 
               right: 0, 
-              padding: '32px', 
-              background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
+              padding: '32px',
+              background: 'linear-gradient(to top, rgba(58,24,38,0.85), transparent)',
               display: 'flex', 
               justifyContent: 'center', 
               alignItems: 'center', 
@@ -256,7 +256,7 @@ const JanaCamera = ({ onCapture, onClose, overlayClass, cardClass }) => {
             <div style={{ position: 'absolute', bottom: '32px', left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: '24px' }}>
               <button 
                 onClick={retake}
-                style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.3)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', backdropFilter: 'blur(10px)' }}
+                style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: 'rgba(58,24,38,0.6)', border: '1px solid rgba(255,255,255,0.3)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', backdropFilter: 'blur(10px)' }}
               >
                 <RefreshCw size={24} />
               </button>

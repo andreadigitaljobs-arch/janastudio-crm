@@ -39,7 +39,8 @@ import {
   Package,
   Maximize2,
   Edit2,
-  Mail
+  Mail,
+  Scissors
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { supabase } from '../lib/supabase';
@@ -1686,6 +1687,13 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
 
 const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
   const { showToast } = useNotifs();
+  const [detailWidth, setDetailWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  useEffect(() => {
+    const handleResize = () => setDetailWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  const isCompact = isMobile || detailWidth < 960;
   const [showCollage, setShowCollage] = useState(false);
   const [showAllHistory, setShowAllHistory] = useState(false);
   const [photoA, setPhotoA] = useState(null);
@@ -1697,6 +1705,8 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
   const [gallery, setGallery] = useState([]);
+  const [comparisons, setComparisons] = useState([]);
+  const [comparisonTitle, setComparisonTitle] = useState('');
   const [selectedVisit, setSelectedVisit] = useState(null);
   const [pendingPhoto, setPendingPhoto] = useState(null);
   const [photoMeta, setPhotoMeta] = useState({ type: 'Normal', serviceId: null });
@@ -1752,11 +1762,12 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
       try {
         const { data, error } = await dataService.supabase
           .from('clients')
-          .select('work_gallery')
+          .select('work_gallery, work_comparisons')
           .eq('id', client.id)
           .single();
         if (error) throw error;
         setGallery(data?.work_gallery || []);
+        setComparisons(data?.work_comparisons || []);
       } catch (err) {
         console.error('Error fetching client gallery:', err);
       }
@@ -1767,13 +1778,17 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
   }, [client?.id]);
 
   const fileInputRef = useRef(null);
-  const [editData, setEditData] = useState({ 
-    name: client.name, 
+  const [editData, setEditData] = useState({
+    name: client.name,
     phone: client.phone,
     id_card: client.id_card,
     birth_date: client.birth_date || '',
-    hair_type: client.hair_type,
-    scalp_type: client.scalp_type
+    notes: client.notes || ''
+  });
+  const [isEditingHair, setIsEditingHair] = useState(false);
+  const [hairEditData, setHairEditData] = useState({
+    hair_type: client.hair_type || 'Normal',
+    scalp_type: client.scalp_type || 'Normal'
   });
 
   useEffect(() => {
@@ -1913,6 +1928,58 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
     }
   };
 
+  const handleSaveComparison = async () => {
+    if (!photoA || !photoB) {
+      showToast('Selecciona la foto de antes y de después', 'warning');
+      return;
+    }
+    if (!comparisonTitle.trim()) {
+      showToast('Ponle un nombre al tratamiento', 'warning');
+      return;
+    }
+    try {
+      const newComparison = {
+        id: `${Date.now()}`,
+        title: comparisonTitle.trim(),
+        beforeUrl: photoA,
+        afterUrl: photoB,
+        date: new Date().toISOString()
+      };
+      const { data: latestClient } = await dataService.supabase
+        .from('clients')
+        .select('work_comparisons')
+        .eq('id', client.id)
+        .single();
+      const currentLatest = Array.isArray(latestClient?.work_comparisons) ? latestClient.work_comparisons : [];
+      const newComparisons = [newComparison, ...currentLatest];
+
+      const updatedClient = await onUpdate({ work_comparisons: newComparisons });
+      if (updatedClient) {
+        setComparisons(newComparisons);
+        setShowCollage(false);
+        setPhotoA(null);
+        setPhotoB(null);
+        setComparisonTitle('');
+        showToast('Comparativa guardada', 'success');
+      }
+    } catch (e) {
+      console.error(e);
+      showToast('Error al guardar la comparativa', 'error');
+    }
+  };
+
+  const handleDeleteComparison = async (id) => {
+    if (!await confirm('¿Deseas eliminar esta comparativa?')) return;
+    try {
+      const newComparisons = comparisons.filter(c => c.id !== id);
+      setComparisons(newComparisons);
+      await onUpdate({ work_comparisons: newComparisons });
+      showToast('Comparativa eliminada');
+    } catch (e) {
+      showToast('Error al eliminar la comparativa', 'error');
+    }
+  };
+
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -1928,25 +1995,32 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
     switch (activeSubTab) {
       case 'gallery':
         return (
-          <div className="glass-card" style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>
-                <ImageIcon size={18} color="var(--pink-primary)" /> Galería de Trabajos
-              </h4>
-              <button 
-                onClick={() => setShowCollage(!showCollage)}
-                style={{ 
-                  background: showCollage ? 'var(--pink-primary)' : 'rgba(217,70,168,0.1)', 
-                  border: '1px solid var(--pink-primary)', 
-                  color: showCollage ? 'black' : 'var(--pink-primary)',
-                  padding: '6px 12px',
-                  borderRadius: '6px',
-                  fontSize: '12px',
+          <div className="glass-card" style={{ padding: '24px', background: 'white', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', gap: '16px' }}>
+              <div>
+                <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '850', margin: 0, color: 'var(--text-primary)' }}>
+                  <Sparkles size={18} color="var(--pink-primary)" /> Galería de trabajos
+                </h4>
+                <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--text-muted)' }}>
+                  Documenta los resultados y transforma cada cambio en inspiración.
+                </p>
+              </div>
+              <button
+                onClick={() => { setShowCollage(!showCollage); setComparisonTitle(''); setPhotoA(null); setPhotoB(null); }}
+                className="btn-interactive"
+                style={{
+                  background: showCollage ? 'var(--bg-tertiary)' : 'var(--magenta-gradient)',
+                  border: 'none',
+                  color: showCollage ? 'var(--text-primary)' : 'white',
+                  padding: '10px 16px',
+                  borderRadius: '12px',
+                  fontSize: '13px',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
+                  gap: '8px',
                   cursor: 'pointer',
-                  fontWeight: '800'
+                  fontWeight: '750',
+                  whiteSpace: 'nowrap'
                 }}
               >
                 <ColumnsIcon size={14} /> {showCollage ? 'Ver Galería' : 'Crear Comparativa'}
@@ -2004,20 +2078,40 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                 </div>
 
                 {photoA && photoB ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                    <BeforeAfterSlider 
-                      photoA={photoA} 
-                      photoB={photoB} 
-                      sliderPos={sliderPos} 
-                      setSliderPos={setSliderPos} 
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <BeforeAfterSlider
+                      photoA={photoA}
+                      photoB={photoB}
+                      sliderPos={sliderPos}
+                      setSliderPos={setSliderPos}
                     />
-                    <button 
-                      onClick={handleDownloadComparison}
-                      className="btn-pink" 
-                      style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
-                    >
-                      <Download size={18} /> Descargar Comparativa
-                    </button>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>NOMBRE DEL TRATAMIENTO</label>
+                      <input
+                        className="form-input"
+                        value={comparisonTitle}
+                        onChange={e => setComparisonTitle(e.target.value)}
+                        placeholder="Ej. Alisado orgánico + hidratación"
+                        style={{ width: '100%', padding: '10px 12px' }}
+                      />
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <button
+                        onClick={handleSaveComparison}
+                        className="btn-pink"
+                        style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                      >
+                        <Check size={18} /> Guardar Comparativa
+                      </button>
+                      <button
+                        onClick={handleDownloadComparison}
+                        className="btn-interactive"
+                        style={{ padding: '0 16px', borderRadius: '12px', border: '1px solid var(--border-color)', background: 'white', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        title="Descargar"
+                      >
+                        <Download size={18} />
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <div style={{ padding: '12px', borderRadius: '12px', backgroundColor: '#faf5f5', textAlign: 'center', fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>
@@ -2062,45 +2156,79 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                 </AnimatedModal>
               </div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '12px' }}>
-                {gallery.map((img, i) => (
-                  <div key={i} style={{ aspectRatio: '1/1', backgroundColor: 'var(--bg-tertiary)', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-color)', position: 'relative' }} className="group">
-                    <img src={img.url || img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', padding: '8px', fontSize: '9px', fontWeight: '800', color: 'var(--pink-primary)' }}>
-                      {img.type || 'FOTO'}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px' }}>
+                  <div
+                    onClick={() => setShowCamera(true)}
+                    className="btn-interactive"
+                    style={{
+                      aspectRatio: '4/3',
+                      backgroundColor: 'rgba(160,80,106,0.02)',
+                      borderRadius: '16px',
+                      border: '2px dashed var(--pink-primary)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '10px',
+                      cursor: 'pointer',
+                      textAlign: 'center',
+                      padding: '16px'
+                    }}
+                  >
+                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(160,80,106,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Plus size={20} color="var(--pink-primary)" />
                     </div>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); handlePhotoDelete(i); }}
-                      style={{ 
-                        position: 'absolute', top: '8px', right: '8px', 
-                        backgroundColor: 'rgba(255, 69, 58, 0.8)', 
-                        border: 'none', borderRadius: '8px', color: 'white', 
-                        padding: '6px', cursor: 'pointer',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
-                        transition: '0.2s'
-                      }}
-                      onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#ff453a'}
-                      onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 69, 58, 0.8)'}
-                    >
-                      <Trash2 size={14} />
-                    </button>
+                    <span style={{ fontSize: '13px', fontWeight: '750', color: 'var(--text-primary)' }}>Subir nuevas imágenes</span>
+                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>JPG, PNG &bull; Máx. 10 MB</span>
                   </div>
-                ))}
-                <div 
-                  onClick={() => setShowCamera(true)}
-                  style={{ aspectRatio: '1/1', backgroundColor: 'rgba(217,70,168,0.02)', borderRadius: '12px', border: '2px dashed var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: '0.2s' }}
-                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(217,70,168,0.05)'}
-                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(217,70,168,0.02)'}
-                >
-                  <Camera size={24} color="var(--pink-primary)" />
+
+                  {comparisons.map(comp => (
+                    <ComparisonCard key={comp.id} comparison={comp} onDelete={() => handleDeleteComparison(comp.id)} />
+                  ))}
                 </div>
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  onChange={handleFileSelect} 
-                  accept="image/*" 
-                  style={{ display: 'none' }} 
+
+                <div>
+                  <h5 style={{ margin: '0 0 12px', fontSize: '13px', fontWeight: '800', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Fotos individuales
+                  </h5>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '12px' }}>
+                    {gallery.map((img, i) => (
+                      <div key={i} style={{ aspectRatio: '1/1', backgroundColor: 'var(--bg-tertiary)', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-color)', position: 'relative' }} className="group">
+                        <img src={img.url || img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', padding: '8px', fontSize: '9px', fontWeight: '800', color: 'var(--pink-primary)' }}>
+                          {img.type || 'FOTO'}
+                        </div>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handlePhotoDelete(i); }}
+                          style={{
+                            position: 'absolute', top: '8px', right: '8px',
+                            backgroundColor: 'rgba(255, 69, 58, 0.8)',
+                            border: 'none', borderRadius: '8px', color: 'white',
+                            padding: '6px', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+                            transition: '0.2s'
+                          }}
+                          onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#ff453a'}
+                          onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 69, 58, 0.8)'}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    ))}
+                    {gallery.length === 0 && (
+                      <p style={{ color: 'var(--text-muted)', fontSize: '12px', gridColumn: '1 / -1' }}>Aún no hay fotos sueltas. Usa "Subir nuevas imágenes" para agregar la primera.</p>
+                    )}
+                  </div>
+                </div>
+
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileSelect}
+                  accept="image/*"
+                  style={{ display: 'none' }}
                 />
               </div>
             )}
@@ -2108,12 +2236,67 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
         );
       case 'diagnoses':
         return (
-          <div className="glass-card" style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div className="glass-card" style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isEditingHair ? '16px' : '0' }}>
+                <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>
+                  <Scissors size={16} color="var(--pink-primary)" /> Perfil Capilar
+                </h4>
+                {!isEditingHair && (
+                  <button
+                    onClick={() => { setHairEditData({ hair_type: client.hair_type || 'Normal', scalp_type: client.scalp_type || 'Normal' }); setIsEditingHair(true); }}
+                    style={{ background: 'none', border: 'none', color: 'var(--magenta-primary)', fontSize: '12px', fontWeight: '750', cursor: 'pointer', padding: '4px 8px', borderRadius: '8px', backgroundColor: 'rgba(160,80,106,0.05)' }}
+                  >
+                    Editar
+                  </button>
+                )}
+              </div>
+
+              {isEditingHair ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '12px' }}>
+                    <JanaSelect
+                      label="Tipo de Cabello"
+                      value={hairEditData.hair_type}
+                      onChange={(val) => setHairEditData({ ...hairEditData, hair_type: val })}
+                      options={[
+                        { label: 'Normal', value: 'Normal' },
+                        { label: 'Graso', value: 'Graso' },
+                        { label: 'Seco', value: 'Seco' },
+                        { label: 'Mixto', value: 'Mixto' }
+                      ]}
+                    />
+                    <JanaSelect
+                      label="Cuero Cabelludo"
+                      value={hairEditData.scalp_type}
+                      onChange={(val) => setHairEditData({ ...hairEditData, scalp_type: val })}
+                      options={[
+                        { label: 'Sano', value: 'Sano' },
+                        { label: 'Sensible', value: 'Sensible' },
+                        { label: 'Irritado', value: 'Irritado' },
+                        { label: 'Caspa', value: 'Caspa' }
+                      ]}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button className="btn-pink" style={{ flex: 1, padding: '10px', background: 'var(--magenta-gradient)', border: 'none', fontWeight: '750' }} onClick={async () => { await onUpdate(hairEditData); setIsEditingHair(false); }}>Guardar</button>
+                    <button className="btn-interactive" style={{ flex: 1, padding: '10px', background: 'none', border: '1px solid var(--border-color)', color: 'var(--text-muted)', borderRadius: '12px', fontSize: '13px', fontWeight: '600' }} onClick={() => setIsEditingHair(false)}>Cancelar</button>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <DetailItem label="Tipo de Cabello" value={client.hair_type || 'Normal'} />
+                  <DetailItem label="Cuero Cabelludo" value={client.scalp_type || 'Normal'} />
+                </div>
+              )}
+            </div>
+
+            <div className="glass-card" style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>
                 <Activity size={18} color="var(--pink-primary)" /> Historial de Diagnósticos Capilares
               </h4>
-              <button 
+              <button
                 onClick={() => setShowAddDiagnosis(!showAddDiagnosis)}
                 className="btn-pink"
                 style={{ height: '32px', padding: '0 12px', fontSize: '12px' }}
@@ -2283,6 +2466,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                 ))}
               </div>
             )}
+            </div>
           </div>
         );
       case 'packages':
@@ -2403,30 +2587,46 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
     }
   };
 
+  const lastVisitLabel = history.length > 0 && history[0]?.created_at
+    ? new Date(history[0].created_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' })
+    : 'Sin visitas';
+
   return (
     <div className="animate-fade-in" style={{ paddingBottom: '60px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <button 
-          onClick={onBack} 
-          style={{ 
-            color: 'var(--pink-primary)', 
-            background: 'rgba(160,80,106,0.12)', 
-            border: '1px solid rgba(160,80,106,0.2)', 
-            padding: '8px 14px',
-            borderRadius: '20px',
-            cursor: 'pointer', 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '6px',
-            fontSize: '13px',
-            fontWeight: '750',
-            transition: 'all 0.2s',
-          }}
-          className="btn-interactive"
-        >
-          &larr; Volver
-        </button>
-        <button 
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <button
+            onClick={onBack}
+            style={{
+              color: 'var(--pink-primary)',
+              background: 'rgba(160,80,106,0.12)',
+              border: '1px solid rgba(160,80,106,0.2)',
+              padding: '8px 14px',
+              borderRadius: '20px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '13px',
+              fontWeight: '750',
+              transition: 'all 0.2s',
+              flexShrink: 0
+            }}
+            className="btn-interactive"
+          >
+            &larr; Volver
+          </button>
+          {!isCompact && (
+            <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontStyle: 'italic' }}>Jana Studio</span>
+              <ChevronRight size={12} />
+              <span>Clientes</span>
+              <ChevronRight size={12} />
+              <span style={{ color: 'var(--text-secondary)' }}>Ficha de Cliente</span>
+            </div>
+          )}
+        </div>
+        <button
           onClick={onDelete}
           style={{ 
             color: '#d44e6c', 
@@ -2445,7 +2645,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
         </button>
       </div>
       
-      {isMobile ? (
+      {isCompact ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {/* Mobile Profile Card */}
           <div className="glass-card" style={{ padding: '20px', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)', animation: 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)' }}>
@@ -2498,17 +2698,17 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
               </div>
             </div>
 
-            {/* Ficha Técnica Section (Minimalist & Compact rows instead of big block boxes) */}
+            {/* Información del Cliente (Minimalist & Compact rows instead of big block boxes) */}
             <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '14px', marginTop: '14px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                 <h4 style={{ margin: 0, fontSize: '12px', fontWeight: '850', color: 'var(--magenta-primary)', display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  <Activity size={14} color="var(--magenta-primary)" /> Ficha Técnica Capilar
+                  <FileText size={14} color="var(--magenta-primary)" /> Información del Cliente
                 </h4>
                 {!isEditing && (
-                  <button 
+                  <button
                     onClick={() => setIsEditing(true)}
-                    style={{ 
-                      background: 'none', border: 'none', color: 'var(--magenta-primary)', 
+                    style={{
+                      background: 'none', border: 'none', color: 'var(--magenta-primary)',
                       fontSize: '11px', fontWeight: '750', cursor: 'pointer', padding: '4px 8px',
                       borderRadius: '8px', backgroundColor: 'rgba(160,80,106,0.05)'
                     }}
@@ -2524,28 +2724,6 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   <input className="form-input" value={editData.phone} onChange={e => setEditData({...editData, phone: e.target.value})} placeholder="Teléfono" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
                   <input className="form-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="Cédula" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
                   <BirthdayTextInput value={editData.birth_date} onChange={e => setEditData({...editData, birth_date: e.target.value})} style={{ width: '100%' }} />
-                  <JanaSelect 
-                    label="Tipo de Cabello"
-                    value={editData.hair_type}
-                    onChange={(val) => setEditData({...editData, hair_type: val})}
-                    options={[
-                      { label: 'Normal', value: 'Normal' },
-                      { label: 'Graso', value: 'Graso' },
-                      { label: 'Seco', value: 'Seco' },
-                      { label: 'Mixto', value: 'Mixto' }
-                    ]}
-                  />
-                  <JanaSelect 
-                    label="Cuero Cabelludo"
-                    value={editData.scalp_type}
-                    onChange={(val) => setEditData({...editData, scalp_type: val})}
-                    options={[
-                      { label: 'Sano', value: 'Sano' },
-                      { label: 'Sensible', value: 'Sensible' },
-                      { label: 'Irritado', value: 'Irritado' },
-                      { label: 'Caspa', value: 'Caspa' }
-                    ]}
-                  />
                   <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
                     <button className="btn-pink" onClick={() => { onUpdate(editData); setIsEditing(false); }} style={{ flex: 1, fontSize: '12px', padding: '8px', fontWeight: '750', background: 'var(--magenta-gradient)', border: 'none' }}>Guardar</button>
                     <button onClick={() => setIsEditing(false)} style={{ flex: 1, background: 'none', border: '1px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '12px', borderRadius: '12px', cursor: 'pointer' }}>Cancelar</button>
@@ -2553,14 +2731,6 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                 </div>
               ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                  <div style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>CABELLO</span>
-                    <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '750' }}>{client.hair_type || 'Normal'}</span>
-                  </div>
-                  <div style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>CUERO</span>
-                    <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '750' }}>{client.scalp_type || 'Normal'}</span>
-                  </div>
                   <div style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>CUMPLE</span>
                     <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '750' }}>{client.birth_date ? new Date(client.birth_date + 'T00:00:00').toLocaleDateString([], {day: '2-digit', month: 'short'}) : 'N/A'}</span>
@@ -2627,212 +2797,154 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
           </div>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', animation: 'fadeIn 0.3s ease' }}>
-          {/* Premium Wide Profile Header Banner */}
-          <div className="glass-card" style={{ 
-            padding: '0', 
-            borderRadius: '24px', 
-            overflow: 'hidden', 
-            border: '1px solid var(--border-color)',
-            boxShadow: 'var(--shadow-card)',
-            position: 'relative'
-          }}>
-            {/* Cover background gradient with brand colors */}
-            <div style={{ 
-              height: '110px', 
-              background: 'var(--magenta-gradient)', 
-              opacity: 0.9,
-              position: 'relative'
-            }} />
-            
-            <div style={{ 
-              padding: '24px 32px', 
-              marginTop: '-50px',
-              display: 'flex',
-              alignItems: 'flex-end',
-              justifyContent: 'space-between',
-              gap: '24px',
-              position: 'relative',
-              zIndex: 1
-            }}>
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: '24px' }}>
-                {/* Avatar with White Border */}
-                <div style={{ 
-                  width: '100px', height: '100px', borderRadius: '50%', 
-                  backgroundColor: 'white', display: 'flex', alignItems: 'center', 
-                  justifyContent: 'center', border: '4px solid white',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.12)', overflow: 'hidden',
-                  flexShrink: 0
-                }}>
-                  {client.image_url ? (
-                    <img src={client.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
-                    <User size={48} color="var(--magenta-primary)" />
-                  )}
+        <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '28px', alignItems: 'start', animation: 'fadeIn 0.3s ease' }}>
+          {/* Sidebar: Profile + Ficha Técnica */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div className="glass-card" style={{ padding: '28px 24px', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)', textAlign: 'center' }}>
+              <div style={{
+                width: '96px', height: '96px', borderRadius: '50%', margin: '0 auto 16px',
+                backgroundColor: 'var(--bg-tertiary)', display: 'flex', alignItems: 'center',
+                justifyContent: 'center', border: '3px solid white',
+                boxShadow: '0 8px 20px rgba(160,80,106,0.15)', overflow: 'hidden'
+              }}>
+                {client.image_url ? (
+                  <img src={client.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <User size={40} color="var(--magenta-primary)" />
+                )}
+              </div>
+
+              <h2 style={{ margin: 0, fontSize: '19px', fontWeight: '850', color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>{client.name}</h2>
+
+              <div style={{ margin: '8px 0 6px', display: 'inline-block', fontSize: '12px', fontWeight: '750', color: 'var(--magenta-primary)', background: 'rgba(160,80,106,0.08)', padding: '4px 12px', borderRadius: '20px' }}>
+                V-{client.id_card || '00.000.000'}
+              </div>
+
+              <div style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: '600' }}>
+                <Phone size={13} color="var(--magenta-primary)" /> {client.phone}
+              </div>
+
+              <div style={{ borderTop: '1px solid var(--border-color)', marginTop: '18px', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px', textAlign: 'left' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                  <Users size={14} color="var(--magenta-primary)" />
+                  Total de visitas
+                  <span style={{ marginLeft: 'auto', fontWeight: '800', color: 'var(--text-primary)' }}>{history.length}</span>
                 </div>
-                
-                <div style={{ marginBottom: '8px' }}>
-                  <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '850', color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>{client.name}</h2>
-                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginTop: '6px', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '600' }}>V-{client.id_card || '00.000.000'}</span>
-                    <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--border-color)' }} />
-                    <span style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '500' }}>
-                      <Phone size={14} color="var(--magenta-primary)" /> {client.phone}
-                    </span>
-                    <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--border-color)' }} />
-                    <span style={{ 
-                      fontSize: '12px', 
-                      color: 'var(--magenta-primary)', 
-                      fontWeight: '750',
-                      backgroundColor: 'rgba(160,80,106,0.06)',
-                      padding: '4px 10px',
-                      borderRadius: '12px',
-                      border: '1px solid rgba(160,80,106,0.1)'
-                    }}>
-                      {history.length} visitas
-                    </span>
-                  </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                  <Calendar size={14} color="var(--magenta-primary)" />
+                  Última visita
+                  <span style={{ marginLeft: 'auto', fontWeight: '800', color: 'var(--text-primary)' }}>{lastVisitLabel}</span>
                 </div>
               </div>
 
               {!isEditing && (
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '8px' }}>
-                  <button 
-                    onClick={() => setIsEditing(true)}
-                    className="btn-interactive"
-                    style={{
-                      background: 'white',
-                      border: '1px solid var(--border-color)',
-                      color: 'var(--text-primary)',
-                      padding: '10px 18px',
-                      borderRadius: '12px',
-                      fontSize: '13px',
-                      fontWeight: '700',
-                      cursor: 'pointer',
-                      boxShadow: '0 2px 6px rgba(0,0,0,0.02)'
-                    }}
-                  >
-                    Editar Perfil
-                  </button>
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="btn-interactive"
+                  style={{
+                    marginTop: '18px', width: '100%', padding: '11px', borderRadius: '12px',
+                    border: 'none', background: 'var(--magenta-gradient)', color: 'white',
+                    fontWeight: '750', fontSize: '13px', cursor: 'pointer'
+                  }}
+                >
+                  Editar Perfil
+                </button>
+              )}
+            </div>
+
+            <div className="glass-card" style={{ padding: '22px', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
+              <h4 style={{ margin: '0 0 16px 0', fontSize: '13px', fontWeight: '850', color: 'var(--magenta-primary)', display: 'flex', alignItems: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                <FileText size={14} /> Información del Cliente
+              </h4>
+
+              {isEditing ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>NOMBRE</label>
+                    <input className="form-input" value={editData.name} onChange={e => setEditData({...editData, name: formatName(e.target.value)})} placeholder="Nombre" style={{ width: '100%', padding: '8px 12px' }} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>CÉDULA</label>
+                    <input className="form-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="Cédula" style={{ width: '100%', padding: '8px 12px' }} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>TELÉFONO</label>
+                    <input className="form-input" value={editData.phone} onChange={e => setEditData({...editData, phone: e.target.value})} placeholder="Teléfono" style={{ width: '100%', padding: '8px 12px' }} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>CUMPLEANOS</label>
+                    <BirthdayTextInput value={editData.birth_date} onChange={e => setEditData({...editData, birth_date: e.target.value})} style={{ width: '100%' }} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>NOTAS RÁPIDAS</label>
+                    <textarea
+                      className="form-input"
+                      value={editData.notes}
+                      onChange={e => setEditData({...editData, notes: e.target.value})}
+                      placeholder="Notas sobre la clienta..."
+                      rows={3}
+                      style={{ width: '100%', padding: '8px 12px', resize: 'vertical', fontFamily: 'inherit' }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                    <button className="btn-pink" style={{ flex: 1, padding: '10px', background: 'var(--magenta-gradient)', border: 'none', fontWeight: '750' }} onClick={() => { onUpdate(editData); setIsEditing(false); }}>Guardar</button>
+                    <button className="btn-interactive" style={{ flex: 1, padding: '10px', background: 'none', border: '1px solid var(--border-color)', color: 'var(--text-muted)', borderRadius: '12px', fontSize: '13px', fontWeight: '600' }} onClick={() => setIsEditing(false)}>Cancelar</button>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <DetailItem label="Cumpleaños" value={client.birth_date ? new Date(client.birth_date + 'T00:00:00').toLocaleDateString([], {day: '2-digit', month: 'long', year: 'numeric'}) : 'No registrado'} />
+                  <DetailItem label="Fecha de registro" value={client.created_at ? new Date(client.created_at).toLocaleDateString() : 'N/A'} />
+                  <div>
+                    <p style={{ margin: '0 0 4px', fontSize: '13px', color: 'var(--text-secondary)' }}>Notas rápidas</p>
+                    <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-primary)', fontWeight: '600', lineHeight: 1.5 }}>
+                      {client.notes || 'Sin notas registradas.'}
+                    </p>
+                  </div>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Body Columns */}
-          <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '28px', alignItems: 'start' }}>
-            {/* Left Column: Ficha Técnica */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
-                <h4 style={{ margin: '0 0 16px 0', fontSize: '14px', fontWeight: '850', color: 'var(--magenta-primary)', display: 'flex', alignItems: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  <Activity size={16} /> Ficha Técnica Capilar
-                </h4>
-                
-                {isEditing ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>NOMBRE</label>
-                      <input className="form-input" value={editData.name} onChange={e => setEditData({...editData, name: formatName(e.target.value)})} placeholder="Nombre" style={{ width: '100%', padding: '8px 12px' }} />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>CÉDULA</label>
-                      <input className="form-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="Cédula" style={{ width: '100%', padding: '8px 12px' }} />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>TELÉFONO</label>
-                      <input className="form-input" value={editData.phone} onChange={e => setEditData({...editData, phone: e.target.value})} placeholder="Teléfono" style={{ width: '100%', padding: '8px 12px' }} />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>CUMPLEANOS</label>
-                      <BirthdayTextInput value={editData.birth_date} onChange={e => setEditData({...editData, birth_date: e.target.value})} style={{ width: '100%' }} />
-                    </div>
-                    
-                    <JanaSelect 
-                      label="Tipo de Cabello"
-                      value={editData.hair_type}
-                      onChange={(val) => setEditData({...editData, hair_type: val})}
-                      options={[
-                        { label: 'Normal', value: 'Normal' },
-                        { label: 'Graso', value: 'Graso' },
-                        { label: 'Seco', value: 'Seco' },
-                        { label: 'Mixto', value: 'Mixto' }
-                      ]}
-                    />
-                    <JanaSelect 
-                      label="Cuero Cabelludo"
-                      value={editData.scalp_type}
-                      onChange={(val) => setEditData({...editData, scalp_type: val})}
-                      options={[
-                        { label: 'Sano', value: 'Sano' },
-                        { label: 'Sensible', value: 'Sensible' },
-                        { label: 'Irritado', value: 'Irritado' },
-                        { label: 'Caspa', value: 'Caspa' }
-                      ]}
-                    />
-                    <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                      <button className="btn-pink" style={{ flex: 1, padding: '10px', background: 'var(--magenta-gradient)', border: 'none', fontWeight: '750' }} onClick={() => { onUpdate(editData); setIsEditing(false); }}>Guardar</button>
-                      <button className="btn-interactive" style={{ flex: 1, padding: '10px', background: 'none', border: '1px solid var(--border-color)', color: 'var(--text-muted)', borderRadius: '12px', fontSize: '13px', fontWeight: '600' }} onClick={() => setIsEditing(false)}>Cancelar</button>
-                    </div>
-                  </div>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <DetailItem label="Tipo de Cabello" value={client.hair_type || 'Normal'} />
-                    <DetailItem label="Cuero Cabelludo" value={client.scalp_type || 'Normal'} />
-                    <DetailItem label="Cumpleaños" value={client.birth_date ? new Date(client.birth_date + 'T00:00:00').toLocaleDateString([], {day: '2-digit', month: 'long', year: 'numeric'}) : 'No registrado'} />
-                    <DetailItem label="Registrado" value={client.created_at ? new Date(client.created_at).toLocaleDateString() : 'N/A'} />
-                  </div>
-                )}
-              </div>
+          {/* Right Column: Tabs Content */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ display: 'flex', gap: '28px', borderBottom: '1px solid var(--border-color)' }}>
+              {[
+                { id: 'gallery', label: 'Galería de trabajos', icon: <ImageIcon size={16} /> },
+                { id: 'diagnoses', label: 'Diagnóstico capilar', icon: <Activity size={16} /> },
+                { id: 'packages', label: 'Paquetes y sesiones', icon: <Package size={16} /> },
+                { id: 'history', label: 'Historial de visitas', icon: <Calendar size={16} /> }
+              ].map(tab => {
+                const isActive = activeSubTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => { setActiveSubTab(tab.id); setShowCollage(false); }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '0 0 12px 0',
+                      border: 'none',
+                      borderBottom: isActive ? '2px solid var(--magenta-primary)' : '2px solid transparent',
+                      background: 'transparent',
+                      color: isActive ? 'var(--magenta-primary)' : 'var(--text-secondary)',
+                      fontWeight: isActive ? '800' : '600',
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      marginBottom: '-1px',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    {tab.icon}
+                    {tab.label}
+                  </button>
+                );
+              })}
             </div>
-            
-            {/* Right Column: Tabs Content */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <div style={{ 
-                display: 'inline-flex', 
-                background: 'var(--bg-tertiary)', 
-                padding: '6px', 
-                borderRadius: '16px', 
-                border: '1px solid var(--border-color)',
-                gap: '4px',
-                alignSelf: 'flex-start'
-              }}>
-                {[
-                  { id: 'gallery', label: 'Galería de Trabajos', icon: <ImageIcon size={16} /> },
-                  { id: 'diagnoses', label: 'Diagnóstico Capilar', icon: <Activity size={16} /> },
-                  { id: 'packages', label: 'Paquetes y Sesiones', icon: <Package size={16} /> },
-                  { id: 'history', label: 'Historial de Visitas', icon: <Calendar size={16} /> }
-                ].map(tab => {
-                  const isActive = activeSubTab === tab.id;
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => { setActiveSubTab(tab.id); setShowCollage(false); }}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        padding: '8px 20px',
-                        borderRadius: '12px',
-                        border: 'none',
-                        background: isActive ? 'white' : 'transparent',
-                        color: isActive ? 'var(--magenta-primary)' : 'var(--text-secondary)',
-                        fontWeight: isActive ? '800' : '600',
-                        fontSize: '13px',
-                        cursor: 'pointer',
-                        boxShadow: isActive ? '0 4px 12px rgba(160, 80, 106, 0.06)' : 'none',
-                        transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)'
-                      }}
-                    >
-                      {tab.icon}
-                      {tab.label}
-                    </button>
-                  );
-                })}
-              </div>
 
-              <div>
-                {renderSubTabContent()}
-              </div>
+            <div>
+              {renderSubTabContent()}
             </div>
           </div>
         </div>
@@ -2859,24 +2971,35 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
       <AnimatedModal isOpen={!!pendingPhoto}>
         {(overlayClass, cardClass) => (
           <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-            <div className={`glass-card ${cardClass}`} style={{ maxWidth: '400px', width: '100%', borderRadius: '32px', padding: '24px', border: '1.5px solid rgba(217,70,168,0.3)' }}>
-              <h3 style={{ 
-                marginBottom: '20px', 
+            <div className={cardClass} style={{
+              width: '100%',
+              maxWidth: 'min(90vw, 560px)',
+              borderRadius: '36px',
+              padding: '36px',
+              background: 'linear-gradient(160deg, #fff3f6 0%, #fbe3ec 100%)',
+              border: '1.5px solid rgba(217,70,168,0.3)',
+              boxShadow: '0 30px 70px rgba(160,80,106,0.25)'
+            }}>
+              <h3 style={{
+                marginBottom: '24px',
                 fontWeight: '900',
+                fontSize: '22px',
+                color: 'var(--text-primary)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '10px'
+                gap: '12px'
               }}>
-                <Camera size={22} color="var(--pink-primary)" />
+                <Camera size={26} color="var(--pink-primary)" />
                 <span>Configurar <span className="text-pink">Foto</span></span>
               </h3>
-              
-              <div style={{ width: '100%', aspectRatio: '1/1', borderRadius: '16px', overflow: 'hidden', marginBottom: '20px' }}>
+
+              <div style={{ width: '100%', maxWidth: '340px', margin: '0 auto 24px', aspectRatio: '1/1', borderRadius: '20px', overflow: 'hidden', border: '1px solid rgba(217,70,168,0.2)' }}>
                 <img src={pendingPhoto} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <JanaSelect 
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                <JanaSelect
+                  variant="light"
                   label="TIPO DE FOTO"
                   value={photoMeta.type}
                   onChange={(val) => setPhotoMeta({ ...photoMeta, type: val })}
@@ -2887,22 +3010,23 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   ]}
                 />
 
-                <JanaSelect 
+                <JanaSelect
+                  variant="light"
                   label="ASOCIAR A VISITA (OPCIONAL)"
                   value={photoMeta.serviceId}
                   onChange={(val) => setPhotoMeta({ ...photoMeta, serviceId: val })}
                   options={[
                     { label: 'Ninguna', value: null },
-                    ...history.map(h => ({ 
-                      label: `${new Date(h.created_at).toLocaleDateString()} - ${h.services?.name || h.description.split(' - ')[0].replace('Servicio: ', '')}`, 
-                      value: h.id 
+                    ...history.map(h => ({
+                      label: `${new Date(h.created_at).toLocaleDateString()} - ${h.services?.name || h.description.split(' - ')[0].replace('Servicio: ', '')}`,
+                      value: h.id
                     }))
                   ]}
                 />
 
-                <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
-                  <button onClick={() => setPendingPhoto(null)} style={{ flex: 1, padding: '14px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.1)', background: 'none', color: 'white', fontWeight: '700' }}>CANCELAR</button>
-                  <button onClick={confirmSavePhoto} className="btn-pink" style={{ flex: 1, height: '48px', borderRadius: '14px' }}>GUARDAR FOTO</button>
+                <div style={{ display: 'flex', gap: '14px', marginTop: '12px' }}>
+                  <button onClick={() => setPendingPhoto(null)} className="btn-interactive" style={{ flex: 1, padding: '16px', borderRadius: '16px', border: '1px solid var(--border-color)', background: 'rgba(255,255,255,0.6)', color: 'var(--text-muted)', fontWeight: '700', fontSize: '14px', cursor: 'pointer' }}>CANCELAR</button>
+                  <button onClick={confirmSavePhoto} className="btn-pink" style={{ flex: 1, height: '54px', borderRadius: '16px', fontSize: '14px' }}>GUARDAR FOTO</button>
                 </div>
               </div>
             </div>
@@ -3038,6 +3162,55 @@ const VisitDetailModal = ({ isOpen, visit, onClose, gallery = [] }) => {
         </div>
       )}
     </AnimatedModal>
+  );
+};
+
+const ComparisonCard = ({ comparison, onDelete }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const formattedDate = comparison.date
+    ? new Date(comparison.date).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' })
+    : '';
+
+  return (
+    <div style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-color)', backgroundColor: 'white', position: 'relative' }}>
+      <div style={{ display: 'flex', aspectRatio: '4/3' }}>
+        <div style={{ flex: 1, position: 'relative' }}>
+          <img src={comparison.beforeUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <span style={{ position: 'absolute', bottom: '8px', left: '8px', backgroundColor: 'rgba(0,0,0,0.7)', padding: '3px 8px', borderRadius: '4px', fontSize: '9px', fontWeight: '900', color: 'white' }}>ANTES</span>
+        </div>
+        <div style={{ flex: 1, position: 'relative' }}>
+          <img src={comparison.afterUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <span style={{ position: 'absolute', bottom: '8px', right: '8px', backgroundColor: 'var(--magenta-primary)', padding: '3px 8px', borderRadius: '4px', fontSize: '9px', fontWeight: '900', color: 'white' }}>DESPUÉS</span>
+        </div>
+      </div>
+      <div style={{ padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+        <div style={{ minWidth: 0 }}>
+          <p style={{ margin: 0, fontSize: '12px', fontWeight: '750', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{comparison.title}</p>
+          <p style={{ margin: '2px 0 0', fontSize: '11px', color: 'var(--text-muted)' }}>{formattedDate}</p>
+        </div>
+        <div style={{ position: 'relative', flexShrink: 0 }}>
+          <button
+            onClick={() => setMenuOpen(o => !o)}
+            style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px', display: 'flex' }}
+          >
+            <MoreHorizontal size={16} />
+          </button>
+          {menuOpen && (
+            <>
+              <div onClick={() => setMenuOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 10 }} />
+              <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '4px', backgroundColor: 'white', border: '1px solid var(--border-color)', borderRadius: '10px', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', zIndex: 11, overflow: 'hidden', minWidth: '120px' }}>
+                <button
+                  onClick={() => { setMenuOpen(false); onDelete(); }}
+                  style={{ width: '100%', padding: '10px 14px', background: 'none', border: 'none', color: '#d44e6c', fontSize: '12px', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', textAlign: 'left' }}
+                >
+                  <Trash2 size={13} /> Eliminar
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 

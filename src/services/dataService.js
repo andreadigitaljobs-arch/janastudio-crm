@@ -735,6 +735,17 @@ export const dataService = {
     return result;
   },
 
+  async getClientTransactions(clientId) {
+    const { data, error } = await supabase
+      .from('transactions')
+      .select('*')
+      .eq('client_id', clientId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return _asArray(data);
+  },
+
   async addTransaction(transaction) {
     _cacheInvalidate('transactions');
     const { data, error } = await supabase
