@@ -1748,21 +1748,40 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
   return (
     <div className="animate-fade-in" style={{ paddingBottom: '60px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <button onClick={onBack} style={{ color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          &larr; Volver al Listado
+        <button 
+          onClick={onBack} 
+          style={{ 
+            color: 'var(--pink-primary)', 
+            background: 'rgba(212,160,154,0.12)', 
+            border: '1px solid rgba(212,160,154,0.2)', 
+            padding: '8px 14px',
+            borderRadius: '20px',
+            cursor: 'pointer', 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '6px',
+            fontSize: '13px',
+            fontWeight: '750',
+            transition: 'all 0.2s',
+          }}
+          className="btn-interactive"
+        >
+          &larr; Volver
         </button>
         <button 
           onClick={onDelete}
           style={{ 
-            color: '#ff453a', 
-            background: 'rgba(255, 69, 58, 0.1)', 
-            border: 'none', 
-            padding: '8px 16px', 
-            borderRadius: '8px', 
+            color: '#d44e6c', 
+            background: 'rgba(212, 78, 108, 0.08)', 
+            border: '1px solid rgba(212, 78, 108, 0.15)', 
+            padding: '8px 14px', 
+            borderRadius: '20px', 
             cursor: 'pointer',
             fontSize: '13px',
-            fontWeight: '600'
+            fontWeight: '750',
+            transition: 'all 0.2s'
           }}
+          className="btn-interactive"
         >
           Eliminar Ficha
         </button>
@@ -1771,55 +1790,115 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
       {isMobile ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {/* Mobile: Combined User Info + Ficha Técnica Card */}
-          <div className="glass-card" style={{ padding: '20px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-              {/* User Info Column */}
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ width: '70px', height: '70px', borderRadius: '50%', backgroundColor: 'var(--bg-tertiary)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 10px', border: '2px solid var(--border-color)' }}>
-                  <User size={36} color="var(--pink-primary)" />
+          <div className="glass-card" style={{ padding: '0', overflow: 'hidden', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)', animation: 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+            {/* Header Banner */}
+            <div style={{ height: '70px', background: 'linear-gradient(135deg, var(--pink-secondary) 0%, rgba(212,160,154,0.4) 100%)', position: 'relative' }} />
+            
+            <div style={{ padding: '20px', marginTop: '-35px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginBottom: '20px' }}>
+                {/* Avatar with Pink Pulse Animation */}
+                <div 
+                  className="pulse-pink"
+                  style={{ 
+                    width: '74px', height: '74px', borderRadius: '50%', 
+                    backgroundColor: 'white', display: 'flex', alignItems: 'center', 
+                    justifyContent: 'center', border: '3px solid var(--pink-primary)', 
+                    boxShadow: '0 4px 12px rgba(212,160,154,0.3)', overflow: 'hidden'
+                  }}
+                >
+                  {client.image_url ? (
+                    <img src={client.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <User size={38} color="var(--pink-primary)" />
+                  )}
                 </div>
+                
                 {isEditing ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <input className="form-input" value={editData.name} onChange={e => setEditData({...editData, name: formatName(e.target.value)})} placeholder="Nombre" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
-                    <input className="form-input" value={editData.phone} onChange={e => setEditData({...editData, phone: e.target.value})} placeholder="Teléfono" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
-                    <button className="btn-pink" onClick={() => { onUpdate(editData); setIsEditing(false); }} style={{ fontSize: '12px', padding: '8px' }}>Guardar</button>
-                    <button onClick={() => setIsEditing(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '11px' }}>Cancelar</button>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', marginTop: '12px' }}>
+                    <input className="form-input" value={editData.name} onChange={e => setEditData({...editData, name: formatName(e.target.value)})} placeholder="Nombre" style={{ width: '100%', fontSize: '13px', padding: '10px' }} />
+                    <input className="form-input" value={editData.phone} onChange={e => setEditData({...editData, phone: e.target.value})} placeholder="Teléfono" style={{ width: '100%', fontSize: '13px', padding: '10px' }} />
+                    <button className="btn-pink" onClick={() => { onUpdate(editData); setIsEditing(false); }} style={{ fontSize: '13px', padding: '10px', fontWeight: '700' }}>Guardar Cambios</button>
+                    <button onClick={() => setIsEditing(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '12px', cursor: 'pointer' }}>Cancelar</button>
                   </div>
                 ) : (
                   <>
-                    <h3 style={{ fontSize: '15px', marginBottom: '4px', fontWeight: '800' }}>{client.name}</h3>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '10px', marginBottom: '8px' }}>V-{client.id_card || '00.000.000'}</p>
-                    <p style={{ color: 'var(--text-secondary)', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', fontSize: '11px' }}>
-                      <Phone size={10} color="var(--pink-primary)" /> {client.phone}
-                    </p>
-                    <div style={{ backgroundColor: 'var(--bg-tertiary)', padding: '6px', borderRadius: '6px', fontSize: '11px' }}>
-                      <span style={{ color: 'var(--pink-primary)', fontWeight: '700' }}>{history.length}</span> Visitas
+                    <h3 style={{ fontSize: '18px', fontWeight: '850', color: 'var(--text-primary)', marginTop: '8px', marginBottom: '2px' }}>{client.name}</h3>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '11px', fontWeight: '600', marginBottom: '8px', letterSpacing: '0.5px' }}>V-{client.id_card || '00.000.000'}</p>
+                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', width: '100%', marginTop: '4px' }}>
+                      {client.phone && (
+                        <a 
+                          href={`tel:${client.phone}`}
+                          style={{ 
+                            textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px', 
+                            fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '700',
+                            backgroundColor: 'rgba(212,160,154,0.1)', padding: '6px 12px', borderRadius: '20px',
+                            border: '1px solid rgba(212,160,154,0.15)', transition: 'transform 0.2s'
+                          }}
+                          className="btn-interactive"
+                        >
+                          <Phone size={12} color="var(--pink-primary)" /> Llamar
+                        </a>
+                      )}
+                      <div 
+                        style={{ 
+                          display: 'flex', alignItems: 'center', gap: '6px', 
+                          fontSize: '12px', color: 'var(--magenta-primary)', fontWeight: '700',
+                          backgroundColor: 'rgba(160,80,106,0.06)', padding: '6px 12px', borderRadius: '20px',
+                          border: '1px solid rgba(160,80,106,0.1)'
+                        }}
+                      >
+                        <Sparkles size={12} color="var(--magenta-primary)" /> {history.length} visitas
+                      </div>
                     </div>
                   </>
                 )}
               </div>
-              {/* Ficha Técnica Column */}
-              <div>
-                <h4 style={{ marginBottom: '10px', fontSize: '13px', fontWeight: '800' }}>Ficha Técnica Capilar</h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <DetailItem label="Cabello" value={client.hair_type || 'Normal'} />
-                  <DetailItem label="Cuero" value={client.scalp_type || 'Normal'} />
-                  <DetailItem label="Cumple" value={client.birth_date ? new Date(client.birth_date + 'T00:00:00').toLocaleDateString([], {day: '2-digit', month: 'short'}) : 'N/A'} />
-                  <DetailItem label="Registro" value={client.created_at ? new Date(client.created_at).toLocaleDateString() : 'N/A'} />
+
+              {/* Ficha Técnica Section with Pink Headers & Pink Icons */}
+              <div style={{ borderTop: '1px dashed var(--border-color)', paddingTop: '16px', marginTop: '16px' }}>
+                <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', fontWeight: '850', color: 'var(--magenta-primary)', display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <Activity size={14} color="var(--pink-primary)" /> Ficha Técnica Capilar
+                </h4>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <div style={{ padding: '10px', borderRadius: '12px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>CABELLO</span>
+                    <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '700' }}>{client.hair_type || 'Normal'}</span>
+                  </div>
+                  <div style={{ padding: '10px', borderRadius: '12px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>CUERO</span>
+                    <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '700' }}>{client.scalp_type || 'Normal'}</span>
+                  </div>
+                  <div style={{ padding: '10px', borderRadius: '12px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>CUMPLE</span>
+                    <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '700' }}>{client.birth_date ? new Date(client.birth_date + 'T00:00:00').toLocaleDateString([], {day: '2-digit', month: 'short'}) : 'N/A'}</span>
+                  </div>
+                  <div style={{ padding: '10px', borderRadius: '12px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>REGISTRO</span>
+                    <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '700' }}>{client.created_at ? new Date(client.created_at).toLocaleDateString() : 'N/A'}</span>
+                  </div>
                 </div>
                 {!isEditing && (
                   <button 
                     onClick={() => setIsEditing(true)}
-                    style={{ width: '100%', marginTop: '10px', background: 'none', border: '1px solid var(--pink-primary)', color: 'var(--pink-primary)', padding: '5px', borderRadius: '6px', cursor: 'pointer', fontSize: '11px', fontWeight: '700' }}
+                    style={{ 
+                      width: '100%', marginTop: '12px', background: 'white', 
+                      border: '1px solid var(--pink-primary)', color: 'var(--pink-primary)', 
+                      padding: '8px', borderRadius: '12px', cursor: 'pointer', 
+                      fontSize: '12px', fontWeight: '700', display: 'flex', 
+                      alignItems: 'center', justifyContent: 'center', gap: '6px',
+                      transition: 'all 0.2s'
+                    }}
+                    className="btn-interactive"
                   >
-                    Editar
+                    ✏️ Editar Ficha Capilar
                   </button>
                 )}
               </div>
             </div>
+            
             {isEditing && (
-              <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <input className="form-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="Cédula" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
+              <div style={{ padding: '0 20px 20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <input className="form-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="Cédula" style={{ width: '100%', fontSize: '13px', padding: '10px' }} />
                 <BirthdayTextInput value={editData.birth_date} onChange={e => setEditData({...editData, birth_date: e.target.value})} style={{ width: '100%' }} />
                 <JanaSelect 
                   label="Tipo de Cabello"
@@ -1848,32 +1927,44 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
           </div>
 
           {/* Mobile Tabs */}
-          <div style={{ display: 'flex', gap: '4px', overflowX: 'auto', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px', marginBottom: '16px' }}>
+          <div 
+            style={{ 
+              display: 'flex', gap: '6px', overflowX: 'auto', 
+              paddingBottom: '8px', marginBottom: '8px',
+              scrollbarWidth: 'none', msOverflowStyle: 'none'
+            }}
+            className="no-scrollbar"
+          >
             {[
               { id: 'gallery', label: 'Galería', icon: <ImageIcon size={14} /> },
               { id: 'diagnoses', label: 'Salud Capilar', icon: <Activity size={14} /> },
               { id: 'packages', label: 'Paquetes', icon: <Package size={14} /> },
               { id: 'history', label: 'Visitas', icon: <Calendar size={14} /> }
-            ].map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => { setActiveSubTab(tab.id); setShowCollage(false); }}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '4px',
-                  padding: '6px 12px', borderRadius: '8px', border: 'none',
-                  background: activeSubTab === tab.id ? 'rgba(196,139,159,0.1)' : 'transparent',
-                  color: activeSubTab === tab.id ? 'var(--pink-primary)' : 'var(--text-secondary)',
-                  fontWeight: activeSubTab === tab.id ? '700' : '500',
-                  fontSize: '12px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0
-                }}
-              >
-                {tab.icon}
-                {tab.label}
-              </button>
-            ))}
+            ].map(tab => {
+              const isActive = activeSubTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => { setActiveSubTab(tab.id); setShowCollage(false); }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '6px',
+                    padding: '8px 14px', borderRadius: '20px', border: isActive ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)',
+                    background: isActive ? 'linear-gradient(135deg, rgba(196,139,159,0.12) 0%, rgba(212,160,154,0.06) 100%)' : 'white',
+                    color: isActive ? 'var(--pink-primary)' : 'var(--text-secondary)',
+                    fontWeight: '800',
+                    fontSize: '12px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    transform: isActive ? 'scale(1.02)' : 'scale(1)',
+                    boxShadow: isActive ? '0 4px 10px rgba(212,160,154,0.15)' : 'none'
+                  }}
+                >
+                  <span style={{ display: 'flex', color: isActive ? 'var(--pink-primary)' : 'var(--text-muted)' }}>{tab.icon}</span>
+                  {tab.label}
+                </button>
+              );
+            })}
           </div>
-
-          <div style={{ marginBottom: '20px' }}>
+          <div style={{ marginBottom: '20px', animation: 'fadeIn 0.3s ease' }}>
             {renderSubTabContent()}
           </div>
         </div>
