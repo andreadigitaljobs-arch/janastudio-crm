@@ -515,13 +515,9 @@ export default function OnboardingModule({ onComplete }) {
         <div className="onboarding-content-panel">
           <div className="onboarding-content-inner" key={currentSlide}>
             <h1 className="onboarding-title onboarding-title-desktop">
-              {slides[currentSlide].desktopDark.map((line, i) => (
-                <React.Fragment key={i}>
-                  {line}
-                  {i < slides[currentSlide].desktopDark.length - 1 && <br />}
-                </React.Fragment>
-              ))}
-              <span className="onboarding-title-accent">{slides[currentSlide].titleAccent}</span>
+              {slides[currentSlide].titleLine1}
+              <br />
+              <span className="onboarding-title-accent">{slides[currentSlide].titlePrefix}{slides[currentSlide].titleAccent}</span>
             </h1>
             <h1 className="onboarding-title onboarding-title-mobile">
               {slides[currentSlide].titleLine1}
