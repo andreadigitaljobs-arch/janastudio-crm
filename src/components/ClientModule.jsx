@@ -659,32 +659,89 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                 </div>
               )}
 
-              {/* Mobile birthdays */}
-              <div style={{ marginTop: '28px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                  <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Cake size={18} color="var(--pink-primary)" /> Próximos cumpleañeros
-                  </h3>
+              {/* Row 2: Bottom aligned widgets (Mobile) */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '28px' }}>
+                {/* Left Column: Seguimientos pendientes */}
+                <div style={{ minWidth: 0 }}>
+                  <div className="glass-card animate-slide-up" style={{ padding: '20px', borderRadius: '24px', border: '1px solid var(--border-color)', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.03)', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                      <h3 style={{ fontSize: '15px', fontWeight: '850', color: 'var(--text-primary)', margin: 0 }}>
+                        Seguimientos pendientes
+                      </h3>
+                      <span onClick={() => onNavigate && onNavigate('notifications')} style={{ fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '750', cursor: 'pointer' }}>Ver todos</span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {[
+                        { text: 'Confirmar cita de Valentina Pérez', line1: '12 may 2025', line2: '11:30 AM', icon: Calendar, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' },
+                        { text: 'Enviar rutina post cuidado', line1: 'Laura Martínez', line2: '18 may 2025', icon: Mail, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' },
+                        { text: 'Recordatorio de evaluación', line1: 'Andrea Rodríguez', line2: '20 may 2025', icon: Bell, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' }
+                      ].map((item, i) => (
+                        <div key={i} style={{ padding: '12px 14px', borderRadius: '16px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', background: 'white' }} className="interactive-hover-card stagger-row">
+                          <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <item.icon size={15} color={item.color} />
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '11.5px', fontWeight: '700', color: 'var(--text-primary)', lineHeight: '1.3' }}>{item.text}</div>
+                            <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', marginTop: '2px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                              <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.line1}</div>
+                              <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.line2}</div>
+                            </div>
+                          </div>
+                          <ChevronRight size={12} color="var(--text-muted)" style={{ marginLeft: '4px' }} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                {upcomingBirthdays.length === 0 ? (
-                  <div className="glass-card" style={{ padding: '20px', borderRadius: '12px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
-                    <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>No hay fechas de cumpleaños registradas.</p>
-                  </div>
-                ) : (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
-                    {upcomingBirthdays.map((c, i) => (
-                      <div key={i} className="glass-card" style={{ padding: '14px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'rgba(212, 160, 154, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <Cake size={16} color="var(--pink-primary)" />
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)' }}>{c.name}</div>
-                          <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{c.daysLeft === 0 ? '¡Hoy cumple años!' : `En ${c.daysLeft} días`}</div>
-                        </div>
+
+                {/* Right Column: Próximos cumpleaños */}
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div className="glass-card animate-slide-up interactive-hover-card" style={{ padding: '20px', borderRadius: '24px', border: '1px solid var(--border-color)', backgroundColor: '#f8dbd9', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: '230px' }}>
+                    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundImage: 'linear-gradient(90deg, #f8dbd9 45%, rgba(248, 219, 217, 0) 95%)', zIndex: 1, pointerEvents: 'none' }} />
+                    <img 
+                      src="/cumpleanos_jana.png" 
+                      alt="" 
+                      style={{ 
+                        position: 'absolute', 
+                        right: 0, 
+                        top: 0, 
+                        height: '100%', 
+                        width: 'auto', 
+                        objectFit: 'contain', 
+                        pointerEvents: 'none',
+                        zIndex: 0
+                      }} 
+                    />
+                    <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', height: '100%', flex: 1 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                        <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          Próximos cumpleaños
+                        </h3>
                       </div>
-                    ))}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingBottom: '20px', justifyContent: 'center', flex: 1 }}>
+                        {upcomingBirthdays.length === 0 ? (
+                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic', padding: '10px 0' }}>
+                            No hay fechas de cumpleaños registradas.
+                          </div>
+                        ) : (
+                          upcomingBirthdays.map((c, i) => (
+                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                              <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(212, 160, 154, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <Gift size={12} color="var(--pink-primary)" />
+                              </div>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontSize: '11.5px', fontWeight: '700', color: 'var(--text-primary)' }}>{c.name}</div>
+                                <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                                  {c.daysLeft === 0 ? '¡Hoy cumple años!' : `En ${c.daysLeft} días`}
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
             </div>
           ) : (
