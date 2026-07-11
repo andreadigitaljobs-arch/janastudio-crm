@@ -41,15 +41,16 @@ import { useModal } from './context/ModalContext';
 import { canAccessModule } from './utils/roles';
 import { preloadImages, getStaffAvatarUrl } from './utils/preloadImages';
 
-const DashboardModule = lazy(() => import('./components/DashboardModule'));
-const ClientModule = lazy(() => import('./components/ClientModule'));
+import DashboardModule from './components/DashboardModule';
+import ClientModule from './components/ClientModule';
+import SchedulingModule from './components/SchedulingModule';
+import CheckoutPOS from './components/CheckoutPOS';
+
 const PersonnelModule = lazy(() => import('./components/PersonnelModule'));
 const FinanceModule = lazy(() => import('./components/FinanceModule'));
 const ServicesModule = lazy(() => import('./components/ServicesModule'));
 const InventoryModule = lazy(() => import('./components/InventoryModule'));
 const CostingModule = lazy(() => import('./components/CostingModule'));
-const SchedulingModule = lazy(() => import('./components/SchedulingModule'));
-const CheckoutPOS = lazy(() => import('./components/CheckoutPOS'));
 const ReceptionModule = lazy(() => import('./components/ReceptionModule'));
 const ReportsModule = lazy(() => import('./components/ReportsModule'));
 const LaserModule = lazy(() => import('./components/LaserModule'));
