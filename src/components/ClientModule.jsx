@@ -645,9 +645,9 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
             /* Desktop Split Layout (Master-Detail Columns) */
             <>
               {/* Search, Filter Chips and Sort Dropdown Row */}
-              <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', alignItems: 'center', flexWrap: 'nowrap' }}>
                   {/* Search box */}
-                  <div style={{ width: '380px', position: 'relative', flexShrink: 0 }}>
+                  <div style={{ width: '220px', position: 'relative', flexShrink: 0 }}>
                     <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                     <input
                       type="text"
@@ -705,14 +705,14 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                   <div style={{ position: 'relative', marginLeft: 'auto' }}>
                     <div 
                       onClick={() => setShowSortDropdown(!showSortDropdown)}
-                      style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#6b7280', fontWeight: '500', cursor: 'pointer', padding: '8px 16px', borderRadius: '12px', border: '1px solid #fae8eb', backgroundColor: 'white' }}
+                      style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#6b7280', fontWeight: '500', cursor: 'pointer', padding: '8px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'white' }}
                       className="btn-interactive"
                     >
                       {sortBy === 'recent' && 'Más recientes'}
                       {sortBy === 'oldest' && 'Más antiguos'}
                       {sortBy === 'az' && 'Nombre A-Z'}
                       {sortBy === 'za' && 'Nombre Z-A'}
-                      <ChevronDown size={14} color="#e69fa8" />
+                      <ChevronDown size={14} color="var(--pink-primary)" />
                     </div>
                     {showSortDropdown && (
                       <>
