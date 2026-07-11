@@ -639,7 +639,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
               {/* Search, Filter Chips and Sort Dropdown Row */}
               <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
                   {/* Search box */}
-                  <div style={{ width: '280px', position: 'relative', flexShrink: 0 }}>
+                  <div style={{ width: '380px', position: 'relative', flexShrink: 0 }}>
                     <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                     <input
                       type="text"
