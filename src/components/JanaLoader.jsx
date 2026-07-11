@@ -127,7 +127,7 @@ const JanaLoader = ({ visible }) => {
   return (
     <div
       ref={containerRef}
-      className="loader-container"
+      className={`loader-container ${visible ? 'loader-entering' : 'loader-exiting'}`}
       style={{
         opacity: visible ? 1 : 0,
         pointerEvents: visible ? 'all' : 'none',
@@ -264,6 +264,7 @@ const JanaLoader = ({ visible }) => {
           margin-bottom: 30px;
           display: flex;
           justify-content: center;
+          animation: luxuryScaleIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
         }
         .rose-gold-spinner {
           width: 46px;
@@ -282,6 +283,7 @@ const JanaLoader = ({ visible }) => {
         /* --- Typography --- */
         .loader-info-wrapper {
           margin-bottom: 25px;
+          animation: luxurySlideUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
         }
         .loader-title {
           font-family: 'Playfair Display', Georgia, serif;
@@ -318,6 +320,7 @@ const JanaLoader = ({ visible }) => {
           width: 100%;
           max-width: 320px;
           margin-bottom: 70px;
+          animation: luxurySlideUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
         }
         .custom-progress-track {
           flex: 1;
@@ -355,6 +358,7 @@ const JanaLoader = ({ visible }) => {
           flex-direction: column;
           align-items: center;
           gap: 6px;
+          animation: fadeInScale 1s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
         }
         @media (max-height: 600px) {
           .loader-footer {
@@ -391,9 +395,48 @@ const JanaLoader = ({ visible }) => {
           50% { transform: scale(1.15); }
         }
 
+        /* --- Entry Animations --- */
         @keyframes fadeInScale {
           0% { opacity: 0; transform: scale(0.96); }
           100% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes luxurySlideUp {
+          from { opacity: 0; transform: translateY(24px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes luxuryScaleIn {
+          from { opacity: 0; transform: scale(0.85); }
+          to { opacity: 1; transform: scale(1); }
+        }
+
+        /* --- Exit Animations --- */
+        .loader-exiting .loader-logo-wrapper {
+          animation: luxurySlideUpOut 0.5s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+        }
+        .loader-exiting .loader-spinner-wrapper {
+          animation: luxuryScaleOut 0.5s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+        }
+        .loader-exiting .loader-info-wrapper {
+          animation: luxurySlideDownOut 0.5s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+        }
+        .loader-exiting .loader-progress-row {
+          animation: luxuryScaleOut 0.5s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+        }
+        .loader-exiting .loader-footer {
+          animation: luxurySlideDownOut 0.5s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+        }
+
+        @keyframes luxurySlideUpOut {
+          from { opacity: 1; transform: translateY(0); }
+          to { opacity: 0; transform: translateY(-24px); }
+        }
+        @keyframes luxurySlideDownOut {
+          from { opacity: 1; transform: translateY(0); }
+          to { opacity: 0; transform: translateY(24px); }
+        }
+        @keyframes luxuryScaleOut {
+          from { opacity: 1; transform: scale(1); }
+          to { opacity: 0; transform: scale(0.85); }
         }
       `}</style>
     </div>
