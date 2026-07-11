@@ -724,20 +724,6 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                     <div style={{ fontSize: '11px', color: 'var(--pink-primary)', fontWeight: '600', marginTop: '6px', cursor: 'pointer' }}>✏️ Editar nota</div>
                   </div>
 
-                  {/* Evolution */}
-                  <div style={{ padding: '0 20px 16px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                      <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>Evolución</span>
-                      <span style={{ fontSize: '11px', color: 'var(--pink-primary)', fontWeight: '600', cursor: 'pointer' }}>Ver todo</span>
-                    </div>
-                    <div style={{ display: 'flex', gap: '6px' }}>
-                      {[1, 2, 3].map(i => (
-                        <div key={i} style={{ flex: 1, height: '60px', borderRadius: '8px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <ImageIcon size={16} color="var(--text-muted)" />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
 
                   {/* Actions */}
                   <div style={{ padding: '16px 20px', borderTop: '1px solid var(--border-color)', display: 'flex', gap: '8px' }}>
