@@ -1158,7 +1158,6 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                     <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
                       Próximos cumpleaños
                     </h3>
-                    <span style={{ fontSize: '11px', color: 'var(--pink-primary)', fontWeight: '700', cursor: 'pointer' }}>Ver todos</span>
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '20px' }}>
