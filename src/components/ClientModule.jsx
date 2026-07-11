@@ -78,6 +78,11 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
   const [selectedClient, setSelectedClient] = useState(null);
   const [showMessageModal, setShowMessageModal] = useState(false);
 
+  // Opening/closing a client's ficha counts as a new "page" - start at the top.
+  useEffect(() => {
+    document.querySelector('.main-content')?.scrollTo({ top: 0, behavior: 'instant' });
+  }, [selectedClient?.id]);
+
   useScrollLock(showMessageModal);
 
   const [defaultBdayMessage, setDefaultBdayMessage] = useState(getBirthdayMessageTemplate());
@@ -1500,7 +1505,6 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
               const updated = await dataService.updateClient(selectedClient.id, updates);
               setSelectedClient(updated);
               await onRefresh();
-              showToast('Datos actualizados');
               return updated;
             } catch (e) {
               showToast('Error al actualizar', 'error');
@@ -1717,6 +1721,11 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
   const [pendingPhoto, setPendingPhoto] = useState(null);
   const [photoMeta, setPhotoMeta] = useState({ type: 'Normal', serviceId: null });
   const [activeSubTab, setActiveSubTab] = useState('gallery'); // 'gallery', 'diagnoses', 'packages', 'history'
+
+  // Switching sub-tabs (Fotos/Salud/Paquetes/Visitas) should also start at the top.
+  useEffect(() => {
+    document.querySelector('.main-content')?.scrollTo({ top: 0, behavior: 'instant' });
+  }, [activeSubTab]);
   const [diagnoses, setDiagnoses] = useState([]);
   const [loadingDiagnoses, setLoadingDiagnoses] = useState(true);
   const [packages, setPackages] = useState([]);
@@ -2285,7 +2294,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                     />
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <button className="btn-pink" style={{ flex: 1, padding: '10px', background: 'var(--magenta-gradient)', border: 'none', fontWeight: '750' }} onClick={async () => { await onUpdate(hairEditData); setIsEditingHair(false); }}>Guardar</button>
+                    <button className="btn-pink" style={{ flex: 1, padding: '10px', background: 'var(--magenta-gradient)', border: 'none', fontWeight: '750' }} onClick={async () => { const r = await onUpdate(hairEditData); if (r) showToast('Datos actualizados'); setIsEditingHair(false); }}>Guardar</button>
                     <button className="btn-interactive" style={{ flex: 1, padding: '10px', background: 'none', border: '1px solid var(--border-color)', color: 'var(--text-muted)', borderRadius: '12px', fontSize: '13px', fontWeight: '600' }} onClick={() => setIsEditingHair(false)}>Cancelar</button>
                   </div>
                 </div>
@@ -2731,7 +2740,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   <input className="form-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="Cédula" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
                   <BirthdayTextInput value={editData.birth_date} onChange={e => setEditData({...editData, birth_date: e.target.value})} style={{ width: '100%' }} />
                   <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
-                    <button className="btn-pink" onClick={() => { onUpdate(editData); setIsEditing(false); }} style={{ flex: 1, fontSize: '12px', padding: '8px', fontWeight: '750', background: 'var(--magenta-gradient)', border: 'none' }}>Guardar</button>
+                    <button className="btn-pink" onClick={async () => { const r = await onUpdate(editData); if (r) showToast('Datos actualizados'); setIsEditing(false); }} style={{ flex: 1, fontSize: '12px', padding: '8px', fontWeight: '750', background: 'var(--magenta-gradient)', border: 'none' }}>Guardar</button>
                     <button onClick={() => setIsEditing(false)} style={{ flex: 1, background: 'none', border: '1px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '12px', borderRadius: '12px', cursor: 'pointer' }}>Cancelar</button>
                   </div>
                 </div>
@@ -2893,7 +2902,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                     />
                   </div>
                   <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                    <button className="btn-pink" style={{ flex: 1, padding: '10px', background: 'var(--magenta-gradient)', border: 'none', fontWeight: '750' }} onClick={() => { onUpdate(editData); setIsEditing(false); }}>Guardar</button>
+                    <button className="btn-pink" style={{ flex: 1, padding: '10px', background: 'var(--magenta-gradient)', border: 'none', fontWeight: '750' }} onClick={async () => { const r = await onUpdate(editData); if (r) showToast('Datos actualizados'); setIsEditing(false); }}>Guardar</button>
                     <button className="btn-interactive" style={{ flex: 1, padding: '10px', background: 'none', border: '1px solid var(--border-color)', color: 'var(--text-muted)', borderRadius: '12px', fontSize: '13px', fontWeight: '600' }} onClick={() => setIsEditing(false)}>Cancelar</button>
                   </div>
                 </div>

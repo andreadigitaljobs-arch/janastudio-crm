@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useState, useEffect, useMemo, useCallback } from 'react';
+import React, { lazy, Suspense, useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import Sidebar from './components/Sidebar';
 import {
   BarChart3,
@@ -64,6 +64,7 @@ function App() {
   const { alert, confirm } = useDialog();
   const [showOnboarding, setShowOnboarding] = useState(() => localStorage.getItem('jana_onboarding_completed') !== 'true');
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const mainContentRef = useRef(null);
   const [activeTab, setActiveTab] = useState(() => {
     const saved = localStorage.getItem('jana_active_tab') || 'dashboard';
     const isMobileDevice = typeof window !== 'undefined' ? (window.innerWidth < 600 || window.screen.width < 600) : false;
@@ -415,6 +416,12 @@ function App() {
     await fetchSecondaryData();
   }
 
+  // Every time a new "page" opens (main tab switch, or a deep-link like a client id),
+  // start scrolled at the top instead of wherever the previous page left off.
+  useEffect(() => {
+    mainContentRef.current?.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [activeTab, tabParams]);
+
   const handleTabChange = useCallback((tabId, params = {}) => {
     if (!canAccessModule(user?.role, tabId)) return;
     
@@ -528,7 +535,7 @@ function App() {
         </div>
       )}
 
-      <main className="main-content no-scrollbar" style={{ 
+      <main ref={mainContentRef} className="main-content no-scrollbar" style={{ 
         flex: 1, 
         paddingTop: isMobile ? 'calc(var(--spacing-sm) + env(safe-area-inset-top, 0px))' : 'var(--spacing-xl)', 
         paddingLeft: isMobile ? '16px' : 'var(--spacing-xl)', 
