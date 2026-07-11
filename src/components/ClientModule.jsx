@@ -1694,6 +1694,17 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
 };
 
 const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
+  const getWhatsAppNumber = (phone) => {
+    if (!phone) return '';
+    let clean = phone.replace(/[^0-9]/g, '');
+    if (clean.startsWith('0') && clean.length === 11) {
+      return '58' + clean.slice(1);
+    }
+    if (clean.length === 10) {
+      return '58' + clean;
+    }
+    return clean;
+  };
   const { showToast } = useNotifs();
   const { confirm } = useDialog();
   const containerRef = useRef(null);
@@ -3321,7 +3332,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                         <Phone size={10} color="var(--magenta-primary)" /> Llamar
                       </a>
                       <a 
-                        href={`https://wa.me/${client.phone.replace(/[^0-9]/g, '')}`}
+                        href={`https://wa.me/${getWhatsAppNumber(client.phone)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{ 
@@ -3574,7 +3585,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                     <Phone size={11} /> Llamar
                   </a>
                   <a 
-                    href={`https://wa.me/${client.phone.replace(/[^0-9]/g, '')}`}
+                    href={`https://wa.me/${getWhatsAppNumber(client.phone)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn-interactive"
