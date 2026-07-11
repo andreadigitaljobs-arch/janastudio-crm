@@ -1708,6 +1708,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
   }, []);
   const isCompact = isMobile || detailWidth < 1000;
   const [showCollage, setShowCollage] = useState(false);
+  const [isSavingComparison, setIsSavingComparison] = useState(false);
   const [showAllHistory, setShowAllHistory] = useState(false);
   const [photoA, setPhotoA] = useState(null);
   const [photoB, setPhotoB] = useState(null);
@@ -2232,6 +2233,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
       showToast('Ponle un nombre al tratamiento', 'warning');
       return;
     }
+    setIsSavingComparison(true);
     try {
       const newComparison = {
         id: `${Date.now()}`,
@@ -2260,6 +2262,8 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
     } catch (e) {
       console.error(e);
       showToast('Error al guardar la comparativa', 'error');
+    } finally {
+      setIsSavingComparison(false);
     }
   };
 
@@ -2501,10 +2505,15 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                     <div style={{ display: 'flex', gap: '10px' }}>
                       <button
                         onClick={handleSaveComparison}
+                        disabled={isSavingComparison}
                         className="btn-pink"
-                        style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                        style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', opacity: isSavingComparison ? 0.7 : 1, cursor: isSavingComparison ? 'wait' : 'pointer' }}
                       >
-                        <Check size={18} /> Guardar Comparativa
+                        {isSavingComparison ? (
+                          <><Loader2 size={18} className="animate-spin" /> Guardando...</>
+                        ) : (
+                          <><Check size={18} /> Guardar Comparativa</>
+                        )}
                       </button>
                       <button
                         onClick={handleDownloadComparison}
