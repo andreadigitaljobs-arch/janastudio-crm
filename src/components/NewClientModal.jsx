@@ -67,7 +67,7 @@ const NewClientModal = ({ isOpen, onClose, onSuccess, onClientCreated }) => {
             left: 0, 
             right: 0, 
             bottom: 0, 
-            backgroundColor: 'rgba(0,0,0,0.85)', 
+            backgroundColor: 'rgba(0,0,0,0.4)', 
             backdropFilter: 'blur(10px)', 
             zIndex: 10000, 
             display: 'flex', 
@@ -78,8 +78,8 @@ const NewClientModal = ({ isOpen, onClose, onSuccess, onClientCreated }) => {
             <div className={`glass-card ${cardClass}`} style={{ 
               maxWidth: '460px', 
               width: '100%', 
-              borderRadius: '32px', 
-              border: '1.5px solid rgba(196,139,159,0.3)',
+              borderRadius: '24px', 
+              border: '1px solid var(--border-color)',
               padding: '32px',
               background: 'rgba(255, 255, 255, 0.96)',
               boxShadow: '0 24px 70px rgba(38, 24, 28, 0.28)',
@@ -108,16 +108,18 @@ const NewClientModal = ({ isOpen, onClose, onSuccess, onClientCreated }) => {
 
               <header style={{ marginBottom: '26px', paddingRight: '46px' }}>
                 <h2 style={{ 
-                  fontSize: '24px', 
-                  fontWeight: '900', 
+                  fontSize: '22px', 
+                  fontWeight: '800', 
                   color: 'var(--text-primary)', 
-                  marginBottom: '8px',
+                  marginBottom: '6px',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '10px'
                 }}>
-                  <User size={24} color="var(--pink-primary)" />
-                  <span>Nuevo <span className="text-gold">Cliente</span></span>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'var(--magenta-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <User size={20} color="white" />
+                  </div>
+                  Nuevo Cliente
                 </h2>
                 <p style={{ fontSize: '14px', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.45 }}>
                   Completa los datos para registrarlo en el sistema.
@@ -202,7 +204,7 @@ const NewClientModal = ({ isOpen, onClose, onSuccess, onClientCreated }) => {
                     type="submit"
                     disabled={loading}
                     className="btn-pink" 
-                    style={{ flex: 1.5, height: '56px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontWeight: 800 }}
+                    style={{ flex: 1.5, height: '50px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontWeight: 700 }}
                   >
                     {loading ? <Loader2 className="animate-spin" size={20} /> : 'REGISTRAR CLIENTE'}
                   </button>
