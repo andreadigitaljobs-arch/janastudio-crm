@@ -286,10 +286,36 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
 
   const getStatusBadge = (client) => {
     const visits = client.total_visits || 0;
-    if (visits >= 10) return { label: 'VIP', bg: 'rgba(196,139,159,0.15)', color: '#a0506a' };
-    if (visits >= 3) return { label: 'Activa', bg: 'rgba(50,215,75,0.1)', color: '#16a34a' };
-    if (visits === 0) return { label: 'Nueva', bg: 'rgba(59,130,246,0.1)', color: '#2563eb' };
-    return { label: 'Seguimiento', bg: 'rgba(245,158,11,0.1)', color: '#d97706' };
+    if (visits >= 10) {
+      return { 
+        label: 'VIP', 
+        bg: 'linear-gradient(135deg, rgba(160, 80, 106, 0.08), rgba(212, 160, 154, 0.08))', 
+        color: 'var(--magenta-primary)', 
+        border: '1px solid rgba(160, 80, 106, 0.15)' 
+      };
+    }
+    if (visits >= 3) {
+      return { 
+        label: 'Activa', 
+        bg: 'rgba(212, 160, 154, 0.12)', 
+        color: 'var(--pink-primary)', 
+        border: '1px solid rgba(212, 160, 154, 0.2)' 
+      };
+    }
+    if (visits === 0) {
+      return { 
+        label: 'Nueva', 
+        bg: 'rgba(74, 48, 54, 0.05)', 
+        color: 'var(--text-secondary)', 
+        border: '1px solid rgba(74, 48, 54, 0.1)' 
+      };
+    }
+    return { 
+      label: 'Seguimiento', 
+      bg: 'rgba(160, 80, 106, 0.06)', 
+      color: 'var(--magenta-primary)', 
+      border: '1px solid rgba(160, 80, 106, 0.12)' 
+    };
   };
 
   return (
@@ -309,21 +335,21 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
           {/* Stat Cards */}
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px', marginBottom: '28px' }}>
             {[
-              { label: 'Clientas activas', value: activeClients, icon: Users, trend: '+12%', trendSub: 'vs. mes anterior', iconBg: 'rgba(196,139,159,0.1)' },
-              { label: 'Nuevas este mes', value: newThisMonth, icon: UserPlus, trend: `+${newThisMonth}`, trendSub: 'vs. mes anterior', iconBg: 'rgba(50,215,75,0.1)', iconColor: '#16a34a' },
-              { label: 'Con próxima cita', value: upcomingCount, icon: Calendar, trend: '+8%', trendSub: 'vs. mes anterior', iconBg: 'rgba(59,130,246,0.1)', iconColor: '#2563eb' },
-              { label: 'Cumpleaños cercanos', value: birthdaySoon, icon: Cake, trend: '', trendSub: 'En los próximos 7 días', iconBg: 'rgba(245,158,11,0.1)', iconColor: '#d97706' }
+              { label: 'Clientas activas', value: activeClients, icon: Users, trend: '+12%', trendSub: 'vs. mes anterior', iconBg: 'rgba(212, 160, 154, 0.12)', iconColor: 'var(--pink-primary)' },
+              { label: 'Nuevas este mes', value: newThisMonth, icon: UserPlus, trend: `+${newThisMonth}`, trendSub: 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.1)', iconColor: 'var(--magenta-primary)' },
+              { label: 'Con próxima cita', value: upcomingCount, icon: Calendar, trend: '+8%', trendSub: 'vs. mes anterior', iconBg: 'rgba(74, 48, 54, 0.06)', iconColor: 'var(--text-secondary)' },
+              { label: 'Cumpleaños cercanos', value: birthdaySoon, icon: Cake, trend: '', trendSub: 'En los próximos 7 días', iconBg: 'rgba(212, 160, 154, 0.15)', iconColor: 'var(--pink-primary)' }
             ].map((stat, i) => (
               <div key={i} className="glass-card" style={{ padding: isMobile ? '12px 10px' : '20px', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
                 <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'center' : 'flex-start', gap: '10px', textAlign: isMobile ? 'center' : 'left' }}>
                   <div style={{ width: isMobile ? '36px' : '44px', height: isMobile ? '36px' : '44px', borderRadius: '12px', backgroundColor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <stat.icon size={isMobile ? 18 : 20} color={stat.iconColor || 'var(--pink-primary)'} />
+                    <stat.icon size={isMobile ? 18 : 20} color={stat.iconColor} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0, width: '100%' }}>
                     <div style={{ fontSize: isMobile ? '10px' : '12px', color: 'var(--text-muted)', fontWeight: '600', marginBottom: '4px', textOverflow: 'ellipsis', overflow: 'hidden' }}>{stat.label}</div>
                     <div style={{ fontSize: isMobile ? '20px' : '28px', fontWeight: '800', color: 'var(--text-primary)', lineHeight: '1' }}>{stat.value}</div>
                     {stat.trend && (
-                      <div style={{ fontSize: '10px', color: '#16a34a', fontWeight: '600', marginTop: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2px', flexWrap: 'wrap' }}>
+                      <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '600', marginTop: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2px', flexWrap: 'wrap' }}>
                         <ArrowUpRight size={10} /> {stat.trend} <span style={{ color: 'var(--text-muted)', display: isMobile ? 'none' : 'inline' }}>{stat.trendSub}</span>
                       </div>
                     )}
@@ -336,13 +362,13 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
             ))}
           </div>
 
-          {/* Main Content: Table + Sidebar */}
+          {/* Main Content: Table */}
           <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
             {/* Left: Table Section */}
             <div style={{ flex: 1, minWidth: 0 }}>
               {/* Search & Actions Bar */}
               <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
-                <div style={{ flex: 1, minWidth: '200px', position: 'relative' }}>
+                <div style={{ flex: 1, minWidth: isMobile ? '100%' : '200px', position: 'relative' }}>
                   <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                   <input
                     type="text"
@@ -361,42 +387,59 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                     }}
                   />
                 </div>
-                <button style={{ padding: '10px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
-                  <Download size={15} /> Exportar
-                </button>
-                <button style={{ padding: '10px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
-                  <Filter size={15} /> Filtros
-                </button>
+                <div style={{ display: 'flex', gap: '10px', width: isMobile ? '100%' : 'auto' }}>
+                  <button style={{ flex: isMobile ? 1 : 'none', padding: '10px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
+                    <Download size={15} /> Exportar
+                  </button>
+                  <button style={{ flex: isMobile ? 1 : 'none', padding: '10px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
+                    <Filter size={15} /> Filtros
+                  </button>
+                </div>
               </div>
 
               {/* Filter Chips */}
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
-                {[
-                  { key: 'all', label: 'Todas' },
-                  { key: 'frequent', label: 'Frecuentes' },
-                  { key: 'active', label: 'Activas' },
-                  { key: 'no Appointment', label: 'Sin cita' },
-                  { key: 'consent', label: 'Con consentimiento' }
-                ].map(f => (
-                  <button
-                    key={f.key}
-                    onClick={() => { setActiveFilter(f.key); setCurrentPage(1); }}
-                    style={{
-                      padding: '7px 16px',
-                      borderRadius: '20px',
-                      border: activeFilter === f.key ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)',
-                      backgroundColor: activeFilter === f.key ? 'rgba(196,139,159,0.1)' : 'white',
-                      color: activeFilter === f.key ? 'var(--pink-primary)' : 'var(--text-secondary)',
-                      fontSize: '12px',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                  >
-                    {f.label}
-                  </button>
-                ))}
-                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600', cursor: 'pointer' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+                <div 
+                  style={{ 
+                    display: 'flex', 
+                    gap: '8px', 
+                    overflowX: isMobile ? 'auto' : 'visible', 
+                    whiteSpace: isMobile ? 'nowrap' : 'normal',
+                    flex: isMobile ? '1' : 'auto',
+                    paddingBottom: isMobile ? '6px' : '0',
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none'
+                  }}
+                  className="no-scrollbar"
+                >
+                  {[
+                    { key: 'all', label: 'Todas' },
+                    { key: 'frequent', label: 'Frecuentes' },
+                    { key: 'active', label: 'Activas' },
+                    { key: 'no Appointment', label: 'Sin cita' },
+                    { key: 'consent', label: 'Con consentimiento' }
+                  ].map(f => (
+                    <button
+                      key={f.key}
+                      onClick={() => { setActiveFilter(f.key); setCurrentPage(1); }}
+                      style={{
+                        padding: '7px 16px',
+                        borderRadius: '20px',
+                        border: activeFilter === f.key ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)',
+                        backgroundColor: activeFilter === f.key ? 'rgba(196,139,159,0.1)' : 'white',
+                        color: activeFilter === f.key ? 'var(--pink-primary)' : 'var(--text-secondary)',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        display: 'inline-block'
+                      }}
+                    >
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600', cursor: 'pointer' }}>
                   Más recientes <ChevronDown size={14} />
                 </div>
               </div>
@@ -460,6 +503,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                           <span style={{
                             fontSize: '0.62rem', fontWeight: '800',
                             color: status.color, backgroundColor: status.bg,
+                            border: status.border,
                             padding: '3px 8px', borderRadius: '6px',
                             whiteSpace: 'nowrap'
                           }}>{status.label}</span>
@@ -584,7 +628,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                             </td>
                             <td style={{ padding: '12px 16px' }}>
                               {client.next_appointment ? (
-                                <span style={{ fontSize: '12px', fontWeight: '600', color: '#d97706', backgroundColor: 'rgba(245,158,11,0.08)', padding: '4px 8px', borderRadius: '6px', whiteSpace: 'nowrap' }}>
+                                <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--magenta-primary)', backgroundColor: 'rgba(160, 80, 106, 0.06)', border: '1px solid rgba(160, 80, 106, 0.12)', padding: '4px 8px', borderRadius: '6px', whiteSpace: 'nowrap' }}>
                                   {new Date(client.next_appointment).toLocaleDateString('es-VE', { day: '2-digit', month: 'short' })} · {new Date(client.next_appointment).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true })}
                                 </span>
                               ) : (
@@ -597,7 +641,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                               </span>
                             </td>
                             <td style={{ padding: '12px 16px' }}>
-                              <span style={{ fontSize: '10px', fontWeight: '700', color: status.color, backgroundColor: status.bg, padding: '4px 10px', borderRadius: '6px', whiteSpace: 'nowrap' }}>
+                              <span style={{ fontSize: '10px', fontWeight: '700', color: status.color, backgroundColor: status.bg, border: status.border, padding: '4px 10px', borderRadius: '6px', whiteSpace: 'nowrap' }}>
                                 {status.label}
                               </span>
                             </td>
@@ -671,9 +715,9 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '12px' }}>
                   {[
-                    { text: 'Confirmar cita de Valentina S.', date: '05 Jul · 03:00 PM', icon: Calendar, color: '#d97706', bg: 'rgba(217, 119, 6, 0.1)' },
+                    { text: 'Confirmar cita de Valentina S.', date: '05 Jul · 03:00 PM', icon: Calendar, color: '#b47d49', bg: 'rgba(180, 125, 73, 0.1)' },
                     { text: 'Enviar rutina post coloración a Laura M.', date: 'Pendiente desde 02 Jul 2026', icon: FileText, color: '#d4a09a', bg: 'rgba(212, 160, 154, 0.12)' },
-                    { text: 'Cumpleaños de Andrea R. en 2 días', date: '06 Jul 2026', icon: Gift, color: '#d97706', bg: 'rgba(217, 119, 6, 0.1)' }
+                    { text: 'Cumpleaños de Andrea R. en 2 días', date: '06 Jul 2026', icon: Gift, color: '#b47d49', bg: 'rgba(180, 125, 73, 0.1)' }
                   ].map((item, i) => (
                     <div key={i} className="glass-card" style={{ padding: '14px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', transition: 'all 0.2s' }}>
                       <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
