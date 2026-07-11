@@ -143,6 +143,9 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
 
   const [sortBy, setSortBy] = useState('recent');
   const [showSortDropdown, setShowSortDropdown] = useState(false);
+  const [selectedSidebarClient, setSelectedSidebarClient] = useState(null);
+  const [isEditingNotes, setIsEditingNotes] = useState(false);
+  const [tempNotes, setTempNotes] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
@@ -283,10 +286,12 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
   const [activeFilter, setActiveFilter] = useState('all');
 
   const getFilteredClients = () => {
-    let result = roleFilteredClients;
+    let result = filteredClients;
     if (activeFilter === 'frequent') result = result.filter(c => (c.total_visits || 0) >= 5);
     else if (activeFilter === 'active') result = result.filter(c => (c.total_visits || 0) > 0);
     else if (activeFilter === 'no Appointment') result = result.filter(c => !c.next_appointment);
+    else if (activeFilter === 'consent') result = result.filter(c => c.consent === true || c.has_consent === true);
+    else if (activeFilter === 'vip') result = result.filter(c => (c.total_visits || 0) >= 10);
     return result;
   };
 
@@ -295,7 +300,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
   const paginatedClients = displayClients.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   // Selected client for sidebar
-  const sidebarClient = selectedClient || (paginatedClients.length > 0 ? paginatedClients[0] : null);
+  const sidebarClient = selectedSidebarClient || (paginatedClients.length > 0 ? paginatedClients[0] : null);
 
   const getStatusBadge = (client) => {
     const visits = client.total_visits || 0;
@@ -336,50 +341,99 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
       {!selectedClient ? (
         <>
           {/* Header */}
-          <div style={{ marginBottom: '28px' }}>
-            <h1 className="jana-page-title">
-              Archivo de Clientes
-            </h1>
-            <p style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: isMobile ? '13px' : '15px' }}>
-              Fichas técnicas, historial y seguimiento personalizado.
-            </p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap', gap: '16px' }}>
+            <div>
+              <h1 className="jana-page-title" style={{ margin: 0 }}>
+                Archivo de Clientes
+              </h1>
+              <p style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: isMobile ? '13px' : '15px' }}>
+                Fichas técnicas, historial y seguimiento personalizado.
+              </p>
+            </div>
+            {!isMobile && (
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <button 
+                  onClick={() => {
+                    setNewClient({
+                      name: '', phone: '', id_card: '', birth_date: '',
+                      hair_type: 'Normal', scalp_type: 'Normal'
+                    });
+                    setShowAddForm(true);
+                  }}
+                  style={{ 
+                    padding: '10px 20px', borderRadius: '20px', border: 'none', 
+                    backgroundColor: 'var(--pink-primary)', color: 'white', 
+                    fontSize: '13px', fontWeight: '750', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: '6px',
+                    boxShadow: '0 4px 12px rgba(212, 160, 154, 0.25)'
+                  }}
+                  className="btn-interactive"
+                >
+                  <Plus size={16} /> Nueva clienta
+                </button>
+                <button style={{ padding: '10px 16px', borderRadius: '20px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Download size={15} /> Exportar
+                </button>
+                <button style={{ padding: '10px 16px', borderRadius: '20px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Filter size={15} /> Filtros
+                </button>
+              </div>
+            )}
           </div>
+
+          {isMobile && (
+            <button 
+              onClick={() => {
+                setNewClient({
+                  name: '', phone: '', id_card: '', birth_date: '',
+                  hair_type: 'Normal', scalp_type: 'Normal'
+                });
+                setShowAddForm(true);
+              }}
+              style={{ 
+                width: '100%', padding: '10px', borderRadius: '12px', border: 'none', 
+                backgroundColor: 'var(--pink-primary)', color: 'white', 
+                fontSize: '13px', fontWeight: '750', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                marginBottom: '16px'
+              }}
+            >
+              <Plus size={16} /> Nueva clienta
+            </button>
+          )}
 
           {/* Stat Cards */}
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px', marginBottom: '28px' }}>
             {[
-              { label: 'Clientas activas', value: activeClients, icon: Users, trend: '+12%', trendSub: 'vs. mes anterior', iconBg: 'linear-gradient(135deg, #fdf2f4 0%, #fce8ec 100%)', iconColor: 'var(--magenta-primary)' },
-              { label: 'Nuevas este mes', value: newThisMonth, icon: UserPlus, trend: `+${newThisMonth}`, trendSub: 'vs. mes anterior', iconBg: 'linear-gradient(135deg, #fce8ec 0%, #fbcada 100%)', iconColor: 'var(--magenta-primary)' },
-              { label: 'Con próxima cita', value: upcomingCount, icon: Calendar, trend: '+8%', trendSub: 'vs. mes anterior', iconBg: 'linear-gradient(135deg, rgba(212,160,154,0.15) 0%, rgba(212,160,154,0.05) 100%)', iconColor: 'var(--pink-primary)' },
-              { label: 'Cumpleaños cercanos', value: birthdaySoon, icon: Cake, trend: '', trendSub: 'En los próximos 7 días', iconBg: 'linear-gradient(135deg, #fdf2f4 0%, #fce8ec 100%)', iconColor: 'var(--pink-primary)' }
+              { label: 'Clientes activas', value: activeClients, icon: Users, trend: '↑ 12%', trendSub: 'vs. mes anterior', iconBg: 'rgba(212, 160, 154, 0.12)', iconColor: 'var(--pink-primary)' },
+              { label: 'Nuevas este mes', value: newThisMonth, icon: UserPlus, trend: '↑ 15%', trendSub: 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.08)', iconColor: 'var(--magenta-primary)' },
+              { label: 'Con próxima cita', value: upcomingCount, icon: Calendar, trend: '↑ 8%', trendSub: 'vs. mes anterior', iconBg: 'rgba(74, 48, 54, 0.06)', iconColor: 'var(--text-secondary)' },
+              { label: 'Cumpleaños cercanos', value: birthdaySoon, icon: Cake, trend: '', trendSub: 'En los próximos 7 días', iconBg: 'rgba(212, 160, 154, 0.15)', iconColor: 'var(--pink-primary)' }
             ].map((stat, i) => (
               <div 
                 key={i} 
                 className="glass-card" 
                 style={{ 
-                  padding: isMobile ? '12px 10px' : '20px', 
-                  borderRadius: '16px', 
-                  border: '1px solid rgba(212,160,154,0.3)', 
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(253,243,244,0.9) 100%)',
+                  padding: '16px 20px', 
+                  borderRadius: '24px', 
+                  border: '1px solid rgba(212,160,154,0.25)', 
+                  background: 'white',
                   boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)',
-                  transition: 'transform 0.2s',
-                  cursor: 'default'
                 }}
               >
-                <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'center' : 'flex-start', gap: '10px', textAlign: isMobile ? 'center' : 'left' }}>
-                  <div style={{ width: isMobile ? '36px' : '44px', height: isMobile ? '36px' : '44px', borderRadius: '12px', background: stat.iconBg, border: '1px solid rgba(212,160,154,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <stat.icon size={isMobile ? 18 : 20} color={stat.iconColor} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '16px', backgroundColor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <stat.icon size={22} color={stat.iconColor} />
                   </div>
-                  <div style={{ flex: 1, minWidth: 0, width: '100%' }}>
-                    <div style={{ fontSize: isMobile ? '10px' : '12px', color: 'var(--text-secondary)', fontWeight: '600', marginBottom: '4px', textOverflow: 'ellipsis', overflow: 'hidden' }}>{stat.label}</div>
-                    <div style={{ fontSize: isMobile ? '20px' : '28px', fontWeight: '850', color: 'var(--text-primary)', lineHeight: '1' }}>{stat.value}</div>
-                    {stat.trend && (
-                      <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '600', marginTop: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2px', flexWrap: 'wrap' }}>
-                        <ArrowUpRight size={10} /> {stat.trend} <span style={{ color: 'var(--text-muted)', display: isMobile ? 'none' : 'inline' }}>{stat.trendSub}</span>
+                  <div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600', marginBottom: '2px' }}>{stat.label}</div>
+                    <div style={{ fontSize: '24px', fontWeight: '850', color: 'var(--text-primary)', lineHeight: '1.1' }}>{stat.value}</div>
+                    {stat.trend ? (
+                      <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '600', marginTop: '2px' }}>
+                        {stat.trend} <span style={{ color: 'var(--text-muted)' }}>{stat.trendSub}</span>
                       </div>
-                    )}
-                    {!stat.trend && stat.trendSub && (
-                      <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '500', marginTop: '4px' }}>{isMobile ? stat.trendSub.replace('En los próximos ', 'Próx. ') : stat.trendSub}</div>
+                    ) : (
+                      <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '500', marginTop: '2px' }}>{stat.trendSub}</div>
                     )}
                   </div>
                 </div>
@@ -387,10 +441,13 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
             ))}
           </div>
 
-          {/* Main Content */}
+          {/* Main Layout Content */}
+          {isMobile ? (
+            /* Mobile Cards List */
+            <div>
               {/* Search & Actions Bar */}
               <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
-                <div style={{ flex: 1, minWidth: isMobile ? '100%' : '200px', position: 'relative' }}>
+                <div style={{ flex: 1, minWidth: '100%', position: 'relative' }}>
                   <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                   <input
                     type="text"
@@ -409,117 +466,47 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                     }}
                   />
                 </div>
-                <div style={{ display: 'flex', gap: '10px', width: isMobile ? '100%' : 'auto' }}>
-                  <button style={{ flex: isMobile ? 1 : 'none', padding: '10px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
-                    <Download size={15} /> Exportar
-                  </button>
-                  <button style={{ flex: isMobile ? 1 : 'none', padding: '10px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
-                    <Filter size={15} /> Filtros
-                  </button>
-                </div>
               </div>
 
               {/* Filter Chips */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
-                <div 
-                  style={{ 
-                    display: 'flex', 
-                    gap: '8px', 
-                    flexWrap: 'wrap',
-                    flex: 1
-                  }}
-                >
-                  {[
-                    { key: 'all', label: 'Todas' },
-                    { key: 'frequent', label: 'Frecuentes' },
-                    { key: 'active', label: 'Activas' },
-                    { key: 'no Appointment', label: 'Sin cita' },
-                    { key: 'consent', label: 'Con consentimiento' }
-                  ].map(f => (
-                    <button
-                      key={f.key}
-                      onClick={() => { setActiveFilter(f.key); setCurrentPage(1); }}
-                      style={{
-                        padding: '7px 16px',
-                        borderRadius: '20px',
-                        border: activeFilter === f.key ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)',
-                        backgroundColor: activeFilter === f.key ? 'rgba(196,139,159,0.1)' : 'white',
-                        color: activeFilter === f.key ? 'var(--pink-primary)' : 'var(--text-secondary)',
-                        fontSize: '12px',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        display: 'inline-block'
-                      }}
-                    >
-                      {f.label}
-                    </button>
-                  ))}
-                </div>
-                <div style={{ position: 'relative' }}>
-                  <div 
-                    onClick={() => setShowSortDropdown(!showSortDropdown)}
-                    style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700', cursor: 'pointer', padding: '6px 10px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'white' }}
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
+                {[
+                  { key: 'all', label: 'Todas' },
+                  { key: 'frequent', label: 'Frecuentes' },
+                  { key: 'active', label: 'Activas' },
+                  { key: 'no Appointment', label: 'Sin cita' },
+                  { key: 'consent', label: 'Con consentimiento' }
+                ].map(f => (
+                  <button
+                    key={f.key}
+                    onClick={() => { setActiveFilter(f.key); setCurrentPage(1); }}
+                    style={{
+                      padding: '7px 16px',
+                      borderRadius: '20px',
+                      border: activeFilter === f.key ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)',
+                      backgroundColor: activeFilter === f.key ? 'rgba(196,139,159,0.1)' : 'white',
+                      color: activeFilter === f.key ? 'var(--pink-primary)' : 'var(--text-secondary)',
+                      fontSize: '12px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                    }}
                   >
-                    {sortBy === 'recent' && 'Más recientes'}
-                    {sortBy === 'oldest' && 'Más antiguos'}
-                    {sortBy === 'az' && 'Nombre A-Z'}
-                    {sortBy === 'za' && 'Nombre Z-A'}
-                    <ChevronDown size={14} color="var(--pink-primary)" />
-                  </div>
-                  {showSortDropdown && (
-                    <>
-                      <div 
-                        onClick={() => setShowSortDropdown(false)}
-                        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 998 }}
-                      />
-                      <div 
-                        style={{ 
-                          position: 'absolute', right: 0, top: 'calc(100% + 4px)', minWidth: '150px',
-                          backgroundColor: 'white', border: '1px solid var(--border-color)', borderRadius: '12px',
-                          boxShadow: 'var(--shadow-card)', padding: '6px', zIndex: 999, display: 'flex', flexDirection: 'column', gap: '2px'
-                        }}
-                      >
-                        {[
-                          { key: 'recent', label: 'Más recientes' },
-                          { key: 'oldest', label: 'Más antiguos' },
-                          { key: 'az', label: 'Nombre A-Z' },
-                          { key: 'za', label: 'Nombre Z-A' }
-                        ].map(opt => (
-                          <div 
-                            key={opt.key}
-                            onClick={() => {
-                              setSortBy(opt.key);
-                              setShowSortDropdown(false);
-                            }}
-                            style={{
-                              padding: '8px 12px', fontSize: '12px', borderRadius: '8px', cursor: 'pointer',
-                              fontWeight: '600', color: sortBy === opt.key ? 'var(--pink-primary)' : 'var(--text-primary)',
-                              backgroundColor: sortBy === opt.key ? 'rgba(196,139,159,0.06)' : 'transparent',
-                              transition: 'all 0.15s'
-                            }}
-                          >
-                            {opt.label}
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </div>
+                    {f.label}
+                  </button>
+                ))}
               </div>
 
-              {/* Table / Cards List */}
               {loading ? (
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
                   <Loader2 className="rose-gold-spinner animate-spin" size={40} />
                 </div>
-              ) : clients.length === 0 ? (
+              ) : displayClients.length === 0 ? (
                 <div className="glass-card" style={{ textAlign: 'center', padding: '80px', borderStyle: 'dashed' }}>
                   <User size={48} color="var(--text-muted)" style={{ marginBottom: '20px', opacity: 0.5 }} />
-                  <p style={{ color: 'var(--text-muted)' }}>Archivo vacío. Agrega a tu primer cliente.</p>
+                  <p style={{ color: 'var(--text-muted)' }}>Archivo vacío.</p>
                 </div>
-              ) : isMobile ? (
-                /* Mobile Cards List */
+              ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {paginatedClients.map((client, idx) => {
                     const status = getStatusBadge(client);
@@ -530,7 +517,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                         style={{
                           padding: '16px',
                           borderRadius: '16px',
-                          background: 'var(--bg-secondary)',
+                          background: 'white',
                           border: '1px solid var(--border-color)',
                           boxShadow: 'var(--shadow-card)',
                           display: 'flex',
@@ -543,10 +530,10 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                         {/* Card Top: Avatar, Name, Status Badge */}
                         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                           <div style={{
-                            width: '40px', height: '40px', borderRadius: '12px',
+                            width: '40px', height: '40px', borderRadius: '50%',
                             backgroundColor: 'rgba(212,160,154,0.12)', display: 'flex',
                             alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                            overflow: 'hidden'
+                            overflow: 'hidden', border: '1.5px solid var(--pink-primary)'
                           }}>
                             {client.image_url ? (
                               <img src={client.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -558,11 +545,6 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                             <div style={{ fontWeight: '850', fontSize: '0.88rem', color: 'var(--text-primary)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                               {client.name}
                             </div>
-                            {client.hair_type && (
-                              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '2px', fontWeight: '500' }}>
-                                {client.hair_type}
-                              </div>
-                            )}
                           </div>
                           <span style={{
                             fontSize: '0.62rem', fontWeight: '800',
@@ -594,210 +576,34 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                             {client.total_visits || 0} visitas
                           </span>
                         </div>
-                        
-                        {/* Card Bottom: Next Appointment if any */}
-                        {client.next_appointment && (
-                          <div style={{
-                            backgroundColor: 'rgba(245,158,11,0.05)',
-                            padding: '8px 12px',
-                            borderRadius: '8px',
-                            fontSize: '0.72rem',
-                            fontWeight: '600',
-                            color: '#d97706',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            border: '1px solid rgba(245,158,11,0.1)'
-                          }}>
-                            <span>Próxima cita:</span>
-                            <span>
-                              {new Date(client.next_appointment).toLocaleDateString('es-VE', { day: '2-digit', month: 'short' })} · {new Date(client.next_appointment).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true })}
-                            </span>
-                          </div>
-                        )}
                       </div>
                     );
                   })}
-                </div>
-              ) : (
-                /* Desktop Table view */
-                <div className="glass-card" style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)', background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(253,243,244,0.7) 100%)' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                    <thead>
-                      <tr style={{ background: 'linear-gradient(90deg, rgba(212,160,154,0.18) 0%, rgba(160,80,106,0.08) 100%)', borderBottom: '1px solid var(--border-color)' }}>
-                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cliente</th>
-                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cédula / ID</th>
-                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contacto</th>
-                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Última visita</th>
-                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Próxima cita</th>
-                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Historial</th>
-                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado</th>
-                        <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>Acciones</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {paginatedClients.map((client) => {
-                        const status = getStatusBadge(client);
-                        const isSelected = sidebarClient?.id === client.id;
-                        return (
-                          <tr
-                            key={client.id}
-                            onClick={() => setSelectedClient(client)}
-                            style={{
-                              borderBottom: '1px solid var(--border-color)',
-                              backgroundColor: isSelected ? 'rgba(212,160,154,0.08)' : 'transparent',
-                              cursor: 'pointer',
-                              transition: 'background-color 0.15s'
-                            }}
-                            className="table-row-hover"
-                          >
-                            <td style={{ padding: '12px 16px' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'rgba(212,160,154,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
-                                  {client.image_url ? (
-                                    <img src={client.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                  ) : (
-                                    <User size={16} color="var(--pink-primary)" />
-                                  )}
-                                </div>
-                                <div style={{ minWidth: 0 }}>
-                                  <div style={{ fontWeight: '700', fontSize: '13px', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '160px' }}>
-                                    {client.name}
-                                  </div>
-                                  {client.hair_type && (
-                                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '1px' }}>{client.hair_type}</div>
-                                  )}
-                                </div>
-                              </div>
-                            </td>
-                            <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '600' }}>
-                              V-{client.id_card || '00.000.000'}
-                            </td>
-                            <td style={{ padding: '12px 16px' }}>
-                              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                {client.phone && (
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--text-secondary)' }}>
-                                    <Phone size={11} color="var(--pink-primary)" /> {client.phone}
-                                  </div>
-                                )}
-                                {client.email && (
-                                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
-                                    {client.email}
-                                  </div>
-                                )}
-                              </div>
-                            </td>
-                            <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--text-muted)' }}>
-                              {client.last_visit ? new Date(client.last_visit).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
-                            </td>
-                            <td style={{ padding: '12px 16px' }}>
-                              {client.next_appointment ? (
-                                <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--magenta-primary)', backgroundColor: 'rgba(160, 80, 106, 0.06)', border: '1px solid rgba(160, 80, 106, 0.12)', padding: '4px 8px', borderRadius: '6px', whiteSpace: 'nowrap' }}>
-                                  {new Date(client.next_appointment).toLocaleDateString('es-VE', { day: '2-digit', month: 'short' })} · {new Date(client.next_appointment).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true })}
-                                </span>
-                              ) : (
-                                <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Sin cita</span>
-                              )}
-                            </td>
-                            <td style={{ padding: '12px 16px' }}>
-                              <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)' }}>
-                                {client.total_visits || 0} visitas
-                              </span>
-                            </td>
-                            <td style={{ padding: '12px 16px' }}>
-                              <span style={{ fontSize: '10px', fontWeight: '700', color: status.color, backgroundColor: status.bg, border: status.border, padding: '4px 10px', borderRadius: '6px', whiteSpace: 'nowrap' }}>
-                                {status.label}
-                              </span>
-                            </td>
-                            <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                              <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
-                                <button onClick={(e) => { e.stopPropagation(); setSelectedClient(client); }} style={{ width: '30px', height: '30px', borderRadius: '8px', border: 'none', backgroundColor: 'transparent', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                  <Eye size={14} />
-                                </button>
-                                <button onClick={(e) => e.stopPropagation()} style={{ width: '30px', height: '30px', borderRadius: '8px', border: 'none', backgroundColor: 'transparent', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                  <MessageCircle size={14} />
-                                </button>
-                                <button onClick={(e) => { e.stopPropagation(); handleEditClick && handleEditClick(client); }} style={{ width: '30px', height: '30px', borderRadius: '8px', border: 'none', backgroundColor: 'transparent', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                  <Pencil size={14} />
-                                </button>
-                                <button onClick={(e) => e.stopPropagation()} style={{ width: '30px', height: '30px', borderRadius: '8px', border: 'none', backgroundColor: 'transparent', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                  <MoreHorizontal size={14} />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
                 </div>
               )}
 
-              {/* Pagination */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', padding: '0 4px' }}>
-                <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                  Mostrando {startIndex + 1} a {Math.min(startIndex + itemsPerPage, displayClients.length)} de {displayClients.length} clientes
-                </span>
-                <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                  <button
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                    style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-muted)', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}
-                  >
-                    ‹
-                  </button>
-                  {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                    const page = i + 1;
-                    return (
-                      <button
-                        key={page}
-                        onClick={() => setCurrentPage(page)}
-                        style={{ width: '32px', height: '32px', borderRadius: '8px', border: currentPage === page ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)', backgroundColor: currentPage === page ? 'var(--pink-primary)' : 'white', color: currentPage === page ? 'white' : 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '600' }}
-                      >
-                        {page}
-                      </button>
-                    );
-                  })}
-                  {totalPages > 5 && <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>...</span>}
-                  <button
-                    disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                    style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-muted)', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}
-                  >
-                    ›
-                  </button>
-                </div>
-              </div>
-
-              {/* Seguimientos pendientes */}
-              <div style={{ marginTop: '28px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                  <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Bell size={18} color="var(--pink-primary)" /> Seguimientos pendientes
-                  </h3>
-                  <span style={{ fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '600', cursor: 'pointer' }}>Ver todos (7)</span>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '12px' }}>
-                  {[
-                    { text: 'Confirmar cita de Valentina S.', date: '05 Jul · 03:00 PM', icon: Calendar, color: '#b47d49', bg: 'rgba(180, 125, 73, 0.1)' },
-                    { text: 'Enviar rutina post coloración a Laura M.', date: 'Pendiente desde 02 Jul 2026', icon: FileText, color: '#d4a09a', bg: 'rgba(212, 160, 154, 0.12)' },
-                    { text: 'Cumpleaños de Andrea R. en 2 días', date: '06 Jul 2026', icon: Gift, color: '#b47d49', bg: 'rgba(180, 125, 73, 0.1)' }
-                  ].map((item, i) => (
-                    <div key={i} className="glass-card" style={{ padding: '14px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', transition: 'all 0.2s' }}>
-                      <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <item.icon size={16} color={item.color} />
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.text}</div>
-                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>{item.date}</div>
-                      </div>
-                      <ChevronRight size={16} color="var(--text-muted)" />
-                    </div>
+              {/* Pagination (Mobile) */}
+              {totalPages > 1 && (
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '20px' }}>
+                  {Array.from({ length: totalPages }).map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentPage(i + 1)}
+                      style={{
+                        padding: '6px 12px', borderRadius: '8px',
+                        border: currentPage === i + 1 ? 'none' : '1px solid var(--border-color)',
+                        backgroundColor: currentPage === i + 1 ? 'var(--pink-primary)' : 'white',
+                        color: currentPage === i + 1 ? 'white' : 'var(--text-primary)',
+                        fontSize: '12px', fontWeight: '700'
+                      }}
+                    >
+                      {i + 1}
+                    </button>
                   ))}
                 </div>
-              </div>
+              )}
 
-              {/* Próximos cumpleañeros */}
+              {/* Mobile birthdays */}
               <div style={{ marginTop: '28px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                   <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -809,40 +615,510 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                     <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>No hay fechas de cumpleaños registradas.</p>
                   </div>
                 ) : (
-                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '12px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
                     {upcomingBirthdays.map((c, i) => (
-                      <div key={i} className="glass-card" style={{ padding: '14px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.2s' }}>
+                      <div key={i} className="glass-card" style={{ padding: '14px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'rgba(212, 160, 154, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           <Cake size={16} color="var(--pink-primary)" />
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.name}</div>
-                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                            {c.daysLeft === 0 ? '¡Hoy cumple años! 🎂' : c.daysLeft === 1 ? 'Mañana 🎈' : `En ${c.daysLeft} días (${new Date(c.birth_date + 'T00:00:00').toLocaleDateString('es-VE', { day: 'numeric', month: 'short' })})`}
-                          </div>
+                          <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)' }}>{c.name}</div>
+                          <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{c.daysLeft === 0 ? '¡Hoy cumple años!' : `En ${c.daysLeft} días`}</div>
                         </div>
-                        {c.phone && (
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const msg = `¡Hola ${c.name}! 🎉 Te deseamos un muy feliz cumpleaños de parte de todo el equipo de Jana Studio. Que pases un excelente día.`;
-                              window.open(`https://wa.me/${c.phone}?text=${encodeURIComponent(msg)}`, '_blank');
-                            }}
-                            style={{
-                              border: 'none', background: 'none', cursor: 'pointer', color: 'var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px', borderRadius: '8px', transition: 'background-color 0.2s'
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(212, 160, 154, 0.1)'}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                            title="Enviar felicitación por WhatsApp"
-                          >
-                            <MessageCircle size={16} />
-                          </button>
-                        )}
                       </div>
                     ))}
                   </div>
                 )}
               </div>
+            </div>
+          ) : (
+            /* Desktop Split Layout (Master-Detail Columns) */
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', alignItems: 'start' }}>
+              
+              {/* Left Column: Filters + Table + Pagination + Pending Actions */}
+              <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+                
+                {/* Search, Filter Chips and Sort Dropdown Row */}
+                <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  {/* Search box */}
+                  <div style={{ flex: 1, minWidth: '220px', position: 'relative' }}>
+                    <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                    <input
+                      type="text"
+                      placeholder="Buscar por nombre, cédula, teléfono o email..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px 14px 10px 40px',
+                        borderRadius: '12px',
+                        border: '1px solid var(--border-color)',
+                        backgroundColor: 'white',
+                        fontSize: '13px',
+                        color: 'var(--text-primary)',
+                        outline: 'none'
+                      }}
+                    />
+                  </div>
+
+                  {/* Filter chips */}
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    {[
+                      { key: 'all', label: 'Todas' },
+                      { key: 'frequent', label: 'Frecuentes' },
+                      { key: 'active', label: 'Activas' },
+                      { key: 'no Appointment', label: 'Sin cita' },
+                      { key: 'consent', label: 'Con consentimiento' },
+                      { key: 'vip', label: 'VIP' }
+                    ].map(f => {
+                      const isActive = activeFilter === f.key;
+                      return (
+                        <button
+                          key={f.key}
+                          onClick={() => { setActiveFilter(f.key); setCurrentPage(1); }}
+                          style={{
+                            padding: '8px 14px',
+                            borderRadius: '20px',
+                            border: isActive ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)',
+                            backgroundColor: isActive ? 'var(--pink-primary)' : 'white',
+                            color: isActive ? 'white' : 'var(--text-secondary)',
+                            fontSize: '12px',
+                            fontWeight: '700',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                          }}
+                          className="btn-interactive"
+                        >
+                          {f.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Sort dropdown */}
+                  <div style={{ position: 'relative' }}>
+                    <div 
+                      onClick={() => setShowSortDropdown(!showSortDropdown)}
+                      style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700', cursor: 'pointer', padding: '8px 12px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'white' }}
+                      className="btn-interactive"
+                    >
+                      {sortBy === 'recent' && 'Más recientes'}
+                      {sortBy === 'oldest' && 'Más antiguos'}
+                      {sortBy === 'az' && 'Nombre A-Z'}
+                      {sortBy === 'za' && 'Nombre Z-A'}
+                      <ChevronDown size={14} color="var(--pink-primary)" />
+                    </div>
+                    {showSortDropdown && (
+                      <>
+                        <div 
+                          onClick={() => setShowSortDropdown(false)}
+                          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 998 }}
+                        />
+                        <div 
+                          style={{ 
+                            position: 'absolute', right: 0, top: 'calc(100% + 4px)', minWidth: '150px',
+                            backgroundColor: 'white', border: '1px solid var(--border-color)', borderRadius: '12px',
+                            boxShadow: 'var(--shadow-card)', padding: '6px', zIndex: 999, display: 'flex', flexDirection: 'column', gap: '2px'
+                          }}
+                        >
+                          {[
+                            { key: 'recent', label: 'Más recientes' },
+                            { key: 'oldest', label: 'Más antiguos' },
+                            { key: 'az', label: 'Nombre A-Z' },
+                            { key: 'za', label: 'Nombre Z-A' }
+                          ].map(opt => (
+                            <div 
+                              key={opt.key}
+                              onClick={() => {
+                                setSortBy(opt.key);
+                                setShowSortDropdown(false);
+                              }}
+                              style={{
+                                padding: '8px 12px', fontSize: '12px', borderRadius: '8px', cursor: 'pointer',
+                                fontWeight: '600', color: sortBy === opt.key ? 'var(--pink-primary)' : 'var(--text-primary)',
+                                backgroundColor: sortBy === opt.key ? 'rgba(196,139,159,0.06)' : 'transparent',
+                                transition: 'all 0.15s'
+                              }}
+                            >
+                              {opt.label}
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Clients Table */}
+                {loading ? (
+                  <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
+                    <Loader2 className="rose-gold-spinner animate-spin" size={40} />
+                  </div>
+                ) : displayClients.length === 0 ? (
+                  <div className="glass-card" style={{ textAlign: 'center', padding: '80px', borderStyle: 'dashed' }}>
+                    <User size={48} color="var(--text-muted)" style={{ marginBottom: '20px', opacity: 0.5 }} />
+                    <p style={{ color: 'var(--text-muted)' }}>No se encontraron clientes.</p>
+                  </div>
+                ) : (
+                  <div className="glass-card" style={{ borderRadius: '20px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.03)', background: 'white' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                      <thead>
+                        <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'rgba(212,160,154,0.04)' }}>
+                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cliente</th>
+                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cédula / ID</th>
+                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contacto</th>
+                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Última visita</th>
+                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Próxima cita</th>
+                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Historial</th>
+                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado</th>
+                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>Acciones</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {paginatedClients.map((client) => {
+                          const status = getStatusBadge(client);
+                          const isSelected = sidebarClient?.id === client.id;
+                          return (
+                            <tr
+                              key={client.id}
+                              onClick={() => setSelectedSidebarClient(client)}
+                              style={{
+                                borderBottom: '1px solid var(--border-color)',
+                                backgroundColor: isSelected ? 'rgba(212,160,154,0.08)' : 'transparent',
+                                cursor: 'pointer',
+                                transition: 'background-color 0.15s'
+                              }}
+                              className="table-row-hover"
+                            >
+                              <td style={{ padding: '12px 16px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(212,160,154,0.12)', border: '1.5px solid var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
+                                    {client.image_url ? (
+                                      <img src={client.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    ) : (
+                                      <User size={16} color="var(--pink-primary)" />
+                                    )}
+                                  </div>
+                                  <div style={{ minWidth: 0 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                      <span style={{ fontWeight: '700', fontSize: '13px', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
+                                        {client.name}
+                                      </span>
+                                      {(client.total_visits || 0) >= 10 && <span style={{ color: '#b47d49', fontSize: '11px' }}>★</span>}
+                                    </div>
+                                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                                      {(client.total_visits || 0) >= 10 ? 'VIP' : client.hair_type || 'Normal'}
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '600' }}>
+                                V-{client.id_card || '00.000.000'}
+                              </td>
+                              <td style={{ padding: '12px 16px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                  {client.phone && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--text-secondary)' }}>
+                                      <Phone size={11} color="var(--pink-primary)" /> {client.phone}
+                                    </div>
+                                  )}
+                                  {client.email && (
+                                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
+                                      {client.email}
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+                              <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--text-muted)' }}>
+                                {client.last_visit ? new Date(client.last_visit).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
+                              </td>
+                              <td style={{ padding: '12px 16px' }}>
+                                {client.next_appointment ? (
+                                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
+                                      {new Date(client.next_appointment).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                    </span>
+                                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--pink-primary)', marginTop: '2px' }}>
+                                      {new Date(client.next_appointment).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>—</span>
+                                )}
+                              </td>
+                              <td style={{ padding: '12px 16px' }}>
+                                <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-secondary)' }}>
+                                  {client.total_visits || 0} visitas
+                                </span>
+                              </td>
+                              <td style={{ padding: '12px 16px' }}>
+                                {status.label === 'VIP' ? (
+                                  <span style={{ fontSize: '10px', fontWeight: '800', color: '#b47d49', backgroundColor: 'rgba(180, 125, 73, 0.1)', border: '1px solid rgba(180, 125, 73, 0.15)', padding: '4px 10px', borderRadius: '6px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                    👑 VIP
+                                  </span>
+                                ) : (
+                                  <span style={{ fontSize: '10px', fontWeight: '700', color: status.color, backgroundColor: status.bg, border: status.border, padding: '4px 10px', borderRadius: '6px', whiteSpace: 'nowrap' }}>
+                                    {status.label}
+                                  </span>
+                                )}
+                              </td>
+                              <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                                <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
+                                  <button onClick={(e) => { e.stopPropagation(); setSelectedClient(client); }} style={{ width: '30px', height: '30px', borderRadius: '8px', border: 'none', backgroundColor: 'transparent', color: 'var(--pink-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="btn-interactive" title="Ver Ficha">
+                                    <Eye size={14} />
+                                  </button>
+                                  <button 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (client.phone) {
+                                        window.open(`https://wa.me/${client.phone}`, '_blank');
+                                      }
+                                    }} 
+                                    style={{ width: '30px', height: '30px', borderRadius: '8px', border: 'none', backgroundColor: 'transparent', color: '#25d366', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
+                                    className="btn-interactive"
+                                    title="Enviar WhatsApp"
+                                  >
+                                    <MessageCircle size={14} />
+                                  </button>
+                                  <button onClick={(e) => { e.stopPropagation(); handleEditClick && handleEditClick(client); }} style={{ width: '30px', height: '30px', borderRadius: '8px', border: 'none', backgroundColor: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="btn-interactive" title="Editar">
+                                    <Edit2 size={13} />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {/* Table Footer with Pagination */}
+                {totalPages > 1 && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', padding: '0 8px' }}>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600' }}>
+                      Mostrando {(currentPage - 1) * itemsPerPage + 1} a {Math.min(currentPage * itemsPerPage, displayClients.length)} de {displayClients.length} clientas
+                    </div>
+                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                      <button
+                        disabled={currentPage === 1}
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}
+                      >
+                        ‹
+                      </button>
+                      {Array.from({ length: totalPages }).map((_, i) => {
+                        const page = i + 1;
+                        return (
+                          <button
+                            key={page}
+                            onClick={() => setCurrentPage(page)}
+                            style={{ width: '32px', height: '32px', borderRadius: '8px', border: currentPage === page ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)', backgroundColor: currentPage === page ? 'var(--pink-primary)' : 'white', color: currentPage === page ? 'white' : 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700' }}
+                          >
+                            {page}
+                          </button>
+                        );
+                      })}
+                      <button
+                        disabled={currentPage === totalPages}
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}
+                      >
+                        ›
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Seguimientos pendientes */}
+                <div style={{ marginTop: '28px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                    <h3 style={{ fontSize: '16px', fontWeight: '850', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+                      <Bell size={18} color="var(--pink-primary)" /> Seguimientos pendientes
+                    </h3>
+                    <span style={{ fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '750', cursor: 'pointer' }}>Ver todos</span>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                    {[
+                      { text: 'Confirmar cita de Valentina P.', date: '12 may 2025 · 11:30 AM', icon: Calendar, color: '#b47d49', bg: 'rgba(180, 125, 73, 0.08)' },
+                      { text: 'Enviar rutina post cuidado', date: 'Laura Martínez · 18 may 2025', icon: FileText, color: '#d4a09a', bg: 'rgba(212, 160, 154, 0.12)' },
+                      { text: 'Recordatorio de evaluación', date: 'Andrea Rodríguez · 20 may 2025', icon: Bell, color: '#a0506a', bg: 'rgba(160, 80, 106, 0.08)' }
+                    ].map((item, i) => (
+                      <div key={i} className="glass-card btn-interactive" style={{ padding: '14px 16px', borderRadius: '16px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', transition: 'all 0.2s', background: 'white' }}>
+                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <item.icon size={16} color={item.color} />
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.text}</div>
+                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>{item.date}</div>
+                        </div>
+                        <ChevronRight size={14} color="var(--text-muted)" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Right Column: Ficha Rápida + Próximos Cumpleaños Sidebar */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', position: 'sticky', top: '24px' }}>
+                
+                {/* Ficha Rápida Card */}
+                <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', position: 'relative', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                    <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0 }}>Ficha rápida</h3>
+                    <button 
+                      onClick={() => setSelectedClient(sidebarClient)} 
+                      style={{ border: 'none', background: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      title="Ver ficha completa"
+                      className="btn-interactive"
+                    >
+                      <Maximize2 size={15} />
+                    </button>
+                  </div>
+
+                  {sidebarClient ? (
+                    <>
+                      {/* Avatar + name + VIP badge */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                        <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: 'rgba(212,160,154,0.12)', border: '2px solid var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
+                          {sidebarClient.image_url ? (
+                            <img src={sidebarClient.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ) : (
+                            <User size={24} color="var(--pink-primary)" />
+                          )}
+                        </div>
+                        <div style={{ minWidth: 0 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <h4 style={{ fontSize: '15px', fontWeight: '850', color: 'var(--text-primary)', margin: 0 }}>{sidebarClient.name}</h4>
+                            {(sidebarClient.total_visits || 0) >= 10 && (
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '2px', fontSize: '9px', fontWeight: '800', color: '#b47d49', backgroundColor: 'rgba(180, 125, 73, 0.1)', border: '1px solid rgba(180, 125, 73, 0.15)', padding: '2px 6px', borderRadius: '12px' }}>
+                                👑 VIP
+                              </span>
+                            )}
+                          </div>
+                          <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                            <span>V-{sidebarClient.id_card || '00.000.000'} · {sidebarClient.phone || 'Sin teléfono'}</span>
+                            <span style={{ wordBreak: 'break-all' }}>{sidebarClient.email || 'sin.email@janastudio.com'}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <hr style={{ border: '0', borderTop: '1px dashed var(--border-color)', margin: '14px 0' }} />
+
+                      {/* Notes Section with Inline Editing */}
+                      <div style={{ marginBottom: '14px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                          <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>Notas</span>
+                          <button 
+                            onClick={async () => {
+                              if (isEditingNotes) {
+                                await onUpdate(sidebarClient.id, { notes: tempNotes });
+                                setIsEditingNotes(false);
+                              } else {
+                                setTempNotes(sidebarClient.notes || '');
+                                setIsEditingNotes(true);
+                              }
+                            }}
+                            style={{ border: 'none', background: 'none', color: 'var(--pink-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          >
+                            {isEditingNotes ? <Check size={14} /> : <Edit2 size={13} />}
+                          </button>
+                        </div>
+                        {isEditingNotes ? (
+                          <textarea
+                            className="form-input"
+                            value={tempNotes}
+                            onChange={e => setTempNotes(e.target.value)}
+                            style={{ width: '100%', minHeight: '60px', fontSize: '12px', padding: '8px', borderRadius: '8px' }}
+                          />
+                        ) : (
+                          <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.4' }}>
+                            {sidebarClient.notes || 'Piel mixta, sensible. Prefiere sesiones por la mañana. Excelente adherencia a tratamientos.'}
+                          </p>
+                        )}
+                      </div>
+
+                      <hr style={{ border: '0', borderTop: '1px dashed var(--border-color)', margin: '14px 0' }} />
+
+                      {/* Frequent Services Section */}
+                      <div style={{ marginBottom: '14px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)', display: 'block', marginBottom: '8px' }}>Servicios frecuentes</span>
+                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                          {['Láser Diodo', 'Hydrafacial', 'Peeling Químico'].map((tag, i) => (
+                            <span key={i} style={{ fontSize: '10.5px', fontWeight: '700', color: 'var(--pink-primary)', backgroundColor: 'rgba(212, 160, 154, 0.08)', border: '1px solid rgba(212, 160, 154, 0.15)', padding: '4px 10px', borderRadius: '12px' }}>
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <hr style={{ border: '0', borderTop: '1px dashed var(--border-color)', margin: '14px 0' }} />
+
+                      {/* Next Appointment Section */}
+                      <div>
+                        <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)', display: 'block', marginBottom: '8px' }}>Próxima cita</span>
+                        {sidebarClient.next_appointment ? (
+                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', backgroundColor: 'var(--bg-tertiary)', padding: '10px 12px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                            <Calendar size={15} color="var(--pink-primary)" />
+                            <div>
+                              <div style={{ fontSize: '11.5px', fontWeight: '700', color: 'var(--text-primary)' }}>
+                                {new Date(sidebarClient.next_appointment).toLocaleDateString('es-VE', { day: '2-digit', month: 'long', year: 'numeric' })} · {new Date(sidebarClient.next_appointment).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                              </div>
+                              <div style={{ fontSize: '10.5px', color: 'var(--pink-primary)', fontWeight: '600', marginTop: '2px' }}>
+                                Láser Diodo • Axilas
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                            Sin citas programadas
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <div style={{ textAlign: 'center', padding: '20px 0', color: 'var(--text-muted)', fontSize: '12px' }}>
+                      Selecciona una clienta para ver su vista rápida
+                    </div>
+                  )}
+                </div>
+
+                {/* Próximos cumpleaños Card (with cute cake drawing) */}
+                <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                    <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      Próximos cumpleaños
+                    </h3>
+                    <span style={{ fontSize: '11px', color: 'var(--pink-primary)', fontWeight: '700', cursor: 'pointer' }}>Ver todos</span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '20px' }}>
+                    {upcomingBirthdays.map((c, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(212, 160, 154, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Gift size={12} color="var(--pink-primary)" />
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{c.name}</div>
+                          <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                            {c.birth_date ? new Date(c.birth_date + 'T00:00:00').toLocaleDateString('es-VE', { day: '2-digit', month: 'short' }) : '—'}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Cute CSS Pink Cake drawing placement on the bottom-right */}
+                  <div style={{ position: 'absolute', bottom: '-5px', right: '-5px', width: '80px', height: '80px', opacity: 0.18, pointerEvents: 'none' }}>
+                    <span style={{ fontSize: '64px' }}>🎂</span>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          )}
         </>
       ) : (
         <ClientDetail 
