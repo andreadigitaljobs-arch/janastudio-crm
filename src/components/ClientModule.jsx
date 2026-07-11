@@ -1014,11 +1014,24 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                     <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0 }}>Ficha rápida</h3>
                     <button 
                       onClick={() => setSelectedClient(sidebarClient)} 
-                      style={{ border: 'none', background: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                      title="Ver ficha completa"
+                      style={{ 
+                        border: '1px solid #fae8eb', 
+                        backgroundColor: 'rgba(212, 160, 154, 0.05)', 
+                        color: 'var(--pink-primary)', 
+                        cursor: 'pointer', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        padding: '6px 12px',
+                        borderRadius: '10px',
+                        fontSize: '11px',
+                        fontWeight: '750',
+                        gap: '4px',
+                        transition: 'all 0.2s'
+                      }}
                       className="btn-interactive"
                     >
-                      <Maximize2 size={15} />
+                      Ver ficha completa <ArrowUpRight size={13} />
                     </button>
                   </div>
 
