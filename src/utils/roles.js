@@ -23,6 +23,7 @@ const MODULE_ROLES = {
   inventory: ['admin', 'cashier'],
   finance: ['admin', 'cashier'],
   reports: ['admin'],
+  notifications: ['admin', 'reception', 'cashier', 'worker'],
 };
 
 export const canAccessModule = (role, moduleId) => {
