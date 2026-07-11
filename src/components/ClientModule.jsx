@@ -374,10 +374,10 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                   }}
                   style={{ 
                     padding: '10px 20px', borderRadius: '20px', border: 'none', 
-                    backgroundColor: 'var(--pink-primary)', color: 'white', 
+                    background: 'var(--magenta-gradient)', color: 'white', 
                     fontSize: '13px', fontWeight: '750', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', gap: '6px',
-                    boxShadow: '0 4px 12px rgba(212, 160, 154, 0.25)'
+                    boxShadow: '0 4px 15px rgba(160, 80, 106, 0.25)'
                   }}
                   className="btn-interactive"
                 >
@@ -401,10 +401,11 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
               }}
               style={{ 
                 width: '100%', padding: '10px', borderRadius: '12px', border: 'none', 
-                backgroundColor: 'var(--pink-primary)', color: 'white', 
+                background: 'var(--magenta-gradient)', color: 'white', 
                 fontSize: '13px', fontWeight: '750', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                marginBottom: '16px'
+                marginBottom: '16px',
+                boxShadow: '0 4px 15px rgba(160, 80, 106, 0.2)'
               }}
             >
               <Plus size={16} /> Nueva clienta
