@@ -767,13 +767,13 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                       <thead>
                         <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'rgba(212, 160, 154, 0.08)' }}>
-                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cliente</th>
-                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cédula / ID</th>
-                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contacto</th>
-                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Última visita</th>
-                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Próxima cita</th>
-                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Historial</th>
-                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado</th>
+                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Cliente</th>
+                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Cédula / ID</th>
+                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Contacto</th>
+                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Última visita</th>
+                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Próxima cita</th>
+                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Historial</th>
+                          <th style={{ padding: '14px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Estado</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -814,13 +814,13 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                                   </div>
                                 </div>
                               </td>
-                              <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '600' }}>
+                              <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>
                                 V-{client.id_card || '00.000.000'}
                               </td>
-                              <td style={{ padding: '12px 16px' }}>
+                              <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                                   {client.phone && (
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--text-secondary)' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
                                       <Phone size={11} color="var(--pink-primary)" /> {client.phone}
                                     </div>
                                   )}
@@ -831,16 +831,16 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                                   )}
                                 </div>
                               </td>
-                              <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--text-muted)' }}>
+                              <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
                                 {client.last_visit ? new Date(client.last_visit).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
                               </td>
-                              <td style={{ padding: '12px 16px' }}>
+                              <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
                                 {client.next_appointment ? (
                                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                                     <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
                                       {new Date(client.next_appointment).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' })}
                                     </span>
-                                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--pink-primary)', marginTop: '2px' }}>
+                                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--pink-primary)', marginTop: '2px', whiteSpace: 'nowrap' }}>
                                       {new Date(client.next_appointment).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true })}
                                     </span>
                                   </div>
