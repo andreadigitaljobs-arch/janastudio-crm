@@ -510,8 +510,31 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
               </div>
 
               {loading ? (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
-                  <Loader2 className="rose-gold-spinner animate-spin" size={40} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {[1, 2, 3].map((n) => (
+                    <div
+                      key={n}
+                      style={{
+                        padding: '16px',
+                        borderRadius: '16px',
+                        background: 'white',
+                        border: '1px solid var(--border-color)',
+                        boxShadow: 'var(--shadow-card)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '12px'
+                      }}
+                    >
+                      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                        <div className="skeleton-bar" style={{ width: '40px', height: '40px', borderRadius: '50%', flexShrink: 0 }} />
+                        <div style={{ flex: 1 }}>
+                          <div className="skeleton-bar" style={{ width: '100px', height: '14px', marginBottom: '6px' }} />
+                          <div className="skeleton-bar" style={{ width: '60px', height: '10px' }} />
+                        </div>
+                        <div className="skeleton-bar" style={{ width: '60px', height: '20px', borderRadius: '6px' }} />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ) : displayClients.length === 0 ? (
                 <div className="glass-card" style={{ textAlign: 'center', padding: '80px', borderStyle: 'dashed' }}>
@@ -889,8 +912,53 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
 
                     {/* Clients Table */}
                 {loading ? (
-                  <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
-                    <Loader2 className="rose-gold-spinner animate-spin" size={40} />
+                  <div className="glass-card animate-pulse" style={{ borderRadius: '20px', overflow: 'hidden', border: '1px solid var(--border-color)', background: 'white' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                      <thead>
+                        <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'rgba(212, 160, 154, 0.08)' }}>
+                          <th style={{ padding: '12px 6px 12px 24px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cliente</th>
+                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cédula / ID</th>
+                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contacto</th>
+                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Última visita</th>
+                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Próxima cita</th>
+                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Historial</th>
+                          <th style={{ padding: '12px 24px 12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <tr key={n} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                            <td style={{ padding: '10px 6px 10px 24px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <div className="skeleton-bar" style={{ width: '30px', height: '30px', borderRadius: '50%', flexShrink: 0 }} />
+                                <div>
+                                  <div className="skeleton-bar" style={{ width: '80px', height: '12px', marginBottom: '4px' }} />
+                                  <div className="skeleton-bar" style={{ width: '40px', height: '8px' }} />
+                                </div>
+                              </div>
+                            </td>
+                            <td style={{ padding: '10px 6px' }}>
+                              <div className="skeleton-bar" style={{ width: '70px', height: '10px' }} />
+                            </td>
+                            <td style={{ padding: '10px 6px' }}>
+                              <div className="skeleton-bar" style={{ width: '90px', height: '10px' }} />
+                            </td>
+                            <td style={{ padding: '10px 6px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>
+                              <div className="skeleton-bar" style={{ width: '60px', height: '10px' }} />
+                            </td>
+                            <td style={{ padding: '10px 6px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>
+                              <div className="skeleton-bar" style={{ width: '60px', height: '10px' }} />
+                            </td>
+                            <td style={{ padding: '10px 6px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>
+                              <div className="skeleton-bar" style={{ width: '40px', height: '10px' }} />
+                            </td>
+                            <td style={{ padding: '10px 24px 10px 6px' }}>
+                              <div className="skeleton-bar" style={{ width: '50px', height: '16px', borderRadius: '6px' }} />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 ) : displayClients.length === 0 ? (
                   <div className="glass-card" style={{ textAlign: 'center', padding: '80px', borderStyle: 'dashed' }}>
@@ -1172,12 +1240,21 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates }) 
                       {/* Notes Section with Inline Editing */}
                       <div style={{ marginBottom: '14px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                          <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>Notas</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>Notas</span>
+                            {showSaveSuccess && (
+                              <span style={{ fontSize: '10px', color: '#10b981', display: 'flex', alignItems: 'center', gap: '2px', fontWeight: '750', animation: 'scaleIn 0.2s ease-out' }}>
+                                <Check size={11} /> ¡Guardado!
+                              </span>
+                            )}
+                          </div>
                           <button 
                             onClick={async () => {
                               if (isEditingNotes) {
                                 await onUpdate(sidebarClient.id, { notes: tempNotes });
                                 setIsEditingNotes(false);
+                                setShowSaveSuccess(true);
+                                setTimeout(() => setShowSaveSuccess(false), 2000);
                               } else {
                                 setTempNotes(sidebarClient.notes || '');
                                 setIsEditingNotes(true);
