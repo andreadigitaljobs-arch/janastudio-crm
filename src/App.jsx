@@ -167,6 +167,14 @@ function App() {
 
   const handleRefresh = () => setRefreshKey(prev => prev + 1);
 
+  const handleOpenNotifications = () => {
+    if (isMobile) {
+      handleTabChange('notifications');
+    } else {
+      setIsNotificationsOpen(true);
+    }
+  };
+
   useEffect(() => {
     const syncRates = async () => {
       const ratesData = await dataService.getExchangeRates();
@@ -175,13 +183,6 @@ function App() {
     syncRates();
     const interval = setInterval(syncRates, 10 * 60 * 1000);
 
-    const handleOpenNotifications = () => {
-      if (isMobile) {
-        handleTabChange('notifications');
-      } else {
-        setIsNotificationsOpen(true);
-      }
-    };
     const handleHideSidebar = () => setHideSidebar(true);
     const handleShowSidebar = () => setHideSidebar(false);
     window.addEventListener('jana:open-notifications', handleOpenNotifications);
