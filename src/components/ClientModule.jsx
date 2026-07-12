@@ -3345,15 +3345,31 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                   {(observations.length > 0 || images.length > 0) && (
                     <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : (observations.length > 0 && images.length > 0 ? '1.2fr 0.8fr' : '1fr'), gap: '12px' }}>
                       {observations.length > 0 && (
-                        <div className="glass-card" style={{ padding: '20px', borderRadius: '20px', background: 'rgba(160,80,106,0.015)', border: '1px solid rgba(160,80,106,0.1)' }}>
-                          <h4 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Anotaciones del Especialista</h4>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '11px' }}>
+                        <div className="glass-card" style={{ 
+                          padding: '24px', 
+                          borderRadius: '20px', 
+                          background: 'rgba(160,80,106,0.015)', 
+                          border: '1px solid rgba(160,80,106,0.1)',
+                          borderLeft: '5px solid var(--magenta-primary)',
+                          maxWidth: '850px',
+                          boxShadow: '0 4px 20px rgba(160,80,106,0.02)'
+                        }}>
+                          <h4 style={{ margin: '0 0 16px', fontSize: '14.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <FileText size={18} color="var(--magenta-primary)" /> Anotaciones del Especialista
+                          </h4>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
                             {observations.map((obs, i) => (
-                              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                              <div key={i} style={{ 
+                                display: 'flex', 
+                                alignItems: 'flex-start', 
+                                gap: '12px',
+                                padding: '12px 0',
+                                borderBottom: i === observations.length - 1 ? 'none' : '1px dashed rgba(160,80,106,0.08)'
+                              }}>
                                 <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'rgba(46,158,91,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
                                   <Check size={11} color="#2e9e5b" strokeWidth={3} />
                                 </div>
-                                <span style={{ fontSize: '14.5px', color: 'var(--text-secondary)', fontWeight: '500', lineHeight: 1.45 }}>{obs}</span>
+                                <span style={{ fontSize: '14.5px', color: 'var(--text-secondary)', fontWeight: '500', lineHeight: 1.5 }}>{obs}</span>
                               </div>
                             ))}
                           </div>
