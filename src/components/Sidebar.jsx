@@ -101,7 +101,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
     boxShadow: '0 8px 32px rgba(160, 80, 106, 0.06)',
     display: 'flex', 
     flexDirection: 'column',
-    padding: effectiveCollapsed ? '16px 8px' : '12px 12px',
+    padding: effectiveCollapsed ? '10px 8px' : '10px 10px',
     overflowY: 'hidden', 
     overflowX: 'hidden',
     transition: 'all 0.3s ease',
@@ -122,10 +122,10 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
     <div className="sidebar" ref={sidebarRef} style={sidebarStyle}>
       {/* Mobile close button + Logo header */}
       <div style={{
-        gap: effectiveCollapsed ? '24px' : '28px',
+        gap: effectiveCollapsed ? '16px' : '16px',
         display: 'flex', flexDirection: 'column', alignItems: 'center',
         position: 'relative',
-        marginBottom: effectiveCollapsed ? '16px' : '0'
+        marginBottom: effectiveCollapsed ? '8px' : '0'
       }}>
         {isMobile && (
           <button
@@ -168,13 +168,13 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
         {!effectiveCollapsed && (
           <div style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center',
-            marginTop: '8px', padding: '8px 0'
+            marginTop: '4px', padding: '4px 0'
           }}>
             <img
               src="/logo.webp"
               alt="JanaStudio"
             style={{
-              height: '42px', marginBottom: '4px',
+              height: '38px', marginBottom: '2px',
               filter: 'brightness(1.0) drop-shadow(0 2px 8px rgba(212, 160, 154, 0.15))'
             }}
           />
@@ -194,7 +194,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
 
       <nav
         onMouseLeave={() => setHoveredTab(null)}
-        style={{ display: 'flex', flexDirection: 'column', gap: '3px', position: 'relative', flex: 1, minHeight: 0, overflowY: 'hidden', overflowX: 'hidden' }}
+        style={{ display: 'flex', flexDirection: 'column', gap: '1px', position: 'relative', flex: 1, minHeight: 0, overflowY: 'hidden', overflowX: 'hidden' }}
       >
         <div
           style={{
@@ -222,11 +222,11 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
               aria-label={effectiveCollapsed ? item.label : undefined}
               style={{
                 display: 'flex', alignItems: 'center', gap: effectiveCollapsed ? '0' : '12px',
-                padding: effectiveCollapsed ? '11px' : '10px 14px',
-                borderRadius: '14px', border: isActive ? '1px solid rgba(201, 114, 130, 0.12)' : '1px solid transparent',
+                padding: effectiveCollapsed ? '9px' : '8px 12px',
+                borderRadius: '12px', border: isActive ? '1px solid rgba(201, 114, 130, 0.12)' : '1px solid transparent',
                 background: 'transparent',
                 color: isActive ? '#a0506a' : 'var(--text-secondary)',
-                cursor: 'pointer', fontSize: '0.82rem',
+                cursor: 'pointer', fontSize: '0.8rem',
                 fontWeight: isActive ? 700 : 500,
                 transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)', width: '100%',
                 textAlign: 'left',
@@ -245,7 +245,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
               }}
             >
               <div style={{
-                width: '32px', height: '32px', borderRadius: '10px',
+                width: '30px', height: '30px', borderRadius: '10px',
                 background: isActive ? colors.bg : 'rgba(212, 160, 154, 0.06)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -266,14 +266,14 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
         })}
       </nav>
 
-      <div style={{ flexShrink: 0, paddingTop: '12px', display: 'flex', flexDirection: 'column', gap: '10px', position: 'relative' }}>
+      <div style={{ flexShrink: 0, paddingTop: '8px', display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative' }}>
         {!effectiveCollapsed ? (
           <button
             onClick={handleLogout}
             style={{
               display: 'flex', alignItems: 'center', gap: '12px',
-              padding: '12px 14px',
-              borderRadius: '16px',
+              padding: '10px 12px',
+              borderRadius: '14px',
               border: '1px solid rgba(201, 114, 130, 0.15)',
               background: 'rgba(255,255,255,0.6)',
               backdropFilter: 'blur(8px)',
@@ -286,7 +286,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
             onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.6)'; e.currentTarget.style.borderColor = 'rgba(201, 114, 130, 0.15)'; }}
           >
             <div style={{
-              width: '32px', height: '32px', borderRadius: '10px',
+              width: '30px', height: '30px', borderRadius: '10px',
               background: 'rgba(201, 114, 130, 0.08)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0

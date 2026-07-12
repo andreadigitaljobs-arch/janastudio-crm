@@ -689,7 +689,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                     return (
                       <div
                         key={client.id}
-                        onClick={() => setSelectedClient(client)}
+                        onClick={() => { setSelectedClient(client); sessionStorage.setItem('jana_tab_params', JSON.stringify({ clientId: client.id })); }}
                         style={{
                           padding: '16px',
                           borderRadius: '16px',
@@ -1202,6 +1202,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                               onClick={() => {
                                 if (isNarrowScreen) {
                                   setSelectedClient(client);
+                                  sessionStorage.setItem('jana_tab_params', JSON.stringify({ clientId: client.id }));
                                 } else {
                                   setSelectedSidebarClient(client);
                                 }
@@ -1405,7 +1406,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                     <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0 }}>Ficha rápida</h3>
                     <button 
-                      onClick={() => setSelectedClient(sidebarClient)} 
+                      onClick={() => { setSelectedClient(sidebarClient); sessionStorage.setItem('jana_tab_params', JSON.stringify({ clientId: sidebarClient.id })); }}
                       style={{ 
                         border: '1px solid #fae8eb', 
                         backgroundColor: 'rgba(160, 80, 106, 0.05)', 
@@ -1717,6 +1718,8 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
           onNavigate={onNavigate}
           onBack={() => {
             setSelectedClient(null);
+            sessionStorage.removeItem('jana_scroll_position');
+            onNavigate('clients', {});
             setShowCamera(false); // Reset camera state on back
           }} 
           onDelete={() => handleDeleteClient(selectedClient.id, selectedClient.name)}
@@ -1973,7 +1976,22 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
   const [upcomingAppointment, setUpcomingAppointment] = useState(null);
   const [editingNotes, setEditingNotes] = useState(false);
   const [localNotes, setLocalNotes] = useState(client.notes || '');
-  const [activeSubTab, setActiveSubTab] = useState('gallery'); // 'gallery', 'diagnoses', 'packages', 'history'
+  const [activeSubTab, setActiveSubTab] = useState(() => {
+    try {
+      const clientId = client?.id;
+      if (clientId) {
+        const saved = sessionStorage.getItem(`jana_client_subtab_${clientId}`);
+        if (saved) return saved;
+      }
+    } catch {}
+    return 'gallery';
+  });
+
+  useEffect(() => {
+    if (client?.id) {
+      sessionStorage.setItem(`jana_client_subtab_${client.id}`, activeSubTab);
+    }
+  }, [activeSubTab, client?.id]);
 
   // Switching sub-tabs (Fotos/Salud/Paquetes/Visitas) should also start at the top.
   useEffect(() => {
@@ -3734,7 +3752,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                 { label: 'Próxima sesión', value: nextSession || 'N/A', sub: nextSession ? (demoPkgs ? '10:00 AM · Mariana R.' : '') : 'Sin citas programadas', iconBg: 'rgba(160,80,106,0.05)', icon: <Clock size={18} color="var(--pink-primary)" /> },
                 { label: 'Valor invertido', value: `$${totalSpent.toLocaleString()}`, sub: 'Ver resumen financiero →', iconBg: 'rgba(160,80,106,0.04)', icon: <Receipt size={18} color="var(--magenta-primary)" /> },
               ].map((s, i) => (
-                <div key={i} style={{ padding: '16px 18px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: '14px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
+                <div key={i} className={`ficha-card stagger-${i + 1}`} style={{ padding: '16px 18px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: '14px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)', cursor: 'pointer' }}>
                   <div style={{ width: '42px', height: '42px', borderRadius: '14px', backgroundColor: s.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{s.icon}</div>
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
@@ -3748,7 +3766,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
             {/* Main: Active Package + Upcoming Sessions */}
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.2fr 0.8fr', gap: '20px', alignItems: 'start' }}>
               {/* Active Package */}
-              <div style={{ padding: '24px', borderRadius: '20px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
+              <div className="ficha-card" style={{ padding: '24px', borderRadius: '20px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                   <h4 style={{ margin: 0, fontSize: '16px', fontWeight: '850', color: 'var(--text-primary)' }}>Paquete activo</h4>
                   <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: '800', background: 'rgba(34,197,94,0.08)', color: '#22c55e', textTransform: 'uppercase' }}>Activo</span>
@@ -3810,16 +3828,16 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
               </div>
 
               {/* Upcoming Sessions */}
-              <div style={{ padding: '20px', borderRadius: '20px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
+              <div className="ficha-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                   <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '850', color: 'var(--text-primary)' }}>Próximas sesiones</h4>
-                  <button style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: '700', color: 'var(--pink-primary)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', borderRadius: '8px' }}>
+                  <button className="btn-interactive" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: '700', color: 'var(--pink-primary)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', borderRadius: '8px' }}>
                     <Calendar size={12} /> Ver calendario
                   </button>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {upcomingSessions.map((s, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px', borderRadius: '12px', background: 'rgba(160,80,106,0.02)', cursor: 'pointer' }}>
+                    <div key={i} className="ficha-row btn-interactive" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px', borderRadius: '12px', background: 'rgba(160,80,106,0.02)', cursor: 'pointer' }}>
                       <div style={{ textAlign: 'center', minWidth: '40px' }}>
                         <div style={{ fontSize: '18px', fontWeight: '900', color: 'var(--magenta-primary)', lineHeight: '1' }}>{s.day}</div>
                         <div style={{ fontSize: '8px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.month}</div>
@@ -3830,13 +3848,13 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                         </div>
                         <div style={{ fontSize: '13px', fontWeight: '750', color: 'var(--text-primary)', marginTop: '2px' }}>¡ {s.service}</div>
                       </div>
-                      <span style={{ padding: '3px 8px', borderRadius: '20px', fontSize: '9px', fontWeight: '800', background: 'rgba(46,158,91,0.08)', color: '#2e9e5b', textTransform: 'uppercase', flexShrink: 0 }}>{s.status}</span>
+                      <span className="ficha-tag" style={{ padding: '3px 8px', borderRadius: '20px', fontSize: '9px', fontWeight: '800', background: 'rgba(46,158,91,0.08)', color: '#2e9e5b', textTransform: 'uppercase', flexShrink: 0 }}>{s.status}</span>
                       <ChevronRight size={14} color="var(--text-muted)" />
                     </div>
                   ))}
                 </div>
                 {upcomingSessions.length > 3 && (
-                  <button style={{ width: '100%', marginTop: '10px', padding: '10px', fontSize: '12px', fontWeight: '700', color: 'var(--pink-primary)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center' }}>
+                  <button className="btn-interactive" style={{ width: '100%', marginTop: '10px', padding: '10px', fontSize: '12px', fontWeight: '700', color: 'var(--pink-primary)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center' }}>
                     Ver todas las sesiones →
                   </button>
                 )}
@@ -3846,65 +3864,65 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
             {/* Bottom Row: History + Recent Sessions + Recommendations */}
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '16px' }}>
               {/* Package History */}
-              <div style={{ padding: '20px', borderRadius: '20px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
+              <div className="ficha-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
                 <h4 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: '850', color: 'var(--text-primary)' }}>Historial de paquetes</h4>
                 <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 0.6fr 0.7fr', gap: '4px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.3px', padding: '0 0 8px', marginBottom: '4px' }}>
                   <span>Paquete</span><span>Fecha</span><span>Monto</span><span>Estado</span>
                 </div>
                 {pkgHistory.map((p, i) => (
-                  <div key={i} style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 0.6fr 0.7fr', gap: '4px', padding: '10px 0', alignItems: 'center', cursor: 'pointer' }}>
+                  <div key={i} className="ficha-row" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 0.6fr 0.7fr', gap: '4px', padding: '10px 0', alignItems: 'center', cursor: 'pointer' }}>
                     <div style={{ fontSize: '12px', fontWeight: '750', color: 'var(--text-primary)' }}>{p.name}</div>
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{p.date}</div>
                     <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>{p.price}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '9px', fontWeight: '800', background: p.status === 'Activo' ? 'rgba(34,197,94,0.08)' : 'rgba(160,80,106,0.06)', color: p.status === 'Activo' ? '#22c55e' : 'var(--text-muted)', textTransform: 'uppercase' }}>{p.status}</span>
+                      <span className="ficha-tag" style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '9px', fontWeight: '800', background: p.status === 'Activo' ? 'rgba(34,197,94,0.08)' : 'rgba(160,80,106,0.06)', color: p.status === 'Activo' ? '#22c55e' : 'var(--text-muted)', textTransform: 'uppercase' }}>{p.status}</span>
                       <ChevronRight size={10} color="var(--text-muted)" />
                     </div>
                   </div>
                 ))}
-                <button style={{ width: '100%', marginTop: '10px', padding: '10px', fontSize: '12px', fontWeight: '700', color: 'var(--pink-primary)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center' }}>
+                <button className="btn-interactive" style={{ width: '100%', marginTop: '10px', padding: '10px', fontSize: '12px', fontWeight: '700', color: 'var(--pink-primary)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center' }}>
                   Ver historial completo →
                 </button>
               </div>
 
               {/* Recent Sessions */}
-              <div style={{ padding: '20px', borderRadius: '20px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
+              <div className="ficha-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
                 <h4 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: '850', color: 'var(--text-primary)' }}>Sesiones recientes</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   {recentSessions.map((s, i) => (
-                    <div key={i} style={{ padding: '12px', borderRadius: '12px', background: 'rgba(160,80,106,0.02)' }}>
+                    <div key={i} className="ficha-row" style={{ padding: '12px', borderRadius: '12px', background: 'rgba(160,80,106,0.02)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                         <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', fontWeight: '600' }}>{s.date}</div>
-                        <span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '9px', fontWeight: '800', background: 'rgba(46,158,91,0.08)', color: '#2e9e5b', textTransform: 'uppercase' }}>{s.status}</span>
+                        <span className="ficha-tag" style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '9px', fontWeight: '800', background: 'rgba(46,158,91,0.08)', color: '#2e9e5b', textTransform: 'uppercase' }}>{s.status}</span>
                       </div>
                       <div style={{ fontSize: '14px', fontWeight: '850', color: 'var(--text-primary)', marginBottom: '2px' }}>{s.service}</div>
                       <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}>{s.client}</div>
                       <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '6px' }}>Notas: {s.notes}</div>
                       <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                         {s.results.map((r, ri) => (
-                          <span key={ri} style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '9.5px', fontWeight: '700', background: 'rgba(160,80,106,0.04)', color: 'var(--magenta-primary)' }}>{r}</span>
+                          <span key={ri} className="ficha-tag" style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '9.5px', fontWeight: '700', background: 'rgba(160,80,106,0.04)', color: 'var(--magenta-primary)' }}>{r}</span>
                         ))}
                       </div>
                     </div>
                   ))}
                 </div>
-                <button style={{ width: '100%', marginTop: '10px', padding: '10px', fontSize: '12px', fontWeight: '700', color: 'var(--pink-primary)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center' }}>
+                <button className="btn-interactive" style={{ width: '100%', marginTop: '10px', padding: '10px', fontSize: '12px', fontWeight: '700', color: 'var(--pink-primary)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center' }}>
                   Ver todas las sesiones →
                 </button>
               </div>
 
               {/* Recommendations */}
-              <div style={{ padding: '20px', borderRadius: '20px', background: 'linear-gradient(160deg, rgba(160,80,106,0.04) 0%, rgba(160,80,106,0.01) 100%)', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
+              <div className="ficha-card" style={{ padding: '20px', borderRadius: '20px', background: 'linear-gradient(160deg, rgba(160,80,106,0.04) 0%, rgba(160,80,106,0.01) 100%)', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
                 <h4 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: '850', color: 'var(--text-primary)' }}>Recomendaciones para {clientFirstName}</h4>
-                <div style={{ padding: '14px', borderRadius: '14px', background: 'white', boxShadow: '0 1px 6px rgba(160,80,106,0.04)', marginBottom: '12px' }}>
+                <div className="ficha-row" style={{ padding: '14px', borderRadius: '14px', background: 'white', boxShadow: '0 1px 6px rgba(160,80,106,0.04)', marginBottom: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                     <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Siguiente paso recomendado</span>
                   </div>
                   <div style={{ fontSize: '15px', fontWeight: '850', color: 'var(--text-primary)', marginBottom: '6px' }}>Paquete Fortalece & Crece</div>
                   <p style={{ margin: '0 0 10px', fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5 }}>Estimula el crecimiento, fortalece la fibra capilar y previene la caída.</p>
-                  <button className="btn-pink" style={{ width: '100%', padding: '10px', fontSize: '12px', fontWeight: '750', borderRadius: '12px' }}>Ver detalles del paquete</button>
+                  <button className="btn-pink btn-interactive" style={{ width: '100%', padding: '10px', fontSize: '12px', fontWeight: '750', borderRadius: '12px' }}>Ver detalles del paquete</button>
                 </div>
-                <div style={{ padding: '12px', borderRadius: '12px', background: 'white', boxShadow: '0 1px 6px rgba(160,80,106,0.04)' }}>
+                <div className="ficha-row" style={{ padding: '12px', borderRadius: '12px', background: 'white', boxShadow: '0 1px 6px rgba(160,80,106,0.04)' }}>
                   <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '6px' }}>Producto sugerido</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(160,80,106,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Droplet size={16} color="var(--pink-primary)" /></div>
@@ -3966,7 +3984,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                 </h3>
                 <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--text-muted)', fontWeight: '500' }}>Registro completo de todas las visitas y tratamientos realizados.</p>
               </div>
-              <button className="btn-pink" style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 18px', fontSize: '13px', fontWeight: '750', borderRadius: '14px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+              <button className="btn-pink btn-interactive" style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 18px', fontSize: '13px', fontWeight: '750', borderRadius: '14px', whiteSpace: 'nowrap', flexShrink: 0 }}>
                 <Plus size={16} /> Nueva Sesión
               </button>
             </div>
@@ -3979,7 +3997,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                 { label: 'Servicio favorito', value: hFavService[0], sub: `${hFavService[1]} sesiones realizadas`, iconBg: 'rgba(217,70,168,0.06)', icon: <Star size={18} color="var(--pink-primary)" /> },
                 { label: 'Última visita', value: hLastVisit ? new Date(hLastVisit).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A', sub: hLastAgo, iconBg: 'rgba(160,80,106,0.05)', icon: <Clock size={18} color="var(--magenta-primary)" /> },
               ].map((s, i) => (
-                <div key={i} style={{ padding: '16px 18px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: '14px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
+                <div key={i} className={`ficha-card stagger-${i + 1}`} style={{ padding: '16px 18px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: '14px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)', cursor: 'pointer' }}>
                   <div style={{ width: '42px', height: '42px', borderRadius: '14px', backgroundColor: s.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{s.icon}</div>
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
@@ -4030,8 +4048,8 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                               borderRadius: '16px',
                               background: isExpanded ? 'rgba(160,80,106,0.03)' : 'white',
                               cursor: 'pointer',
-                              transition: 'all 0.2s ease',
-                              boxShadow: '0 2px 8px rgba(160,80,106,0.03)',
+                              transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                              boxShadow: isExpanded ? '0 6px 20px rgba(160,80,106,0.08)' : '0 2px 8px rgba(160,80,106,0.03)',
                             }}
                           >
                             <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
@@ -4050,7 +4068,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                                     <span style={{ margin: '0 2px' }}>·</span>
                                     <span>{v.client}</span>
                                   </div>
-                                  <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: '800', backgroundColor: sts === 'Completada' ? 'rgba(46,158,91,0.08)' : 'rgba(230,159,60,0.08)', color: sts === 'Completada' ? '#2e9e5b' : '#c9821f', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{sts}</span>
+                                   <span className="ficha-tag" style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: '800', backgroundColor: sts === 'Completada' ? 'rgba(46,158,91,0.08)' : 'rgba(230,159,60,0.08)', color: sts === 'Completada' ? '#2e9e5b' : '#c9821f', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{sts}</span>
                                 </div>
                                 <div style={{ fontSize: '15px', fontWeight: '850', color: 'var(--text-primary)', marginBottom: '6px' }}>{svc}</div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '6px' }}>
@@ -4061,7 +4079,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                                 {tags.length > 0 && (
                                   <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                                     {tags.map((tag, ti) => (
-                                      <span key={ti} style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: '700', background: 'rgba(160,80,106,0.06)', color: 'var(--magenta-primary)' }}>{tag}</span>
+                                      <span key={ti} className="ficha-tag" style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: '700', background: 'rgba(160,80,106,0.06)', color: 'var(--magenta-primary)' }}>{tag}</span>
                                     ))}
                                   </div>
                                 )}
@@ -4073,19 +4091,19 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                               <div style={{ marginTop: '16px', paddingTop: '16px' }} onClick={e => e.stopPropagation()}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                                   <h5 style={{ margin: 0, fontSize: '14px', fontWeight: '850', color: 'var(--text-primary)' }}>Detalles de la visita</h5>
-                                  <button onClick={() => setExpandedHistoryVisit(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '4px', display: 'flex' }}><ChevronDown size={16} style={{ transform: 'rotate(180deg)' }} /></button>
+                                   <button onClick={() => setExpandedHistoryVisit(null)} className="btn-interactive" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '4px', display: 'flex' }}><ChevronDown size={16} style={{ transform: 'rotate(180deg)' }} /></button>
                                 </div>
 
                                 <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '16px' }}>
                                   {/* Left Column */}
                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                     {/* Diagnóstico */}
-                                    <div style={{ background: 'rgba(160,80,106,0.02)', padding: '14px', borderRadius: '12px' }}>
+                                    <div className="ficha-row" style={{ background: 'rgba(160,80,106,0.02)', padding: '14px', borderRadius: '12px' }}>
                                        <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '6px' }}>Resumen del diagnóstico</div>
                                       <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>{detail.diagnostic}</p>
                                     </div>
                                     {/* Recomendaciones */}
-                                    <div style={{ background: 'rgba(160,80,106,0.02)', padding: '14px', borderRadius: '12px' }}>
+                                    <div className="ficha-row" style={{ background: 'rgba(160,80,106,0.02)', padding: '14px', borderRadius: '12px' }}>
                                        <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>Recomendaciones</div>
                                       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                         {detail.recommendations.map((rec, ri) => (
@@ -4101,8 +4119,8 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                     {/* Productos */}
                                     {detail.products.length > 0 && (
-                                      <div style={{ background: 'rgba(160,80,106,0.02)', padding: '14px', borderRadius: '12px' }}>
-                                        <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>Productos y servicios utilizados</div>
+                                      <div className="ficha-row" style={{ background: 'rgba(160,80,106,0.02)', padding: '14px', borderRadius: '12px' }}>
+                                         <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>Productos y servicios utilizados</div>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                           {detail.products.map((p, pi) => (
                                             <div key={pi} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -4118,8 +4136,8 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                                     )}
                                     {/* Notas */}
                                     {detail.notes && (
-                                      <div style={{ background: 'rgba(160,80,106,0.02)', padding: '14px', borderRadius: '12px' }}>
-                                        <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '6px' }}>Notas de la especialista</div>
+                                      <div className="ficha-row" style={{ background: 'rgba(160,80,106,0.02)', padding: '14px', borderRadius: '12px' }}>
+                                         <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '6px' }}>Notas de la especialista</div>
                                         <p style={{ margin: '0 0 6px', fontSize: '12.5px', color: 'var(--text-secondary)', fontStyle: 'italic', lineHeight: 1.5 }}>"{detail.notes}"</p>
                                         <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>— {detail.specialist}</div>
                                       </div>
@@ -4140,7 +4158,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
               {!isMobile && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                    {/* Patrones de visitas */}
-                   <div style={{ padding: '18px', borderRadius: '18px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
+                   <div className="ficha-card" style={{ padding: '18px', borderRadius: '18px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
                      <h5 style={{ margin: '0 0 14px', fontSize: '13px', fontWeight: '850', color: 'var(--text-primary)' }}>Patrones de visitas</h5>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                       {[
@@ -4161,19 +4179,19 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                   </div>
 
                   {/* Próxima recomendación */}
-                   <div style={{ padding: '18px', borderRadius: '18px', background: 'linear-gradient(135deg, rgba(160,80,106,0.04) 0%, rgba(160,80,106,0.01) 100%)', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
+                   <div className="ficha-card" style={{ padding: '18px', borderRadius: '18px', background: 'linear-gradient(135deg, rgba(160,80,106,0.04) 0%, rgba(160,80,106,0.01) 100%)', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
                     <h5 style={{ margin: '0 0 6px', fontSize: '13px', fontWeight: '850', color: 'var(--text-primary)' }}>Próxima recomendación</h5>
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px' }}>Tu próxima sesión sugerida</div>
                     <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--magenta-primary)', marginBottom: '4px' }}>21 jun 2025</div>
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '12px' }}>En 36 días</div>
-                    <button className="btn-pink" style={{ width: '100%', padding: '10px', fontSize: '12px', fontWeight: '750', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                    <button className="btn-pink btn-interactive" style={{ width: '100%', padding: '10px', fontSize: '12px', fontWeight: '750', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                       <Calendar size={14} /> Agendar visita
                     </button>
                   </div>
 
                    {/* Estadísticas rápidas */}
-                   <div style={{ padding: '18px', borderRadius: '18px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
-                    <h5 style={{ margin: '0 0 14px', fontSize: '13px', fontWeight: '850', color: 'var(--text-primary)' }}>Estadísticas rápidas</h5>
+                   <div className="ficha-card" style={{ padding: '18px', borderRadius: '18px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
+                     <h5 style={{ margin: '0 0 14px', fontSize: '13px', fontWeight: '850', color: 'var(--text-primary)' }}>Estadísticas rápidas</h5>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                       {/* Donut */}
                       <div style={{ position: 'relative', width: '80px', height: '80px', flexShrink: 0 }}>
@@ -4533,11 +4551,13 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
             })}
           </div>
           <div style={{ marginBottom: '20px' }}>
-            {renderSubTabContent()}
+            <div key={activeSubTab} className="animate-tab-enter">
+              {renderSubTabContent()}
+            </div>
           </div>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '28px', alignItems: 'start' }}>
+        <div className="animate-ficha-enter" style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '28px', alignItems: 'start' }}>
           {/* Sidebar: Profile + Ficha Técnica */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div className="glass-card" style={{ padding: '28px 24px', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)', textAlign: 'center' }}>

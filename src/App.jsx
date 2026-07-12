@@ -97,7 +97,12 @@ function App() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [isAppLoading, setIsAppLoading] = useState(true);
   const [isTabLoading, setIsTabLoading] = useState(false);
-  const [tabParams, setTabParams] = useState({});
+  const [tabParams, setTabParams] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('jana_tab_params');
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  });
   const [isReceptionModalOpen, setIsReceptionModalOpen] = useState(false);
   const [hideSidebar, setHideSidebar] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -420,9 +425,48 @@ function App() {
     await fetchSecondaryData();
   }
 
+  const isInitialMount = useRef(true);
+  const restoredScroll = useRef(false);
+
+  // Restore scroll position on first mount, then disable restore flag
+  useEffect(() => {
+    if (isInitialMount.current) {
+      const saved = sessionStorage.getItem('jana_scroll_position');
+      if (saved && mainContentRef.current) {
+        const target = Number(saved);
+        restoredScroll.current = true;
+        requestAnimationFrame(() => {
+          if (mainContentRef.current) {
+            mainContentRef.current.scrollTop = target;
+          }
+        });
+      }
+      isInitialMount.current = false;
+    }
+  }, []);
+
+  // Save scroll position on scroll (debounced)
+  useEffect(() => {
+    const el = mainContentRef.current;
+    if (!el) return;
+    let timeout;
+    const handleScroll = () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        sessionStorage.setItem('jana_scroll_position', String(Math.round(el.scrollTop)));
+      }, 200);
+    };
+    el.addEventListener('scroll', handleScroll, { passive: true });
+    return () => { el.removeEventListener('scroll', handleScroll); clearTimeout(timeout); };
+  }, []);
+
   // Every time a new "page" opens (main tab switch, or a deep-link like a client id),
   // start scrolled at the top instead of wherever the previous page left off.
   useEffect(() => {
+    if (restoredScroll.current) {
+      restoredScroll.current = false;
+      return;
+    }
     mainContentRef.current?.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [activeTab, tabParams]);
 
@@ -437,6 +481,7 @@ function App() {
     }
 
     setTabParams(params);
+    sessionStorage.setItem('jana_tab_params', JSON.stringify(params));
     if (tabId === activeTab) return;
     setActiveTab(tabId);
     localStorage.setItem('jana_active_tab', tabId);

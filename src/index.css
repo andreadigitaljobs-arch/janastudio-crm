@@ -1065,14 +1065,14 @@ html, body {
   }
 
   .salon-form-title {
-    font-size: 1.15rem;
+    font-size: 1.5rem;
     font-weight: 600;
     color: #4a3036;
   }
 
   .salon-form-subtitle {
-    font-size: 0.78rem;
-    line-height: 1.35;
+    font-size: 0.95rem;
+    line-height: 1.4;
     color: #8c767b;
   }
 
@@ -1084,9 +1084,13 @@ html, body {
     border-radius: 12px;
   }
 
-  .salon-field-input {
-    padding: 11px 14px 11px 46px;
+  .salon-field-label {
     font-size: 0.92rem;
+  }
+
+  .salon-field-input {
+    padding: 13px 14px 13px 46px;
+    font-size: 1rem;
   }
 
   .salon-field-icon {
@@ -1099,8 +1103,8 @@ html, body {
   }
 
   .salon-submit-button {
-    padding: 14px;
-    font-size: 0.92rem;
+    padding: 16px;
+    font-size: 1.05rem;
     font-weight: 700;
     margin-top: 2px;
     border-radius: 12px;
@@ -1130,35 +1134,73 @@ html, body {
   }
 
   .salon-decorative-label {
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .salon-decorative-sub {
-    font-size: 9px;
+    font-size: 11px;
   }
 
-  /* Ajustes específicos para teléfonos compactos (como Mobile S 320px o pantallas cortas) */
-  @media (max-height: 670px) or (max-width: 340px) {
+  /* Ajustes específicos para teléfonos compactos (Galaxy S21, etc: 360-390px ancho) */
+  @media (max-width: 390px) {
     .salon-login-left {
-      height: 25vh !important;
-      height: 25dvh !important;
+      height: 30dvh !important;
     }
-    
+
     .salon-logo-image {
-      max-width: 70px !important;
+      width: clamp(60px, 20vw, 100px) !important;
+      max-width: none !important;
     }
-    
+
+    .salon-logo-header {
+      margin-bottom: clamp(10px, 3vh, 20px) !important;
+      padding-top: 8px !important;
+    }
+
     .salon-form-title {
-      font-size: 1.05rem !important;
+      font-size: clamp(1.15rem, 4vw, 1.35rem) !important;
+      white-space: nowrap !important;
     }
-    
+
+    .salon-form-subtitle {
+      font-size: 0.85rem !important;
+    }
+
     .salon-login-right {
-      padding: calc(var(--login-radius, 24px) + 8px) 20px calc(var(--login-radius, 24px) + 8px) !important;
-      padding-bottom: calc(var(--login-radius, 24px) + 8px + env(safe-area-inset-bottom, 0px)) !important;
+      padding: calc(var(--login-radius, 24px) + 20px) 22px calc(var(--login-radius, 24px) + 20px) !important;
+      padding-bottom: calc(var(--login-radius, 24px) + 20px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+
+    .salon-field-label {
+      font-size: 0.85rem !important;
+    }
+
+    .salon-field-input {
+      padding: 12px 14px 12px 44px !important;
+      font-size: 0.95rem !important;
+    }
+
+    .salon-submit-button {
+      padding: 14px !important;
+      font-size: 1rem !important;
     }
 
     .salon-decorative-section {
-      margin-top: 16px !important;
+      margin-top: 20px !important;
+      padding-top: 12px !important;
+    }
+
+    .salon-decorative-icon-wrapper {
+      width: 38px !important;
+      height: 38px !important;
+    }
+
+    .salon-decorative-label {
+      font-size: 11px !important;
+    }
+
+    .salon-decorative-sub {
+      font-size: 10px !important;
     }
   }
 }
@@ -3355,4 +3397,60 @@ button, [role="button"], a[href] {
   outline: none !important;
   box-shadow: none !important;
 }
+
+/* Client ficha animations */
+@keyframes fichaSlideIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-ficha-enter {
+  animation: fichaSlideIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes tabContentIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-tab-enter {
+  animation: tabContentIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Hover microinteractions for ficha cards */
+.ficha-card {
+  transition: box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ficha-card:hover {
+  box-shadow: 0 8px 28px rgba(160, 80, 106, 0.10), 0 2px 8px rgba(160, 80, 106, 0.06) !important;
+  transform: translateY(-2px);
+}
+.ficha-card:active {
+  transform: scale(0.985);
+  box-shadow: 0 2px 8px rgba(160, 80, 106, 0.08) !important;
+}
+
+/* Hover for clickable rows/inner items */
+.ficha-row {
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.ficha-row:hover {
+  background-color: rgba(160, 80, 106, 0.04) !important;
+  box-shadow: 0 2px 12px rgba(160, 80, 106, 0.06);
+}
+
+/* Hover for tags/badges */
+.ficha-tag {
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+.ficha-tag:hover {
+  background-color: rgba(160, 80, 106, 0.10) !important;
+  transform: scale(1.05);
+}
+
+/* Stagger animation delays for cards */
+.stagger-1 { animation-delay: 0.04s; }
+.stagger-2 { animation-delay: 0.08s; }
+.stagger-3 { animation-delay: 0.12s; }
+.stagger-4 { animation-delay: 0.16s; }
+.stagger-5 { animation-delay: 0.20s; }
+.stagger-6 { animation-delay: 0.24s; }
 
