@@ -4866,27 +4866,40 @@ const DetailItem = ({ label, value }) => (
 const HistoryItem = ({ date, service, price, onClick }) => (
   <div 
     onClick={onClick}
+    className="btn-interactive"
     style={{ 
       display: 'flex', 
       justifyContent: 'space-between', 
       alignItems: 'center', 
       padding: '16px', 
-      backgroundColor: 'var(--bg-tertiary)', 
-      borderRadius: '12px',
+      background: 'linear-gradient(135deg, #ffffff 0%, #fefbfc 100%)',
+      borderRadius: '16px',
       cursor: 'pointer',
-      transition: 'all 0.2s',
-      border: '1px solid transparent'
+      transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+      borderLeft: '5px solid var(--magenta-primary)',
+      borderTop: '1px solid rgba(160,80,106,0.08)',
+      borderRight: '1px solid rgba(160,80,106,0.08)',
+      borderBottom: '1px solid rgba(160,80,106,0.08)',
+      boxShadow: '0 4px 14px rgba(160,80,106,0.03)',
+      marginBottom: '10px'
     }}
-    onMouseOver={(e) => { e.currentTarget.style.borderColor = 'var(--pink-primary)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-    onMouseOut={(e) => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.transform = 'translateY(0)'; }}
   >
-    <div>
-      <div style={{ fontWeight: '700', fontSize: '15px', color: 'white' }}>{service}</div>
-      <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>{date}</div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div style={{
+        width: '36px', height: '36px', borderRadius: '10px',
+        backgroundColor: 'rgba(160,80,106,0.06)', display: 'flex',
+        alignItems: 'center', justifyContent: 'center', flexShrink: 0
+      }}>
+        <Calendar size={15} color="var(--magenta-primary)" />
+      </div>
+      <div>
+        <div style={{ fontWeight: '850', fontSize: '13.5px', color: 'var(--text-primary)', letterSpacing: '-0.2px' }}>{service}</div>
+        <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '3px', fontWeight: '600' }}>{date}</div>
+      </div>
     </div>
-    <div style={{ textAlign: 'right' }}>
-      <div style={{ fontWeight: '800', color: 'var(--pink-primary)', fontSize: '16px' }}>${price}</div>
-      <div style={{ fontSize: '10px', color: 'var(--text-secondary)', fontWeight: '700' }}>VER DETALLE</div>
+    <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
+      <div style={{ fontWeight: '900', color: '#2e9e5b', fontSize: '15px', background: 'rgba(46,158,91,0.08)', padding: '3px 10px', borderRadius: '10px' }}>${price}</div>
+      <div style={{ fontSize: '9px', color: 'var(--magenta-primary)', fontWeight: '850', letterSpacing: '0.5px', textTransform: 'uppercase', marginTop: '2px' }}>Ver detalle</div>
     </div>
   </div>
 );
