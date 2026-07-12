@@ -3469,15 +3469,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
           >
             &larr; Volver
           </button>
-          {!isCompact && (
-            <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontStyle: 'italic' }}>Jana Studio</span>
-              <ChevronRight size={12} />
-              <span>Clientes</span>
-              <ChevronRight size={12} />
-              <span style={{ color: 'var(--text-secondary)' }}>Ficha de Cliente</span>
-            </div>
-          )}
+          {/* Breadcrumbs removed as requested */}
         </div>
         <button
           onClick={onDelete}
