@@ -3810,7 +3810,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
     : 'Sin visitas';
 
   return (
-    <div ref={containerRef} className="animate-fade-in" style={{ paddingBottom: '60px' }}>
+    <div ref={containerRef} style={{ paddingBottom: '60px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <button
@@ -3868,8 +3868,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
               borderTop: '1px solid rgba(160,80,106,0.1)',
               borderRight: '1px solid rgba(160,80,106,0.1)',
               borderBottom: '1px solid rgba(160,80,106,0.1)',
-              boxShadow: '0 20px 40px rgba(160,80,106,0.06)',
-              animation: 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)' 
+              boxShadow: '0 20px 40px rgba(160,80,106,0.06)' 
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '18px', marginBottom: '20px' }}>
@@ -4131,12 +4130,12 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
               );
             })}
           </div>
-          <div style={{ marginBottom: '20px', animation: 'fadeIn 0.3s ease' }}>
+          <div style={{ marginBottom: '20px' }}>
             {renderSubTabContent()}
           </div>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '28px', alignItems: 'start', animation: 'fadeIn 0.3s ease' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '28px', alignItems: 'start' }}>
           {/* Sidebar: Profile + Ficha Técnica */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div className="glass-card" style={{ padding: '28px 24px', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)', textAlign: 'center' }}>
