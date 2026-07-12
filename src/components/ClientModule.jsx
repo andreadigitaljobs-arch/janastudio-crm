@@ -4387,15 +4387,11 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
           {/* Right Column: Tabs Content */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div style={{ 
-              display: 'inline-flex', 
+              display: 'flex', 
               flexWrap: 'wrap', 
               rowGap: '8px', 
-              gap: '6px', 
-              backgroundColor: 'rgba(160, 80, 106, 0.03)',
-              padding: '6px',
-              borderRadius: '16px',
-              border: '1px solid rgba(160, 80, 106, 0.08)',
-              marginBottom: '10px'
+              gap: '8px', 
+              marginBottom: '16px'
             }}>
               {[
                 { id: 'gallery', label: 'Galería de trabajos', icon: <ImageIcon size={17} /> },
@@ -4415,16 +4411,14 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                       display: 'flex',
                       alignItems: 'center',
                       gap: '8px',
-                      padding: '8px 18px',
+                      padding: '8px 16px',
                       borderRadius: '12px',
-                      background: isActive ? 'white' : 'transparent',
+                      background: isActive ? 'rgba(160, 80, 106, 0.08)' : 'transparent',
                       color: isActive ? 'var(--magenta-primary)' : 'var(--text-secondary)',
-                      fontWeight: isActive ? '850' : '650',
-                      fontSize: '14.5px',
+                      fontWeight: isActive ? '850' : '600',
+                      fontSize: '14px',
                       cursor: 'pointer',
-                      boxShadow: isActive ? '0 4px 12px rgba(160,80,106,0.06)' : 'none',
-                      transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-                      transform: isActive ? 'scale(1.02)' : 'none',
+                      transition: 'all 0.2s ease',
                       userSelect: 'none'
                     }}
                   >
