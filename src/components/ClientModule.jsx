@@ -4419,7 +4419,8 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                       fontSize: '14px',
                       cursor: 'pointer',
                       transition: 'all 0.2s ease',
-                      userSelect: 'none'
+                      userSelect: 'none',
+                      outline: 'none'
                     }}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', color: isActive ? 'var(--magenta-primary)' : 'var(--text-muted)' }}>
