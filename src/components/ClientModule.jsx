@@ -3893,8 +3893,8 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                 )}
               </div>
 
-              <div style={{ flex: 1 }}>
-                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '-0.4px' }}>{client.name}</h3>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '-0.4px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{client.name}</h3>
                 <p style={{ margin: '2px 0 10px 0', color: 'var(--text-muted)', fontSize: '11px', fontWeight: '700', letterSpacing: '0.5px' }}>V-{client.id_card || '00.000.000'}</p>
                 
                 <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
@@ -3928,28 +3928,43 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                       </a>
                     </>
                   )}
-                  <div 
-                    style={{ 
-                      display: 'flex', alignItems: 'center', gap: '5px', 
-                      fontSize: '10.5px', 
-                      color: history.length > 0 ? '#ffffff' : 'var(--magenta-primary)', 
-                      fontWeight: '900',
-                      background: history.length > 0 
-                        ? 'linear-gradient(135deg, #f97316 0%, #db2777 100%)'
-                        : 'linear-gradient(135deg, #fff2f5 0%, #ffe3ea 100%)',
-                      padding: '5px 12px', 
-                      borderRadius: '14px',
-                      border: history.length > 0 ? 'none' : '1px solid rgba(160,80,106,0.15)',
-                      boxShadow: history.length > 0 
-                        ? '0 4px 10px rgba(219,39,119,0.25)' 
-                        : '0 2px 6px rgba(160,80,106,0.06)',
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    <Sparkles size={10} color={history.length > 0 ? '#ffffff' : 'var(--magenta-primary)'} />
-                    <span>{history.length} {history.length === 1 ? 'visita' : 'visitas'}</span>
-                  </div>
                 </div>
+              </div>
+
+              {/* Large, Beautiful Visits Number on the right */}
+              <div style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                backgroundColor: 'rgba(160,80,106,0.04)',
+                borderRadius: '16px',
+                padding: '8px 12px',
+                minWidth: '65px',
+                border: '1px solid rgba(160,80,106,0.08)',
+                flexShrink: 0
+              }}>
+                <span style={{ 
+                  fontSize: '28px', 
+                  fontWeight: '950', 
+                  color: 'var(--magenta-primary)', 
+                  lineHeight: '1',
+                  background: 'var(--magenta-gradient)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent'
+                }}>
+                  {history.length}
+                </span>
+                <span style={{ 
+                  fontSize: '9px', 
+                  color: 'var(--text-muted)', 
+                  fontWeight: '850', 
+                  marginTop: '4px',
+                  letterSpacing: '0.5px',
+                  textTransform: 'uppercase'
+                }}>
+                  {history.length === 1 ? 'Visita' : 'Visitas'}
+                </span>
               </div>
             </div>
 
