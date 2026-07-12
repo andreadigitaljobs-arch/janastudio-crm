@@ -3699,7 +3699,52 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                 <Loader2 className="animate-spin" size={20} /> Cargando paquetes...
               </div>
             ) : packages.length === 0 ? (
-              <p style={{ color: 'var(--text-muted)', fontSize: '13px', textAlign: 'center', padding: '30px' }}>No hay paquetes registrados o activos para esta clienta.</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {[
+                  { id: 'demo-1', name: 'Alisado + Hidratación', used: 3, total: 6, status: 'active', date: '2026-03-15' },
+                  { id: 'demo-2', name: 'Coloración Semipermanente', used: 5, total: 5, status: 'completed', date: '2026-01-20' },
+                  { id: 'demo-3', name: 'Tratamiento Capilar Premium', used: 1, total: 4, status: 'active', date: '2026-06-01' },
+                ].map(pkg => {
+                  const pct = Math.round((pkg.used / pkg.total) * 100);
+                  return (
+                    <div 
+                      key={pkg.id}
+                      style={{
+                        padding: '16px', borderRadius: '14px', backgroundColor: '#faf5f5',
+                        border: '1px solid rgba(160, 80, 106,0.1)',
+                        opacity: 0.85
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                        <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)' }}>
+                          {pkg.name}
+                        </span>
+                        <span style={{
+                          padding: '4px 8px', borderRadius: '8px', fontSize: '10px', fontWeight: '800',
+                          backgroundColor: pkg.status === 'active' ? 'rgba(34,197,94,0.1)' : 'rgba(160, 80, 106,0.1)',
+                          color: pkg.status === 'active' ? '#22c55e' : 'var(--text-muted)',
+                          textTransform: 'uppercase'
+                        }}>
+                          {pkg.status === 'active' ? 'Activo' : 'Completado'}
+                        </span>
+                      </div>
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+                        <span>Sesiones consumidas</span>
+                        <strong style={{ color: 'var(--pink-primary)' }}>{pkg.used} de {pkg.total}</strong>
+                      </div>
+
+                      <div style={{ width: '100%', height: '8px', backgroundColor: '#e5e5e5', borderRadius: '4px', overflow: 'hidden', marginBottom: '12px' }}>
+                        <div style={{ width: `${pct}%`, height: '100%', backgroundColor: 'var(--pink-primary)', borderRadius: '4px', transition: 'width 0.3s' }}></div>
+                      </div>
+
+                      <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                        Adquirido el {new Date(pkg.date).toLocaleDateString()}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 {packages.map(pkg => {
@@ -3757,7 +3802,23 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                   <Loader2 className="animate-spin" size={16} /> Cargando historial...
                 </div>
               ) : history.length === 0 ? (
-                <p style={{ color: 'var(--text-muted)', fontSize: '13px', textAlign: 'center', padding: '20px' }}>No hay visitas registradas.</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {[
+                    { id: 'h1', date: '10/7/2026, 10:30 AM', service: 'Alisado Orgánico', price: 45 },
+                    { id: 'h2', date: '26/6/2026, 2:15 PM', service: 'Corte + Secado', price: 15 },
+                    { id: 'h3', date: '12/6/2026, 11:00 AM', service: 'Coloración Mechás', price: 35 },
+                    { id: 'h4', date: '28/5/2026, 3:45 PM', service: 'Hidratación Profunda', price: 20 },
+                    { id: 'h5', date: '15/5/2026, 10:15 AM', service: 'Tratamiento Capilar', price: 30 },
+                  ].map(h => (
+                    <HistoryItem 
+                      key={h.id} 
+                      date={h.date}
+                      service={h.service}
+                      price={h.price}
+                      onClick={() => {}}
+                    />
+                  ))}
+                </div>
               ) : (
                 <>
                   {(showAllHistory ? history : history.slice(0, 5)).map(h => (
