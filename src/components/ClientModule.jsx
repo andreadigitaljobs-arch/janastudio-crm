@@ -4028,45 +4028,48 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
             style={{ 
               display: 'grid', 
               gridTemplateColumns: 'repeat(4, 1fr)', 
-              gap: '4px', 
-              background: '#f3ecee', 
-              padding: '4px', 
-              borderRadius: '12px',
-              marginBottom: '16px',
-              border: '1px solid var(--border-color)'
+              gap: '6px', 
+              background: 'linear-gradient(135deg, rgba(160,80,106,0.06) 0%, rgba(217,70,168,0.03) 100%)', 
+              padding: '6px', 
+              borderRadius: '16px',
+              marginBottom: '20px',
+              border: '1px solid rgba(160,80,106,0.1)'
             }}
           >
             {[
-              { id: 'gallery', label: 'Fotos', icon: <ImageIcon size={14} /> },
-              { id: 'diagnoses', label: 'Salud', icon: <Activity size={14} /> },
-              { id: 'packages', label: 'Paquetes', icon: <Package size={14} /> },
-              { id: 'history', label: 'Visitas', icon: <Calendar size={14} /> }
+              { id: 'gallery', label: 'Fotos', icon: <ImageIcon size={16} />, gradient: 'linear-gradient(135deg, #ff4e88 0%, #d946a8 100%)', shadow: 'rgba(217,70,168,0.35)' },
+              { id: 'diagnoses', label: 'Salud', icon: <Activity size={16} />, gradient: 'linear-gradient(135deg, #06b6d4 0%, #0d9488 100%)', shadow: 'rgba(13,148,136,0.35)' },
+              { id: 'packages', label: 'Paquetes', icon: <Package size={16} />, gradient: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)', shadow: 'rgba(139,92,246,0.35)' },
+              { id: 'history', label: 'Visitas', icon: <Calendar size={16} />, gradient: 'linear-gradient(135deg, #f97316 0%, #db2777 100%)', shadow: 'rgba(249,115,22,0.35)' }
             ].map(tab => {
               const isActive = activeSubTab === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => { setActiveSubTab(tab.id); setShowCollage(false); }}
+                  className="btn-interactive"
                   style={{
                     display: 'flex', 
                     flexDirection: 'column',
                     alignItems: 'center', 
                     justifyContent: 'center',
-                    gap: '4px',
-                    padding: '8px 2px', 
-                    borderRadius: '10px', 
+                    gap: '6px',
+                    padding: '10px 2px', 
+                    borderRadius: '12px', 
                     border: 'none',
-                    background: isActive ? 'white' : 'transparent',
-                    color: isActive ? 'var(--magenta-primary)' : 'var(--text-secondary)',
-                    fontWeight: isActive ? '800' : '600',
+                    background: isActive ? tab.gradient : 'transparent',
+                    color: isActive ? 'white' : 'var(--text-secondary)',
+                    fontWeight: isActive ? '900' : '650',
                     fontSize: '11px', 
                     cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    boxShadow: isActive ? '0 2px 6px rgba(160, 80, 106, 0.05)' : 'none'
+                    transform: isActive ? 'scale(1.06) translateY(-2px)' : 'scale(1)',
+                    transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                    boxShadow: isActive ? `0 6px 16px ${tab.shadow}` : 'none',
+                    opacity: isActive ? 1 : 0.75
                   }}
                 >
-                  <span style={{ display: 'flex', color: isActive ? 'var(--magenta-primary)' : 'var(--text-muted)' }}>{tab.icon}</span>
-                  <span>{tab.label}</span>
+                  <span style={{ display: 'flex', transition: 'transform 0.3s ease', transform: isActive ? 'scale(1.15)' : 'scale(1)', color: isActive ? 'white' : 'var(--text-muted)' }}>{tab.icon}</span>
+                  <span style={{ fontSize: '11.5px' }}>{tab.label}</span>
                 </button>
               );
             })}
