@@ -1954,6 +1954,8 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
   const [comparisons, setComparisons] = useState([]);
   const [comparisonTitle, setComparisonTitle] = useState('');
   const [lightboxPhoto, setLightboxPhoto] = useState(null);
+  const [lightboxPhotoIndex, setLightboxPhotoIndex] = useState(null);
+  const [lightboxComparison, setLightboxComparison] = useState(null);
   const [galleryFilter, setGalleryFilter] = useState('all'); // 'all', 'Antes', 'Después'
   const [dateFilter, setDateFilter] = useState('all'); // 'all', 'week', 'month', 'year', 'custom'
   const [customDateFilter, setCustomDateFilter] = useState('');
@@ -2176,101 +2178,192 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
     }
   };
 
+  const handleChangePhotoType = async (index, newType) => {
+    try {
+      const newGallery = [...gallery];
+      newGallery[index] = { ...newGallery[index], type: newType };
+      setGallery(newGallery);
+      await onUpdate({ work_gallery: newGallery });
+      setLightboxPhoto(newGallery[index]); // update lightbox state
+      showToast('Etiqueta de foto actualizada');
+    } catch (e) {
+      showToast('Error al actualizar la foto', 'error');
+    }
+  };
+
+  const handleDownloadPhoto = (photoUrl) => {
+    const link = document.createElement('a');
+    link.href = photoUrl;
+    link.download = `foto_${client.first_name || 'cliente'}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('Descargando foto...');
+  };
   const handleDownloadComparison = () => {
-    if (!photoA || !photoB) return;
-
-    const canvas = document.createElement('canvas');
-    const imgA = new Image();
-    const imgB = new Image();
-    const logo = new Image();
-
-    imgA.src = photoA;
-    imgB.src = photoB;
-    logo.src = '/logo.webp';
-
-    // Crop-to-fill (like CSS object-fit: cover) instead of stretching the source image.
-    const drawCover = (ctx, img, x, y, w, h) => {
-      const imgRatio = img.width / img.height;
-      const boxRatio = w / h;
-      let sx, sy, sWidth, sHeight;
-      if (imgRatio > boxRatio) {
-        sHeight = img.height;
-        sWidth = sHeight * boxRatio;
-        sx = (img.width - sWidth) / 2;
-        sy = 0;
-      } else {
-        sWidth = img.width;
-        sHeight = sWidth / boxRatio;
-        sx = 0;
-        sy = (img.height - sHeight) / 2;
-      }
-      ctx.drawImage(img, sx, sy, sWidth, sHeight, x, y, w, h);
-    };
-
-    const isVertical = downloadOrientation === 'vertical';
+    const isStory = downloadOrientation === 'story';
+    const isSquare = downloadOrientation === 'square';
 
     Promise.all([
       new Promise(res => { imgA.onload = res; }),
       new Promise(res => { imgB.onload = res; }),
       new Promise(res => { logo.onload = res; logo.onerror = res; })
     ]).then(() => {
-      const width = isVertical ? 800 : 1200;
-      const height = isVertical ? 1200 : 800;
+      let width, height;
+      if (isStory) {
+        width = 1080;
+        height = 1920;
+      } else if (isSquare) {
+        width = 1080;
+        height = 1080;
+      } else {
+        width = downloadOrientation === 'vertical' ? 800 : 1200;
+        height = downloadOrientation === 'vertical' ? 1200 : 800;
+      }
+
       canvas.width = width;
       canvas.height = height;
       const ctx = canvas.getContext('2d');
 
-      const halfW = isVertical ? width : width / 2;
-      const halfH = isVertical ? height / 2 : height;
-      const boxA = { x: 0, y: 0 };
-      const boxB = isVertical ? { x: 0, y: height / 2 } : { x: width / 2, y: 0 };
+      if (isStory) {
+        // Instagram Story branded design
+        ctx.fillStyle = '#fffafb';
+        ctx.fillRect(0, 0, width, height);
 
-      drawCover(ctx, imgA, boxA.x, boxA.y, halfW, halfH);
-      drawCover(ctx, imgB, boxB.x, boxB.y, halfW, halfH);
+        // draw top arc decorative backdrop
+        ctx.fillStyle = 'rgba(160,80,106,0.04)';
+        ctx.beginPath();
+        ctx.arc(540, -100, 600, 0, Math.PI * 2);
+        ctx.fill();
 
-      ctx.fillStyle = 'white';
-      if (isVertical) {
-        ctx.fillRect(0, height / 2 - 1, width, 2);
-      } else {
-        ctx.fillRect(width / 2 - 1, 0, 2, height);
-      }
+        // draw border accent lines
+        ctx.strokeStyle = 'rgba(160,80,106,0.1)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(30, 30, width - 60, height - 60);
 
-      if (includeBranding) {
-        const dateA = findPhotoDate(photoA);
-        const dateB = findPhotoDate(photoB);
+        // Header Title
+        ctx.fillStyle = 'rgba(74,26,46,0.95)';
+        ctx.textAlign = 'center';
+        ctx.font = 'bold 36px sans-serif';
+        ctx.fillText('JANA STUDIO', 540, 120);
 
-        const drawLabel = (text, date, x, y) => {
-          const boxHeight = date ? 66 : 40;
-          ctx.font = 'bold 20px Inter, sans-serif';
-          const boxWidth = Math.max(100, ctx.measureText(text).width + 30);
-          ctx.fillStyle = 'rgba(74,26,46,0.75)';
-          ctx.fillRect(x, y - 20 - boxHeight, boxWidth, boxHeight);
-          ctx.fillStyle = 'white';
-          ctx.fillText(text, x + 15, date ? y - 55 : y - 33);
-          if (date) {
-            ctx.font = '14px Inter, sans-serif';
-            ctx.fillStyle = 'rgba(255,255,255,0.85)';
-            ctx.fillText(date, x + 15, y - 33);
-          }
+        ctx.fillStyle = 'rgba(160,80,106,0.7)';
+        ctx.font = 'bold 20px sans-serif';
+        ctx.fillText('ANTES & DESPUÉS', 540, 160);
+
+        // helper to draw rounded image
+        const drawRoundedCover = (img, x, y, w, h, r) => {
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(x + r, y);
+          ctx.lineTo(x + w - r, y);
+          ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+          ctx.lineTo(x + w, y + h - r);
+          ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+          ctx.lineTo(x + r, y + h);
+          ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+          ctx.lineTo(x, y + r);
+          ctx.quadraticCurveTo(x, y, x + r, y);
+          ctx.closePath();
+          ctx.clip();
+          drawCover(ctx, img, x, y, w, h);
+          ctx.restore();
         };
 
-        drawLabel('ANTES', dateA, boxA.x + 20, boxA.y + halfH);
-        drawLabel('DESPUÉS', dateB, boxB.x + 20, boxB.y + halfH);
+        // Draw drop shadows for photos
+        ctx.shadowColor = 'rgba(160,80,106,0.15)';
+        ctx.shadowBlur = 24;
+        ctx.shadowOffsetY = 8;
+        ctx.shadowOffsetX = 0;
 
-        // Branding: use the real logo when it loaded, otherwise fall back to text.
-        if (logo.naturalWidth > 0) {
-          const logoHeight = 34;
-          const logoWidth = (logo.naturalWidth / logo.naturalHeight) * logoHeight;
-          ctx.drawImage(logo, width - logoWidth - 24, 20, logoWidth, logoHeight);
-        } else {
+        // Image coordinates
+        const imgW = 880;
+        const imgH = 640;
+        const imgX = 100;
+        const imgYA = 220;
+        const imgYB = 920;
+
+        drawRoundedCover(imgA, imgX, imgYA, imgW, imgH, 20);
+        drawRoundedCover(imgB, imgX, imgYB, imgW, imgH, 20);
+
+        // Draw text badges over images (no shadow)
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetY = 0;
+
+        const drawLabelBadge = (txt, x, y) => {
+          ctx.fillStyle = 'rgba(74,26,46,0.85)';
+          ctx.fillRect(x, y, 130, 44);
           ctx.fillStyle = 'white';
-          ctx.font = '16px Inter, sans-serif';
-          ctx.fillText('JANA STUDIO', width - 200, 30);
+          ctx.font = 'bold 16px sans-serif';
+          ctx.fillText(txt, x + 65, y + 27);
+        };
+
+        drawLabelBadge('ANTES', imgX + 20, imgYA + 20);
+        drawLabelBadge('DESPUÉS', imgX + 20, imgYB + 20);
+
+        // Footer Branding & Treatment Name
+        ctx.fillStyle = 'rgba(74,26,46,0.95)';
+        ctx.font = 'bold 32px sans-serif';
+        ctx.fillText(comparisonTitle || 'Transformación Capilar', 540, 1680);
+
+        ctx.fillStyle = 'rgba(160,80,106,0.6)';
+        ctx.font = '18px sans-serif';
+        ctx.fillText(new Date().toLocaleDateString('es-VE', { day: '2-digit', month: 'long', year: 'numeric' }), 540, 1720);
+      } else {
+        // Square or normal Horizontal/Vertical grid split
+        const isVert = downloadOrientation === 'vertical';
+        const halfW = isVert ? width : width / 2;
+        const halfH = isVert ? height / 2 : height;
+        const boxA = { x: 0, y: 0 };
+        const boxB = isVert ? { x: 0, y: height / 2 } : { x: width / 2, y: 0 };
+
+        drawCover(ctx, imgA, boxA.x, boxA.y, halfW, halfH);
+        drawCover(ctx, imgB, boxB.x, boxB.y, halfW, halfH);
+
+        ctx.fillStyle = 'white';
+        if (isVert) {
+          ctx.fillRect(0, height / 2 - 1, width, 2);
+        } else {
+          ctx.fillRect(width / 2 - 1, 0, 2, height);
+        }
+
+        if (includeBranding) {
+          const dateA = findPhotoDate(photoA);
+          const dateB = findPhotoDate(photoB);
+
+          const drawLabel = (text, date, x, y) => {
+            const boxHeight = date ? 66 : 40;
+            ctx.font = 'bold 20px Inter, sans-serif';
+            const boxWidth = Math.max(100, ctx.measureText(text).width + 30);
+            ctx.fillStyle = 'rgba(74,26,46,0.75)';
+            ctx.fillRect(x, y - 20 - boxHeight, boxWidth, boxHeight);
+            ctx.fillStyle = 'white';
+            ctx.fillText(text, x + 15, date ? y - 55 : y - 33);
+            if (date) {
+              ctx.font = '14px Inter, sans-serif';
+              ctx.fillStyle = 'rgba(255,255,255,0.85)';
+              ctx.fillText(date, x + 15, y - 33);
+            }
+          };
+
+          drawLabel('ANTES', dateA, boxA.x + 20, boxA.y + halfH);
+          drawLabel('DESPUÉS', dateB, boxB.x + 20, boxB.y + halfH);
+
+          // Branding
+          if (logo.naturalWidth > 0) {
+            const logoHeight = 34;
+            const logoWidth = (logo.naturalWidth / logo.naturalHeight) * logoHeight;
+            ctx.drawImage(logo, width - logoWidth - 24, 20, logoWidth, logoHeight);
+          } else {
+            ctx.fillStyle = 'white';
+            ctx.font = '16px Inter, sans-serif';
+            ctx.fillText('JANA STUDIO', width - 200, 30);
+          }
         }
       }
 
       const link = document.createElement('a');
-      link.download = `Comparativa_${client.name}.jpg`;
+      link.download = `Comparativa_${client.first_name || 'cliente'}.jpg`;
       link.href = canvas.toDataURL('image/jpeg', 0.9);
       link.click();
       showToast('Descargando comparativa...');
@@ -2712,33 +2805,24 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                       />
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', padding: '0 4px' }}>
-                      <div style={{ display: 'flex', gap: '6px' }}>
-                        <button
-                          type="button"
-                          onClick={() => setDownloadOrientation('horizontal')}
-                          className="btn-interactive"
-                          style={{
-                            padding: '6px 14px', borderRadius: '10px', fontSize: '12px', fontWeight: '700', cursor: 'pointer',
-                            border: downloadOrientation === 'horizontal' ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)',
-                            background: downloadOrientation === 'horizontal' ? 'rgba(160,80,106,0.1)' : 'white',
-                            color: downloadOrientation === 'horizontal' ? 'var(--pink-primary)' : 'var(--text-secondary)'
-                          }}
-                        >
-                          Horizontal
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setDownloadOrientation('vertical')}
-                          className="btn-interactive"
-                          style={{
-                            padding: '6px 14px', borderRadius: '10px', fontSize: '12px', fontWeight: '700', cursor: 'pointer',
-                            border: downloadOrientation === 'vertical' ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)',
-                            background: downloadOrientation === 'vertical' ? 'rgba(160,80,106,0.1)' : 'white',
-                            color: downloadOrientation === 'vertical' ? 'var(--pink-primary)' : 'var(--text-secondary)'
-                          }}
-                        >
-                          Vertical
-                        </button>
+                      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                        {['horizontal', 'square', 'story'].map(opt => (
+                          <button
+                            key={opt}
+                            type="button"
+                            onClick={() => setDownloadOrientation(opt)}
+                            className="btn-interactive"
+                            style={{
+                              padding: '6px 14px', borderRadius: '10px', fontSize: '12px', fontWeight: '750', cursor: 'pointer',
+                              border: downloadOrientation === opt ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)',
+                              background: downloadOrientation === opt ? 'rgba(160,80,106,0.1)' : 'white',
+                              color: downloadOrientation === opt ? 'var(--pink-primary)' : 'var(--text-secondary)',
+                              transition: 'all 0.2s'
+                            }}
+                          >
+                            {opt === 'horizontal' ? 'Horizontal (3:2)' : opt === 'square' ? 'Cuadrado (1:1)' : 'Instagram Story (9:16)'}
+                          </button>
+                        ))}
                       </div>
 
                       <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)', cursor: 'pointer' }}>
@@ -2887,7 +2971,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                 {comparisons.length > 0 && (
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px' }}>
                     {comparisons.slice(0, visibleCompsCount).map(comp => (
-                      <ComparisonCard key={comp.id} comparison={comp} onDelete={() => handleDeleteComparison(comp.id)} onShare={() => handleShareComparison(comp)} />
+                      <ComparisonCard key={comp.id} comparison={comp} onDelete={() => handleDeleteComparison(comp.id)} onShare={() => handleShareComparison(comp)} onCardClick={setLightboxComparison} />
                     ))}
                     {visibleCompsCount < comparisons.length && (
                       <div ref={compsObserverRef} style={{ height: '20px', width: '100%' }} />
@@ -3045,6 +3129,48 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                         style={{ flex: isMobile ? 'none' : 1, width: isMobile ? '100%' : 'auto' }}
                       />
                     </div>
+
+                    {galleryServiceNames.length > 0 && (
+                      <div className="no-scrollbar" style={{ display: 'flex', gap: '8px', overflowX: 'auto', padding: '4px 0 10px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
+                        <button
+                          onClick={() => setServiceFilter('all')}
+                          style={{
+                            padding: '6px 14px',
+                            borderRadius: '20px',
+                            fontSize: '12px',
+                            fontWeight: '750',
+                            cursor: 'pointer',
+                            border: serviceFilter === 'all' ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)',
+                            background: serviceFilter === 'all' ? 'rgba(160,80,106,0.1)' : 'white',
+                            color: serviceFilter === 'all' ? 'var(--pink-primary)' : 'var(--text-secondary)',
+                            whiteSpace: 'nowrap',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          Todos los servicios
+                        </button>
+                        {galleryServiceNames.map(name => (
+                          <button
+                            key={name}
+                            onClick={() => setServiceFilter(name)}
+                            style={{
+                              padding: '6px 14px',
+                              borderRadius: '20px',
+                              fontSize: '12px',
+                              fontWeight: '750',
+                              cursor: 'pointer',
+                              border: serviceFilter === name ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)',
+                              background: serviceFilter === name ? 'rgba(160,80,106,0.1)' : 'white',
+                              color: serviceFilter === name ? 'var(--pink-primary)' : 'var(--text-secondary)',
+                              whiteSpace: 'nowrap',
+                              transition: 'all 0.2s'
+                            }}
+                          >
+                            {name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   {filteredIndexedGallery.length === 0 ? (
@@ -3080,7 +3206,14 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                         return (
                         <div
                           key={i}
-                          onClick={() => selectionMode ? togglePhotoSelection(i) : setLightboxPhoto(img)}
+                          onClick={() => {
+                            if (selectionMode) {
+                              togglePhotoSelection(i);
+                            } else {
+                              setLightboxPhoto(img);
+                              setLightboxPhotoIndex(i);
+                            }
+                          }}
                           style={{ aspectRatio: '1/1', backgroundColor: '#eee', borderRadius: '20px', overflow: 'hidden', position: 'relative', cursor: 'pointer', border: isSelected ? '4px solid var(--pink-primary)' : '1px solid var(--border-color)', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
                           className="group"
                         >
@@ -4263,12 +4396,12 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
             <div
               className={cardClass}
               onClick={(e) => e.stopPropagation()}
-              style={{ maxWidth: '640px', width: '100%', display: 'flex', flexDirection: 'column', gap: '14px' }}
+              style={{ maxWidth: '720px', width: '100%', display: 'flex', flexDirection: 'column', gap: '16px' }}
             >
-              <div style={{ borderRadius: '20px', overflow: 'hidden', maxHeight: '75vh', display: 'flex' }}>
-                <img src={lightboxPhoto?.url || lightboxPhoto} style={{ width: '100%', height: '100%', maxHeight: '75vh', objectFit: 'contain' }} />
+              <div style={{ borderRadius: '20px', overflow: 'hidden', maxHeight: '72vh', display: 'flex', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <img src={lightboxPhoto?.url || lightboxPhoto} style={{ width: '100%', height: '100%', maxHeight: '72vh', objectFit: 'contain' }} />
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'white' }}>
+              <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center', color: 'white', gap: '14px', padding: '0 4px' }}>
                 <div style={{ fontSize: '13px', fontWeight: '700' }}>
                   {lightboxPhoto?.type || 'Foto'}
                   {lightboxPhoto?.date && (
@@ -4278,13 +4411,81 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                     <span style={{ fontWeight: '500', opacity: 0.75 }}> &bull; {lightboxPhoto.service_name}</span>
                   )}
                 </div>
-                <button
-                  onClick={() => setLightboxPhoto(null)}
-                  style={{ background: 'rgba(255,255,255,0.12)', border: 'none', color: 'white', padding: '10px', borderRadius: '50%', cursor: 'pointer', display: 'flex' }}
-                >
-                  <X size={18} />
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  {lightboxPhotoIndex !== null && (
+                    <div style={{ display: 'flex', gap: '4px', background: 'rgba(255,255,255,0.1)', padding: '3px', borderRadius: '12px' }}>
+                      {['Antes', 'Después', 'Normal'].map(lbl => {
+                        const isCurrent = lightboxPhoto?.type === lbl || (!lightboxPhoto?.type && lbl === 'Normal');
+                        return (
+                          <button
+                            key={lbl}
+                            onClick={() => handleChangePhotoType(lightboxPhotoIndex, lbl)}
+                            style={{
+                              padding: '5px 10px',
+                              borderRadius: '8px',
+                              fontSize: '11px',
+                              fontWeight: '750',
+                              cursor: 'pointer',
+                              border: 'none',
+                              background: isCurrent ? 'var(--pink-primary)' : 'transparent',
+                              color: 'white',
+                              transition: 'all 0.2s'
+                            }}
+                          >
+                            {lbl}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                  <button
+                    onClick={() => handleDownloadPhoto(lightboxPhoto?.url || lightboxPhoto)}
+                    className="btn-interactive"
+                    style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: 'white', padding: '8px 12px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: '700' }}
+                  >
+                    <Download size={14} /> Descargar
+                  </button>
+                  <button
+                    onClick={() => setLightboxPhoto(null)}
+                    style={{ background: 'rgba(255,255,255,0.12)', border: 'none', color: 'white', padding: '10px', borderRadius: '50%', cursor: 'pointer', display: 'flex' }}
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
               </div>
+            </div>
+          </div>
+        )}
+      </AnimatedModal>
+
+      <AnimatedModal isOpen={!!lightboxComparison}>
+        {(overlayClass, cardClass) => (
+          <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(74,26,46,0.75)', backdropFilter: 'blur(10px)', zIndex: 100000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+            <div className={`glass-card ${cardClass}`} style={{ maxWidth: '650px', width: '100%', padding: '24px', backgroundColor: 'white' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', alignItems: 'center' }}>
+                <div>
+                  <h4 style={{ fontWeight: '900', color: 'var(--text-primary)', margin: 0 }}>{lightboxComparison?.title || 'Comparativa'}</h4>
+                  <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                    {lightboxComparison?.date ? new Date(lightboxComparison.date).toLocaleDateString('es-VE', { day: '2-digit', month: 'long', year: 'numeric' }) : ''}
+                  </span>
+                </div>
+                <button onClick={() => setLightboxComparison(null)} style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}><X size={20} /></button>
+              </div>
+              
+              {lightboxComparison && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <BeforeAfterSlider
+                    photoA={lightboxComparison.beforeUrl}
+                    photoB={lightboxComparison.afterUrl}
+                    sliderPos={sliderPos}
+                    setSliderPos={setSliderPos}
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 4px', fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '750' }}>
+                    <span>Antes</span>
+                    <span>Después</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -4563,7 +4764,7 @@ const VisitDetailModal = ({ isOpen, visit, onClose, gallery = [] }) => {
   );
 };
 
-const ComparisonCard = ({ comparison, onDelete, onShare }) => {
+const ComparisonCard = ({ comparison, onDelete, onShare, onCardClick }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const formattedDate = comparison.date
     ? new Date(comparison.date).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' })
@@ -4571,7 +4772,10 @@ const ComparisonCard = ({ comparison, onDelete, onShare }) => {
 
   return (
     <div style={{ borderRadius: '16px', border: '1px solid var(--border-color)', backgroundColor: 'white', position: 'relative' }}>
-      <div style={{ display: 'flex', aspectRatio: '4/3', borderTopLeftRadius: '15px', borderTopRightRadius: '15px', overflow: 'hidden' }}>
+      <div 
+        onClick={() => onCardClick?.(comparison)}
+        style={{ display: 'flex', aspectRatio: '4/3', borderTopLeftRadius: '15px', borderTopRightRadius: '15px', overflow: 'hidden', cursor: 'pointer' }}
+      >
         <div style={{ flex: 1, position: 'relative' }}>
           <img src={comparison.beforeUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           <span style={{ position: 'absolute', bottom: '8px', left: '8px', backgroundColor: 'rgba(74,26,46,0.85)', padding: '3px 8px', borderRadius: '4px', fontSize: '9px', fontWeight: '900', color: 'white' }}>ANTES</span>
