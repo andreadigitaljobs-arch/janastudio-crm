@@ -106,7 +106,7 @@ html, body {
 
 .main-content {
   flex: 1;
-  transition: all 0.3s ease;
+  transition: margin-left 0.3s ease;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -3347,5 +3347,12 @@ button, [role="button"], a[href] {
 .btn-interactive:active {
   transform: scale(0.95) !important;
   opacity: 0.9;
+}
+
+.btn-interactive:focus,
+.btn-interactive:focus-visible,
+.btn-interactive:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
 }
 

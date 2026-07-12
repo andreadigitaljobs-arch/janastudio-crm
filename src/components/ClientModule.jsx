@@ -2687,7 +2687,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
     switch (activeSubTab) {
       case 'gallery':
         return (
-          <div className="glass-card" style={{ padding: '24px', background: 'white', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
+          <div style={{ padding: '24px', background: 'white', borderRadius: '20px', border: '1px solid var(--border-color)', boxShadow: '0 4px 20px rgba(160,80,106,0.02)' }}>
             <div style={{
               display: 'flex',
               flexDirection: isMobile ? 'column' : 'row',
@@ -3689,7 +3689,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
         );
       case 'packages':
         return (
-          <div className="glass-card" style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+          <div style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)', boxShadow: '0 4px 20px rgba(160,80,106,0.02)' }}>
             <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '800', margin: '0 0 20px 0', color: 'var(--text-primary)' }}>
               <Package size={18} color="var(--pink-primary)" /> Paquetes y Sesiones Activas
             </h4>
@@ -3747,7 +3747,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
         );
       case 'history':
         return (
-          <div className="glass-card" style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+          <div style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)', boxShadow: '0 4px 20px rgba(160,80,106,0.02)' }}>
             <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '800', margin: '0 0 16px 0', color: 'var(--text-primary)' }}>
               <Calendar size={18} color="var(--pink-primary)" /> {isMobile ? 'Historial de Servicios' : 'Historial de Visitas'}
             </h4>
