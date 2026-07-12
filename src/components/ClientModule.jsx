@@ -3148,8 +3148,8 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                         <div style={{ width: '38px', height: '38px', borderRadius: '11px', background: 'var(--magenta-gradient)', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
                           {React.cloneElement(s.icon, { size: 17, color: 'white' })}
                         </div>
-                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.label}</div>
-                        <div style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: '800', color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>{s.value}</div>
+                        <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '700', marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.label}</div>
+                        <div style={{ fontSize: isMobile ? '16px' : '18.5px', fontWeight: '800', color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>{s.value}</div>
                       </div>
                     ))}
                   </div>
@@ -3163,10 +3163,10 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                           return (
                             <div key={i}>
                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                                <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700' }}>{b.label}</span>
+                                <span style={{ fontSize: '13.5px', color: 'var(--text-secondary)', fontWeight: '700' }}>{b.label}</span>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                  <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '850' }}>{b.pct}%</span>
-                                  <span style={{ fontSize: '9px', fontWeight: '800', padding: '3px 10px', borderRadius: '20px', background: tag.bg, color: tag.color, textTransform: 'uppercase', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>{tag.label}</span>
+                                  <span style={{ fontSize: '13.5px', color: 'var(--text-primary)', fontWeight: '850' }}>{b.pct}%</span>
+                                  <span style={{ fontSize: '10px', fontWeight: '800', padding: '3px 10px', borderRadius: '20px', background: tag.bg, color: tag.color, textTransform: 'uppercase', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>{tag.label}</span>
                                 </div>
                               </div>
                               <div style={{ height: '8px', borderRadius: '10px', background: 'rgba(160,80,106,0.06)', overflow: 'hidden' }}>
@@ -3197,10 +3197,10 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                             <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '7px', background: 'white', paddingRight: '6px', zIndex: 1 }}>
                                 {React.cloneElement(it.icon, { size: 12, color: 'var(--magenta-primary)' })}
-                                <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>{it.label}</span>
+                                <span style={{ fontSize: '13.5px', color: 'var(--text-secondary)', fontWeight: '600' }}>{it.label}</span>
                               </div>
                               <div style={{ flex: 1, borderBottom: '1px dashed rgba(160,80,106,0.15)', margin: '0 6px', position: 'relative', top: '3px' }} />
-                              <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '800', background: 'white', paddingLeft: '6px', zIndex: 1 }}>{it.value}</span>
+                              <span style={{ fontSize: '13.5px', color: 'var(--text-primary)', fontWeight: '800', background: 'white', paddingLeft: '6px', zIndex: 1 }}>{it.value}</span>
                             </div>
                           ))}
                         </div>
@@ -3219,7 +3219,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                                 <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'rgba(46,158,91,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
                                   <Check size={11} color="#2e9e5b" strokeWidth={3} />
                                 </div>
-                                <span style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '500', lineHeight: 1.45 }}>{obs}</span>
+                                <span style={{ fontSize: '14.5px', color: 'var(--text-secondary)', fontWeight: '500', lineHeight: 1.45 }}>{obs}</span>
                               </div>
                             ))}
                           </div>
@@ -3300,22 +3300,22 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                       {diag.chemical_history && (
                         <div>
-                          <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '3px' }}>Historial Químico</div>
-                          <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{diag.chemical_history}</p>
+                          <div style={{ fontSize: '12.5px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '3px' }}>Historial Químico</div>
+                          <p style={{ margin: 0, fontSize: '15px', color: 'var(--text-secondary)', lineHeight: '1.45' }}>{diag.chemical_history}</p>
                         </div>
                       )}
 
                       {diag.recommended_treatment && (
                         <div>
-                          <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '3px' }}>Tratamiento Recomendado</div>
-                          <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-primary)', fontWeight: '600', lineHeight: '1.4' }}>{diag.recommended_treatment}</p>
+                          <div style={{ fontSize: '12.5px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '3px' }}>Tratamiento Recomendado</div>
+                          <p style={{ margin: 0, fontSize: '15px', color: 'var(--text-primary)', fontWeight: '600', lineHeight: '1.45' }}>{diag.recommended_treatment}</p>
                         </div>
                       )}
 
                       {diag.notes && (
                         <div>
-                          <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '3px' }}>Notas</div>
-                          <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary)', fontStyle: 'italic', lineHeight: '1.4' }}>{diag.notes}</p>
+                          <div style={{ fontSize: '12.5px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '3px' }}>Notas</div>
+                          <p style={{ margin: 0, fontSize: '15px', color: 'var(--text-secondary)', fontStyle: 'italic', lineHeight: '1.45' }}>{diag.notes}</p>
                         </div>
                       )}
                     </div>
