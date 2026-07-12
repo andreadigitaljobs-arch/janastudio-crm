@@ -3690,7 +3690,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
       case 'packages':
         return (
           <div className="glass-card" style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
-            <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '800', marginBottom: '20px', margin: 0, color: 'var(--text-primary)' }}>
+            <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '800', margin: '0 0 20px 0', color: 'var(--text-primary)' }}>
               <Package size={18} color="var(--pink-primary)" /> Paquetes y Sesiones Activas
             </h4>
 
@@ -3748,7 +3748,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
       case 'history':
         return (
           <div className="glass-card" style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
-            <h4 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>
+            <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '800', margin: '0 0 16px 0', color: 'var(--text-primary)' }}>
               <Calendar size={18} color="var(--pink-primary)" /> {isMobile ? 'Historial de Servicios' : 'Historial de Visitas'}
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
