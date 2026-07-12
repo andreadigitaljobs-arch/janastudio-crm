@@ -14,14 +14,14 @@ const MENU_COLORS = [
   { bg: 'rgba(201, 114, 130, 0.12)', icon: '#c97282' },
   { bg: 'rgba(160, 80, 106, 0.12)', icon: '#a0506a' },
   { bg: 'rgba(186, 130, 160, 0.12)', icon: '#ba82a0' },
-  { bg: 'rgba(201, 148, 130, 0.12)', icon: '#c99482' },
-  { bg: 'rgba(160, 130, 80, 0.12)', icon: '#a08250' },
-  { bg: 'rgba(130, 160, 120, 0.12)', icon: '#82a078' },
-  { bg: 'rgba(120, 140, 180, 0.12)', icon: '#788cb4' },
-  { bg: 'rgba(160, 120, 180, 0.12)', icon: '#a078b4' },
-  { bg: 'rgba(180, 120, 140, 0.12)', icon: '#b4788c' },
+  { bg: 'rgba(190, 120, 145, 0.12)', icon: '#be7891' },
+  { bg: 'rgba(170, 90, 120, 0.12)', icon: '#aa5a78' },
+  { bg: 'rgba(180, 100, 130, 0.12)', icon: '#b46482' },
+  { bg: 'rgba(195, 125, 150, 0.12)', icon: '#c37d96' },
+  { bg: 'rgba(155, 85, 110, 0.12)', icon: '#9b556e' },
+  { bg: 'rgba(185, 115, 140, 0.12)', icon: '#b9738c' },
   { bg: 'rgba(201, 114, 130, 0.12)', icon: '#c97282' },
-  { bg: 'rgba(150, 150, 160, 0.12)', icon: '#9696a0' },
+  { bg: 'rgba(165, 95, 115, 0.12)', icon: '#a55f73' },
 ];
 
 const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsCollapsed, activeRateType, onToggleRateType, isOpen, onClose }) => {
