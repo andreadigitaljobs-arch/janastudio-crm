@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import JanaDatePicker from './JanaDatePicker';
 import { useNotifs } from '../context/NotificationContext';
@@ -61,6 +61,102 @@ import { useDialog } from '../context/DialogContext';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { useAuth } from '../context/AuthContext';
 import { getRoleKind } from '../utils/roles';
+import BirthdayModule from './BirthdayModule';
+import { getWidgetSections, getDemoBirthdayClients } from '../utils/birthdays';
+
+const CustomSelect = ({ value, onChange, options, isMobile }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const selectedLabel = options.find(o => o.key === value)?.label || 'Todas';
+
+  return (
+    <div ref={ref} style={{ position: 'relative', marginBottom: '16px' }}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          width: '100%',
+          padding: '12px 14px 12px 16px',
+          borderRadius: '16px',
+          border: isOpen ? '1.5px solid var(--pink-primary)' : '1.5px solid var(--border-color)',
+          backgroundColor: 'white',
+          fontSize: '15px',
+          fontWeight: '650',
+          color: 'var(--text-primary)',
+          cursor: 'pointer',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          boxShadow: isOpen ? '0 8px 24px rgba(160, 80, 106, 0.12)' : '0 2px 8px rgba(160, 80, 106, 0.08)',
+          transition: 'all 0.2s ease',
+          outline: 'none',
+        }}
+      >
+        <span>{selectedLabel}</span>
+        <svg width="12" height="8" viewBox="0 0 12 8" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }}>
+          <path fill="#a0506a" d="M1 1l5 5 5-5" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            marginTop: '8px',
+            backgroundColor: 'white',
+            border: '1px solid var(--border-color)',
+            borderRadius: '16px',
+            boxShadow: '0 8px 24px rgba(160, 80, 106, 0.15)',
+            zIndex: 1000,
+            overflow: 'hidden',
+            animation: 'slideDown 0.2s ease',
+          }}
+        >
+          {options.map((option, idx) => (
+            <button
+              key={option.key}
+              onClick={() => {
+                onChange(option.key);
+                setIsOpen(false);
+              }}
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: 'none',
+                backgroundColor: value === option.key ? 'rgba(160, 80, 106, 0.08)' : 'white',
+                color: value === option.key ? 'var(--pink-primary)' : 'var(--text-primary)',
+                fontSize: '15px',
+                fontWeight: value === option.key ? '700' : '500',
+                cursor: 'pointer',
+                textAlign: 'left',
+                transition: 'all 0.2s',
+                borderBottom: idx < options.length - 1 ? '1px solid var(--border-color)' : 'none',
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(160, 80, 106, 0.06)'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = value === option.key ? 'rgba(160, 80, 106, 0.08)' : 'white'}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      )}
+      <style>{`@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+    </div>
+  );
+};
 
 const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, onNavigate }) => {
   const { user } = useAuth();
@@ -144,6 +240,8 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
   const [loading, setLoading] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [viewMode, setViewMode] = useState('table'); // 'grid' or 'table'
+  const [activeTab, setActiveTab] = useState('clients'); // 'clients' or 'birthdays'
+  const [birthdayDemoMode, setBirthdayDemoMode] = useState(false);
 
   // Sync selected client when global list updates (Crucial for persistence visibility)
   useEffect(() => {
@@ -281,29 +379,11 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
     return diff >= 0 && diff <= 7;
   }).length;
 
-  const upcomingBirthdays = clients
-    .filter(c => c.birth_date)
-    .map(c => {
-      const bday = new Date(c.birth_date + 'T00:00:00');
-      const today = new Date();
-      const thisYearBday = new Date(today.getFullYear(), bday.getMonth(), bday.getDate());
-      
-      let targetBday = thisYearBday;
-      if (thisYearBday < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
-        targetBday = new Date(today.getFullYear() + 1, bday.getMonth(), bday.getDate());
-      }
-      
-      const diffTime = targetBday - today;
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
-      return {
-        ...c,
-        daysLeft: diffDays,
-        targetDate: targetBday
-      };
-    })
-    .sort((a, b) => a.daysLeft - b.daysLeft)
-    .slice(0, 3);
+  const clientsForBirthdays = useMemo(
+    () => (birthdayDemoMode ? [...clients, ...getDemoBirthdayClients()] : clients),
+    [clients, birthdayDemoMode]
+  );
+  const birthdaySections = useMemo(() => getWidgetSections(clientsForBirthdays), [clientsForBirthdays]);
 
   // Filter state
   const [activeFilter, setActiveFilter] = useState('all');
@@ -382,7 +462,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                 <Users size={isMobile ? 16 : 20} color="white" />
               </div>
               <div>
-                <h1 className="jana-page-title" style={{ margin: 0, fontSize: windowWidth < 600 ? '20px' : '28px', letterSpacing: '-0.6px', fontWeight: '850', color: 'var(--text-primary)' }}>
+                <h1 className="jana-page-title" style={{ margin: 0, fontSize: windowWidth < 600 ? '24px' : '28px', letterSpacing: '-0.6px', fontWeight: '850', color: 'var(--text-primary)' }}>
                   Archivo de Clientes
                 </h1>
                 <p style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: windowWidth < 600 ? '12px' : '14px', fontWeight: '500' }}>
@@ -429,43 +509,99 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
             </button>
           )}
 
-          {/* Stat Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: windowWidth < 1200 ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: windowWidth < 600 ? '10px' : '16px', marginBottom: '28px' }}>
+          {/* Tab Switcher: Clientes / Cumpleaños */}
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
             {[
-              { label: windowWidth < 600 ? 'Activas' : 'Clientes activas', value: activeClients, icon: Users, trend: '↑ 12%', trendSub: 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.12)', iconColor: 'var(--pink-primary)' },
-              { label: windowWidth < 600 ? 'Nuevas' : 'Nuevas este mes', value: newThisMonth, icon: UserPlus, trend: '↑ 15%', trendSub: 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.08)', iconColor: 'var(--magenta-primary)' },
-              { label: windowWidth < 600 ? 'Próxima cita' : 'Con próxima cita', value: upcomingCount, icon: Calendar, trend: '↑ 8%', trendSub: 'vs. mes anterior', iconBg: 'rgba(74, 48, 54, 0.06)', iconColor: 'var(--text-secondary)' },
-              { label: windowWidth < 600 ? 'Cumpleaños' : 'Cumpleaños cercanos', value: birthdaySoon, icon: Cake, trend: '', trendSub: 'Próximos 7 días', iconBg: 'rgba(160, 80, 106, 0.15)', iconColor: 'var(--pink-primary)' }
+              { key: 'clients', label: 'Clientes', icon: Users },
+              { key: 'birthdays', label: 'Cumpleaños', icon: Cake },
+            ].map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setActiveTab(t.key)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                  padding: '9px 18px', borderRadius: '20px',
+                  border: activeTab === t.key ? 'none' : '1px solid var(--border-color)',
+                  background: activeTab === t.key ? 'var(--magenta-gradient)' : 'white',
+                  color: activeTab === t.key ? 'white' : 'var(--text-secondary)',
+                  fontSize: '13px', fontWeight: '750', cursor: 'pointer',
+                  boxShadow: activeTab === t.key ? '0 4px 15px rgba(160, 80, 106, 0.25)' : 'none',
+                }}
+                className="btn-interactive"
+              >
+                <t.icon size={15} /> {t.label}
+              </button>
+            ))}
+          </div>
+
+          {activeTab === 'birthdays' ? (
+            <BirthdayModule
+              clients={clientsForBirthdays}
+              isMobile={isMobile}
+              demoMode={birthdayDemoMode}
+              onToggleDemo={() => setBirthdayDemoMode((v) => !v)}
+            />
+          ) : (
+          <>
+          {/* Stat Cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: windowWidth < 1200 ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: windowWidth < 600 ? '12px' : '16px', marginBottom: '28px' }}>
+            {[
+              { label: windowWidth < 600 ? 'Activas' : 'Clientes activas', value: activeClients, icon: Users, trend: '↑ 12%', trendSub: windowWidth < 600 ? 'vs ant.' : 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.12)', iconColor: 'var(--pink-primary)' },
+              { label: windowWidth < 600 ? 'Nuevas' : 'Nuevas este mes', value: newThisMonth, icon: UserPlus, trend: '↑ 15%', trendSub: windowWidth < 600 ? 'vs ant.' : 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.08)', iconColor: 'var(--magenta-primary)' },
+              { label: windowWidth < 600 ? 'Próxima cita' : 'Con próxima cita', value: upcomingCount, icon: Calendar, trend: '↑ 8%', trendSub: windowWidth < 600 ? 'vs ant.' : 'vs. mes anterior', iconBg: 'rgba(74, 48, 54, 0.06)', iconColor: 'var(--text-secondary)' },
+              { label: windowWidth < 600 ? 'Cumpleaños' : 'Cumpleaños cercanos', value: birthdaySoon, icon: Cake, trend: '', trendSub: windowWidth < 600 ? 'Próx. 7d' : 'Próximos 7 días', iconBg: 'rgba(160, 80, 106, 0.15)', iconColor: 'var(--pink-primary)' }
             ].map((stat, i) => (
-              <div 
-                key={i} 
-                className="glass-card animate-scale-in" 
-                style={{ 
-                  padding: windowWidth < 600 ? '10px 8px' : '16px 20px', 
-                  borderRadius: '24px', 
-                  border: '1px solid rgba(160,80,106,0.25)', 
+              <div
+                key={i}
+                className="glass-card animate-scale-in"
+                style={{
+                  padding: windowWidth < 600 ? '16px 16px' : '16px 20px',
+                  borderRadius: '24px',
+                  border: '1px solid rgba(160,80,106,0.25)',
                   background: 'white',
                   boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)',
                   animationDelay: `${i * 80}ms`,
-                  minWidth: 0
+                  minWidth: 0,
+                  minHeight: windowWidth < 600 ? '110px' : 'auto',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: windowWidth < 600 ? '8px' : '14px' }}>
-                  <div style={{ width: windowWidth < 600 ? '34px' : '48px', height: windowWidth < 600 ? '34px' : '48px', borderRadius: windowWidth < 600 ? '10px' : '16px', backgroundColor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <stat.icon size={windowWidth < 600 ? 16 : 22} color={stat.iconColor} />
-                  </div>
-                  <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ fontSize: windowWidth < 600 ? '10px' : '12px', color: 'var(--text-secondary)', fontWeight: '600', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{stat.label}</div>
-                    <div style={{ fontSize: windowWidth < 600 ? '18px' : '24px', fontWeight: '850', color: 'var(--text-primary)', lineHeight: '1.1' }}>{stat.value}</div>
-                    {stat.trend ? (
-                      <div style={{ fontSize: windowWidth < 600 ? '8px' : '10px', color: 'var(--pink-primary)', fontWeight: '600', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {stat.trend} <span style={{ color: 'var(--text-muted)' }}>{stat.trendSub}</span>
+                {windowWidth < 600 ? (
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                      <div style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '700' }}>{stat.label}</div>
+                      <div style={{ width: '34px', height: '34px', borderRadius: '10px', backgroundColor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <stat.icon size={17} color={stat.iconColor} />
                       </div>
-                    ) : (
-                      <div style={{ fontSize: windowWidth < 600 ? '8px' : '10px', color: 'var(--text-muted)', fontWeight: '500', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{stat.trendSub}</div>
-                    )}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '8px' }}>
+                      <div style={{ fontSize: '30px', fontWeight: '850', color: 'var(--text-primary)', lineHeight: '1' }}>{stat.value}</div>
+                      {stat.trend ? (
+                        <div style={{ fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '700', textAlign: 'right' }}>
+                          {stat.trend}<br /><span style={{ color: 'var(--text-secondary)', fontWeight: '500' }}>{stat.trendSub}</span>
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '500' }}>{stat.trendSub}</div>
+                      )}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div style={{ width: '48px', height: '48px', borderRadius: '16px', backgroundColor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <stat.icon size={22} color={stat.iconColor} />
+                    </div>
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{stat.label}</div>
+                      <div style={{ fontSize: '24px', fontWeight: '850', color: 'var(--text-primary)', lineHeight: '1.1', marginBottom: '1px' }}>{stat.value}</div>
+                      {stat.trend ? (
+                        <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '600' }}>
+                          {stat.trend} <span style={{ color: 'var(--text-muted)' }}>{stat.trendSub}</span>
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '500' }}>{stat.trendSub}</div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -485,11 +621,11 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                     onChange={(e) => setSearchTerm(e.target.value)}
                     style={{
                       width: '100%',
-                      padding: '10px 14px 10px 40px',
+                      padding: '12px 14px 12px 40px',
                       borderRadius: '12px',
                       border: '1px solid var(--border-color)',
                       backgroundColor: 'white',
-                      fontSize: '13px',
+                      fontSize: '15px',
                       color: 'var(--text-primary)',
                       outline: 'none'
                     }}
@@ -497,34 +633,19 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                 </div>
               </div>
 
-              {/* Filter Chips */}
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
-                {[
+              {/* Filter Dropdown (Mobile) */}
+              <CustomSelect
+                value={activeFilter}
+                onChange={(val) => { setActiveFilter(val); setCurrentPage(1); }}
+                options={[
                   { key: 'all', label: 'Todas' },
                   { key: 'frequent', label: 'Frecuentes' },
                   { key: 'active', label: 'Activas' },
                   { key: 'no Appointment', label: 'Sin cita' },
                   { key: 'consent', label: 'Con consentimiento' }
-                ].map(f => (
-                  <button
-                    key={f.key}
-                    onClick={() => { setActiveFilter(f.key); setCurrentPage(1); }}
-                    style={{
-                      padding: '7px 16px',
-                      borderRadius: '20px',
-                      border: activeFilter === f.key ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)',
-                      backgroundColor: activeFilter === f.key ? 'rgba(160, 80, 106,0.1)' : 'white',
-                      color: activeFilter === f.key ? 'var(--pink-primary)' : 'var(--text-secondary)',
-                      fontSize: '12px',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                    }}
-                  >
-                    {f.label}
-                  </button>
-                ))}
-              </div>
+                ]}
+                isMobile={isMobile}
+              />
 
               {loading ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -594,37 +715,37 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                             )}
                           </div>
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontWeight: '850', fontSize: '0.88rem', color: 'var(--text-primary)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                            <div style={{ fontWeight: '850', fontSize: '1rem', color: 'var(--text-primary)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                               {client.name}
                             </div>
                           </div>
                           <span style={{
-                            fontSize: '0.62rem', fontWeight: '800',
+                            fontSize: '0.7rem', fontWeight: '800',
                             color: status.color, backgroundColor: status.bg,
                             border: status.border,
-                            padding: '3px 8px', borderRadius: '6px',
+                            padding: '4px 10px', borderRadius: '6px',
                             whiteSpace: 'nowrap'
                           }}>{status.label}</span>
                         </div>
 
                         {/* Card Middle: Contacts & Visits */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '10px', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '12px', alignItems: 'center' }}>
                           {client.phone ? (
                             <a
                               href={`tel:${client.phone}`}
                               onClick={(e) => e.stopPropagation()}
                               style={{
                                 display: 'flex', alignItems: 'center', gap: '4px',
-                                fontSize: '0.75rem', color: 'var(--text-secondary)', textDecoration: 'none',
+                                fontSize: '0.85rem', color: 'var(--text-secondary)', textDecoration: 'none',
                                 fontWeight: '600'
                               }}
                             >
-                              <Phone size={12} color="var(--pink-primary)" /> {client.phone}
+                              <Phone size={14} color="var(--pink-primary)" /> {client.phone}
                             </a>
                           ) : (
-                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Sin teléfono</span>
+                            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '500' }}>Sin teléfono</span>
                           )}
-                          <span style={{ fontSize: '0.75rem', fontWeight: '750', color: 'var(--text-secondary)' }}>
+                          <span style={{ fontSize: '0.85rem', fontWeight: '750', color: 'var(--text-secondary)' }}>
                             {client.total_visits || 0} visitas
                           </span>
                         </div>
@@ -672,18 +793,18 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                         { text: 'Enviar rutina post cuidado', line1: 'Laura Martínez', line2: '18 may 2025', icon: Mail, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' },
                         { text: 'Recordatorio de evaluación', line1: 'Andrea Rodríguez', line2: '20 may 2025', icon: Bell, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' }
                       ].map((item, i) => (
-                        <div key={i} style={{ padding: '12px 14px', borderRadius: '16px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', background: 'white' }} className="interactive-hover-card stagger-row">
-                          <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <item.icon size={15} color={item.color} />
+                        <div key={i} style={{ padding: isMobile ? '14px 16px' : '12px 14px', borderRadius: '16px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: isMobile ? '14px' : '12px', cursor: 'pointer', background: 'white' }} className="interactive-hover-card stagger-row">
+                          <div style={{ width: isMobile ? '42px' : '36px', height: isMobile ? '42px' : '36px', borderRadius: '10px', backgroundColor: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <item.icon size={isMobile ? 18 : 15} color={item.color} />
                           </div>
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: '11.5px', fontWeight: '700', color: 'var(--text-primary)', lineHeight: '1.3' }}>{item.text}</div>
-                            <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', marginTop: '2px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                            <div style={{ fontSize: isMobile ? '13.5px' : '11.5px', fontWeight: '700', color: 'var(--text-primary)', lineHeight: '1.3' }}>{item.text}</div>
+                            <div style={{ fontSize: isMobile ? '12.5px' : '10.5px', color: 'var(--text-secondary)', marginTop: isMobile ? '4px' : '2px', display: 'flex', flexDirection: 'column', gap: '2px', fontWeight: '500' }}>
                               <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.line1}</div>
                               <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.line2}</div>
                             </div>
                           </div>
-                          <ChevronRight size={12} color="var(--text-muted)" style={{ marginLeft: '4px' }} />
+                          <ChevronRight size={isMobile ? 14 : 12} color="var(--text-muted)" style={{ marginLeft: '4px' }} />
                         </div>
                       ))}
                     </div>
@@ -711,25 +832,40 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                     <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', height: '100%', flex: 1 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                         <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          Próximos cumpleaños
+                          Cumpleaños
+                          {birthdayDemoMode && (
+                            <span style={{ fontSize: '9px', fontWeight: '750', color: 'var(--pink-primary)', background: 'rgba(160,80,106,0.15)', padding: '2px 6px', borderRadius: '8px' }}>demo</span>
+                          )}
                         </h3>
+                        <button onClick={() => setActiveTab('birthdays')} style={{ fontSize: '10.5px', fontWeight: '750', color: 'var(--pink-primary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                          Ver todas
+                        </button>
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingBottom: '20px', justifyContent: 'center', flex: 1 }}>
-                        {upcomingBirthdays.length === 0 ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '20px', justifyContent: 'center', flex: 1 }}>
+                        {birthdaySections.length === 0 ? (
                           <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic', padding: '10px 0' }}>
                             No hay fechas de cumpleaños registradas.
                           </div>
                         ) : (
-                          upcomingBirthdays.map((c, i) => (
-                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                              <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(160, 80, 106, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                <Gift size={12} color="var(--pink-primary)" />
+                          birthdaySections.map((section) => (
+                            <div key={section.label}>
+                              <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
+                                {section.label}
                               </div>
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ fontSize: '11.5px', fontWeight: '700', color: 'var(--text-primary)' }}>{c.name}</div>
-                                <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                                  {c.daysLeft === 0 ? '¡Hoy cumple años!' : `En ${c.daysLeft} días`}
-                                </div>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                {section.items.map((c) => (
+                                  <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(160, 80, 106, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                      <Gift size={12} color="var(--pink-primary)" />
+                                    </div>
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                      <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)' }}>{c.name}</div>
+                                    </div>
+                                  </div>
+                                ))}
+                                {section.moreCount > 0 && (
+                                  <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)', paddingLeft: '38px', fontWeight: '500' }}>+{section.moreCount} más</div>
+                                )}
                               </div>
                             </div>
                           ))
@@ -1430,12 +1566,12 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)', lineHeight: '1.3' }}>{item.text}</div>
-                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                          <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '2px', fontWeight: '500' }}>
                             <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.line1}</div>
                             <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.line2}</div>
                           </div>
                         </div>
-                        <ChevronRight size={14} color="var(--text-muted)" style={{ marginLeft: '4px' }} />
+                        <ChevronRight size={14} color="var(--text-secondary)" style={{ marginLeft: '4px' }} />
                       </div>
                     ))}
                   </div>
@@ -1468,24 +1604,45 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                   <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', height: '100%', flex: 1 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                       <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        Próximos cumpleaños
+                        Cumpleaños
+                        {birthdayDemoMode && (
+                          <span style={{ fontSize: '9px', fontWeight: '750', color: 'var(--pink-primary)', background: 'rgba(160,80,106,0.15)', padding: '2px 6px', borderRadius: '8px' }}>demo</span>
+                        )}
                       </h3>
+                      <button onClick={() => setActiveTab('birthdays')} style={{ fontSize: '11px', fontWeight: '750', color: 'var(--pink-primary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                        Ver todas
+                      </button>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '20px', justifyContent: 'center', flex: 1 }}>
-                      {upcomingBirthdays.map((c, i) => (
-                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(160, 80, 106, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <Gift size={12} color="var(--pink-primary)" />
-                          </div>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{c.name}</div>
-                            <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                              {c.birth_date ? new Date(c.birth_date + 'T00:00:00').toLocaleDateString('es-VE', { day: '2-digit', month: 'short' }) : '—'}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', paddingBottom: '20px', justifyContent: 'center', flex: 1 }}>
+                      {birthdaySections.length === 0 ? (
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic', padding: '10px 0' }}>
+                          No hay fechas de cumpleaños registradas.
+                        </div>
+                      ) : (
+                        birthdaySections.map((section) => (
+                          <div key={section.label}>
+                            <div style={{ fontSize: '10px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
+                              {section.label}
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                              {section.items.map((c) => (
+                                <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'rgba(160, 80, 106, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <Gift size={12} color="var(--pink-primary)" />
+                                  </div>
+                                  <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{c.name}</div>
+                                  </div>
+                                </div>
+                              ))}
+                              {section.moreCount > 0 && (
+                                <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', paddingLeft: '38px' }}>+{section.moreCount} más</div>
+                              )}
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1493,9 +1650,11 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
             </div>
           </>
         )}
+          </>
+          )}
       </>
       ) : (
-        <ClientDetail 
+        <ClientDetail
           isMobile={isMobile}
           client={selectedClient} 
           onBack={() => {
