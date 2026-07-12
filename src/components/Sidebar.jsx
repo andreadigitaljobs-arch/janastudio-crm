@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import {
   BarChart3, Users, UserCircle, Sparkles, Package, Wallet,
   Star, Calendar, LogOut, PanelLeftClose, PanelLeftOpen,
-  Receipt, Percent, Settings, Sliders, FileText, X
+  Receipt, Percent, Settings, Sliders, FileText, X, Activity
 } from 'lucide-react';
 import LaserGunIcon from './LaserGunIcon';
 import { useAuth } from '../context/AuthContext';
@@ -34,6 +34,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
     { id: 'reception', label: 'Recepción', icon: UserCircle, roles: ['Admin', 'Recepcionista'] },
     { id: 'laser', label: 'Centro Láser', icon: LaserGunIcon, roles: ['Admin', 'Recepcionista'] },
     { id: 'clients', label: 'Clientes', icon: Users, roles: ['Admin', 'Recepcionista', 'Manicurista', 'Lashista'] },
+    { id: 'diagnosis', label: 'Diagnóstico Capilar', icon: Activity, roles: ['Admin', 'Recepcionista', 'Manicurista', 'Lashista'] },
     { id: 'services', label: 'Servicios', icon: Star, roles: ['Admin'] },
     { id: 'personnel', label: 'Equipo', icon: Sparkles, roles: ['Admin'] },
     { id: 'inventory', label: 'Inventario', icon: Package, roles: ['Admin', 'Caja'] },
@@ -193,7 +194,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
 
       <nav
         onMouseLeave={() => setHoveredTab(null)}
-        style={{ display: 'flex', flexDirection: 'column', gap: '3px', position: 'relative', flex: 1, overflowY: 'auto', overflowX: 'hidden' }}
+        style={{ display: 'flex', flexDirection: 'column', gap: '3px', position: 'relative', flex: 1, minHeight: 0, overflowY: 'hidden', overflowX: 'hidden' }}
       >
         <div
           style={{

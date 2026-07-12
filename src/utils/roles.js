@@ -17,6 +17,7 @@ const MODULE_ROLES = {
   laser: ['admin', 'reception'],
   checkout: ['admin', 'reception', 'cashier'],
   clients: ['admin', 'reception', 'cashier', 'worker'],
+  diagnosis: ['admin', 'reception', 'worker'],
   personnel: ['admin'],
   services: ['admin'],
   costing: ['admin'],

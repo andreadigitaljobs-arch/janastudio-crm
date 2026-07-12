@@ -196,7 +196,7 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
   ];
 
   return (
-    <div style={{ padding: isMobile ? '16px' : '32px', maxWidth: '1400px', margin: '0 auto' }}>
+    <div>
       <div style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 

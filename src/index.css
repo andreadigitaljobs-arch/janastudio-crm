@@ -73,26 +73,6 @@ html, body {
 
 ::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
 
-/* Scale the whole UI up on smaller laptop screens so text stays readable
-   without shrinking layouts. Only applies above the app's own mobile
-   breakpoint (~992px) — below that, the dedicated mobile layouts already
-   handle sizing, so zooming on top of them would double-scale things. */
-@media (min-width: 1800px) and (max-width: 1920px) {
-  body { zoom: 1.05; }
-}
-@media (min-width: 1600px) and (max-width: 1799px) {
-  body { zoom: 1.08; }
-}
-@media (min-width: 1400px) and (max-width: 1599px) {
-  body { zoom: 1.12; }
-}
-@media (min-width: 1200px) and (max-width: 1399px) {
-  body { zoom: 1.16; }
-}
-@media (min-width: 993px) and (max-width: 1199px) {
-  body { zoom: 1.22; }
-}
-
 .text-gold {
   background: var(--pink-gradient);
   -webkit-background-clip: text;

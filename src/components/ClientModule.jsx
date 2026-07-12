@@ -886,7 +886,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
               {windowWidth >= 1350 ? (
                 <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', alignItems: 'center', flexWrap: 'nowrap' }}>
                   {/* Search box */}
-                  <div style={{ width: '220px', position: 'relative', flexShrink: 0 }}>
+                  <div style={{ width: '340px', position: 'relative', flexShrink: 0 }}>
                     <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
                     <input
                       type="text"
@@ -1183,13 +1183,13 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                       <thead>
                         <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'rgba(160, 80, 106, 0.08)' }}>
-                          <th style={{ padding: '12px 6px 12px 24px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Cliente</th>
-                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Cédula / ID</th>
-                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Contacto</th>
-                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Última visita</th>
-                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Próxima cita</th>
-                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Historial</th>
-                          <th style={{ padding: '12px 24px 12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Estado</th>
+                          <th style={{ padding: '16px 10px 16px 28px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Cliente</th>
+                          <th style={{ padding: '16px 10px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Cédula / ID</th>
+                          <th style={{ padding: '16px 10px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Contacto</th>
+                          <th style={{ padding: '16px 10px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Última visita</th>
+                          <th style={{ padding: '16px 10px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Próxima cita</th>
+                          <th style={{ padding: '16px 10px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Historial</th>
+                          <th style={{ padding: '16px 28px 16px 10px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Estado</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1214,74 +1214,74 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                               }}
                               className="table-row-hover"
                             >
-                               <td style={{ padding: '10px 6px 10px 24px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                  <div style={{ width: '30px', height: '30px', borderRadius: '50%', backgroundColor: 'rgba(160,80,106,0.12)', border: '1.5px solid var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
+                               <td style={{ padding: '18px 10px 18px 28px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(160,80,106,0.12)', border: '1.5px solid var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
                                     {client.image_url ? (
                                       <img src={client.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                     ) : (
-                                      <User size={14} color="var(--pink-primary)" />
+                                      <User size={18} color="var(--pink-primary)" />
                                     )}
                                   </div>
                                   <div style={{ minWidth: 0 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                      <span style={{ fontWeight: '700', fontSize: '12px', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '120px' }}>
+                                      <span style={{ fontWeight: '750', fontSize: '14px', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '160px' }}>
                                         {client.name}
                                       </span>
-                                      {(client.total_visits || 0) >= 10 && <span style={{ color: '#b47d49', fontSize: '10px' }}>★</span>}
+                                      {(client.total_visits || 0) >= 10 && <span style={{ color: '#b47d49', fontSize: '11px' }}>★</span>}
                                     </div>
-                                    <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                                    <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)', marginTop: '3px' }}>
                                       {(client.total_visits || 0) >= 10 ? 'VIP' : client.hair_type || 'Normal'}
                                     </div>
                                   </div>
                                 </div>
                               </td>
-                              <td style={{ padding: '10px 6px', fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>
+                              <td style={{ padding: '18px 10px', fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>
                                 V-{client.id_card || '00.000.000'}
                               </td>
-                              <td style={{ padding: '10px 6px', whiteSpace: 'nowrap' }}>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                              <td style={{ padding: '18px 10px', whiteSpace: 'nowrap' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
                                   {client.phone && (
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
-                                      <Phone size={10} color="var(--pink-primary)" /> {client.phone}
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12.5px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
+                                      <Phone size={11} color="var(--pink-primary)" /> {client.phone}
                                     </div>
                                   )}
                                   {client.email && (
-                                    <div style={{ fontSize: '10px', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '120px' }}>
+                                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
                                       {client.email}
                                     </div>
                                   )}
                                 </div>
                               </td>
-                              <td style={{ padding: '10px 6px', fontSize: '11.5px', color: 'var(--text-muted)', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>
+                              <td style={{ padding: '18px 10px', fontSize: '12.5px', color: 'var(--text-muted)', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>
                                 {client.last_visit ? new Date(client.last_visit).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
                               </td>
-                              <td style={{ padding: '10px 6px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>
+                              <td style={{ padding: '18px 10px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>
                                 {client.next_appointment ? (
                                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                    <span style={{ fontSize: '11.5px', fontWeight: '700', color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
+                                    <span style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
                                       {new Date(client.next_appointment).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' })}
                                     </span>
-                                    <span style={{ fontSize: '10px', fontWeight: '700', color: 'var(--pink-primary)', marginTop: '1px', whiteSpace: 'nowrap' }}>
+                                    <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--pink-primary)', marginTop: '2px', whiteSpace: 'nowrap' }}>
                                       {new Date(client.next_appointment).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true })}
                                     </span>
                                   </div>
                                 ) : (
-                                  <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>—</span>
+                                  <span style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>—</span>
                                 )}
                               </td>
-                              <td style={{ padding: '10px 6px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>
-                                <span style={{ fontSize: '11.5px', fontWeight: '700', color: 'var(--text-secondary)' }}>
+                              <td style={{ padding: '18px 10px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>
+                                <span style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--text-secondary)' }}>
                                   {client.total_visits || 0} visitas
                                 </span>
                               </td>
-                              <td style={{ padding: '10px 24px 10px 6px' }}>
+                              <td style={{ padding: '18px 28px 18px 10px' }}>
                                 {status.label === 'VIP' ? (
-                                  <span style={{ fontSize: '9px', fontWeight: '800', color: '#b47d49', backgroundColor: 'rgba(180, 125, 73, 0.1)', border: '1px solid rgba(180, 125, 73, 0.15)', padding: '3px 8px', borderRadius: '6px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                  <span style={{ fontSize: '10px', fontWeight: '800', color: '#b47d49', backgroundColor: 'rgba(180, 125, 73, 0.1)', border: '1px solid rgba(180, 125, 73, 0.15)', padding: '5px 10px', borderRadius: '7px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                     👑 VIP
                                   </span>
                                 ) : (
-                                  <span style={{ fontSize: '10px', fontWeight: '700', color: status.color, backgroundColor: status.bg, border: status.border, padding: '4px 10px', borderRadius: '6px', whiteSpace: 'nowrap' }}>
+                                  <span style={{ fontSize: '11px', fontWeight: '700', color: status.color, backgroundColor: status.bg, border: status.border, padding: '5px 12px', borderRadius: '7px', whiteSpace: 'nowrap' }}>
                                     {status.label}
                                   </span>
                                 )}
@@ -1401,8 +1401,8 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
               {/* Right Column: Ficha Rápida Sidebar */}
               <div ref={quickViewRef} style={{ display: isNarrowScreen ? 'none' : 'flex', flexDirection: 'column', gap: '24px', position: 'sticky', top: '24px' }}>
                 {/* Ficha Rápida Card */}
-                <div className="glass-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', position: 'relative', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <div className="glass-card" style={{ padding: '20px', borderRadius: '24px', border: '1px solid var(--border-color)', position: 'relative', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                     <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0 }}>Ficha rápida</h3>
                     <button 
                       onClick={() => setSelectedClient(sidebarClient)} 
@@ -1430,7 +1430,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                   {sidebarClient ? (
                     <>
                       {/* Avatar + name + VIP badge */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                         <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: 'rgba(160,80,106,0.12)', border: '2px solid var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
                           {sidebarClient.image_url ? (
                             <img src={sidebarClient.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -1454,10 +1454,64 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                         </div>
                       </div>
 
-                      <hr style={{ border: '0', borderTop: '1px dashed var(--border-color)', margin: '14px 0' }} />
+                      {/* Quick contact buttons */}
+                      {sidebarClient.phone && (
+                        <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                          <a
+                            href={`tel:${sidebarClient.phone}`}
+                            style={{ flex: 1, textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '12px', color: 'var(--text-primary)', fontWeight: '650', backgroundColor: 'var(--bg-tertiary)', padding: '9px 10px', borderRadius: '12px', border: '1px solid var(--border-color)' }}
+                            className="btn-interactive"
+                          >
+                            <Phone size={13} color="var(--text-secondary)" /> Llamar
+                          </a>
+                          <a
+                            href={`https://wa.me/${getWhatsAppNumber(sidebarClient.phone)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ flex: 1, textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '12px', color: 'var(--text-primary)', fontWeight: '650', backgroundColor: 'var(--bg-tertiary)', padding: '9px 10px', borderRadius: '12px', border: '1px solid var(--border-color)' }}
+                            className="btn-interactive"
+                          >
+                            <MessageCircle size={13} color="var(--text-secondary)" /> WhatsApp
+                          </a>
+                        </div>
+                      )}
+
+                      {/* Key stats: last visit, birthday, total spent */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '12px' }}>
+                        <div style={{ padding: '10px 12px', borderRadius: '12px', backgroundColor: 'white', border: '1px solid var(--border-color)' }}>
+                          <div style={{ fontSize: '10px', color: 'var(--text-secondary)', fontWeight: '650', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '3px' }}>Última visita</div>
+                          <div style={{ fontSize: '12px', fontWeight: '650', color: 'var(--text-primary)' }}>
+                            {sidebarClient.last_visit ? new Date(sidebarClient.last_visit).toLocaleDateString('es-VE', { day: '2-digit', month: 'short' }) : 'Sin visitas'}
+                          </div>
+                        </div>
+                        <div style={{ padding: '10px 12px', borderRadius: '12px', backgroundColor: 'white', border: '1px solid var(--border-color)' }}>
+                          <div style={{ fontSize: '10px', color: 'var(--text-secondary)', fontWeight: '650', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '3px' }}>Cumpleaños</div>
+                          <div style={{ fontSize: '12px', fontWeight: '650', color: 'var(--text-primary)' }}>
+                            {sidebarClient.birth_date ? new Date(sidebarClient.birth_date + 'T00:00:00').toLocaleDateString('es-VE', { day: '2-digit', month: 'short' }) : 'No registrado'}
+                          </div>
+                        </div>
+                        <div style={{ padding: '10px 12px', borderRadius: '12px', backgroundColor: 'white', border: '1px solid var(--border-color)', gridColumn: '1 / -1' }}>
+                          <div style={{ fontSize: '10px', color: 'var(--text-secondary)', fontWeight: '650', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '3px' }}>Total facturado</div>
+                          <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-primary)' }}>
+                            ${(sidebarClient.total_spent || 0).toLocaleString('es-VE', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                          </div>
+                        </div>
+                      </div>
+
+                      {sidebarClient.allergies && (
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', padding: '10px 12px', borderRadius: '12px', backgroundColor: 'white', border: '1px solid var(--border-color)', marginBottom: '12px' }}>
+                          <span style={{ fontSize: '13px', flexShrink: 0 }}>⚠️</span>
+                          <div>
+                            <div style={{ fontSize: '10px', color: 'var(--text-secondary)', fontWeight: '650', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '2px' }}>Alergias</div>
+                            <div style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '600' }}>{sidebarClient.allergies}</div>
+                          </div>
+                        </div>
+                      )}
+
+                      <hr style={{ border: '0', borderTop: '1px dashed var(--border-color)', margin: '10px 0' }} />
 
                       {/* Notes Section with Inline Editing */}
-                      <div style={{ marginBottom: '14px' }}>
+                      <div style={{ marginBottom: '10px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>Notas</span>
@@ -1498,10 +1552,10 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                         )}
                       </div>
 
-                      <hr style={{ border: '0', borderTop: '1px dashed var(--border-color)', margin: '14px 0' }} />
+                      <hr style={{ border: '0', borderTop: '1px dashed var(--border-color)', margin: '10px 0' }} />
 
                       {/* Frequent Services Section */}
-                      <div style={{ marginBottom: '14px' }}>
+                      <div style={{ marginBottom: '10px' }}>
                         <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)', display: 'block', marginBottom: '8px' }}>Servicios frecuentes</span>
                         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                           {['Láser Diodo', 'Hydrafacial', 'Peeling Químico'].map((tag, i) => (
@@ -1659,7 +1713,8 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
       ) : (
         <ClientDetail
           isMobile={isMobile}
-          client={selectedClient} 
+          client={selectedClient}
+          onNavigate={onNavigate}
           onBack={() => {
             setSelectedClient(null);
             setShowCamera(false); // Reset camera state on back
@@ -1855,18 +1910,19 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
   );
 };
 
-const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
-  const getWhatsAppNumber = (phone) => {
-    if (!phone) return '';
-    let clean = phone.replace(/[^0-9]/g, '');
-    if (clean.startsWith('0') && clean.length === 11) {
-      return '58' + clean.slice(1);
-    }
-    if (clean.length === 10) {
-      return '58' + clean;
-    }
-    return clean;
-  };
+const getWhatsAppNumber = (phone) => {
+  if (!phone) return '';
+  let clean = phone.replace(/[^0-9]/g, '');
+  if (clean.startsWith('0') && clean.length === 11) {
+    return '58' + clean.slice(1);
+  }
+  if (clean.length === 10) {
+    return '58' + clean;
+  }
+  return clean;
+};
+
+const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate }) => {
   const { showToast } = useNotifs();
   const { confirm } = useDialog();
   const containerRef = useRef(null);
@@ -1946,31 +2002,6 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
   const [loadingDiagnoses, setLoadingDiagnoses] = useState(true);
   const [packages, setPackages] = useState([]);
   const [loadingPackages, setLoadingPackages] = useState(true);
-  const [showAddDiagnosis, setShowAddDiagnosis] = useState(false);
-  const [newDiagnosis, setNewDiagnosis] = useState({
-    hair_type: 'Normal',
-    porosity: 'Media',
-    scalp_condition: 'Sano',
-    elasticity: 'Buena',
-    overall_score: 7.5,
-    hydration_pct: 70,
-    nutrition_pct: 60,
-    repair_pct: 50,
-    shine_pct: 80,
-    strength_pct: 70,
-    scalp_oil_level: 'Normal',
-    scalp_sensitivity: 'Baja',
-    scalp_flaking: 'No',
-    scalp_hairloss: 'Leve',
-    scalp_inflammation: 'No',
-    scalp_health_pct: 70,
-    observations: '',
-    chemical_history: '',
-    recommended_treatment: '',
-    notes: '',
-    images: []
-  });
-
   const fetchDiagnoses = async () => {
     try {
       setLoadingDiagnoses(true);
@@ -2030,12 +2061,6 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
     birth_date: client.birth_date || '',
     notes: client.notes || ''
   });
-  const [isEditingHair, setIsEditingHair] = useState(false);
-  const [hairEditData, setHairEditData] = useState({
-    hair_type: client.hair_type || 'Normal',
-    scalp_type: client.scalp_type || 'Normal'
-  });
-
   useEffect(() => {
     setLocalNotes(client.notes || '');
   }, [client.notes]);
@@ -3213,285 +3238,22 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
             })()}
 
             <div className="glass-card" style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isEditingHair ? '16px' : '0' }}>
-                <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>
-                  <Scissors size={18} color="var(--pink-primary)" /> Perfil Capilar
-                </h4>
-                {!isEditingHair && (
-                  <button
-                    onClick={() => { setHairEditData({ hair_type: client.hair_type || 'Normal', scalp_type: client.scalp_type || 'Normal' }); setIsEditingHair(true); }}
-                    style={{ background: 'none', border: 'none', color: 'var(--magenta-primary)', fontSize: '14px', fontWeight: '750', cursor: 'pointer', padding: '4px 8px', borderRadius: '8px', backgroundColor: 'rgba(160,80,106,0.05)' }}
-                  >
-                    Editar
-                  </button>
-                )}
-              </div>
-
-              {isEditingHair ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '12px' }}>
-                    <JanaSelect
-                      variant="light"
-                      label="Tipo de Cabello"
-                      value={hairEditData.hair_type}
-                      onChange={(val) => setHairEditData({ ...hairEditData, hair_type: val })}
-                      options={[
-                        { label: 'Normal', value: 'Normal' },
-                        { label: 'Graso', value: 'Graso' },
-                        { label: 'Seco', value: 'Seco' },
-                        { label: 'Mixto', value: 'Mixto' }
-                      ]}
-                    />
-                    <JanaSelect
-                      variant="light"
-                      label="Cuero Cabelludo"
-                      value={hairEditData.scalp_type}
-                      onChange={(val) => setHairEditData({ ...hairEditData, scalp_type: val })}
-                      options={[
-                        { label: 'Sano', value: 'Sano' },
-                        { label: 'Sensible', value: 'Sensible' },
-                        { label: 'Irritado', value: 'Irritado' },
-                        { label: 'Caspa', value: 'Caspa' }
-                      ]}
-                    />
-                  </div>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button className="btn-pink" style={{ flex: 1, padding: '10px', background: 'var(--magenta-gradient)', border: 'none', fontWeight: '750' }} onClick={async () => { const r = await onUpdate(hairEditData); if (r) showToast('Datos actualizados'); setIsEditingHair(false); }}>Guardar</button>
-                    <button className="btn-interactive" style={{ flex: 1, padding: '10px', background: 'none', border: '1px solid var(--border-color)', color: 'var(--text-muted)', borderRadius: '12px', fontSize: '13px', fontWeight: '600' }} onClick={() => setIsEditingHair(false)}>Cancelar</button>
-                  </div>
-                </div>
-              ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                  <DetailItem label="Tipo de Cabello" value={client.hair_type || 'Normal'} />
-                  <DetailItem label="Cuero Cabelludo" value={client.scalp_type || 'Normal'} />
-                </div>
+            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center', gap: isMobile ? '12px' : '0', marginBottom: '20px' }}>
+              <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>
+                <Activity size={18} color="var(--pink-primary)" /> Historial de Diagnósticos
+              </h4>
+              {onNavigate && (
+                <button
+                  onClick={() => onNavigate('diagnosis', { clientId: client.id })}
+                  className="btn-pink"
+                  style={isMobile
+                    ? { width: '100%', height: '44px', padding: '0 16px', fontSize: '14px', fontWeight: '750', borderRadius: '12px' }
+                    : { height: '32px', padding: '0 12px', fontSize: '12px' }}
+                >
+                  + Nuevo Diagnóstico
+                </button>
               )}
             </div>
-
-            <div className="glass-card" style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>
-                <Activity size={18} color="var(--pink-primary)" /> Historial de Diagnósticos Capilares
-              </h4>
-              <button
-                onClick={() => setShowAddDiagnosis(!showAddDiagnosis)}
-                className="btn-pink"
-                style={{ height: '32px', padding: '0 12px', fontSize: '12px' }}
-              >
-                {showAddDiagnosis ? 'Cancelar' : 'Nuevo Diagnóstico'}
-              </button>
-            </div>
-
-            {showAddDiagnosis && (
-              <div style={{ backgroundColor: '#faf5f5', padding: '16px', borderRadius: '18px', border: '1px solid rgba(160, 80, 106,0.15)', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }} className="animate-fade-in">
-
-                {/* Section: Perfil */}
-                <div style={{ background: 'white', borderRadius: '14px', padding: '16px', border: '1px solid var(--border-color)' }}>
-                  <h5 style={{ margin: '0 0 12px', fontSize: '12px', fontWeight: '850', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Scissors size={13} /> Perfil del Cabello
-                  </h5>
-                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : '1fr 1fr 1fr 1fr', gap: '12px' }}>
-                    <JanaSelect
-                      variant="light"
-                      label="Grosor de Hebra"
-                      value={newDiagnosis.hair_type}
-                      onChange={(val) => setNewDiagnosis({ ...newDiagnosis, hair_type: val })}
-                      options={[
-                        { label: 'Normal', value: 'Normal' },
-                        { label: 'Fino', value: 'Fino' },
-                        { label: 'Grueso', value: 'Grueso' },
-                        { label: 'Quebradizo', value: 'Quebradizo' }
-                      ]}
-                    />
-                    <JanaSelect
-                      variant="light"
-                      label="Porosidad"
-                      value={newDiagnosis.porosity}
-                      onChange={(val) => setNewDiagnosis({ ...newDiagnosis, porosity: val })}
-                      options={[
-                        { label: 'Baja', value: 'Baja' },
-                        { label: 'Media', value: 'Media' },
-                        { label: 'Alta', value: 'Alta' }
-                      ]}
-                    />
-                    <JanaSelect
-                      variant="light"
-                      label="Condición del Cuero"
-                      value={newDiagnosis.scalp_condition}
-                      onChange={(val) => setNewDiagnosis({ ...newDiagnosis, scalp_condition: val })}
-                      options={[
-                        { label: 'Sano', value: 'Sano' },
-                        { label: 'Seborrea', value: 'Seborrea' },
-                        { label: 'Descamación', value: 'Descamación' },
-                        { label: 'Caída', value: 'Caída' },
-                        { label: 'Sensible', value: 'Sensible' }
-                      ]}
-                    />
-                    <JanaSelect
-                      variant="light"
-                      label="Elasticidad"
-                      value={newDiagnosis.elasticity}
-                      onChange={(val) => setNewDiagnosis({ ...newDiagnosis, elasticity: val })}
-                      options={[
-                        { label: 'Baja', value: 'Baja' },
-                        { label: 'Regular', value: 'Regular' },
-                        { label: 'Buena', value: 'Buena' }
-                      ]}
-                    />
-                  </div>
-                  <div style={{ marginTop: '14px' }}>
-                    <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>Estado General: {newDiagnosis.overall_score} / 10</label>
-                    <input type="range" min="0" max="10" step="0.5" value={newDiagnosis.overall_score} onChange={e => setNewDiagnosis({ ...newDiagnosis, overall_score: Number(e.target.value) })} style={{ width: '100%', accentColor: 'var(--pink-primary)' }} />
-                  </div>
-                </div>
-
-                {/* Section: Condición del Cabello */}
-                <div style={{ background: 'white', borderRadius: '14px', padding: '16px', border: '1px solid var(--border-color)' }}>
-                  <h5 style={{ margin: '0 0 12px', fontSize: '12px', fontWeight: '850', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Activity size={13} /> Condición del Cabello
-                  </h5>
-                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '12px 16px' }}>
-                    {[
-                      { key: 'hydration_pct', label: 'Hidratación' },
-                      { key: 'nutrition_pct', label: 'Nutrición' },
-                      { key: 'repair_pct', label: 'Reparación' },
-                      { key: 'shine_pct', label: 'Brillo' },
-                      { key: 'strength_pct', label: 'Fuerza' },
-                    ].map((f) => (
-                      <div key={f.key}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '700', marginBottom: '3px' }}>
-                          <span>{f.label}</span><span>{newDiagnosis[f.key]}%</span>
-                        </div>
-                        <input type="range" min="0" max="100" value={newDiagnosis[f.key]} onChange={e => setNewDiagnosis({ ...newDiagnosis, [f.key]: Number(e.target.value) })} style={{ width: '100%', accentColor: 'var(--pink-primary)' }} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Section: Salud del Cuero Cabelludo */}
-                <div style={{ background: 'white', borderRadius: '14px', padding: '16px', border: '1px solid var(--border-color)' }}>
-                  <h5 style={{ margin: '0 0 12px', fontSize: '12px', fontWeight: '850', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Droplet size={13} /> Salud del Cuero Cabelludo
-                  </h5>
-                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : '1fr 1fr 1fr', gap: '12px' }}>
-                    <JanaSelect variant="light" label="Nivel de Grasa" value={newDiagnosis.scalp_oil_level} onChange={(val) => setNewDiagnosis({ ...newDiagnosis, scalp_oil_level: val })}
-                      options={[{ label: 'Bajo', value: 'Bajo' }, { label: 'Normal', value: 'Normal' }, { label: 'Alto', value: 'Alto' }]} />
-                    <JanaSelect variant="light" label="Sensibilidad" value={newDiagnosis.scalp_sensitivity} onChange={(val) => setNewDiagnosis({ ...newDiagnosis, scalp_sensitivity: val })}
-                      options={[{ label: 'Baja', value: 'Baja' }, { label: 'Media', value: 'Media' }, { label: 'Alta', value: 'Alta' }]} />
-                    <JanaSelect variant="light" label="Descamación" value={newDiagnosis.scalp_flaking} onChange={(val) => setNewDiagnosis({ ...newDiagnosis, scalp_flaking: val })}
-                      options={[{ label: 'No', value: 'No' }, { label: 'Leve', value: 'Leve' }, { label: 'Sí', value: 'Sí' }]} />
-                    <JanaSelect variant="light" label="Caída" value={newDiagnosis.scalp_hairloss} onChange={(val) => setNewDiagnosis({ ...newDiagnosis, scalp_hairloss: val })}
-                      options={[{ label: 'No', value: 'No' }, { label: 'Leve', value: 'Leve' }, { label: 'Moderada', value: 'Moderada' }]} />
-                    <JanaSelect variant="light" label="Inflamación" value={newDiagnosis.scalp_inflammation} onChange={(val) => setNewDiagnosis({ ...newDiagnosis, scalp_inflammation: val })}
-                      options={[{ label: 'No', value: 'No' }, { label: 'Leve', value: 'Leve' }, { label: 'Sí', value: 'Sí' }]} />
-                    <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '700', marginBottom: '3px' }}>
-                        <span>Salud general</span><span>{newDiagnosis.scalp_health_pct}%</span>
-                      </div>
-                      <input type="range" min="0" max="100" value={newDiagnosis.scalp_health_pct} onChange={e => setNewDiagnosis({ ...newDiagnosis, scalp_health_pct: Number(e.target.value) })} style={{ width: '100%', marginTop: '10px', accentColor: 'var(--pink-primary)' }} />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Section: Notas y observaciones */}
-                <div style={{ background: 'white', borderRadius: '14px', padding: '16px', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <h5 style={{ margin: 0, fontSize: '12px', fontWeight: '850', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <FileText size={13} /> Notas y Observaciones
-                  </h5>
-                  <div>
-                    <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Observaciones (una por línea)</label>
-                    <textarea
-                      className="form-input"
-                      value={newDiagnosis.observations}
-                      onChange={e => setNewDiagnosis({ ...newDiagnosis, observations: e.target.value })}
-                      placeholder={'Se observa acumulación leve de residuos en raíz.\nPuntas ligeramente secas y porosas.'}
-                      style={{ width: '100%', height: '60px', padding: '10px', fontSize: '13px' }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Historial Químico</label>
-                    <textarea
-                      className="form-input"
-                      value={newDiagnosis.chemical_history}
-                      onChange={e => setNewDiagnosis({ ...newDiagnosis, chemical_history: e.target.value })}
-                      placeholder="Decoloraciones previas, alisados, tintes..."
-                      style={{ width: '100%', height: '60px', padding: '10px', fontSize: '13px' }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Tratamiento Recomendado</label>
-                    <textarea
-                      className="form-input"
-                      value={newDiagnosis.recommended_treatment}
-                      onChange={e => setNewDiagnosis({ ...newDiagnosis, recommended_treatment: e.target.value })}
-                      placeholder="Tratamiento molecular, fototerapia, etc..."
-                      style={{ width: '100%', height: '60px', padding: '10px', fontSize: '13px' }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Notas de Diagnóstico</label>
-                    <textarea
-                      className="form-input"
-                      value={newDiagnosis.notes}
-                      onChange={e => setNewDiagnosis({ ...newDiagnosis, notes: e.target.value })}
-                      placeholder="Observaciones adicionales..."
-                      style={{ width: '100%', height: '60px', padding: '10px', fontSize: '13px' }}
-                    />
-                  </div>
-                </div>
-
-                <button
-                  onClick={async () => {
-                    try {
-                      if (!newDiagnosis.chemical_history && !newDiagnosis.recommended_treatment) {
-                        showToast('Por favor introduce detalles del diagnóstico', 'warning');
-                        return;
-                      }
-                      const saved = await dataService.addCapillaryDiagnosis({
-                        client_id: client.id,
-                        ...newDiagnosis,
-                        observations: newDiagnosis.observations.split('\n').map(s => s.trim()).filter(Boolean)
-                      });
-                      setDiagnoses([saved, ...diagnoses]);
-                      setShowAddDiagnosis(false);
-                      setNewDiagnosis({
-                        hair_type: 'Normal',
-                        porosity: 'Media',
-                        scalp_condition: 'Sano',
-                        elasticity: 'Buena',
-                        overall_score: 7.5,
-                        hydration_pct: 70,
-                        nutrition_pct: 60,
-                        repair_pct: 50,
-                        shine_pct: 80,
-                        strength_pct: 70,
-                        scalp_oil_level: 'Normal',
-                        scalp_sensitivity: 'Baja',
-                        scalp_flaking: 'No',
-                        scalp_hairloss: 'Leve',
-                        scalp_inflammation: 'No',
-                        scalp_health_pct: 70,
-                        observations: '',
-                        chemical_history: '',
-                        recommended_treatment: '',
-                        notes: '',
-                        images: []
-                      });
-                      showToast('Diagnóstico registrado con éxito', 'success');
-                    } catch (err) {
-                      showToast('Error al registrar diagnóstico', 'error');
-                    }
-                  }}
-                  className="btn-pink"
-                  style={{ width: '100%', height: '40px' }}
-                >
-                  Guardar Diagnóstico
-                </button>
-              </div>
-            )}
 
             {loadingDiagnoses ? (
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
@@ -3502,48 +3264,57 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 {diagnoses.map(diag => (
-                  <div 
+                  <div
                     key={diag.id}
                     style={{
-                      padding: '16px', borderRadius: '14px', backgroundColor: '#faf5f5',
-                      border: '1px solid rgba(160, 80, 106,0.1)'
+                      padding: isMobile ? '18px 16px' : '16px', borderRadius: '18px', backgroundColor: 'white',
+                      border: '1px solid rgba(160, 80, 106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.05)'
                     }}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                      <span style={{ fontSize: '14.5px', fontWeight: '800', color: 'var(--pink-primary)' }}>
-                        🩺 Diagnóstico del {new Date(diag.created_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '4px' : '0', marginBottom: '14px', paddingBottom: '14px', borderBottom: '1px solid var(--border-color)' }}>
+                      <span style={{ fontSize: isMobile ? '15px' : '14.5px', fontWeight: '800', color: 'var(--pink-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <Activity size={15} /> Diagnóstico del {new Date(diag.created_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' })}
                       </span>
-                      <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+                      <span style={{ fontSize: '12.5px', color: 'var(--text-muted)', fontWeight: '600' }}>
                         {new Date(diag.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '8px', marginBottom: '12px', padding: '10px', backgroundColor: 'white', borderRadius: '8px', border: '1px solid var(--border-color)', fontSize: '14px' }}>
-                      <div><strong style={{ color: 'var(--text-secondary)' }}>Hebra:</strong> {diag.hair_type}</div>
-                      <div><strong style={{ color: 'var(--text-secondary)' }}>Porosidad:</strong> {diag.porosity}</div>
-                      <div><strong style={{ color: 'var(--text-secondary)' }}>Cuero:</strong> {diag.scalp_condition}</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '14px' }}>
+                      {[
+                        { label: 'Hebra', value: diag.hair_type },
+                        { label: 'Porosidad', value: diag.porosity },
+                        { label: 'Cuero', value: diag.scalp_condition },
+                      ].filter(f => f.value).map((f, i) => (
+                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '7px 12px', borderRadius: '10px', background: 'rgba(160,80,106,0.07)', border: '1px solid rgba(160,80,106,0.12)' }}>
+                          <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>{f.label}:</span>
+                          <span style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: '750' }}>{f.value}</span>
+                        </div>
+                      ))}
                     </div>
 
-                    {diag.chemical_history && (
-                      <div style={{ fontSize: '14px', marginBottom: '10px' }}>
-                        <strong>Historial Químico:</strong>
-                        <p style={{ margin: '3px 0 0', color: 'var(--text-secondary)' }}>{diag.chemical_history}</p>
-                      </div>
-                    )}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {diag.chemical_history && (
+                        <div>
+                          <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '3px' }}>Historial Químico</div>
+                          <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{diag.chemical_history}</p>
+                        </div>
+                      )}
 
-                    {diag.recommended_treatment && (
-                      <div style={{ fontSize: '14px', marginBottom: '10px' }}>
-                        <strong>Tratamiento Molecular Recomendado:</strong>
-                        <p style={{ margin: '3px 0 0', color: 'var(--text-secondary)', fontWeight: '700' }}>{diag.recommended_treatment}</p>
-                      </div>
-                    )}
+                      {diag.recommended_treatment && (
+                        <div>
+                          <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '3px' }}>Tratamiento Recomendado</div>
+                          <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-primary)', fontWeight: '600', lineHeight: '1.4' }}>{diag.recommended_treatment}</p>
+                        </div>
+                      )}
 
-                    {diag.notes && (
-                      <div style={{ fontSize: '14px' }}>
-                        <strong>Notas:</strong>
-                        <p style={{ margin: '3px 0 0', color: 'var(--text-secondary)', fontStyle: 'italic' }}>{diag.notes}</p>
-                      </div>
-                    )}
+                      {diag.notes && (
+                        <div>
+                          <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '3px' }}>Notas</div>
+                          <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary)', fontStyle: 'italic', lineHeight: '1.4' }}>{diag.notes}</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

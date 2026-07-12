@@ -99,14 +99,16 @@ const BirthdayModule = ({ clients, isMobile, demoMode, onToggleDemo }) => {
         </div>
 
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <div style={{ fontSize: isMobile ? '16px' : '14px', fontWeight: '800', color: 'var(--text-primary)' }}>{c.name}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
+            <div style={{ fontSize: isMobile ? '16px' : '14px', fontWeight: '800', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>{c.name}</div>
             {c.isDemo && (
               <span style={{ fontSize: '9px', fontWeight: '750', color: 'var(--pink-primary)', background: 'rgba(160,80,106,0.15)', padding: '2px 6px', borderRadius: '8px', flexShrink: 0 }}>demo</span>
             )}
           </div>
-          <div style={{ fontSize: isMobile ? '14px' : '12.5px', color: 'var(--text-secondary)', marginTop: '3px', fontWeight: '500' }}>
-            {formatBirthdayDate(c.targetDate)} · Cumple {c.turningAge} años
+          <div style={{ fontSize: isMobile ? '14px' : '12.5px', color: 'var(--text-secondary)', marginTop: '3px', fontWeight: '500', whiteSpace: 'nowrap' }}>
+            {isMobile
+              ? `${c.targetDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })} · ${c.turningAge} años`
+              : `${formatBirthdayDate(c.targetDate)} · Cumple ${c.turningAge} años`}
           </div>
         </div>
 
@@ -200,17 +202,21 @@ const BirthdayModule = ({ clients, isMobile, demoMode, onToggleDemo }) => {
       </div>
 
       {/* Filter pills */}
-      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '20px' }}>
+      <div style={isMobile
+        ? { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '20px' }
+        : { display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '20px' }}
+      >
         {FILTERS.map((f) => (
           <button
             key={f.key}
             onClick={() => setFilter(f.key)}
             style={{
-              padding: isMobile ? '10px 16px' : '7px 16px', borderRadius: '20px',
+              padding: isMobile ? '12px 16px' : '7px 16px', borderRadius: isMobile ? '14px' : '20px',
               border: filter === f.key ? '1px solid var(--pink-primary)' : '1px solid var(--border-color)',
               backgroundColor: filter === f.key ? 'rgba(160, 80, 106,0.1)' : 'white',
               color: filter === f.key ? 'var(--pink-primary)' : 'var(--text-secondary)',
               fontSize: isMobile ? '14px' : '12px', fontWeight: '700', cursor: 'pointer',
+              textAlign: 'center',
             }}
           >
             {f.label}
@@ -233,12 +239,12 @@ const BirthdayModule = ({ clients, isMobile, demoMode, onToggleDemo }) => {
             <div key={g.monthIndex}>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '6px' }}>
                 <h3 style={{
-                  fontSize: '13px', fontWeight: '850', color: 'var(--text-primary)',
+                  fontSize: isMobile ? '16px' : '13px', fontWeight: '850', color: 'var(--text-primary)',
                   textTransform: 'uppercase', letterSpacing: '0.4px', margin: 0,
                 }}>
                   {g.month}
                 </h3>
-                <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)' }}>
+                <span style={{ fontSize: isMobile ? '14px' : '11px', fontWeight: '600', color: 'var(--text-secondary)' }}>
                   · {g.clients.length} {g.clients.length === 1 ? 'cumpleaños' : 'cumpleaños'}
                 </span>
               </div>

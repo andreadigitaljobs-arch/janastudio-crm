@@ -970,7 +970,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
   const dayTicket = dayTransactions > 0 ? daySales / dayTransactions : 0;
 
   return (
-    <div className="animate-fade-in" style={{ maxWidth: '1400px', margin: '0 auto', paddingBottom: isMobile ? '120px' : '80px' }}>
+    <div className="animate-fade-in" style={{ paddingBottom: isMobile ? '120px' : '80px' }}>
       {/* Header Section */}
       <div style={{
         display: 'flex',
