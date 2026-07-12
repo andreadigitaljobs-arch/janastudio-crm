@@ -5,7 +5,7 @@ import {
   ChevronDown, Search, Pencil,
   CheckCircle2, Users,
   CalendarDays, StickyNote, BarChart3, XCircle, Bell,
-  DollarSign, Info, AlertTriangle, Coffee, Sliders, Check, HelpCircle, Scissors, Sparkles, Sun
+  DollarSign, Info, AlertTriangle, Coffee, Sliders, Check, HelpCircle, Scissors, Sparkles, Sun, MessageCircle
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
@@ -518,8 +518,15 @@ const StaffDayColumn = ({
   );
 };
 
+const getWhatsAppNumber = (phone) => {
+  if (!phone) return '';
+  const clean = phone.replace(/[^0-9]/g, '');
+  if (clean.startsWith('0') && clean.length === 11) return '58' + clean.slice(1);
+  if (clean.length === 10) return '58' + clean;
+  return clean;
+};
 
-const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rates, openScheduleModal = false, modalKey = null, onOpenNotifications }) => {
+const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rates, openScheduleModal = false, modalKey = null, onOpenNotifications, onNavigate }) => {
   const { user } = useAuth();
   const { showToast } = useNotifs();
 
@@ -583,7 +590,17 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
   const [isClosingDetailedApp, setIsClosingDetailedApp] = useState(false);
   const [statusEditingApp, setStatusEditingApp] = useState(null); // { appId, clientName, x, y }
   const [selectedStaffAvailDetail, setSelectedStaffAvailDetail] = useState(null);
-  
+  const [clientPastAppointments, setClientPastAppointments] = useState([]);
+
+  useEffect(() => {
+    if (!selectedDetailedApp?.clients?.id) { setClientPastAppointments([]); return; }
+    let cancelled = false;
+    dataService.getClientPastAppointments(selectedDetailedApp.clients.id, selectedDetailedApp.id)
+      .then(data => { if (!cancelled) setClientPastAppointments(data); })
+      .catch(() => { if (!cancelled) setClientPastAppointments([]); });
+    return () => { cancelled = true; };
+  }, [selectedDetailedApp?.id, selectedDetailedApp?.clients?.id]);
+
   const triggerCloseDetailedApp = () => {
     setIsClosingDetailedApp(true);
     setTimeout(() => {
@@ -1642,8 +1659,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                 const isRetrasada = Math.floor((new Date().getTime() - start.getTime()) / 60000) > 15 && app.status !== 'Completado' && app.status !== 'Cancelada';
 
                                 let bgColor = '#fcfaf9';
-                                let borderColor = 'rgba(201, 114, 130, 0.3)';
-                                let accentColor = '#c97282';
+                                let borderColor = 'rgba(160, 80, 106, 0.25)';
+                                let accentColor = '#a0506a';
                                 if (app.status === 'Completado') {
                                   bgColor = 'rgba(34, 197, 94, 0.05)'; borderColor = 'rgba(34, 197, 94, 0.3)'; accentColor = '#16a34a';
                                 } else if (isRetrasada) {
@@ -1652,14 +1669,23 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                   bgColor = 'rgba(245, 158, 11, 0.05)'; borderColor = 'rgba(245, 158, 11, 0.3)'; accentColor = '#d97706';
                                 }
 
+                                const durationMin = getAppointmentDuration(app);
+                                const durationLabel = durationMin >= 60
+                                  ? `${Math.floor(durationMin / 60)}h${durationMin % 60 ? ` ${durationMin % 60}m` : ''}`
+                                  : `${durationMin}m`;
+                                const price = app.total_price ?? app.services?.price;
+
+                                const canComplete = app.status !== 'Completado' && app.status !== 'Cancelada';
+                                const clientPhone = app.clients?.phone;
+
                                 return (
                                   <div key={app.id}
                                     onClick={() => setSelectedDetailedApp(app)}
                                     style={{
-                                      display: 'flex', alignItems: 'center', gap: '12px',
+                                      display: 'flex', alignItems: 'stretch', gap: 0,
                                       background: bgColor, border: `1px solid ${borderColor}`,
-                                      borderLeft: `4px solid ${accentColor}`, borderRadius: '12px',
-                                      padding: '10px 14px', cursor: 'pointer',
+                                      borderLeft: `6px solid ${accentColor}`, borderRadius: '12px',
+                                      overflow: 'hidden', cursor: 'pointer',
                                       boxShadow: '0 2px 8px rgba(74, 48, 54, 0.04)',
                                       transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s'
                                     }}
@@ -1667,22 +1693,67 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                     onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(74, 48, 54, 0.04)'; }}
                                   >
                                     {staffMember && (
-                                      <img
-                                        src={staffMember.image_url || staffMember.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(staffMember.name || '')}`}
-                                        alt={staffMember.name || ''}
-                                        style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1.5px solid rgba(223,178,140,0.25)' }}
-                                      />
+                                      <div style={{ position: 'relative', width: '58px', minHeight: '82px', flexShrink: 0 }}>
+                                        <img
+                                          src={staffMember.image_url || staffMember.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(staffMember.name || '')}`}
+                                          alt={staffMember.name || ''}
+                                          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                                        />
+                                        <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(200deg, ${accentColor}66 0%, ${accentColor}00 55%), linear-gradient(0deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0) 45%)` }} />
+                                      </div>
                                     )}
-                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                      <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#2d1b22', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    <div style={{ flex: 1, minWidth: 0, padding: '12px 16px' }}>
+                                      <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#2d1b22', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '5px' }}>
                                         {app.clients?.name || 'Cliente'}
+                                        {isRetrasada && <AlertTriangle size={12} color="#dc2626" style={{ flexShrink: 0 }} />}
                                       </div>
                                       <div style={{ fontSize: '0.68rem', color: '#8c767b', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                         {app.services?.name || 'Servicio'}{staffMember ? ` · ${staffMember.name.split(' ')[0]}` : ''}
                                       </div>
+                                      <div style={{ display: 'flex', gap: '6px', marginTop: '6px' }}>
+                                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '0.7rem', color: '#2d1b22', fontWeight: 800, background: '#fff', border: '1px solid rgba(74,48,54,0.12)', padding: '3px 9px', borderRadius: '8px' }}>
+                                          <Clock size={11} color="#2d1b22" /> {durationLabel}
+                                        </span>
+                                        {price != null && (
+                                          <span style={{ fontSize: '0.7rem', color: '#2d1b22', fontWeight: 800, background: '#fff', border: '1px solid rgba(74,48,54,0.12)', padding: '3px 9px', borderRadius: '8px' }}>
+                                            ${Number(price).toLocaleString('es-VE')}
+                                          </span>
+                                        )}
+                                      </div>
                                     </div>
-                                    <div style={{ fontSize: '0.62rem', fontWeight: 800, color: accentColor, background: `${accentColor}18`, padding: '4px 10px', borderRadius: '999px', flexShrink: 0, whiteSpace: 'nowrap' }}>
-                                      {app.status}
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px', flexShrink: 0, padding: '12px 16px 12px 0' }}>
+                                      <div style={{ fontSize: '0.62rem', fontWeight: 800, color: accentColor, background: `${accentColor}18`, padding: '4px 10px', borderRadius: '999px', whiteSpace: 'nowrap' }}>
+                                        {app.status}
+                                      </div>
+                                      <div style={{ display: 'flex', gap: '6px' }}>
+                                        {clientPhone && (
+                                          <button
+                                            onClick={(e) => { e.stopPropagation(); window.open(`https://wa.me/${getWhatsAppNumber(clientPhone)}`, '_blank'); }}
+                                            title="Contactar por WhatsApp"
+                                            style={{ width: '26px', height: '26px', borderRadius: '8px', border: '1px solid rgba(223,178,140,0.25)', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
+                                          >
+                                            <MessageCircle size={13} color="#8c767b" />
+                                          </button>
+                                        )}
+                                        {canComplete && (
+                                          <button
+                                            onClick={async (e) => {
+                                              e.stopPropagation();
+                                              try {
+                                                await dataService.updateAppointment(app.id, { status: 'Completado' });
+                                                showToast('Cita marcada como completada', 'success');
+                                                loadFilteredAppointments();
+                                              } catch (err) {
+                                                showToast('Error al actualizar la cita', 'error');
+                                              }
+                                            }}
+                                            title="Marcar como completada"
+                                            style={{ width: '26px', height: '26px', borderRadius: '8px', border: '1px solid rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
+                                          >
+                                            <Check size={14} color="#16a34a" />
+                                          </button>
+                                        )}
+                                      </div>
                                     </div>
                                   </div>
                                 );
@@ -1755,7 +1826,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 </div>
 
                 {/* Stylists Compact Grid */}
-                <div className="jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '10px', overflowY: 'auto', flex: 1, paddingRight: '4px' }}>
+                <div className="jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: `repeat(${(isMobile || isTablet) ? 2 : 3}, minmax(0, 1fr))`, gap: '10px', overflowY: 'auto', flex: 1, paddingRight: '4px', paddingTop: '6px', paddingBottom: '6px' }}>
                   <AnimatePresence mode="popLayout">
                   {visibleStaff.map((s, staffIdx) => {
                     const window = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
@@ -1797,7 +1868,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                             <img
                               src={s.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(s.name)}`}
                               alt={s.name}
-                              style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(223,178,140,0.15)', filter: 'grayscale(100%)' }}
+                              style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(223,178,140,0.15)', filter: 'grayscale(55%)', opacity: 0.85 }}
                             />
                           </div>
                           <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#8c767b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{s.name}</div>
@@ -2724,12 +2795,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       Cliente Siguiente
                     </h3>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                      <div style={{ width: '42px', height: '42px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #c97282', flexShrink: 0 }}>
-                        <img 
-                          src={`https://i.pravatar.cc/150?u=Valentina`}
-                          alt="Valentina Pérez"
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        />
+                      <div style={{ width: '42px', height: '42px', borderRadius: '50%', flexShrink: 0, backgroundColor: 'rgba(160,80,106,0.12)', border: '1.5px solid #a0506a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#a0506a' }}>VP</span>
                       </div>
                       <div>
                         <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#2d1b22' }}>Valentina Pérez</div>
@@ -3020,47 +3087,127 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             onClick={triggerCloseDetailedApp}
           >
             <div className="staff-drawer" onClick={(e) => e.stopPropagation()} style={{
-              background: 'linear-gradient(180deg, #ffffff 0%, #fffbfb 100%)',
+              background: '#ffffff',
               display: 'flex',
               flexDirection: 'column',
-              justifyContent: 'space-between'
+              justifyContent: 'space-between',
+              padding: 0
             }}>
               {/* Header */}
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid rgba(223, 178, 140, 0.15)', paddingBottom: '14px' }}>
-                  <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#2d1b22', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '-0.3px' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: '#fff0f2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c97282' }}>
-                      <CalendarIcon size={16} />
+                {/* Pink Hero Header (full-bleed) */}
+                <div style={{
+                  background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)',
+                  padding: '26px 24px 22px', position: 'relative', overflow: 'hidden'
+                }}>
+                  <div style={{ position: 'absolute', top: '-50px', right: '-40px', width: '150px', height: '150px', borderRadius: '50%', background: 'rgba(255,255,255,0.10)', pointerEvents: 'none' }} />
+                  <div style={{ position: 'absolute', bottom: '-60px', left: '-30px', width: '140px', height: '140px', borderRadius: '50%', background: 'rgba(255,255,255,0.06)', pointerEvents: 'none' }} />
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ width: '30px', height: '30px', borderRadius: '9px', backgroundColor: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+                        <CalendarIcon size={15} />
+                      </div>
+                      <h4 style={{ fontSize: '0.72rem', fontWeight: 800, color: 'rgba(255,255,255,0.85)', margin: 0, textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+                        Detalle del Turno
+                      </h4>
                     </div>
-                    Detalle del <span style={{ color: '#c97282' }}>Turno</span>
-                  </h4>
-                  <button 
-                    onClick={triggerCloseDetailedApp}
-                    style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'rgba(74,48,54,0.05)', border: 'none', color: '#8c767b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', transition: 'all 0.2s' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(201, 114, 130,0.12)'; e.currentTarget.style.color = '#c97282'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(74,48,54,0.05)'; e.currentTarget.style.color = '#8c767b'; }}
-                  >
-                    ✕
-                  </button>
+                    <button
+                      onClick={triggerCloseDetailedApp}
+                      style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(255,255,255,0.15)', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', transition: 'all 0.2s' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.28)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div style={{ marginTop: '20px', position: 'relative', zIndex: 1 }}>
+                    <div style={{ fontSize: '1.25rem', fontWeight: 850, color: '#fff', letterSpacing: '-0.3px' }}>
+                      {selectedDetailedApp.clients?.name || 'Cliente'}
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.9)', fontWeight: 650 }}>
+                        {formattedDate} · {formattedTime}
+                      </span>
+                      <span style={{
+                        padding: '3px 10px', borderRadius: '20px', fontSize: '0.62rem', fontWeight: 800,
+                        background: 'rgba(255,255,255,0.22)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)'
+                      }}>
+                        {selectedDetailedApp.status}
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '22px 24px 4px' }}>
                   {/* Client Card (Foto 2 Inspired) */}
                   <div style={{
                     padding: '16px', borderRadius: '16px', border: '1.5px solid rgba(223,178,140,0.22)',
-                    display: 'flex', alignItems: 'center', gap: '14px', background: '#ffffff',
-                    boxShadow: '0 4px 12px rgba(74, 48, 54, 0.03)'
+                    background: '#ffffff', boxShadow: '0 4px 12px rgba(74, 48, 54, 0.03)'
                   }}>
-                    <img 
-                      src={`https://i.pravatar.cc/150?u=${encodeURIComponent(selectedDetailedApp.clients?.name || '')}`}
-                      alt={selectedDetailedApp.clients?.name || ''} 
-                      style={{ width: '46px', height: '46px', borderRadius: '50%', backgroundColor: '#fff0f2', border: '2px solid #fff' }} 
-                    />
-                    <div>
-                      <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Clienta</div>
-                      <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#2d1b22' }}>{selectedDetailedApp.clients?.name || 'Cliente'}</div>
-                      <div style={{ fontSize: '0.74rem', color: '#c97282', fontWeight: 600, marginTop: '1px' }}>{selectedDetailedApp.clients?.phone || 'Sin número'}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                      <div style={{
+                        width: '46px', height: '46px', borderRadius: '50%', flexShrink: 0,
+                        backgroundColor: 'rgba(160,80,106,0.12)', border: '1.5px solid var(--pink-primary, #a0506a)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center'
+                      }}>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#a0506a' }}>
+                          {(selectedDetailedApp.clients?.name || '?').trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase()}
+                        </span>
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Clienta</div>
+                        <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#2d1b22' }}>{selectedDetailedApp.clients?.name || 'Cliente'}</div>
+                        <div style={{ fontSize: '0.74rem', color: '#c97282', fontWeight: 600, marginTop: '1px' }}>{selectedDetailedApp.clients?.phone || 'Sin número'}</div>
+                      </div>
+                      {onNavigate && selectedDetailedApp.clients?.id && (
+                        <button
+                          onClick={() => onNavigate('clients', { clientId: selectedDetailedApp.clients.id })}
+                          style={{ fontSize: '0.66rem', fontWeight: 750, color: '#a0506a', background: 'rgba(160,80,106,0.08)', border: '1px solid rgba(160,80,106,0.15)', borderRadius: '10px', padding: '6px 10px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
+                        >
+                          Ver ficha ↗
+                        </button>
+                      )}
                     </div>
+
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '12px' }}>
+                      <span style={{ fontSize: '0.66rem', fontWeight: 700, color: '#8c767b', background: '#faf6f5', border: '1px solid rgba(223,178,140,0.2)', borderRadius: '8px', padding: '4px 9px' }}>
+                        {clientPastAppointments.length > 0 ? `${clientPastAppointments.length} visita${clientPastAppointments.length === 1 ? '' : 's'} anterior${clientPastAppointments.length === 1 ? '' : 'es'}` : 'Primera visita'}
+                      </span>
+                      <span style={{
+                        fontSize: '0.66rem', fontWeight: 700, borderRadius: '8px', padding: '4px 9px', border: '1px solid',
+                        ...(selectedDetailedApp.status === 'Completado'
+                          ? { color: '#16a34a', background: 'rgba(34,197,94,0.08)', borderColor: 'rgba(34,197,94,0.25)' }
+                          : { color: '#d97706', background: 'rgba(245,158,11,0.08)', borderColor: 'rgba(245,158,11,0.25)' })
+                      }}>
+                        {selectedDetailedApp.status === 'Completado' ? 'Pagado' : 'Pago pendiente'}
+                      </span>
+                    </div>
+
+                    {selectedDetailedApp.clients?.allergies && (
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '7px', marginTop: '10px', padding: '9px 11px', borderRadius: '10px', background: 'rgba(220,80,80,0.06)', border: '1px solid rgba(220,80,80,0.18)' }}>
+                        <AlertTriangle size={13} color="#c14040" style={{ flexShrink: 0, marginTop: '1px' }} />
+                        <div>
+                          <div style={{ fontSize: '0.6rem', color: '#c14040', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.4px' }}>Alergias</div>
+                          <div style={{ fontSize: '0.72rem', color: '#8a3030', fontWeight: 600, marginTop: '1px' }}>{selectedDetailedApp.clients.allergies}</div>
+                        </div>
+                      </div>
+                    )}
+
+                    {clientPastAppointments.length > 0 && (
+                      <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px dashed rgba(223,178,140,0.25)' }}>
+                        <div style={{ fontSize: '0.6rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '6px' }}>Últimos servicios</div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                          {clientPastAppointments.slice(0, 3).map(pa => (
+                            <div key={pa.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem' }}>
+                              <span style={{ color: '#2d1b22', fontWeight: 650, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{pa.services?.name || 'Servicio'}</span>
+                              <span style={{ color: '#a0909a', fontWeight: 600, flexShrink: 0, marginLeft: '8px' }}>{new Date(pa.scheduled_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'short' })}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Specialist & Service Card */}
@@ -3070,7 +3217,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   }}>
                     {/* Service Row */}
                     <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                      <div style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c97282', border: '1px solid rgba(223,178,140,0.2)', flexShrink: 0 }}>
+                      <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', boxShadow: '0 3px 8px rgba(160,80,106,0.25)', flexShrink: 0 }}>
                         <Scissors size={14} />
                       </div>
                       <div>
@@ -3097,30 +3244,6 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     </div>
                   </div>
 
-                  {/* Time, Date and Status Card */}
-                  <div style={{
-                    padding: '16px', borderRadius: '16px', border: '1.5px solid rgba(223,178,140,0.18)',
-                    display: 'flex', flexDirection: 'column', gap: '10px', background: '#ffffff',
-                    boxShadow: '0 4px 12px rgba(74, 48, 54, 0.02)'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.72rem', color: '#8c767b', fontWeight: 600 }}>Fecha:</span>
-                      <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#2d1b22', textTransform: 'capitalize' }}>{formattedDate}</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.72rem', color: '#8c767b', fontWeight: 600 }}>Hora reservada:</span>
-                      <span style={{ fontSize: '0.78rem', fontWeight: 850, color: '#a0506a' }}>{formattedTime}</span>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.72rem', color: '#8c767b', fontWeight: 600 }}>Estado:</span>
-                      <span style={{
-                        padding: '3px 10px', borderRadius: '20px', fontSize: '0.65rem', fontWeight: 800,
-                        background: STATUS_COLORS[selectedDetailedApp.status]?.bg || '#f3f4f6',
-                        color: STATUS_COLORS[selectedDetailedApp.status]?.text || '#374151',
-                        border: `1px solid ${STATUS_COLORS[selectedDetailedApp.status]?.border || '#e5e7eb'}`
-                      }}>{selectedDetailedApp.status}</span>
-                    </div>
-                  </div>
 
                   {/* Notes Card */}
                   {selectedDetailedApp.notes && (
@@ -3140,7 +3263,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               </div>
 
               {/* Action Buttons Footer */}
-              <div style={{ borderTop: '1px solid rgba(223, 178, 140, 0.15)', paddingTop: '20px', marginTop: '20px' }}>
+              <div style={{ borderTop: '1px solid rgba(223, 178, 140, 0.15)', padding: '20px 24px', paddingBottom: isMobile ? '110px' : '20px', marginTop: '20px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   
                   {/* Fila 1: Acciones Operativas Principales */}
@@ -3172,8 +3295,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   </div>
 
                   {/* Fila 2: Gestión y Estados Auxiliares */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '10px' }}>
-                    <button 
+                  <div style={{ display: 'grid', gridTemplateColumns: isWorkerView ? '1fr' : '1fr 1.2fr', gap: '10px' }}>
+                    <button
                       onClick={() => {
                         triggerCloseDetailedApp();
                         setTimeout(() => {
@@ -3187,32 +3310,35 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     >
                       <Pencil size={12} /> Editar Ficha
                     </button>
-                    <button 
-                      onClick={async () => {
-                        const confirmNoShow = window.confirm('¿Confirmas que la clienta no asistió a su cita programada?');
-                        if (confirmNoShow) {
-                          try {
-                            setLoading(true);
-                            await dataService.updateAppointment(selectedDetailedApp.id, { status: 'Cancelada' });
-                            showToast?.('Cita marcada como No se presentó', 'warning');
-                            triggerCloseDetailedApp();
-                            loadFilteredAppointments();
-                          } catch (err) {
-                            showToast?.('Error al actualizar la cita', 'error');
-                          } finally {
-                            setLoading(false);
+                    {!isWorkerView && (
+                      <button
+                        onClick={async () => {
+                          const confirmNoShow = window.confirm('¿Confirmas que la clienta no asistió a su cita programada?');
+                          if (confirmNoShow) {
+                            try {
+                              setLoading(true);
+                              await dataService.updateAppointment(selectedDetailedApp.id, { status: 'Cancelada' });
+                              showToast?.('Cita marcada como No se presentó', 'warning');
+                              triggerCloseDetailedApp();
+                              loadFilteredAppointments();
+                            } catch (err) {
+                              showToast?.('Error al actualizar la cita', 'error');
+                            } finally {
+                              setLoading(false);
+                            }
                           }
-                        }
-                      }}
-                      className="drawer-btn drawer-btn-noshow"
-                      style={{ borderRadius: '12px' }}
-                    >
-                      <AlertTriangle size={12} /> No asistió (No-show)
-                    </button>
+                        }}
+                        className="drawer-btn drawer-btn-noshow"
+                        style={{ borderRadius: '12px' }}
+                      >
+                        <AlertTriangle size={12} /> No asistió (No-show)
+                      </button>
+                    )}
                   </div>
 
-                  {/* Fila 3: Acciones Críticas Unificadas */}
-                  <button 
+                  {/* Fila 3: Acciones Críticas Unificadas (solo admin/recepción) */}
+                  {!isWorkerView && (
+                  <button
                     onClick={async () => {
                       const ans = window.confirm(
                         "⚠️ ACCIÓN CRÍTICA\n\n" +
@@ -3260,6 +3386,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   >
                     <XCircle size={12} /> Gestionar Cancelación / Eliminar Cita
                   </button>
+                  )}
                 </div>
               </div>
             </div>

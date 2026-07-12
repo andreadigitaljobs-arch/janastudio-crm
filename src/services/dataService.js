@@ -350,7 +350,7 @@ export const dataService = {
       .from('appointments')
       .select(`
         *,
-        clients (id, name, phone),
+        clients (id, name, phone, allergies),
         services (id, name, price, duration_minutes),
         staff!appointments_staff_id_fkey (id, name, role),
         appointment_staff (id, staff_id, commission_earned, tip_amount)
@@ -369,6 +369,20 @@ export const dataService = {
     return this.getAppointments(`${today}T00:00:00`, `${today}T23:59:59`);
   },
 
+  async getClientPastAppointments(clientId, excludeAppointmentId) {
+    let query = supabase
+      .from('appointments')
+      .select('id, scheduled_at, status, total_price, services (name, price)')
+      .eq('client_id', clientId)
+      .eq('status', 'Completado')
+      .order('scheduled_at', { ascending: false })
+      .limit(100);
+    if (excludeAppointmentId) query = query.neq('id', excludeAppointmentId);
+    const { data, error } = await query;
+    if (error) throw error;
+    return _asArray(data);
+  },
+
   async getAppointmentsByState(states, startDate) {
     const cacheKey = `appts_state_${states.join('_')}_${startDate || 'all'}`;
     const cached = _cacheGet(cacheKey);
@@ -378,7 +392,7 @@ export const dataService = {
       .from('appointments')
       .select(`
         *,
-        clients (id, name, phone),
+        clients (id, name, phone, allergies),
         services (id, name, price, duration_minutes),
         staff!appointments_staff_id_fkey (id, name, role),
         appointment_staff (id, staff_id, commission_earned, tip_amount)
@@ -570,7 +584,7 @@ export const dataService = {
         duration_minutes,
         services (id, name, price, duration_minutes),
         staff (id, name, role),
-        appointments!inner (id, client_id, status, notes, clients (id, name, phone))
+        appointments!inner (id, client_id, status, notes, clients (id, name, phone, allergies))
       `)
       .gte('scheduled_at', startDate)
       .lte('scheduled_at', endDate)

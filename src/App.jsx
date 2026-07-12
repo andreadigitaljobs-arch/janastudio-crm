@@ -475,7 +475,7 @@ function App() {
           onRefresh={fetchInitialData}
           onOpenNotifications={handleOpenNotifications}
         /></div>;
-      case 'scheduling': return <div className="p-container p-container-agenda"><SchedulingModule isMobile={isMobile} isTablet={isTablet} isCollapsed={isCollapsed} rates={effectiveRates} openScheduleModal={tabParams.openScheduleModal} modalKey={tabParams.modalKey} onOpenNotifications={handleOpenNotifications} /></div>;
+      case 'scheduling': return <div className="p-container p-container-agenda"><SchedulingModule isMobile={isMobile} isTablet={isTablet} isCollapsed={isCollapsed} rates={effectiveRates} openScheduleModal={tabParams.openScheduleModal} modalKey={tabParams.modalKey} onOpenNotifications={handleOpenNotifications} onNavigate={handleTabChange} /></div>;
       case 'reception': return <div className="p-container"><ReceptionModule isMobile={isMobile} /></div>;
       case 'laser': return <div className="p-container"><LaserModule isMobile={isMobile} /></div>;
       case 'checkout': return <div className="p-container"><CheckoutPOS isMobile={isMobile} rates={effectiveRates} onOpenSale={() => setIsSaleModalOpen(true)} onNavigate={handleTabChange} /></div>;
