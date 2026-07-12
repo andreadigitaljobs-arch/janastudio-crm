@@ -3858,66 +3858,81 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
       {isCompact ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {/* Mobile Profile Card */}
-          <div className="glass-card" style={{ padding: '20px', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)', animation: 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
-              {/* Avatar with subtle shadow */}
+          <div 
+            className="glass-card" 
+            style={{ 
+              padding: '24px 20px', 
+              borderRadius: '28px', 
+              background: 'linear-gradient(135deg, #ffffff 0%, #fefbfc 100%)',
+              borderLeft: '6px solid var(--magenta-primary)',
+              borderTop: '1px solid rgba(160,80,106,0.1)',
+              borderRight: '1px solid rgba(160,80,106,0.1)',
+              borderBottom: '1px solid rgba(160,80,106,0.1)',
+              boxShadow: '0 20px 40px rgba(160,80,106,0.06)',
+              animation: 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)' 
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', marginBottom: '20px' }}>
+              {/* Squircle Avatar with rotate accent */}
               <div style={{ 
-                width: '68px', height: '68px', borderRadius: '50%', 
+                width: '74px', height: '74px', borderRadius: '22px', 
                 background: client.image_url ? 'white' : 'var(--magenta-gradient)', 
                 display: 'flex', alignItems: 'center', 
                 justifyContent: 'center', border: '2.5px solid white', 
-                boxShadow: '0 4px 12px rgba(160, 80, 106, 0.15)', overflow: 'hidden',
-                flexShrink: 0
+                outline: '2.5px solid rgba(160,80,106,0.25)',
+                boxShadow: '0 8px 24px rgba(160, 80, 106, 0.18)', overflow: 'hidden',
+                flexShrink: 0,
+                transform: 'rotate(-2deg)'
               }}>
                 {client.image_url ? (
                   <img src={client.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
-                  <span style={{ fontSize: '22px', fontWeight: '800', color: 'white', letterSpacing: '-0.5px' }}>
+                  <span style={{ fontSize: '24px', fontWeight: '900', color: 'white', letterSpacing: '-0.5px' }}>
                     {client.name ? client.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase() : 'C'}
                   </span>
                 )}
               </div>
 
               <div style={{ flex: 1 }}>
-                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '850', color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>{client.name}</h3>
-                <p style={{ margin: '2px 0 6px 0', color: 'var(--text-muted)', fontSize: '11px', fontWeight: '600', letterSpacing: '0.5px' }}>V-{client.id_card || '00.000.000'}</p>
+                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '-0.4px' }}>{client.name}</h3>
+                <p style={{ margin: '2px 0 10px 0', color: 'var(--text-muted)', fontSize: '11px', fontWeight: '700', letterSpacing: '0.5px' }}>V-{client.id_card || '00.000.000'}</p>
                 
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                   {client.phone && (
                     <>
                       <a 
                         href={`tel:${client.phone}`}
                         style={{ 
-                          textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px', 
-                          fontSize: '11px', color: 'var(--magenta-primary)', fontWeight: '750',
-                          backgroundColor: 'rgba(160,80,106,0.06)', padding: '4px 10px', borderRadius: '20px',
-                          border: '1px solid rgba(160,80,106,0.1)', whiteSpace: 'nowrap'
+                          textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '5px', 
+                          fontSize: '10.5px', color: 'white', fontWeight: '850',
+                          background: 'var(--magenta-gradient)', padding: '5px 12px', borderRadius: '14px',
+                          boxShadow: '0 4px 10px rgba(160,80,106,0.2)', whiteSpace: 'nowrap'
                         }}
                         className="btn-interactive"
                       >
-                        <Phone size={10} color="var(--magenta-primary)" /> Llamar
+                        <Phone size={10} color="white" /> Llamar
                       </a>
                       <a 
                         href={`https://wa.me/${getWhatsAppNumber(client.phone)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{ 
-                          textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px', 
-                          fontSize: '11px', color: '#128C7E', fontWeight: '750',
-                          backgroundColor: 'rgba(18,140,126,0.06)', padding: '4px 10px', borderRadius: '20px',
-                          border: '1px solid rgba(18,140,126,0.1)', whiteSpace: 'nowrap'
+                          textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '5px', 
+                          fontSize: '10.5px', color: 'white', fontWeight: '850',
+                          backgroundColor: '#25D366', padding: '5px 12px', borderRadius: '14px',
+                          boxShadow: '0 4px 10px rgba(37,211,102,0.2)', whiteSpace: 'nowrap'
                         }}
                         className="btn-interactive"
                       >
-                        <MessageCircle size={10} color="#128C7E" /> WhatsApp
+                        <MessageCircle size={10} color="white" /> WhatsApp
                       </a>
                     </>
                   )}
                   <div 
                     style={{ 
-                      display: 'flex', alignItems: 'center', gap: '4px', 
-                      fontSize: '11px', color: 'var(--magenta-primary)', fontWeight: '750',
-                      backgroundColor: 'rgba(160,80,106,0.06)', padding: '4px 10px', borderRadius: '20px',
+                      display: 'flex', alignItems: 'center', gap: '5px', 
+                      fontSize: '10.5px', color: 'var(--text-secondary)', fontWeight: '850',
+                      backgroundColor: 'rgba(160,80,106,0.06)', padding: '5px 12px', borderRadius: '14px',
                       border: '1px solid rgba(160,80,106,0.1)', whiteSpace: 'nowrap'
                     }}
                   >
@@ -3928,18 +3943,19 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
             </div>
 
             {/* Información del Cliente (Minimalist & Compact rows instead of big block boxes) */}
-            <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '14px', marginTop: '14px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <h4 style={{ margin: 0, fontSize: '12px', fontWeight: '850', color: 'var(--magenta-primary)', display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            <div style={{ borderTop: '1px solid rgba(160,80,106,0.08)', paddingTop: '16px', marginTop: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                <h4 style={{ margin: 0, fontSize: '12px', fontWeight: '850', color: 'var(--magenta-primary)', display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
                   <FileText size={14} color="var(--magenta-primary)" /> Información del Cliente
                 </h4>
                 {!isEditing && (
                   <button
                     onClick={() => setIsEditing(true)}
+                    className="btn-interactive"
                     style={{
                       background: 'none', border: 'none', color: 'var(--magenta-primary)',
-                      fontSize: '11px', fontWeight: '750', cursor: 'pointer', padding: '4px 8px',
-                      borderRadius: '8px', backgroundColor: 'rgba(160,80,106,0.05)'
+                      fontSize: '11px', fontWeight: '750', cursor: 'pointer', padding: '4px 10px',
+                      borderRadius: '10px', backgroundColor: 'rgba(160,80,106,0.06)'
                     }}
                   >
                     Editar
@@ -3982,40 +3998,55 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                 (() => {
                   const totalSpend = history.reduce((sum, h) => sum + (Number(h.amount) || 0), 0);
                   const infoRow = (icon, iconColor, iconBg, label, value, valueColor) => (
-                    <div style={{
-                      padding: '12px 14px', borderRadius: '14px', backgroundColor: 'white',
-                      border: '1px solid rgba(160,80,106,0.14)', boxShadow: '0 2px 10px rgba(160,80,106,0.05)',
-                      display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px',
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '9px', minWidth: 0 }}>
-                        <div style={{
-                          width: '30px', height: '30px', borderRadius: '9px', backgroundColor: iconBg,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                        }}>
-                          {React.cloneElement(icon, { size: 14, color: iconColor })}
-                        </div>
-                        <span style={{ fontSize: '11.5px', color: 'var(--text-secondary)', fontWeight: '700', whiteSpace: 'nowrap' }}>{label}</span>
+                    <div 
+                      className="btn-interactive"
+                      style={{
+                        padding: '16px 14px', borderRadius: '18px', backgroundColor: 'rgba(160,80,106,0.02)',
+                        border: '1px solid rgba(160,80,106,0.05)', display: 'flex', flexDirection: 'column',
+                        gap: '6px', alignItems: 'flex-start', position: 'relative', overflow: 'hidden',
+                        transition: 'all 0.3s ease'
+                      }}
+                    >
+                      <div style={{ position: 'absolute', top: '12px', right: '12px', width: '22px', height: '22px', borderRadius: '50%', backgroundColor: iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {React.cloneElement(icon, { size: 11, color: iconColor })}
                       </div>
-                      <span style={{ fontSize: '13px', color: valueColor || 'var(--text-primary)', fontWeight: '800', whiteSpace: 'nowrap' }}>{value}</span>
+                      <span style={{ fontSize: '9.5px', color: 'var(--text-muted)', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.8px' }}>{label}</span>
+                      <span style={{ fontSize: '15px', color: valueColor || 'var(--text-primary)', fontWeight: '900', marginTop: '2px' }}>{value}</span>
                     </div>
                   );
 
                   return (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                        {infoRow(<Cake />, 'var(--pink-primary)', 'rgba(160,80,106,0.12)', 'CUMPLE',
+                        {infoRow(<Cake />, 'var(--pink-primary)', 'rgba(160,80,106,0.1)', 'CUMPLE',
                           client.birth_date ? new Date(client.birth_date + 'T00:00:00').toLocaleDateString([], {day: '2-digit', month: 'short'}) : 'N/A')}
                         {infoRow(<FileText />, 'var(--magenta-primary)', 'rgba(160,80,106,0.08)', 'REGISTRO',
                           client.created_at ? new Date(client.created_at).toLocaleDateString([], {day: '2-digit', month: '2-digit'}) : 'N/A')}
                       </div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                        {infoRow(<Calendar />, 'var(--pink-primary)', 'rgba(160,80,106,0.12)', 'PRÓX. CITA',
+                        {infoRow(<Calendar />, 'var(--pink-primary)', 'rgba(160,80,106,0.1)', 'PRÓX. CITA',
                           upcomingAppointment ? new Date(upcomingAppointment.scheduled_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'short' }) : 'Ninguna',
                           upcomingAppointment ? 'var(--magenta-primary)' : 'var(--text-primary)')}
-                        {infoRow(<Receipt />, '#2e9e5b', 'rgba(46,158,91,0.12)', 'FACTURADO',
-                          `$${totalSpend.toLocaleString('es-VE', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`)}
+                        {infoRow(<Receipt />, '#2e9e5b', 'rgba(46,158,91,0.1)', 'FACTURADO',
+                          `$${totalSpend.toLocaleString('es-VE', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, '#2e9e5b')}
                       </div>
-                      {infoRow(<Clock />, 'var(--text-secondary)', 'rgba(74,48,54,0.06)', 'ÚLT. VISITA', lastVisitLabel)}
+                      {/* Last visit as full-width banner stat */}
+                      <div 
+                        className="btn-interactive"
+                        style={{
+                          padding: '16px 14px', borderRadius: '18px', backgroundColor: 'rgba(160,80,106,0.02)',
+                          border: '1px solid rgba(160,80,106,0.05)', display: 'flex', justifyContent: 'space-between',
+                          alignItems: 'center', position: 'relative', overflow: 'hidden', transition: 'all 0.3s ease'
+                        }}
+                      >
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <span style={{ fontSize: '9.5px', color: 'var(--text-muted)', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.8px' }}>ÚLTIMA VISITA</span>
+                          <span style={{ fontSize: '15px', color: 'var(--text-primary)', fontWeight: '900', marginTop: '2px' }}>{lastVisitLabel}</span>
+                        </div>
+                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'rgba(74,48,54,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Clock size={14} color="var(--text-secondary)" />
+                        </div>
+                      </div>
                     </div>
                   );
                 })()
