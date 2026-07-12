@@ -4386,36 +4386,50 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
 
           {/* Right Column: Tabs Content */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div style={{ display: 'flex', flexWrap: 'wrap', rowGap: '8px', gap: '20px', borderBottom: '1px solid var(--border-color)' }}>
+            <div style={{ 
+              display: 'inline-flex', 
+              flexWrap: 'wrap', 
+              rowGap: '8px', 
+              gap: '6px', 
+              backgroundColor: 'rgba(160, 80, 106, 0.03)',
+              padding: '6px',
+              borderRadius: '16px',
+              border: '1px solid rgba(160, 80, 106, 0.08)',
+              marginBottom: '10px'
+            }}>
               {[
-                { id: 'gallery', label: 'Galería de trabajos', icon: <ImageIcon size={16} /> },
-                { id: 'diagnoses', label: 'Diagnóstico capilar', icon: <Activity size={16} /> },
-                { id: 'packages', label: 'Paquetes y sesiones', icon: <Package size={16} /> },
-                { id: 'history', label: 'Historial de visitas', icon: <Calendar size={16} /> }
+                { id: 'gallery', label: 'Galería de trabajos', icon: <ImageIcon size={17} /> },
+                { id: 'diagnoses', label: 'Diagnóstico capilar', icon: <Activity size={17} /> },
+                { id: 'packages', label: 'Paquetes y sesiones', icon: <Package size={17} /> },
+                { id: 'history', label: 'Historial de visitas', icon: <Calendar size={17} /> }
               ].map(tab => {
                 const isActive = activeSubTab === tab.id;
                 return (
                   <button
                     key={tab.id}
                     onClick={() => { setActiveSubTab(tab.id); setShowCollage(false); }}
+                    className="btn-interactive"
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: '8px',
-                      padding: '0 0 12px 0',
+                      padding: '8px 18px',
                       border: 'none',
-                      borderBottom: isActive ? '2px solid var(--magenta-primary)' : '2px solid transparent',
-                      background: 'transparent',
+                      borderRadius: '12px',
+                      background: isActive ? 'white' : 'transparent',
                       color: isActive ? 'var(--magenta-primary)' : 'var(--text-secondary)',
-                      fontWeight: isActive ? '800' : '600',
-                      fontSize: '13px',
+                      fontWeight: isActive ? '850' : '650',
+                      fontSize: '14.5px',
                       cursor: 'pointer',
-                      marginBottom: '-1px',
-                      transition: 'all 0.2s ease'
+                      boxShadow: isActive ? '0 4px 12px rgba(160,80,106,0.06)' : 'none',
+                      transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                      transform: isActive ? 'scale(1.02)' : 'none'
                     }}
                   >
-                    {tab.icon}
-                    {tab.label}
+                    <span style={{ display: 'flex', alignItems: 'center', color: isActive ? 'var(--magenta-primary)' : 'var(--text-muted)' }}>
+                      {tab.icon}
+                    </span>
+                    <span>{tab.label}</span>
                   </button>
                 );
               })}
