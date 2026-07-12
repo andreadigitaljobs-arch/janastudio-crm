@@ -3931,12 +3931,23 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                   <div 
                     style={{ 
                       display: 'flex', alignItems: 'center', gap: '5px', 
-                      fontSize: '10.5px', color: 'var(--text-secondary)', fontWeight: '850',
-                      backgroundColor: 'rgba(160,80,106,0.06)', padding: '5px 12px', borderRadius: '14px',
-                      border: '1px solid rgba(160,80,106,0.1)', whiteSpace: 'nowrap'
+                      fontSize: '10.5px', 
+                      color: history.length > 0 ? '#ffffff' : 'var(--magenta-primary)', 
+                      fontWeight: '900',
+                      background: history.length > 0 
+                        ? 'linear-gradient(135deg, #f97316 0%, #db2777 100%)'
+                        : 'linear-gradient(135deg, #fff2f5 0%, #ffe3ea 100%)',
+                      padding: '5px 12px', 
+                      borderRadius: '14px',
+                      border: history.length > 0 ? 'none' : '1px solid rgba(160,80,106,0.15)',
+                      boxShadow: history.length > 0 
+                        ? '0 4px 10px rgba(219,39,119,0.25)' 
+                        : '0 2px 6px rgba(160,80,106,0.06)',
+                      whiteSpace: 'nowrap'
                     }}
                   >
-                    <Sparkles size={10} color="var(--magenta-primary)" /> {history.length} visitas
+                    <Sparkles size={10} color={history.length > 0 ? '#ffffff' : 'var(--magenta-primary)'} />
+                    <span>{history.length} {history.length === 1 ? 'visita' : 'visitas'}</span>
                   </div>
                 </div>
               </div>
