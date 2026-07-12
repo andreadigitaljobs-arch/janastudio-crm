@@ -1964,6 +1964,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedPhotoIndices, setSelectedPhotoIndices] = useState([]);
   const [selectedVisit, setSelectedVisit] = useState(null);
+  const [expandedHistoryVisit, setExpandedHistoryVisit] = useState(null);
   const [pendingPhoto, setPendingPhoto] = useState(null);
   const [photoMeta, setPhotoMeta] = useState({ type: 'Normal', serviceId: null });
   const [pendingBulkPhotos, setPendingBulkPhotos] = useState([]);
@@ -3790,77 +3791,289 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
             )}
           </div>
         );
-      case 'history':
+      case 'history': {
+        const demoHistory = [
+          { id: 'dh1', day: '10', month: 'MAY', year: '2025', time: '10:00 AM', client: 'Mariana R.', service: 'Hidratación profunda', status: 'Completada', duration: '90 min', price: 480, description: 'Cabello con excelente respuesta a la hidratación. Se recomienda mantener rutina.', tags: ['Hidratación', 'Nutrición', 'Brillo'], detail: { diagnostic: 'Cuero cabelludo en buenas condiciones. Hidratación adecuada y cutícula sellada. Ligera acumulación de residuos en puntas.', products: [{ name: 'Shampoo Hidratante Jana Studio', desc: 'Limpieza suave e hidratación profunda.' }, { name: 'Mascarilla Repair Intense', desc: 'Nutrición intensiva y reparación.' }, { name: 'Sérum de Brillo Jana Studio', desc: 'Protección térmica y brillo duradero.' }], recommendations: ['Mantener hidratación semanal.', 'Usar protector térmico siempre.', 'Aplicar sérum en puntas cada 2 días.'], notes: 'Excelente progreso en la hidratación. Seguir con la rutina recomendada para mantener el brillo y la suavidad.', specialist: 'Mariana R.' } },
+          { id: 'dh2', day: '24', month: 'MAY', year: '2024', time: '10:00 AM', client: 'Mariana R.', service: 'Terapia de reconstrucción', status: 'Completada', duration: '120 min', price: 560, description: 'Tratamiento de reconstrucción capilar completo.', tags: ['Reconstrucción', 'Proteínas'], detail: { diagnostic: 'Cabello con daño químico moderado. Cutícula abierta en zonas medias y puntas.', products: [{ name: 'Keratina Líquida Jana Studio', desc: 'Reconstrucción profunda de la fibra capilar.' }, { name: 'Mascarilla Protein Force', desc: 'Reconstituye la masa capilar.' }], recommendations: ['Evitar calor excesivo por 2 semanas.', 'Aplicar máscara de proteínas quincenal.', 'Cortar puntas cada 6 semanas.'], notes: 'Buena evolución. El cabello recuperó fuerza y elasticidad.', specialist: 'Mariana R.' } },
+          { id: 'dh3', day: '07', month: 'JUN', year: '2024', time: '10:00 AM', client: 'Mariana R.', service: 'Tratamiento láser capilar', status: 'Completada', duration: '60 min', price: 420, description: 'Sesión de láser capilar para estimulación de folículos.', tags: ['Láser', 'Crecimiento'], detail: { diagnostic: 'Zona temporal con ligera reducción de densidad. Folículos en fase catágena.', products: [], recommendations: ['Completar ciclo de 8 sesiones.', 'Evitar exposición solar directo.', 'Usar sérum estimulante diario.'], notes: 'Primeros signos de mejora visible. Mantener las sesiones quincenales.', specialist: 'Mariana R.' } },
+          { id: 'dh4', day: '18', month: 'ABR', year: '2024', time: '10:30 AM', client: 'Mariana R.', service: 'Masaje capilar detox', status: 'Completada', duration: '60 min', price: 350, description: 'Limpieza profunda del cuero cabelludo con productos naturales.', tags: ['Detox', 'Limpieza'], detail: { diagnostic: 'Acumulación de productos en el cuero cabelludo. Poros obstruidos levemente.', products: [{ name: 'Shampoo Detox Jana Studio', desc: 'Limpieza profunda con arcilla verde.' }, { name: 'Tónico Scalp Purifier', desc: 'Purificación y equilibrio del cuero cabelludo.' }], recommendations: ['Realizar detox cada 2 meses.', 'Reducir uso de productos con siliconas.', 'Masajear cuero cabelludo durante el lavado.'], notes: 'Excelente resultado. El cuero cabelludo recuperó su equilibrio natural.', specialist: 'Mariana R.' } },
+        ];
+
+        const hTotalVisits = history.length || demoHistory.length;
+        const hTotalSpent = history.length > 0 ? history.reduce((s, h) => s + (Number(h.amount) || 0), 0) : demoHistory.reduce((s, h) => s + h.price, 0);
+        const hFavService = history.length > 0 ? (() => { const counts = {}; history.forEach(h => { const n = h.service_name || 'Servicio'; counts[n] = (counts[n] || 0) + 1; }); return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]; })() : ['Hidratación profunda', 4];
+        const hLastVisit = history.length > 0 ? history[0]?.created_at : '2025-05-10T10:00:00';
+        const hSinceMonth = history.length > 0 && history[history.length - 1]?.created_at
+          ? new Date(history[history.length - 1].created_at).toLocaleDateString('es-VE', { month: 'short', year: 'numeric' })
+          : 'Feb 2024';
+        const hLastAgo = (() => {
+          if (!hLastVisit) return '';
+          const diff = Date.now() - new Date(hLastVisit).getTime();
+          const days = Math.floor(diff / 86400000);
+          if (days < 1) return 'Hoy';
+          if (days < 7) return `Hace ${days} días`;
+          if (days < 30) return `Hace ${Math.floor(days / 7)} semanas`;
+          return `Hace ${Math.floor(days / 30)} meses`;
+        })();
+
+        const serviceDistribution = [
+          { name: 'Hidratación', pct: 50, color: '#c97282' },
+          { name: 'Reparación', pct: 25, color: '#a0506a' },
+          { name: 'Detox', pct: 12.5, color: '#dfb4a8' },
+          { name: 'Otros', pct: 12.5, color: '#e8cfc9' },
+        ];
+        let cumulativeDeg = 0;
+        const conicStops = serviceDistribution.map(s => { const start = cumulativeDeg; cumulativeDeg += s.pct * 3.6; return `${s.color} ${start}deg ${cumulativeDeg}deg`; }).join(', ');
+
+        const activeHistory = history.length > 0 ? history : demoHistory;
+
         return (
-          <div style={{ padding: '20px', background: 'white', borderRadius: '16px', boxShadow: '0 4px 20px rgba(160,80,106,0.02)' }}>
-            <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '800', margin: '0 0 16px 0', color: 'var(--text-primary)' }}>
-              <Calendar size={18} color="var(--pink-primary)" /> {isMobile ? 'Historial de Servicios' : 'Historial de Visitas'}
-            </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {loadingHistory ? (
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-                  <Loader2 className="animate-spin" size={16} /> Cargando historial...
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px', flexWrap: 'wrap' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '22px', fontWeight: '850', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Calendar size={20} color="var(--pink-primary)" /> Historial de Visitas
+                </h3>
+                <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--text-muted)', fontWeight: '500' }}>Registro completo de todas las visitas y tratamientos realizados.</p>
+              </div>
+              <button className="btn-pink" style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 18px', fontSize: '13px', fontWeight: '750', borderRadius: '14px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                <Plus size={16} /> Nueva Sesión
+              </button>
+            </div>
+
+            {/* Stats Row */}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: '12px' }}>
+              {[
+                { label: 'Total de visitas', value: hTotalVisits, sub: `desde ${hSinceMonth}`, iconBg: 'rgba(160,80,106,0.08)', icon: <Calendar size={18} color="var(--pink-primary)" /> },
+                { label: 'Total invertido', value: `$${hTotalSpent.toLocaleString()}`, sub: 'en tratamientos', iconBg: 'rgba(160,80,106,0.06)', icon: <Receipt size={18} color="var(--magenta-primary)" /> },
+                { label: 'Servicio favorito', value: hFavService[0], sub: `${hFavService[1]} sesiones realizadas`, iconBg: 'rgba(217,70,168,0.06)', icon: <Star size={18} color="var(--pink-primary)" /> },
+                { label: 'Última visita', value: hLastVisit ? new Date(hLastVisit).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A', sub: hLastAgo, iconBg: 'rgba(160,80,106,0.05)', icon: <Clock size={18} color="var(--magenta-primary)" /> },
+              ].map((s, i) => (
+                <div key={i} className="glass-card" style={{ padding: '16px 18px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: '14px', border: '1px solid rgba(160,80,106,0.1)', background: 'white' }}>
+                  <div style={{ width: '42px', height: '42px', borderRadius: '14px', backgroundColor: s.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{s.icon}</div>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
+                    <div style={{ fontSize: '17px', fontWeight: '850', color: 'var(--text-primary)', marginTop: '2px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{s.value}</div>
+                    <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', fontWeight: '500', marginTop: '1px' }}>{s.sub}</div>
+                  </div>
                 </div>
-              ) : history.length === 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {[
-                    { id: 'h1', date: '10/7/2026, 10:30 AM', service: 'Alisado Orgánico', price: 45 },
-                    { id: 'h2', date: '26/6/2026, 2:15 PM', service: 'Corte + Secado', price: 15 },
-                    { id: 'h3', date: '12/6/2026, 11:00 AM', service: 'Coloración Mechás', price: 35 },
-                    { id: 'h4', date: '28/5/2026, 3:45 PM', service: 'Hidratación Profunda', price: 20 },
-                    { id: 'h5', date: '15/5/2026, 10:15 AM', service: 'Tratamiento Capilar', price: 30 },
-                  ].map(h => (
-                    <HistoryItem 
-                      key={h.id} 
-                      date={h.date}
-                      service={h.service}
-                      price={h.price}
-                      onClick={() => {}}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <>
-                  {(showAllHistory ? history : history.slice(0, 5)).map(h => (
-                    <HistoryItem 
-                      key={h.id} 
-                      date={h.created_at ? new Date(h.created_at).toLocaleString('es-VE', { 
-                        day: 'numeric', 
-                        month: 'numeric', 
-                        year: 'numeric', 
-                        hour: '2-digit', 
-                        minute: '2-digit', 
-                        hour12: true 
-                      }) : 'Fecha no registrada'} 
-                      service={h.service_name || h.description.split(' - ')[0].replace('Servicio: ', '')} 
-                      price={h.amount} 
-                      onClick={() => setSelectedVisit(h)}
-                    />
-                  ))}
-                  {history.length > 5 && (
-                    <button 
-                      onClick={() => setShowAllHistory(!showAllHistory)}
-                      style={{ 
-                        width: '100%', 
-                        padding: '12px', 
-                        background: showAllHistory ? 'rgba(255,255,255,0.03)' : 'rgba(217,70,168,0.08)', 
-                        border: '1px solid var(--pink-primary)', 
-                        color: 'var(--pink-primary)', 
-                        borderRadius: '10px', 
-                        cursor: 'pointer',
-                        fontWeight: '700',
-                        fontSize: '13px',
-                        marginTop: '4px'
-                      }}
-                    >
-                      {showAllHistory ? '↑ Ver menos' : `↓ Ver más visitas (${history.length - 5})`}
+              ))}
+            </div>
+
+            {/* Main Content: Timeline + Sidebar */}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 300px', gap: '20px', alignItems: 'start' }}>
+              {/* Timeline */}
+              <div>
+                <h4 style={{ fontSize: '15px', fontWeight: '850', color: 'var(--text-primary)', margin: '0 0 16px 0', letterSpacing: '-0.2px' }}>Historial cronológico</h4>
+                {loadingHistory ? (
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
+                    <Loader2 className="animate-spin" size={20} /> Cargando historial...
+                  </div>
+                ) : (
+                  <div style={{ position: 'relative', paddingLeft: isMobile ? '0' : '28px', borderLeft: isMobile ? 'none' : '2px solid rgba(160,80,106,0.1)', display: 'flex', flexDirection: 'column', gap: '0' }}>
+                    {activeHistory.map((v, i) => {
+                      const isExpanded = expandedHistoryVisit === v.id;
+                      const detail = v.detail;
+                      const d = v.day || (v.created_at ? new Date(v.created_at).getDate() : '');
+                      const m = v.month || (v.created_at ? new Date(v.created_at).toLocaleDateString('es-VE', { month: 'short' }).toUpperCase().replace('.', '') : '');
+                      const y = v.year || (v.created_at ? new Date(v.created_at).getFullYear() : '');
+                      const t = v.time || (v.created_at ? new Date(v.created_at).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' }) : '');
+                      const svc = v.service || v.service_name || '';
+                      const prc = v.price || v.amount || 0;
+                      const dur = v.duration || '';
+                      const sts = v.status || 'Completada';
+                      const desc = v.description || '';
+                      const tags = v.tags || [];
+                      return (
+                        <div key={v.id || i} style={{ position: 'relative', paddingBottom: i < activeHistory.length - 1 ? '24px' : '0' }}>
+                          {/* Timeline dot */}
+                          {!isMobile && (
+                            <div style={{ position: 'absolute', left: '-38px', top: '6px', width: '14px', height: '14px', borderRadius: '50%', background: 'var(--magenta-gradient)', border: '3px solid #fff', boxShadow: '0 2px 6px rgba(160,80,106,0.25)', zIndex: 2 }} />
+                          )}
+
+                          {/* Visit Card */}
+                          <div
+                            onClick={() => setExpandedHistoryVisit(isExpanded ? null : v.id)}
+                            className="btn-interactive"
+                            style={{
+                              padding: isMobile ? '14px' : '18px',
+                              borderRadius: '16px',
+                              background: isExpanded ? 'rgba(160,80,106,0.03)' : 'white',
+                              border: isExpanded ? '1px solid rgba(160,80,106,0.15)' : '1px solid rgba(160,80,106,0.06)',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                              boxShadow: '0 2px 8px rgba(160,80,106,0.03)',
+                            }}
+                          >
+                            <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                              {/* Date Circle */}
+                              <div style={{ minWidth: '52px', textAlign: 'center', flexShrink: 0 }}>
+                                <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--magenta-primary)', lineHeight: '1' }}>{d}</div>
+                                <div style={{ fontSize: '9px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{m}</div>
+                                <div style={{ fontSize: '9px', fontWeight: '700', color: 'var(--text-muted)' }}>{y}</div>
+                              </div>
+
+                              {/* Visit Info */}
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', marginBottom: '4px', flexWrap: 'wrap' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>
+                                    <Clock size={11} /> {t}
+                                    <span style={{ margin: '0 2px' }}>·</span>
+                                    <span>{v.client}</span>
+                                  </div>
+                                  <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: '800', backgroundColor: sts === 'Completada' ? 'rgba(46,158,91,0.08)' : 'rgba(230,159,60,0.08)', color: sts === 'Completada' ? '#2e9e5b' : '#c9821f', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{sts}</span>
+                                </div>
+                                <div style={{ fontSize: '15px', fontWeight: '850', color: 'var(--text-primary)', marginBottom: '6px' }}>{svc}</div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+                                  {dur && <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={12} /> {dur}</span>}
+                                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '800', color: '#2e9e5b' }}>${prc}</span>
+                                </div>
+                                {desc && <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', lineHeight: 1.4, marginBottom: tags.length > 0 ? '8px' : '0' }}>{desc}</div>}
+                                {tags.length > 0 && (
+                                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                                    {tags.map((tag, ti) => (
+                                      <span key={ti} style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: '700', background: 'rgba(160,80,106,0.06)', color: 'var(--magenta-primary)', border: '1px solid rgba(160,80,106,0.1)' }}>{tag}</span>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Expanded Detail Panel */}
+                            {isExpanded && detail && (
+                              <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid rgba(160,80,106,0.08)' }} onClick={e => e.stopPropagation()}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                                  <h5 style={{ margin: 0, fontSize: '14px', fontWeight: '850', color: 'var(--text-primary)' }}>Detalles de la visita</h5>
+                                  <button onClick={() => setExpandedHistoryVisit(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '4px', display: 'flex' }}><ChevronDown size={16} style={{ transform: 'rotate(180deg)' }} /></button>
+                                </div>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '16px' }}>
+                                  {/* Left Column */}
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                    {/* Diagnóstico */}
+                                    <div style={{ background: 'rgba(160,80,106,0.02)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(160,80,106,0.06)' }}>
+                                      <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '6px' }}>Resumen del diagnóstico</div>
+                                      <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>{detail.diagnostic}</p>
+                                    </div>
+                                    {/* Recomendaciones */}
+                                    <div style={{ background: 'rgba(160,80,106,0.02)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(160,80,106,0.06)' }}>
+                                      <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>Recomendaciones</div>
+                                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                        {detail.recommendations.map((rec, ri) => (
+                                          <div key={ri} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '12.5px', color: 'var(--text-secondary)' }}>
+                                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--pink-primary)', flexShrink: 0, marginTop: '5px' }} />
+                                            {rec}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  {/* Right Column */}
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                    {/* Productos */}
+                                    {detail.products.length > 0 && (
+                                      <div style={{ background: 'rgba(160,80,106,0.02)', padding: '14px', borderRadius: '12px', border: '1px solid rgba(160,80,106,0.06)' }}>
+                                        <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '8px' }}>Productos y servicios utilizados</div>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                          {detail.products.map((p, pi) => (
+                                            <div key={pi} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                              <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(160,80,106,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Package size={14} color="var(--pink-primary)" /></div>
+                                              <div>
+                                                <div style={{ fontSize: '12.5px', fontWeight: '750', color: 'var(--text-primary)' }}>{p.name}</div>
+                                                <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{p.desc}</div>
+                                              </div>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                    {/* Notas */}
+                                    {detail.notes && (
+                                      <div style={{ background: 'rgba(160,80,106,0.02)', padding: '14px', borderRadius: '12px', borderLeft: '4px solid var(--magenta-primary)' }}>
+                                        <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '6px' }}>Notas de la especialista</div>
+                                        <p style={{ margin: '0 0 6px', fontSize: '12.5px', color: 'var(--text-secondary)', fontStyle: 'italic', lineHeight: 1.5 }}>"{detail.notes}"</p>
+                                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>— {detail.specialist}</div>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Right Sidebar */}
+              {!isMobile && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {/* Patrones de visitas */}
+                  <div className="glass-card" style={{ padding: '18px', borderRadius: '18px', background: 'white', border: '1px solid rgba(160,80,106,0.1)' }}>
+                    <h5 style={{ margin: '0 0 14px', fontSize: '13px', fontWeight: '850', color: 'var(--text-primary)' }}>Patrones de visitas</h5>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {[
+                        { icon: <Calendar size={14} />, label: 'Frecuencia promedio', value: 'Cada 45 días' },
+                        { icon: <Star size={14} />, label: 'Mejor día', value: 'Viernes' },
+                        { icon: <Clock size={14} />, label: 'Mejor hora', value: '10:00 AM' },
+                        { icon: <Activity size={14} />, label: 'Anticipación promedio', value: '3 días' },
+                      ].map((p, i) => (
+                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(160,80,106,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--pink-primary)', flexShrink: 0 }}>{p.icon}</div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', fontWeight: '600' }}>{p.label}</div>
+                            <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-primary)' }}>{p.value}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Próxima recomendación */}
+                  <div className="glass-card" style={{ padding: '18px', borderRadius: '18px', background: 'linear-gradient(135deg, rgba(160,80,106,0.04) 0%, rgba(160,80,106,0.01) 100%)', border: '1px solid rgba(160,80,106,0.1)' }}>
+                    <h5 style={{ margin: '0 0 6px', fontSize: '13px', fontWeight: '850', color: 'var(--text-primary)' }}>Próxima recomendación</h5>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px' }}>Tu próxima sesión sugerida</div>
+                    <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--magenta-primary)', marginBottom: '4px' }}>21 jun 2025</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '12px' }}>En 36 días</div>
+                    <button className="btn-pink" style={{ width: '100%', padding: '10px', fontSize: '12px', fontWeight: '750', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                      <Calendar size={14} /> Agendar visita
                     </button>
-                  )}
-                </>
+                  </div>
+
+                  {/* Estadísticas rápidas */}
+                  <div className="glass-card" style={{ padding: '18px', borderRadius: '18px', background: 'white', border: '1px solid rgba(160,80,106,0.1)' }}>
+                    <h5 style={{ margin: '0 0 14px', fontSize: '13px', fontWeight: '850', color: 'var(--text-primary)' }}>Estadísticas rápidas</h5>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                      {/* Donut */}
+                      <div style={{ position: 'relative', width: '80px', height: '80px', flexShrink: 0 }}>
+                        <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: `conic-gradient(${conicStops})`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                            <span style={{ fontSize: '18px', fontWeight: '900', color: 'var(--text-primary)', lineHeight: '1' }}>{hTotalVisits}</span>
+                            <span style={{ fontSize: '8px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>Visitas</span>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Legend */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1 }}>
+                        {serviceDistribution.map((s, i) => (
+                          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: s.color, flexShrink: 0 }} />
+                            <span style={{ flex: 1, fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '600' }}>{s.name}</span>
+                            <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-primary)' }}>{s.pct}%</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
           </div>
         );
+      }
       default:
         return null;
     }
