@@ -2829,72 +2829,71 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                 </AnimatedModal>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px' }}>
-                  <div
-                    onClick={() => fileInputRef.current?.click()}
-                    className="btn-interactive"
-                    style={{
-                      aspectRatio: (isMobile || comparisons.length === 0) ? 'none' : '4/3',
-                      minHeight: isMobile ? '100px' : 'auto',
-                      height: (isMobile || comparisons.length === 0) ? '110px' : 'auto',
-                      backgroundColor: 'rgba(160,80,106,0.015)',
-                      borderRadius: '16px',
-                      border: '2px dashed var(--pink-primary)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      padding: '16px 24px',
-                      gridColumn: (isMobile || comparisons.length === 0) ? '1 / -1' : 'auto'
-                    }}
-                  >
-                    <div style={{ display: 'flex', flexDirection: (isMobile || comparisons.length === 0) ? 'row' : 'column', alignItems: 'center', gap: (isMobile || comparisons.length === 0) ? '16px' : '10px', justifyContent: 'center', width: '100%' }}>
-                      <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(160,80,106,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        {processingBulkUpload ? <Loader2 size={20} color="var(--pink-primary)" className="animate-spin" /> : <Plus size={20} color="var(--pink-primary)" />}
-                      </div>
-                      <div style={{ textAlign: (isMobile || comparisons.length === 0) ? 'left' : 'center', display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontSize: '13px', fontWeight: '750', color: 'var(--text-primary)' }}>
-                          {processingBulkUpload ? 'Procesando...' : 'Subir nuevas imágenes'}
-                        </span>
-                        <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-                          JPG, PNG &bull; Puedes elegir varias {(isMobile || comparisons.length === 0) ? '' : 'o usar la cámara'}
-                        </span>
-                        {(isMobile || (comparisons.length === 0 && !isMobile)) && (
-                          <button
-                            type="button"
-                            onClick={(e) => { e.stopPropagation(); if (isMobile) { setShowCamera(true); } else { fileInputRef.current?.click(); } }}
-                            style={{ 
-                              fontSize: '12px', 
-                              color: 'var(--magenta-primary)', 
-                              backgroundColor: 'rgba(160,80,106,0.06)', 
-                              border: '1px solid rgba(160,80,106,0.15)', 
-                              fontWeight: '750', 
-                              cursor: 'pointer', 
-                              padding: '7px 16px', 
-                              borderRadius: '20px',
-                              width: 'fit-content', 
-                              marginTop: '8px', 
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '6px'
-                            }}
-                            className="btn-interactive"
-                          >
-                            <Camera size={13} color="var(--magenta-primary)" /> Usar cámara
-                          </button>
-                        )}
-                      </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                {/* Banner de Subida de Ancho Completo */}
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="btn-interactive"
+                  style={{
+                    width: '100%',
+                    backgroundColor: 'rgba(160,80,106,0.015)',
+                    borderRadius: '16px',
+                    border: '2px dashed var(--pink-primary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    padding: '20px 24px'
+                  }}
+                >
+                  <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: '16px', justifyContent: 'center', width: '100%' }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(160,80,106,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      {processingBulkUpload ? <Loader2 size={20} color="var(--pink-primary)" className="animate-spin" /> : <Plus size={20} color="var(--pink-primary)" />}
                     </div>
+                    <div style={{ textAlign: isMobile ? 'center' : 'left', display: 'flex', flexDirection: 'column' }}>
+                      <span style={{ fontSize: '13.5px', fontWeight: '750', color: 'var(--text-primary)' }}>
+                        {processingBulkUpload ? 'Procesando...' : 'Subir nuevas imágenes'}
+                      </span>
+                      <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
+                        JPG, PNG &bull; Puedes elegir varias {isMobile ? '' : 'o usar la cámara'}
+                      </span>
+                    </div>
+                    {isMobile && (
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setShowCamera(true); }}
+                        style={{ 
+                          fontSize: '12px', 
+                          color: 'var(--magenta-primary)', 
+                          backgroundColor: 'rgba(160,80,106,0.06)', 
+                          border: '1px solid rgba(160,80,106,0.15)', 
+                          fontWeight: '750', 
+                          cursor: 'pointer', 
+                          padding: '7px 16px', 
+                          borderRadius: '20px',
+                          width: 'fit-content', 
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px'
+                        }}
+                        className="btn-interactive"
+                      >
+                        <Camera size={13} color="var(--magenta-primary)" /> Usar cámara
+                      </button>
+                    )}
                   </div>
-
-                  {comparisons.slice(0, visibleCompsCount).map(comp => (
-                    <ComparisonCard key={comp.id} comparison={comp} onDelete={() => handleDeleteComparison(comp.id)} onShare={() => handleShareComparison(comp)} />
-                  ))}
-                  {visibleCompsCount < comparisons.length && (
-                    <div ref={compsObserverRef} style={{ height: '20px', width: '100%' }} />
-                  )}
                 </div>
+
+                {comparisons.length > 0 && (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px' }}>
+                    {comparisons.slice(0, visibleCompsCount).map(comp => (
+                      <ComparisonCard key={comp.id} comparison={comp} onDelete={() => handleDeleteComparison(comp.id)} onShare={() => handleShareComparison(comp)} />
+                    ))}
+                    {visibleCompsCount < comparisons.length && (
+                      <div ref={compsObserverRef} style={{ height: '20px', width: '100%' }} />
+                    )}
+                  </div>
+                )}
 
                 {unpairedAntes && unpairedDespues && (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap', padding: '14px 18px', borderRadius: '16px', background: 'rgba(160,80,106,0.06)', border: '1px solid rgba(160,80,106,0.15)' }}>
