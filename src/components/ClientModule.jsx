@@ -3251,7 +3251,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                           <span>{hairTypeData.textMin}</span>
                           <span>{hairTypeData.textMax}</span>
                         </div>
-                        <p style={{ margin: 0, fontSize: '10px', color: 'var(--text-muted)', fontStyle: 'italic', lineHeight: '1.25' }}>"{hairTypeData.desc}"</p>
+                        <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic', fontWeight: '500', lineHeight: '1.35' }}>"{hairTypeData.desc}"</p>
                       </div>
                     </div>
 
@@ -3276,7 +3276,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                           <span>{porosityData.textMin}</span>
                           <span>{porosityData.textMax}</span>
                         </div>
-                        <p style={{ margin: 0, fontSize: '10px', color: 'var(--text-muted)', fontStyle: 'italic', lineHeight: '1.25' }}>"{porosityData.desc}"</p>
+                        <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic', fontWeight: '500', lineHeight: '1.35' }}>"{porosityData.desc}"</p>
                       </div>
                     </div>
 
@@ -3301,7 +3301,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                           <span>{elasticityData.textMin}</span>
                           <span>{elasticityData.textMax}</span>
                         </div>
-                        <p style={{ margin: 0, fontSize: '10px', color: 'var(--text-muted)', fontStyle: 'italic', lineHeight: '1.25' }}>"{elasticityData.desc}"</p>
+                        <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic', fontWeight: '500', lineHeight: '1.35' }}>"{elasticityData.desc}"</p>
                       </div>
                     </div>
 
@@ -3324,7 +3324,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                           <span>Crítico</span>
                           <span>Óptimo</span>
                         </div>
-                        <p style={{ margin: 0, fontSize: '10px', color: 'var(--text-muted)', fontStyle: 'italic', lineHeight: '1.25' }}>"{overallScoreData.desc}"</p>
+                        <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic', fontWeight: '500', lineHeight: '1.35' }}>"{overallScoreData.desc}"</p>
                       </div>
                     </div>
                   </div>
