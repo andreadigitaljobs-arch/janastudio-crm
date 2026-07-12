@@ -4405,16 +4405,17 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
               ].map(tab => {
                 const isActive = activeSubTab === tab.id;
                 return (
-                  <button
+                  <div
                     key={tab.id}
                     onClick={() => { setActiveSubTab(tab.id); setShowCollage(false); }}
+                    role="button"
+                    tabIndex={0}
                     className="btn-interactive"
                     style={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: '8px',
                       padding: '8px 18px',
-                      border: 'none',
                       borderRadius: '12px',
                       background: isActive ? 'white' : 'transparent',
                       color: isActive ? 'var(--magenta-primary)' : 'var(--text-secondary)',
@@ -4423,14 +4424,15 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                       cursor: 'pointer',
                       boxShadow: isActive ? '0 4px 12px rgba(160,80,106,0.06)' : 'none',
                       transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-                      transform: isActive ? 'scale(1.02)' : 'none'
+                      transform: isActive ? 'scale(1.02)' : 'none',
+                      userSelect: 'none'
                     }}
                   >
                     <span style={{ display: 'flex', alignItems: 'center', color: isActive ? 'var(--magenta-primary)' : 'var(--text-muted)' }}>
                       {tab.icon}
                     </span>
                     <span>{tab.label}</span>
-                  </button>
+                  </div>
                 );
               })}
             </div>
