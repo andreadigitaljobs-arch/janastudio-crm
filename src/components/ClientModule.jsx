@@ -4037,10 +4037,10 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
             }}
           >
             {[
-              { id: 'gallery', label: 'Fotos', icon: <ImageIcon size={16} />, gradient: 'linear-gradient(135deg, #ff4e88 0%, #d946a8 100%)', shadow: 'rgba(217,70,168,0.35)' },
-              { id: 'diagnoses', label: 'Salud', icon: <Activity size={16} />, gradient: 'linear-gradient(135deg, #06b6d4 0%, #0d9488 100%)', shadow: 'rgba(13,148,136,0.35)' },
-              { id: 'packages', label: 'Paquetes', icon: <Package size={16} />, gradient: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)', shadow: 'rgba(139,92,246,0.35)' },
-              { id: 'history', label: 'Visitas', icon: <Calendar size={16} />, gradient: 'linear-gradient(135deg, #f97316 0%, #db2777 100%)', shadow: 'rgba(249,115,22,0.35)' }
+              { id: 'gallery', label: 'Fotos', icon: <ImageIcon size={16} />, gradient: 'linear-gradient(135deg, #ff6fa9 0%, #d946a8 100%)', shadow: 'rgba(217,70,168,0.3)' },
+              { id: 'diagnoses', label: 'Salud', icon: <Activity size={16} />, gradient: 'linear-gradient(135deg, #8a2b53 0%, #4a1a2e 100%)', shadow: 'rgba(74,26,46,0.3)' },
+              { id: 'packages', label: 'Paquetes', icon: <Package size={16} />, gradient: 'linear-gradient(135deg, #d946a8 0%, #a0506a 100%)', shadow: 'rgba(160,80,106,0.3)' },
+              { id: 'history', label: 'Visitas', icon: <Calendar size={16} />, gradient: 'linear-gradient(135deg, #c73e72 0%, #7d1a3c 100%)', shadow: 'rgba(199,62,114,0.3)' }
             ].map(tab => {
               const isActive = activeSubTab === tab.id;
               return (
