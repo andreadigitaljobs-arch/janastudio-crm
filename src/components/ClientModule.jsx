@@ -3127,12 +3127,58 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                 { icon: <Flame />, label: 'Inflamación', value: latest.scalp_inflammation || 'No' },
               ];
 
-              const statCards = [
-                { icon: <Scissors />, label: 'Tipo de Cabello', value: latest.hair_type || client.hair_type || 'Normal' },
-                { icon: <CircleDot />, label: 'Porosidad', value: latest.porosity || 'Media' },
-                { icon: <Waves />, label: 'Elasticidad', value: latest.elasticity || 'Buena' },
-                { icon: <Star />, label: 'Estado General', value: `${latest.overall_score ?? 7.5} / 10` },
-              ];
+              const getHairTypeData = (val) => {
+                const lower = String(val || '').toLowerCase();
+                if (lower.includes('seco')) {
+                  return { activeIndex: 0, textMin: 'Seco', textMax: 'Graso', desc: 'Falta lípidos. Evitar lavados agresivos y nutrir.' };
+                } else if (lower.includes('graso')) {
+                  return { activeIndex: 2, textMin: 'Seco', textMax: 'Graso', desc: 'Exceso de sebo. Requiere purificación y control.' };
+                } else {
+                  return { activeIndex: 1, textMin: 'Seco', textMax: 'Graso', desc: 'Producción de sebo saludable y equilibrada.' };
+                }
+              };
+
+              const getPorosityData = (val) => {
+                const lower = String(val || '').toLowerCase();
+                if (lower.includes('baja')) {
+                  return { activeIndex: 0, textMin: 'Baja', textMax: 'Alta', desc: 'Cutícula cerrada. Difícil de hidratar.' };
+                } else if (lower.includes('alta')) {
+                  return { activeIndex: 2, textMin: 'Baja', textMax: 'Alta', desc: 'Cutícula abierta. Pierde humedad rápido.' };
+                } else {
+                  return { activeIndex: 1, textMin: 'Baja', textMax: 'Alta', desc: 'Absorción y retención de humedad ideales.' };
+                }
+              };
+
+              const getElasticityData = (val) => {
+                const lower = String(val || '').toLowerCase();
+                if (lower.includes('baja') || lower.includes('debil') || lower.includes('mala')) {
+                  return { activeIndex: 0, textMin: 'Mala', textMax: 'Buena', desc: 'Hebras quebradizas. Falta de proteínas.' };
+                } else if (lower.includes('regular') || lower.includes('media')) {
+                  return { activeIndex: 1, textMin: 'Mala', textMax: 'Buena', desc: 'Resistencia moderada. Evitar calor excesivo.' };
+                } else {
+                  return { activeIndex: 2, textMin: 'Mala', textMax: 'Buena', desc: 'Excelente fuerza y flexibilidad al estirar.' };
+                }
+              };
+
+              const getOverallScoreData = (val) => {
+                const num = parseFloat(val) || 7.5;
+                let desc = 'Cabello debilitado, requiere tratamiento urgente.';
+                if (num >= 8.5) desc = 'Cabello en excelentes condiciones de salud.';
+                else if (num >= 6.0) desc = 'Cabello saludable, requiere mantenimiento.';
+                return { score: num, desc };
+              };
+
+              const hairTypeVal = latest.hair_type || client.hair_type || 'Normal';
+              const hairTypeData = getHairTypeData(hairTypeVal);
+
+              const porosityVal = latest.porosity || 'Media';
+              const porosityData = getPorosityData(porosityVal);
+
+              const elasticityVal = latest.elasticity || 'Buena';
+              const elasticityData = getElasticityData(elasticityVal);
+
+              const overallScoreVal = latest.overall_score ?? 7.5;
+              const overallScoreData = getOverallScoreData(overallScoreVal);
 
               const scalpHealthPct = latest.scalp_health_pct ?? 70;
               const observations = Array.isArray(latest.observations)
@@ -3143,15 +3189,103 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
               return (
                 <>
                   <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: '12px' }}>
-                    {statCards.map((s, i) => (
-                      <div key={i} className="glass-card" style={{ padding: '18px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)', transition: 'transform 0.2s', cursor: 'default' }}>
-                        <div style={{ width: '38px', height: '38px', borderRadius: '11px', background: 'var(--magenta-gradient)', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
-                          {React.cloneElement(s.icon, { size: 17, color: 'white' })}
+                    {/* Card 1: Tipo de Cabello */}
+                    <div className="glass-card" style={{ padding: '16px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '142px' }}>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                          <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--magenta-gradient)', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Scissors size={14} color="white" />
+                          </div>
+                          <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Hebra</span>
                         </div>
-                        <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '700', marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.label}</div>
-                        <div style={{ fontSize: isMobile ? '16px' : '18.5px', fontWeight: '800', color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>{s.value}</div>
+                        <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '4px' }}>{hairTypeVal}</div>
                       </div>
-                    ))}
+                      <div>
+                        <div style={{ display: 'flex', gap: '3px', margin: '4px 0 2px' }}>
+                          {[0, 1, 2].map((idx) => (
+                            <div key={idx} style={{ flex: 1, height: '4px', borderRadius: '2px', background: idx === hairTypeData.activeIndex ? 'var(--pink-primary)' : 'rgba(160,80,106,0.08)', boxShadow: idx === hairTypeData.activeIndex ? '0 0 4px rgba(201, 114, 130, 0.4)' : 'none' }} />
+                          ))}
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '8.5px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', marginBottom: '4px' }}>
+                          <span>{hairTypeData.textMin}</span>
+                          <span>{hairTypeData.textMax}</span>
+                        </div>
+                        <p style={{ margin: 0, fontSize: '10px', color: 'var(--text-muted)', fontStyle: 'italic', lineHeight: '1.25' }}>"{hairTypeData.desc}"</p>
+                      </div>
+                    </div>
+
+                    {/* Card 2: Porosidad */}
+                    <div className="glass-card" style={{ padding: '16px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '142px' }}>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                          <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--magenta-gradient)', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <CircleDot size={14} color="white" />
+                          </div>
+                          <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Porosidad</span>
+                        </div>
+                        <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '4px' }}>{porosityVal}</div>
+                      </div>
+                      <div>
+                        <div style={{ display: 'flex', gap: '3px', margin: '4px 0 2px' }}>
+                          {[0, 1, 2].map((idx) => (
+                            <div key={idx} style={{ flex: 1, height: '4px', borderRadius: '2px', background: idx === porosityData.activeIndex ? 'var(--pink-primary)' : 'rgba(160,80,106,0.08)', boxShadow: idx === porosityData.activeIndex ? '0 0 4px rgba(201, 114, 130, 0.4)' : 'none' }} />
+                          ))}
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '8.5px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', marginBottom: '4px' }}>
+                          <span>{porosityData.textMin}</span>
+                          <span>{porosityData.textMax}</span>
+                        </div>
+                        <p style={{ margin: 0, fontSize: '10px', color: 'var(--text-muted)', fontStyle: 'italic', lineHeight: '1.25' }}>"{porosityData.desc}"</p>
+                      </div>
+                    </div>
+
+                    {/* Card 3: Elasticidad */}
+                    <div className="glass-card" style={{ padding: '16px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '142px' }}>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                          <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--magenta-gradient)', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Waves size={14} color="white" />
+                          </div>
+                          <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Elasticidad</span>
+                        </div>
+                        <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '4px' }}>{elasticityVal}</div>
+                      </div>
+                      <div>
+                        <div style={{ display: 'flex', gap: '3px', margin: '4px 0 2px' }}>
+                          {[0, 1, 2].map((idx) => (
+                            <div key={idx} style={{ flex: 1, height: '4px', borderRadius: '2px', background: idx === elasticityData.activeIndex ? 'var(--pink-primary)' : 'rgba(160,80,106,0.08)', boxShadow: idx === elasticityData.activeIndex ? '0 0 4px rgba(201, 114, 130, 0.4)' : 'none' }} />
+                          ))}
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '8.5px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', marginBottom: '4px' }}>
+                          <span>{elasticityData.textMin}</span>
+                          <span>{elasticityData.textMax}</span>
+                        </div>
+                        <p style={{ margin: 0, fontSize: '10px', color: 'var(--text-muted)', fontStyle: 'italic', lineHeight: '1.25' }}>"{elasticityData.desc}"</p>
+                      </div>
+                    </div>
+
+                    {/* Card 4: Estado General */}
+                    <div className="glass-card" style={{ padding: '16px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '142px' }}>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                          <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--magenta-gradient)', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Star size={14} color="white" />
+                          </div>
+                          <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Salud</span>
+                        </div>
+                        <div style={{ fontSize: '15px', fontWeight: '850', color: 'var(--text-primary)', marginBottom: '4px' }}>{overallScoreVal}/10</div>
+                      </div>
+                      <div>
+                        <div style={{ height: '4px', borderRadius: '2px', background: 'rgba(160,80,106,0.08)', overflow: 'hidden', margin: '4px 0 2px' }}>
+                          <div style={{ height: '100%', width: `${overallScoreData.score * 10}%`, background: 'var(--magenta-gradient)' }} />
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '8.5px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', marginBottom: '4px' }}>
+                          <span>Crítico</span>
+                          <span>Óptimo</span>
+                        </div>
+                        <p style={{ margin: 0, fontSize: '10px', color: 'var(--text-muted)', fontStyle: 'italic', lineHeight: '1.25' }}>"{overallScoreData.desc}"</p>
+                      </div>
+                    </div>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.1fr 0.9fr', gap: '12px' }}>
