@@ -3144,33 +3144,33 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                 <>
                   <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: '12px' }}>
                     {statCards.map((s, i) => (
-                      <div key={i} className="glass-card" style={{ padding: '16px', borderRadius: '18px', background: 'white', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.05)' }}>
-                        <div style={{ width: '38px', height: '38px', borderRadius: '11px', background: 'rgba(160,80,106,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
-                          {React.cloneElement(s.icon, { size: 17, color: 'var(--pink-primary)' })}
+                      <div key={i} className="glass-card" style={{ padding: '18px 16px', borderRadius: '16px', background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)', transition: 'transform 0.2s', cursor: 'default' }}>
+                        <div style={{ width: '38px', height: '38px', borderRadius: '11px', background: 'var(--magenta-gradient)', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
+                          {React.cloneElement(s.icon, { size: 17, color: 'white' })}
                         </div>
-                        <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)', fontWeight: '700', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.label}</div>
-                        <div style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: '850', color: 'var(--text-primary)' }}>{s.value}</div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.label}</div>
+                        <div style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: '800', color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>{s.value}</div>
                       </div>
                     ))}
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '12px' }}>
-                    <div className="glass-card" style={{ padding: '18px', borderRadius: '18px', background: 'white', border: '1px solid var(--border-color)' }}>
-                      <h4 style={{ margin: '0 0 14px', fontSize: '13px', fontWeight: '850', color: 'var(--text-primary)' }}>Condición del Cabello</h4>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '13px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.1fr 0.9fr', gap: '12px' }}>
+                    <div className="glass-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
+                      <h4 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Condición del Cabello</h4>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                         {bars.map((b, i) => {
                           const tag = tagFor(b.pct);
                           return (
                             <div key={i}>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                                 <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700' }}>{b.label}</span>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                  <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '800' }}>{b.pct}%</span>
-                                  <span style={{ fontSize: '10px', fontWeight: '750', padding: '2px 8px', borderRadius: '8px', background: tag.bg, color: tag.color, whiteSpace: 'nowrap' }}>{tag.label}</span>
+                                  <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '850' }}>{b.pct}%</span>
+                                  <span style={{ fontSize: '9px', fontWeight: '800', padding: '3px 10px', borderRadius: '20px', background: tag.bg, color: tag.color, textTransform: 'uppercase', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>{tag.label}</span>
                                 </div>
                               </div>
-                              <div style={{ height: '7px', borderRadius: '6px', background: 'rgba(160,80,106,0.1)', overflow: 'hidden' }}>
-                                <div style={{ height: '100%', width: `${b.pct}%`, borderRadius: '6px', background: 'var(--magenta-gradient)' }} />
+                              <div style={{ height: '8px', borderRadius: '10px', background: 'rgba(160,80,106,0.06)', overflow: 'hidden' }}>
+                                <div style={{ height: '100%', width: `${b.pct}%`, borderRadius: '10px', background: 'linear-gradient(90deg, var(--pink-primary) 0%, var(--magenta-primary) 100%)' }} />
                               </div>
                             </div>
                           );
@@ -3178,27 +3178,29 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                       </div>
                     </div>
 
-                    <div className="glass-card" style={{ padding: '18px', borderRadius: '18px', background: 'white', border: '1px solid var(--border-color)' }}>
-                      <h4 style={{ margin: '0 0 14px', fontSize: '13px', fontWeight: '850', color: 'var(--text-primary)' }}>Salud del Cuero Cabelludo</h4>
-                      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: '16px' }}>
+                    <div className="glass-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
+                      <h4 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Salud del Cuero Cabelludo</h4>
+                      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: '20px' }}>
                         <div style={{
-                          width: '110px', height: '110px', borderRadius: '50%', flexShrink: 0,
-                          background: `conic-gradient(var(--pink-primary) ${scalpHealthPct * 3.6}deg, rgba(160,80,106,0.12) 0deg)`,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center'
+                          width: '114px', height: '114px', borderRadius: '50%', flexShrink: 0,
+                          background: `conic-gradient(var(--magenta-primary) 0deg, var(--pink-primary) ${scalpHealthPct * 3.6}deg, rgba(160,80,106,0.06) ${scalpHealthPct * 3.6}deg 360deg)`,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          boxShadow: '0 4px 12px rgba(160,80,106,0.1)'
                         }}>
-                          <div style={{ width: '82px', height: '82px', borderRadius: '50%', background: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                          <div style={{ width: '86px', height: '86px', borderRadius: '50%', background: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 2px 5px rgba(0,0,0,0.05)' }}>
                             <span style={{ fontSize: '20px', fontWeight: '850', color: 'var(--text-primary)' }}>{scalpHealthPct}%</span>
-                            <span style={{ fontSize: '9px', color: 'var(--text-muted)', fontWeight: '600' }}>Salud general</span>
+                            <span style={{ fontSize: '9px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2px' }}>General</span>
                           </div>
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '9px', width: '100%' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '11px', width: '100%' }}>
                           {scalpItems.map((it, i) => (
-                            <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-                                {React.cloneElement(it.icon, { size: 13, color: 'var(--pink-primary)' })}
+                            <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '7px', background: 'white', paddingRight: '6px', zIndex: 1 }}>
+                                {React.cloneElement(it.icon, { size: 12, color: 'var(--magenta-primary)' })}
                                 <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>{it.label}</span>
                               </div>
-                              <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '800' }}>{it.value}</span>
+                              <div style={{ flex: 1, borderBottom: '1px dashed rgba(160,80,106,0.15)', margin: '0 6px', position: 'relative', top: '3px' }} />
+                              <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '800', background: 'white', paddingLeft: '6px', zIndex: 1 }}>{it.value}</span>
                             </div>
                           ))}
                         </div>
@@ -3207,26 +3209,28 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                   </div>
 
                   {(observations.length > 0 || images.length > 0) && (
-                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : (observations.length > 0 && images.length > 0 ? '1fr 1fr' : '1fr'), gap: '12px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : (observations.length > 0 && images.length > 0 ? '1.2fr 0.8fr' : '1fr'), gap: '12px' }}>
                       {observations.length > 0 && (
-                        <div className="glass-card" style={{ padding: '18px', borderRadius: '18px', background: 'white', border: '1px solid var(--border-color)' }}>
-                          <h4 style={{ margin: '0 0 14px', fontSize: '15px', fontWeight: '850', color: 'var(--text-primary)' }}>Observaciones</h4>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <div className="glass-card" style={{ padding: '20px', borderRadius: '20px', background: 'rgba(160,80,106,0.015)', border: '1px solid rgba(160,80,106,0.1)' }}>
+                          <h4 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Anotaciones del Especialista</h4>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '11px' }}>
                             {observations.map((obs, i) => (
-                              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                                <Check size={16} color="#2e9e5b" style={{ flexShrink: 0, marginTop: '2px' }} />
-                                <span style={{ fontSize: '14.5px', color: 'var(--text-secondary)', fontWeight: '500' }}>{obs}</span>
+                              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                                <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'rgba(46,158,91,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
+                                  <Check size={11} color="#2e9e5b" strokeWidth={3} />
+                                </div>
+                                <span style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '500', lineHeight: 1.45 }}>{obs}</span>
                               </div>
                             ))}
                           </div>
                         </div>
                       )}
                       {images.length > 0 && (
-                        <div className="glass-card" style={{ padding: '18px', borderRadius: '18px', background: 'white', border: '1px solid var(--border-color)' }}>
-                          <h4 style={{ margin: '0 0 12px', fontSize: '13px', fontWeight: '850', color: 'var(--text-primary)' }}>Imágenes del Diagnóstico</h4>
+                        <div className="glass-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
+                          <h4 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Imágenes del Diagnóstico</h4>
                           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                             {images.slice(0, 6).map((img, i) => (
-                              <img key={i} src={img} alt="" style={{ width: '100%', aspectRatio: '1', objectFit: 'cover', borderRadius: '10px' }} />
+                              <img key={i} src={img} alt="" style={{ width: '100%', aspectRatio: '1', objectFit: 'cover', borderRadius: '10px', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }} />
                             ))}
                           </div>
                         </div>
@@ -3498,15 +3502,18 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
               {/* Avatar with subtle shadow */}
               <div style={{ 
                 width: '68px', height: '68px', borderRadius: '50%', 
-                backgroundColor: 'white', display: 'flex', alignItems: 'center', 
-                justifyContent: 'center', border: '2.5px solid var(--magenta-primary)', 
-                boxShadow: '0 4px 12px rgba(160, 80, 106, 0.12)', overflow: 'hidden',
+                background: client.image_url ? 'white' : 'var(--magenta-gradient)', 
+                display: 'flex', alignItems: 'center', 
+                justifyContent: 'center', border: '2.5px solid white', 
+                boxShadow: '0 4px 12px rgba(160, 80, 106, 0.15)', overflow: 'hidden',
                 flexShrink: 0
               }}>
                 {client.image_url ? (
                   <img src={client.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
-                  <User size={32} color="var(--magenta-primary)" />
+                  <span style={{ fontSize: '22px', fontWeight: '800', color: 'white', letterSpacing: '-0.5px' }}>
+                    {client.name ? client.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase() : 'C'}
+                  </span>
                 )}
               </div>
 
@@ -3714,14 +3721,17 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
             <div className="glass-card" style={{ padding: '28px 24px', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)', textAlign: 'center' }}>
               <div style={{
                 width: '96px', height: '96px', borderRadius: '50%', margin: '0 auto 16px',
-                backgroundColor: 'var(--bg-tertiary)', display: 'flex', alignItems: 'center',
+                background: client.image_url ? 'var(--bg-tertiary)' : 'var(--magenta-gradient)', 
+                display: 'flex', alignItems: 'center',
                 justifyContent: 'center', border: '3px solid white',
-                boxShadow: '0 8px 20px rgba(160,80,106,0.15)', overflow: 'hidden'
+                boxShadow: '0 8px 20px rgba(160,80,106,0.2)', overflow: 'hidden'
               }}>
                 {client.image_url ? (
                   <img src={client.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
-                  <User size={40} color="var(--magenta-primary)" />
+                  <span style={{ fontSize: '32px', fontWeight: '800', color: 'white', letterSpacing: '-0.5px' }}>
+                    {client.name ? client.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase() : 'C'}
+                  </span>
                 )}
               </div>
 
