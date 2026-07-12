@@ -2613,7 +2613,9 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
               </div>
               <button
                 onClick={() => { setShowCollage(!showCollage); setComparisonTitle(''); setPhotoA(null); setPhotoB(null); }}
+                disabled={gallery.length < 2 && !showCollage}
                 className="btn-interactive"
+                title={gallery.length < 2 && !showCollage ? 'Sube al menos 2 fotos para crear una comparativa de Antes y Después' : undefined}
                 style={{
                   background: showCollage ? 'var(--bg-tertiary)' : 'var(--magenta-gradient)',
                   border: 'none',
@@ -2625,7 +2627,8 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '8px',
-                  cursor: 'pointer',
+                  cursor: (gallery.length < 2 && !showCollage) ? 'not-allowed' : 'pointer',
+                  opacity: (gallery.length < 2 && !showCollage) ? 0.55 : 1,
                   fontWeight: '750',
                   whiteSpace: 'nowrap',
                   width: isMobile ? '100%' : 'auto',
@@ -2832,35 +2835,35 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                     onClick={() => fileInputRef.current?.click()}
                     className="btn-interactive"
                     style={{
-                      aspectRatio: isMobile ? 'none' : '4/3',
+                      aspectRatio: (isMobile || comparisons.length === 0) ? 'none' : '4/3',
                       minHeight: isMobile ? '100px' : 'auto',
-                      height: 'auto',
-                      backgroundColor: 'rgba(160,80,106,0.02)',
+                      height: (isMobile || comparisons.length === 0) ? '110px' : 'auto',
+                      backgroundColor: 'rgba(160,80,106,0.015)',
                       borderRadius: '16px',
                       border: '2px dashed var(--pink-primary)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       cursor: 'pointer',
-                      padding: isMobile ? '12px 20px' : '16px',
-                      gridColumn: isMobile ? '1 / -1' : 'auto'
+                      padding: '16px 24px',
+                      gridColumn: (isMobile || comparisons.length === 0) ? '1 / -1' : 'auto'
                     }}
                   >
-                    <div style={{ display: 'flex', flexDirection: isMobile ? 'row' : 'column', alignItems: 'center', gap: isMobile ? '16px' : '10px', justifyContent: 'center', width: '100%' }}>
+                    <div style={{ display: 'flex', flexDirection: (isMobile || comparisons.length === 0) ? 'row' : 'column', alignItems: 'center', gap: (isMobile || comparisons.length === 0) ? '16px' : '10px', justifyContent: 'center', width: '100%' }}>
                       <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(160,80,106,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         {processingBulkUpload ? <Loader2 size={20} color="var(--pink-primary)" className="animate-spin" /> : <Plus size={20} color="var(--pink-primary)" />}
                       </div>
-                      <div style={{ textAlign: isMobile ? 'left' : 'center', display: 'flex', flexDirection: 'column' }}>
+                      <div style={{ textAlign: (isMobile || comparisons.length === 0) ? 'left' : 'center', display: 'flex', flexDirection: 'column' }}>
                         <span style={{ fontSize: '13px', fontWeight: '750', color: 'var(--text-primary)' }}>
                           {processingBulkUpload ? 'Procesando...' : 'Subir nuevas imágenes'}
                         </span>
                         <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-                          JPG, PNG &bull; Puedes elegir varias {isMobile ? '' : 'o usar la cámara'}
+                          JPG, PNG &bull; Puedes elegir varias {(isMobile || comparisons.length === 0) ? '' : 'o usar la cámara'}
                         </span>
-                        {isMobile && (
+                        {(isMobile || (comparisons.length === 0 && !isMobile)) && (
                           <button
                             type="button"
-                            onClick={(e) => { e.stopPropagation(); setShowCamera(true); }}
+                            onClick={(e) => { e.stopPropagation(); if (isMobile) { setShowCamera(true); } else { fileInputRef.current?.click(); } }}
                             style={{ 
                               fontSize: '12px', 
                               color: 'var(--magenta-primary)', 
@@ -3045,51 +3048,79 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '20px' }}>
-                    {filteredIndexedGallery.slice(0, visiblePhotosCount).map(({ img, i }) => {
-                      const isSelected = selectedPhotoIndices.includes(i);
-                      return (
-                      <div
-                        key={i}
-                        onClick={() => selectionMode ? togglePhotoSelection(i) : setLightboxPhoto(img)}
-                        style={{ aspectRatio: '1/1', backgroundColor: '#eee', borderRadius: '20px', overflow: 'hidden', position: 'relative', cursor: 'pointer', border: isSelected ? '4px solid var(--pink-primary)' : '1px solid var(--border-color)', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
-                        className="group"
+                  {filteredIndexedGallery.length === 0 ? (
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '48px 24px',
+                      background: 'rgba(160,80,106,0.01)',
+                      border: '1.5px dashed rgba(160,80,106,0.1)',
+                      borderRadius: '20px',
+                      textAlign: 'center',
+                      marginTop: '12px'
+                    }}>
+                      <Camera size={44} color="var(--pink-primary)" style={{ marginBottom: '16px', opacity: 0.65 }} />
+                      <h6 style={{ margin: '0 0 8px', fontSize: '14.5px', fontWeight: '800', color: 'var(--text-primary)' }}>Galería sin fotos</h6>
+                      <p style={{ margin: '0 0 16px', fontSize: '13.5px', color: 'var(--text-muted)', maxWidth: '400px', lineHeight: 1.45 }}>
+                        Aún no hay fotos cargadas en esta sección. Sube imágenes del cabello de la clienta para documentar sus sesiones.
+                      </p>
+                      <button 
+                        onClick={() => fileInputRef.current?.click()}
+                        className="btn-pink"
+                        style={{ padding: '8px 18px', fontSize: '12.5px', fontWeight: '750', display: 'flex', alignItems: 'center', gap: '6px' }}
                       >
-                        <img src={img.url || img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'linear-gradient(transparent, rgba(0,0,0,0.6))', padding: '12px', fontSize: '11px', fontWeight: '850', color: 'white' }}>
-                          {img.type || 'FOTO'}
-                        </div>
-                        {selectionMode ? (
-                          <div style={{
-                            position: 'absolute', top: '12px', right: '12px', width: '28px', height: '28px', borderRadius: '10px',
-                            border: isSelected ? 'none' : '2px solid white', backgroundColor: isSelected ? 'var(--pink-primary)' : 'rgba(0,0,0,0.3)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center'
-                          }}>
-                            {isSelected && <Check size={18} color="white" strokeWidth={3} />}
+                        <Plus size={16} /> Subir Primera Foto
+                      </button>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '20px' }}>
+                      {filteredIndexedGallery.slice(0, visiblePhotosCount).map(({ img, i }) => {
+                        const isSelected = selectedPhotoIndices.includes(i);
+                        return (
+                        <div
+                          key={i}
+                          onClick={() => selectionMode ? togglePhotoSelection(i) : setLightboxPhoto(img)}
+                          style={{ aspectRatio: '1/1', backgroundColor: '#eee', borderRadius: '20px', overflow: 'hidden', position: 'relative', cursor: 'pointer', border: isSelected ? '4px solid var(--pink-primary)' : '1px solid var(--border-color)', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
+                          className="group"
+                        >
+                          <img src={img.url || img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'linear-gradient(transparent, rgba(0,0,0,0.6))', padding: '12px', fontSize: '11px', fontWeight: '850', color: 'white' }}>
+                            {img.type || 'FOTO'}
                           </div>
-                        ) : (
-                          <button
-                            onClick={(e) => { e.stopPropagation(); handlePhotoDelete(i); }}
-                            style={{
-                              position: 'absolute', top: '12px', right: '12px',
-                              backgroundColor: 'rgba(255, 69, 58, 0.9)',
-                              border: 'none', borderRadius: '10px', color: 'white',
-                              padding: '8px', cursor: 'pointer',
-                              display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
-                              transition: '0.2s',
-                              opacity: 0,
-                            }}
-                            className="group-hover:opacity-100"
-                            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#ff453a'}
-                            onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 69, 58, 0.9)'}
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        )}
-                      </div>
-                    );})}
-                  </div>
+                          {selectionMode ? (
+                            <div style={{
+                              position: 'absolute', top: '12px', right: '12px', width: '28px', height: '28px', borderRadius: '10px',
+                              border: isSelected ? 'none' : '2px solid white', backgroundColor: isSelected ? 'var(--pink-primary)' : 'rgba(0,0,0,0.3)',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center'
+                            }}>
+                              {isSelected && <Check size={18} color="white" strokeWidth={3} />}
+                            </div>
+                          ) : (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handlePhotoDelete(i); }}
+                              style={{
+                                position: 'absolute', top: '12px', right: '12px',
+                                backgroundColor: 'rgba(255, 69, 58, 0.9)',
+                                border: 'none', borderRadius: '10px', color: 'white',
+                                padding: '8px', cursor: 'pointer',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+                                transition: '0.2s',
+                                opacity: 0,
+                              }}
+                              className="group-hover:opacity-100"
+                              onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#ff453a'}
+                              onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 69, 58, 0.9)'}
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          )}
+                        </div>
+                      );})}
+                    </div>
+                  )}
                   {visiblePhotosCount < filteredIndexedGallery.length && (
                     <div ref={photosObserverRef} style={{ height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', marginTop: '20px' }}>
                       <Loader2 size={24} color="var(--pink-primary)" className="animate-spin" />
