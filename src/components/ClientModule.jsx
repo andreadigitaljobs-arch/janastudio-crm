@@ -42,7 +42,12 @@ import {
   Edit2,
   Mail,
   Scissors,
-  Share2
+  Share2,
+  Star,
+  Droplet,
+  Waves,
+  Flame,
+  CircleDot
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { supabase } from '../lib/supabase';
@@ -497,15 +502,15 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
             <button
               onClick={() => setShowAddForm(true)}
               style={{
-                width: '100%', padding: '10px', borderRadius: '12px', border: 'none', 
-                background: 'var(--magenta-gradient)', color: 'white', 
-                fontSize: '13px', fontWeight: '750', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                width: '100%', padding: '15px', borderRadius: '16px', border: 'none',
+                background: 'var(--magenta-gradient)', color: 'white',
+                fontSize: '15px', fontWeight: '750', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                 marginBottom: '16px',
                 boxShadow: '0 4px 15px rgba(160, 80, 106, 0.2)'
               }}
             >
-              <Plus size={16} /> Nueva clienta
+              <Plus size={18} /> Nueva clienta
             </button>
           )}
 
@@ -546,10 +551,10 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
           {/* Stat Cards */}
           <div style={{ display: 'grid', gridTemplateColumns: windowWidth < 1200 ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: windowWidth < 600 ? '12px' : '16px', marginBottom: '28px' }}>
             {[
-              { label: windowWidth < 600 ? 'Activas' : 'Clientes activas', value: activeClients, icon: Users, trend: '↑ 12%', trendSub: windowWidth < 600 ? 'vs ant.' : 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.12)', iconColor: 'var(--pink-primary)' },
-              { label: windowWidth < 600 ? 'Nuevas' : 'Nuevas este mes', value: newThisMonth, icon: UserPlus, trend: '↑ 15%', trendSub: windowWidth < 600 ? 'vs ant.' : 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.08)', iconColor: 'var(--magenta-primary)' },
-              { label: windowWidth < 600 ? 'Próxima cita' : 'Con próxima cita', value: upcomingCount, icon: Calendar, trend: '↑ 8%', trendSub: windowWidth < 600 ? 'vs ant.' : 'vs. mes anterior', iconBg: 'rgba(74, 48, 54, 0.06)', iconColor: 'var(--text-secondary)' },
-              { label: windowWidth < 600 ? 'Cumpleaños' : 'Cumpleaños cercanos', value: birthdaySoon, icon: Cake, trend: '', trendSub: windowWidth < 600 ? 'Próx. 7d' : 'Próximos 7 días', iconBg: 'rgba(160, 80, 106, 0.15)', iconColor: 'var(--pink-primary)' }
+              { label: windowWidth < 600 ? 'Activas' : 'Clientes activas', value: activeClients, icon: Users, trend: '↑ 12%', trendSub: 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.12)', iconColor: 'var(--pink-primary)' },
+              { label: windowWidth < 600 ? 'Nuevas' : 'Nuevas este mes', value: newThisMonth, icon: UserPlus, trend: '↑ 15%', trendSub: 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.08)', iconColor: 'var(--magenta-primary)' },
+              { label: windowWidth < 600 ? 'Próxima cita' : 'Con próxima cita', value: upcomingCount, icon: Calendar, trend: '↑ 8%', trendSub: 'vs. mes anterior', iconBg: 'rgba(74, 48, 54, 0.06)', iconColor: 'var(--text-secondary)' },
+              { label: windowWidth < 600 ? 'Cumpleaños' : 'Cumpleaños cercanos', value: birthdaySoon, icon: Cake, trend: '', trendSub: 'Próximos 7 días', iconBg: 'rgba(160, 80, 106, 0.15)', iconColor: 'var(--pink-primary)' }
             ].map((stat, i) => (
               <div
                 key={i}
@@ -573,16 +578,14 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                         <stat.icon size={17} color={stat.iconColor} />
                       </div>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '8px' }}>
-                      <div style={{ fontSize: '30px', fontWeight: '850', color: 'var(--text-primary)', lineHeight: '1' }}>{stat.value}</div>
-                      {stat.trend ? (
-                        <div style={{ fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '700', textAlign: 'right' }}>
-                          {stat.trend}<br /><span style={{ color: 'var(--text-secondary)', fontWeight: '500' }}>{stat.trendSub}</span>
-                        </div>
-                      ) : (
-                        <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '500' }}>{stat.trendSub}</div>
-                      )}
-                    </div>
+                    <div style={{ fontSize: '30px', fontWeight: '850', color: 'var(--text-primary)', lineHeight: '1', marginBottom: '4px' }}>{stat.value}</div>
+                    {stat.trend ? (
+                      <div style={{ fontSize: '10.5px', color: '#2e9e5b', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {stat.trend} <span style={{ color: 'var(--text-secondary)', fontWeight: '500' }}>{stat.trendSub}</span>
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '500', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{stat.trendSub}</div>
+                    )}
                   </div>
                 ) : (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
@@ -593,7 +596,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                       <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{stat.label}</div>
                       <div style={{ fontSize: '24px', fontWeight: '850', color: 'var(--text-primary)', lineHeight: '1.1', marginBottom: '1px' }}>{stat.value}</div>
                       {stat.trend ? (
-                        <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '600' }}>
+                        <div style={{ fontSize: '10px', color: '#2e9e5b', fontWeight: '600' }}>
                           {stat.trend} <span style={{ color: 'var(--text-muted)' }}>{stat.trendSub}</span>
                         </div>
                       ) : (
@@ -1948,6 +1951,20 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
     hair_type: 'Normal',
     porosity: 'Media',
     scalp_condition: 'Sano',
+    elasticity: 'Buena',
+    overall_score: 7.5,
+    hydration_pct: 70,
+    nutrition_pct: 60,
+    repair_pct: 50,
+    shine_pct: 80,
+    strength_pct: 70,
+    scalp_oil_level: 'Normal',
+    scalp_sensitivity: 'Baja',
+    scalp_flaking: 'No',
+    scalp_hairloss: 'Leve',
+    scalp_inflammation: 'No',
+    scalp_health_pct: 70,
+    observations: '',
     chemical_history: '',
     recommended_treatment: '',
     notes: '',
@@ -3058,16 +3075,152 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
         );
       case 'diagnoses':
         return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {(() => {
+              const latest = diagnoses[0];
+              if (!latest) return null;
+
+              const tagFor = (pct) => (
+                pct >= 70 ? { label: 'Buena', bg: 'rgba(46,158,91,0.12)', color: '#2e9e5b' }
+                : pct >= 40 ? { label: 'Regular', bg: 'rgba(230,159,60,0.16)', color: '#c9821f' }
+                : { label: 'Débil', bg: 'rgba(220,80,80,0.12)', color: '#d64545' }
+              );
+
+              const bars = [
+                { label: 'Hidratación', pct: latest.hydration_pct ?? 70 },
+                { label: 'Nutrición', pct: latest.nutrition_pct ?? 60 },
+                { label: 'Reparación', pct: latest.repair_pct ?? 50 },
+                { label: 'Brillo', pct: latest.shine_pct ?? 80 },
+                { label: 'Fuerza', pct: latest.strength_pct ?? 70 },
+              ];
+
+              const scalpItems = [
+                { icon: <Droplet />, label: 'Nivel de grasa', value: latest.scalp_oil_level || 'Normal' },
+                { icon: <Activity />, label: 'Sensibilidad', value: latest.scalp_sensitivity || 'Baja' },
+                { icon: <CircleDot />, label: 'Descamación', value: latest.scalp_flaking || 'No' },
+                { icon: <Waves />, label: 'Caída', value: latest.scalp_hairloss || 'Leve' },
+                { icon: <Flame />, label: 'Inflamación', value: latest.scalp_inflammation || 'No' },
+              ];
+
+              const statCards = [
+                { icon: <Scissors />, label: 'Tipo de Cabello', value: latest.hair_type || client.hair_type || 'Normal' },
+                { icon: <CircleDot />, label: 'Porosidad', value: latest.porosity || 'Media' },
+                { icon: <Waves />, label: 'Elasticidad', value: latest.elasticity || 'Buena' },
+                { icon: <Star />, label: 'Estado General', value: `${latest.overall_score ?? 7.5} / 10` },
+              ];
+
+              const scalpHealthPct = latest.scalp_health_pct ?? 70;
+              const observations = Array.isArray(latest.observations)
+                ? latest.observations
+                : (latest.observations ? String(latest.observations).split('\n').filter(Boolean) : []);
+              const images = Array.isArray(latest.images) ? latest.images : [];
+
+              return (
+                <>
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: '12px' }}>
+                    {statCards.map((s, i) => (
+                      <div key={i} className="glass-card" style={{ padding: '16px', borderRadius: '18px', background: 'white', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.05)' }}>
+                        <div style={{ width: '38px', height: '38px', borderRadius: '11px', background: 'rgba(160,80,106,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
+                          {React.cloneElement(s.icon, { size: 17, color: 'var(--pink-primary)' })}
+                        </div>
+                        <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)', fontWeight: '700', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.label}</div>
+                        <div style={{ fontSize: isMobile ? '16px' : '18px', fontWeight: '850', color: 'var(--text-primary)' }}>{s.value}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '12px' }}>
+                    <div className="glass-card" style={{ padding: '18px', borderRadius: '18px', background: 'white', border: '1px solid var(--border-color)' }}>
+                      <h4 style={{ margin: '0 0 14px', fontSize: '13px', fontWeight: '850', color: 'var(--text-primary)' }}>Condición del Cabello</h4>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '13px' }}>
+                        {bars.map((b, i) => {
+                          const tag = tagFor(b.pct);
+                          return (
+                            <div key={i}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '5px' }}>
+                                <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700' }}>{b.label}</span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '800' }}>{b.pct}%</span>
+                                  <span style={{ fontSize: '10px', fontWeight: '750', padding: '2px 8px', borderRadius: '8px', background: tag.bg, color: tag.color, whiteSpace: 'nowrap' }}>{tag.label}</span>
+                                </div>
+                              </div>
+                              <div style={{ height: '7px', borderRadius: '6px', background: 'rgba(160,80,106,0.1)', overflow: 'hidden' }}>
+                                <div style={{ height: '100%', width: `${b.pct}%`, borderRadius: '6px', background: 'var(--magenta-gradient)' }} />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="glass-card" style={{ padding: '18px', borderRadius: '18px', background: 'white', border: '1px solid var(--border-color)' }}>
+                      <h4 style={{ margin: '0 0 14px', fontSize: '13px', fontWeight: '850', color: 'var(--text-primary)' }}>Salud del Cuero Cabelludo</h4>
+                      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: '16px' }}>
+                        <div style={{
+                          width: '110px', height: '110px', borderRadius: '50%', flexShrink: 0,
+                          background: `conic-gradient(var(--pink-primary) ${scalpHealthPct * 3.6}deg, rgba(160,80,106,0.12) 0deg)`,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center'
+                        }}>
+                          <div style={{ width: '82px', height: '82px', borderRadius: '50%', background: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                            <span style={{ fontSize: '20px', fontWeight: '850', color: 'var(--text-primary)' }}>{scalpHealthPct}%</span>
+                            <span style={{ fontSize: '9px', color: 'var(--text-muted)', fontWeight: '600' }}>Salud general</span>
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '9px', width: '100%' }}>
+                          {scalpItems.map((it, i) => (
+                            <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                                {React.cloneElement(it.icon, { size: 13, color: 'var(--pink-primary)' })}
+                                <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>{it.label}</span>
+                              </div>
+                              <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '800' }}>{it.value}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {(observations.length > 0 || images.length > 0) && (
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : (observations.length > 0 && images.length > 0 ? '1fr 1fr' : '1fr'), gap: '12px' }}>
+                      {observations.length > 0 && (
+                        <div className="glass-card" style={{ padding: '18px', borderRadius: '18px', background: 'white', border: '1px solid var(--border-color)' }}>
+                          <h4 style={{ margin: '0 0 14px', fontSize: '15px', fontWeight: '850', color: 'var(--text-primary)' }}>Observaciones</h4>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                            {observations.map((obs, i) => (
+                              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                                <Check size={16} color="#2e9e5b" style={{ flexShrink: 0, marginTop: '2px' }} />
+                                <span style={{ fontSize: '14.5px', color: 'var(--text-secondary)', fontWeight: '500' }}>{obs}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {images.length > 0 && (
+                        <div className="glass-card" style={{ padding: '18px', borderRadius: '18px', background: 'white', border: '1px solid var(--border-color)' }}>
+                          <h4 style={{ margin: '0 0 12px', fontSize: '13px', fontWeight: '850', color: 'var(--text-primary)' }}>Imágenes del Diagnóstico</h4>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                            {images.slice(0, 6).map((img, i) => (
+                              <img key={i} src={img} alt="" style={{ width: '100%', aspectRatio: '1', objectFit: 'cover', borderRadius: '10px' }} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </>
+              );
+            })()}
+
             <div className="glass-card" style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isEditingHair ? '16px' : '0' }}>
-                <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>
-                  <Scissors size={16} color="var(--pink-primary)" /> Perfil Capilar
+                <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>
+                  <Scissors size={18} color="var(--pink-primary)" /> Perfil Capilar
                 </h4>
                 {!isEditingHair && (
                   <button
                     onClick={() => { setHairEditData({ hair_type: client.hair_type || 'Normal', scalp_type: client.scalp_type || 'Normal' }); setIsEditingHair(true); }}
-                    style={{ background: 'none', border: 'none', color: 'var(--magenta-primary)', fontSize: '12px', fontWeight: '750', cursor: 'pointer', padding: '4px 8px', borderRadius: '8px', backgroundColor: 'rgba(160,80,106,0.05)' }}
+                    style={{ background: 'none', border: 'none', color: 'var(--magenta-primary)', fontSize: '14px', fontWeight: '750', cursor: 'pointer', padding: '4px 8px', borderRadius: '8px', backgroundColor: 'rgba(160,80,106,0.05)' }}
                   >
                     Editar
                   </button>
@@ -3078,6 +3231,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '12px' }}>
                     <JanaSelect
+                      variant="light"
                       label="Tipo de Cabello"
                       value={hairEditData.hair_type}
                       onChange={(val) => setHairEditData({ ...hairEditData, hair_type: val })}
@@ -3089,6 +3243,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                       ]}
                     />
                     <JanaSelect
+                      variant="light"
                       label="Cuero Cabelludo"
                       value={hairEditData.scalp_type}
                       onChange={(val) => setHairEditData({ ...hairEditData, scalp_type: val })}
@@ -3115,7 +3270,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
 
             <div className="glass-card" style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>
+              <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>
                 <Activity size={18} color="var(--pink-primary)" /> Historial de Diagnósticos Capilares
               </h4>
               <button
@@ -3128,77 +3283,167 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
             </div>
 
             {showAddDiagnosis && (
-              <div style={{ backgroundColor: '#faf5f5', padding: '16px', borderRadius: '14px', border: '1px solid rgba(160, 80, 106,0.2)', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }} className="animate-fade-in">
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '12px' }}>
-                  <JanaSelect 
-                    label="Grosor de Hebra"
-                    value={newDiagnosis.hair_type}
-                    onChange={(val) => setNewDiagnosis({ ...newDiagnosis, hair_type: val })}
-                    options={[
-                      { label: 'Normal', value: 'Normal' },
-                      { label: 'Fino', value: 'Fino' },
-                      { label: 'Grueso', value: 'Grueso' },
-                      { label: 'Quebradizo', value: 'Quebradizo' }
-                    ]}
-                  />
-                  <JanaSelect 
-                    label="Porosidad"
-                    value={newDiagnosis.porosity}
-                    onChange={(val) => setNewDiagnosis({ ...newDiagnosis, porosity: val })}
-                    options={[
-                      { label: 'Baja', value: 'Baja' },
-                      { label: 'Media', value: 'Media' },
-                      { label: 'Alta', value: 'Alta' }
-                    ]}
-                  />
-                  <JanaSelect 
-                    label="Condición del Cuero"
-                    value={newDiagnosis.scalp_condition}
-                    onChange={(val) => setNewDiagnosis({ ...newDiagnosis, scalp_condition: val })}
-                    options={[
-                      { label: 'Sano', value: 'Sano' },
-                      { label: 'Seborrea', value: 'Seborrea' },
-                      { label: 'Descamación', value: 'Descamación' },
-                      { label: 'Caída', value: 'Caída' },
-                      { label: 'Sensible', value: 'Sensible' }
-                    ]}
-                  />
+              <div style={{ backgroundColor: '#faf5f5', padding: '16px', borderRadius: '18px', border: '1px solid rgba(160, 80, 106,0.15)', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }} className="animate-fade-in">
+
+                {/* Section: Perfil */}
+                <div style={{ background: 'white', borderRadius: '14px', padding: '16px', border: '1px solid var(--border-color)' }}>
+                  <h5 style={{ margin: '0 0 12px', fontSize: '12px', fontWeight: '850', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Scissors size={13} /> Perfil del Cabello
+                  </h5>
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : '1fr 1fr 1fr 1fr', gap: '12px' }}>
+                    <JanaSelect
+                      variant="light"
+                      label="Grosor de Hebra"
+                      value={newDiagnosis.hair_type}
+                      onChange={(val) => setNewDiagnosis({ ...newDiagnosis, hair_type: val })}
+                      options={[
+                        { label: 'Normal', value: 'Normal' },
+                        { label: 'Fino', value: 'Fino' },
+                        { label: 'Grueso', value: 'Grueso' },
+                        { label: 'Quebradizo', value: 'Quebradizo' }
+                      ]}
+                    />
+                    <JanaSelect
+                      variant="light"
+                      label="Porosidad"
+                      value={newDiagnosis.porosity}
+                      onChange={(val) => setNewDiagnosis({ ...newDiagnosis, porosity: val })}
+                      options={[
+                        { label: 'Baja', value: 'Baja' },
+                        { label: 'Media', value: 'Media' },
+                        { label: 'Alta', value: 'Alta' }
+                      ]}
+                    />
+                    <JanaSelect
+                      variant="light"
+                      label="Condición del Cuero"
+                      value={newDiagnosis.scalp_condition}
+                      onChange={(val) => setNewDiagnosis({ ...newDiagnosis, scalp_condition: val })}
+                      options={[
+                        { label: 'Sano', value: 'Sano' },
+                        { label: 'Seborrea', value: 'Seborrea' },
+                        { label: 'Descamación', value: 'Descamación' },
+                        { label: 'Caída', value: 'Caída' },
+                        { label: 'Sensible', value: 'Sensible' }
+                      ]}
+                    />
+                    <JanaSelect
+                      variant="light"
+                      label="Elasticidad"
+                      value={newDiagnosis.elasticity}
+                      onChange={(val) => setNewDiagnosis({ ...newDiagnosis, elasticity: val })}
+                      options={[
+                        { label: 'Baja', value: 'Baja' },
+                        { label: 'Regular', value: 'Regular' },
+                        { label: 'Buena', value: 'Buena' }
+                      ]}
+                    />
+                  </div>
+                  <div style={{ marginTop: '14px' }}>
+                    <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>Estado General: {newDiagnosis.overall_score} / 10</label>
+                    <input type="range" min="0" max="10" step="0.5" value={newDiagnosis.overall_score} onChange={e => setNewDiagnosis({ ...newDiagnosis, overall_score: Number(e.target.value) })} style={{ width: '100%', accentColor: 'var(--pink-primary)' }} />
+                  </div>
                 </div>
 
-                <div>
-                  <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Historial Químico</label>
-                  <textarea 
-                    className="form-input" 
-                    value={newDiagnosis.chemical_history} 
-                    onChange={e => setNewDiagnosis({ ...newDiagnosis, chemical_history: e.target.value })} 
-                    placeholder="Decoloraciones previas, alisados, tintes..." 
-                    style={{ width: '100%', height: '60px', padding: '10px', fontSize: '13px' }}
-                  />
+                {/* Section: Condición del Cabello */}
+                <div style={{ background: 'white', borderRadius: '14px', padding: '16px', border: '1px solid var(--border-color)' }}>
+                  <h5 style={{ margin: '0 0 12px', fontSize: '12px', fontWeight: '850', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Activity size={13} /> Condición del Cabello
+                  </h5>
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '12px 16px' }}>
+                    {[
+                      { key: 'hydration_pct', label: 'Hidratación' },
+                      { key: 'nutrition_pct', label: 'Nutrición' },
+                      { key: 'repair_pct', label: 'Reparación' },
+                      { key: 'shine_pct', label: 'Brillo' },
+                      { key: 'strength_pct', label: 'Fuerza' },
+                    ].map((f) => (
+                      <div key={f.key}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '700', marginBottom: '3px' }}>
+                          <span>{f.label}</span><span>{newDiagnosis[f.key]}%</span>
+                        </div>
+                        <input type="range" min="0" max="100" value={newDiagnosis[f.key]} onChange={e => setNewDiagnosis({ ...newDiagnosis, [f.key]: Number(e.target.value) })} style={{ width: '100%', accentColor: 'var(--pink-primary)' }} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
-                <div>
-                  <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Tratamiento Recomendado</label>
-                  <textarea 
-                    className="form-input" 
-                    value={newDiagnosis.recommended_treatment} 
-                    onChange={e => setNewDiagnosis({ ...newDiagnosis, recommended_treatment: e.target.value })} 
-                    placeholder="Tratamiento molecular, fototerapia, etc..." 
-                    style={{ width: '100%', height: '60px', padding: '10px', fontSize: '13px' }}
-                  />
+                {/* Section: Salud del Cuero Cabelludo */}
+                <div style={{ background: 'white', borderRadius: '14px', padding: '16px', border: '1px solid var(--border-color)' }}>
+                  <h5 style={{ margin: '0 0 12px', fontSize: '12px', fontWeight: '850', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Droplet size={13} /> Salud del Cuero Cabelludo
+                  </h5>
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : '1fr 1fr 1fr', gap: '12px' }}>
+                    <JanaSelect variant="light" label="Nivel de Grasa" value={newDiagnosis.scalp_oil_level} onChange={(val) => setNewDiagnosis({ ...newDiagnosis, scalp_oil_level: val })}
+                      options={[{ label: 'Bajo', value: 'Bajo' }, { label: 'Normal', value: 'Normal' }, { label: 'Alto', value: 'Alto' }]} />
+                    <JanaSelect variant="light" label="Sensibilidad" value={newDiagnosis.scalp_sensitivity} onChange={(val) => setNewDiagnosis({ ...newDiagnosis, scalp_sensitivity: val })}
+                      options={[{ label: 'Baja', value: 'Baja' }, { label: 'Media', value: 'Media' }, { label: 'Alta', value: 'Alta' }]} />
+                    <JanaSelect variant="light" label="Descamación" value={newDiagnosis.scalp_flaking} onChange={(val) => setNewDiagnosis({ ...newDiagnosis, scalp_flaking: val })}
+                      options={[{ label: 'No', value: 'No' }, { label: 'Leve', value: 'Leve' }, { label: 'Sí', value: 'Sí' }]} />
+                    <JanaSelect variant="light" label="Caída" value={newDiagnosis.scalp_hairloss} onChange={(val) => setNewDiagnosis({ ...newDiagnosis, scalp_hairloss: val })}
+                      options={[{ label: 'No', value: 'No' }, { label: 'Leve', value: 'Leve' }, { label: 'Moderada', value: 'Moderada' }]} />
+                    <JanaSelect variant="light" label="Inflamación" value={newDiagnosis.scalp_inflammation} onChange={(val) => setNewDiagnosis({ ...newDiagnosis, scalp_inflammation: val })}
+                      options={[{ label: 'No', value: 'No' }, { label: 'Leve', value: 'Leve' }, { label: 'Sí', value: 'Sí' }]} />
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '700', marginBottom: '3px' }}>
+                        <span>Salud general</span><span>{newDiagnosis.scalp_health_pct}%</span>
+                      </div>
+                      <input type="range" min="0" max="100" value={newDiagnosis.scalp_health_pct} onChange={e => setNewDiagnosis({ ...newDiagnosis, scalp_health_pct: Number(e.target.value) })} style={{ width: '100%', marginTop: '10px', accentColor: 'var(--pink-primary)' }} />
+                    </div>
+                  </div>
                 </div>
 
-                <div>
-                  <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Notas de Diagnóstico</label>
-                  <textarea 
-                    className="form-input" 
-                    value={newDiagnosis.notes} 
-                    onChange={e => setNewDiagnosis({ ...newDiagnosis, notes: e.target.value })} 
-                    placeholder="Observaciones adicionales..." 
-                    style={{ width: '100%', height: '60px', padding: '10px', fontSize: '13px' }}
-                  />
+                {/* Section: Notas y observaciones */}
+                <div style={{ background: 'white', borderRadius: '14px', padding: '16px', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <h5 style={{ margin: 0, fontSize: '12px', fontWeight: '850', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <FileText size={13} /> Notas y Observaciones
+                  </h5>
+                  <div>
+                    <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Observaciones (una por línea)</label>
+                    <textarea
+                      className="form-input"
+                      value={newDiagnosis.observations}
+                      onChange={e => setNewDiagnosis({ ...newDiagnosis, observations: e.target.value })}
+                      placeholder={'Se observa acumulación leve de residuos en raíz.\nPuntas ligeramente secas y porosas.'}
+                      style={{ width: '100%', height: '60px', padding: '10px', fontSize: '13px' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Historial Químico</label>
+                    <textarea
+                      className="form-input"
+                      value={newDiagnosis.chemical_history}
+                      onChange={e => setNewDiagnosis({ ...newDiagnosis, chemical_history: e.target.value })}
+                      placeholder="Decoloraciones previas, alisados, tintes..."
+                      style={{ width: '100%', height: '60px', padding: '10px', fontSize: '13px' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Tratamiento Recomendado</label>
+                    <textarea
+                      className="form-input"
+                      value={newDiagnosis.recommended_treatment}
+                      onChange={e => setNewDiagnosis({ ...newDiagnosis, recommended_treatment: e.target.value })}
+                      placeholder="Tratamiento molecular, fototerapia, etc..."
+                      style={{ width: '100%', height: '60px', padding: '10px', fontSize: '13px' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Notas de Diagnóstico</label>
+                    <textarea
+                      className="form-input"
+                      value={newDiagnosis.notes}
+                      onChange={e => setNewDiagnosis({ ...newDiagnosis, notes: e.target.value })}
+                      placeholder="Observaciones adicionales..."
+                      style={{ width: '100%', height: '60px', padding: '10px', fontSize: '13px' }}
+                    />
+                  </div>
                 </div>
 
-                <button 
+                <button
                   onClick={async () => {
                     try {
                       if (!newDiagnosis.chemical_history && !newDiagnosis.recommended_treatment) {
@@ -3207,7 +3452,8 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                       }
                       const saved = await dataService.addCapillaryDiagnosis({
                         client_id: client.id,
-                        ...newDiagnosis
+                        ...newDiagnosis,
+                        observations: newDiagnosis.observations.split('\n').map(s => s.trim()).filter(Boolean)
                       });
                       setDiagnoses([saved, ...diagnoses]);
                       setShowAddDiagnosis(false);
@@ -3215,6 +3461,20 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                         hair_type: 'Normal',
                         porosity: 'Media',
                         scalp_condition: 'Sano',
+                        elasticity: 'Buena',
+                        overall_score: 7.5,
+                        hydration_pct: 70,
+                        nutrition_pct: 60,
+                        repair_pct: 50,
+                        shine_pct: 80,
+                        strength_pct: 70,
+                        scalp_oil_level: 'Normal',
+                        scalp_sensitivity: 'Baja',
+                        scalp_flaking: 'No',
+                        scalp_hairloss: 'Leve',
+                        scalp_inflammation: 'No',
+                        scalp_health_pct: 70,
+                        observations: '',
                         chemical_history: '',
                         recommended_treatment: '',
                         notes: '',
@@ -3250,38 +3510,38 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                      <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--pink-primary)' }}>
+                      <span style={{ fontSize: '14.5px', fontWeight: '800', color: 'var(--pink-primary)' }}>
                         🩺 Diagnóstico del {new Date(diag.created_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' })}
                       </span>
-                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                      <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
                         {new Date(diag.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '8px', marginBottom: '12px', padding: '8px', backgroundColor: 'white', borderRadius: '8px', border: '1px solid var(--border-color)', fontSize: '12px' }}>
-                      <div><strong style={{ color: 'var(--text-muted)' }}>Hebra:</strong> {diag.hair_type}</div>
-                      <div><strong style={{ color: 'var(--text-muted)' }}>Porosidad:</strong> {diag.porosity}</div>
-                      <div><strong style={{ color: 'var(--text-muted)' }}>Cuero:</strong> {diag.scalp_condition}</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '8px', marginBottom: '12px', padding: '10px', backgroundColor: 'white', borderRadius: '8px', border: '1px solid var(--border-color)', fontSize: '14px' }}>
+                      <div><strong style={{ color: 'var(--text-secondary)' }}>Hebra:</strong> {diag.hair_type}</div>
+                      <div><strong style={{ color: 'var(--text-secondary)' }}>Porosidad:</strong> {diag.porosity}</div>
+                      <div><strong style={{ color: 'var(--text-secondary)' }}>Cuero:</strong> {diag.scalp_condition}</div>
                     </div>
 
                     {diag.chemical_history && (
-                      <div style={{ fontSize: '12px', marginBottom: '8px' }}>
+                      <div style={{ fontSize: '14px', marginBottom: '10px' }}>
                         <strong>Historial Químico:</strong>
-                        <p style={{ margin: '2px 0 0', color: 'var(--text-secondary)' }}>{diag.chemical_history}</p>
+                        <p style={{ margin: '3px 0 0', color: 'var(--text-secondary)' }}>{diag.chemical_history}</p>
                       </div>
                     )}
 
                     {diag.recommended_treatment && (
-                      <div style={{ fontSize: '12px', marginBottom: '8px' }}>
+                      <div style={{ fontSize: '14px', marginBottom: '10px' }}>
                         <strong>Tratamiento Molecular Recomendado:</strong>
-                        <p style={{ margin: '2px 0 0', color: 'var(--text-secondary)', fontWeight: '700' }}>{diag.recommended_treatment}</p>
+                        <p style={{ margin: '3px 0 0', color: 'var(--text-secondary)', fontWeight: '700' }}>{diag.recommended_treatment}</p>
                       </div>
                     )}
 
                     {diag.notes && (
-                      <div style={{ fontSize: '12px' }}>
+                      <div style={{ fontSize: '14px' }}>
                         <strong>Notas:</strong>
-                        <p style={{ margin: '2px 0 0', color: 'var(--text-muted)', fontStyle: 'italic' }}>{diag.notes}</p>
+                        <p style={{ margin: '3px 0 0', color: 'var(--text-secondary)', fontStyle: 'italic' }}>{diag.notes}</p>
                       </div>
                     )}
                   </div>
@@ -3588,47 +3848,46 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate }) => {
                   </div>
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                    <div style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>CUMPLE</span>
-                      <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '750' }}>{client.birth_date ? new Date(client.birth_date + 'T00:00:00').toLocaleDateString([], {day: '2-digit', month: 'short'}) : 'N/A'}</span>
+                (() => {
+                  const totalSpend = history.reduce((sum, h) => sum + (Number(h.amount) || 0), 0);
+                  const infoRow = (icon, iconColor, iconBg, label, value, valueColor) => (
+                    <div style={{
+                      padding: '12px 14px', borderRadius: '14px', backgroundColor: 'white',
+                      border: '1px solid rgba(160,80,106,0.14)', boxShadow: '0 2px 10px rgba(160,80,106,0.05)',
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px',
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '9px', minWidth: 0 }}>
+                        <div style={{
+                          width: '30px', height: '30px', borderRadius: '9px', backgroundColor: iconBg,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                        }}>
+                          {React.cloneElement(icon, { size: 14, color: iconColor })}
+                        </div>
+                        <span style={{ fontSize: '11.5px', color: 'var(--text-secondary)', fontWeight: '700', whiteSpace: 'nowrap' }}>{label}</span>
+                      </div>
+                      <span style={{ fontSize: '13px', color: valueColor || 'var(--text-primary)', fontWeight: '800', whiteSpace: 'nowrap' }}>{value}</span>
                     </div>
-                    <div style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>REGISTRO</span>
-                      <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '750' }}>{client.created_at ? new Date(client.created_at).toLocaleDateString([], {day: '2-digit', month: '2-digit'}) : 'N/A'}</span>
-                    </div>
-                  </div>
+                  );
 
-                  {/* Mobile Stats Block */}
-                  {(() => {
-                    const totalSpend = history.reduce((sum, h) => sum + (Number(h.amount) || 0), 0);
-                    return (
-                      <>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                          <div style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>PRÓX. CITA</span>
-                            <span style={{ fontSize: '11px', color: upcomingAppointment ? 'var(--magenta-primary)' : 'var(--text-primary)', fontWeight: '750' }}>
-                              {upcomingAppointment 
-                                ? new Date(upcomingAppointment.scheduled_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'short' })
-                                : 'Ninguna'}
-                            </span>
-                          </div>
-                          <div style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>FACTURADO</span>
-                            <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '750' }}>
-                              ${totalSpend.toLocaleString('es-VE', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                            </span>
-                          </div>
-                        </div>
-                        <div style={{ padding: '8px 12px', borderRadius: '10px', backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>ÚLT. VISITA</span>
-                          <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: '750' }}>{lastVisitLabel}</span>
-                        </div>
-                      </>
-                    );
-                  })()}
-                </div>
+                  return (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                        {infoRow(<Cake />, 'var(--pink-primary)', 'rgba(160,80,106,0.12)', 'CUMPLE',
+                          client.birth_date ? new Date(client.birth_date + 'T00:00:00').toLocaleDateString([], {day: '2-digit', month: 'short'}) : 'N/A')}
+                        {infoRow(<FileText />, 'var(--magenta-primary)', 'rgba(160,80,106,0.08)', 'REGISTRO',
+                          client.created_at ? new Date(client.created_at).toLocaleDateString([], {day: '2-digit', month: '2-digit'}) : 'N/A')}
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                        {infoRow(<Calendar />, 'var(--pink-primary)', 'rgba(160,80,106,0.12)', 'PRÓX. CITA',
+                          upcomingAppointment ? new Date(upcomingAppointment.scheduled_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'short' }) : 'Ninguna',
+                          upcomingAppointment ? 'var(--magenta-primary)' : 'var(--text-primary)')}
+                        {infoRow(<Receipt />, '#2e9e5b', 'rgba(46,158,91,0.12)', 'FACTURADO',
+                          `$${totalSpend.toLocaleString('es-VE', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`)}
+                      </div>
+                      {infoRow(<Clock />, 'var(--text-secondary)', 'rgba(74,48,54,0.06)', 'ÚLT. VISITA', lastVisitLabel)}
+                    </div>
+                  );
+                })()
               )}
             </div>
           </div>
@@ -4360,8 +4619,8 @@ const ComparisonCard = ({ comparison, onDelete, onShare }) => {
 
 const DetailItem = ({ label, value }) => (
   <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
-    <span style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>{label}</span>
-    <span style={{ fontWeight: '600', fontSize: '14px' }}>{value}</span>
+    <span style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>{label}</span>
+    <span style={{ fontWeight: '700', fontSize: '16px' }}>{value}</span>
   </div>
 );
 
