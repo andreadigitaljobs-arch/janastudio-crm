@@ -2580,6 +2580,17 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
   };
 
   const renderSubTabContent = () => {
+    const getBadgeStyle = (val) => {
+      const lower = String(val || '').toLowerCase();
+      if (lower.includes('sano') || lower.includes('normal') || lower.includes('buena') || lower.includes('óptimo') || lower.includes('optim')) {
+        return { bg: 'rgba(46, 158, 91, 0.07)', color: '#2e9e5b', border: 'rgba(46, 158, 91, 0.15)' };
+      }
+      if (lower.includes('media') || lower.includes('regular') || lower.includes('mixto')) {
+        return { bg: 'rgba(230, 159, 60, 0.08)', color: '#c9821f', border: 'rgba(230, 159, 60, 0.18)' };
+      }
+      return { bg: 'rgba(212, 78, 108, 0.07)', color: '#d44e6c', border: 'rgba(212, 78, 108, 0.15)' };
+    };
+
     switch (activeSubTab) {
       case 'gallery':
         return (
@@ -3416,62 +3427,99 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
             ) : diagnoses.length === 0 ? (
               <p style={{ color: 'var(--text-muted)', fontSize: '13px', textAlign: 'center', padding: '30px' }}>No hay diagnósticos capilares registrados para esta clienta.</p>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {diagnoses.map(diag => (
-                  <div
-                    key={diag.id}
-                    style={{
-                      padding: isMobile ? '18px 16px' : '16px', borderRadius: '18px', backgroundColor: 'white',
-                      border: '1px solid rgba(160, 80, 106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.05)'
-                    }}
-                  >
-                    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '4px' : '0', marginBottom: '14px', paddingBottom: '14px', borderBottom: '1px solid var(--border-color)' }}>
-                      <span style={{ fontSize: isMobile ? '15px' : '14.5px', fontWeight: '800', color: 'var(--pink-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Activity size={15} /> Diagnóstico del {new Date(diag.created_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' })}
-                      </span>
-                      <span style={{ fontSize: '12.5px', color: 'var(--text-muted)', fontWeight: '600' }}>
-                        {new Date(diag.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    </div>
-
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '14px' }}>
-                      {[
-                        { label: 'Hebra', value: diag.hair_type },
-                        { label: 'Porosidad', value: diag.porosity },
-                        { label: 'Cuero', value: diag.scalp_condition },
-                      ].filter(f => f.value).map((f, i) => (
-                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '7px 12px', borderRadius: '10px', background: 'rgba(160,80,106,0.07)', border: '1px solid rgba(160,80,106,0.12)' }}>
-                          <span style={{ fontSize: '11.5px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>{f.label}:</span>
-                          <span style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: '750' }}>{f.value}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      {diag.chemical_history && (
-                        <div>
-                          <div style={{ fontSize: '12.5px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '3px' }}>Historial Químico</div>
-                          <p style={{ margin: 0, fontSize: '15px', color: 'var(--text-secondary)', lineHeight: '1.45' }}>{diag.chemical_history}</p>
-                        </div>
+              <div style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '24px', 
+                position: 'relative',
+                  paddingLeft: isMobile ? '0' : '20px',
+                  borderLeft: isMobile ? 'none' : '2.5px solid rgba(160, 80, 106, 0.1)'
+                }}>
+                  {diagnoses.map(diag => (
+                    <div
+                      key={diag.id}
+                      style={{
+                        position: 'relative',
+                        padding: isMobile ? '18px 16px' : '20px', 
+                        borderRadius: '18px', 
+                        backgroundColor: 'white',
+                        border: '1px solid rgba(160, 80, 106, 0.12)', 
+                        boxShadow: '0 4px 16px rgba(160, 80, 106, 0.04)'
+                      }}
+                    >
+                      {!isMobile && (
+                        <div style={{
+                          position: 'absolute',
+                          left: '-29px',
+                          top: '22px',
+                          width: '15px',
+                          height: '15px',
+                          borderRadius: '50%',
+                          background: 'var(--magenta-gradient)',
+                          border: '3px solid #fffbfa',
+                          boxShadow: '0 2px 6px rgba(160, 80, 106, 0.25)',
+                          zIndex: 2
+                        }} />
                       )}
 
-                      {diag.recommended_treatment && (
-                        <div>
-                          <div style={{ fontSize: '12.5px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '3px' }}>Tratamiento Recomendado</div>
-                          <p style={{ margin: 0, fontSize: '15px', color: 'var(--text-primary)', fontWeight: '600', lineHeight: '1.45' }}>{diag.recommended_treatment}</p>
-                        </div>
-                      )}
+                      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '4px' : '0', marginBottom: '14px', paddingBottom: '14px', borderBottom: '1px solid var(--border-color)' }}>
+                        <span style={{ fontSize: isMobile ? '15px' : '14.5px', fontWeight: '800', color: 'var(--pink-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Activity size={15} /> Diagnóstico del {new Date(diag.created_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        </span>
+                        <span style={{ fontSize: '12.5px', color: 'var(--text-muted)', fontWeight: '600' }}>
+                          {new Date(diag.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
 
-                      {diag.notes && (
-                        <div>
-                          <div style={{ fontSize: '12.5px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '3px' }}>Notas</div>
-                          <p style={{ margin: 0, fontSize: '15px', color: 'var(--text-secondary)', fontStyle: 'italic', lineHeight: '1.45' }}>{diag.notes}</p>
-                        </div>
-                      )}
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '14px' }}>
+                        {[
+                          { label: 'Hebra', value: diag.hair_type },
+                          { label: 'Porosidad', value: diag.porosity },
+                          { label: 'Cuero', value: diag.scalp_condition },
+                        ].filter(f => f.value).map((f, i) => {
+                          const style = getBadgeStyle(f.value);
+                          return (
+                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '6px 12px', borderRadius: '20px', background: style.bg, border: `1px solid ${style.border}`, color: style.color }}>
+                              <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{f.label}:</span>
+                              <span style={{ fontSize: '12.5px', fontWeight: '800' }}>{f.value}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginTop: '12px' }}>
+                        {diag.chemical_history && (
+                          <div style={{ background: 'rgba(160,80,106,0.005)', padding: '12px 14px', borderRadius: '12px', border: '1px solid rgba(160,80,106,0.05)' }}>
+                            <div style={{ fontSize: '11.5px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '4px' }}>Historial Químico</div>
+                            <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary)', lineHeight: '1.45' }}>{diag.chemical_history}</p>
+                          </div>
+                        )}
+
+                        {diag.recommended_treatment && (
+                          <div style={{ 
+                            background: 'rgba(160,80,106,0.02)', 
+                            padding: '12px 14px', 
+                            borderRadius: '12px', 
+                            border: '1px solid rgba(160,80,106,0.08)',
+                            borderLeft: '4px solid var(--magenta-primary)'
+                          }}>
+                            <div style={{ fontSize: '11.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <Sparkles size={12} color="var(--magenta-primary)" /> Tratamiento Recomendado
+                            </div>
+                            <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-primary)', fontWeight: '700', lineHeight: '1.45' }}>{diag.recommended_treatment}</p>
+                          </div>
+                        )}
+
+                        {diag.notes && (
+                          <div style={{ background: 'rgba(160,80,106,0.005)', padding: '12px 14px', borderRadius: '12px', border: '1px solid rgba(160,80,106,0.05)' }}>
+                            <div style={{ fontSize: '11.5px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '4px' }}>Notas de Sesión</div>
+                            <p style={{ margin: 0, fontSize: '13.5px', color: 'var(--text-secondary)', fontStyle: 'italic', lineHeight: '1.45' }}>{diag.notes}</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
             )}
             </div>
           </div>
