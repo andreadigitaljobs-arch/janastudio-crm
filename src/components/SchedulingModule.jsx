@@ -1545,8 +1545,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       <Clock size={16} color="#c97282" />
                       CITAS DE HOY
                     </h4>
-                    <span style={{ fontSize: '0.66rem', color: '#a0909a', fontWeight: 600, marginLeft: '24px' }}>
-                      👆 Toca una cita para ver sus detalles
+                    <span style={{ fontSize: '0.66rem', color: '#a0909a', fontWeight: 600, marginLeft: '24px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <Info size={12} color="#a0909a" /> Toca una cita para ver sus detalles
                     </span>
                   </div>
                   {visibleStaff.length > 0 && (
