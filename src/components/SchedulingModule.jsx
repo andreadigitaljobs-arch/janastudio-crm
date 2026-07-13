@@ -1869,28 +1869,13 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   Toca en una especialista para ver su ficha
                 </p>
 
-                <div className="jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: `repeat(${(isMobile || isTablet) ? 2 : 3}, minmax(0, 1fr))`, gap: '10px', overflow: 'visible', flex: 1, paddingRight: '4px', paddingTop: '6px', paddingBottom: '6px' }}>
+                <div className="jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(155px, 1fr))', gap: '10px', overflow: 'visible', flex: 1, paddingRight: '4px', paddingTop: '6px', paddingBottom: '6px' }}>
                   <AnimatePresence mode="popLayout">
                   {visibleStaff.map((s, staffIdx) => {
                     const window = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
                     const metrics = getStaffMetrics(s.id);
                     const initial = (s.name || '?').charAt(0).toUpperCase();
                     const nextApp = getStaffNextApp(s.id);
-                    
-                    const cols = (isMobile || isTablet) ? 2 : 3;
-                    const colIndex = staffIdx % cols;
-                    const posStyle = cols === 2 
-                      ? (colIndex === 0 
-                        ? { tooltip: { left: '0px', right: 'auto', transform: 'none' }, arrow: { left: '20px', right: 'auto', transform: 'none' } }
-                        : { tooltip: { right: '0px', left: 'auto', transform: 'none' }, arrow: { right: '20px', left: 'auto', transform: 'none' } }
-                      )
-                      : (colIndex === 0
-                        ? { tooltip: { left: '0px', right: 'auto', transform: 'none' }, arrow: { left: '24px', right: 'auto', transform: 'none' } }
-                        : (colIndex === 1
-                          ? { tooltip: { left: '50%', right: 'auto', transform: 'translateX(-50%)' }, arrow: { left: '50%', right: 'auto', transform: 'translateX(-50%)' } }
-                          : { tooltip: { right: '0px', left: 'auto', transform: 'none' }, arrow: { right: '24px', left: 'auto', transform: 'none' } }
-                        )
-                      );
                     const staffMotionProps = {
                       layout: true,
                       initial: { opacity: 0, y: 20, scale: 0.92 },
@@ -2007,11 +1992,11 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       >
                         {/* Desktop tooltip on hover */}
                         {hoveredStaffId === s.id && (
-                          <div className="staff-tooltip" style={{ ...posStyle.tooltip, background: '#a0506a' }}>
+                          <div className="staff-tooltip" style={{ left: '50%', transform: 'translateX(-50%)', background: '#a0506a', whiteSpace: 'normal', width: 'max-content', maxWidth: '170px', textAlign: 'center' }}>
                             <div style={{ fontWeight: 700, marginBottom: '2px' }}>{s.name}</div>
                             <div style={{ opacity: 0.8 }}>{metrics.citasCount} cita{metrics.citasCount !== 1 ? 's' : ''} · {metrics.occupancy}% ocupación</div>
                             {nextApp && <div style={{ opacity: 0.65, marginTop: '2px' }}>Próxima: {nextApp.timeStr}</div>}
-                            <div style={{ position: 'absolute', top: '100%', border: '5px solid transparent', borderTopColor: '#a0506a', ...posStyle.arrow }} />
+                            <div style={{ position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)', border: '5px solid transparent', borderTopColor: '#a0506a' }} />
                           </div>
                         )}
 
