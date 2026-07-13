@@ -1859,10 +1859,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     const nextApp = getStaffNextApp(s.id);
                     const staffMotionProps = {
                       layout: true,
-                      initial: { opacity: 0, y: 12, scale: 0.96 },
+                      initial: { opacity: 0, y: 20, scale: 0.92 },
                       animate: { opacity: 1, y: 0, scale: 1 },
-                      exit: { opacity: 0, y: -8, scale: 0.96, transition: { duration: 0.18 } },
-                      transition: { duration: 0.3, delay: Math.min(staffIdx * 0.05, 0.35), ease: [0.16, 1, 0.3, 1] }
+                      exit: { opacity: 0, y: -12, scale: 0.92, transition: { duration: 0.2 } },
+                      transition: { duration: 0.4, delay: Math.min(staffIdx * 0.06, 0.4), ease: [0.16, 1, 0.3, 1] }
                     };
 
                     if (!window.isWorking) {

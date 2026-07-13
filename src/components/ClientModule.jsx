@@ -532,10 +532,10 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                   fontSize: '13px', fontWeight: '750', cursor: 'pointer',
                   boxShadow: activeTab === t.key ? '0 4px 15px rgba(160, 80, 106, 0.25)' : 'none',
                 }}
-              className="btn-interactive mi-btn"
-            >
-              <Plus size={18} /> Nueva clienta
-            </button>
+                className="btn-interactive mi-btn"
+              >
+                <t.icon size={16} /> {t.label}
+              </button>
             ))}
           </div>
 
@@ -572,8 +572,8 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
               >
                 {windowWidth < 600 ? (
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                      <div style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '700' }}>{stat.label}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', gap: '8px' }}>
+                      <div style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '700', minWidth: 0, flex: 1 }}>{stat.label}</div>
                       <div style={{ width: '34px', height: '34px', borderRadius: '10px', backgroundColor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         <stat.icon size={17} color={stat.iconColor} />
                       </div>
