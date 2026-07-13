@@ -3716,4 +3716,98 @@ button, [role="button"], a[href] {
   to { transform: scaleX(1); }
 }
 
+/* ══════════════════════════════════════════════════════════════
+   STAFF CARD ENHANCEMENTS — Agenda especialistas
+   ══════════════════════════════════════════════════════════════ */
+
+/* Pulsing dot for busy status */
+@keyframes staffDotPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.6); opacity: 0.5; }
+}
+.staff-dot-pulse {
+  animation: staffDotPulse 1.8s ease-in-out infinite;
+}
+
+/* Avatar shimmer on load */
+@keyframes staffAvatarShimmer {
+  0% { background-position: -150% 0; }
+  100% { background-position: 150% 0; }
+}
+.staff-avatar-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: staffAvatarShimmer 1.8s ease-in-out 0.5s 1;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Glow on hover matching status color */
+.agenda-staff-card {
+  transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+.agenda-staff-card:hover {
+  transform: translateY(-3px) !important;
+}
+.agenda-staff-card[data-status="libre"]:hover {
+  box-shadow: 0 6px 20px rgba(34,197,94,0.18), 0 2px 8px rgba(34,197,94,0.08) !important;
+  border-color: rgba(34,197,94,0.35) !important;
+}
+.agenda-staff-card[data-status="encita"]:hover {
+  box-shadow: 0 6px 20px rgba(239,68,68,0.18), 0 2px 8px rgba(239,68,68,0.08) !important;
+  border-color: rgba(239,68,68,0.35) !important;
+}
+.agenda-staff-card[data-status="almuerzo"]:hover {
+  box-shadow: 0 6px 20px rgba(201,114,130,0.18), 0 2px 8px rgba(201,114,130,0.08) !important;
+  border-color: rgba(201,114,130,0.35) !important;
+}
+.agenda-staff-card[data-status="notrabaja"]:hover {
+  box-shadow: 0 4px 14px rgba(180,170,165,0.15) !important;
+  border-color: rgba(180,170,165,0.35) !important;
+  opacity: 0.75 !important;
+}
+
+/* Staff tooltip */
+@keyframes staffTooltipIn {
+  from { opacity: 0; transform: translateY(4px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.staff-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2d1b22;
+  color: #fff;
+  padding: 8px 12px;
+  borderRadius: 10px;
+  fontSize: '0.65rem';
+  whiteSpace: 'nowrap';
+  pointerEvents: 'none';
+  zIndex: 20;
+  boxShadow: 0 4px 16px rgba(45,27,34,0.25);
+  animation: staffTooltipIn 0.2s ease both;
+}
+.staff-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  borderTopColor: #2d1b22;
+}
+
+/* Chevron bounce on hover */
+@keyframes staffChevronBounce {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(3px); }
+}
+.agenda-staff-card:hover .staff-chevron {
+  animation: staffChevronBounce 0.6s ease-in-out infinite;
+}
+
 

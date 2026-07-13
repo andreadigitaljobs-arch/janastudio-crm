@@ -648,6 +648,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
   const [mobileStaffFilter, setMobileStaffFilter] = useState('all');
   const [timeOfDayFilter, setTimeOfDayFilter] = useState('all'); // 'all' | 'manana' | 'mediodia' | 'tarde' | 'noche'
   const [staffSearchQuery, setStaffSearchQuery] = useState('');
+  const [hoveredStaffId, setHoveredStaffId] = useState(null);
   const [showHeaderCalendar, setShowHeaderCalendar] = useState(false);
 
   const handleCloseStaffDrawer = () => {
@@ -1845,7 +1846,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 </div>
 
                 {/* Stylists Compact Grid */}
-                <div className="jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: `repeat(${(isMobile || isTablet) ? 2 : 3}, minmax(0, 1fr))`, gap: '10px', overflowY: 'auto', flex: 1, paddingRight: '4px', paddingTop: '6px', paddingBottom: '6px' }}>
+                <div className="jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: `repeat(${(isMobile || isTablet) ? 2 : 3}, minmax(0, 1fr))`, gap: '10px', overflowY: 'auto', flex: 1, paddingRight: '4px', paddingTop: '6px', paddingBottom: '6px', overflowX: 'visible' }}>
                   <AnimatePresence mode="popLayout">
                   {visibleStaff.map((s, staffIdx) => {
                     const window = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
@@ -1866,7 +1867,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                           key={s.id}
                           {...staffMotionProps}
                           onClick={() => setSelectedStaffDrawer(s)}
+                          onMouseEnter={() => setHoveredStaffId(s.id)}
+                          onMouseLeave={() => setHoveredStaffId(null)}
                           className="agenda-staff-card"
+                          data-status="notrabaja"
                           style={{
                             padding: '10px',
                             background: '#fcfaf9',
@@ -1878,14 +1882,15 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                             gap: '10px',
                             cursor: 'pointer',
                             opacity: 0.6,
-                            transition: 'all 0.2s ease',
                             position: 'relative',
-                            overflow: 'hidden',
+                            overflow: 'visible',
                           }}
-                          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.opacity = '0.8'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(74,48,54,0.06)'; }}
-                          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.opacity = '0.6'; e.currentTarget.style.boxShadow = 'none'; }}
                         >
-                          <div style={{ position: 'relative', width: '50px', height: '50px', flexShrink: 0, borderRadius: '12px', overflow: 'hidden' }}>
+                          {/* Floating status badge */}
+                          <div style={{ position: 'absolute', top: '6px', right: '6px', width: '18px', height: '18px', borderRadius: '50%', background: 'rgba(180,170,165,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.5rem', zIndex: 2 }}>
+                            ⬜
+                          </div>
+                          <div className="staff-avatar-shimmer" style={{ position: 'relative', width: '50px', height: '50px', flexShrink: 0, borderRadius: '12px', overflow: 'hidden' }}>
                             <img
                               src={s.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(s.name)}`}
                               alt={s.name}
@@ -1899,7 +1904,9 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                             <div style={{ marginTop: '4px', fontSize: '0.52rem', fontWeight: 800, color: '#b0a8a3', background: 'rgba(180,170,165,0.1)', padding: '2px 8px', borderRadius: '999px', letterSpacing: '0.3px', display: 'inline-block', whiteSpace: 'nowrap' }}>
                               NO TRABAJA
                             </div>
+                            <div style={{ fontSize: '0.48rem', color: '#b0a8a3', fontWeight: 500, marginTop: '3px', fontStyle: 'italic' }}>Toca para ver agenda</div>
                           </div>
+                          <ChevronRight size={14} color="#b0a8a3" className="staff-chevron" style={{ flexShrink: 0, opacity: 0.5 }} />
                         </motion.div>
                       );
                     }
@@ -1941,7 +1948,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         key={s.id}
                         {...staffMotionProps}
                         onClick={() => setSelectedStaffDrawer(s)}
+                        onMouseEnter={() => setHoveredStaffId(s.id)}
+                        onMouseLeave={() => setHoveredStaffId(null)}
                         className="agenda-staff-card"
+                        data-status={statusText === 'LIBRE' ? 'libre' : statusText === 'EN CITA' ? 'encita' : 'almuerzo'}
                         style={{
                           padding: '10px',
                           background: '#ffffff',
@@ -1953,34 +1963,64 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                           gap: '10px',
                           cursor: 'pointer',
                           boxShadow: '0 2px 8px rgba(74,48,54,0.04)',
-                          transition: 'all 0.2s ease',
                           position: 'relative',
-                          overflow: 'hidden',
+                          overflow: 'visible',
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(74,48,54,0.1)'; e.currentTarget.style.borderColor = 'rgba(212,160,154,0.3)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(74,48,54,0.04)'; e.currentTarget.style.borderColor = 'rgba(223,178,140,0.18)'; }}
                       >
-                        {/* Photo - Rounded Rectangle with gradient overlay */}
-                        <div style={{ position: 'relative', width: '50px', height: '58px', flexShrink: 0, borderRadius: '12px', overflow: 'hidden' }}>
+                        {/* Desktop tooltip on hover */}
+                        {hoveredStaffId === s.id && !isMobile && !isTablet && (
+                          <div className="staff-tooltip" style={{ position: 'absolute', bottom: 'calc(100% + 8px)', left: '50%', transform: 'translateX(-50%)', background: '#2d1b22', color: '#fff', padding: '8px 12px', borderRadius: '10px', fontSize: '0.65rem', whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 20, boxShadow: '0 4px 16px rgba(45,27,34,0.25)' }}>
+                            <div style={{ fontWeight: 700, marginBottom: '2px' }}>{s.name}</div>
+                            <div style={{ opacity: 0.8 }}>{metrics.citasCount} cita{metrics.citasCount !== 1 ? 's' : ''} · {metrics.occupancy}% ocupación</div>
+                            {nextApp && <div style={{ opacity: 0.65, marginTop: '2px' }}>Próxima: {nextApp.timeStr}</div>}
+                            <div style={{ position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)', border: '5px solid transparent', borderTopColor: '#2d1b22' }} />
+                          </div>
+                        )}
+                        {/* Floating status badge — top-right corner */}
+                        <div style={{ position: 'absolute', top: '6px', right: '6px', width: '20px', height: '20px', borderRadius: '50%', background: `${statusColor}18`, border: `1.5px solid ${statusColor}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.55rem', zIndex: 2, boxShadow: `0 0 8px ${statusColor}20` }}>
+                          {statusText === 'EN CITA' ? '🔴' : statusText === 'ALMUERZO' ? '🍽️' : '🟢'}
+                        </div>
+
+                        {/* Photo - Rounded Rectangle with shimmer + gradient overlay */}
+                        <div className="staff-avatar-shimmer" style={{ position: 'relative', width: '50px', height: '58px', flexShrink: 0, borderRadius: '12px', overflow: 'hidden' }}>
                           <img
                             src={s.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(s.name)}`}
                             alt={s.name}
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                           />
                           <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(200deg, ${statusColor}55 0%, ${statusColor}00 55%), linear-gradient(0deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 45%)` }} />
-                          <span style={{ position: 'absolute', right: '3px', bottom: '3px', width: '9px', height: '9px', borderRadius: '50%', background: statusColor, border: '2px solid #fff', boxShadow: `0 0 4px ${statusColor}66` }} />
+                          {/* Status dot — pulsing when busy */}
+                          <span className={statusText !== 'LIBRE' ? 'staff-dot-pulse' : ''} style={{ position: 'absolute', right: '3px', bottom: '3px', width: '9px', height: '9px', borderRadius: '50%', background: statusColor, border: '2px solid #fff', boxShadow: `0 0 4px ${statusColor}66` }} />
                         </div>
 
                         {/* Info */}
-                        <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ flex: 1, minWidth: 0, paddingRight: '22px' }}>
                           <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#2d1b22', lineHeight: 1.3 }}>{s.name}</div>
                           <div style={{ fontSize: '0.56rem', color: '#a0909a', fontWeight: 600, marginTop: '1px', lineHeight: 1.3 }}>{getStaffRole(s.name)}</div>
                           <div style={{ marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                             <span className="mi-tag" style={{ fontSize: '0.52rem', fontWeight: 800, color: statusColor, background: `${statusColor}12`, padding: '2px 8px', borderRadius: '999px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>
+                              {statusText !== 'LIBRE' && <span className="staff-dot-pulse" style={{ display: 'inline-block', width: '5px', height: '5px', borderRadius: '50%', background: statusColor, marginRight: '4px', verticalAlign: 'middle' }} />}
                               {statusText}
                             </span>
+                            {/* Citas count */}
+                            {metrics.citasCount > 0 && (
+                              <span style={{ fontSize: '0.48rem', fontWeight: 700, color: '#a0909a', background: 'rgba(160,144,154,0.08)', padding: '1px 6px', borderRadius: '999px', whiteSpace: 'nowrap' }}>
+                                📅 {metrics.citasCount}
+                              </span>
+                            )}
                           </div>
+                          {/* Next appointment hint */}
+                          {nextApp && statusText === 'LIBRE' && (
+                            <div style={{ fontSize: '0.46rem', color: '#c9a0a8', fontWeight: 500, marginTop: '2px' }}>
+                              Próxima: {nextApp.timeStr}
+                            </div>
+                          )}
+                          {/* "Toca para ver agenda" hint */}
+                          <div style={{ fontSize: '0.46rem', color: '#c9a0a8', fontWeight: 500, marginTop: '2px', fontStyle: 'italic' }}>Toca para ver agenda</div>
                         </div>
+
+                        {/* Chevron */}
+                        <ChevronRight size={14} color={statusColor} className="staff-chevron" style={{ flexShrink: 0, opacity: 0.5, position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)' }} />
 
                         {/* Occupancy bar */}
                         <div style={{ position: 'absolute', bottom: 0, left: '4px', right: 0, height: '3px', background: '#fcf6f7', borderRadius: '0 0 14px 0', overflow: 'hidden' }}>
