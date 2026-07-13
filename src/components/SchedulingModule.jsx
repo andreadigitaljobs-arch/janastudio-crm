@@ -2439,14 +2439,13 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
           {/* Main content padding area */}
           <div style={{ padding: isMobile ? '16px 16px calc(130px + env(safe-area-inset-bottom, 12px)) 16px' : '24px 32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            
             {/* Identity Card & Date Selector Ribbon */}
             <div style={{
-              background: 'linear-gradient(135deg, #2d1b22 0%, #4a2b37 100%)',
-              border: '1px solid rgba(223,178,140,0.18)',
+              background: 'linear-gradient(135deg, #fffcfb 0%, #faf1f0 100%)',
+              border: '1px solid rgba(223,178,140,0.28)',
               borderRadius: isMobile ? '16px' : '24px',
               padding: isMobile ? '14px' : '24px',
-              boxShadow: '0 4px 20px rgba(74, 48, 54, 0.15)',
+              boxShadow: '0 4px 24px rgba(74, 48, 54, 0.04)',
               display: 'flex',
               flexDirection: isMobile ? 'column' : 'row',
               justifyContent: 'space-between',
@@ -2455,29 +2454,29 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               position: 'relative',
               overflow: 'hidden'
             }}>
-              {/* Decorative chic glow orb (matches visit detail header) */}
+              {/* Decorative chic glow orb (warm champagne glow) */}
               <div style={{
                 position: 'absolute', right: '-20px', top: '-20px',
                 width: '120px', height: '120px', borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(223, 178, 140, 0.25) 0%, rgba(223, 178, 140, 0) 70%)',
+                background: 'radial-gradient(circle, rgba(223, 178, 140, 0.15) 0%, rgba(223, 178, 140, 0) 70%)',
                 filter: 'blur(12px)', pointerEvents: 'none'
               }} />
 
               {/* Left Side: Photo & Name & Specialty */}
               <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '12px' : '20px', flexWrap: 'wrap', position: 'relative' }}>
-                <div style={{ width: isMobile ? '60px' : '90px', height: isMobile ? '60px' : '90px', borderRadius: '50%', overflow: 'hidden', border: '3px solid rgba(255,255,255,0.25)', flexShrink: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.2)', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontSize: isMobile ? '1.4rem' : '2rem', fontWeight: 800, color: '#fff' }}>{(selectedStaffDrawer.name || '?').charAt(0).toUpperCase()}</span>
+                <div style={{ width: isMobile ? '60px' : '90px', height: isMobile ? '60px' : '90px', borderRadius: '50%', overflow: 'hidden', border: '3px solid #ffffff', flexShrink: 0, boxShadow: '0 4px 12px rgba(74, 48, 54, 0.08)', background: 'linear-gradient(135deg, #dfb28c, #c97282)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: isMobile ? '1.4rem' : '2rem', fontWeight: 800, color: '#fff', fontFamily: 'Georgia, serif' }}>{(selectedStaffDrawer.name || '?').charAt(0).toUpperCase()}</span>
                 </div>
                 <div style={{ minWidth: 0, flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    <h2 style={{ fontSize: isMobile ? '1.15rem' : '1.5rem', fontWeight: 900, color: '#ffffff', margin: 0, fontFamily: 'Georgia, serif' }}>
+                    <h2 style={{ fontSize: isMobile ? '1.15rem' : '1.5rem', fontWeight: 900, color: '#2d1b22', margin: 0, fontFamily: 'Georgia, serif' }}>
                       {selectedStaffDrawer.name}
                     </h2>
-                    <span className="mi-tag" style={{ fontSize: isMobile ? '0.64rem' : '0.72rem', color: '#fae5e3', background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)', padding: isMobile ? '3px 9px' : '3px 10px', borderRadius: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px' }}>
+                    <span className="mi-tag" style={{ fontSize: isMobile ? '0.64rem' : '0.72rem', color: '#a0506a', background: 'rgba(160, 80, 106, 0.06)', border: '1px solid rgba(160, 80, 106, 0.12)', padding: isMobile ? '3px 9px' : '3px 10px', borderRadius: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px' }}>
                       {getStaffRole(selectedStaffDrawer.name)}
                     </span>
                   </div>
-                  <p style={{ fontSize: isMobile ? '0.74rem' : '0.8rem', color: '#e5c1a7', margin: isMobile ? '5px 0 0' : '8px 0 0', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <p style={{ fontSize: isMobile ? '0.74rem' : '0.8rem', color: '#6b5a5f', margin: isMobile ? '5px 0 0' : '8px 0 0', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     0412 345 6789
                   </p>
                 </div>
@@ -2489,8 +2488,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 <div style={{
                   display: 'flex',
                   alignItems: 'center',
-                  background: 'rgba(255,255,255,0.1)',
-                  border: '1px solid rgba(255,255,255,0.18)',
+                  background: '#ffffff',
+                  border: '1px solid rgba(223, 178, 140, 0.22)',
                   borderRadius: isMobile ? '10px' : '12px',
                   padding: '3px',
                   flex: isMobile ? 1 : 'none',
@@ -2500,7 +2499,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     padding: isMobile ? '6px 10px' : '8px 16px',
                     fontSize: isMobile ? '0.68rem' : '0.82rem',
                     fontWeight: 700,
-                    color: '#ffffff',
+                    color: '#2d1b22',
                     textTransform: 'capitalize',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -2511,13 +2510,13 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   }}>
                     {selectedDate.toLocaleDateString('es-VE', { weekday: isMobile ? 'short' : 'long', day: 'numeric', month: 'short', year: 'numeric' }).replace(' de', '').replace(' de', '')}
                   </div>
-                  <div style={{ display: 'flex', gap: '2px', borderLeft: '1px solid rgba(255,255,255,0.15)', paddingLeft: '4px', flexShrink: 0 }}>
+                  <div style={{ display: 'flex', gap: '2px', borderLeft: '1px solid rgba(223, 178, 140, 0.15)', paddingLeft: '4px', flexShrink: 0 }}>
                     <button
                       onClick={() => goToDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() - 1), 'prev')}
                       className="mi-btn btn-hover-scale"
                       style={{
                         width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', background: 'transparent',
-                        color: '#fae5e3', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                        color: '#a0506a', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
                       }}
                     >
                       <ChevronLeft size={isMobile ? 14 : 16} />
@@ -2527,7 +2526,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       className="mi-btn btn-hover-scale"
                       style={{
                         width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', background: 'transparent',
-                        color: '#fae5e3', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                        color: '#a0506a', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
                       }}
                     >
                       <ChevronRight size={isMobile ? 14 : 16} />
@@ -2540,9 +2539,9 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   onClick={() => showToast?.('Abriendo editor de horarios...', 'info')}
                   className="mi-btn btn-hover-scale"
                   style={{
-                    background: 'rgba(255,255,255,0.95)',
+                    background: '#a0506a',
                     border: 'none',
-                    color: '#a0506a',
+                    color: '#ffffff',
                     padding: isMobile ? '8px 14px' : '10px 20px',
                     borderRadius: isMobile ? '10px' : '12px',
                     fontSize: isMobile ? '0.7rem' : '0.82rem',
@@ -2551,10 +2550,12 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                    boxShadow: '0 4px 12px rgba(160, 80, 106, 0.15)',
                     whiteSpace: 'nowrap',
                     flexShrink: 0
                   }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#8c425a'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#a0506a'; }}
                 >
                   <Clock size={14} /> Editar horario
                 </button>
