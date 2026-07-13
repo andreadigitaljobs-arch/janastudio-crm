@@ -1470,7 +1470,7 @@ const DashboardModule = ({
             </span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', flex: 1 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {[
               { name: 'Pestañas clásicas', value: 42, icon: Sparkles },
               { name: 'Laminado cejas', value: 24, icon: Star },
@@ -1515,7 +1515,8 @@ const DashboardModule = ({
               background: 'linear-gradient(140deg, #a0506a 0%, #964a63 30%, #8a4560 60%, #7a3f55 100%)',
               boxShadow: '0 10px 30px rgba(160, 80, 106, 0.25), 0 4px 12px rgba(112, 48, 80, 0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
               transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-              display: 'flex'
+              display: 'flex',
+              flex: 1
             }}
             onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-3px) scale(1.005)'; e.currentTarget.style.boxShadow = '0 16px 40px rgba(160, 80, 106, 0.35), 0 6px 16px rgba(112, 48, 80, 0.2), inset 0 1px 0 rgba(255,255,255,0.15)' }}
             onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 10px 30px rgba(160, 80, 106, 0.25), 0 4px 12px rgba(112, 48, 80, 0.15), inset 0 1px 0 rgba(255,255,255,0.1)' }}
