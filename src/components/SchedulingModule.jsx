@@ -27,6 +27,27 @@ import { ModalShield } from '../context/ModalContext';
 import AnimatedModal from './AnimatedModal';
 import JanaSelect from './JanaSelect';
 
+const STAFF_PHOTO_FALLBACKS = {
+  'isabella': '/staff/Beautician_smiling_in_beauty_salon_202607131301.jpeg',
+  'laura': '/staff/Hairdresser_smiling_in_beauty_salon_202607131301 (1).jpeg',
+  'sofia': '/staff/Hairdresser_smiling_in_beauty_salon_202607131301.jpeg',
+  'valentina': '/staff/Hairstylist_smiling_in_beauty_salon_202607131301.jpeg',
+  'mariana': '/staff/Manicurist_smiling_in_beauty_salon_202607131301 (1).jpeg',
+  'camila': '/staff/Manicurist_smiling_in_beauty_salon_202607131301.jpeg',
+  'andrea': '/staff/Massage_therapist_smiling_in_salon_202607131301.jpeg',
+  'gabriela': '/staff/Retrato_de_una_manicurista_profesional_202607131302.jpeg',
+  'valeria': '/staff/Retrato_de_una_masajista_profesional_202607131301.jpeg'
+};
+
+const getStaffPhoto = (member) => {
+  if (!member) return null;
+  if (member.image_url && member.image_url.trim() !== '') {
+    return member.image_url;
+  }
+  const nameKey = String(member.name || '').split(' ')[0].toLowerCase();
+  return STAFF_PHOTO_FALLBACKS[nameKey] || null;
+};
+
 const STATUS_COLORS = {
   'Confirmada': { bg: '#f0fdf4', text: '#16a34a', border: '#bbf7d0', leftBorder: '#22c55e' },
   'Pendiente': { bg: '#fffbeb', text: '#d97706', border: '#fde68a', leftBorder: '#f59e0b' },
@@ -333,9 +354,11 @@ const StaffDayColumn = ({
           boxShadow: checkingTime != null && isCheckingFree ? '0 0 8px #22c55e' : 'none',
           overflow: 'hidden'
         }}>
-          {staffMember.image_url ? (
-            <img src={staffMember.image_url} alt={staffMember.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          ) : initial}
+          {getStaffPhoto(staffMember) ? (
+            <img src={getStaffPhoto(staffMember)} alt={staffMember.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            <User size={14} color="#fff" />
+          )}
         </div>
         <div style={{ minWidth: 0, flex: 1 }}>
           <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#2d1b22', lineHeight: 1.3 }}>
@@ -1768,10 +1791,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                     <div style={{ display: 'flex', flex: (isMobile || isTablet || isNarrowAgendaColumn) ? 'none' : 1, minWidth: 0 }}>
                                       {staffMember && (
                                         <div style={{ position: 'relative', width: '58px', minHeight: (isMobile || isTablet || isNarrowAgendaColumn) ? '100%' : '82px', flexShrink: 0, borderRadius: (isMobile || isTablet || isNarrowAgendaColumn) ? '11px 0 0 0' : '11px 0 0 11px', overflow: 'hidden', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                          {staffMember.image_url ? (
-                                            <img src={staffMember.image_url} alt={staffMember.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                          {getStaffPhoto(staffMember) ? (
+                                            <img src={getStaffPhoto(staffMember)} alt={staffMember.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                           ) : (
-                                            <span style={{ fontSize: '1.3rem', fontWeight: 800, color: '#fff' }}>{(staffMember.name || '?').charAt(0).toUpperCase()}</span>
+                                            <User size={24} color="#fff" />
                                           )}
                                           <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(200deg, ${accentColor}66 0%, ${accentColor}00 55%), linear-gradient(0deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0) 45%)` }} />
                                         </div>
@@ -1999,10 +2022,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                           }}
                         >
                           <div style={{ position: 'relative', width: (isMobile || isTablet) ? '40px' : '50px', height: (isMobile || isTablet) ? '40px' : '50px', flexShrink: 0, borderRadius: '10px', overflow: 'hidden', background: 'linear-gradient(135deg, #b0a8a3, #8c767b)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            {s.image_url ? (
-                              <img src={s.image_url} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            {getStaffPhoto(s) ? (
+                              <img src={getStaffPhoto(s)} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             ) : (
-                              <span style={{ fontSize: (isMobile || isTablet) ? '0.9rem' : '1.1rem', fontWeight: 800, color: '#fff' }}>{(s.name || '?').charAt(0).toUpperCase()}</span>
+                              <User size={20} color="#fff" />
                             )}
                             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(180,170,165,0.3) 0%, rgba(180,170,165,0.05) 100%)' }} />
                           </div>
@@ -2079,10 +2102,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       >
                         {/* Photo */}
                         <div style={{ position: 'relative', width: isMobileCard ? '42px' : '50px', height: isMobileCard ? '42px' : '58px', flexShrink: 0, borderRadius: isMobileCard ? '10px' : '12px', overflow: 'hidden', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          {s.image_url ? (
-                            <img src={s.image_url} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          {getStaffPhoto(s) ? (
+                            <img src={getStaffPhoto(s)} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           ) : (
-                            <span style={{ fontSize: isMobileCard ? '1rem' : '1.2rem', fontWeight: 800, color: '#fff' }}>{(s.name || '?').charAt(0).toUpperCase()}</span>
+                            <User size={20} color="#fff" />
                           )}
                           <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(200deg, ${statusColor}55 0%, ${statusColor}00 55%), linear-gradient(0deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 45%)` }} />
                           {/* Status dot — pulsing when busy */}
@@ -2479,10 +2502,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               {/* Left Side: Photo & Name & Specialty */}
               <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '12px' : '20px', flexWrap: 'wrap', position: 'relative' }}>
                 <div style={{ width: isMobile ? '60px' : '90px', height: isMobile ? '60px' : '90px', borderRadius: '50%', overflow: 'hidden', border: '3px solid #ffffff', flexShrink: 0, boxShadow: '0 4px 12px rgba(74, 48, 54, 0.08)', background: 'linear-gradient(135deg, #dfb28c, #c97282)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {selectedStaffDrawer.image_url ? (
-                    <img src={selectedStaffDrawer.image_url} alt={selectedStaffDrawer.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  {getStaffPhoto(selectedStaffDrawer) ? (
+                    <img src={getStaffPhoto(selectedStaffDrawer)} alt={selectedStaffDrawer.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
-                    <span style={{ fontSize: isMobile ? '1.4rem' : '2rem', fontWeight: 800, color: '#fff', fontFamily: 'Georgia, serif' }}>{(selectedStaffDrawer.name || '?').charAt(0).toUpperCase()}</span>
+                    <User size={32} color="#fff" />
                   )}
                 </div>
                 <div style={{ minWidth: 0, flex: 1 }}>
@@ -3499,10 +3522,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       </div>
                       <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                         <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', border: '1px solid rgba(223,178,140,0.2)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                          {activeStaff?.image_url ? (
-                            <img src={activeStaff.image_url} alt={staffNameOnly} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          {getStaffPhoto(activeStaff) ? (
+                            <img src={getStaffPhoto(activeStaff)} alt={staffNameOnly} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           ) : (
-                            <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#fff' }}>{(staffNameOnly || '?').charAt(0).toUpperCase()}</span>
+                            <User size={18} color="#fff" />
                           )}
                         </div>
                         <div>
