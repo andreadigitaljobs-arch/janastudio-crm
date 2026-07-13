@@ -36,7 +36,9 @@ const STAFF_PHOTO_FALLBACKS = {
   'camila': '/staff/Manicurist_smiling_in_beauty_salon_202607131301.jpeg',
   'andrea': '/staff/Massage_therapist_smiling_in_salon_202607131301.jpeg',
   'gabriela': '/staff/Retrato_de_una_manicurista_profesional_202607131302.jpeg',
-  'valeria': '/staff/Retrato_de_una_masajista_profesional_202607131301.jpeg'
+  'valeria': '/staff/Retrato_de_una_masajista_profesional_202607131301.jpeg',
+  'lucia': '/staff/Retrato_de_una_manicurista_profesional_202607131302.jpeg',
+  'daniela': '/staff/daniela.jpeg'
 };
 
 const getStaffPhoto = (member) => {
@@ -44,7 +46,7 @@ const getStaffPhoto = (member) => {
   if (member.image_url && member.image_url.trim() !== '') {
     return member.image_url;
   }
-  const nameKey = String(member.name || '').split(' ')[0].toLowerCase();
+  const nameKey = String(member.name || '').split(' ')[0].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   return STAFF_PHOTO_FALLBACKS[nameKey] || null;
 };
 
