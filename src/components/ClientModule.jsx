@@ -1134,22 +1134,22 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                     {/* Clients Table */}
                 {loading ? (
                   <div className="glass-card animate-pulse" style={{ borderRadius: '20px', overflow: 'hidden', border: '1px solid var(--border-color)', background: 'white' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', tableLayout: 'auto' }}>
                       <thead>
                         <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'rgba(160, 80, 106, 0.08)' }}>
-                          <th style={{ padding: '12px 6px 12px 24px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cliente</th>
+                          <th style={{ padding: '12px 6px 12px 16px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cliente</th>
                           <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cédula / ID</th>
                           <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contacto</th>
                           <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Última visita</th>
                           <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Próxima cita</th>
                           <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Historial</th>
-                          <th style={{ padding: '12px 24px 12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado</th>
+                          <th style={{ padding: '12px 16px 12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado</th>
                         </tr>
                       </thead>
                       <tbody>
                         {[1, 2, 3, 4, 5].map((n) => (
                           <tr key={n} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                            <td style={{ padding: '10px 6px 10px 24px' }}>
+                            <td style={{ padding: '10px 6px 10px 16px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <div className="skeleton-bar" style={{ width: '30px', height: '30px', borderRadius: '50%', flexShrink: 0 }} />
                                 <div>
@@ -1173,7 +1173,7 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                             <td style={{ padding: '10px 6px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>
                               <div className="skeleton-bar" style={{ width: '40px', height: '10px' }} />
                             </td>
-                            <td style={{ padding: '10px 24px 10px 6px' }}>
+                            <td style={{ padding: '10px 16px 10px 6px' }}>
                               <div className="skeleton-bar" style={{ width: '50px', height: '16px', borderRadius: '6px' }} />
                             </td>
                           </tr>
@@ -1188,16 +1188,16 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                   </div>
                 ) : (
                   <div className="glass-card animate-slide-up delay-2" style={{ borderRadius: '20px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.03)', background: 'white' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', tableLayout: 'auto' }}>
                       <thead>
                         <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'rgba(160, 80, 106, 0.08)' }}>
-                          <th style={{ padding: '16px 10px 16px 28px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Cliente</th>
-                          <th style={{ padding: '16px 10px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Cédula / ID</th>
-                          <th style={{ padding: '16px 10px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Contacto</th>
-                          <th style={{ padding: '16px 10px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Última visita</th>
-                          <th style={{ padding: '16px 10px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Próxima cita</th>
-                          <th style={{ padding: '16px 10px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Historial</th>
-                          <th style={{ padding: '16px 28px 16px 10px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Estado</th>
+                          <th style={{ padding: '16px 6px 16px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Cliente</th>
+                          <th style={{ padding: '16px 6px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Cédula / ID</th>
+                          <th style={{ padding: '16px 6px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Contacto</th>
+                          <th style={{ padding: '16px 6px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Última visita</th>
+                          <th style={{ padding: '16px 6px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Próxima cita</th>
+                          <th style={{ padding: '16px 6px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Historial</th>
+                          <th style={{ padding: '16px 16px 16px 6px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Estado</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1208,13 +1208,13 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                             <tr
                               key={client.id}
                               onClick={() => {
-                                if (isNarrowScreen) {
-                                  setSelectedClient(client);
-                                  sessionStorage.setItem('jana_tab_params', JSON.stringify({ clientId: client.id }));
-                                } else {
-                                  setSelectedSidebarClient(client);
-                                }
-                              }}
+                                  if (isNarrowScreen) {
+                                    setSelectedClient(client);
+                                    sessionStorage.setItem('jana_tab_params', JSON.stringify({ clientId: client.id }));
+                                  } else {
+                                    setSelectedSidebarClient(client);
+                                  }
+                                }}
                               style={{
                                 borderBottom: '1px solid var(--border-color)',
                                 backgroundColor: isSelected ? 'rgba(160, 80, 106, 0.08)' : 'transparent',
@@ -1223,7 +1223,7 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                               }}
                               className="table-row-hover mi-row"
                             >
-                               <td style={{ padding: '18px 10px 18px 28px' }}>
+                              <td style={{ padding: '12px 6px 12px 16px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                   <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(160,80,106,0.12)', border: '1.5px solid var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
                                     {client.image_url ? (
@@ -1245,10 +1245,10 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                                   </div>
                                 </div>
                               </td>
-                              <td style={{ padding: '18px 10px', fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>
+                              <td style={{ padding: '12px 6px', fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>
                                 V-{client.id_card || '00.000.000'}
                               </td>
-                              <td style={{ padding: '18px 10px', whiteSpace: 'nowrap' }}>
+                              <td style={{ padding: '12px 6px', whiteSpace: 'nowrap' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
                                   {client.phone && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12.5px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
@@ -1262,10 +1262,10 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                                   )}
                                 </div>
                               </td>
-                              <td style={{ padding: '18px 10px', fontSize: '12.5px', color: 'var(--text-muted)', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>
+                              <td style={{ padding: '12px 6px', fontSize: '12.5px', color: 'var(--text-muted)', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>
                                 {client.last_visit ? new Date(client.last_visit).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
                               </td>
-                              <td style={{ padding: '18px 10px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>
+                              <td style={{ padding: '12px 6px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>
                                 {client.next_appointment ? (
                                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                                     <span style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
@@ -1279,12 +1279,12 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                                   <span style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>—</span>
                                 )}
                               </td>
-                              <td style={{ padding: '18px 10px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>
+                              <td style={{ padding: '12px 6px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>
                                 <span style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--text-secondary)' }}>
                                   {client.total_visits || 0} visitas
                                 </span>
                               </td>
-                              <td style={{ padding: '18px 28px 18px 10px' }}>
+                              <td style={{ padding: '12px 16px 12px 6px' }}>
                                 {status.label === 'VIP' ? (
                                   <span className="mi-tag" style={{ fontSize: '10px', fontWeight: '800', color: '#b47d49', backgroundColor: 'rgba(180, 125, 73, 0.1)', border: '1px solid rgba(180, 125, 73, 0.15)', padding: '5px 10px', borderRadius: '7px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                     👑 VIP
