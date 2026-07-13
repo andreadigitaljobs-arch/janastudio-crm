@@ -1719,7 +1719,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                       display: 'flex', alignItems: 'stretch', gap: 0,
                                       background: bgColor, border: `1px solid ${borderColor}`,
                                       borderLeft: `6px solid ${accentColor}`, borderRadius: '12px',
-                                      overflow: 'hidden', cursor: 'pointer',
+                                      overflow: 'visible', cursor: 'pointer',
                                       boxShadow: '0 2px 8px rgba(74, 48, 54, 0.04)',
                                       transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s'
                                     }}
@@ -1727,7 +1727,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                     onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(74, 48, 54, 0.04)'; }}
                                   >
                                     {staffMember && (
-                                      <div style={{ position: 'relative', width: '58px', minHeight: '82px', flexShrink: 0 }}>
+                                      <div style={{ position: 'relative', width: '58px', minHeight: '82px', flexShrink: 0, borderRadius: '11px 0 0 11px', overflow: 'hidden' }}>
                                         <img
                                           src={staffMember.image_url || staffMember.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(staffMember.name || '')}`}
                                           alt={staffMember.name || ''}
