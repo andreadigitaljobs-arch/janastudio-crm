@@ -3898,4 +3898,21 @@ button, [role="button"], a[href] {
   }
 }
 
+/* Responsive adjustments for featured photo banner on tablet / small desktop viewports (width <= 1100px) */
+@media (max-width: 1100px) {
+  .featured-image-wrapper {
+    width: 35% !important;
+  }
+  .featured-content-wrapper {
+    width: 65% !important;
+    padding: 16px 14px !important;
+  }
+  .featured-content-wrapper h4 {
+    font-size: 13px !important;
+  }
+  .featured-content-wrapper span {
+    font-size: 10px !important;
+  }
+}
+
 

@@ -1521,7 +1521,7 @@ const DashboardModule = ({
             onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 10px 30px rgba(160, 80, 106, 0.25), 0 4px 12px rgba(112, 48, 80, 0.15), inset 0 1px 0 rgba(255,255,255,0.1)' }}
           >
             {/* Peinado y maquillaje photo placed on the right with a fixed width on desktop */}
-            <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: (isMobile || isTablet) ? '35%' : '240px', zIndex: 1 }}>
+            <div className="featured-image-wrapper" style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: (isMobile || isTablet) ? '35%' : '240px', zIndex: 1 }}>
               <img 
                 src="/peinado_maquillaje.png" 
                 alt="Adicional de Ondas" 
@@ -1543,7 +1543,7 @@ const DashboardModule = ({
             </div>
 
             {/* Content area on the left, takes up the remaining width */}
-            <div style={{ 
+            <div className="featured-content-wrapper" style={{ 
               position: 'relative', 
               zIndex: 2, 
               display: 'flex', 
@@ -1603,7 +1603,7 @@ const DashboardModule = ({
               >
                 o Sueltas
               </span>
-              <span style={{ 
+              <span className="featured-citas-badge" style={{ 
                 fontSize: '11px', 
                 color: '#ffffff', 
                 fontWeight: '700',
@@ -1611,7 +1611,8 @@ const DashboardModule = ({
                 opacity: 0.95,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '5px'
+                gap: '5px',
+                whiteSpace: 'nowrap'
               }}>
                 <span style={{
                   display: 'inline-flex',
