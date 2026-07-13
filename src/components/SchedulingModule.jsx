@@ -3272,16 +3272,16 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             }}>
               {/* Header */}
               <div style={{
-                background: 'linear-gradient(135deg, #faf0ef 0%, #ebd0ce 100%)',
+                background: 'linear-gradient(135deg, #2d1b22 0%, #4a2b37 100%)',
                 padding: '30px 24px 24px', position: 'relative', overflow: 'hidden',
                 borderBottom: '1px solid rgba(223,178,140,0.15)'
               }}>
-                {/* Decorative chic glow orb */}
+                {/* Decorative chic glow orb (warm champagne glow) */}
                 <div style={{
                   position: 'absolute', right: '-20px', top: '-20px',
                   width: '120px', height: '120px', borderRadius: '50%',
-                  background: 'radial-gradient(circle, rgba(251, 203, 198, 0.5) 0%, rgba(251, 203, 198, 0) 70%)',
-                  filter: 'blur(10px)', pointerEvents: 'none'
+                  background: 'radial-gradient(circle, rgba(223, 178, 140, 0.25) 0%, rgba(223, 178, 140, 0) 70%)',
+                  filter: 'blur(12px)', pointerEvents: 'none'
                 }} />
 
                 {/* Top close button */}
@@ -3290,50 +3290,44 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     onClick={triggerCloseDetailedApp}
                     style={{
                       width: '30px', height: '30px', borderRadius: '50%',
-                      backgroundColor: 'rgba(255, 255, 255, 0.65)',
-                      backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)',
-                      border: '1.2px solid rgba(223, 178, 140, 0.3)',
+                      backgroundColor: '#ffffff',
+                      border: 'none',
+                      boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                       transition: 'all 0.22s ease', outline: 'none'
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.95)'; e.currentTarget.style.transform = 'scale(1.08)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.65)'; e.currentTarget.style.transform = 'scale(1)'; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#fae5e3'; e.currentTarget.style.transform = 'scale(1.08)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.transform = 'scale(1)'; }}
                   >
-                    <X size={14} color="#a0506a" strokeWidth={2.5} />
+                    <X size={14} color="#2d1b22" strokeWidth={2.5} />
                   </button>
                 </div>
 
                 <div style={{ marginTop: '20px', position: 'relative', paddingRight: '80px' }}>
-                  {/* Chic Glassmorphism Badge framing the logo */}
+                  {/* Logo JANA Studio raw (no circle container, floats beautifully on dark plum background) */}
                   <div style={{
                     position: 'absolute', right: '0', top: '50%', transform: 'translateY(-50%)',
-                    width: '64px', height: '64px', borderRadius: '50%',
-                    background: 'rgba(255, 255, 255, 0.45)',
-                    backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
-                    border: '1.5px solid rgba(223, 178, 140, 0.35)',
-                    boxShadow: '0 8px 24px rgba(74, 48, 54, 0.08)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    pointerEvents: 'none'
+                    opacity: 0.95, pointerEvents: 'none'
                   }}>
-                    <img src="/logo.webp" alt="JANA Studio" style={{ height: '42px', width: '42px', objectFit: 'contain' }} />
+                    <img src="/logo.webp" alt="JANA Studio" style={{ height: '54px', objectFit: 'contain' }} />
                   </div>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                    <CalendarIcon size={11} color="#a0506a" />
-                    <span style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0506a', textTransform: 'uppercase', letterSpacing: '2px' }}>
+                    <CalendarIcon size={11} color="#e5c1a7" />
+                    <span style={{ fontSize: '0.62rem', fontWeight: 800, color: '#e5c1a7', textTransform: 'uppercase', letterSpacing: '2px' }}>
                       Detalle de Visita
                     </span>
                   </div>
-                  <h2 style={{ fontSize: '1.45rem', fontWeight: 850, color: '#24151b', margin: '0 0 8px 0', letterSpacing: '-0.3px', fontFamily: 'Georgia, serif' }}>
+                  <h2 style={{ fontSize: '1.45rem', fontWeight: 850, color: '#ffffff', margin: '0 0 8px 0', letterSpacing: '-0.3px', fontFamily: 'Georgia, serif' }}>
                     {selectedDetailedApp.clients?.name || 'Cliente'}
                   </h2>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '0.74rem', color: '#6b5a60', fontWeight: 650, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <CalendarIcon size={12} color="#a0506a" /> {formattedDate} · {formattedTime}
+                    <span style={{ fontSize: '0.74rem', color: '#fae5e3', fontWeight: 650, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <CalendarIcon size={12} color="#fae5e3" /> {formattedDate} · {formattedTime}
                     </span>
                     <span className="mi-tag" style={{
                       padding: '3px 10px', borderRadius: '20px', fontSize: '0.62rem', fontWeight: 800,
-                      background: 'rgba(245,233,235,1)', color: '#c97282', border: '1px solid rgba(201,114,130,0.25)'
+                      background: 'rgba(255,255,255,0.12)', color: '#fae5e3', border: '1px solid rgba(255,255,255,0.2)'
                     }}>
                       {selectedDetailedApp.status}
                     </span>
