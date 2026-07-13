@@ -222,12 +222,18 @@ const ReceptionModule = ({ isMobile }) => {
           </div>
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
-          <button onClick={() => setIsNewClientModalOpen(true)} style={{
+          <button className="mi-btn" onClick={() => setIsNewClientModalOpen(true)} style={{
             padding: '8px 16px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.08)',
             background: '#fff', color: '#6b6b6b', fontSize: '0.78rem', fontWeight: 600,
             cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'
           }}><UserPlus size={15} /> Nuevo Cliente</button>
           <button className="mi-btn" style={{
+            padding: '8px 16px', borderRadius: '10px', border: 'none',
+            background: 'linear-gradient(135deg, #d4a09a, #c48b9f, #a0506a)',
+            color: '#fff', fontSize: '0.78rem', fontWeight: 600,
+            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
+            boxShadow: '0 3px 10px rgba(196,139,159,0.25)'
+          }}><Zap size={15} /> Check-in Rápido</button>
         </div>
       </div>
 
