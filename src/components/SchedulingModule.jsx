@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar as CalendarIcon, Clock, User, Plus, ChevronLeft, ChevronRight,
@@ -3256,10 +3257,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
       {/* DETALLE DE CITA LATERAL DESLIZANTE */}
       {selectedDetailedApp && detailedAppDetails && (() => {
         const { activeStaff, staffNameOnly, staffRoleOnly, formattedDate, formattedTime } = detailedAppDetails;
-        return (
+        return createPortal(
           <div 
             className={`staff-drawer-overlay ${isClosingDetailedApp ? 'closing' : ''}`} 
-            style={{ zIndex: 15000 }} 
+            style={{ zIndex: 999999 }} 
             onClick={triggerCloseDetailedApp}
           >
             <div className="staff-drawer" onClick={(e) => e.stopPropagation()} style={{
@@ -3580,7 +3581,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 </div>
               </div>
             </div>
-          </div>
+          </div>,
+          document.body
         );
       })()}
 
