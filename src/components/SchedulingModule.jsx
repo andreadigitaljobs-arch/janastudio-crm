@@ -3276,7 +3276,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 borderBottom: '1px solid rgba(223,178,140,0.15)'
               }}>
                 {/* Logo JANA Studio overlay on the right */}
-                <div style={{ position: 'absolute', right: '20px', top: '22px', opacity: 0.7, pointerEvents: 'none' }}>
+                <div style={{ position: 'absolute', right: '20px', top: '60px', opacity: 0.7, pointerEvents: 'none' }}>
                   <img src="/logo.webp" alt="JANA Studio" style={{ height: '40px', objectFit: 'contain' }} />
                 </div>
 
