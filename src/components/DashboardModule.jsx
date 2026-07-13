@@ -35,7 +35,7 @@ const TOP_SPECIALISTS = [
 const simplifyServiceName = (name) => {
   if (!name) return '';
   return name
-    .replace(/Adicional de Ondas \(Sirena o Sueltas\)/i, 'Ondas Sirena o Sueltas')
+    .replace(/Adicional de Ondas \(Sirena o Sueltas\)/i, 'Ondas Sirena')
     .replace(/^Adicional de\s+/i, '')
     .replace(/^Servicio de\s+/i, '');
 };
