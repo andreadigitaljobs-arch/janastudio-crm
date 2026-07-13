@@ -3765,22 +3765,6 @@ button, [role="button"], a[href] {
   animation: staffDotPulse 1.8s ease-in-out infinite;
 }
 
-/* Avatar shimmer on load */
-@keyframes staffAvatarShimmer {
-  0% { background-position: -150% 0; }
-  100% { background-position: 150% 0; }
-}
-.staff-avatar-shimmer::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%);
-  background-size: 200% 100%;
-  animation: staffAvatarShimmer 1.8s ease-in-out 0.5s 1;
-  pointer-events: none;
-  border-radius: inherit;
-}
-
 /* Glow on hover matching status color */
 .agenda-staff-card {
   transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;

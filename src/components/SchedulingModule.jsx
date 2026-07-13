@@ -535,6 +535,17 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
   const { showToast } = useNotifs();
   const isLargePhone = isMobile && typeof window !== 'undefined' && window.innerWidth >= 410;
 
+  // La columna de "Citas de hoy" queda angosta en pantallas medianas (ej. iPad Pro 1024px)
+  // aunque el dispositivo no se clasifique como isMobile/isTablet, así que se detecta aparte.
+  const [isNarrowAgendaColumn, setIsNarrowAgendaColumn] = useState(
+    typeof window !== 'undefined' ? window.innerWidth < 1240 : false
+  );
+  useEffect(() => {
+    const handleResize = () => setIsNarrowAgendaColumn(window.innerWidth < 1240);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const staffRoles = {
     'Isabella': 'Lashista Senior',
     'Valentina': 'Especialista en Uñas',
@@ -1739,7 +1750,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                     onClick={() => setSelectedDetailedApp(app)}
                                     className="mi-card"
                                     style={{
-                                      display: 'flex', alignItems: 'stretch', gap: 0,
+                                      display: 'flex', flexDirection: (isMobile || isTablet || isNarrowAgendaColumn) ? 'column' : 'row', alignItems: 'stretch', gap: 0,
                                       background: bgColor, border: `1px solid ${borderColor}`,
                                       borderLeft: `6px solid ${accentColor}`, borderRadius: '12px',
                                       overflow: 'visible', cursor: 'pointer',
@@ -1749,74 +1760,119 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                     onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(74, 48, 54, 0.1)'; }}
                                     onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(74, 48, 54, 0.04)'; }}
                                   >
-                                    {staffMember && (
-                                      <div style={{ position: 'relative', width: '58px', minHeight: '82px', flexShrink: 0, borderRadius: '11px 0 0 11px', overflow: 'hidden' }}>
-                                        <img
-                                          src={staffMember.image_url || staffMember.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(staffMember.name || '')}`}
-                                          alt={staffMember.name || ''}
-                                          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-                                        />
-                                        <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(200deg, ${accentColor}66 0%, ${accentColor}00 55%), linear-gradient(0deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0) 45%)` }} />
+                                    <div style={{ display: 'flex', flex: (isMobile || isTablet || isNarrowAgendaColumn) ? 'none' : 1, minWidth: 0 }}>
+                                      {staffMember && (
+                                        <div style={{ position: 'relative', width: '58px', minHeight: (isMobile || isTablet || isNarrowAgendaColumn) ? '100%' : '82px', flexShrink: 0, borderRadius: (isMobile || isTablet || isNarrowAgendaColumn) ? '11px 0 0 0' : '11px 0 0 11px', overflow: 'hidden', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                          <span style={{ fontSize: '1.3rem', fontWeight: 800, color: '#fff' }}>{(staffMember.name || '?').charAt(0).toUpperCase()}</span>
+                                          <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(200deg, ${accentColor}66 0%, ${accentColor}00 55%), linear-gradient(0deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0) 45%)` }} />
+                                        </div>
+                                      )}
+                                      <div style={{ flex: 1, minWidth: 0, padding: '12px 16px' }}>
+                                        <div style={{ fontSize: (isMobile || isTablet || isNarrowAgendaColumn) ? '0.92rem' : '0.8rem', fontWeight: 800, color: '#2d1b22', display: 'flex', alignItems: 'center', gap: '5px', lineHeight: 1.3 }}>
+                                          <span>{app.clients?.name || 'Cliente'}</span>
+                                          {isRetrasada && <AlertTriangle size={12} color="#dc2626" style={{ flexShrink: 0 }} />}
+                                        </div>
+                                        <div style={{ fontSize: (isMobile || isTablet || isNarrowAgendaColumn) ? '0.8rem' : '0.68rem', color: '#8c767b', fontWeight: 600, lineHeight: 1.4, marginTop: '3px' }}>
+                                          {app.services?.name || 'Servicio'}
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px', flexWrap: 'wrap' }}>
+                                          {staffMember && (
+                                            <span style={{ fontSize: (isMobile || isTablet || isNarrowAgendaColumn) ? '0.8rem' : '0.68rem', color: '#a0506a', fontWeight: 700 }}>
+                                              {staffMember.name.split(' ')[0]}
+                                            </span>
+                                          )}
+                                          <span className="mi-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: (isMobile || isTablet || isNarrowAgendaColumn) ? '0.8rem' : '0.7rem', color: '#2d1b22', fontWeight: 800, background: '#fff', border: '1px solid rgba(74,48,54,0.12)', padding: '3px 9px', borderRadius: '8px' }}>
+                                            <Clock size={11} color="#2d1b22" /> {durationLabel}
+                                          </span>
+                                          {price != null && (
+                                            <span className="mi-tag" style={{ fontSize: (isMobile || isTablet || isNarrowAgendaColumn) ? '0.8rem' : '0.7rem', color: '#2d1b22', fontWeight: 800, background: '#fff', border: '1px solid rgba(74,48,54,0.12)', padding: '3px 9px', borderRadius: '8px' }}>
+                                              ${Number(price).toLocaleString('es-VE')}
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+                                      {!(isMobile || isTablet || isNarrowAgendaColumn) && (
+                                        <>
+                                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px', flexShrink: 0, padding: '12px 16px 12px 0' }}>
+                                            <div className="mi-tag" style={{ fontSize: '0.62rem', fontWeight: 800, color: accentColor, background: `${accentColor}18`, padding: '4px 10px', borderRadius: '999px', whiteSpace: 'nowrap' }}>
+                                              {app.status}
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '6px' }}>
+                                              {clientPhone && (
+                                                <button
+                                                  onClick={(e) => { e.stopPropagation(); window.open(`https://wa.me/${getWhatsAppNumber(clientPhone)}`, '_blank'); }}
+                                                  className="mi-btn jana-tooltip"
+                                                  data-tooltip="Contactar por WhatsApp"
+                                                  style={{ width: '26px', height: '26px', borderRadius: '8px', border: '1px solid rgba(223,178,140,0.25)', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
+                                                >
+                                                  <MessageCircle size={13} color="#8c767b" />
+                                                </button>
+                                              )}
+                                              {canComplete && (
+                                                <button
+                                                  onClick={async (e) => {
+                                                    e.stopPropagation();
+                                                    try {
+                                                      await dataService.updateAppointment(app.id, { status: 'Completado' });
+                                                      showToast('Cita marcada como completada', 'success');
+                                                      loadFilteredAppointments();
+                                                    } catch (err) {
+                                                      showToast('Error al actualizar la cita', 'error');
+                                                    }
+                                                  }}
+                                                  className="mi-btn jana-tooltip"
+                                                  data-tooltip="Marcar como completada"
+                                                  style={{ width: '26px', height: '26px', borderRadius: '8px', border: '1px solid rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
+                                                >
+                                                  <Check size={14} color="#16a34a" />
+                                                </button>
+                                              )}
+                                            </div>
+                                          </div>
+                                          <div style={{ display: 'flex', alignItems: 'center', paddingRight: '12px', flexShrink: 0 }}>
+                                            <ChevronRight size={16} color="#8c767b" className="card-chevron" style={{ opacity: 0.35, transition: 'all 0.2s ease' }} />
+                                          </div>
+                                        </>
+                                      )}
+                                    </div>
+                                    {(isMobile || isTablet || isNarrowAgendaColumn) && (
+                                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px 12px 16px', borderTop: '1px solid rgba(74,48,54,0.06)', marginTop: '2px', paddingTop: '10px' }}>
+                                        <div className="mi-tag" style={{ fontSize: '0.7rem', fontWeight: 800, color: accentColor, background: `${accentColor}18`, padding: '4px 10px', borderRadius: '999px', whiteSpace: 'nowrap' }}>
+                                          {app.status}
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                          {clientPhone && (
+                                            <button
+                                              onClick={(e) => { e.stopPropagation(); window.open(`https://wa.me/${getWhatsAppNumber(clientPhone)}`, '_blank'); }}
+                                              className="mi-btn jana-tooltip"
+                                              data-tooltip="Contactar por WhatsApp"
+                                              style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid rgba(223,178,140,0.25)', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
+                                            >
+                                              <MessageCircle size={15} color="#8c767b" />
+                                            </button>
+                                          )}
+                                          {canComplete && (
+                                            <button
+                                              onClick={async (e) => {
+                                                e.stopPropagation();
+                                                try {
+                                                  await dataService.updateAppointment(app.id, { status: 'Completado' });
+                                                  showToast('Cita marcada como completada', 'success');
+                                                  loadFilteredAppointments();
+                                                } catch (err) {
+                                                  showToast('Error al actualizar la cita', 'error');
+                                                }
+                                              }}
+                                              className="mi-btn jana-tooltip"
+                                              data-tooltip="Marcar como completada"
+                                              style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
+                                            >
+                                              <Check size={16} color="#16a34a" />
+                                            </button>
+                                          )}
+                                        </div>
                                       </div>
                                     )}
-                                    <div style={{ flex: 1, minWidth: 0, padding: '12px 16px' }}>
-                                      <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#2d1b22', display: 'flex', alignItems: 'center', gap: '5px', lineHeight: 1.3 }}>
-                                        {app.clients?.name || 'Cliente'}
-                                        {isRetrasada && <AlertTriangle size={12} color="#dc2626" style={{ flexShrink: 0 }} />}
-                                      </div>
-                                      <div style={{ fontSize: '0.68rem', color: '#8c767b', fontWeight: 600, lineHeight: 1.3, marginTop: '2px' }}>
-                                        {app.services?.name || 'Servicio'}{staffMember ? ` · ${staffMember.name.split(' ')[0]}` : ''}
-                                      </div>
-                                      <div style={{ display: 'flex', gap: '6px', marginTop: '6px' }}>
-                                        <span className="mi-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '0.7rem', color: '#2d1b22', fontWeight: 800, background: '#fff', border: '1px solid rgba(74,48,54,0.12)', padding: '3px 9px', borderRadius: '8px' }}>
-                                          <Clock size={11} color="#2d1b22" /> {durationLabel}
-                                        </span>
-                                        {price != null && (
-                                          <span className="mi-tag" style={{ fontSize: '0.7rem', color: '#2d1b22', fontWeight: 800, background: '#fff', border: '1px solid rgba(74,48,54,0.12)', padding: '3px 9px', borderRadius: '8px' }}>
-                                            ${Number(price).toLocaleString('es-VE')}
-                                          </span>
-                                        )}
-                                      </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px', flexShrink: 0, padding: '12px 16px 12px 0' }}>
-                                      <div className="mi-tag" style={{ fontSize: '0.62rem', fontWeight: 800, color: accentColor, background: `${accentColor}18`, padding: '4px 10px', borderRadius: '999px', whiteSpace: 'nowrap' }}>
-                                        {app.status}
-                                      </div>
-                                      <div style={{ display: 'flex', gap: '6px' }}>
-                                        {clientPhone && (
-                                          <button
-                                            onClick={(e) => { e.stopPropagation(); window.open(`https://wa.me/${getWhatsAppNumber(clientPhone)}`, '_blank'); }}
-                                            className="mi-btn jana-tooltip"
-                                            data-tooltip="Contactar por WhatsApp"
-                                            style={{ width: '26px', height: '26px', borderRadius: '8px', border: '1px solid rgba(223,178,140,0.25)', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
-                                          >
-                                            <MessageCircle size={13} color="#8c767b" />
-                                          </button>
-                                        )}
-                                        {canComplete && (
-                                          <button
-                                            onClick={async (e) => {
-                                              e.stopPropagation();
-                                              try {
-                                                await dataService.updateAppointment(app.id, { status: 'Completado' });
-                                                showToast('Cita marcada como completada', 'success');
-                                                loadFilteredAppointments();
-                                              } catch (err) {
-                                                showToast('Error al actualizar la cita', 'error');
-                                              }
-                                            }}
-                                            className="mi-btn jana-tooltip"
-                                            data-tooltip="Marcar como completada"
-                                            style={{ width: '26px', height: '26px', borderRadius: '8px', border: '1px solid rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
-                                          >
-                                            <Check size={14} color="#16a34a" />
-                                          </button>
-                                        )}
-                                      </div>
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', paddingRight: '12px', flexShrink: 0 }}>
-                                      <ChevronRight size={16} color="#8c767b" className="card-chevron" style={{ opacity: 0.35, transition: 'all 0.2s ease' }} />
-                                    </div>
                                   </div>
                                 );
                               })}
@@ -1892,7 +1948,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   Toca en una especialista para ver su ficha
                 </p>
 
-                <div className="jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '10px', overflow: 'visible', flex: 1, paddingRight: '4px', paddingTop: '6px', paddingBottom: '6px' }}>
+                <div className="jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? 'repeat(2, minmax(0, 1fr))' : 'repeat(auto-fill, minmax(240px, 1fr))', gap: (isMobile || isTablet) ? '8px' : '10px', overflow: 'visible', flex: 1, paddingRight: '4px', paddingTop: '6px', paddingBottom: '6px' }}>
                   <AnimatePresence mode="popLayout">
                   {visibleStaff.map((s, staffIdx) => {
                     const window = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
@@ -1933,12 +1989,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                             overflow: 'visible',
                           }}
                         >
-                          <div className="staff-avatar-shimmer" style={{ position: 'relative', width: (isMobile || isTablet) ? '40px' : '50px', height: (isMobile || isTablet) ? '40px' : '50px', flexShrink: 0, borderRadius: '10px', overflow: 'hidden' }}>
-                            <img
-                              src={s.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(s.name)}`}
-                              alt={s.name}
-                              style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(50%)' }}
-                            />
+                          <div style={{ position: 'relative', width: (isMobile || isTablet) ? '40px' : '50px', height: (isMobile || isTablet) ? '40px' : '50px', flexShrink: 0, borderRadius: '10px', overflow: 'hidden', background: 'linear-gradient(135deg, #b0a8a3, #8c767b)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <span style={{ fontSize: (isMobile || isTablet) ? '0.9rem' : '1.1rem', fontWeight: 800, color: '#fff' }}>{(s.name || '?').charAt(0).toUpperCase()}</span>
                             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(180,170,165,0.3) 0%, rgba(180,170,165,0.05) 100%)' }} />
                           </div>
                           <div style={{ flex: 1, minWidth: 0, textAlign: (isMobile || isTablet) ? 'center' : 'left' }}>
@@ -2024,12 +2076,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         )}
 
                         {/* Photo */}
-                        <div className="staff-avatar-shimmer" style={{ position: 'relative', width: isMobileCard ? '42px' : '50px', height: isMobileCard ? '42px' : '58px', flexShrink: 0, borderRadius: isMobileCard ? '10px' : '12px', overflow: 'hidden' }}>
-                          <img
-                            src={s.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(s.name)}`}
-                            alt={s.name}
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          />
+                        <div style={{ position: 'relative', width: isMobileCard ? '42px' : '50px', height: isMobileCard ? '42px' : '58px', flexShrink: 0, borderRadius: isMobileCard ? '10px' : '12px', overflow: 'hidden', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <span style={{ fontSize: isMobileCard ? '1rem' : '1.2rem', fontWeight: 800, color: '#fff' }}>{(s.name || '?').charAt(0).toUpperCase()}</span>
                           <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(200deg, ${statusColor}55 0%, ${statusColor}00 55%), linear-gradient(0deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 45%)` }} />
                           {/* Status dot — pulsing when busy */}
                           <span className={statusText !== 'LIBRE' ? 'staff-dot-pulse' : ''} style={{ position: 'absolute', right: '2px', bottom: '2px', width: isMobileCard ? '7px' : '9px', height: isMobileCard ? '7px' : '9px', borderRadius: '50%', background: statusColor, border: '1.5px solid #fff', boxShadow: `0 0 4px ${statusColor}66` }} />
@@ -2395,53 +2443,58 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           <div style={{ padding: isMobile ? '16px 16px calc(130px + env(safe-area-inset-bottom, 12px)) 16px' : '24px 32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
             
             {/* Identity Card & Date Selector Ribbon */}
-            <div style={{ 
-              background: '#fff', 
-              border: '1px solid rgba(223,178,140,0.18)', 
-              borderRadius: isMobile ? '16px' : '24px', 
+            <div style={{
+              background: 'linear-gradient(135deg, #2d1b22 0%, #4a2b37 100%)',
+              border: '1px solid rgba(223,178,140,0.18)',
+              borderRadius: isMobile ? '16px' : '24px',
               padding: isMobile ? '14px' : '24px',
-              boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)',
+              boxShadow: '0 4px 20px rgba(74, 48, 54, 0.15)',
               display: 'flex',
               flexDirection: isMobile ? 'column' : 'row',
               justifyContent: 'space-between',
               alignItems: isMobile ? 'stretch' : 'center',
-              gap: isMobile ? '12px' : '20px'
+              gap: isMobile ? '12px' : '20px',
+              position: 'relative',
+              overflow: 'hidden'
             }}>
+              {/* Decorative chic glow orb (matches visit detail header) */}
+              <div style={{
+                position: 'absolute', right: '-20px', top: '-20px',
+                width: '120px', height: '120px', borderRadius: '50%',
+                background: 'radial-gradient(circle, rgba(223, 178, 140, 0.25) 0%, rgba(223, 178, 140, 0) 70%)',
+                filter: 'blur(12px)', pointerEvents: 'none'
+              }} />
+
               {/* Left Side: Photo & Name & Specialty */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '12px' : '20px', flexWrap: 'wrap' }}>
-                <div style={{ width: isMobile ? '52px' : '90px', height: isMobile ? '52px' : '90px', borderRadius: '50%', overflow: 'hidden', border: '3px solid #fce4e8', flexShrink: 0, boxShadow: '0 4px 12px rgba(201, 114, 130,0.15)' }}>
-                  <img 
-                    src={selectedStaffDrawer.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(selectedStaffDrawer.name)}`}
-                    alt={selectedStaffDrawer.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
+              <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '12px' : '20px', flexWrap: 'wrap', position: 'relative' }}>
+                <div style={{ width: isMobile ? '60px' : '90px', height: isMobile ? '60px' : '90px', borderRadius: '50%', overflow: 'hidden', border: '3px solid rgba(255,255,255,0.25)', flexShrink: 0, boxShadow: '0 4px 12px rgba(0,0,0,0.2)', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: isMobile ? '1.4rem' : '2rem', fontWeight: 800, color: '#fff' }}>{(selectedStaffDrawer.name || '?').charAt(0).toUpperCase()}</span>
                 </div>
                 <div style={{ minWidth: 0, flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    <h2 style={{ fontSize: isMobile ? '0.95rem' : '1.5rem', fontWeight: 900, color: '#2d1b22', margin: 0 }}>
+                    <h2 style={{ fontSize: isMobile ? '1.15rem' : '1.5rem', fontWeight: 900, color: '#ffffff', margin: 0, fontFamily: 'Georgia, serif' }}>
                       {selectedStaffDrawer.name}
                     </h2>
-                    <span className="mi-tag" style={{ fontSize: isMobile ? '0.52rem' : '0.72rem', color: '#c97282', background: 'rgba(201, 114, 130,0.1)', padding: isMobile ? '2px 8px' : '3px 10px', borderRadius: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px' }}>
+                    <span className="mi-tag" style={{ fontSize: isMobile ? '0.64rem' : '0.72rem', color: '#fae5e3', background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)', padding: isMobile ? '3px 9px' : '3px 10px', borderRadius: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px' }}>
                       {getStaffRole(selectedStaffDrawer.name)}
                     </span>
                   </div>
-                  <p style={{ fontSize: isMobile ? '0.6rem' : '0.8rem', color: '#a0909a', margin: isMobile ? '4px 0 0' : '8px 0 0', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {selectedStaffDrawer.role || 'Extensiones de pestañas'} · 0412 345 6789
+                  <p style={{ fontSize: isMobile ? '0.74rem' : '0.8rem', color: '#e5c1a7', margin: isMobile ? '5px 0 0' : '8px 0 0', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    0412 345 6789
                   </p>
                 </div>
               </div>
 
               {/* Right Side: Date Picker Navigation & Edit Schedule */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '12px', flexWrap: 'wrap', justifyContent: isMobile ? 'space-between' : 'flex-end' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '12px', flexWrap: 'wrap', justifyContent: isMobile ? 'space-between' : 'flex-end', position: 'relative' }}>
                 {/* Date Navigator */}
-                <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  background: '#ffffff', 
-                  border: '1px solid rgba(223, 178, 140, 0.25)', 
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  background: 'rgba(255,255,255,0.1)',
+                  border: '1px solid rgba(255,255,255,0.18)',
                   borderRadius: isMobile ? '10px' : '12px',
                   padding: '3px',
-                  boxShadow: '0 2px 8px rgba(74, 48, 54, 0.02)',
                   flex: isMobile ? 1 : 'none',
                   minWidth: 0
                 }}>
@@ -2449,7 +2502,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     padding: isMobile ? '6px 10px' : '8px 16px',
                     fontSize: isMobile ? '0.68rem' : '0.82rem',
                     fontWeight: 700,
-                    color: '#2d1b22',
+                    color: '#ffffff',
                     textTransform: 'capitalize',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -2460,13 +2513,13 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   }}>
                     {selectedDate.toLocaleDateString('es-VE', { weekday: isMobile ? 'short' : 'long', day: 'numeric', month: 'short', year: 'numeric' }).replace(' de', '').replace(' de', '')}
                   </div>
-                  <div style={{ display: 'flex', gap: '2px', borderLeft: '1px solid rgba(223,178,140,0.15)', paddingLeft: '4px', flexShrink: 0 }}>
+                  <div style={{ display: 'flex', gap: '2px', borderLeft: '1px solid rgba(255,255,255,0.15)', paddingLeft: '4px', flexShrink: 0 }}>
                     <button
                       onClick={() => goToDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() - 1), 'prev')}
                       className="mi-btn btn-hover-scale"
                       style={{
                         width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', background: 'transparent',
-                        color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                        color: '#fae5e3', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
                       }}
                     >
                       <ChevronLeft size={isMobile ? 14 : 16} />
@@ -2476,7 +2529,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       className="mi-btn btn-hover-scale"
                       style={{
                         width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', background: 'transparent',
-                        color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                        color: '#fae5e3', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
                       }}
                     >
                       <ChevronRight size={isMobile ? 14 : 16} />
@@ -2485,22 +2538,22 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 </div>
 
                 {/* Edit Schedule Button */}
-                <button 
+                <button
                   onClick={() => showToast?.('Abriendo editor de horarios...', 'info')}
                   className="mi-btn btn-hover-scale"
                   style={{
-                    background: '#fff', 
-                    border: '1px solid #c97282', 
-                    color: '#c97282',
-                    padding: isMobile ? '8px 14px' : '10px 20px', 
-                    borderRadius: isMobile ? '10px' : '12px', 
-                    fontSize: isMobile ? '0.7rem' : '0.82rem', 
-                    fontWeight: 700, 
+                    background: 'rgba(255,255,255,0.95)',
+                    border: 'none',
+                    color: '#a0506a',
+                    padding: isMobile ? '8px 14px' : '10px 20px',
+                    borderRadius: isMobile ? '10px' : '12px',
+                    fontSize: isMobile ? '0.7rem' : '0.82rem',
+                    fontWeight: 700,
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    boxShadow: '0 2px 8px rgba(201, 114, 130,0.05)',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
                     whiteSpace: 'nowrap',
                     flexShrink: 0
                   }}
@@ -2523,12 +2576,12 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
               {/* Card 2: Próxima Cita */}
               <div className="mi-stat mi-enter-up mi-delay-2" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '14px' : '20px', padding: isMobile ? '12px' : '16px 20px', display: 'flex', alignItems: 'center', gap: isMobile ? '10px' : '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                <div style={{ width: isMobile ? '30px' : '36px', height: isMobile ? '30px' : '36px', borderRadius: '10px', background: 'rgba(217, 119, 6, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706', flexShrink: 0 }}>
+                <div style={{ width: isMobile ? '30px' : '36px', height: isMobile ? '30px' : '36px', borderRadius: '10px', background: 'rgba(160, 80, 106, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
                   <CalendarIcon size={isMobile ? 14 : 16} />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: isMobile ? '0.55rem' : '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Próxima cita</div>
-                  <div style={{ fontSize: isMobile ? '0.78rem' : '0.9rem', fontWeight: 800, color: '#d97706', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div style={{ fontSize: isMobile ? '0.78rem' : '0.9rem', fontWeight: 800, color: '#a0506a', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     12:00 PM <span style={{ color: '#a0909a', fontSize: isMobile ? '0.65rem' : '0.78rem', fontWeight: 500 }}>· Volumen 3D</span>
                   </div>
                 </div>
@@ -3338,32 +3391,84 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               <div style={{ flex: 1, overflowY: 'auto' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '22px 24px 4px' }}>
                   
-                  {/* CARD 1A: DATOS DE LA CLIENTE */}
+                  {/* SINGLE UNIFIED CARD: SERVICIO, PROFESIONAL Y DATOS DE LA CLIENTE */}
                   <div className="mi-card" style={{
                     padding: '20px', borderRadius: '16px', border: '1px solid rgba(223,178,140,0.18)',
                     background: '#ffffff', boxShadow: '0 4px 12px rgba(74, 48, 54, 0.03)'
                   }}>
-                    
+
+                    {/* ¿Qué servicios quiere? */}
+                    <div style={{ marginBottom: '14px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                        <Scissors size={13} color="#a0506a" />
+                        <span style={{ fontSize: '0.78rem', color: '#a0506a', fontWeight: 700 }}>¿Qué servicios quiere?</span>
+                      </div>
+                      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', flexShrink: 0 }}>
+                          <Scissors size={16} />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: '1rem', fontWeight: 850, color: '#2d1b22' }}>{selectedDetailedApp.services?.name || 'Servicio'}</div>
+                          <div style={{ display: 'flex', gap: '16px', marginTop: '4px', fontSize: '0.82rem', color: '#8c767b', fontWeight: 650 }}>
+                            <span>Duración: {selectedDetailedApp.services?.duration || 90} min</span>
+                            <span>Precio: <span style={{ color: '#c97282', fontWeight: 800 }}>${Number(selectedDetailedApp.total_price || selectedDetailedApp.services?.price || 0).toFixed(2)}</span></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.12)', margin: '14px 0' }} />
+
+                    {/* ¿Con qué profesional se va a atender? */}
+                    <div style={{ marginBottom: '14px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                        <User size={13} color="#a0506a" />
+                        <span style={{ fontSize: '0.78rem', color: '#a0506a', fontWeight: 700 }}>¿Con qué profesional se va a atender?</span>
+                      </div>
+                      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                        <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', border: '1px solid rgba(223,178,140,0.2)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#fff' }}>{(staffNameOnly || '?').charAt(0).toUpperCase()}</span>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#2d1b22' }}>{staffNameOnly}</div>
+                          <div style={{ fontSize: '0.78rem', color: '#8c767b', fontWeight: 600 }}>{staffRoleOnly}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.12)', margin: '14px 0' }} />
+
                     {/* ¿Qué clienta es? */}
                     <div style={{ marginBottom: '14px' }}>
-                      <div style={{ fontSize: '0.7rem', color: '#6b5a5f', fontWeight: 700, marginBottom: '6px' }}>
-                        ¿Qué clienta es?
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                        <Sparkles size={13} color={clientPastAppointments.length === 0 ? '#16a34a' : '#a0506a'} />
+                        <span style={{ fontSize: '0.78rem', color: clientPastAppointments.length === 0 ? '#16a34a' : '#a0506a', fontWeight: 700 }}>¿Qué clienta es?</span>
                       </div>
-                      <div style={{ fontSize: '0.86rem', fontWeight: 800, color: clientPastAppointments.length === 0 ? '#16a34a' : '#a0506a' }}>
+                      <div style={{ fontSize: '0.95rem', fontWeight: 800, color: clientPastAppointments.length === 0 ? '#16a34a' : '#a0506a' }}>
                         {clientPastAppointments.length === 0 ? 'Clienta Nueva (Primera Visita)' : 'Clienta Frecuente'}
                       </div>
+                      {clientPastAppointments.length > 0 && (
+                        <div style={{ fontSize: '0.82rem', color: '#6b5a60', fontWeight: 650, marginTop: '4px' }}>
+                          <span style={{ fontWeight: 800, color: '#a0506a' }}>{clientPastAppointments.length} visitas</span> registradas · Último servicio: {new Date(clientPastAppointments[0].scheduled_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'long', year: 'numeric' })}
+                        </div>
+                      )}
+                      {clientPastAppointments.length > 0 && (
+                        <div style={{ fontSize: '0.86rem', color: '#2d1b22', fontWeight: 700, marginTop: '6px' }}>
+                          Especialista preferida: <span style={{ fontWeight: 800 }}>{preferredSpecialist}</span>
+                        </div>
+                      )}
                     </div>
 
                     <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.12)', margin: '14px 0' }} />
 
                     {/* Teléfono de contacto */}
                     <div style={{ marginBottom: '14px' }}>
-                      <div style={{ fontSize: '0.7rem', color: '#6b5a5f', fontWeight: 700, marginBottom: '6px' }}>
-                        Teléfono de contacto
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.88rem', fontWeight: 800, color: '#2d1b22' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                         <Phone size={13} color="#a0506a" />
-                        <span>{selectedDetailedApp.clients?.phone || 'Sin número registrado'}</span>
+                        <span style={{ fontSize: '0.78rem', color: '#a0506a', fontWeight: 700 }}>Teléfono de contacto</span>
+                      </div>
+                      <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#2d1b22' }}>
+                        {selectedDetailedApp.clients?.phone || 'Sin número registrado'}
                       </div>
                     </div>
 
@@ -3371,10 +3476,11 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
                     {/* Preferencias de la cliente */}
                     <div style={{ marginBottom: '14px' }}>
-                      <div style={{ fontSize: '0.7rem', color: '#6b5a5f', fontWeight: 700, marginBottom: '6px' }}>
-                        Preferencias de la cliente
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                        <StickyNote size={13} color="#a0506a" />
+                        <span style={{ fontSize: '0.78rem', color: '#a0506a', fontWeight: 700 }}>Preferencias de la cliente</span>
                       </div>
-                      <div style={{ fontSize: '0.8rem', color: '#2d1b22', fontWeight: 650, lineHeight: '1.4' }}>
+                      <div style={{ fontSize: '0.88rem', color: '#2d1b22', fontWeight: 650, lineHeight: '1.4' }}>
                         {selectedDetailedApp.clients?.hair_type ? (
                           <span>Cabello: {selectedDetailedApp.clients.hair_type}. {selectedDetailedApp.clients.notes || ''}</span>
                         ) : (
@@ -3387,102 +3493,15 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
                     {/* Notas importantes */}
                     <div>
-                      <div style={{ fontSize: '0.7rem', color: '#6b5a5f', fontWeight: 700, marginBottom: '6px' }}>
-                        Notas importantes
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                        <Star size={13} color="#e5a13b" />
+                        <span style={{ fontSize: '0.78rem', color: '#e5a13b', fontWeight: 700 }}>Notas importantes</span>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 700, color: '#2d1b22' }}>
-                        <Star size={13} color="#e5a13b" style={{ flexShrink: 0 }} />
-                        <span>
-                          Alergia conocida: <span style={{ color: '#c97282', fontWeight: 800 }}>{selectedDetailedApp.clients?.allergies || 'Ninguna alergia registrada'}</span>
-                        </span>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#2d1b22' }}>
+                        Alergia conocida: <span style={{ color: '#c97282', fontWeight: 800 }}>{selectedDetailedApp.clients?.allergies || 'Ninguna alergia registrada'}</span>
                       </div>
                     </div>
 
-                  </div>
-
-                  {/* CARD 1B: HISTORIAL DE VISITAS */}
-                  <div className="mi-card" style={{
-                    padding: '20px', borderRadius: '16px', border: '1px solid rgba(223,178,140,0.12)',
-                    background: 'rgba(223, 178, 140, 0.05)', boxShadow: '0 4px 12px rgba(74, 48, 54, 0.01)'
-                  }}>
-                    {/* ¿Es su primera visita? */}
-                    <div style={{ marginBottom: clientPastAppointments.length > 0 ? '14px' : '0' }}>
-                      <div style={{ fontSize: '0.7rem', color: '#6b5a5f', fontWeight: 700, marginBottom: '6px' }}>
-                        ¿Es su primera visita?
-                      </div>
-                      <div style={{ fontSize: '0.8rem', color: '#2d1b22', fontWeight: 650, lineHeight: '1.4' }}>
-                        {clientPastAppointments.length === 0 ? (
-                          <span style={{ color: '#16a34a', fontWeight: 800 }}>Sí, es su primera visita hoy.</span>
-                        ) : (
-                          <span>
-                            No, ya tiene <span style={{ fontWeight: 800, color: '#a0506a' }}>{clientPastAppointments.length} visitas</span> registradas.
-                            <span style={{ fontSize: '0.72rem', color: '#6b5a60', display: 'block', marginTop: '2px' }}>
-                              Último servicio: {new Date(clientPastAppointments[0].scheduled_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'long', year: 'numeric' })}
-                            </span>
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* ¿Tiene una especialista preferida si no es su primera vez? */}
-                    {clientPastAppointments.length > 0 && (
-                      <>
-                        <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.12)', margin: '14px 0' }} />
-                        <div>
-                          <div style={{ fontSize: '0.7rem', color: '#6b5a5f', fontWeight: 700, marginBottom: '6px' }}>
-                            ¿Tiene una especialista preferida si no es su primera vez?
-                          </div>
-                          <div style={{ fontSize: '0.8rem', color: '#2d1b22', fontWeight: 750 }}>
-                            {preferredSpecialist}
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-
-                  {/* SERVICE & SPECIALIST CARD */}
-                  <div className="mi-card" style={{
-                    padding: '20px', borderRadius: '16px', border: '1px solid rgba(223,178,140,0.15)',
-                    display: 'flex', flexDirection: 'column', gap: '14px', background: '#fff9f8'
-                  }}>
-                    {/* ¿Qué servicios quiere? */}
-                    <div>
-                      <div style={{ fontSize: '0.7rem', color: '#6b5a5f', fontWeight: 700, marginBottom: '6px' }}>
-                        ¿Qué servicios quiere?
-                      </div>
-                      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                        <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', flexShrink: 0 }}>
-                          <Scissors size={14} />
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: '0.88rem', fontWeight: 850, color: '#2d1b22' }}>{selectedDetailedApp.services?.name || 'Servicio'}</div>
-                          <div style={{ display: 'flex', gap: '16px', marginTop: '4px', fontSize: '0.74rem', color: '#8c767b', fontWeight: 650 }}>
-                            <span>Duración: {selectedDetailedApp.services?.duration || 90} min</span>
-                            <span>Precio: <span style={{ color: '#c97282', fontWeight: 800 }}>${Number(selectedDetailedApp.total_price || selectedDetailedApp.services?.price || 0).toFixed(2)}</span></span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.12)' }} />
-
-                    {/* ¿Con qué profesional se va a atender? */}
-                    <div>
-                      <div style={{ fontSize: '0.7rem', color: '#6b5a5f', fontWeight: 700, marginBottom: '6px' }}>
-                        ¿Con qué profesional se va a atender?
-                      </div>
-                      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                        <img 
-                          src={activeStaff?.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(staffNameOnly)}`}
-                          alt={staffNameOnly} 
-                          style={{ width: '34px', height: '34px', borderRadius: '50%', backgroundColor: '#fff', border: '1px solid rgba(223,178,140,0.2)', objectFit: 'cover', flexShrink: 0 }} 
-                        />
-                        <div>
-                          <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#2d1b22' }}>{staffNameOnly}</div>
-                          <div style={{ fontSize: '0.7rem', color: '#8c767b', fontWeight: 600 }}>{staffRoleOnly}</div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
 
                   {/* Notes Card */}
@@ -3559,9 +3578,9 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         }
                       }}
                       className="mi-btn"
-                      style={{ height: '42px', fontSize: '0.78rem', borderRadius: '12px', background: '#fff', color: '#d97706', border: '1.5px solid rgba(217, 119, 6, 0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: 700, cursor: 'pointer' }}
+                      style={{ height: '42px', fontSize: '0.78rem', borderRadius: '12px', background: '#fff', color: '#6b4a52', border: '1.5px solid rgba(107, 74, 82, 0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: 700, cursor: 'pointer' }}
                     >
-                      <Bell size={12} color="#d97706" /> Enviar Recordatorio
+                      <Bell size={12} color="#6b4a52" /> Enviar Recordatorio
                     </button>
                   </div>
 

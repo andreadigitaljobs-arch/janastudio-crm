@@ -270,11 +270,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
               justifyContent: 'center', 
               flexShrink: 0 
             }}>
-              {staffMember.image_url ? (
-                <img src={staffMember.image_url} alt={staffMember.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                <User size={40} color="var(--pink-primary)" opacity={0.5} />
-              )}
+              <span style={{ fontSize: isMobileView ? '1.6rem' : '2rem', fontWeight: 800, color: 'var(--pink-primary)' }}>{(staffMember.name || '?').charAt(0).toUpperCase()}</span>
             </div>
             <div>
               <h2 style={{ fontSize: isMobileView ? '22px' : '28px', fontWeight: '900', color: 'white', margin: 0 }}>{staffMember.name}</h2>

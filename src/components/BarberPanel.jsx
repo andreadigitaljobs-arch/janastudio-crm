@@ -646,11 +646,7 @@ const BarberPanel = ({ isMobile, rates }) => {
                 style={{ padding: '30px 10px', borderRadius: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', cursor: 'pointer', width: '100%' }}
               >
                 <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'var(--pink-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--pink-glow)', marginBottom: '4px' }}>
-                  {s.image_url ? (
-                    <img src={s.image_url} alt={s.name} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
-                  ) : (
-                    <User size={32} color="black" />
-                  )}
+                  <User size={32} color="black" />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '100%' }}>
                   <span style={{ fontWeight: '800', fontSize: '16px', color: 'white' }}>{s.name}</span>
@@ -688,11 +684,7 @@ const BarberPanel = ({ isMobile, rates }) => {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
             <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: isStylist ? 'linear-gradient(135deg, #007aff, #00d2ff)' : 'var(--pink-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {selectedStylist.image_url ? (
-                <img src={selectedStylist.image_url} alt={selectedStylist.name} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
-              ) : (
-                isStylist ? <Droplets size={20} color="white" /> : <Sparkles size={20} color="black" />
-              )}
+              {isStylist ? <Droplets size={20} color="white" /> : <Sparkles size={20} color="black" />}
             </div>
             <h2 style={{ fontSize: '24px', fontWeight: '900' }}>¡Hola, <span className="text-gold">{selectedStylist.name.split(' ')[0]}!</span></h2>
           </div>

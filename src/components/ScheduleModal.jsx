@@ -777,7 +777,9 @@ const ScheduleModal = ({
                           display: 'flex', alignItems: 'center', gap: '12px', background: '#faf8f7',
                           marginTop: '8px'
                         }}>
-                          <img src={localStaff.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(localStaff.name || '')}`} alt={localStaff.name || ''} style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+                          <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <span style={{ fontSize: '0.95rem', fontWeight: 800, color: '#fff' }}>{(localStaff.name || '?').charAt(0).toUpperCase()}</span>
+                          </div>
                           <div>
                             <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#2d1b22' }}>{localStaff.name || ''}</div>
                             <div style={{ fontSize: '0.68rem', color: '#a0909a', fontWeight: 600 }}>{String(localStaff.role || 'Especialista').split('|')[0]}</div>

@@ -40,7 +40,6 @@ import { useDialog } from './context/DialogContext';
 import { useScrollLock } from './hooks/useScrollLock';
 import { useModal } from './context/ModalContext';
 import { canAccessModule } from './utils/roles';
-import { preloadImages, getStaffAvatarUrl } from './utils/preloadImages';
 
 import DashboardModule from './components/DashboardModule';
 import ClientModule from './components/ClientModule';
@@ -267,14 +266,6 @@ function App() {
   const [isSaleModalOpen, setIsSaleModalOpen] = useState(false);
   const [stats, setStats] = useState({ income: 0, clients: 0, expenses: 0, appointments: 0 });
   const [dbData, setDbData] = useState({ clients: [], services: [], staff: [], inventory: [] });
-
-  // Precarga las fotos del equipo apenas llegan, para que los avatares no
-  // aparezcan en blanco la primera vez que se muestran en cada módulo.
-  useEffect(() => {
-    if (dbData.staff?.length) {
-      preloadImages(dbData.staff.map(getStaffAvatarUrl));
-    }
-  }, [dbData.staff]);
 
   const [chartData, setChartData] = useState({
     labels: ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'],

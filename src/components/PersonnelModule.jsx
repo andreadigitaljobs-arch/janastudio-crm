@@ -606,7 +606,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                         <tr className="table-row-hover mi-row" style={{ borderBottom: '1px solid var(--border-color)' }}>
                           <td style={{ padding: '12px 16px' }}>
                             <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '12px', overflow: 'hidden' }}>
-                              {person.image_url ? <img src={person.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : (person.name || '?')[0].toUpperCase()}
+                              {(person.name || '?')[0].toUpperCase()}
                             </div>
                           </td>
                           <td style={{ padding: '12px 16px' }}>
@@ -656,7 +656,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                   <div key={person.id} className="mi-card" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '14px', overflow: 'hidden', flexShrink: 0 }}>
-                        {person.image_url ? <img src={person.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : (person.name || '?')[0].toUpperCase()}
+                        {(person.name || '?')[0].toUpperCase()}
                       </div>
                       <div style={{ minWidth: 0, flex: 1 }}>
                         <div style={{ fontWeight: '800', color: 'var(--text-primary)', fontSize: '14px', lineHeight: '1.3' }}>{person.name}</div>
@@ -698,7 +698,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                 return (
                   <div key={person.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px', borderRadius: '12px', backgroundColor: '#faf5f5', border: '1px solid var(--border-color)', minWidth: '200px', flexShrink: 0 }}>
                     <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '12px', overflow: 'hidden', flexShrink: 0 }}>
-                      {person.image_url ? <img src={person.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : (person.name || '?')[0].toUpperCase()}
+                      {(person.name || '?')[0].toUpperCase()}
                     </div>
                     <div style={{ minWidth: 0 }}>
                       <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '12px' }}>{person.name}</div>
@@ -747,7 +747,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                 return (
                   <div key={person.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 0', borderBottom: idx < 2 ? '1px solid var(--border-color)' : 'none' }}>
                     <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '10px', overflow: 'hidden', flexShrink: 0 }}>
-                      {person.image_url ? <img src={person.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : (person.name || '?')[0].toUpperCase()}
+                      {(person.name || '?')[0].toUpperCase()}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '12px' }}>{person.name}</div>
