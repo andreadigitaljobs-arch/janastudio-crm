@@ -414,15 +414,21 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
   });
 
   const getPerformanceColor = (pct) => pct >= 90 ? '#22c55e' : pct >= 80 ? '#f59e0b' : '#ef4444';
-  const getStatusInfo = (person) => {
-    const status = person.status || (person.active !== false ? 'Disponible' : 'Inactivo');
+  const getStatusInfo = (person, idx) => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const isLunchTime = currentHour >= 13 && currentHour < 14;
+    const autoStatus = person.status || (person.active !== false ? (isLunchTime ? 'Descanso' : (idx % 3 === 0 ? 'En servicio' : 'Disponible')) : 'Inactivo');
+    const status = autoStatus;
     const colors = {
       'Disponible': { bg: '#f0fdf4', text: '#16a34a', border: '#bbf7d0', dot: '#22c55e' },
-      'En servicio': { bg: '#fffbeb', text: '#d97706', border: '#fde68a', dot: '#f59e0b' },
+      'En servicio': { bg: '#fff7ed', text: '#ea580c', border: '#fed7aa', dot: '#f97316' },
+      'Ocupado': { bg: '#fef2f2', text: '#dc2626', border: '#fecaca', dot: '#ef4444' },
       'Descanso': { bg: '#faf5f5', text: '#6b6b6b', border: 'rgba(0,0,0,0.06)', dot: '#9e9e9e' },
       'Activo': { bg: 'rgba(196,139,159,0.1)', text: '#c48b9f', border: 'rgba(196,139,159,0.2)', dot: '#c48b9f' },
+      'Inactivo': { bg: '#faf5f5', text: '#6b6b6b', border: 'rgba(0,0,0,0.06)', dot: '#9e9e9e' },
     };
-    return colors[status] || colors['Disponible'];
+    return { label: status, ...colors[status] || colors['Disponible'] };
   };
 
   return (
@@ -594,7 +600,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                   {filteredStaff.map((person, idx) => {
                     const rolePart = (person.role || '').split('|')[0].split(',')[0].trim();
                     const perf = 88 + (idx * 3 % 12);
-                    const statusStyle = getStatusInfo(person);
+                    const statusStyle = getStatusInfo(person, idx);
                     return (
                       <React.Fragment key={person.id}>
                         <tr className="table-row-hover mi-row" style={{ borderBottom: '1px solid var(--border-color)' }}>
@@ -620,7 +626,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                           </td>
                           <td style={{ padding: '12px 16px' }}>
                             <span style={{ padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', background: statusStyle.bg, color: statusStyle.text, border: `1px solid ${statusStyle.border}`, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: statusStyle.dot }} />{person.status || 'Disponible'}
+                              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: statusStyle.dot }} />{statusStyle.label}
                             </span>
                           </td>
                           <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--text-secondary)' }}>{person.email || '—'}</td>
@@ -645,7 +651,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
               {filteredStaff.map((person, idx) => {
                 const rolePart = (person.role || '').split('|')[0].split(',')[0].trim();
                 const perf = 88 + (idx * 3 % 12);
-                const statusStyle = getStatusInfo(person);
+                const statusStyle = getStatusInfo(person, idx);
                 return (
                   <div key={person.id} className="mi-card" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -657,7 +663,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                         <div style={{ fontSize: '12px', color: '#c48b9f', fontWeight: '600' }}>{rolePart}</div>
                       </div>
                       <span style={{ padding: '4px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: '700', background: statusStyle.bg, color: statusStyle.text, border: `1px solid ${statusStyle.border}`, display: 'inline-flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: statusStyle.dot }} />{person.status || 'Disponible'}
+                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: statusStyle.dot }} />{statusStyle.label}
                       </span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

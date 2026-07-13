@@ -1926,6 +1926,14 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       statusText = 'EN CITA';
                       statusBg = 'rgba(239, 68, 68, 0.06)';
                       statusColor = '#dc2626';
+                    } else if (staffIdx === 1 || staffIdx === 3 || staffIdx === 5) {
+                      statusText = 'EN CITA';
+                      statusBg = 'rgba(239, 68, 68, 0.06)';
+                      statusColor = '#dc2626';
+                    } else if (staffIdx === 7) {
+                      statusText = 'ALMUERZO';
+                      statusBg = 'rgba(201, 114, 130, 0.08)';
+                      statusColor = '#c97282';
                     }
 
                     return (
