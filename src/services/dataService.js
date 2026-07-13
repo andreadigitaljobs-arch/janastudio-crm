@@ -372,7 +372,7 @@ export const dataService = {
   async getClientPastAppointments(clientId, excludeAppointmentId) {
     let query = supabase
       .from('appointments')
-      .select('id, scheduled_at, status, total_price, services (name, price)')
+      .select('id, scheduled_at, status, total_price, services (name, price), appointment_services (staff_id, staff (id, name))')
       .eq('client_id', clientId)
       .eq('status', 'Completado')
       .order('scheduled_at', { ascending: false })

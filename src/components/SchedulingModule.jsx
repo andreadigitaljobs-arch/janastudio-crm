@@ -616,6 +616,28 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
     };
   }, [selectedDetailedApp]);
 
+  const preferredSpecialist = useMemo(() => {
+    if (!clientPastAppointments || clientPastAppointments.length === 0) {
+      return 'No aplica (Primera visita)';
+    }
+    const counts = {};
+    clientPastAppointments.forEach(pa => {
+      const services = pa.appointment_services || [];
+      services.forEach(as => {
+        const staffName = as.staff?.name;
+        if (staffName) {
+          const nameClean = staffName.split('(')[0].trim();
+          counts[nameClean] = (counts[nameClean] || 0) + 1;
+        }
+      });
+    });
+    const entries = Object.entries(counts);
+    if (entries.length === 0) return 'No registrada';
+    entries.sort((a, b) => b[1] - a[1]);
+    const [topName, topCount] = entries[0];
+    return `${topName} (Atendió ${topCount} de sus ${clientPastAppointments.length} citas)`;
+  }, [clientPastAppointments]);
+
   const triggerCloseDetailedApp = () => {
     setIsClosingDetailedApp(true);
     setTimeout(() => {
@@ -3368,6 +3390,13 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       )}
                     </div>
 
+                    <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px dashed rgba(223,178,140,0.25)' }}>
+                      <div style={{ fontSize: '0.6rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '6px' }}>Especialista Preferida</div>
+                      <div style={{ fontSize: '0.74rem', color: '#2d1b22', fontWeight: 750 }}>
+                        ⭐️ Preferencia: <span style={{ fontWeight: 600, color: 'var(--pink-primary)' }}>{preferredSpecialist}</span>
+                      </div>
+                    </div>
+
                     <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px dashed rgba(223,178,140,0.25)' }}>
                       <div style={{ fontSize: '0.6rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '6px' }}>Historial (Últimas Visitas)</div>
                       {clientPastAppointments.length > 0 ? (
@@ -3396,9 +3425,9 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         <Scissors size={14} />
                       </div>
                       <div>
-                        <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Servicio contratado</div>
+                        <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Servicio Solicitado</div>
                         <div style={{ fontSize: '0.8rem', fontWeight: 850, color: '#2d1b22', marginTop: '1px' }}>{selectedDetailedApp.services?.name || 'Servicio'}</div>
-                        <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#c97282', marginTop: '2px' }}>${Number(selectedDetailedApp.total_price || selectedDetailedApp.services?.price || 0).toFixed(2)}</div>
+                        <div style={{ fontSize: '0.74rem', fontWeight: 650, color: '#8c767b', marginTop: '2px' }}>Monto total del turno: <span style={{ color: '#c97282', fontWeight: 850 }}>${Number(selectedDetailedApp.total_price || selectedDetailedApp.services?.price || 0).toFixed(2)}</span></div>
                       </div>
                     </div>
 
@@ -3412,9 +3441,9 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#fff', border: '1px solid rgba(223,178,140,0.2)', objectFit: 'cover' }} 
                       />
                       <div>
-                        <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Profesional a cargo</div>
+                        <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Especialista Asignada</div>
                         <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#2d1b22', marginTop: '1px' }}>{staffNameOnly}</div>
-                        <div style={{ fontSize: '0.68rem', color: '#a0909a', fontWeight: 600 }}>{staffRoleOnly}</div>
+                        <div style={{ fontSize: '0.68rem', color: '#a0909a', fontWeight: 600 }}>Cargo / Rol: {staffRoleOnly}</div>
                       </div>
                     </div>
                   </div>
