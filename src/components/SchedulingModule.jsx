@@ -3323,20 +3323,12 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     padding: '16px', borderRadius: '16px', border: '1.5px solid rgba(223,178,140,0.22)',
                     background: '#ffffff', boxShadow: '0 4px 12px rgba(74, 48, 54, 0.03)'
                   }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                      <div style={{
-                        width: '46px', height: '46px', borderRadius: '50%', flexShrink: 0,
-                        backgroundColor: 'rgba(160,80,106,0.12)', border: '1.5px solid var(--pink-primary, #a0506a)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center'
-                      }}>
-                        <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#a0506a' }}>
-                          {(selectedDetailedApp.clients?.name || '?').trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase()}
-                        </span>
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Clienta</div>
-                        <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#2d1b22' }}>{selectedDetailedApp.clients?.name || 'Cliente'}</div>
-                        <div style={{ fontSize: '0.74rem', color: '#c97282', fontWeight: 600, marginTop: '1px' }}>{selectedDetailedApp.clients?.phone || 'Sin número'}</div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Teléfono de contacto</div>
+                        <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#2d1b22' }}>
+                          📞 {selectedDetailedApp.clients?.phone || 'Sin número'}
+                        </div>
                       </div>
                       {onNavigate && selectedDetailedApp.clients?.id && (
                         <button
@@ -3346,20 +3338,6 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                           Ver ficha ↗
                         </button>
                       )}
-                    </div>
-
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '12px' }}>
-                      <span className="mi-tag" style={{ fontSize: '0.66rem', fontWeight: 700, color: '#8c767b', background: '#faf6f5', border: '1px solid rgba(223,178,140,0.2)', borderRadius: '8px', padding: '4px 9px' }}>
-                        {clientPastAppointments.length > 0 ? `${clientPastAppointments.length} visita${clientPastAppointments.length === 1 ? '' : 's'} anterior${clientPastAppointments.length === 1 ? '' : 'es'}` : 'Primera visita'}
-                      </span>
-                      <span className="mi-tag" style={{
-                        fontSize: '0.66rem', fontWeight: 700, borderRadius: '8px', padding: '4px 9px', border: '1px solid',
-                        ...(selectedDetailedApp.status === 'Completado'
-                          ? { color: '#16a34a', background: 'rgba(34,197,94,0.08)', borderColor: 'rgba(34,197,94,0.25)' }
-                          : { color: '#d97706', background: 'rgba(245,158,11,0.08)', borderColor: 'rgba(245,158,11,0.25)' })
-                      }}>
-                        {selectedDetailedApp.status === 'Completado' ? 'Pagado' : 'Pago pendiente'}
-                      </span>
                     </div>
 
                     {selectedDetailedApp.clients?.allergies && (
