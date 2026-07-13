@@ -3379,15 +3379,15 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             }}>
               {/* Header */}
               <div style={{
-                background: 'linear-gradient(135deg, #2d1b22 0%, #4a2b37 100%)',
+                background: 'linear-gradient(135deg, #fffcfb 0%, #faf1f0 100%)',
                 padding: '30px 24px 24px', position: 'relative', overflow: 'hidden',
-                borderBottom: '1px solid rgba(223,178,140,0.15)'
+                borderBottom: '1px solid rgba(223,178,140,0.25)'
               }}>
                 {/* Decorative chic glow orb (warm champagne glow) */}
                 <div style={{
                   position: 'absolute', right: '-20px', top: '-20px',
                   width: '120px', height: '120px', borderRadius: '50%',
-                  background: 'radial-gradient(circle, rgba(223, 178, 140, 0.25) 0%, rgba(223, 178, 140, 0) 70%)',
+                  background: 'radial-gradient(circle, rgba(223, 178, 140, 0.15) 0%, rgba(223, 178, 140, 0) 70%)',
                   filter: 'blur(12px)', pointerEvents: 'none'
                 }} />
 
@@ -3398,8 +3398,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     style={{
                       width: '30px', height: '30px', borderRadius: '50%',
                       backgroundColor: '#ffffff',
-                      border: 'none',
-                      boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
+                      border: '1.2px solid rgba(223, 178, 140, 0.3)',
+                      boxShadow: '0 2px 8px rgba(74, 48, 54, 0.04)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                       transition: 'all 0.22s ease', outline: 'none'
                     }}
@@ -3411,7 +3411,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 </div>
 
                 <div style={{ marginTop: '20px', position: 'relative', paddingRight: '80px' }}>
-                  {/* Logo JANA Studio raw (no circle container, floats beautifully on dark plum background) */}
+                  {/* Logo JANA Studio raw (no circle container, floats beautifully on light champagne background) */}
                   <div style={{
                     position: 'absolute', right: '0', top: '50%', transform: 'translateY(-50%)',
                     opacity: 0.95, pointerEvents: 'none'
@@ -3420,21 +3420,21 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   </div>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                    <CalendarIcon size={11} color="#e5c1a7" />
-                    <span style={{ fontSize: '0.62rem', fontWeight: 800, color: '#e5c1a7', textTransform: 'uppercase', letterSpacing: '2px' }}>
+                    <CalendarIcon size={11} color="#a0506a" />
+                    <span style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0506a', textTransform: 'uppercase', letterSpacing: '2px' }}>
                       Detalle de Visita
                     </span>
                   </div>
-                  <h2 style={{ fontSize: '1.45rem', fontWeight: 850, color: '#ffffff', margin: '0 0 8px 0', letterSpacing: '-0.3px', fontFamily: 'Georgia, serif' }}>
+                  <h2 style={{ fontSize: '1.45rem', fontWeight: 850, color: '#2d1b22', margin: '0 0 8px 0', letterSpacing: '-0.3px', fontFamily: 'Georgia, serif' }}>
                     {selectedDetailedApp.clients?.name || 'Cliente'}
                   </h2>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '0.74rem', color: '#fae5e3', fontWeight: 650, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <CalendarIcon size={12} color="#fae5e3" /> {formattedDate} · {formattedTime}
+                    <span style={{ fontSize: '0.74rem', color: '#6b5a5f', fontWeight: 650, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <CalendarIcon size={12} color="#6b5a5f" /> {formattedDate} · {formattedTime}
                     </span>
                     <span className="mi-tag" style={{
                       padding: '3px 10px', borderRadius: '20px', fontSize: '0.62rem', fontWeight: 800,
-                      background: 'rgba(255,255,255,0.12)', color: '#fae5e3', border: '1px solid rgba(255,255,255,0.2)'
+                      background: 'rgba(160, 80, 106, 0.06)', color: '#a0506a', border: '1px solid rgba(160, 80, 106, 0.12)'
                     }}>
                       {selectedDetailedApp.status}
                     </span>
