@@ -2926,24 +2926,35 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   </div>
 
                   {/* Day Comparison widget */}
-                  <div className="mi-card" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                    <h3 className="mi-section-header" style={{ fontSize: '0.78rem', fontWeight: 800, color: '#a0909a', margin: '0 0 14px 0', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
-                      Comparativo del día <br /><span style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 500, textTransform: 'none' }}>vs. día anterior</span>
-                    </h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div className="mi-card" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '18px' : '24px', padding: isMobile ? '16px' : '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 16px 0' }}>
+                      <BarChart3 size={16} color="#c97282" />
+                      <div>
+                        <div style={{ fontSize: isMobile ? '0.82rem' : '0.78rem', fontWeight: 800, color: '#2d1b22', letterSpacing: '0.3px' }}>Comparativo del día</div>
+                        <div style={{ fontSize: isMobile ? '0.65rem' : '0.62rem', color: '#a0909a', fontWeight: 500 }}>vs. día anterior</div>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '10px' : '12px' }}>
                       {[
-                        { label: 'Ingresos', pct: '+ 18%', val: '$ 98.00', isUp: true },
-                        { label: 'Citas', pct: '+ 25%', val: '4 citas', isUp: true },
-                        { label: 'Ocupación', pct: '+ 12%', val: '78%', isUp: true }
+                        { label: 'Ingresos', val: '$ 98.00', pct: '+ 18%', isUp: true, icon: <DollarSign size={14} />, bg: 'rgba(201,114,130,0.08)', accent: '#c97282' },
+                        { label: 'Citas', val: '4 citas', pct: '+ 25%', isUp: true, icon: <CalendarIcon size={14} />, bg: 'rgba(34,197,94,0.08)', accent: '#22c55e' },
+                        { label: 'Ocupación', val: '78%', pct: '+ 12%', isUp: true, icon: <BarChart3 size={14} />, bg: 'rgba(99,102,241,0.08)', accent: '#6366f1' }
                       ].map((cmp, cIdx) => (
-                        <div key={cIdx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem' }}>
-                          <span style={{ color: '#8c767b', fontWeight: 600 }}>{cmp.label}</span>
-                          <div style={{ textAlign: 'right' }}>
-                            <span style={{ color: cmp.isUp ? '#16a34a' : '#dc2626', fontWeight: 850, marginRight: '6px' }}>
-                              {cmp.isUp ? '↑' : '↓'} {cmp.pct}
-                            </span>
-                            <span style={{ color: '#2d1b22', fontWeight: 800 }}>{cmp.val}</span>
+                        <div key={cIdx} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: isMobile ? '10px 12px' : '12px 14px', background: cmp.bg, borderRadius: '14px' }}>
+                          <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: cmp.accent, boxShadow: '0 1px 4px rgba(0,0,0,0.04)', flexShrink: 0 }}>
+                            {cmp.icon}
                           </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: isMobile ? '0.68rem' : '0.62rem', color: '#a0909a', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px' }}>{cmp.label}</div>
+                            <div style={{ fontSize: isMobile ? '1rem' : '0.92rem', fontWeight: 900, color: '#2d1b22', marginTop: '2px' }}>{cmp.val}</div>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', borderRadius: '8px', background: cmp.isUp ? 'rgba(22,163,74,0.1)' : 'rgba(220,38,38,0.1)', flexShrink: 0 }}>
+                            <span style={{ fontSize: isMobile ? '0.72rem' : '0.65rem', fontWeight: 800, color: cmp.isUp ? '#16a34a' : '#dc2626' }}>{cmp.isUp ? '↑' : '↓'} {cmp.pct}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                         </div>
                       ))}
                     </div>
