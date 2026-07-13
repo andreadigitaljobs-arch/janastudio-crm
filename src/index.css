@@ -3880,4 +3880,22 @@ button, [role="button"], a[href] {
   color: var(--pink-primary) !important;
 }
 
+/* Responsive adjustments for KPI cards on iPads / tablets (width <= 1180px) */
+@media (max-width: 1180px) {
+  .dashboard-kpi-row .mi-stat {
+    padding: 12px 10px !important;
+    gap: 8px !important;
+    border-radius: 16px !important;
+  }
+  .dashboard-kpi-row .mi-stat > div:first-child {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 10px !important;
+  }
+  .dashboard-kpi-row .mi-stat > div:first-child svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+}
+
 
