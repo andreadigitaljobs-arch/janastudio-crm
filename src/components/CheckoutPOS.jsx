@@ -1423,7 +1423,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                         }}>{badgeStatus === 'En Silla' ? <><img src={goldChairImg} alt="silla" style={{ width: '12px', height: '12px', objectFit: 'contain', marginRight: '3px', verticalAlign: 'middle' }} />En Silla</> : badgeStatus}</span>
                       </div>
                       <div style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', maxWidth: '70%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', maxWidth: '70%', lineHeight: '1.3' }}>
                           <Sparkles size={12} /> {serviceNames} • <span style={{ fontWeight: '600' }}>{staffNames}</span>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
@@ -1464,7 +1464,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                       >
                         <div style={{ maxWidth: '70%' }}>
                           <div style={{ fontWeight: '800', fontSize: '14px' }}>{group.client_name}</div>
-                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', lineHeight: '1.3' }}>
                             {timeString} • {serviceNames} • {staffNames}
                           </div>
                         </div>
@@ -1819,7 +1819,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                       <button onClick={() => handleRemoveProduct(p)} style={{ background: 'none', border: 'none', color: '#ff453a', cursor: 'pointer', padding: '2px', display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
                         <XCircle size={isMobile ? 12 : 14} style={{ opacity: 0.8 }} />
                       </button>
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'rgba(255,255,255,0.9)' }}>{p.name}</span>
+                      <span style={{ lineHeight: '1.3', color: 'rgba(255,255,255,0.9)' }}>{p.name}</span>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '2px', background: 'rgba(255,255,255,0.05)', padding: '1px 4px', borderRadius: '4px', flexShrink: 0 }}>
                         <button 
                           onClick={() => handleDecrementProduct(p)}
@@ -1863,7 +1863,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                       <button onClick={() => handleRemoveExtra(extra.id)} style={{ background: 'none', border: 'none', color: '#ff453a', cursor: 'pointer', padding: '2px', display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
                         <XCircle size={isMobile ? 12 : 14} style={{ opacity: 0.8 }} />
                       </button>
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--pink-primary)' }}>{extra.service_extras?.name}</span>
+                      <span style={{ lineHeight: '1.3', color: 'var(--pink-primary)' }}>{extra.service_extras?.name}</span>
                       
                       {/* Staff Selector for Extra */}
                       <CartSellerSelect
@@ -2701,7 +2701,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                       </div>
                       
                       <div style={{ width: '100%' }}>
-                        <div style={{ fontWeight: '800', fontSize: '15px', color: 'var(--text-primary)', marginBottom: '6px', lineHeight: '1.3', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{extra.name}</div>
+                        <div style={{ fontWeight: '800', fontSize: '15px', color: 'var(--text-primary)', marginBottom: '6px', lineHeight: '1.3' }}>{extra.name}</div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                           {rates?.usd > 0 ? (
                             <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>~ {Math.round(extra.price * rates.usd).toLocaleString()} Bs.</div>

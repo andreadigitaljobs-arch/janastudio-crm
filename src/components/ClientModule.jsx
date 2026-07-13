@@ -560,31 +560,31 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                 key={i}
                 className="glass-card animate-scale-in mi-stat"
                 style={{
-                  padding: windowWidth < 600 ? '16px 16px' : '16px 20px',
+                  padding: windowWidth < 600 ? '14px 14px' : '16px 20px',
                   borderRadius: '24px',
                   border: '1px solid rgba(160,80,106,0.25)',
                   background: 'white',
                   boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)',
                   animationDelay: `${i * 80}ms`,
                   minWidth: 0,
-                  minHeight: windowWidth < 600 ? '110px' : 'auto',
+                  minHeight: windowWidth < 600 ? '100px' : 'auto',
                 }}
               >
                 {windowWidth < 600 ? (
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', gap: '8px' }}>
-                      <div style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '700', minWidth: 0, flex: 1 }}>{stat.label}</div>
-                      <div style={{ width: '34px', height: '34px', borderRadius: '10px', backgroundColor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <stat.icon size={17} color={stat.iconColor} />
+                      <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700', minWidth: 0, flex: 1, lineHeight: 1.3 }}>{stat.label}</div>
+                      <div style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <stat.icon size={16} color={stat.iconColor} />
                       </div>
                     </div>
-                    <div style={{ fontSize: '30px', fontWeight: '850', color: 'var(--text-primary)', lineHeight: '1', marginBottom: '4px' }}>{stat.value}</div>
+                    <div style={{ fontSize: '28px', fontWeight: '850', color: 'var(--text-primary)', lineHeight: '1', marginBottom: '4px' }}>{stat.value}</div>
                     {stat.trend ? (
-                      <div style={{ fontSize: '10.5px', color: '#2e9e5b', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <div style={{ fontSize: '10px', color: '#2e9e5b', fontWeight: '700', whiteSpace: 'nowrap' }}>
                         {stat.trend} <span style={{ color: 'var(--text-secondary)', fontWeight: '500' }}>{stat.trendSub}</span>
                       </div>
                     ) : (
-                      <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '500', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{stat.trendSub}</div>
+                      <div style={{ fontSize: '10px', color: 'var(--text-secondary)', fontWeight: '500', whiteSpace: 'nowrap' }}>{stat.trendSub}</div>
                     )}
                   </div>
                 ) : (
@@ -593,7 +593,7 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                       <stat.icon size={22} color={stat.iconColor} />
                     </div>
                     <div style={{ minWidth: 0, flex: 1 }}>
-                      <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600', marginBottom: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{stat.label}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600', marginBottom: '2px', lineHeight: 1.3 }}>{stat.label}</div>
                       <div style={{ fontSize: '24px', fontWeight: '850', color: 'var(--text-primary)', lineHeight: '1.1', marginBottom: '1px' }}>{stat.value}</div>
                       {stat.trend ? (
                         <div style={{ fontSize: '10px', color: '#2e9e5b', fontWeight: '600' }}>
@@ -685,6 +685,9 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <p style={{ fontSize: '0.85rem', color: '#a0909a', fontWeight: 600, margin: '0', textAlign: 'center', fontStyle: 'italic' }}>
+                    Toca en una tarjeta de cliente para ver su ficha
+                  </p>
                   {paginatedClients.map((client, idx) => {
                     const status = getStatusBadge(client);
                     return (
@@ -720,7 +723,7 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                             )}
                           </div>
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontWeight: '850', fontSize: '1rem', color: 'var(--text-primary)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                            <div style={{ fontWeight: '850', fontSize: '1rem', color: 'var(--text-primary)', lineHeight: '1.3' }}>
                               {client.name}
                             </div>
                           </div>
@@ -750,9 +753,12 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                           ) : (
                             <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '500' }}>Sin teléfono</span>
                           )}
-                          <span style={{ fontSize: '0.85rem', fontWeight: '750', color: 'var(--text-secondary)' }}>
-                            {client.total_visits || 0} visitas
-                          </span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontSize: '0.85rem', fontWeight: '750', color: 'var(--text-secondary)' }}>
+                              {client.total_visits || 0} visitas
+                            </span>
+                            <ChevronRight size={16} color="var(--text-muted)" />
+                          </div>
                         </div>
                       </div>
                     );
@@ -805,8 +811,8 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ fontSize: isMobile ? '13.5px' : '11.5px', fontWeight: '700', color: 'var(--text-primary)', lineHeight: '1.3' }}>{item.text}</div>
                             <div style={{ fontSize: isMobile ? '12.5px' : '10.5px', color: 'var(--text-secondary)', marginTop: isMobile ? '4px' : '2px', display: 'flex', flexDirection: 'column', gap: '2px', fontWeight: '500' }}>
-                              <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.line1}</div>
-                              <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.line2}</div>
+                              <div style={{ lineHeight: '1.3' }}>{item.line1}</div>
+                              <div style={{ lineHeight: '1.3' }}>{item.line2}</div>
                             </div>
                           </div>
                           <ChevronRight size={isMobile ? 14 : 12} color="var(--text-muted)" style={{ marginLeft: '4px' }} />
@@ -1232,7 +1238,7 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                                   </div>
                                   <div style={{ minWidth: 0 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                      <span style={{ fontWeight: '750', fontSize: '14px', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '160px' }}>
+                                      <span style={{ fontWeight: '750', fontSize: '14px', color: 'var(--text-primary)', lineHeight: '1.3' }}>
                                         {client.name}
                                       </span>
                                       {(client.total_visits || 0) >= 10 && <span style={{ color: '#b47d49', fontSize: '11px' }}>★</span>}
@@ -1632,8 +1638,8 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)', lineHeight: '1.3' }}>{item.text}</div>
                           <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '2px', fontWeight: '500' }}>
-                            <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.line1}</div>
-                            <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.line2}</div>
+                            <div style={{ lineHeight: '1.3' }}>{item.line1}</div>
+                            <div style={{ lineHeight: '1.3' }}>{item.line2}</div>
                           </div>
                         </div>
                         <ChevronRight size={14} color="var(--text-secondary)" style={{ marginLeft: '4px' }} />
@@ -4009,12 +4015,12 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                 { label: 'Servicio favorito', value: hFavService[0], sub: `${hFavService[1]} sesiones realizadas`, iconBg: 'rgba(217,70,168,0.06)', icon: <Star size={18} color="var(--pink-primary)" /> },
                 { label: 'Última visita', value: hLastVisit ? new Date(hLastVisit).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A', sub: hLastAgo, iconBg: 'rgba(160,80,106,0.05)', icon: <Clock size={18} color="var(--magenta-primary)" /> },
               ].map((s, i) => (
-                <div key={i} className={`ficha-card stagger-${i + 1} mi-stat`} style={{ padding: (isMobile || isTablet) ? '12px 14px' : '16px 18px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: (isMobile || isTablet) ? '10px' : '14px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)', cursor: 'pointer', minWidth: 0, overflow: 'hidden' }}>
+                <div key={i} className={`ficha-card stagger-${i + 1} mi-stat`} style={{ padding: (isMobile || isTablet) ? '12px 14px' : '16px 18px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: (isMobile || isTablet) ? '10px' : '14px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)', cursor: 'pointer', minWidth: 0 }}>
                   <div style={{ width: (isMobile || isTablet) ? '36px' : '42px', height: (isMobile || isTablet) ? '36px' : '42px', borderRadius: '14px', backgroundColor: s.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{s.icon}</div>
-                  <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                  <div style={{ minWidth: 0, flex: 1 }}>
                     <div style={{ fontSize: (isMobile || isTablet) ? '10px' : '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
-                    <div style={{ fontSize: (isMobile || isTablet) ? '15px' : '17px', fontWeight: '850', color: 'var(--text-primary)', marginTop: '2px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{s.value}</div>
-                    <div style={{ fontSize: (isMobile || isTablet) ? '9.5px' : '10.5px', color: 'var(--text-muted)', fontWeight: '500', marginTop: '1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.sub}</div>
+                    <div style={{ fontSize: (isMobile || isTablet) ? '15px' : '17px', fontWeight: '850', color: 'var(--text-primary)', marginTop: '2px', lineHeight: 1.3 }}>{s.value}</div>
+                    <div style={{ fontSize: (isMobile || isTablet) ? '9.5px' : '10.5px', color: 'var(--text-muted)', fontWeight: '500', marginTop: '1px', lineHeight: 1.3 }}>{s.sub}</div>
                   </div>
                 </div>
               ))}
@@ -4325,7 +4331,7 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
               </div>
 
               <div style={{ flex: 1, minWidth: 0 }}>
-                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '-0.4px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{client.name}</h3>
+                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '-0.4px', lineHeight: '1.3' }}>{client.name}</h3>
                 <p style={{ margin: '2px 0 10px 0', color: 'var(--text-muted)', fontSize: '11px', fontWeight: '700', letterSpacing: '0.5px' }}>V-{client.id_card || '00.000.000'}</p>
                 
                 <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
@@ -5293,7 +5299,7 @@ const ComparisonCard = ({ comparison, onDelete, onShare, onCardClick }) => {
       </div>
       <div style={{ padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
         <div style={{ minWidth: 0 }}>
-          <p style={{ margin: 0, fontSize: '12px', fontWeight: '750', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{comparison.title}</p>
+          <p style={{ margin: 0, fontSize: '12px', fontWeight: '750', color: 'var(--text-primary)', lineHeight: '1.3' }}>{comparison.title}</p>
           <p style={{ margin: '2px 0 0', fontSize: '11px', color: 'var(--text-muted)' }}>{formattedDate}</p>
         </div>
         <div style={{ position: 'relative', flexShrink: 0 }}>

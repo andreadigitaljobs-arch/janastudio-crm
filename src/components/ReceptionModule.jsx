@@ -544,8 +544,8 @@ const ReceptionModule = ({ isMobile }) => {
                         {clientName.charAt(0).toUpperCase()}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontWeight: 600, color: '#2d2d2d', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{clientName}</div>
-                        <div style={{ fontSize: '0.62rem', color: '#9e9e9e', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>- {apt.services?.name || 'Servicio'}</div>
+                        <div style={{ fontWeight: 600, color: '#2d2d2d', lineHeight: '1.3' }}>{clientName}</div>
+                        <div style={{ fontSize: '0.62rem', color: '#9e9e9e', lineHeight: '1.3' }}>- {apt.services?.name || 'Servicio'}</div>
                       </div>
                       <div style={{ fontSize: '0.62rem', color: '#6b6b6b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {specialistName.split(' ')[0]}

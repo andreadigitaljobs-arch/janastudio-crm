@@ -387,7 +387,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                         </div>
                         {/* Info */}
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '13px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</div>
+                          <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '13px', lineHeight: '1.3' }}>{item.name}</div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3px' }}>
                             <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{item.category}</span>
                             <span style={{ padding: '2px 8px', borderRadius: '20px', fontSize: '10px', fontWeight: 700, background: statusBg, color: stockColor }}>{statusLabel}</span>
@@ -518,7 +518,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                       <Package size={14} color="#c48b9f" />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: '600', color: 'var(--text-primary)', fontSize: '12px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</div>
+                      <div style={{ fontWeight: '600', color: 'var(--text-primary)', fontSize: '12px', lineHeight: '1.3' }}>{item.name}</div>
                       <div style={{ fontSize: '10px', color: item.stock === 0 ? '#ef4444' : '#f59e0b', fontWeight: '700' }}>Stock actual: {item.stock}</div>
                     </div>
                   </div>

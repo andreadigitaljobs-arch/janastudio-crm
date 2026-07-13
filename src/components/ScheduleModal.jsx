@@ -1045,7 +1045,7 @@ const ScheduleModal = ({
 
                               {/* Service Info */}
                               <div style={{ flex: '1 1 140px', minWidth: 0, paddingRight: '8px', zIndex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#2d1b22', lineHeight: '1.2', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{svc.name}</div>
+                                <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#2d1b22', lineHeight: '1.3' }}>{svc.name}</div>
                                 <div style={{ fontSize: '0.7rem', color: '#a0909a', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
                                   <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={12} /> {formatDuration(svc.duration_minutes || 60)}</span>
                                   {pkg && <span style={{ color: '#16a34a', fontWeight: 800, background: 'rgba(34,197,94,0.1)', padding: '2px 6px', borderRadius: '4px' }}>✓ Paquete</span>}
@@ -1363,7 +1363,7 @@ const ScheduleModal = ({
                                          alt={staffObj?.name}
                                          style={{ width: '18px', height: '18px', borderRadius: '50%', objectFit: 'cover' }}
                                        />
-                                       <span style={{ fontSize: '0.68rem', color: '#8b7076', fontWeight: 650, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                       <span style={{ fontSize: '0.68rem', color: '#8b7076', fontWeight: 650, lineHeight: '1.3' }}>
                                          {getStaffDisplayName(staffObj)} · <span style={{ color: '#c97282', fontWeight: 700 }}>{getDisplayTime(svc.time)}</span>
                                        </span>
                                      </div>

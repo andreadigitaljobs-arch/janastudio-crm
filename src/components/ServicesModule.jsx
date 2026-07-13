@@ -736,7 +736,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                   </div>
                   <div style={{ minWidth: 0, flex: 1 }}>
                     <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Destacado</div>
-                    <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{mostBookedService?.name || '-'}</div>
+                    <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-primary)', lineHeight: '1.3' }}>{mostBookedService?.name || '-'}</div>
                   </div>
                 </div>
                 <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '500' }}>{mostBookedService?.total_bookings || 0} reservas hoy</div>
@@ -896,7 +896,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                         )}
                       </div>
                       <div>
-                        <h4 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', }}>
+                        <h4 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0, lineHeight: '1.3', }}>
                           {service.name}
                         </h4>
                           <span style={{ fontSize: '10px', fontWeight: '700', color: '#c97282', textTransform: 'uppercase', letterSpacing: '0.4px', marginTop: '2px', display: 'block' }}>

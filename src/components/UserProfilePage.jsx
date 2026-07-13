@@ -861,10 +861,10 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
                         </div>
                         <div style={{ width: 7, height: 7, borderRadius: '50%', background: cfg.dot, flexShrink: 0 }} />
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: isMobile ? '13px' : '14px', fontWeight: '700', color: 'white', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          <div style={{ fontSize: isMobile ? '13px' : '14px', fontWeight: '700', color: 'white', lineHeight: '1.3' }}>
                             {appt.clients?.name || 'Cliente'}
                           </div>
-                          <div style={{ fontSize: '11px', color: '#666', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{appt.services?.name || '—'}</div>
+                          <div style={{ fontSize: '11px', color: '#666', lineHeight: '1.3' }}>{appt.services?.name || '—'}</div>
                         </div>
                         <div className="appt-price" style={{ fontSize: '13px', fontWeight: '800', color: '#c48b9f', flexShrink: 0 }}>
                           ${Number(appt.total_price || 0).toFixed(0)}

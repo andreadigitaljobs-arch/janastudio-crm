@@ -383,7 +383,7 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
                   <span style={{ fontSize: '11px', fontWeight: '800', color: t.rank <= 3 ? t.color : 'var(--text-muted)', minWidth: '18px' }}>{t.rank <= 3 ? `#${t.rank}` : t.rank}</span>
                   <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '800', color: t.color, flexShrink: 0 }}>{t.avatar}</div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.name}</div>
+                    <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)', lineHeight: '1.3' }}>{t.name}</div>
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Bs. {formatBs(t.ingresos)} · {t.citas} citas</div>
                   </div>
                   <span style={{ fontSize: '13px', fontWeight: '800', color: t.rendimiento >= 85 ? '#32d74b' : t.rendimiento >= 75 ? '#ff9f0a' : '#ff453a', flexShrink: 0 }}>{t.rendimiento}%</span>
@@ -464,7 +464,7 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
                   <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', minWidth: '16px' }}>{c.num}</span>
                   <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '800', color: 'var(--pink-primary)', flexShrink: 0 }}>{c.avatar}</div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</div>
+                    <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)', lineHeight: '1.3' }}>{c.name}</div>
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{c.visits} visitas</div>
                   </div>
                   <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--pink-primary)', flexShrink: 0 }}>Bs. {formatBs(c.total)}</span>

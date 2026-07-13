@@ -172,7 +172,7 @@ const CapillaryDiagnosisModule = ({ isMobile, clients = [], onNavigate, prefillC
                   <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--pink-primary)' }}>{getInitials(c.name)}</span>
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: '14.5px', fontWeight: '750', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.name}</div>
+                  <div style={{ fontSize: '14.5px', fontWeight: '750', color: 'var(--text-primary)', lineHeight: '1.3' }}>{c.name}</div>
                   {c.phone && <div style={{ fontSize: '12.5px', color: 'var(--text-secondary)' }}>{c.phone}</div>}
                 </div>
                 <ChevronRight size={18} color="var(--text-muted)" style={{ flexShrink: 0 }} />

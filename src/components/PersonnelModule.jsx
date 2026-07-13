@@ -659,7 +659,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                         {person.image_url ? <img src={person.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : (person.name || '?')[0].toUpperCase()}
                       </div>
                       <div style={{ minWidth: 0, flex: 1 }}>
-                        <div style={{ fontWeight: '800', color: 'var(--text-primary)', fontSize: '14px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{person.name}</div>
+                        <div style={{ fontWeight: '800', color: 'var(--text-primary)', fontSize: '14px', lineHeight: '1.3' }}>{person.name}</div>
                         <div style={{ fontSize: '12px', color: '#c48b9f', fontWeight: '600' }}>{rolePart}</div>
                       </div>
                       <span style={{ padding: '4px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: '700', background: statusStyle.bg, color: statusStyle.text, border: `1px solid ${statusStyle.border}`, display: 'inline-flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>

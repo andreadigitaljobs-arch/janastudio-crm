@@ -332,7 +332,7 @@ const StaffDayColumn = ({
           boxShadow: checkingTime != null && isCheckingFree ? '0 0 8px #22c55e' : 'none'
         }}>{initial}</div>
         <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#2d1b22', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#2d1b22', lineHeight: 1.3 }}>
             {staffMember.name}
           </div>
           <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 600 }}>
@@ -508,11 +508,11 @@ const StaffDayColumn = ({
                 e.currentTarget.style.zIndex = '2';
               }}
             >
-              <div style={{ fontSize: '0.66rem', fontWeight: 700, color: '#2d1b22', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '2px' }}>
+              <div style={{ fontSize: '0.66rem', fontWeight: 700, color: '#2d1b22', lineHeight: 1.3, display: 'flex', alignItems: 'center', gap: '2px' }}>
                 {isMultipleApp && <span>🔗</span>}
                 {clientName}
               </div>
-              {height > 32 && <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{app.services?.name || 'Servicio'}</div>}
+              {height > 32 && <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 600, lineHeight: 1.3 }}>{app.services?.name || 'Servicio'}</div>}
             </div>
           );
         })}
@@ -1486,7 +1486,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
         <div className="staff-control-container">
 
           {/* THREE-COLUMN CONTENT GRID */}
-          {isMobile && (
+          {(isMobile || isTablet) && (
             <div style={{ 
               display: 'flex', position: 'relative', marginBottom: '24px', 
               background: 'rgba(252, 249, 248, 0.7)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
@@ -1515,7 +1515,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : 'repeat(2, 1fr)', gap: (isMobile || isTablet) ? '16px' : '24px', width: '100%', alignItems: 'start', marginTop: '0' }}>
 
             {/* Column 1 - Próximas Citas */}
-            <div style={{ display: (!isMobile || leftTab === 'citas') ? 'flex' : 'none', flexDirection: 'column', gap: '24px', minWidth: 0, animation: (isMobile && leftTab === 'citas') ? 'fadeInUpWow 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards' : 'none' }}>
+            <div style={{ display: (!(isMobile || isTablet) || leftTab === 'citas') ? 'flex' : 'none', flexDirection: 'column', gap: '24px', minWidth: 0, animation: ((isMobile || isTablet) && leftTab === 'citas') ? 'fadeInUpWow 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards' : 'none' }}>
 
               {/* TIMELINE AGENDA - PREMIUM */}
               <div className="agenda-glass-card" style={{ padding: '0', display: 'flex', flexDirection: 'column', minHeight: '600px', overflow: 'hidden' }}>
@@ -1790,7 +1790,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             </div>
 
             {/* Column 2 - Especialistas */}
-            <div style={{ display: (!isMobile || leftTab === 'especialistas') ? 'flex' : 'none', flexDirection: 'column', gap: '24px', minWidth: 0, animation: (isMobile && leftTab === 'especialistas') ? 'fadeInUpWow 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards' : 'none' }}>
+            <div style={{ display: (!(isMobile || isTablet) || leftTab === 'especialistas') ? 'flex' : 'none', flexDirection: 'column', gap: '24px', minWidth: 0, animation: ((isMobile || isTablet) && leftTab === 'especialistas') ? 'fadeInUpWow 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards' : 'none' }}>
 
               {/* ESTADO DEL EQUIPO (Moved to Personal Tab) */}
               <div style={{ marginBottom: '0' }}>
@@ -1900,7 +1900,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(180,170,165,0.3) 0%, rgba(180,170,165,0.05) 100%)' }} />
                           </div>
                           <div style={{ flex: 1, minWidth: 0, textAlign: (isMobile || isTablet) ? 'center' : 'left' }}>
-                            <div style={{ fontSize: (isMobile || isTablet) ? '0.65rem' : '0.72rem', fontWeight: 800, color: '#8c767b', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</div>
+                            <div style={{ fontSize: (isMobile || isTablet) ? '0.65rem' : '0.72rem', fontWeight: 800, color: '#8c767b', lineHeight: 1.3 }}>{s.name}</div>
                             <div style={{ fontSize: '0.52rem', color: '#a0909a', fontWeight: 600, marginTop: '1px', lineHeight: 1.3 }}>{getStaffRole(s.name)}</div>
                             <div style={{ marginTop: '3px', display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '0.48rem', fontWeight: 800, color: '#b0a8a3', background: 'rgba(180,170,165,0.1)', padding: '1px 6px', borderRadius: '999px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>
                               <Circle size={7} color="#b0a8a3" strokeWidth={2.5} />
@@ -1995,7 +1995,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
                         {/* Info */}
                         <div style={{ flex: 1, minWidth: 0, textAlign: isMobileCard ? 'center' : 'left', paddingRight: isMobileCard ? 0 : '22px' }}>
-                          <div style={{ fontSize: isMobileCard ? '0.65rem' : '0.72rem', fontWeight: 800, color: '#2d1b22', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</div>
+                          <div style={{ fontSize: isMobileCard ? '0.65rem' : '0.72rem', fontWeight: 800, color: '#2d1b22', lineHeight: 1.3 }}>{s.name}</div>
                           <div style={{ fontSize: '0.5rem', color: '#a0909a', fontWeight: 600, marginTop: '1px', lineHeight: 1.3 }}>{getStaffRole(s.name)}</div>
                           <div style={{ marginTop: '3px', display: 'flex', alignItems: 'center', gap: isMobileCard ? '4px' : '6px', justifyContent: isMobileCard ? 'center' : 'flex-start', flexWrap: 'wrap' }}>
                             <span className="mi-tag" style={{ fontSize: '0.48rem', fontWeight: 800, color: statusColor, background: `${statusColor}12`, padding: '1px 6px', borderRadius: '999px', letterSpacing: '0.3px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
@@ -2347,61 +2347,6 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             >
               <ChevronLeft size={18} /> Volver a Agenda
             </button>
-
-            {/* Right side of topbar: Bell & Active User Profile */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              {/* Bell Icon */}
-              <button
-                onClick={onOpenNotifications}
-                className="mi-btn"
-                style={{
-                  width: '38px', height: '38px', borderRadius: '12px',
-                  background: '#ffffff', border: '1px solid rgba(223, 178, 140, 0.2)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  cursor: 'pointer', position: 'relative',
-                  color: '#2d1b22',
-                  boxShadow: '0 2px 8px rgba(74, 48, 54, 0.03)',
-                  transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.08) translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 8px 20px rgba(212, 160, 154, 0.2)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1) translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(74, 48, 54, 0.03)';
-                }}
-              >
-                <Bell size={16} />
-                <span style={{
-                  position: 'absolute', top: '-4px', right: '-4px',
-                  backgroundColor: '#c97282', width: '16px', height: '16px',
-                  borderRadius: '50%', color: '#fff', fontSize: '0.62rem',
-                  fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                  5
-                </span>
-              </button>
-
-              {/* User Profile */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ textAlign: 'right', display: isMobile ? 'none' : 'block' }}>
-                  <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#2d1b22' }}>
-                    {user?.name || 'Admin'}
-                  </div>
-                  <div style={{ fontSize: '0.65rem', color: '#a0909a', fontWeight: 600 }}>
-                    {getRoleName(user?.role) || 'Dueña'}
-                  </div>
-                </div>
-                <div style={{ width: '38px', height: '38px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #c97282' }}>
-                  <img 
-                    src={user?.photo_url || `https://i.pravatar.cc/150?u=Admin`}
-                    alt="User profile"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Main content padding area */}
@@ -2411,80 +2356,88 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             <div style={{ 
               background: '#fff', 
               border: '1px solid rgba(223,178,140,0.18)', 
-              borderRadius: '24px', 
-              padding: '24px',
+              borderRadius: isMobile ? '16px' : '24px', 
+              padding: isMobile ? '14px' : '24px',
               boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)',
               display: 'flex',
               flexDirection: isMobile ? 'column' : 'row',
               justifyContent: 'space-between',
               alignItems: isMobile ? 'stretch' : 'center',
-              gap: '20px'
+              gap: isMobile ? '12px' : '20px'
             }}>
               {/* Left Side: Photo & Name & Specialty */}
-              <div style={{ display: 'flex', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '16px' : '20px', flexWrap: 'wrap', flexDirection: isMobile ? 'column' : 'row' }}>
-                <div style={{ width: isMobile ? '70px' : '90px', height: isMobile ? '70px' : '90px', borderRadius: '50%', overflow: 'hidden', border: '3px solid #fce4e8', flexShrink: 0, boxShadow: '0 4px 12px rgba(201, 114, 130,0.15)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '12px' : '20px', flexWrap: 'wrap' }}>
+                <div style={{ width: isMobile ? '52px' : '90px', height: isMobile ? '52px' : '90px', borderRadius: '50%', overflow: 'hidden', border: '3px solid #fce4e8', flexShrink: 0, boxShadow: '0 4px 12px rgba(201, 114, 130,0.15)' }}>
                   <img 
                     src={selectedStaffDrawer.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(selectedStaffDrawer.name)}`}
                     alt={selectedStaffDrawer.name}
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 </div>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                    <h2 style={{ fontSize: isMobile ? '1.1rem' : '1.5rem', fontWeight: 900, color: '#2d1b22', margin: 0, }}>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <h2 style={{ fontSize: isMobile ? '0.95rem' : '1.5rem', fontWeight: 900, color: '#2d1b22', margin: 0 }}>
                       {selectedStaffDrawer.name}
                     </h2>
-                    <span className="mi-tag" style={{ fontSize: isMobile ? '0.6rem' : '0.72rem', color: '#c97282', background: 'rgba(201, 114, 130,0.1)', padding: '3px 10px', borderRadius: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px' }}>
+                    <span className="mi-tag" style={{ fontSize: isMobile ? '0.52rem' : '0.72rem', color: '#c97282', background: 'rgba(201, 114, 130,0.1)', padding: isMobile ? '2px 8px' : '3px 10px', borderRadius: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px' }}>
                       {getStaffRole(selectedStaffDrawer.name)}
                     </span>
                   </div>
-                  <p style={{ fontSize: isMobile ? '0.68rem' : '0.8rem', color: '#a0909a', margin: '8px 0 0', fontWeight: 600 }}>
-                    Especialidad: {selectedStaffDrawer.role || 'Extensiones de pestañas'}  ·  Teléfono: 0412 345 6789
+                  <p style={{ fontSize: isMobile ? '0.6rem' : '0.8rem', color: '#a0909a', margin: isMobile ? '4px 0 0' : '8px 0 0', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {selectedStaffDrawer.role || 'Extensiones de pestañas'} · 0412 345 6789
                   </p>
                 </div>
               </div>
 
               {/* Right Side: Date Picker Navigation & Edit Schedule */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: isMobile ? 'flex-start' : 'flex-end' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '12px', flexWrap: 'wrap', justifyContent: isMobile ? 'space-between' : 'flex-end' }}>
                 {/* Date Navigator */}
                 <div style={{ 
                   display: 'flex', 
                   alignItems: 'center', 
                   background: '#ffffff', 
                   border: '1px solid rgba(223, 178, 140, 0.25)', 
-                  borderRadius: '12px',
-                  padding: '4px',
-                  boxShadow: '0 2px 8px rgba(74, 48, 54, 0.02)'
+                  borderRadius: isMobile ? '10px' : '12px',
+                  padding: '3px',
+                  boxShadow: '0 2px 8px rgba(74, 48, 54, 0.02)',
+                  flex: isMobile ? 1 : 'none',
+                  minWidth: 0
                 }}>
                   <div key={selectedDate.toDateString()} className={dateNavDir === 'next' ? 'animate-date-enter' : 'animate-date-prev'} style={{
-                    padding: '8px 16px',
-                    fontSize: '0.82rem',
+                    padding: isMobile ? '6px 10px' : '8px 16px',
+                    fontSize: isMobile ? '0.68rem' : '0.82rem',
                     fontWeight: 700,
                     color: '#2d1b22',
-                    textTransform: 'capitalize'
+                    textTransform: 'capitalize',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    flex: 1,
+                    minWidth: 0,
+                    textAlign: 'center'
                   }}>
-                    {selectedDate.toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).replace(' de', '').replace(' de', '')}
+                    {selectedDate.toLocaleDateString('es-VE', { weekday: isMobile ? 'short' : 'long', day: 'numeric', month: 'short', year: 'numeric' }).replace(' de', '').replace(' de', '')}
                   </div>
-                  <div style={{ display: 'flex', gap: '2px', borderLeft: '1px solid rgba(223,178,140,0.15)', paddingLeft: '4px' }}>
+                  <div style={{ display: 'flex', gap: '2px', borderLeft: '1px solid rgba(223,178,140,0.15)', paddingLeft: '4px', flexShrink: 0 }}>
                     <button
                       onClick={() => goToDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() - 1), 'prev')}
                       className="mi-btn btn-hover-scale"
                       style={{
-                        width: '32px', height: '32px', borderRadius: '8px', border: 'none', background: 'transparent',
+                        width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', background: 'transparent',
                         color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
                       }}
                     >
-                      <ChevronLeft size={16} />
+                      <ChevronLeft size={isMobile ? 14 : 16} />
                     </button>
                     <button
                       onClick={() => goToDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + 1), 'next')}
                       className="mi-btn btn-hover-scale"
                       style={{
-                        width: '32px', height: '32px', borderRadius: '8px', border: 'none', background: 'transparent',
+                        width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', border: 'none', background: 'transparent',
                         color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
                       }}
                     >
-                      <ChevronRight size={16} />
+                      <ChevronRight size={isMobile ? 14 : 16} />
                     </button>
                   </div>
                 </div>
@@ -2492,22 +2445,23 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 {/* Edit Schedule Button */}
                 <button 
                   onClick={() => showToast?.('Abriendo editor de horarios...', 'info')}
-                  className="mi-btn"
+                  className="mi-btn btn-hover-scale"
                   style={{
                     background: '#fff', 
                     border: '1px solid #c97282', 
                     color: '#c97282',
-                    padding: '10px 20px', 
-                    borderRadius: '12px', 
-                    fontSize: '0.82rem', 
+                    padding: isMobile ? '8px 14px' : '10px 20px', 
+                    borderRadius: isMobile ? '10px' : '12px', 
+                    fontSize: isMobile ? '0.7rem' : '0.82rem', 
                     fontWeight: 700, 
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px',
-                    boxShadow: '0 2px 8px rgba(201, 114, 130,0.05)'
+                    gap: '6px',
+                    boxShadow: '0 2px 8px rgba(201, 114, 130,0.05)',
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0
                   }}
-                  className="mi-btn btn-hover-scale"
                 >
                   <Clock size={14} /> Editar horario
                 </button>
@@ -2515,50 +2469,50 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             </div>
 
             {/* Quick Status Cards Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : 'repeat(3, 1fr)', gap: (isMobile || isTablet) ? '10px' : '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: (isMobile || isTablet) ? '10px' : '16px' }}>
               {/* Card 1: Estado Actual */}
-              <div className="mi-stat mi-enter-up mi-delay-1" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '20px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#22c55e', flexShrink: 0, boxShadow: '0 0 8px #22c55e' }} />
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado actual</div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#22c55e', marginTop: '2px' }}>Ocupada <span style={{ color: '#a0909a', fontSize: '0.78rem', fontWeight: 500 }}>Hasta 11:30 AM</span></div>
+              <div className="mi-stat mi-enter-up mi-delay-1" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '14px' : '20px', padding: isMobile ? '12px' : '16px 20px', display: 'flex', alignItems: 'center', gap: isMobile ? '10px' : '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
+                <div style={{ width: isMobile ? '8px' : '10px', height: isMobile ? '8px' : '10px', borderRadius: '50%', background: '#22c55e', flexShrink: 0, boxShadow: '0 0 8px #22c55e' }} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: isMobile ? '0.55rem' : '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado actual</div>
+                  <div style={{ fontSize: isMobile ? '0.78rem' : '0.9rem', fontWeight: 800, color: '#22c55e', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Ocupada <span style={{ color: '#a0909a', fontSize: isMobile ? '0.65rem' : '0.78rem', fontWeight: 500 }}>Hasta 11:30 AM</span></div>
                 </div>
               </div>
 
               {/* Card 2: Próxima Cita */}
-              <div className="mi-stat mi-enter-up mi-delay-2" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '20px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(217, 119, 6, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706', flexShrink: 0 }}>
-                  <CalendarIcon size={16} />
+              <div className="mi-stat mi-enter-up mi-delay-2" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '14px' : '20px', padding: isMobile ? '12px' : '16px 20px', display: 'flex', alignItems: 'center', gap: isMobile ? '10px' : '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
+                <div style={{ width: isMobile ? '30px' : '36px', height: isMobile ? '30px' : '36px', borderRadius: '10px', background: 'rgba(217, 119, 6, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706', flexShrink: 0 }}>
+                  <CalendarIcon size={isMobile ? 14 : 16} />
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Próxima cita</div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#d97706', marginTop: '2px' }}>
-                    12:00 PM <span style={{ color: '#a0909a', fontSize: '0.78rem', fontWeight: 500 }}>· Volumen 3D</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: isMobile ? '0.55rem' : '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Próxima cita</div>
+                  <div style={{ fontSize: isMobile ? '0.78rem' : '0.9rem', fontWeight: 800, color: '#d97706', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    12:00 PM <span style={{ color: '#a0909a', fontSize: isMobile ? '0.65rem' : '0.78rem', fontWeight: 500 }}>· Volumen 3D</span>
                   </div>
                 </div>
               </div>
 
               {/* Card 3: Horario de Hoy */}
-              <div className="mi-stat mi-enter-up mi-delay-3" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '20px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(201, 114, 130, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c97282', flexShrink: 0 }}>
-                  <Clock size={16} />
+              <div className="mi-stat mi-enter-up mi-delay-3" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '14px' : '20px', padding: isMobile ? '12px' : '16px 20px', display: 'flex', alignItems: 'center', gap: isMobile ? '10px' : '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
+                <div style={{ width: isMobile ? '30px' : '36px', height: isMobile ? '30px' : '36px', borderRadius: '10px', background: 'rgba(201, 114, 130, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c97282', flexShrink: 0 }}>
+                  <Clock size={isMobile ? 14 : 16} />
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Horario de hoy</div>
-                  <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#2d1b22', marginTop: '2px', lineHeight: '1.2' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: isMobile ? '0.55rem' : '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Horario de hoy</div>
+                  <div style={{ fontSize: isMobile ? '0.68rem' : '0.78rem', fontWeight: 800, color: '#2d1b22', marginTop: '2px', lineHeight: '1.2' }}>
                     9:00 AM - 6:00 PM <br />
-                    <span style={{ color: '#a0909a', fontSize: '0.68rem', fontWeight: 500 }}>1:00 PM - 2:00 PM (descanso)</span>
+                    <span style={{ color: '#a0909a', fontSize: isMobile ? '0.58rem' : '0.68rem', fontWeight: 500 }}>1:00 PM - 2:00 PM (descanso)</span>
                   </div>
                 </div>
               </div>
             </div>
 
              {/* Horizontal Tabs Menu */}
-             <div style={{ display: 'flex', gap: isMobile ? '16px' : '24px', borderBottom: '1px solid rgba(223, 178, 140, 0.15)', paddingBottom: '2px', overflowX: 'auto' }} className="no-scrollbar">
+             <div style={{ display: 'flex', gap: isMobile ? '0' : '24px', borderBottom: '1px solid rgba(223, 178, 140, 0.15)', paddingBottom: '2px', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }} className="no-scrollbar">
                {[
-                 { id: 'agenda', label: 'Agenda del día' },
-                 { id: 'resumen', label: 'Resumen del día' },
-                 { id: 'servicios', label: 'Servicios realizados' },
+                 { id: 'agenda', label: 'Agenda' },
+                 { id: 'resumen', label: 'Resumen' },
+                 { id: 'servicios', label: 'Servicios' },
                  { id: 'historial', label: 'Historial' },
                  { id: 'notas', label: 'Notas' }
                ].map((tab, tIdx) => {
@@ -2569,14 +2523,16 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                      onClick={() => setStaffActiveTab(tab.id)}
                      className="mi-chip"
                      style={{ 
-                       fontSize: '0.85rem', 
+                       fontSize: isMobile ? '0.72rem' : '0.85rem', 
                        fontWeight: isActive ? 800 : 600, 
                        color: isActive ? '#c97282' : '#a0909a', 
                        borderBottom: isActive ? '3px solid #c97282' : '3px solid transparent', 
-                       paddingBottom: '10px', 
+                       paddingBottom: isMobile ? '8px' : '10px', 
                        cursor: 'pointer',
                        transition: 'all 0.15s',
-                       whiteSpace: 'nowrap'
+                       whiteSpace: 'nowrap',
+                       padding: isMobile ? '6px 12px' : undefined,
+                       flexShrink: 0
                      }}
                    >
                      {tab.label}
@@ -3286,7 +3242,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                           {clientPastAppointments.slice(0, 3).map(pa => (
                             <div key={pa.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem' }}>
-                              <span style={{ color: '#2d1b22', fontWeight: 650, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{pa.services?.name || 'Servicio'}</span>
+                              <span style={{ color: '#2d1b22', fontWeight: 650, lineHeight: 1.3 }}>{pa.services?.name || 'Servicio'}</span>
                               <span style={{ color: '#a0909a', fontWeight: 600, flexShrink: 0, marginLeft: '8px' }}>{new Date(pa.scheduled_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'short' })}</span>
                             </div>
                           ))}

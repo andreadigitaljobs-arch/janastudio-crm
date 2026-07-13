@@ -100,7 +100,7 @@ const BirthdayModule = ({ clients, isMobile, demoMode, onToggleDemo }) => {
 
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
-            <div style={{ fontSize: isMobile ? '16px' : '14px', fontWeight: '800', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>{c.name}</div>
+            <div style={{ fontSize: isMobile ? '16px' : '14px', fontWeight: '800', color: 'var(--text-primary)', lineHeight: '1.3', minWidth: 0 }}>{c.name}</div>
             {c.isDemo && (
               <span style={{ fontSize: '9px', fontWeight: '750', color: 'var(--pink-primary)', background: 'rgba(160,80,106,0.15)', padding: '2px 6px', borderRadius: '8px', flexShrink: 0 }}>demo</span>
             )}

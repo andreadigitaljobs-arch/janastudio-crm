@@ -852,10 +852,10 @@ const DashboardModule = ({
 
                     {/* Client (primary) + service & status (secondary) */}
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '0.82rem', fontWeight: '700', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div style={{ fontSize: '0.82rem', fontWeight: '700', color: 'var(--text-primary)', lineHeight: 1.3 }}>
                         {apt.client}
                       </div>
-                      <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', fontWeight: '500', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', fontWeight: '500', marginTop: '2px', lineHeight: 1.3 }}>
                         {apt.service}
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '3px' }}>
@@ -1045,7 +1045,7 @@ const DashboardModule = ({
 
                   {/* Name + role */}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.82rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{spec.name}</div>
+                    <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.82rem', lineHeight: 1.3 }}>{spec.name}</div>
                     <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>{spec.role}</div>
                   </div>
 
@@ -1405,8 +1405,8 @@ const DashboardModule = ({
 
                     {/* Client (primary) + service & status (secondary) */}
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '0.88rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{apt.client}</div>
-                      <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '2px' }}>{apt.service}</div>
+                      <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '0.88rem', lineHeight: 1.3 }}>{apt.client}</div>
+                      <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', lineHeight: 1.3, marginTop: '2px' }}>{apt.service}</div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '3px' }}>
                         <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: sStyle.text, display: 'inline-block', flexShrink: 0 }} />
                         <span style={{ fontSize: '0.66rem', fontWeight: '700', color: sStyle.text, whiteSpace: 'nowrap' }}>{apt.status}</span>
@@ -1629,7 +1629,7 @@ const DashboardModule = ({
 
                   {/* Name + role */}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.82rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{spec.name}</div>
+                    <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.82rem', lineHeight: 1.3 }}>{spec.name}</div>
                     <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>{spec.role}</div>
                   </div>
 
