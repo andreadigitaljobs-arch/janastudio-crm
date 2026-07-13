@@ -1971,8 +1971,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         key={s.id}
                         {...staffMotionProps}
                         onClick={() => setSelectedStaffDrawer(s)}
-                        onMouseEnter={() => !isMobileCard && setHoveredStaffId(s.id)}
-                        onMouseLeave={() => !isMobileCard && setHoveredStaffId(null)}
+                        onMouseEnter={() => setHoveredStaffId(s.id)}
+                        onMouseLeave={() => setHoveredStaffId(null)}
                         className="agenda-staff-card"
                         data-status={statusText === 'LIBRE' ? 'libre' : statusText === 'EN CITA' ? 'encita' : 'almuerzo'}
                         style={{
@@ -1992,7 +1992,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         }}
                       >
                         {/* Desktop tooltip on hover */}
-                        {!isMobileCard && hoveredStaffId === s.id && (
+                        {hoveredStaffId === s.id && (
                           <div className="staff-tooltip">
                             <div style={{ fontWeight: 700, marginBottom: '2px' }}>{s.name}</div>
                             <div style={{ opacity: 0.8 }}>{metrics.citasCount} cita{metrics.citasCount !== 1 ? 's' : ''} · {metrics.occupancy}% ocupación</div>
