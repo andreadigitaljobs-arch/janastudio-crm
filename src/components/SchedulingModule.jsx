@@ -2351,7 +2351,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           </div>
 
           {/* Main content padding area */}
-          <div style={{ padding: isMobile ? '16px 16px calc(120px + env(safe-area-inset-bottom, 12px)) 16px' : '24px 32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div style={{ padding: isMobile ? '16px 16px calc(180px + env(safe-area-inset-bottom, 12px)) 16px' : '24px 32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
             
             {/* Identity Card & Date Selector Ribbon */}
             <div style={{ 
@@ -2940,8 +2940,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         { label: 'Citas', val: '4 citas', pct: '+ 25%', isUp: true, icon: <CalendarIcon size={14} />, bg: 'rgba(34,197,94,0.08)', accent: '#22c55e' },
                         { label: 'Ocupación', val: '78%', pct: '+ 12%', isUp: true, icon: <BarChart3 size={14} />, bg: 'rgba(99,102,241,0.08)', accent: '#6366f1' }
                       ].map((cmp, cIdx) => (
-                        <div key={cIdx} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: isMobile ? '10px 12px' : '12px 14px', background: cmp.bg, borderRadius: '14px' }}>
-                          <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: cmp.accent, boxShadow: '0 1px 4px rgba(0,0,0,0.04)', flexShrink: 0 }}>
+                        <div key={cIdx} style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '10px', padding: isMobile ? '8px 10px' : '12px 14px', background: cmp.bg, borderRadius: '14px' }}>
+                          <div style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '10px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: cmp.accent, boxShadow: '0 1px 4px rgba(0,0,0,0.04)', flexShrink: 0 }}>
                             {cmp.icon}
                           </div>
                           <div style={{ flex: 1, minWidth: 0 }}>
@@ -2951,10 +2951,6 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', borderRadius: '8px', background: cmp.isUp ? 'rgba(22,163,74,0.1)' : 'rgba(220,38,38,0.1)', flexShrink: 0 }}>
                             <span style={{ fontSize: isMobile ? '0.72rem' : '0.65rem', fontWeight: 800, color: cmp.isUp ? '#16a34a' : '#dc2626' }}>{cmp.isUp ? '↑' : '↓'} {cmp.pct}</span>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
                         </div>
                       ))}
                     </div>
