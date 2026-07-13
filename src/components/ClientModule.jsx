@@ -549,65 +549,61 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
           ) : (
           <>
           {/* Stat Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: windowWidth < 1200 ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: windowWidth < 600 ? '12px' : '16px', marginBottom: '28px' }}>
+          {(() => {
+            const isSmallScreen = windowWidth < 600;
+            const isIpadMini = windowWidth >= 600 && windowWidth < 800;
+            const isIpad = windowWidth >= 800 && windowWidth < 1200;
+            const isCompact = isSmallScreen || isIpadMini;
+            const cols = isSmallScreen ? 2 : 4;
+            const gap = isSmallScreen ? '10px' : isIpadMini ? '10px' : isIpad ? '14px' : '16px';
+            const cardPadding = isSmallScreen ? '12px' : isIpadMini ? '10px 12px' : isIpad ? '12px 10px' : '16px 20px';
+            const iconSize = isSmallScreen ? 30 : isIpadMini ? 30 : isIpad ? 32 : 48;
+            const iconInner = isSmallScreen ? 14 : isIpadMini ? 14 : isIpad ? 16 : 22;
+            const valueFontSize = isSmallScreen ? 20 : isIpadMini ? 18 : isIpad ? 20 : 24;
+            const labelFontSize = isSmallScreen ? 9 : isIpadMini ? 9 : isIpad ? 9 : 12;
+            const trendFontSize = isSmallScreen ? 8 : isIpadMini ? 8 : isIpad ? 8 : 10;
+            return (
+            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap, marginBottom: '28px' }}>
             {[
-              { label: windowWidth < 600 ? 'Activas' : 'Clientes activas', value: activeClients, icon: Users, trend: '↑ 12%', trendSub: 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.12)', iconColor: 'var(--pink-primary)' },
-              { label: windowWidth < 600 ? 'Nuevas' : 'Nuevas este mes', value: newThisMonth, icon: UserPlus, trend: '↑ 15%', trendSub: 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.08)', iconColor: 'var(--magenta-primary)' },
-              { label: windowWidth < 600 ? 'Próxima cita' : 'Con próxima cita', value: upcomingCount, icon: Calendar, trend: '↑ 8%', trendSub: 'vs. mes anterior', iconBg: 'rgba(74, 48, 54, 0.06)', iconColor: 'var(--text-secondary)' },
-              { label: windowWidth < 600 ? 'Cumpleaños' : 'Cumpleaños cercanos', value: birthdaySoon, icon: Cake, trend: '', trendSub: 'Próximos 7 días', iconBg: 'rgba(160, 80, 106, 0.15)', iconColor: 'var(--pink-primary)' }
+              { label: 'Clientes activas', value: activeClients, icon: Users, trend: '↑ 12%', trendSub: 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.12)', iconColor: 'var(--pink-primary)' },
+              { label: 'Nuevas este mes', value: newThisMonth, icon: UserPlus, trend: '↑ 15%', trendSub: 'vs. mes anterior', iconBg: 'rgba(160, 80, 106, 0.08)', iconColor: 'var(--magenta-primary)' },
+              { label: 'Con próxima cita', value: upcomingCount, icon: Calendar, trend: '↑ 8%', trendSub: 'vs. mes anterior', iconBg: 'rgba(74, 48, 54, 0.06)', iconColor: 'var(--text-secondary)' },
+              { label: 'Cumpleaños cercanos', value: birthdaySoon, icon: Cake, trend: '', trendSub: 'Próximos 7 días', iconBg: 'rgba(160, 80, 106, 0.15)', iconColor: 'var(--pink-primary)' }
             ].map((stat, i) => (
               <div
                 key={i}
                 className="glass-card animate-scale-in mi-stat"
                 style={{
-                  padding: windowWidth < 600 ? '14px 14px' : '16px 20px',
-                  borderRadius: '24px',
+                  padding: cardPadding,
+                  borderRadius: '18px',
                   border: '1px solid rgba(160,80,106,0.25)',
                   background: 'white',
                   boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)',
                   animationDelay: `${i * 80}ms`,
                   minWidth: 0,
-                  minHeight: windowWidth < 600 ? '100px' : 'auto',
                 }}
               >
-                {windowWidth < 600 ? (
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', gap: '8px' }}>
-                      <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700', minWidth: 0, flex: 1, lineHeight: 1.3 }}>{stat.label}</div>
-                      <div style={{ width: '32px', height: '32px', borderRadius: '10px', backgroundColor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <stat.icon size={16} color={stat.iconColor} />
-                      </div>
-                    </div>
-                    <div style={{ fontSize: '28px', fontWeight: '850', color: 'var(--text-primary)', lineHeight: '1', marginBottom: '4px' }}>{stat.value}</div>
+                <div style={{ display: 'flex', alignItems: isCompact ? 'flex-start' : 'center', gap: isCompact ? '8px' : '14px', flexDirection: isCompact ? 'column' : 'row' }}>
+                  <div style={{ width: `${iconSize}px`, height: `${iconSize}px`, borderRadius: isCompact ? '10px' : '16px', backgroundColor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <stat.icon size={iconInner} color={stat.iconColor} />
+                  </div>
+                  <div style={{ minWidth: 0, flex: isCompact ? 0 : 1 }}>
+                    <div style={{ fontSize: `${labelFontSize}px`, color: 'var(--text-secondary)', fontWeight: '600', marginBottom: '2px', lineHeight: 1.3 }}>{stat.label}</div>
+                    <div style={{ fontSize: `${valueFontSize}px`, fontWeight: '850', color: 'var(--text-primary)', lineHeight: '1.1', marginBottom: '1px' }}>{stat.value}</div>
                     {stat.trend ? (
-                      <div style={{ fontSize: '10px', color: '#2e9e5b', fontWeight: '700', whiteSpace: 'nowrap' }}>
-                        {stat.trend} <span style={{ color: 'var(--text-secondary)', fontWeight: '500' }}>{stat.trendSub}</span>
+                      <div style={{ fontSize: `${trendFontSize}px`, color: '#2e9e5b', fontWeight: '600' }}>
+                        {stat.trend} <span style={{ color: 'var(--text-muted)' }}>{stat.trendSub}</span>
                       </div>
                     ) : (
-                      <div style={{ fontSize: '10px', color: 'var(--text-secondary)', fontWeight: '500', whiteSpace: 'nowrap' }}>{stat.trendSub}</div>
+                      <div style={{ fontSize: `${trendFontSize}px`, color: 'var(--text-muted)', fontWeight: '500' }}>{stat.trendSub}</div>
                     )}
                   </div>
-                ) : (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                    <div style={{ width: '48px', height: '48px', borderRadius: '16px', backgroundColor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <stat.icon size={22} color={stat.iconColor} />
-                    </div>
-                    <div style={{ minWidth: 0, flex: 1 }}>
-                      <div style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600', marginBottom: '2px', lineHeight: 1.3 }}>{stat.label}</div>
-                      <div style={{ fontSize: '24px', fontWeight: '850', color: 'var(--text-primary)', lineHeight: '1.1', marginBottom: '1px' }}>{stat.value}</div>
-                      {stat.trend ? (
-                        <div style={{ fontSize: '10px', color: '#2e9e5b', fontWeight: '600' }}>
-                          {stat.trend} <span style={{ color: 'var(--text-muted)' }}>{stat.trendSub}</span>
-                        </div>
-                      ) : (
-                        <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '500' }}>{stat.trendSub}</div>
-                      )}
-                    </div>
-                  </div>
-                )}
+                </div>
               </div>
             ))}
           </div>
+            );
+          })()}
 
           {/* Main Layout Content */}
           {isMobile ? (
@@ -4294,155 +4290,134 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
       </div>
       
       {isCompact ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {/* Mobile Profile Card */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          {/* Mobile Profile Card - Rediseñado */}
           <div 
             className="glass-card mi-card"
             style={{ 
-              padding: '24px 20px', 
-              borderRadius: '28px', 
-              background: 'linear-gradient(135deg, #ffffff 0%, #fefbfc 100%)',
-              borderLeft: '6px solid var(--magenta-primary)',
-              borderTop: '1px solid rgba(160,80,106,0.1)',
-              borderRight: '1px solid rgba(160,80,106,0.1)',
-              borderBottom: '1px solid rgba(160,80,106,0.1)',
-              boxShadow: '0 20px 40px rgba(160,80,106,0.06)' 
+              padding: '0', 
+              borderRadius: '22px', 
+              background: 'white',
+              border: '1px solid rgba(160,80,106,0.1)',
+              boxShadow: '0 4px 20px rgba(160,80,106,0.06)',
+              overflow: 'hidden'
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', marginBottom: '20px' }}>
-              {/* Squircle Avatar with rotate accent */}
-              <div style={{ 
-                width: '74px', height: '74px', borderRadius: '22px', 
-                background: client.image_url ? 'white' : 'var(--magenta-gradient)', 
-                display: 'flex', alignItems: 'center', 
-                justifyContent: 'center', border: '2.5px solid white', 
-                outline: '2.5px solid rgba(160,80,106,0.25)',
-                boxShadow: '0 8px 24px rgba(160, 80, 106, 0.18)', overflow: 'hidden',
-                flexShrink: 0,
-                transform: 'rotate(-2deg)'
-              }}>
-                {client.image_url ? (
-                  <img src={client.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : (
-                  <span style={{ fontSize: '24px', fontWeight: '900', color: 'white', letterSpacing: '-0.5px' }}>
-                    {client.name ? client.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase() : 'C'}
-                  </span>
-                )}
-              </div>
-
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '-0.4px', lineHeight: '1.3' }}>{client.name}</h3>
-                <p style={{ margin: '2px 0 10px 0', color: 'var(--text-muted)', fontSize: '11px', fontWeight: '700', letterSpacing: '0.5px' }}>V-{client.id_card || '00.000.000'}</p>
-                
-                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                  {client.phone && (
-                    <>
-                      <a 
-                        href={`tel:${client.phone}`}
-                        style={{ 
-                          textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '5px', 
-                          fontSize: '10.5px', color: 'white', fontWeight: '850',
-                          background: 'var(--magenta-gradient)', padding: '5px 12px', borderRadius: '14px',
-                          boxShadow: '0 4px 10px rgba(160,80,106,0.2)', whiteSpace: 'nowrap'
-                        }}
-                        className="btn-interactive mi-btn"
-                      >
-                        <Phone size={10} color="white" /> Llamar
-                      </a>
-                      <a 
-                        href={`https://wa.me/${getWhatsAppNumber(client.phone)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ 
-                          textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '5px', 
-                          fontSize: '10.5px', color: 'white', fontWeight: '850',
-                          backgroundColor: '#25D366', padding: '5px 12px', borderRadius: '14px',
-                          boxShadow: '0 4px 10px rgba(37,211,102,0.2)', whiteSpace: 'nowrap'
-                        }}
-                        className="btn-interactive mi-btn"
-                      >
-                        <MessageCircle size={10} color="white" /> WhatsApp
-                      </a>
-                    </>
+            {/* Header with gradient background */}
+            <div style={{ 
+              background: 'linear-gradient(135deg, var(--magenta-primary) 0%, #c97282 100%)', 
+              padding: '20px 20px 28px',
+              position: 'relative',
+              overflow: 'hidden'
+            }}>
+              <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
+              <div style={{ position: 'absolute', bottom: '-30px', left: '-10px', width: '70px', height: '70px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
+              
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: '16px', position: 'relative', zIndex: 1 }}>
+                {/* Avatar */}
+                <div style={{ 
+                  width: '68px', height: '68px', borderRadius: '20px', 
+                  background: 'white', 
+                  display: 'flex', alignItems: 'center', 
+                  justifyContent: 'center', flexShrink: 0,
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+                  overflow: 'hidden'
+                }}>
+                  {client.image_url ? (
+                    <img src={client.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <span style={{ fontSize: '22px', fontWeight: '900', color: 'var(--magenta-primary)' }}>
+                      {client.name ? client.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase() : 'C'}
+                    </span>
                   )}
                 </div>
-              </div>
+                
+                {/* Name & Cédula */}
+                <div style={{ flex: 1, minWidth: 0, paddingBottom: '2px' }}>
+                  <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: 'white', lineHeight: '1.2', letterSpacing: '-0.3px' }}>{client.name}</h3>
+                  <p style={{ margin: '3px 0 0', color: 'rgba(255,255,255,0.75)', fontSize: '11px', fontWeight: '600' }}>V-{client.id_card || '00.000.000'}</p>
+                </div>
 
-              {/* Large, Beautiful Visits Number on the right */}
-              <div style={{ 
-                display: 'flex', 
-                flexDirection: 'column', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                backgroundColor: 'rgba(160,80,106,0.04)',
-                borderRadius: '16px',
-                padding: '8px 12px',
-                minWidth: '65px',
-                border: '1px solid rgba(160,80,106,0.08)',
-                flexShrink: 0
-              }}>
-                <span style={{ 
-                  fontSize: '28px', 
-                  fontWeight: '950', 
-                  color: 'var(--magenta-primary)', 
-                  lineHeight: '1',
-                  background: 'var(--magenta-gradient)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent'
+                {/* Visits badge */}
+                <div style={{ 
+                  display: 'flex', flexDirection: 'column', alignItems: 'center',
+                  background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)',
+                  borderRadius: '14px', padding: '6px 10px', flexShrink: 0
                 }}>
-                  {history.length}
-                </span>
-                <span style={{ 
-                  fontSize: '9px', 
-                  color: 'var(--text-muted)', 
-                  fontWeight: '850', 
-                  marginTop: '4px',
-                  letterSpacing: '0.5px',
-                  textTransform: 'uppercase'
-                }}>
-                  {history.length === 1 ? 'Visita' : 'Visitas'}
-                </span>
+                  <span style={{ fontSize: '20px', fontWeight: '900', color: 'white', lineHeight: '1' }}>{history.length}</span>
+                  <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.8)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>visitas</span>
+                </div>
               </div>
             </div>
 
-            {/* Información del Cliente (Minimalist & Compact rows instead of big block boxes) */}
-            <div style={{ borderTop: '1px solid rgba(160,80,106,0.08)', paddingTop: '16px', marginTop: '16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                <h4 style={{ margin: 0, fontSize: '12px', fontWeight: '850', color: 'var(--magenta-primary)', display: 'flex', alignItems: 'center', gap: '6px', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
-                  <FileText size={14} color="var(--magenta-primary)" /> Información del Cliente
-                </h4>
+            {/* Action Buttons */}
+            {client.phone && (
+              <div style={{ display: 'flex', gap: '8px', padding: '14px 20px 0' }}>
+                <a 
+                  href={`tel:${client.phone}`}
+                  style={{ 
+                    flex: 1, textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', 
+                    fontSize: '12px', color: 'var(--magenta-primary)', fontWeight: '750',
+                    backgroundColor: 'rgba(160,80,106,0.06)', padding: '10px 0', borderRadius: '12px',
+                    border: '1px solid rgba(160,80,106,0.1)', transition: 'all 0.2s'
+                  }}
+                  className="btn-interactive mi-btn"
+                >
+                  <Phone size={14} /> Llamar
+                </a>
+                <a 
+                  href={`https://wa.me/${getWhatsAppNumber(client.phone)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ 
+                    flex: 1, textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', 
+                    fontSize: '12px', color: '#128C7E', fontWeight: '750',
+                    backgroundColor: 'rgba(18,140,126,0.06)', padding: '10px 0', borderRadius: '12px',
+                    border: '1px solid rgba(18,140,126,0.12)', transition: 'all 0.2s'
+                  }}
+                  className="btn-interactive mi-btn"
+                >
+                  <MessageCircle size={14} color="#128C7E" /> WhatsApp
+                </a>
+              </div>
+            )}
+
+            {/* Info Grid */}
+            <div style={{ padding: '14px 20px 20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Información</span>
                 {!isEditing && (
-                    <button
-                      onClick={() => setIsEditing(true)}
-                      className="btn-interactive mi-btn"
-                      style={{
-                        background: 'none', border: 'none', color: 'var(--magenta-primary)',
-                        fontSize: '11px', fontWeight: '750', cursor: 'pointer', padding: '4px 10px',
-                        borderRadius: '10px', backgroundColor: 'rgba(160,80,106,0.06)'
-                      }}
-                    >
-                      Editar
-                    </button>
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="btn-interactive mi-btn"
+                    style={{
+                      background: 'none', border: 'none', color: 'var(--magenta-primary)',
+                      fontSize: '11px', fontWeight: '700', cursor: 'pointer', padding: '4px 10px',
+                      borderRadius: '8px', backgroundColor: 'rgba(160,80,106,0.06)'
+                    }}
+                  >
+                    Editar
+                  </button>
                 )}
               </div>
 
               {isEditing ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '10px' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: detailWidth > 580 ? '1fr 1fr' : '1fr', gap: '12px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '700' }}>NOMBRE</label>
-                      <input className="form-input mi-input" value={editData.name} onChange={e => setEditData({...editData, name: formatName(e.target.value)})} placeholder="Nombre" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                      <label style={{ fontSize: '9px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>Nombre</label>
+                      <input className="form-input mi-input" value={editData.name} onChange={e => setEditData({...editData, name: formatName(e.target.value)})} placeholder="Nombre" style={{ width: '100%', fontSize: '12px', padding: '8px 10px', borderRadius: '10px' }} />
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '700' }}>TELÉFONO</label>
-                      <input className="form-input mi-input" value={editData.phone} onChange={e => setEditData({...editData, phone: e.target.value})} placeholder="Teléfono" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                      <label style={{ fontSize: '9px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>Teléfono</label>
+                      <input className="form-input mi-input" value={editData.phone} onChange={e => setEditData({...editData, phone: e.target.value})} placeholder="Teléfono" style={{ width: '100%', fontSize: '12px', padding: '8px 10px', borderRadius: '10px' }} />
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '700' }}>CÉDULA</label>
-                      <input className="form-input mi-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="Cédula" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                      <label style={{ fontSize: '9px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>Cédula</label>
+                      <input className="form-input mi-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="Cédula" style={{ width: '100%', fontSize: '12px', padding: '8px 10px', borderRadius: '10px' }} />
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '700' }}>FECHA DE NACIMIENTO</label>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                      <label style={{ fontSize: '9px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>Nacimiento</label>
                       <BirthdayTextInput 
                         value={editData.birth_date} 
                         onChange={e => setEditData({...editData, birth_date: e.target.value})} 
@@ -4452,64 +4427,50 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                       />
                     </div>
                   </div>
-                  <div style={{ display: 'flex', gap: '10px', marginTop: '8px', maxWidth: '360px', width: '100%' }}>
-                    <button className="btn-pink mi-btn" onClick={async () => { const r = await onUpdate(editData); if (r) showToast('Datos actualizados'); setIsEditing(false); }} style={{ flex: 1.5, fontSize: '12px', padding: '10px', fontWeight: '750', background: 'var(--magenta-gradient)', border: 'none', borderRadius: '12px' }}>Guardar</button>
-                    <button onClick={() => setIsEditing(false)} className="mi-btn" style={{ flex: 1, background: 'none', border: '1px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '12px', borderRadius: '12px', cursor: 'pointer', padding: '10px' }}>Cancelar</button>
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                    <button className="btn-pink mi-btn" onClick={async () => { const r = await onUpdate(editData); if (r) showToast('Datos actualizados'); setIsEditing(false); }} style={{ flex: 1.5, fontSize: '12px', padding: '10px', fontWeight: '750', background: 'var(--magenta-gradient)', border: 'none', borderRadius: '10px' }}>Guardar</button>
+                    <button onClick={() => setIsEditing(false)} className="mi-btn" style={{ flex: 1, background: 'none', border: '1px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '12px', borderRadius: '10px', cursor: 'pointer', padding: '10px' }}>Cancelar</button>
                   </div>
                 </div>
               ) : (
                 (() => {
                   const totalSpend = history.reduce((sum, h) => sum + (Number(h.amount) || 0), 0);
-                  const infoRow = (icon, iconColor, iconBg, label, value, valueColor) => (
-                    <div 
-                      className="btn-interactive"
-                      style={{
-                        padding: '16px 14px', borderRadius: '18px', backgroundColor: 'rgba(160,80,106,0.02)',
-                        border: '1px solid rgba(160,80,106,0.05)', display: 'flex', flexDirection: 'column',
-                        gap: '6px', alignItems: 'flex-start', position: 'relative', overflow: 'hidden',
-                        transition: 'all 0.3s ease'
-                      }}
-                    >
-                      <div style={{ position: 'absolute', top: '12px', right: '12px', width: '22px', height: '22px', borderRadius: '50%', backgroundColor: iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        {React.cloneElement(icon, { size: 11, color: iconColor })}
-                      </div>
-                      <span style={{ fontSize: '9.5px', color: 'var(--text-muted)', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.8px' }}>{label}</span>
-                      <span style={{ fontSize: '15px', color: valueColor || 'var(--text-primary)', fontWeight: '900', marginTop: '2px' }}>{value}</span>
-                    </div>
-                  );
+                  const infoItems = [
+                    { icon: <Cake size={13} />, label: 'Cumple', value: client.birth_date ? new Date(client.birth_date + 'T00:00:00').toLocaleDateString([], {day: '2-digit', month: 'short'}) : 'N/A' },
+                    { icon: <FileText size={13} />, label: 'Registro', value: client.created_at ? new Date(client.created_at).toLocaleDateString([], {day: '2-digit', month: '2-digit', year: '2-digit'}) : 'N/A' },
+                    { icon: <Calendar size={13} />, label: 'Próx. cita', value: upcomingAppointment ? new Date(upcomingAppointment.scheduled_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'short' }) : 'Ninguna', highlight: !!upcomingAppointment },
+                    { icon: <Receipt size={13} />, label: 'Facturado', value: `$${totalSpend.toLocaleString('es-VE', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, green: true },
+                    { icon: <Clock size={13} />, label: 'Última visita', value: lastVisitLabel, fullWidth: true }
+                  ];
 
                   return (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                        {infoRow(<Cake />, 'var(--pink-primary)', 'rgba(160,80,106,0.1)', 'CUMPLE',
-                          client.birth_date ? new Date(client.birth_date + 'T00:00:00').toLocaleDateString([], {day: '2-digit', month: 'short'}) : 'N/A')}
-                        {infoRow(<FileText />, 'var(--magenta-primary)', 'rgba(160,80,106,0.08)', 'REGISTRO',
-                          client.created_at ? new Date(client.created_at).toLocaleDateString([], {day: '2-digit', month: '2-digit'}) : 'N/A')}
-                      </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                        {infoRow(<Calendar />, 'var(--pink-primary)', 'rgba(160,80,106,0.1)', 'PRÓX. CITA',
-                          upcomingAppointment ? new Date(upcomingAppointment.scheduled_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'short' }) : 'Ninguna',
-                          upcomingAppointment ? 'var(--magenta-primary)' : 'var(--text-primary)')}
-                        {infoRow(<Receipt />, '#2e9e5b', 'rgba(46,158,91,0.1)', 'FACTURADO',
-                          `$${totalSpend.toLocaleString('es-VE', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, '#2e9e5b')}
-                      </div>
-                      {/* Last visit as full-width banner stat */}
-                      <div 
-                        className="btn-interactive"
-                        style={{
-                          padding: '16px 14px', borderRadius: '18px', backgroundColor: 'rgba(160,80,106,0.02)',
-                          border: '1px solid rgba(160,80,106,0.05)', display: 'flex', justifyContent: 'space-between',
-                          alignItems: 'center', position: 'relative', overflow: 'hidden', transition: 'all 0.3s ease'
-                        }}
-                      >
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                          <span style={{ fontSize: '9.5px', color: 'var(--text-muted)', fontWeight: '850', textTransform: 'uppercase', letterSpacing: '0.8px' }}>ÚLTIMA VISITA</span>
-                          <span style={{ fontSize: '15px', color: 'var(--text-primary)', fontWeight: '900', marginTop: '2px' }}>{lastVisitLabel}</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                      {infoItems.map((item, i) => (
+                        <div 
+                          key={i}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: '10px',
+                            padding: '10px 12px', borderRadius: '12px',
+                            background: i % 2 === 0 ? 'rgba(160,80,106,0.02)' : 'transparent',
+                          }}
+                        >
+                          <div style={{ 
+                            width: '28px', height: '28px', borderRadius: '8px', 
+                            backgroundColor: item.green ? 'rgba(46,158,91,0.08)' : 'rgba(160,80,106,0.06)', 
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                            color: item.green ? '#2e9e5b' : 'var(--magenta-primary)'
+                          }}>
+                            {item.icon}
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '600' }}>{item.label}</div>
+                            <div style={{ 
+                              fontSize: '13px', fontWeight: '800', color: item.highlight ? 'var(--magenta-primary)' : item.green ? '#2e9e5b' : 'var(--text-primary)',
+                              marginTop: '1px'
+                            }}>{item.value}</div>
+                          </div>
                         </div>
-                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'rgba(74,48,54,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <Clock size={14} color="var(--text-secondary)" />
-                        </div>
-                      </div>
+                      ))}
                     </div>
                   );
                 })()
