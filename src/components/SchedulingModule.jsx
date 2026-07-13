@@ -3340,20 +3340,56 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     background: '#ffffff', boxShadow: '0 4px 12px rgba(74, 48, 54, 0.03)'
                   }}>
                     
-                    {/* INFORMACIÓN DE CONTACTO */}
+                    {/* ¿Qué clienta es? */}
                     <div style={{ marginBottom: '16px' }}>
                       <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
-                        Información de contacto
+                        ¿Qué clienta es?
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.96rem', fontWeight: 800, color: '#2d1b22' }}>
-                        <Phone size={14} color="#a0506a" />
-                        <span>{selectedDetailedApp.clients?.phone || 'Sin número'}</span>
+                      <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#2d1b22', marginBottom: '4px' }}>
+                        {selectedDetailedApp.clients?.name || 'Cliente sin nombre'}
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: 650, color: '#6b5a60' }}>
+                        <Phone size={13} color="#a0506a" />
+                        <span>{selectedDetailedApp.clients?.phone || 'Sin número registrado'}</span>
                       </div>
                     </div>
 
                     <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.12)', margin: '14px 0' }} />
 
-                    {/* PREFERENCIAS DE LA CLIENTE */}
+                    {/* ¿Es su primera visita? */}
+                    <div style={{ marginBottom: '16px' }}>
+                      <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
+                        ¿Es su primera visita?
+                      </div>
+                      <div style={{ fontSize: '0.8rem', color: '#2d1b22', fontWeight: 650, lineHeight: '1.4' }}>
+                        {clientPastAppointments.length === 0 ? (
+                          <span style={{ color: '#16a34a', fontWeight: 800 }}>Sí, es su primera visita hoy.</span>
+                        ) : (
+                          <span>
+                            No, ya tiene <span style={{ fontWeight: 800, color: '#a0506a' }}>{clientPastAppointments.length} visitas</span> registradas.
+                            <span style={{ fontSize: '0.72rem', color: '#6b5a60', display: 'block', marginTop: '2px' }}>
+                              Último servicio: {new Date(clientPastAppointments[0].scheduled_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'long', year: 'numeric' })}
+                            </span>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.12)', margin: '14px 0' }} />
+
+                    {/* ¿Tiene una especialista preferida si no es su primera vez? */}
+                    <div style={{ marginBottom: '16px' }}>
+                      <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
+                        ¿Tiene una especialista preferida si no es su primera vez?
+                      </div>
+                      <div style={{ fontSize: '0.8rem', color: '#2d1b22', fontWeight: 750 }}>
+                        {preferredSpecialist}
+                      </div>
+                    </div>
+
+                    <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.12)', margin: '14px 0' }} />
+
+                    {/* Preferencias de la cliente */}
                     <div style={{ marginBottom: '16px' }}>
                       <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
                         Preferencias de la cliente
@@ -3369,8 +3405,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
                     <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.12)', margin: '14px 0' }} />
 
-                    {/* NOTAS IMPORTANTES */}
-                    <div style={{ marginBottom: '16px' }}>
+                    {/* Notas importantes */}
+                    <div>
                       <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
                         Notas importantes
                       </div>
@@ -3382,25 +3418,6 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       </div>
                     </div>
 
-                    <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.12)', margin: '14px 0' }} />
-
-                    {/* HISTORIAL CON LA CLIENTE */}
-                    <div>
-                      <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
-                        Historial con la cliente
-                      </div>
-                      <div style={{ fontSize: '0.8rem', color: '#2d1b22', fontWeight: 650 }}>
-                        {clientPastAppointments.length} visitas registradas • Último servicio:{' '}
-                        {clientPastAppointments.length > 0 ? (
-                          <span style={{ fontWeight: 750 }}>
-                            {new Date(clientPastAppointments[0].scheduled_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'long', year: 'numeric' })}
-                          </span>
-                        ) : (
-                          'Primera visita hoy'
-                        )}
-                      </div>
-                    </div>
-
                   </div>
 
                   {/* SERVICE & SPECIALIST CARD */}
@@ -3408,10 +3425,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     padding: '20px', borderRadius: '16px', border: '1px solid rgba(223,178,140,0.15)',
                     display: 'flex', flexDirection: 'column', gap: '14px', background: '#fff9f8'
                   }}>
-                    {/* Servicio para hoy */}
+                    {/* ¿Qué servicios quiere? */}
                     <div>
                       <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
-                        Servicio para hoy
+                        ¿Qué servicios quiere?
                       </div>
                       <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                         <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', flexShrink: 0 }}>
@@ -3429,10 +3446,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
                     <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.12)' }} />
 
-                    {/* Profesional Asignada */}
+                    {/* ¿Con qué profesional se va a atender? */}
                     <div>
                       <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
-                        Profesional asignada
+                        ¿Con qué profesional se va a atender?
                       </div>
                       <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                         <img 
