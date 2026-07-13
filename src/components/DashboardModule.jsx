@@ -660,13 +660,20 @@ const DashboardModule = ({
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
                 <span style={{ fontSize: '0.62rem', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>Más reservado</span>
-                <span style={{
-                  fontSize: '0.68rem',
-                  fontWeight: '800',
-                  color: 'var(--text-primary)',
-                  margin: '2px 0',
-                  lineHeight: '1.15'
-                }}>
+                <span 
+                  title={dynamicStats.mostReservedService}
+                  style={{
+                    fontSize: '0.68rem',
+                    fontWeight: '800',
+                    color: 'var(--text-primary)',
+                    margin: '2px 0',
+                    lineHeight: '1.15',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: 'block'
+                  }}
+                >
                   {dynamicStats.mostReservedService}
                 </span>
                 <span style={{ fontSize: '0.55rem', color: 'var(--text-muted)', fontWeight: '500', whiteSpace: 'nowrap' }}>
@@ -1333,7 +1340,22 @@ const DashboardModule = ({
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
             <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>Más reservado</span>
-            <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--text-primary)', lineHeight: 1.2 }}>{dynamicStats.mostReservedService}</span>
+            <span 
+              title={dynamicStats.mostReservedService}
+              style={{
+                fontSize: '0.85rem',
+                fontWeight: '800',
+                color: 'var(--text-primary)',
+                lineHeight: 1.2,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: 'block',
+                width: '100%'
+              }}
+            >
+              {dynamicStats.mostReservedService}
+            </span>
             <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: '500', whiteSpace: 'nowrap' }}>{dynamicStats.mostReservedCount} citas hoy</span>
           </div>
         </div>
