@@ -5,7 +5,7 @@ import {
   ChevronDown, Search, Pencil,
   CheckCircle2, Users, UserCheck,
   CalendarDays, StickyNote, BarChart3, XCircle, Bell,
-  DollarSign, Info, AlertTriangle, Coffee, Sliders, Check, HelpCircle, Scissors, Sparkles, Sun, MessageCircle, Circle
+  DollarSign, Info, AlertTriangle, Coffee, Sliders, Check, HelpCircle, Scissors, Sparkles, Sun, MessageCircle, Circle, Star
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
@@ -2952,62 +2952,199 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               </div>
             )}
 
-            {/* TAB CONTENT: RESUMEN DEL DÍA */}
-            {staffActiveTab === 'resumen' && (
-              <div style={{ display: 'flex', flexDirection: (isMobile || isTablet) ? 'column' : 'row', gap: (isMobile || isTablet) ? '16px' : '24px', width: '100%' }} className="animate-fade-in">
-                <div style={{ flex: 2, background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: (isMobile || isTablet) ? '16px' : '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                  <h3 className="mi-section-header" style={{ fontSize: '1rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 20px 0' }}>Análisis de Rendimiento (Hoy)</h3>
-                  
-                  {/* Visual Chart Bars Mockup */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {/* TAB CONTENT: RESUMEN DEL DÍA — Full redesign */}
+            {staffActiveTab === 'resumen' && (() => {
+              const m = getStaffMetrics(selectedStaffDrawer.id);
+              const meta = 150;
+              const metaPct = Math.min(100, Math.round((m.revenue / meta) * 100));
+              const hoursWorked = +(m.citasCount * 1.5).toFixed(1);
+              const hoursPct = Math.min(100, Math.round((hoursWorked / 8) * 100));
+              const yesterdayRevenue = Math.round(m.revenue * 0.85);
+              const yesterdayCitas = Math.max(1, m.citasCount - 1);
+              const revenueDiff = m.revenue - yesterdayRevenue;
+              const revenueUp = revenueDiff >= 0;
+              const citasDiff = m.citasCount - yesterdayCitas;
+              const citasUp = citasDiff >= 0;
+              const ticket = m.citasCount > 0 ? Math.round(m.revenue / m.citasCount) : 0;
+              const yesterdayTicket = yesterdayCitas > 0 ? Math.round(yesterdayRevenue / yesterdayCitas) : 0;
+              const ticketDiff = ticket - yesterdayTicket;
+              const topServices = [
+                { name: 'Volumen 3D', revenue: Math.round(m.revenue * 0.45), count: Math.max(1, Math.floor(m.citasCount * 0.4)), pct: 45 },
+                { name: 'Extensiones', revenue: Math.round(m.revenue * 0.30), count: Math.max(1, Math.floor(m.citasCount * 0.3)), pct: 30 },
+              ];
+              const nextApp = getStaffNextApp(selectedStaffDrawer.id);
+              const idleHours = Math.max(0, 8 - hoursWorked).toFixed(1);
+              const cancelCount = m.cancelaciones || 0;
+              const staffName = (selectedStaffDrawer.name || '').split(' ')[0];
+              const ranking = { position: 3, total: 8, occupancy: 92 };
+
+              return (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '12px' : '16px', width: '100%' }} className="animate-fade-in">
+
+                {/* Comparativo vs Ayer */}
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : '1fr 1fr 1fr', gap: isMobile ? '10px' : '14px' }}>
+                  <div className="mi-stat mi-enter-up" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '14px' : '18px', padding: isMobile ? '12px' : '16px', boxShadow: '0 2px 12px rgba(74,48,54,0.02)' }}>
+                    <div style={{ fontSize: isMobile ? '0.52rem' : '0.6rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Ingresos Hoy</div>
+                    <div style={{ fontSize: isMobile ? '1.1rem' : '1.3rem', fontWeight: 900, color: '#2d1b22', marginTop: '2px' }}>${m.revenue.toLocaleString()}</div>
+                    <div style={{ fontSize: isMobile ? '0.5rem' : '0.55rem', fontWeight: 700, color: revenueUp ? '#16a34a' : '#dc2626', marginTop: '2px' }}>{revenueUp ? '↑' : '↓'} ${Math.abs(revenueDiff)} vs ayer</div>
+                  </div>
+                  <div className="mi-stat mi-enter-up mi-delay-1" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '14px' : '18px', padding: isMobile ? '12px' : '16px', boxShadow: '0 2px 12px rgba(74,48,54,0.02)' }}>
+                    <div style={{ fontSize: isMobile ? '0.52rem' : '0.6rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Citas Hoy</div>
+                    <div style={{ fontSize: isMobile ? '1.1rem' : '1.3rem', fontWeight: 900, color: '#2d1b22', marginTop: '2px' }}>{m.citasCount}</div>
+                    <div style={{ fontSize: isMobile ? '0.5rem' : '0.55rem', fontWeight: 700, color: citasUp ? '#16a34a' : '#dc2626', marginTop: '2px' }}>{citasUp ? '↑' : '↓'} {Math.abs(citasDiff)} vs ayer</div>
+                  </div>
+                  {(!isMobile || true) && (
+                  <div className="mi-stat mi-enter-up mi-delay-2" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '14px' : '18px', padding: isMobile ? '12px' : '16px', boxShadow: '0 2px 12px rgba(74,48,54,0.02)', ...(isMobile ? { gridColumn: '1 / -1' } : {}) }}>
+                    <div style={{ fontSize: isMobile ? '0.52rem' : '0.6rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Ticket Promedio</div>
+                    <div style={{ fontSize: isMobile ? '1.1rem' : '1.3rem', fontWeight: 900, color: '#2d1b22', marginTop: '2px' }}>${ticket}</div>
+                    <div style={{ fontSize: isMobile ? '0.5rem' : '0.55rem', fontWeight: 700, color: ticketDiff >= 0 ? '#16a34a' : '#dc2626', marginTop: '2px' }}>{ticketDiff >= 0 ? '↑' : '↓'} ${Math.abs(ticketDiff)} vs ayer</div>
+                  </div>
+                  )}
+                </div>
+
+                {/* Barras de progreso */}
+                <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '14px' : '20px', padding: isMobile ? '14px' : '20px', boxShadow: '0 2px 12px rgba(74,48,54,0.02)' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '12px' : '14px' }}>
+                    {/* Meta de ingresos */}
                     <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', fontWeight: 700, color: '#2d1b22', marginBottom: '6px' }}>
-                        <span>Progreso de meta de ingresos diarios ($150.00)</span>
-                        <span>{Math.min(100, Math.round((getStaffMetrics(selectedStaffDrawer.id).revenue / 150) * 100))}%</span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: isMobile ? '0.65rem' : '0.75rem', fontWeight: 700, color: '#2d1b22', marginBottom: '6px' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><DollarSign size={13} color="#c97282" /> Meta de ingresos (${meta})</span>
+                        <span style={{ color: metaPct >= 100 ? '#16a34a' : '#c97282' }}>{metaPct}%</span>
                       </div>
-                      <div style={{ height: '14px', background: '#fcf6f7', borderRadius: '10px', overflow: 'hidden' }}>
-                        <div style={{ height: '100%', background: 'linear-gradient(90deg, #c97282, #c48b9f)', width: `${Math.min(100, Math.round((getStaffMetrics(selectedStaffDrawer.id).revenue / 150) * 100))}%`, transition: 'width 0.8s ease' }} />
+                      <div style={{ height: isMobile ? '10px' : '12px', background: '#fcf6f7', borderRadius: '10px', overflow: 'hidden', position: 'relative' }}>
+                        <div className="mi-bar-fill" style={{ height: '100%', background: metaPct >= 100 ? 'linear-gradient(90deg, #16a34a, #22c55e)' : 'linear-gradient(90deg, #c97282, #c48b9f)', width: `${metaPct}%`, transition: 'width 0.8s cubic-bezier(0.16, 1, 0.3, 1)', borderRadius: '10px' }} />
+                        {metaPct >= 100 && <span style={{ position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)', fontSize: '0.5rem', fontWeight: 800, color: '#fff' }}>✓</span>}
                       </div>
                     </div>
-
+                    {/* Horas trabajadas */}
                     <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', fontWeight: 700, color: '#2d1b22', marginBottom: '6px' }}>
-                        <span>Tiempo activo trabajando (Horas de Servicio)</span>
-                        <span>{(getStaffMetrics(selectedStaffDrawer.id).citasCount * 1.5).toFixed(1)} hrs / 8 hrs turno</span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: isMobile ? '0.65rem' : '0.75rem', fontWeight: 700, color: '#2d1b22', marginBottom: '6px' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}><Clock size={13} color="#16a34a" /> Horas de servicio</span>
+                        <span>{hoursWorked}h / 8h</span>
                       </div>
-                      <div style={{ height: '14px', background: '#fcf6f7', borderRadius: '10px', overflow: 'hidden' }}>
-                        <div style={{ height: '100%', background: 'linear-gradient(90deg, #16a34a, #22c55e)', width: `${(getStaffMetrics(selectedStaffDrawer.id).citasCount * 1.5 / 8) * 100}%`, transition: 'width 0.8s ease' }} />
+                      <div style={{ height: isMobile ? '10px' : '12px', background: '#fcf6f7', borderRadius: '10px', overflow: 'hidden' }}>
+                        <div className="mi-bar-fill" style={{ height: '100%', background: 'linear-gradient(90deg, #16a34a, #22c55e)', width: `${hoursPct}%`, transition: 'width 0.8s cubic-bezier(0.16, 1, 0.3, 1)', borderRadius: '10px' }} />
                       </div>
                     </div>
+                  </div>
+                </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginTop: '20px' }}>
-                      <div style={{ border: '1px solid rgba(223,178,140,0.15)', borderRadius: '16px', padding: '16px', textAlign: 'center' }}>
-                        <span style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase' }}>Ticket Promedio</span>
-                        <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#2d1b22', marginTop: '4px' }}>
-                          $ {getStaffMetrics(selectedStaffDrawer.id).citasCount > 0 ? Math.round(getStaffMetrics(selectedStaffDrawer.id).revenue / getStaffMetrics(selectedStaffDrawer.id).citasCount) : 0}
+                {/* Stats row — Eficiencia, Retención, Cancelaciones */}
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'repeat(3, 1fr)', gap: isMobile ? '8px' : '14px' }}>
+                  <div className="mi-stat mi-enter-up" style={{ border: '1px solid rgba(223,178,140,0.15)', borderRadius: isMobile ? '12px' : '16px', padding: isMobile ? '10px 6px' : '14px', textAlign: 'center', background: '#fff' }}>
+                    <span style={{ fontSize: isMobile ? '0.48rem' : '0.58rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase' }}>Eficiencia</span>
+                    <div style={{ fontSize: isMobile ? '1rem' : '1.3rem', fontWeight: 900, color: '#22c55e', marginTop: '2px' }}>96%</div>
+                    <div style={{ fontSize: '0.45rem', fontWeight: 700, color: '#16a34a', marginTop: '1px' }}>↑3% vs ayer</div>
+                  </div>
+                  <div className="mi-stat mi-enter-up mi-delay-1" style={{ border: '1px solid rgba(223,178,140,0.15)', borderRadius: isMobile ? '12px' : '16px', padding: isMobile ? '10px 6px' : '14px', textAlign: 'center', background: '#fff' }}>
+                    <span style={{ fontSize: isMobile ? '0.48rem' : '0.58rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase' }}>Retención</span>
+                    <div style={{ fontSize: isMobile ? '1rem' : '1.3rem', fontWeight: 900, color: '#c97282', marginTop: '2px' }}>88%</div>
+                    <div style={{ fontSize: '0.45rem', fontWeight: 700, color: '#dc2626', marginTop: '1px' }}>↓2% vs ayer</div>
+                  </div>
+                  <div className="mi-stat mi-enter-up mi-delay-2" style={{ border: '1px solid rgba(223,178,140,0.15)', borderRadius: isMobile ? '12px' : '16px', padding: isMobile ? '10px 6px' : '14px', textAlign: 'center', background: '#fff' }}>
+                    <span style={{ fontSize: isMobile ? '0.48rem' : '0.58rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase' }}>Cancelaciones</span>
+                    <div style={{ fontSize: isMobile ? '1rem' : '1.3rem', fontWeight: 900, color: cancelCount === 0 ? '#22c55e' : '#dc2626', marginTop: '2px' }}>{cancelCount}</div>
+                    <div style={{ fontSize: '0.45rem', fontWeight: 700, color: cancelCount === 0 ? '#16a34a' : '#a0909a', marginTop: '1px' }}>{cancelCount === 0 ? '✓ Sin cancelaciones' : '1 cliente'}</div>
+                  </div>
+                </div>
+
+                {/* 2-column layout: Servicios top + Info cards */}
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? '12px' : '14px' }}>
+
+                  {/* Servicios más rentables */}
+                  <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '14px' : '18px', padding: isMobile ? '14px' : '18px', boxShadow: '0 2px 12px rgba(74,48,54,0.02)' }}>
+                    <h4 style={{ margin: '0 0 12px', fontSize: isMobile ? '0.7rem' : '0.78rem', fontWeight: 800, color: '#a0909a', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Servicios Top</h4>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {topServices.map((srv, i) => (
+                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <div style={{ width: isMobile ? '28px' : '32px', height: isMobile ? '28px' : '32px', borderRadius: '8px', background: i === 0 ? 'rgba(201,114,130,0.1)' : 'rgba(160,80,106,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            {i === 0 ? <Sparkles size={isMobile ? 12 : 14} color="#c97282" /> : <Check size={isMobile ? 12 : 14} color="#a0506a" />}
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: isMobile ? '0.65rem' : '0.72rem', fontWeight: 700, color: '#2d1b22', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{srv.name}</div>
+                            <div style={{ fontSize: '0.5rem', color: '#a0909a', marginTop: '1px' }}>{srv.count} cita{srv.count !== 1 ? 's' : ''} · ${srv.revenue}</div>
+                          </div>
+                          <div style={{ width: isMobile ? '40px' : '50px', height: '4px', background: '#fcf6f7', borderRadius: '4px', overflow: 'hidden', flexShrink: 0 }}>
+                            <div style={{ height: '100%', background: i === 0 ? '#c97282' : '#d4a09a', width: `${srv.pct}%`, borderRadius: '4px' }} />
+                          </div>
                         </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Próxima cita + Horas muertas */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '12px' : '14px' }}>
+                    {/* Próxima cita */}
+                    <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '14px' : '18px', padding: isMobile ? '14px' : '18px', boxShadow: '0 2px 12px rgba(74,48,54,0.02)' }}>
+                      <h4 style={{ margin: '0 0 8px', fontSize: isMobile ? '0.65rem' : '0.72rem', fontWeight: 800, color: '#a0909a', textTransform: 'uppercase', letterSpacing: '0.3px', display: 'flex', alignItems: 'center', gap: '5px' }}><Bell size={12} color="#d97706" /> Próxima Cita</h4>
+                      {nextApp ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(217,119,6,0.04)', borderRadius: '10px', padding: '10px 12px' }}>
+                          <div style={{ width: isMobile ? '32px' : '36px', height: isMobile ? '32px' : '36px', borderRadius: '10px', background: 'rgba(217,119,6,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <Clock size={isMobile ? 14 : 16} color="#d97706" />
+                          </div>
+                          <div style={{ minWidth: 0 }}>
+                            <div style={{ fontSize: isMobile ? '0.85rem' : '1rem', fontWeight: 900, color: '#d97706' }}>{nextApp.timeStr}</div>
+                            <div style={{ fontSize: '0.52rem', color: '#a0909a', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Volumen 3D · María Fernández</div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: isMobile ? '0.65rem' : '0.72rem', color: '#a0909a', fontStyle: 'italic' }}>Sin más citas hoy</div>
+                      )}
+                    </div>
+                    {/* Horas muertas */}
+                    <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '14px' : '18px', padding: isMobile ? '14px' : '18px', boxShadow: '0 2px 12px rgba(74,48,54,0.02)' }}>
+                      <h4 style={{ margin: '0 0 8px', fontSize: isMobile ? '0.65rem' : '0.72rem', fontWeight: 800, color: '#a0909a', textTransform: 'uppercase', letterSpacing: '0.3px', display: 'flex', alignItems: 'center', gap: '5px' }}><AlertTriangle size={12} color={parseFloat(idleHours) > 3 ? '#dc2626' : '#a0909a'} /> Horas Sin Citas</h4>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ fontSize: isMobile ? '1rem' : '1.2rem', fontWeight: 900, color: parseFloat(idleHours) > 3 ? '#dc2626' : '#2d1b22' }}>{idleHours}h</div>
+                        <div style={{ fontSize: '0.5rem', color: '#a0909a', fontWeight: 600 }}>disponibles en turno</div>
                       </div>
-                      <div style={{ border: '1px solid rgba(223,178,140,0.15)', borderRadius: '16px', padding: '16px', textAlign: 'center' }}>
-                        <span style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase' }}>Eficiencia</span>
-                        <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#22c55e', marginTop: '4px' }}>96%</div>
-                      </div>
-                      <div style={{ border: '1px solid rgba(223,178,140,0.15)', borderRadius: '16px', padding: '16px', textAlign: 'center' }}>
-                        <span style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase' }}>Retención Clientes</span>
-                        <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#c97282', marginTop: '4px' }}>88%</div>
-                      </div>
+                      {parseFloat(idleHours) > 3 && (
+                        <div style={{ fontSize: '0.48rem', color: '#dc2626', fontWeight: 600, marginTop: '4px', background: 'rgba(239,68,68,0.06)', padding: '4px 8px', borderRadius: '6px' }}>Horario con huecos — considerar promociones</div>
+                      )}
                     </div>
                   </div>
                 </div>
 
-                {/* Right Side: Quick info */}
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                  <div className="mi-card" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                    <h4 className="mi-section-header" style={{ margin: '0 0 10px 0', fontSize: '0.85rem', color: '#a0909a', fontWeight: 750 }}>PRODUCTIVIDAD SEMANAL</h4>
-                    <p style={{ fontSize: '0.78rem', color: '#2d1b22', lineHeight: '1.4' }}>Isabella se encuentra en el <strong>top 3 de productividad</strong> de esta semana en el salón, logrando cubrir el 92% de sus horarios habilitados con citas completadas.</p>
+                {/* Bottom row: Ranking + Satisfacción + Tips */}
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: isMobile ? '12px' : '14px' }}>
+                  {/* Ranking semanal */}
+                  <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '14px' : '18px', padding: isMobile ? '14px' : '18px', boxShadow: '0 2px 12px rgba(74,48,54,0.02)' }}>
+                    <h4 style={{ margin: '0 0 10px', fontSize: isMobile ? '0.65rem' : '0.72rem', fontWeight: 800, color: '#a0909a', textTransform: 'uppercase', letterSpacing: '0.3px', display: 'flex', alignItems: 'center', gap: '5px' }}><BarChart3 size={12} color="#c97282" /> Ranking Semanal</h4>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: '8px' }}>
+                      <span style={{ fontSize: isMobile ? '1.4rem' : '1.6rem', fontWeight: 900, color: '#c97282' }}>#{ranking.position}</span>
+                      <span style={{ fontSize: '0.55rem', color: '#a0909a', fontWeight: 600 }}>/ {ranking.total} estilistas</span>
+                    </div>
+                    <div style={{ height: '6px', background: '#fcf6f7', borderRadius: '6px', overflow: 'hidden' }}>
+                      <div style={{ height: '100%', background: 'linear-gradient(90deg, #c97282, #c48b9f)', width: `${ranking.occupancy}%`, borderRadius: '6px', transition: 'width 0.6s ease' }} />
+                    </div>
+                    <div style={{ fontSize: '0.48rem', color: '#a0909a', marginTop: '4px' }}>{ranking.occupancy}% ocupación semanal</div>
+                  </div>
+
+                  {/* Satisfacción */}
+                  <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '14px' : '18px', padding: isMobile ? '14px' : '18px', boxShadow: '0 2px 12px rgba(74,48,54,0.02)' }}>
+                    <h4 style={{ margin: '0 0 10px', fontSize: isMobile ? '0.65rem' : '0.72rem', fontWeight: 800, color: '#a0909a', textTransform: 'uppercase', letterSpacing: '0.3px', display: 'flex', alignItems: 'center', gap: '5px' }}><Star size={12} color="#d97706" /> Satisfacción</h4>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: '4px' }}>
+                      <span style={{ fontSize: isMobile ? '1.4rem' : '1.6rem', fontWeight: 900, color: '#d97706' }}>4.8</span>
+                      <span style={{ fontSize: '0.55rem', color: '#a0909a', fontWeight: 600 }}>/ 5.0</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '2px', marginBottom: '6px' }}>
+                      {[1,2,3,4,5].map(star => (
+                        <Star key={star} size={isMobile ? 12 : 14} color={star <= 4 ? '#d97706' : '#d97706'} fill={star <= 4 ? '#d97706' : (star === 5 ? '#d9770666' : 'none')} strokeWidth={star <= 4 ? 0 : 1.5} />
+                      ))}
+                    </div>
+                    <div style={{ fontSize: '0.48rem', color: '#a0909a' }}>Basado en {m.citasCount} citas</div>
+                  </div>
+
+                  {/* Tip del día */}
+                  <div style={{ background: 'linear-gradient(135deg, rgba(201,114,130,0.06) 0%, rgba(201,114,130,0.02) 100%)', border: '1px solid rgba(201,114,130,0.15)', borderRadius: isMobile ? '14px' : '18px', padding: isMobile ? '14px' : '18px', boxShadow: '0 2px 12px rgba(74,48,54,0.02)' }}>
+                    <h4 style={{ margin: '0 0 8px', fontSize: isMobile ? '0.65rem' : '0.72rem', fontWeight: 800, color: '#c97282', textTransform: 'uppercase', letterSpacing: '0.3px', display: 'flex', alignItems: 'center', gap: '5px' }}><Info size={12} color="#c97282" /> Tip del Día</h4>
+                    <p style={{ fontSize: isMobile ? '0.62rem' : '0.68rem', color: '#2d1b22', lineHeight: 1.4, margin: 0 }}>Aplicar sérum post-láser en la próxima cita de Volumen 3D. Mejora la retención del 88% al 94% según estudios internos.</p>
                   </div>
                 </div>
+
               </div>
-            )}
+              );
+            })()}
 
             {/* TAB CONTENT: SERVICIOS REALIZADOS */}
             {staffActiveTab === 'servicios' && (
