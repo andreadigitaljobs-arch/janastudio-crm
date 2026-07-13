@@ -669,12 +669,16 @@ const DashboardModule = ({
               <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
                 <span style={{ fontSize: '0.62rem', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>Más reservado</span>
                 <span 
+                  title={dynamicStats.mostReservedService}
                   style={{
                     fontSize: '0.68rem',
                     fontWeight: '800',
                     color: 'var(--text-primary)',
                     margin: '2px 0',
                     lineHeight: '1.15',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
                     display: 'block'
                   }}
                 >
@@ -1345,11 +1349,15 @@ const DashboardModule = ({
           <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
             <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>Más reservado</span>
             <span 
+              title={dynamicStats.mostReservedService}
               style={{
                 fontSize: '0.82rem',
                 fontWeight: '800',
                 color: 'var(--text-primary)',
                 lineHeight: 1.2,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
                 display: 'block',
                 width: '100%'
               }}
@@ -1566,23 +1574,37 @@ const DashboardModule = ({
               }}>
                 <span style={{ fontSize: '10px' }}>🔥</span> Más reservado
               </div>
-              <h4 style={{ 
-                fontSize: '16px', 
-                fontWeight: '800', 
-                margin: 0, 
-                color: '#ffffff', 
-                lineHeight: '1.15',
-                textShadow: '0 1px 3px rgba(0,0,0,0.15)'
-              }}>
+              <h4 
+                title="Ondas Sirena"
+                style={{ 
+                  fontSize: '16px', 
+                  fontWeight: '800', 
+                  margin: 0, 
+                  color: '#ffffff', 
+                  lineHeight: '1.15',
+                  textShadow: '0 1px 3px rgba(0,0,0,0.15)',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  display: 'block'
+                }}
+              >
                 Ondas Sirena
               </h4>
-              <span style={{ 
-                fontSize: '11.5px', 
-                color: '#fbcada', 
-                fontWeight: '600',
-                marginTop: '2px',
-                letterSpacing: '0.3px'
-              }}>
+              <span 
+                title="o Sueltas"
+                style={{ 
+                  fontSize: '11.5px', 
+                  color: '#fbcada', 
+                  fontWeight: '600',
+                  marginTop: '2px',
+                  letterSpacing: '0.3px',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  display: 'block'
+                }}
+              >
                 o Sueltas
               </span>
               <span style={{ 
