@@ -2088,64 +2088,127 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         className="agenda-staff-card"
                         data-status={statusText === 'LIBRE' ? 'libre' : statusText === 'EN CITA' ? 'encita' : 'almuerzo'}
                         style={{
-                          padding: isMobileCard ? '8px' : '10px',
+                          padding: isMobileCard ? '0' : '10px',
                           background: '#ffffff',
                           border: '1px solid rgba(223,178,140,0.18)',
-                          borderLeft: `4px solid ${statusColor}`,
+                          borderLeft: isMobileCard ? 'none' : `4px solid ${statusColor}`,
                           borderRadius: '14px',
                           display: 'flex',
                           flexDirection: isMobileCard ? 'column' : 'row',
-                          alignItems: isMobileCard ? 'center' : 'center',
-                          gap: isMobileCard ? '6px' : '10px',
+                          alignItems: 'stretch',
+                          gap: isMobileCard ? '0' : '10px',
                           cursor: 'pointer',
                           boxShadow: '0 2px 8px rgba(74,48,54,0.04)',
                           position: 'relative',
+                          overflow: 'hidden'
                         }}
                       >
-                        {/* Photo */}
-                        <div style={{ position: 'relative', width: isMobileCard ? '42px' : '50px', height: isMobileCard ? '42px' : '58px', flexShrink: 0, borderRadius: isMobileCard ? '10px' : '12px', overflow: 'hidden', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          {getStaffPhoto(s) ? (
-                            <img src={getStaffPhoto(s)} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          ) : (
-                            <User size={20} color="#fff" />
-                          )}
-                          <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(200deg, ${statusColor}55 0%, ${statusColor}00 55%), linear-gradient(0deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 45%)` }} />
-                          {/* Status dot — pulsing when busy */}
-                          <span className={statusText !== 'LIBRE' ? 'staff-dot-pulse' : ''} style={{ position: 'absolute', right: '2px', bottom: '2px', width: isMobileCard ? '7px' : '9px', height: isMobileCard ? '7px' : '9px', borderRadius: '50%', background: statusColor, border: '1.5px solid #fff', boxShadow: `0 0 4px ${statusColor}66` }} />
-                        </div>
-
-                        {/* Info */}
-                        <div style={{ flex: 1, minWidth: 0, textAlign: isMobileCard ? 'center' : 'left', paddingRight: isMobileCard ? 0 : '22px' }}>
-                          <div style={{ fontSize: isMobileCard ? '0.65rem' : '0.72rem', fontWeight: 800, color: '#2d1b22', lineHeight: 1.3 }}>{s.name}</div>
-                          <div style={{ fontSize: '0.5rem', color: '#a0909a', fontWeight: 600, marginTop: '1px', lineHeight: 1.3 }}>{getStaffRole(s.name)}</div>
-                          <div style={{ marginTop: '3px', display: 'flex', alignItems: 'center', gap: isMobileCard ? '4px' : '6px', justifyContent: isMobileCard ? 'center' : 'flex-start', flexWrap: 'wrap' }}>
-                            <span className="mi-tag" style={{ fontSize: '0.48rem', fontWeight: 800, color: statusColor, background: `${statusColor}12`, padding: '1px 6px', borderRadius: '999px', letterSpacing: '0.3px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                              {statusText !== 'LIBRE' && <span className="staff-dot-pulse" style={{ display: 'inline-block', width: '4px', height: '4px', borderRadius: '50%', background: statusColor }} />}
-                              {statusText}
-                            </span>
-                            {metrics.citasCount > 0 && (
-                              <span style={{ fontSize: '0.56rem', fontWeight: 700, color: '#6b5a60', background: 'rgba(160,144,154,0.1)', padding: '3px 8px', borderRadius: '999px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                                <CalendarDays size={11} color="#8c767b" strokeWidth={2} />
-                                {metrics.citasCount} {metrics.citasCount === 1 ? 'cita' : 'citas'}
+                        {isMobileCard ? (
+                          <>
+                            {/* Cover Photo */}
+                            <div style={{ position: 'relative', width: '100%', height: '120px', overflow: 'hidden', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              {getStaffPhoto(s) ? (
+                                <img src={getStaffPhoto(s)} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              ) : (
+                                <User size={36} color="#fff" />
+                              )}
+                              {/* Elegant overlay gradient */}
+                              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.4) 100%)' }} />
+                              
+                              {/* Status Pill floating top-left */}
+                              <span className="mi-tag" style={{ position: 'absolute', top: '8px', left: '8px', fontSize: '0.52rem', fontWeight: 900, color: '#fff', background: statusColor, padding: '3px 8px', borderRadius: '8px', letterSpacing: '0.4px', display: 'inline-flex', alignItems: 'center', gap: '3px', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }}>
+                                {statusText}
                               </span>
-                            )}
-                            <span style={{ fontSize: '0.56rem', fontWeight: 700, color: '#a0506a', background: 'rgba(160,80,106,0.06)', padding: '3px 8px', borderRadius: '999px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                              {metrics.occupancy}% ocupación
-                            </span>
-                          </div>
-                          {/* Next appointment — directly visible on the card layout */}
-                          {nextApp ? (
-                            <div style={{ fontSize: '0.64rem', color: '#c97282', fontWeight: 800, marginTop: '5px', display: 'flex', alignItems: 'center', justifyContent: isMobileCard ? 'center' : 'flex-start', gap: '4px' }}>
-                              <Clock size={11} color="#c97282" />
-                              <span>Próxima: {nextApp.timeStr}</span>
                             </div>
-                          ) : (
-                            <div style={{ fontSize: '0.6rem', color: '#a0909a', fontWeight: 600, marginTop: '5px', display: 'flex', alignItems: 'center', justifyContent: isMobileCard ? 'center' : 'flex-start', gap: '4px' }}>
-                              <Clock size={10} color="#a0909a" />
-                              <span>Sin más citas hoy</span>
+
+                            {/* Info Area */}
+                            <div style={{ padding: '10px 12px 12px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: '#fff', textAlign: 'left' }}>
+                              <div>
+                                <div style={{ fontSize: '0.78rem', fontWeight: 900, color: '#2d1b22', lineHeight: 1.25 }}>{s.name}</div>
+                                <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 650, marginTop: '2px' }}>{getStaffRole(s.name)}</div>
+                              </div>
+
+                              {/* Metrics pills stacked */}
+                              <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                                  {metrics.citasCount > 0 ? (
+                                    <span style={{ fontSize: '0.55rem', fontWeight: 700, color: '#6b5a60', background: 'rgba(160,144,154,0.08)', padding: '2px 6px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                      <CalendarDays size={10} color="#8c767b" />
+                                      {metrics.citasCount} {metrics.citasCount === 1 ? 'cita' : 'citas'}
+                                    </span>
+                                  ) : (
+                                    <span style={{ fontSize: '0.55rem', fontWeight: 700, color: '#a0909a', background: 'rgba(160,144,154,0.04)', padding: '2px 6px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                      Sin citas
+                                    </span>
+                                  )}
+                                  <span style={{ fontSize: '0.55rem', fontWeight: 700, color: '#a0506a', background: 'rgba(160,80,106,0.06)', padding: '2px 6px', borderRadius: '6px' }}>
+                                    {metrics.occupancy}% ocupación
+                                  </span>
+                                </div>
+
+                                {/* Next appointment */}
+                                {nextApp ? (
+                                  <div style={{ fontSize: '0.6rem', color: '#c97282', fontWeight: 800, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    <Clock size={10} color="#c97282" />
+                                    <span>Próxima: {nextApp.timeStr}</span>
+                                  </div>
+                                ) : (
+                                  <div style={{ fontSize: '0.56rem', color: '#a0909a', fontWeight: 600, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    <Clock size={9} color="#a0909a" />
+                                    <span>Sin citas hoy</span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                          )}
-                        </div>
+                          </>
+                        ) : (
+                          <>
+                            {/* Photo */}
+                            <div style={{ position: 'relative', width: '50px', height: '58px', flexShrink: 0, borderRadius: '12px', overflow: 'hidden', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              {getStaffPhoto(s) ? (
+                                <img src={getStaffPhoto(s)} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              ) : (
+                                <User size={20} color="#fff" />
+                              )}
+                              <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(200deg, ${statusColor}55 0%, ${statusColor}00 55%), linear-gradient(0deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 45%)` }} />
+                              {/* Status dot — pulsing when busy */}
+                              <span className={statusText !== 'LIBRE' ? 'staff-dot-pulse' : ''} style={{ position: 'absolute', right: '2px', bottom: '2px', width: '9px', height: '9px', borderRadius: '50%', background: statusColor, border: '1.5px solid #fff', boxShadow: `0 0 4px ${statusColor}66` }} />
+                            </div>
+
+                            {/* Info */}
+                            <div style={{ flex: 1, minWidth: 0, textAlign: 'left', paddingRight: '22px' }}>
+                              <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#2d1b22', lineHeight: 1.3 }}>{s.name}</div>
+                              <div style={{ fontSize: '0.5rem', color: '#a0909a', fontWeight: 600, marginTop: '1px', lineHeight: 1.3 }}>{getStaffRole(s.name)}</div>
+                              <div style={{ marginTop: '3px', display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-start', flexWrap: 'wrap' }}>
+                                <span className="mi-tag" style={{ fontSize: '0.48rem', fontWeight: 800, color: statusColor, background: `${statusColor}12`, padding: '1px 6px', borderRadius: '999px', letterSpacing: '0.3px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                  {statusText !== 'LIBRE' && <span className="staff-dot-pulse" style={{ display: 'inline-block', width: '4px', height: '4px', borderRadius: '50%', background: statusColor }} />}
+                                  {statusText}
+                                </span>
+                                {metrics.citasCount > 0 && (
+                                  <span style={{ fontSize: '0.56rem', fontWeight: 700, color: '#6b5a60', background: 'rgba(160,144,154,0.1)', padding: '3px 8px', borderRadius: '999px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                    <CalendarDays size={11} color="#8c767b" strokeWidth={2} />
+                                    {metrics.citasCount} {metrics.citasCount === 1 ? 'cita' : 'citas'}
+                                  </span>
+                                )}
+                                <span style={{ fontSize: '0.56rem', fontWeight: 700, color: '#a0506a', background: 'rgba(160,80,106,0.06)', padding: '3px 8px', borderRadius: '999px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                  {metrics.occupancy}% ocupación
+                                </span>
+                              </div>
+                              {/* Next appointment */}
+                              {nextApp ? (
+                                <div style={{ fontSize: '0.64rem', color: '#c97282', fontWeight: 800, marginTop: '5px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '4px' }}>
+                                  <Clock size={11} color="#c97282" />
+                                  <span>Próxima: {nextApp.timeStr}</span>
+                                </div>
+                              ) : (
+                                <div style={{ fontSize: '0.6rem', color: '#a0909a', fontWeight: 600, marginTop: '5px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '4px' }}>
+                                  <Clock size={10} color="#a0909a" />
+                                  <span>Sin más citas hoy</span>
+                                </div>
+                              )}
+                            </div>
+                          </>
+                        )}
 
                         {/* Chevron — desktop: absolute right; mobile: bottom-right */}
                         <ChevronRight size={isMobileCard ? 10 : 14} color={statusColor} className="staff-chevron" style={{ flexShrink: 0, opacity: 0.4, position: 'absolute', ...(isMobileCard ? { right: '6px', top: '6px' } : { right: '8px', top: '50%', transform: 'translateY(-50%)' }) }} />
