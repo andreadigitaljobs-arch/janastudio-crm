@@ -605,6 +605,17 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
     return () => { cancelled = true; };
   }, [selectedDetailedApp?.id, selectedDetailedApp?.clients?.id]);
 
+  useEffect(() => {
+    if (selectedDetailedApp) {
+      window.dispatchEvent(new CustomEvent('jana:hide-sidebar'));
+    } else {
+      window.dispatchEvent(new CustomEvent('jana:show-sidebar'));
+    }
+    return () => {
+      window.dispatchEvent(new CustomEvent('jana:show-sidebar'));
+    };
+  }, [selectedDetailedApp]);
+
   const triggerCloseDetailedApp = () => {
     setIsClosingDetailedApp(true);
     setTimeout(() => {
