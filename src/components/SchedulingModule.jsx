@@ -3463,7 +3463,6 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     </div>
                   )}
                 </div>
-              </div>
 
               {/* Action Buttons Footer */}
               <div style={{ borderTop: '1px solid rgba(223, 178, 140, 0.15)', padding: '20px 24px', paddingBottom: isMobile ? '110px' : '20px', marginTop: '20px' }}>
@@ -3579,6 +3578,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     </button>
                   )}
                 </div>
+              </div>
               </div>
             </div>
           </div>,
