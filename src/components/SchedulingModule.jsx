@@ -1756,15 +1756,15 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                       </div>
                                     </div>
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px', flexShrink: 0, padding: '12px 16px 12px 0' }}>
-                                                        <div className="mi-tag" style={{ fontSize: '0.62rem', fontWeight: 800, color: accentColor, background: `${accentColor}18`, padding: '4px 10px', borderRadius: '999px', whiteSpace: 'nowrap' }}>
+                                      <div className="mi-tag" style={{ fontSize: '0.62rem', fontWeight: 800, color: accentColor, background: `${accentColor}18`, padding: '4px 10px', borderRadius: '999px', whiteSpace: 'nowrap' }}>
                                         {app.status}
                                       </div>
                                       <div style={{ display: 'flex', gap: '6px' }}>
                                         {clientPhone && (
                                           <button
                                             onClick={(e) => { e.stopPropagation(); window.open(`https://wa.me/${getWhatsAppNumber(clientPhone)}`, '_blank'); }}
-                                            title="Contactar por WhatsApp"
-                                            className="mi-btn"
+                                            className="mi-btn jana-tooltip"
+                                            data-tooltip="Contactar por WhatsApp"
                                             style={{ width: '26px', height: '26px', borderRadius: '8px', border: '1px solid rgba(223,178,140,0.25)', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
                                           >
                                             <MessageCircle size={13} color="#8c767b" />
@@ -1782,8 +1782,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                                 showToast('Error al actualizar la cita', 'error');
                                               }
                                             }}
-                                            title="Marcar como completada"
-                                            className="mi-btn"
+                                            className="mi-btn jana-tooltip"
+                                            data-tooltip="Marcar como completada"
                                             style={{ width: '26px', height: '26px', borderRadius: '8px', border: '1px solid rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
                                           >
                                             <Check size={14} color="#16a34a" />
@@ -1993,11 +1993,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       >
                         {/* Desktop tooltip on hover */}
                         {!isMobileCard && hoveredStaffId === s.id && (
-                          <div className="staff-tooltip" style={{ position: 'absolute', bottom: 'calc(100% + 8px)', left: '50%', transform: 'translateX(-50%)', background: '#2d1b22', color: '#fff', padding: '8px 12px', borderRadius: '10px', fontSize: '0.65rem', whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 20, boxShadow: '0 4px 16px rgba(45,27,34,0.25)' }}>
+                          <div className="staff-tooltip">
                             <div style={{ fontWeight: 700, marginBottom: '2px' }}>{s.name}</div>
                             <div style={{ opacity: 0.8 }}>{metrics.citasCount} cita{metrics.citasCount !== 1 ? 's' : ''} · {metrics.occupancy}% ocupación</div>
                             {nextApp && <div style={{ opacity: 0.65, marginTop: '2px' }}>Próxima: {nextApp.timeStr}</div>}
-                            <div style={{ position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)', border: '5px solid transparent', borderTopColor: '#2d1b22' }} />
                           </div>
                         )}
 

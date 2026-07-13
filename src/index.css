@@ -3814,9 +3814,10 @@ button, [role="button"], a[href] {
 .staff-tooltip {
   position: absolute;
   bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: #2d1b22;
+  right: 0;
+  left: auto;
+  transform: none;
+  background: #a0506a;
   color: #fff;
   padding: 8px 12px;
   border-radius: 10px;
@@ -3824,17 +3825,60 @@ button, [role="button"], a[href] {
   white-space: nowrap;
   pointer-events: none;
   z-index: 20;
-  box-shadow: 0 4px 16px rgba(45,27,34,0.25);
+  box-shadow: 0 4px 16px rgba(160,80,106,0.25);
   animation: staffTooltipIn 0.2s ease both;
 }
 .staff-tooltip::after {
   content: '';
   position: absolute;
   top: 100%;
+  right: 20px;
+  left: auto;
+  transform: none;
+  border: 5px solid transparent;
+  borderTopColor: #a0506a;
+}
+
+/* Custom CSS Tooltip (Premium Pink) */
+.jana-tooltip {
+  position: relative;
+}
+.jana-tooltip::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%) scale(0.95);
+  background: #a0506a;
+  color: #fff;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 99999;
+  box-shadow: 0 4px 12px rgba(160,80,106,0.25);
+}
+.jana-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: 110%;
   left: 50%;
   transform: translateX(-50%);
   border: 5px solid transparent;
-  borderTopColor: #2d1b22;
+  borderTopColor: #a0506a;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.15s ease;
+  z-index: 99999;
+}
+.jana-tooltip:hover::before,
+.jana-tooltip:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
 }
 
 /* Chevron bounce on hover */
