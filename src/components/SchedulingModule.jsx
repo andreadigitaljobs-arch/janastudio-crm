@@ -3318,114 +3318,145 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '22px 24px 4px' }}>
-                  {/* Client Card (Foto 2 Inspired) */}
+                  
+                  {/* CLIENT INFORMATION CARD */}
                   <div className="mi-card" style={{
-                    padding: '16px', borderRadius: '16px', border: '1.5px solid rgba(223,178,140,0.22)',
-                    background: '#ffffff', boxShadow: '0 4px 12px rgba(74, 48, 54, 0.03)'
+                    padding: '18px', borderRadius: '16px', border: '1.5px solid rgba(223,178,140,0.25)',
+                    background: '#ffffff', boxShadow: '0 4px 12px rgba(74, 48, 54, 0.04)'
                   }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div>
-                        <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Teléfono de contacto</div>
-                        <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#2d1b22' }}>
-                          📞 {selectedDetailedApp.clients?.phone || 'Sin número'}
-                        </div>
+                    
+                    {/* ¿Qué clienta es? */}
+                    <div style={{ marginBottom: '14px' }}>
+                      <div style={{ fontSize: '0.72rem', color: '#a0506a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        👤 ¿Qué clienta es?
                       </div>
-                      {onNavigate && selectedDetailedApp.clients?.id && (
-                        <button
-                          onClick={() => onNavigate('clients', { clientId: selectedDetailedApp.clients.id })}
-                          style={{ fontSize: '0.66rem', fontWeight: 750, color: '#a0506a', background: 'rgba(160,80,106,0.08)', border: '1px solid rgba(160,80,106,0.15)', borderRadius: '10px', padding: '6px 10px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
-                        >
-                          Ver ficha ↗
-                        </button>
-                      )}
+                      <div style={{ marginTop: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                          <div style={{ fontSize: '0.92rem', fontWeight: 850, color: '#2d1b22' }}>{selectedDetailedApp.clients?.name || 'Cliente'}</div>
+                          <div style={{ fontSize: '0.78rem', color: '#c97282', fontWeight: 700, marginTop: '2px' }}>📞 {selectedDetailedApp.clients?.phone || 'Sin número'}</div>
+                        </div>
+                        {onNavigate && selectedDetailedApp.clients?.id && (
+                          <button
+                            onClick={() => onNavigate('clients', { clientId: selectedDetailedApp.clients.id })}
+                            style={{ fontSize: '0.66rem', fontWeight: 750, color: '#a0506a', background: 'rgba(160,80,106,0.08)', border: '1px solid rgba(160,80,106,0.15)', borderRadius: '10px', padding: '6px 10px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
+                          >
+                            Ver ficha completa ↗
+                          </button>
+                        )}
+                      </div>
                     </div>
 
-                    {selectedDetailedApp.clients?.allergies && (
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '7px', marginTop: '10px', padding: '9px 11px', borderRadius: '10px', background: 'rgba(220,80,80,0.06)', border: '1px solid rgba(220,80,80,0.18)' }}>
-                        <AlertTriangle size={13} color="#c14040" style={{ flexShrink: 0, marginTop: '1px' }} />
-                        <div>
-                          <div style={{ fontSize: '0.6rem', color: '#c14040', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.4px' }}>Alergias</div>
-                          <div style={{ fontSize: '0.72rem', color: '#8a3030', fontWeight: 600, marginTop: '1px' }}>{selectedDetailedApp.clients.allergies}</div>
-                        </div>
-                      </div>
-                    )}
+                    <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.15)', margin: '12px 0' }} />
 
-                    <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px dashed rgba(223,178,140,0.25)' }}>
-                      <div style={{ fontSize: '0.6rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '6px' }}>Preferencias de la clienta</div>
+                    {/* ¿Es su primera visita? */}
+                    <div style={{ marginBottom: '14px' }}>
+                      <div style={{ fontSize: '0.72rem', color: '#a0506a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        📅 ¿Es su primera visita?
+                      </div>
+                      <div style={{ marginTop: '6px', fontSize: '0.82rem', fontWeight: 700 }}>
+                        {clientPastAppointments.length > 0 ? (
+                          <span style={{ color: '#d97706', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            🔄 No, ha asistido a {clientPastAppointments.length} cita{clientPastAppointments.length === 1 ? '' : 's'} anteriormente
+                          </span>
+                        ) : (
+                          <span style={{ color: '#16a34a', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            ✨ Sí, es su primera visita a Jana Studio
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.15)', margin: '12px 0' }} />
+
+                    {/* ¿Tiene una especialista preferida? */}
+                    <div style={{ marginBottom: '14px' }}>
+                      <div style={{ fontSize: '0.72rem', color: '#a0506a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        ⭐️ ¿Tiene una especialista preferida?
+                      </div>
+                      <div style={{ marginTop: '6px', fontSize: '0.82rem', fontWeight: 700, color: '#2d1b22' }}>
+                        {clientPastAppointments.length > 0 ? (
+                          <span style={{ color: '#2d1b22' }}>
+                            👩‍🎨 Sí: <span style={{ fontWeight: 850, color: 'var(--pink-primary)' }}>{preferredSpecialist}</span>
+                          </span>
+                        ) : (
+                          <span style={{ color: '#6b5a62', fontStyle: 'italic' }}>
+                            No aplica (Primera visita)
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.15)', margin: '12px 0' }} />
+
+                    {/* Preferencias de la clienta / Ficha */}
+                    <div>
+                      <div style={{ fontSize: '0.72rem', color: '#a0506a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        💇‍♀️ Preferencias y Notas de Ficha
+                      </div>
                       {selectedDetailedApp.clients?.hair_type && (
-                        <div style={{ fontSize: '0.74rem', color: '#2d1b22', fontWeight: 700, marginBottom: '4px' }}>
-                          💇‍♀️ Cabello: <span style={{ fontWeight: 600, color: 'var(--pink-primary)' }}>{selectedDetailedApp.clients.hair_type}</span>
+                        <div style={{ fontSize: '0.78rem', color: '#2d1b22', fontWeight: 700, marginTop: '6px' }}>
+                          Tipo de Cabello: <span style={{ fontWeight: 800, color: 'var(--pink-primary)' }}>{selectedDetailedApp.clients.hair_type}</span>
                         </div>
                       )}
                       {selectedDetailedApp.clients?.notes ? (
-                        <div style={{ fontSize: '0.72rem', color: '#6b5a62', fontStyle: 'italic', lineHeight: 1.35, background: '#faf8f7', padding: '8px 10px', borderRadius: '8px', border: '1px solid rgba(160,80,106,0.05)' }}>
+                        <div style={{ fontSize: '0.78rem', color: '#2d1b22', background: 'rgba(160,80,106,0.04)', padding: '10px 12px', borderRadius: '10px', border: '1px solid rgba(160,80,106,0.1)', marginTop: '6px', lineHeight: 1.4 }}>
                           "{selectedDetailedApp.clients.notes}"
                         </div>
                       ) : (
-                        (!selectedDetailedApp.clients?.hair_type) && (
-                          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>Sin preferencias o notas registradas en su ficha.</span>
-                        )
-                      )}
-                    </div>
-
-                    <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px dashed rgba(223,178,140,0.25)' }}>
-                      <div style={{ fontSize: '0.6rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '6px' }}>Especialista Preferida</div>
-                      <div style={{ fontSize: '0.74rem', color: '#2d1b22', fontWeight: 750 }}>
-                        ⭐️ Preferencia: <span style={{ fontWeight: 600, color: 'var(--pink-primary)' }}>{preferredSpecialist}</span>
-                      </div>
-                    </div>
-
-                    <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px dashed rgba(223,178,140,0.25)' }}>
-                      <div style={{ fontSize: '0.6rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '6px' }}>Historial (Últimas Visitas)</div>
-                      {clientPastAppointments.length > 0 ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                          {clientPastAppointments.slice(0, 3).map(pa => (
-                            <div key={pa.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem' }}>
-                              <span style={{ color: '#2d1b22', fontWeight: 650, lineHeight: 1.3 }}>{pa.services?.name || 'Servicio'}</span>
-                              <span style={{ color: '#a0909a', fontWeight: 600, flexShrink: 0, marginLeft: '8px' }}>{new Date(pa.scheduled_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'short' })}</span>
-                            </div>
-                          ))}
+                        <div style={{ fontSize: '0.76rem', color: '#8c767b', fontStyle: 'italic', marginTop: '6px' }}>
+                          Sin notas u observaciones adicionales en su ficha.
                         </div>
-                      ) : (
-                        <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>No registra visitas anteriores (Primera visita).</span>
                       )}
                     </div>
+
                   </div>
 
-                  {/* Specialist & Service Card */}
+                  {/* SERVICES & SPECIALIST CARD */}
                   <div className="mi-card" style={{
-                    padding: '16px', borderRadius: '16px', border: '1.5px solid rgba(223,178,140,0.18)',
-                    display: 'flex', flexDirection: 'column', gap: '12px', background: '#faf8f7'
+                    padding: '18px', borderRadius: '16px', border: '1.5px solid rgba(223,178,140,0.18)',
+                    display: 'flex', flexDirection: 'column', gap: '16px', background: '#faf8f7',
+                    boxShadow: '0 4px 12px rgba(74, 48, 54, 0.02)'
                   }}>
-                    {/* Service Row */}
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                      <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', boxShadow: '0 3px 8px rgba(160,80,106,0.25)', flexShrink: 0 }}>
-                        <Scissors size={14} />
+                    
+                    {/* ¿Qué servicios quiere? */}
+                    <div>
+                      <div style={{ fontSize: '0.72rem', color: '#a0506a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        ✂️ ¿Qué servicios quiere?
                       </div>
-                      <div>
-                        <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Servicio Solicitado</div>
-                        <div style={{ fontSize: '0.8rem', fontWeight: 850, color: '#2d1b22', marginTop: '1px' }}>{selectedDetailedApp.services?.name || 'Servicio'}</div>
-                        <div style={{ fontSize: '0.74rem', fontWeight: 650, color: '#8c767b', marginTop: '2px' }}>Monto total del turno: <span style={{ color: '#c97282', fontWeight: 850 }}>${Number(selectedDetailedApp.total_price || selectedDetailedApp.services?.price || 0).toFixed(2)}</span></div>
+                      <div style={{ marginTop: '8px', display: 'flex', gap: '12px', alignItems: 'center' }}>
+                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', boxShadow: '0 3px 8px rgba(160,80,106,0.25)', flexShrink: 0 }}>
+                          <Scissors size={16} />
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '0.88rem', fontWeight: 850, color: '#2d1b22' }}>{selectedDetailedApp.services?.name || 'Servicio'}</div>
+                          <div style={{ fontSize: '0.78rem', color: '#8c767b', fontWeight: 700, marginTop: '2px' }}>
+                            Monto total del turno: <span style={{ color: '#c97282', fontWeight: 850 }}>${Number(selectedDetailedApp.total_price || selectedDetailedApp.services?.price || 0).toFixed(2)}</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
                     <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.15)' }} />
 
-                    {/* Specialist Row */}
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                      <img 
-                        src={activeStaff?.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(staffNameOnly)}`}
-                        alt={staffNameOnly} 
-                        style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#fff', border: '1px solid rgba(223,178,140,0.2)', objectFit: 'cover' }} 
-                      />
-                      <div>
-                        <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Especialista Asignada</div>
-                        <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#2d1b22', marginTop: '1px' }}>{staffNameOnly}</div>
-                        <div style={{ fontSize: '0.68rem', color: '#a0909a', fontWeight: 600 }}>Cargo / Rol: {staffRoleOnly}</div>
+                    {/* ¿Con qué profesional se va a atender? */}
+                    <div>
+                      <div style={{ fontSize: '0.72rem', color: '#a0506a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        👩‍🎨 ¿Con qué profesional se va a atender?
+                      </div>
+                      <div style={{ marginTop: '8px', display: 'flex', gap: '12px', alignItems: 'center' }}>
+                        <img 
+                          src={activeStaff?.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(staffNameOnly)}`}
+                          alt={staffNameOnly} 
+                          style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#fff', border: '1px solid rgba(223,178,140,0.2)', objectFit: 'cover', flexShrink: 0 }} 
+                        />
+                        <div>
+                          <div style={{ fontSize: '0.88rem', fontWeight: 850, color: '#2d1b22' }}>{staffNameOnly}</div>
+                          <div style={{ fontSize: '0.74rem', color: '#8c767b', fontWeight: 700 }}>Cargo / Rol: <span style={{ color: '#a0506a', fontWeight: 800 }}>{staffRoleOnly}</span></div>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
+                  </div>
 
                   {/* Notes Card */}
                   {selectedDetailedApp.notes && (
