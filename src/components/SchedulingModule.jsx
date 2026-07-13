@@ -5,7 +5,7 @@ import {
   ChevronDown, Search, Pencil,
   CheckCircle2, Users, UserCheck,
   CalendarDays, StickyNote, BarChart3, XCircle, Bell,
-  DollarSign, Info, AlertTriangle, Coffee, Sliders, Check, HelpCircle, Scissors, Sparkles, Sun, MessageCircle, Circle, Star
+  DollarSign, Info, AlertTriangle, Coffee, Sliders, Check, HelpCircle, Scissors, Sparkles, Sun, MessageCircle, Circle, Star, Phone
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
@@ -3328,12 +3328,14 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     {/* ¿Qué clienta es? */}
                     <div style={{ marginBottom: '14px' }}>
                       <div style={{ fontSize: '0.72rem', color: '#a0506a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        👤 ¿Qué clienta es?
+                        <User size={14} color="#a0506a" style={{ flexShrink: 0 }} /> ¿Qué clienta es?
                       </div>
                       <div style={{ marginTop: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
                           <div style={{ fontSize: '0.92rem', fontWeight: 850, color: '#2d1b22' }}>{selectedDetailedApp.clients?.name || 'Cliente'}</div>
-                          <div style={{ fontSize: '0.78rem', color: '#c97282', fontWeight: 700, marginTop: '2px' }}>📞 {selectedDetailedApp.clients?.phone || 'Sin número'}</div>
+                          <div style={{ fontSize: '0.78rem', color: '#c97282', fontWeight: 700, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <Phone size={12} color="#c97282" style={{ flexShrink: 0 }} /> {selectedDetailedApp.clients?.phone || 'Sin número'}
+                          </div>
                         </div>
                         {onNavigate && selectedDetailedApp.clients?.id && (
                           <button
@@ -3351,16 +3353,16 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     {/* ¿Es su primera visita? */}
                     <div style={{ marginBottom: '14px' }}>
                       <div style={{ fontSize: '0.72rem', color: '#a0506a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        📅 ¿Es su primera visita?
+                        <CalendarIcon size={14} color="#a0506a" style={{ flexShrink: 0 }} /> ¿Es su primera visita?
                       </div>
                       <div style={{ marginTop: '6px', fontSize: '0.82rem', fontWeight: 700 }}>
                         {clientPastAppointments.length > 0 ? (
                           <span style={{ color: '#d97706', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                            🔄 No, ha asistido a {clientPastAppointments.length} cita{clientPastAppointments.length === 1 ? '' : 's'} anteriormente
+                            <Clock size={13} color="#d97706" style={{ flexShrink: 0 }} /> No, ha asistido a {clientPastAppointments.length} cita{clientPastAppointments.length === 1 ? '' : 's'} anteriormente
                           </span>
                         ) : (
                           <span style={{ color: '#16a34a', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                            ✨ Sí, es su primera visita a Jana Studio
+                            <Sparkles size={13} color="#16a34a" style={{ flexShrink: 0 }} /> Sí, es su primera visita a Jana Studio
                           </span>
                         )}
                       </div>
@@ -3371,12 +3373,12 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     {/* ¿Tiene una especialista preferida? */}
                     <div style={{ marginBottom: '14px' }}>
                       <div style={{ fontSize: '0.72rem', color: '#a0506a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        ⭐️ ¿Tiene una especialista preferida?
+                        <Star size={14} color="#a0506a" style={{ flexShrink: 0 }} /> ¿Tiene una especialista preferida?
                       </div>
                       <div style={{ marginTop: '6px', fontSize: '0.82rem', fontWeight: 700, color: '#2d1b22' }}>
                         {clientPastAppointments.length > 0 ? (
-                          <span style={{ color: '#2d1b22' }}>
-                            👩‍🎨 Sí: <span style={{ fontWeight: 850, color: 'var(--pink-primary)' }}>{preferredSpecialist}</span>
+                          <span style={{ color: '#2d1b22', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <UserCheck size={13} color="var(--pink-primary)" style={{ flexShrink: 0 }} /> Sí: <span style={{ fontWeight: 850, color: 'var(--pink-primary)' }}>{preferredSpecialist}</span>
                           </span>
                         ) : (
                           <span style={{ color: '#6b5a62', fontStyle: 'italic' }}>
@@ -3391,11 +3393,11 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     {/* Preferencias de la clienta / Ficha */}
                     <div>
                       <div style={{ fontSize: '0.72rem', color: '#a0506a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        💇‍♀️ Preferencias y Notas de Ficha
+                        <StickyNote size={14} color="#a0506a" style={{ flexShrink: 0 }} /> Preferencias y Notas de Ficha
                       </div>
                       {selectedDetailedApp.clients?.hair_type && (
-                        <div style={{ fontSize: '0.78rem', color: '#2d1b22', fontWeight: 700, marginTop: '6px' }}>
-                          Tipo de Cabello: <span style={{ fontWeight: 800, color: 'var(--pink-primary)' }}>{selectedDetailedApp.clients.hair_type}</span>
+                        <div style={{ fontSize: '0.78rem', color: '#2d1b22', fontWeight: 700, marginTop: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <Sliders size={13} color="var(--pink-primary)" style={{ flexShrink: 0 }} /> Tipo de Cabello: <span style={{ fontWeight: 800, color: 'var(--pink-primary)' }}>{selectedDetailedApp.clients.hair_type}</span>
                         </div>
                       )}
                       {selectedDetailedApp.clients?.notes ? (
@@ -3404,7 +3406,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         </div>
                       ) : (
                         <div style={{ fontSize: '0.76rem', color: '#8c767b', fontStyle: 'italic', marginTop: '6px' }}>
-                          Sin notas u observaciones adicionales en su ficha.
+                          Sin notes u observaciones adicionales en su ficha.
                         </div>
                       )}
                     </div>
@@ -3421,7 +3423,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     {/* ¿Qué servicios quiere? */}
                     <div>
                       <div style={{ fontSize: '0.72rem', color: '#a0506a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        ✂️ ¿Qué servicios quiere?
+                        <Scissors size={14} color="#a0506a" style={{ flexShrink: 0 }} /> ¿Qué servicios quiere?
                       </div>
                       <div style={{ marginTop: '8px', display: 'flex', gap: '12px', alignItems: 'center' }}>
                         <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', boxShadow: '0 3px 8px rgba(160,80,106,0.25)', flexShrink: 0 }}>
@@ -3441,7 +3443,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     {/* ¿Con qué profesional se va a atender? */}
                     <div>
                       <div style={{ fontSize: '0.72rem', color: '#a0506a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        👩‍🎨 ¿Con qué profesional se va a atender?
+                        <UserCheck size={14} color="#a0506a" style={{ flexShrink: 0 }} /> ¿Con qué profesional se va a atender?
                       </div>
                       <div style={{ marginTop: '8px', display: 'flex', gap: '12px', alignItems: 'center' }}>
                         <img 
