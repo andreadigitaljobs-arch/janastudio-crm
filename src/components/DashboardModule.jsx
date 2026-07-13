@@ -1513,7 +1513,7 @@ const DashboardModule = ({
             onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 10px 30px rgba(160, 80, 106, 0.25), 0 4px 12px rgba(112, 48, 80, 0.15), inset 0 1px 0 rgba(255,255,255,0.1)' }}
           >
             {/* Peinado y maquillaje photo placed on the right with a fixed width on desktop */}
-            <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: isMobile ? '45%' : '240px', zIndex: 1 }}>
+            <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: (isMobile || isTablet) ? '45%' : '240px', zIndex: 1 }}>
               <img 
                 src="/peinado_maquillaje.png" 
                 alt="Adicional de Ondas" 
@@ -1542,7 +1542,7 @@ const DashboardModule = ({
               flexDirection: 'column', 
               justifyContent: 'center', 
               padding: '16px 22px', 
-              width: isMobile ? '55%' : 'calc(100% - 240px)', 
+              width: (isMobile || isTablet) ? '55%' : 'calc(100% - 240px)', 
               color: '#ffffff' 
             }}>
               {/* Glassmorphism badge */}
