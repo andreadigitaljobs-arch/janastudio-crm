@@ -38,7 +38,7 @@ const STAFF_PHOTO_FALLBACKS = {
   'gabriela': '/staff/Retrato_de_una_manicurista_profesional_202607131302.jpeg',
   'valeria': '/staff/Retrato_de_una_masajista_profesional_202607131301.jpeg',
   'lucia': '/staff/Retrato_de_una_manicurista_profesional_202607131302.jpeg',
-  'daniela': '/staff/daniela.jpeg'
+  'daniela': '/staff/Hairdresser_smiling_in_beauty_salon_202607131301 (1).jpeg'
 };
 
 const getStaffPhoto = (member) => {
