@@ -163,7 +163,7 @@ const CustomSelect = ({ value, onChange, options, isMobile }) => {
   );
 };
 
-const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, onNavigate }) => {
+const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId, rates, onNavigate }) => {
   const { user } = useAuth();
   const { showToast } = useNotifs();
   const { confirm } = useDialog();
@@ -1721,6 +1721,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
       ) : (
         <ClientDetail
           isMobile={isMobile}
+          isTablet={isTablet}
           client={selectedClient}
           onNavigate={onNavigate}
           onBack={() => {
@@ -1936,7 +1937,7 @@ const getWhatsAppNumber = (phone) => {
   return clean;
 };
 
-const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate }) => {
+const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, onNavigate }) => {
   const { showToast } = useNotifs();
   const { confirm } = useDialog();
   const containerRef = useRef(null);
@@ -1949,7 +1950,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
     observer.observe(containerRef.current);
     return () => observer.disconnect();
   }, []);
-  const isCompact = isMobile || detailWidth < 1000;
+  const isCompact = isMobile || isTablet || detailWidth < 1000;
   const [showCollage, setShowCollage] = useState(false);
   const [isSavingComparison, setIsSavingComparison] = useState(false);
 
@@ -3392,7 +3393,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
 
               return (
                 <>
-                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: '12px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: (isMobile || isTablet) ? '10px' : '12px' }}>
                     {/* Card 1: Tipo de Cabello */}
                     <div className="glass-card mi-card" style={{ padding: '16px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '142px' }}>
                       <div>
@@ -3492,8 +3493,8 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.1fr 0.9fr', gap: '12px' }}>
-                    <div className="glass-card mi-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : '1.1fr 0.9fr', gap: (isMobile || isTablet) ? '12px' : '12px' }}>
+                    <div className="glass-card mi-card" style={{ padding: (isMobile || isTablet) ? '16px' : '20px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
                       <h4 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Condición del Cabello</h4>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                         {bars.map((b, i) => {
@@ -3547,7 +3548,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                   </div>
 
                   {(observations.length > 0 || images.length > 0) && (
-                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : (observations.length > 0 && images.length > 0 ? '1.2fr 0.8fr' : '1fr'), gap: '12px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : (observations.length > 0 && images.length > 0 ? '1.2fr 0.8fr' : '1fr'), gap: '12px' }}>
                       {observations.length > 0 && (
                         <div className="glass-card mi-card" style={{ 
                           padding: '24px', 
@@ -3680,7 +3681,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                         })}
                       </div>
 
-                      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginTop: '12px' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginTop: '12px' }}>
                         {diag.chemical_history && (
                           <div style={{ background: 'rgba(160,80,106,0.005)', padding: '12px 14px', borderRadius: '12px', border: '1px solid rgba(160,80,106,0.05)' }}>
                             <div style={{ fontSize: '11.5px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '4px' }}>Historial Químico</div>
@@ -3756,38 +3757,38 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
             </div>
 
             {/* Stats Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: isMobile ? '10px' : '12px' }}>
               {[
                 { label: 'Paquetes activos', value: demoPkgs ? 1 : packages.filter(p => p.status === 'active').length, sub: 'Ver detalles →', iconBg: 'rgba(160,80,106,0.08)', icon: <Package size={18} color="var(--pink-primary)" /> },
                 { label: 'Sesiones pendientes', value: pendingSessions, sub: 'Ver calendario →', iconBg: 'rgba(160,80,106,0.06)', icon: <Calendar size={18} color="var(--magenta-primary)" /> },
                 { label: 'Próxima sesión', value: nextSession || 'N/A', sub: nextSession ? (demoPkgs ? '10:00 AM · Mariana R.' : '') : 'Sin citas programadas', iconBg: 'rgba(160,80,106,0.05)', icon: <Clock size={18} color="var(--pink-primary)" /> },
                 { label: 'Valor invertido', value: `$${totalSpent.toLocaleString()}`, sub: 'Ver resumen financiero →', iconBg: 'rgba(160,80,106,0.04)', icon: <Receipt size={18} color="var(--magenta-primary)" /> },
               ].map((s, i) => (
-                <div key={i} className={`ficha-card stagger-${i + 1} mi-stat`} style={{ padding: '16px 18px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: '14px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)', cursor: 'pointer' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '14px', backgroundColor: s.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{s.icon}</div>
-                  <div style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
-                    <div style={{ fontSize: '17px', fontWeight: '850', color: 'var(--text-primary)', marginTop: '2px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{s.value}</div>
-                    <div style={{ fontSize: '10.5px', color: 'var(--pink-primary)', fontWeight: '600', marginTop: '1px', cursor: 'pointer' }}>{s.sub}</div>
+                <div key={i} className={`ficha-card stagger-${i + 1} mi-stat`} style={{ padding: (isMobile || isTablet) ? '12px 14px' : '16px 18px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: (isMobile || isTablet) ? '10px' : '14px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)', cursor: 'pointer', minWidth: 0, overflow: 'hidden' }}>
+                  <div style={{ width: (isMobile || isTablet) ? '36px' : '42px', height: (isMobile || isTablet) ? '36px' : '42px', borderRadius: '14px', backgroundColor: s.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{s.icon}</div>
+                  <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                    <div style={{ fontSize: (isMobile || isTablet) ? '10px' : '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
+                    <div style={{ fontSize: (isMobile || isTablet) ? '15px' : '17px', fontWeight: '850', color: 'var(--text-primary)', marginTop: '2px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{s.value}</div>
+                    <div style={{ fontSize: (isMobile || isTablet) ? '9.5px' : '10.5px', color: 'var(--pink-primary)', fontWeight: '600', marginTop: '1px', cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.sub}</div>
                   </div>
                 </div>
               ))}
             </div>
 
             {/* Main: Active Package + Upcoming Sessions */}
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.2fr 0.8fr', gap: '20px', alignItems: 'start' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : '1.2fr 0.8fr', gap: (isMobile || isTablet) ? '16px' : '20px', alignItems: 'start' }}>
               {/* Active Package */}
-              <div className="ficha-card mi-card" style={{ padding: '24px', borderRadius: '20px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
+              <div className="ficha-card mi-card" style={{ padding: (isMobile || isTablet) ? '16px' : '24px', borderRadius: '20px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                   <h4 style={{ margin: 0, fontSize: '16px', fontWeight: '850', color: 'var(--text-primary)' }}>Paquete activo</h4>
                   <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: '800', background: 'rgba(34,197,94,0.08)', color: '#22c55e', textTransform: 'uppercase' }}>Activo</span>
                 </div>
                 {activePkg && (
-                  <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: (isMobile || isTablet) ? '16px' : '20px', flexWrap: 'wrap', flexDirection: (isMobile || isTablet) ? 'column' : 'row' }}>
                     {/* Left: Package Info */}
                     <div style={{ flex: '1 1 280px', minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                        <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: 'var(--magenta-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <div style={{ width: (isMobile || isTablet) ? '38px' : '44px', height: (isMobile || isTablet) ? '38px' : '44px', borderRadius: '14px', background: 'var(--magenta-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           <Sparkles size={20} color="white" />
                         </div>
                         <div>
@@ -3812,7 +3813,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                     </div>
 
                     {/* Right: Progress */}
-                    <div style={{ flex: '0 0 200px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div style={{ flex: (isMobile || isTablet) ? '1 1 100%' : '0 0 200px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                       <div>
                         <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '6px' }}>Sesiones utilizadas</div>
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: '8px' }}>
@@ -3873,7 +3874,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
             </div>
 
             {/* Bottom Row: History + Recent Sessions + Recommendations */}
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : '1fr 1fr 1fr', gap: '16px' }}>
               {/* Package History */}
               <div className="ficha-card mi-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
                 <h4 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: '850', color: 'var(--text-primary)' }}>Historial de paquetes</h4>
@@ -4001,26 +4002,26 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
             </div>
 
             {/* Stats Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: (isMobile || isTablet) ? '10px' : '12px' }}>
               {[
                 { label: 'Total de visitas', value: hTotalVisits, sub: `desde ${hSinceMonth}`, iconBg: 'rgba(160,80,106,0.08)', icon: <Calendar size={18} color="var(--pink-primary)" /> },
                 { label: 'Total invertido', value: `$${hTotalSpent.toLocaleString()}`, sub: 'en tratamientos', iconBg: 'rgba(160,80,106,0.06)', icon: <Receipt size={18} color="var(--magenta-primary)" /> },
                 { label: 'Servicio favorito', value: hFavService[0], sub: `${hFavService[1]} sesiones realizadas`, iconBg: 'rgba(217,70,168,0.06)', icon: <Star size={18} color="var(--pink-primary)" /> },
                 { label: 'Última visita', value: hLastVisit ? new Date(hLastVisit).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A', sub: hLastAgo, iconBg: 'rgba(160,80,106,0.05)', icon: <Clock size={18} color="var(--magenta-primary)" /> },
               ].map((s, i) => (
-                <div key={i} className={`ficha-card stagger-${i + 1} mi-stat`} style={{ padding: '16px 18px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: '14px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)', cursor: 'pointer' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '14px', backgroundColor: s.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{s.icon}</div>
-                  <div style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
-                    <div style={{ fontSize: '17px', fontWeight: '850', color: 'var(--text-primary)', marginTop: '2px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{s.value}</div>
-                    <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', fontWeight: '500', marginTop: '1px' }}>{s.sub}</div>
+                <div key={i} className={`ficha-card stagger-${i + 1} mi-stat`} style={{ padding: (isMobile || isTablet) ? '12px 14px' : '16px 18px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: (isMobile || isTablet) ? '10px' : '14px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)', cursor: 'pointer', minWidth: 0, overflow: 'hidden' }}>
+                  <div style={{ width: (isMobile || isTablet) ? '36px' : '42px', height: (isMobile || isTablet) ? '36px' : '42px', borderRadius: '14px', backgroundColor: s.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{s.icon}</div>
+                  <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                    <div style={{ fontSize: (isMobile || isTablet) ? '10px' : '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
+                    <div style={{ fontSize: (isMobile || isTablet) ? '15px' : '17px', fontWeight: '850', color: 'var(--text-primary)', marginTop: '2px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{s.value}</div>
+                    <div style={{ fontSize: (isMobile || isTablet) ? '9.5px' : '10.5px', color: 'var(--text-muted)', fontWeight: '500', marginTop: '1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.sub}</div>
                   </div>
                 </div>
               ))}
             </div>
 
             {/* Main Content: Timeline + Sidebar */}
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 300px', gap: '20px', alignItems: 'start' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : '1fr 300px', gap: (isMobile || isTablet) ? '16px' : '20px', alignItems: 'start' }}>
               {/* Timeline */}
               <div>
                 <h4 style={{ fontSize: '15px', fontWeight: '850', color: 'var(--text-primary)', margin: '0 0 16px 0', letterSpacing: '-0.2px' }}>Historial cronológico</h4>
@@ -4105,7 +4106,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                                    <button onClick={() => setExpandedHistoryVisit(null)} className="btn-interactive" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '4px', display: 'flex' }}><ChevronDown size={16} style={{ transform: 'rotate(180deg)' }} /></button>
                                 </div>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '16px' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : '1fr 1fr', gap: '16px' }}>
                                   {/* Left Column */}
                                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                     {/* Diagnóstico */}

@@ -529,7 +529,7 @@ function App() {
       case 'inventory': return <div className="p-container"><InventoryModule isMobile={isMobile} currency={currency} rates={effectiveRates} /></div>;
       case 'finance': return <div className="p-container"><FinanceModule isMobile={isMobile} currency={currency} rates={effectiveRates} staff={dbData.staff} /></div>;
       case 'reports': return <div className="p-container"><ReportsModule isMobile={isMobile} rates={effectiveRates} staff={dbData.staff || []} services={dbData.services || []} clients={dbData.clients || []} /></div>;
-      case 'clients': return <div className="p-container"><ClientModule isMobile={isMobile} clients={dbData.clients} onRefresh={fetchInitialData} initialClientId={tabParams.clientId} rates={effectiveRates} onNavigate={handleTabChange} /></div>;
+      case 'clients': return <div className="p-container"><ClientModule isMobile={isMobile} isTablet={isTablet} clients={dbData.clients} onRefresh={fetchInitialData} initialClientId={tabParams.clientId} rates={effectiveRates} onNavigate={handleTabChange} /></div>;
       case 'diagnosis': return <div className="p-container"><CapillaryDiagnosisModule isMobile={isMobile} clients={dbData.clients} onNavigate={handleTabChange} prefillClientId={tabParams.clientId} /></div>;
       case 'personnel': return <div className="p-container"><PersonnelModule isMobile={isMobile} inventory={dbData.inventory || []} /></div>;
       case 'notifications': return <div className="p-container"><NotificationsPage isMobile={isMobile} onNavigate={handleTabChange} /></div>;

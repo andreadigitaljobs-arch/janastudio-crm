@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar as CalendarIcon, Clock, User, Plus, ChevronLeft, ChevronRight,
   ChevronDown, Search, Pencil,
-  CheckCircle2, Users,
+  CheckCircle2, Users, UserCheck,
   CalendarDays, StickyNote, BarChart3, XCircle, Bell,
   DollarSign, Info, AlertTriangle, Coffee, Sliders, Check, HelpCircle, Scissors, Sparkles, Sun, MessageCircle, Circle
 } from 'lucide-react';
@@ -1512,7 +1512,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               </button>
             </div>
           )}
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '24px', width: '100%', alignItems: 'start', marginTop: '0' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : 'repeat(2, 1fr)', gap: (isMobile || isTablet) ? '16px' : '24px', width: '100%', alignItems: 'start', marginTop: '0' }}>
 
             {/* Column 1 - Próximas Citas */}
             <div style={{ display: (!isMobile || leftTab === 'citas') ? 'flex' : 'none', flexDirection: 'column', gap: '24px', minWidth: 0, animation: (isMobile && leftTab === 'citas') ? 'fadeInUpWow 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards' : 'none' }}>
@@ -1818,7 +1818,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
               <div className="agenda-glass-card hover-lift" style={{ padding: '20px', display: 'flex', flexDirection: 'column', minHeight: '400px' }}>
                 <h4 className="mi-section-header" style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22', margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-                  <Sparkles size={16} color="#c97282" />
+                  <UserCheck size={16} color="#c97282" />
                   ESTADO DE ESPECIALISTAS
                 </h4>
 
@@ -1844,6 +1844,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     }}
                   />
                 </div>
+
+                <p style={{ fontSize: '0.75rem', color: '#a0909a', fontWeight: 600, margin: '0 0 10px 0', textAlign: 'center', fontStyle: 'italic' }}>
+                  Toca en una especialista para ver su ficha
+                </p>
 
                 {/* Stylists Compact Grid */}
                 <div className="jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: `repeat(${(isMobile || isTablet) ? 2 : 3}, minmax(0, 1fr))`, gap: '10px', overflowY: 'auto', flex: 1, paddingRight: '4px', paddingTop: '6px', paddingBottom: '6px', overflowX: 'visible' }}>
@@ -1999,9 +2003,9 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                               {statusText}
                             </span>
                             {metrics.citasCount > 0 && (
-                              <span style={{ fontSize: '0.45rem', fontWeight: 700, color: '#a0909a', background: 'rgba(160,144,154,0.08)', padding: '1px 5px', borderRadius: '999px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
-                                <CalendarDays size={8} color="#a0909a" strokeWidth={2.5} />
-                                {metrics.citasCount}
+                              <span style={{ fontSize: '0.56rem', fontWeight: 700, color: '#6b5a60', background: 'rgba(160,144,154,0.1)', padding: '3px 8px', borderRadius: '999px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                <CalendarDays size={11} color="#8c767b" strokeWidth={2} />
+                                {metrics.citasCount} {metrics.citasCount === 1 ? 'cita' : 'citas'}
                               </span>
                             )}
                           </div>
@@ -2111,7 +2115,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
         <div style={{ overflowY: 'auto', flex: 1, padding: '24px 32px 32px' }} className="jana-scrollbar">
 
           {/* ── FILTER ROW 1: Fecha | Hora | Duración ── */}
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '16px', marginBottom: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : 'repeat(3, 1fr)', gap: '16px', marginBottom: '16px' }}>
             <div>
               <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a0909a', display: 'block', marginBottom: '7px', letterSpacing: '0.3px' }}>Fecha</label>
               <JanaDatePicker
@@ -2180,7 +2184,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           </div>
 
           {/* ── FILTER ROW 2: Servicio | Especialista ── */}
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '16px', marginBottom: '20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : 'repeat(2, 1fr)', gap: '16px', marginBottom: '20px' }}>
             <div>
               <label style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a0909a', display: 'block', marginBottom: '7px', letterSpacing: '0.3px' }}>Servicio</label>
               <JanaSelect variant="light" value={availServiceId} onChange={val => setAvailServiceId(val)}
@@ -2417,8 +2421,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               gap: '20px'
             }}>
               {/* Left Side: Photo & Name & Specialty */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
-                <div style={{ width: '90px', height: '90px', borderRadius: '50%', overflow: 'hidden', border: '3px solid #fce4e8', flexShrink: 0, boxShadow: '0 4px 12px rgba(201, 114, 130,0.15)' }}>
+              <div style={{ display: 'flex', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '16px' : '20px', flexWrap: 'wrap', flexDirection: isMobile ? 'column' : 'row' }}>
+                <div style={{ width: isMobile ? '70px' : '90px', height: isMobile ? '70px' : '90px', borderRadius: '50%', overflow: 'hidden', border: '3px solid #fce4e8', flexShrink: 0, boxShadow: '0 4px 12px rgba(201, 114, 130,0.15)' }}>
                   <img 
                     src={selectedStaffDrawer.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(selectedStaffDrawer.name)}`}
                     alt={selectedStaffDrawer.name}
@@ -2427,14 +2431,14 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 </div>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                    <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#2d1b22', margin: 0, }}>
+                    <h2 style={{ fontSize: isMobile ? '1.1rem' : '1.5rem', fontWeight: 900, color: '#2d1b22', margin: 0, }}>
                       {selectedStaffDrawer.name}
                     </h2>
-                    <span className="mi-tag" style={{ fontSize: '0.72rem', color: '#c97282', background: 'rgba(201, 114, 130,0.1)', padding: '3px 10px', borderRadius: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px' }}>
+                    <span className="mi-tag" style={{ fontSize: isMobile ? '0.6rem' : '0.72rem', color: '#c97282', background: 'rgba(201, 114, 130,0.1)', padding: '3px 10px', borderRadius: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px' }}>
                       {getStaffRole(selectedStaffDrawer.name)}
                     </span>
                   </div>
-                  <p style={{ fontSize: '0.8rem', color: '#a0909a', margin: '8px 0 0', fontWeight: 600 }}>
+                  <p style={{ fontSize: isMobile ? '0.68rem' : '0.8rem', color: '#a0909a', margin: '8px 0 0', fontWeight: 600 }}>
                     Especialidad: {selectedStaffDrawer.role || 'Extensiones de pestañas'}  ·  Teléfono: 0412 345 6789
                   </p>
                 </div>
@@ -2511,7 +2515,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             </div>
 
             {/* Quick Status Cards Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : 'repeat(3, 1fr)', gap: (isMobile || isTablet) ? '10px' : '16px' }}>
               {/* Card 1: Estado Actual */}
               <div className="mi-stat mi-enter-up mi-delay-1" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '20px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
                 <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#22c55e', flexShrink: 0, boxShadow: '0 0 8px #22c55e' }} />
@@ -2550,7 +2554,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             </div>
 
              {/* Horizontal Tabs Menu */}
-             <div style={{ display: 'flex', gap: '24px', borderBottom: '1px solid rgba(223, 178, 140, 0.15)', paddingBottom: '2px', overflowX: 'auto' }} className="no-scrollbar">
+             <div style={{ display: 'flex', gap: isMobile ? '16px' : '24px', borderBottom: '1px solid rgba(223, 178, 140, 0.15)', paddingBottom: '2px', overflowX: 'auto' }} className="no-scrollbar">
                {[
                  { id: 'agenda', label: 'Agenda del día' },
                  { id: 'resumen', label: 'Resumen del día' },
@@ -2583,7 +2587,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
             {/* Dashboard Content Layout conditioned by active tab */}
             {staffActiveTab === 'agenda' && (
-              <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '24px', alignItems: 'flex-start', width: '100%' }}>
+              <div style={{ display: 'flex', flexDirection: (isMobile || isTablet) ? 'column' : 'row', gap: (isMobile || isTablet) ? '16px' : '24px', alignItems: 'flex-start', width: '100%' }}>
                 
                 {/* Column 1: Daily Agenda Timeline (50% width on Desktop) */}
                 <div style={{ flex: 1.5, background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '24px', minWidth: 0, width: '100%', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
@@ -2994,8 +2998,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
             {/* TAB CONTENT: RESUMEN DEL DÍA */}
             {staffActiveTab === 'resumen' && (
-              <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '24px', width: '100%' }} className="animate-fade-in">
-                <div style={{ flex: 2, background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
+              <div style={{ display: 'flex', flexDirection: (isMobile || isTablet) ? 'column' : 'row', gap: (isMobile || isTablet) ? '16px' : '24px', width: '100%' }} className="animate-fade-in">
+                <div style={{ flex: 2, background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: (isMobile || isTablet) ? '16px' : '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
                   <h3 className="mi-section-header" style={{ fontSize: '1rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 20px 0' }}>Análisis de Rendimiento (Hoy)</h3>
                   
                   {/* Visual Chart Bars Mockup */}
@@ -3051,7 +3055,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
             {/* TAB CONTENT: SERVICIOS REALIZADOS */}
             {staffActiveTab === 'servicios' && (
-              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '20px', width: '100%' }} className="animate-fade-in">
+              <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : 'repeat(3, 1fr)', gap: (isMobile || isTablet) ? '12px' : '20px', width: '100%' }} className="animate-fade-in">
                 {[
                   { name: 'Volumen 3D', duration: '90 min', price: '$ 64.00', qty: 2, icon: '✨' },
                   { name: 'Extensiones Clásicas', duration: '75 min', price: '$ 28.00', qty: 1, icon: '💅' },
@@ -3096,8 +3100,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
             {/* TAB CONTENT: NOTAS */}
             {staffActiveTab === 'notas' && (
-              <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '24px', width: '100%' }} className="animate-fade-in">
-                <div style={{ flex: 1.5, background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
+              <div style={{ display: 'flex', flexDirection: (isMobile || isTablet) ? 'column' : 'row', gap: (isMobile || isTablet) ? '16px' : '24px', width: '100%' }} className="animate-fade-in">
+                <div style={{ flex: 1.5, background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: (isMobile || isTablet) ? '16px' : '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
                   <h3 className="mi-section-header" style={{ fontSize: '1rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 16px 0' }}>Bloc de Notas Internas</h3>
                   <textarea 
                     placeholder="Escribe notas generales sobre el desempeño, preferencias de materiales o avisos para esta especialista..."
