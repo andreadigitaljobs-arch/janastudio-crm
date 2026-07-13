@@ -2523,15 +2523,15 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                      onClick={() => setStaffActiveTab(tab.id)}
                      className="mi-chip"
                      style={{ 
-                       fontSize: isMobile ? '0.72rem' : '0.85rem', 
-                       fontWeight: isActive ? 800 : 600, 
-                       color: isActive ? '#c97282' : '#a0909a', 
-                       borderBottom: isActive ? '3px solid #c97282' : '3px solid transparent', 
-                       paddingBottom: isMobile ? '8px' : '10px', 
-                       cursor: 'pointer',
-                       transition: 'all 0.15s',
-                       whiteSpace: 'nowrap',
-                       padding: isMobile ? '6px 12px' : undefined,
+                        fontSize: isMobile ? '0.72rem' : isTablet ? '1rem' : '1.1rem', 
+                        fontWeight: isActive ? 800 : 600, 
+                        color: isActive ? '#c97282' : '#a0909a', 
+                        borderBottom: isActive ? '3px solid #c97282' : '3px solid transparent', 
+                        paddingBottom: isMobile ? '8px' : '10px', 
+                        cursor: 'pointer',
+                        transition: 'all 0.15s',
+                        whiteSpace: 'nowrap',
+                        padding: isMobile ? '6px 12px' : undefined,
                        flexShrink: 0
                      }}
                    >
