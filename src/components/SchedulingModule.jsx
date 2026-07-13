@@ -3270,194 +3270,182 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               padding: 0
             }}>
               {/* Header */}
-              <div>
-                {/* Pink Hero Header (full-bleed) */}
-                <div style={{
-                  background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)',
-                  padding: '26px 24px 22px', position: 'relative', overflow: 'hidden'
-                }}>
-                  <div style={{ position: 'absolute', top: '-50px', right: '-40px', width: '150px', height: '150px', borderRadius: '50%', background: 'rgba(255,255,255,0.10)', pointerEvents: 'none' }} />
-                  <div style={{ position: 'absolute', bottom: '-60px', left: '-30px', width: '140px', height: '140px', borderRadius: '50%', background: 'rgba(255,255,255,0.06)', pointerEvents: 'none' }} />
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <div style={{ width: '30px', height: '30px', borderRadius: '9px', backgroundColor: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
-                        <CalendarIcon size={15} />
-                      </div>
-                      <h4 style={{ fontSize: '0.72rem', fontWeight: 800, color: 'rgba(255,255,255,0.85)', margin: 0, textTransform: 'uppercase', letterSpacing: '0.6px' }}>
-                        Detalle del Turno
-                      </h4>
-                    </div>
-                    <button
-                      onClick={triggerCloseDetailedApp}
-                      className="mi-btn"
-                      style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(255,255,255,0.15)', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', transition: 'all 0.2s' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.28)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; }}
-                    >
-                      ✕
-                    </button>
-                  </div>
-
-                  <div style={{ marginTop: '20px', position: 'relative', zIndex: 1 }}>
-                    <div style={{ fontSize: '1.25rem', fontWeight: 850, color: '#fff', letterSpacing: '-0.3px' }}>
-                      {selectedDetailedApp.clients?.name || 'Cliente'}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.9)', fontWeight: 650 }}>
-                        {formattedDate} · {formattedTime}
-                      </span>
-                      <span className="mi-tag" style={{
-                        padding: '3px 10px', borderRadius: '20px', fontSize: '0.62rem', fontWeight: 800,
-                        background: 'rgba(255,255,255,0.22)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)'
-                      }}>
-                        {selectedDetailedApp.status}
-                      </span>
-                    </div>
-                  </div>
+              <div style={{
+                background: 'linear-gradient(135deg, #fdf6f5 0%, #fae5e3 100%)',
+                padding: '30px 24px 24px', position: 'relative', overflow: 'hidden',
+                borderBottom: '1px solid rgba(223,178,140,0.15)'
+              }}>
+                {/* Logo JANA Studio overlay on the right */}
+                <div style={{ position: 'absolute', right: '20px', top: '24px', opacity: 0.15, pointerEvents: 'none', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                  <span style={{ fontFamily: 'Georgia, serif', fontSize: '1.6rem', fontWeight: 'bold', color: '#a0506a', letterSpacing: '1px' }}>JANA</span>
+                  <span style={{ fontFamily: 'Georgia, serif', fontSize: '0.8rem', fontStyle: 'italic', color: '#a0506a', marginTop: '-5px' }}>Studio</span>
                 </div>
 
+                {/* Circular top buttons */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <button
+                    onClick={triggerCloseDetailedApp}
+                    style={{
+                      width: '36px', height: '36px', borderRadius: '50%',
+                      backgroundColor: '#fff', border: '1px solid rgba(223,178,140,0.2)',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.04)', display: 'flex',
+                      alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+                    }}
+                  >
+                    <ChevronLeft size={16} color="#a0506a" />
+                  </button>
+                  <button
+                    onClick={triggerCloseDetailedApp}
+                    style={{
+                      width: '36px', height: '36px', borderRadius: '50%',
+                      backgroundColor: '#fff', border: '1px solid rgba(223,178,140,0.2)',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.04)', display: 'flex',
+                      alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+                    }}
+                  >
+                    <XCircle size={16} color="#a0506a" />
+                  </button>
+                </div>
+
+                <div style={{ marginTop: '20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                    <CalendarIcon size={12} color="#a0506a" />
+                    <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+                      Detalle de Visita
+                    </span>
+                  </div>
+                  <h2 style={{ fontSize: '1.45rem', fontWeight: 850, color: '#2d1b22', margin: '0 0 8px 0', letterSpacing: '-0.3px', fontFamily: 'Georgia, serif' }}>
+                    {selectedDetailedApp.clients?.name || 'Cliente'}
+                  </h2>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '0.74rem', color: '#6b5a60', fontWeight: 650, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <CalendarIcon size={12} color="#a0506a" /> {formattedDate} · {formattedTime}
+                    </span>
+                    <span className="mi-tag" style={{
+                      padding: '3px 10px', borderRadius: '20px', fontSize: '0.62rem', fontWeight: 800,
+                      background: 'rgba(245,233,235,1)', color: '#c97282', border: '1px solid rgba(201,114,130,0.25)'
+                    }}>
+                      {selectedDetailedApp.status}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ flex: 1, overflowY: 'auto' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '22px 24px 4px' }}>
                   
                   {/* CLIENT INFORMATION CARD */}
                   <div className="mi-card" style={{
-                    padding: '18px', borderRadius: '16px', border: '1.5px solid rgba(223,178,140,0.25)',
-                    background: '#ffffff', boxShadow: '0 4px 12px rgba(74, 48, 54, 0.04)'
+                    padding: '20px', borderRadius: '16px', border: '1px solid rgba(223,178,140,0.18)',
+                    background: '#ffffff', boxShadow: '0 4px 12px rgba(74, 48, 54, 0.03)'
                   }}>
                     
-                    {/* ¿Qué clienta es? */}
-                    <div style={{ marginBottom: '14px' }}>
-                      <div style={{ fontSize: '0.72rem', color: '#a0506a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <User size={14} color="#a0506a" style={{ flexShrink: 0 }} /> ¿Qué clienta es?
+                    {/* INFORMACIÓN DE CONTACTO */}
+                    <div style={{ marginBottom: '16px' }}>
+                      <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
+                        Información de contacto
                       </div>
-                      <div style={{ marginTop: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                          <div style={{ fontSize: '0.92rem', fontWeight: 850, color: '#2d1b22' }}>{selectedDetailedApp.clients?.name || 'Cliente'}</div>
-                          <div style={{ fontSize: '0.78rem', color: '#c97282', fontWeight: 700, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <Phone size={12} color="#c97282" style={{ flexShrink: 0 }} /> {selectedDetailedApp.clients?.phone || 'Sin número'}
-                          </div>
-                        </div>
-                        {onNavigate && selectedDetailedApp.clients?.id && (
-                          <button
-                            onClick={() => onNavigate('clients', { clientId: selectedDetailedApp.clients.id })}
-                            style={{ fontSize: '0.66rem', fontWeight: 750, color: '#a0506a', background: 'rgba(160,80,106,0.08)', border: '1px solid rgba(160,80,106,0.15)', borderRadius: '10px', padding: '6px 10px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
-                          >
-                            Ver ficha completa ↗
-                          </button>
-                        )}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.96rem', fontWeight: 800, color: '#2d1b22' }}>
+                        <Phone size={14} color="#a0506a" />
+                        <span>{selectedDetailedApp.clients?.phone || 'Sin número'}</span>
                       </div>
                     </div>
 
-                    <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.15)', margin: '12px 0' }} />
+                    <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.12)', margin: '14px 0' }} />
 
-                    {/* ¿Es su primera visita? */}
-                    <div style={{ marginBottom: '14px' }}>
-                      <div style={{ fontSize: '0.72rem', color: '#a0506a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <CalendarIcon size={14} color="#a0506a" style={{ flexShrink: 0 }} /> ¿Es su primera visita?
+                    {/* PREFERENCIAS DE LA CLIENTE */}
+                    <div style={{ marginBottom: '16px' }}>
+                      <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
+                        Preferencias de la cliente
                       </div>
-                      <div style={{ marginTop: '6px', fontSize: '0.82rem', fontWeight: 700 }}>
-                        {clientPastAppointments.length > 0 ? (
-                          <span style={{ color: '#d97706', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                            <Clock size={13} color="#d97706" style={{ flexShrink: 0 }} /> No, ha asistido a {clientPastAppointments.length} cita{clientPastAppointments.length === 1 ? '' : 's'} anteriormente
-                          </span>
+                      <div style={{ fontSize: '0.8rem', color: '#2d1b22', fontWeight: 650, lineHeight: '1.4' }}>
+                        {selectedDetailedApp.clients?.hair_type ? (
+                          <span>Cabello: {selectedDetailedApp.clients.hair_type}. {selectedDetailedApp.clients.notes || ''}</span>
                         ) : (
-                          <span style={{ color: '#16a34a', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                            <Sparkles size={13} color="#16a34a" style={{ flexShrink: 0 }} /> Sí, es su primera visita a Jana Studio
-                          </span>
+                          selectedDetailedApp.clients?.notes || 'No se registraron notas de preferencia.'
                         )}
                       </div>
                     </div>
 
-                    <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.15)', margin: '12px 0' }} />
+                    <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.12)', margin: '14px 0' }} />
 
-                    {/* ¿Tiene una especialista preferida? */}
-                    <div style={{ marginBottom: '14px' }}>
-                      <div style={{ fontSize: '0.72rem', color: '#a0506a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Star size={14} color="#a0506a" style={{ flexShrink: 0 }} /> ¿Tiene una especialista preferida?
+                    {/* NOTAS IMPORTANTES */}
+                    <div style={{ marginBottom: '16px' }}>
+                      <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
+                        Notas importantes
                       </div>
-                      <div style={{ marginTop: '6px', fontSize: '0.82rem', fontWeight: 700, color: '#2d1b22' }}>
-                        {clientPastAppointments.length > 0 ? (
-                          <span style={{ color: '#2d1b22', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <UserCheck size={13} color="var(--pink-primary)" style={{ flexShrink: 0 }} /> Sí: <span style={{ fontWeight: 850, color: 'var(--pink-primary)' }}>{preferredSpecialist}</span>
-                          </span>
-                        ) : (
-                          <span style={{ color: '#6b5a62', fontStyle: 'italic' }}>
-                            No aplica (Primera visita)
-                          </span>
-                        )}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 700, color: '#2d1b22' }}>
+                        <Star size={13} color="#e5a13b" style={{ flexShrink: 0 }} />
+                        <span>
+                          Alergia conocida: <span style={{ color: '#c97282', fontWeight: 800 }}>{selectedDetailedApp.clients?.allergies || 'Ninguna alergia registrada'}</span>
+                        </span>
                       </div>
                     </div>
 
-                    <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.15)', margin: '12px 0' }} />
+                    <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.12)', margin: '14px 0' }} />
 
-                    {/* Preferencias de la clienta / Ficha */}
+                    {/* HISTORIAL CON LA CLIENTE */}
                     <div>
-                      <div style={{ fontSize: '0.72rem', color: '#a0506a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <StickyNote size={14} color="#a0506a" style={{ flexShrink: 0 }} /> Preferencias y Notas de Ficha
+                      <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
+                        Historial con la cliente
                       </div>
-                      {selectedDetailedApp.clients?.hair_type && (
-                        <div style={{ fontSize: '0.78rem', color: '#2d1b22', fontWeight: 700, marginTop: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <Sliders size={13} color="var(--pink-primary)" style={{ flexShrink: 0 }} /> Tipo de Cabello: <span style={{ fontWeight: 800, color: 'var(--pink-primary)' }}>{selectedDetailedApp.clients.hair_type}</span>
-                        </div>
-                      )}
-                      {selectedDetailedApp.clients?.notes ? (
-                        <div style={{ fontSize: '0.78rem', color: '#2d1b22', background: 'rgba(160,80,106,0.04)', padding: '10px 12px', borderRadius: '10px', border: '1px solid rgba(160,80,106,0.1)', marginTop: '6px', lineHeight: 1.4 }}>
-                          "{selectedDetailedApp.clients.notes}"
-                        </div>
-                      ) : (
-                        <div style={{ fontSize: '0.76rem', color: '#8c767b', fontStyle: 'italic', marginTop: '6px' }}>
-                          Sin notes u observaciones adicionales en su ficha.
-                        </div>
-                      )}
+                      <div style={{ fontSize: '0.8rem', color: '#2d1b22', fontWeight: 650 }}>
+                        {clientPastAppointments.length} visitas registradas • Último servicio:{' '}
+                        {clientPastAppointments.length > 0 ? (
+                          <span style={{ fontWeight: 750 }}>
+                            {new Date(clientPastAppointments[0].scheduled_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'long', year: 'numeric' })}
+                          </span>
+                        ) : (
+                          'Primera visita hoy'
+                        )}
+                      </div>
                     </div>
 
                   </div>
 
-                  {/* SERVICES & SPECIALIST CARD */}
+                  {/* SERVICE & SPECIALIST CARD */}
                   <div className="mi-card" style={{
-                    padding: '18px', borderRadius: '16px', border: '1.5px solid rgba(223,178,140,0.18)',
-                    display: 'flex', flexDirection: 'column', gap: '16px', background: '#faf8f7',
-                    boxShadow: '0 4px 12px rgba(74, 48, 54, 0.02)'
+                    padding: '20px', borderRadius: '16px', border: '1px solid rgba(223,178,140,0.15)',
+                    display: 'flex', flexDirection: 'column', gap: '14px', background: '#fff9f8'
                   }}>
-                    
-                    {/* ¿Qué servicios quiere? */}
+                    {/* Servicio para hoy */}
                     <div>
-                      <div style={{ fontSize: '0.72rem', color: '#a0506a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Scissors size={14} color="#a0506a" style={{ flexShrink: 0 }} /> ¿Qué servicios quiere?
+                      <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
+                        Servicio para hoy
                       </div>
-                      <div style={{ marginTop: '8px', display: 'flex', gap: '12px', alignItems: 'center' }}>
-                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', boxShadow: '0 3px 8px rgba(160,80,106,0.25)', flexShrink: 0 }}>
-                          <Scissors size={16} />
+                      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                        <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', flexShrink: 0 }}>
+                          <Scissors size={14} />
                         </div>
-                        <div>
+                        <div style={{ flex: 1 }}>
                           <div style={{ fontSize: '0.88rem', fontWeight: 850, color: '#2d1b22' }}>{selectedDetailedApp.services?.name || 'Servicio'}</div>
-                          <div style={{ fontSize: '0.78rem', color: '#8c767b', fontWeight: 700, marginTop: '2px' }}>
-                            Monto total del turno: <span style={{ color: '#c97282', fontWeight: 850 }}>${Number(selectedDetailedApp.total_price || selectedDetailedApp.services?.price || 0).toFixed(2)}</span>
+                          <div style={{ display: 'flex', gap: '16px', marginTop: '4px', fontSize: '0.74rem', color: '#8c767b', fontWeight: 650 }}>
+                            <span>Duración: {selectedDetailedApp.services?.duration || 90} min</span>
+                            <span>Precio: <span style={{ color: '#c97282', fontWeight: 800 }}>${Number(selectedDetailedApp.total_price || selectedDetailedApp.services?.price || 0).toFixed(2)}</span></span>
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.15)' }} />
+                    <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.12)' }} />
 
-                    {/* ¿Con qué profesional se va a atender? */}
+                    {/* Profesional Asignada */}
                     <div>
-                      <div style={{ fontSize: '0.72rem', color: '#a0506a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <UserCheck size={14} color="#a0506a" style={{ flexShrink: 0 }} /> ¿Con qué profesional se va a atender?
+                      <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
+                        Profesional asignada
                       </div>
-                      <div style={{ marginTop: '8px', display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                         <img 
                           src={activeStaff?.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(staffNameOnly)}`}
                           alt={staffNameOnly} 
-                          style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#fff', border: '1px solid rgba(223,178,140,0.2)', objectFit: 'cover', flexShrink: 0 }} 
+                          style={{ width: '34px', height: '34px', borderRadius: '50%', backgroundColor: '#fff', border: '1px solid rgba(223,178,140,0.2)', objectFit: 'cover', flexShrink: 0 }} 
                         />
                         <div>
-                          <div style={{ fontSize: '0.88rem', fontWeight: 850, color: '#2d1b22' }}>{staffNameOnly}</div>
-                          <div style={{ fontSize: '0.74rem', color: '#8c767b', fontWeight: 700 }}>Cargo / Rol: <span style={{ color: '#a0506a', fontWeight: 800 }}>{staffRoleOnly}</span></div>
+                          <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#2d1b22' }}>{staffNameOnly}</div>
+                          <div style={{ fontSize: '0.7rem', color: '#8c767b', fontWeight: 600 }}>{staffRoleOnly}</div>
                         </div>
                       </div>
                     </div>
-
                   </div>
 
                   {/* Notes Card */}
@@ -3481,15 +3469,15 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               <div style={{ borderTop: '1px solid rgba(223, 178, 140, 0.15)', padding: '20px 24px', paddingBottom: isMobile ? '110px' : '20px', marginTop: '20px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   
-                  {/* Fila 1: Acciones Operativas Principales */}
+                  {/* Completar y Reagendar */}
                   <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '10px' }}>
                     <button 
                       onClick={() => {
                         showToast?.('Cita completada con éxito', 'success');
                         triggerCloseDetailedApp();
                       }}
-                      className="drawer-btn drawer-btn-complete mi-btn"
-                      style={{ height: '44px', fontSize: '0.8rem', borderRadius: '14px' }}
+                      className="mi-btn"
+                      style={{ height: '44px', fontSize: '0.8rem', borderRadius: '14px', background: '#3d665d', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: 800, cursor: 'pointer', border: 'none' }}
                     >
                       <Check size={14} strokeWidth={2.5} /> Completar
                     </button>
@@ -3502,15 +3490,15 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                           setShowScheduleModal(true);
                         }, 280);
                       }}
-                      className="drawer-btn drawer-btn-reprogram mi-btn"
-                      style={{ height: '44px', fontSize: '0.8rem', borderRadius: '14px' }}
+                      className="mi-btn"
+                      style={{ height: '44px', fontSize: '0.8rem', borderRadius: '14px', background: '#a0506a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: 800, cursor: 'pointer', border: 'none' }}
                     >
-                      <Clock size={14} /> Reprogramar
+                      <CalendarIcon size={14} /> Reagendar
                     </button>
                   </div>
 
-                  {/* Fila 2: Gestión y Estados Auxiliares */}
-                  <div style={{ display: 'grid', gridTemplateColumns: isWorkerView ? '1fr' : '1fr 1.2fr', gap: '10px' }}>
+                  {/* Editar Visita y Enviar Recordatorio */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '10px' }}>
                     <button
                       onClick={() => {
                         triggerCloseDetailedApp();
@@ -3520,87 +3508,75 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                           setShowScheduleModal(true);
                         }, 280);
                       }}
-                      className="drawer-btn drawer-btn-edit mi-btn"
-                      style={{ borderRadius: '12px' }}
+                      className="mi-btn"
+                      style={{ height: '42px', fontSize: '0.78rem', borderRadius: '12px', background: '#fff', color: '#2d1b22', border: '1px solid #e3d1cf', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: 700, cursor: 'pointer' }}
                     >
-                      <Pencil size={12} /> Editar Ficha
+                      <Pencil size={12} /> Editar Visita
                     </button>
-                    {!isWorkerView && (
-                      <button
-                        onClick={async () => {
-                          const confirmNoShow = window.confirm('¿Confirmas que la clienta no asistió a su cita programada?');
-                          if (confirmNoShow) {
+                    <button
+                      onClick={() => {
+                        const wpNum = selectedDetailedApp.clients?.phone?.replace(/\D/g, '');
+                        if (wpNum) {
+                          window.open(`https://wa.me/${wpNum}?text=${encodeURIComponent(`Hola ${selectedDetailedApp.clients?.name || ''}, te recordamos tu cita programada hoy en JANA Studio.`)}`, '_blank');
+                        } else {
+                          showToast?.('No hay teléfono registrado para enviar recordatorio', 'warning');
+                        }
+                      }}
+                      className="mi-btn"
+                      style={{ height: '42px', fontSize: '0.78rem', borderRadius: '12px', background: '#fff', color: '#d97706', border: '1px solid #fce3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      <Bell size={12} color="#d97706" /> Enviar Recordatorio
+                    </button>
+                  </div>
+
+                  {/* Cancelar Visita */}
+                  {!isWorkerView && (
+                    <button
+                      onClick={async () => {
+                        const ans = window.confirm(
+                          "⚠️ ACCIÓN CRÍTICA\n\n" +
+                          "Aceptar: CANCELAR la cita (se mantiene el historial, te preguntará el motivo).\n" +
+                          "Cancelar: ELIMINAR permanentemente (borrado total de la grilla).\n\n" +
+                          "Presiona 'Aceptar' para Cancelar, o 'Cancelar' para ver la opción de Eliminar."
+                        );
+                        
+                        if (ans) {
+                          const motivo = prompt('Por favor, indica el motivo de la cancelación:');
+                          if (motivo !== null) {
                             try {
                               setLoading(true);
                               await dataService.updateAppointment(selectedDetailedApp.id, { status: 'Cancelada' });
-                              showToast?.('Cita marcada como No se presentó', 'warning');
+                              showToast?.(`Cita cancelada. Motivo: ${motivo || 'No indicado'}`, 'error');
                               triggerCloseDetailedApp();
                               loadFilteredAppointments();
                             } catch (err) {
-                              showToast?.('Error al actualizar la cita', 'error');
+                              showToast?.('Error al cancelar la cita', 'error');
                             } finally {
                               setLoading(false);
                             }
                           }
-                        }}
-                        className="drawer-btn drawer-btn-noshow mi-btn"
-                        style={{ borderRadius: '12px' }}
-                      >
-                        <AlertTriangle size={12} /> No asistió (No-show)
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Fila 3: Acciones Críticas Unificadas (solo admin/recepción) */}
-                  {!isWorkerView && (
-                  <button
-                    onClick={async () => {
-                      const ans = window.confirm(
-                        "⚠️ ACCIÓN CRÍTICA\n\n" +
-                        "Aceptar: CANCELAR la cita (se mantiene el historial, te preguntará el motivo).\n" +
-                        "Cancelar: ELIMINAR permanentemente (borrado total de la grilla).\n\n" +
-                        "Presiona 'Aceptar' para Cancelar, o 'Cancelar' para ver la opción de Eliminar."
-                      );
-                      
-                      if (ans) {
-                        // Flujo Cancelar Cita
-                        const motivo = prompt('Por favor, indica el motivo de la cancelación:');
-                        if (motivo !== null) {
-                          try {
-                            setLoading(true);
-                            await dataService.updateAppointment(selectedDetailedApp.id, { status: 'Cancelada' });
-                            showToast?.(`Cita cancelada. Motivo: ${motivo || 'No indicado'}`, 'error');
-                            triggerCloseDetailedApp();
-                            loadFilteredAppointments();
-                          } catch (err) {
-                            showToast?.('Error al cancelar la cita', 'error');
-                          } finally {
-                            setLoading(false);
+                        } else {
+                          const confirmDel = window.confirm("¿Segura que deseas ELIMINAR permanentemente esta cita de la base de datos? Esta acción es irreversible.");
+                          if (confirmDel) {
+                            try {
+                              setLoading(true);
+                              await dataService.deleteAppointment(selectedDetailedApp.id);
+                              showToast?.('Cita eliminada permanentemente', 'success');
+                              triggerCloseDetailedApp();
+                              loadFilteredAppointments();
+                            } catch (err) {
+                              showToast?.('Error al eliminar la cita', 'error');
+                            } finally {
+                              setLoading(false);
+                            }
                           }
                         }
-                      } else {
-                        // Confirmar eliminación total
-                        const doubleCheck = window.confirm('🛑 ATENCIÓN: ¿Segura de que quieres ELIMINAR permanentemente este turno? Esta acción destruirá el registro por completo.');
-                        if (doubleCheck) {
-                          try {
-                            setLoading(true);
-                            await dataService.deleteAppointment(selectedDetailedApp.id);
-                            showToast?.('Cita eliminada permanentemente', 'success');
-                            triggerCloseDetailedApp();
-                            loadFilteredAppointments();
-                          } catch (err) {
-                            showToast?.('Error al eliminar la cita', 'error');
-                          } finally {
-                            setLoading(false);
-                          }
-                        }
-                      }
-                    }}
-                    className="drawer-btn drawer-btn-danger mi-btn"
-                    style={{ width: '100%', marginTop: '4px', borderRadius: '12px' }}
-                  >
-                    <XCircle size={12} /> Gestionar Cancelación / Eliminar Cita
-                  </button>
+                      }}
+                      className="mi-btn"
+                      style={{ height: '44px', width: '100%', fontSize: '0.78rem', borderRadius: '14px', background: '#fff', color: '#dc2626', border: '1px solid #fca5a5', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: 800, cursor: 'pointer', marginTop: '4px' }}
+                    >
+                      <XCircle size={14} color="#dc2626" /> CANCELAR VISITA
+                    </button>
                   )}
                 </div>
               </div>
