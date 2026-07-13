@@ -2300,7 +2300,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             right: 0,
             bottom: 0,
             background: '#fcf8f7',
-            zIndex: 998, 
+            zIndex: 1050, 
             display: 'flex',
             flexDirection: 'column',
             overflowY: 'auto',
