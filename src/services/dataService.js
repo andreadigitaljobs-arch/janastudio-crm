@@ -584,7 +584,7 @@ export const dataService = {
         duration_minutes,
         services (id, name, price, duration_minutes),
         staff (id, name, role),
-        appointments!inner (id, client_id, status, notes, clients (id, name, phone, allergies))
+        appointments!inner (id, client_id, status, notes, clients (id, name, phone, allergies, notes, hair_type))
       `)
       .gte('scheduled_at', startDate)
       .lte('scheduled_at', endDate)
