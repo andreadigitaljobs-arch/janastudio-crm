@@ -3734,7 +3734,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       setLoading(false);
                     }
                   }}
-                  className="mi-btn"
+                  className="mi-btn btn-hover-scale"
                   style={{
                     padding: '8px 10px',
                     fontSize: '0.72rem',
@@ -3750,7 +3750,6 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     gap: '8px',
                     transition: 'all 0.18s'
                   }}
-                  className="mi-btn btn-hover-scale"
                   onMouseEnter={(e) => {
                     e.currentTarget.style.background = st.bg;
                     e.currentTarget.style.color = st.color;
