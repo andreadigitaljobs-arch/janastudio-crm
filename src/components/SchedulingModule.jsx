@@ -2401,12 +2401,9 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            background: 'rgba(255, 255, 255, 0.85)',
-            backdropFilter: 'blur(10px)',
-            borderBottom: '1px solid rgba(223, 178, 140, 0.15)',
-            padding: isMobile ? '12px 16px' : '16px 32px',
-            position: 'sticky',
-            top: 0,
+            background: 'transparent',
+            padding: isMobile ? '16px 16px 0' : '24px 32px 0',
+            position: 'relative',
             zIndex: 10
           }}>
             <button
