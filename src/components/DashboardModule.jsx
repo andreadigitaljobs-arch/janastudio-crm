@@ -1521,7 +1521,7 @@ const DashboardModule = ({
             onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 10px 30px rgba(160, 80, 106, 0.25), 0 4px 12px rgba(112, 48, 80, 0.15), inset 0 1px 0 rgba(255,255,255,0.1)' }}
           >
             {/* Peinado y maquillaje photo placed on the right with a fixed width on desktop */}
-            <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: (isMobile || isTablet) ? '45%' : '240px', zIndex: 1 }}>
+            <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: (isMobile || isTablet) ? '35%' : '240px', zIndex: 1 }}>
               <img 
                 src="/peinado_maquillaje.png" 
                 alt="Adicional de Ondas" 
@@ -1550,7 +1550,7 @@ const DashboardModule = ({
               flexDirection: 'column', 
               justifyContent: 'center', 
               padding: '16px 22px', 
-              width: (isMobile || isTablet) ? '55%' : 'calc(100% - 240px)', 
+              width: (isMobile || isTablet) ? '65%' : 'calc(100% - 240px)', 
               color: '#ffffff' 
             }}>
               {/* Glassmorphism badge */}
@@ -1577,15 +1577,13 @@ const DashboardModule = ({
               <h4 
                 title="Ondas Sirena"
                 style={{ 
-                  fontSize: '16px', 
+                  fontSize: (isMobile || isTablet) ? '13px' : '16px', 
                   fontWeight: '800', 
                   margin: 0, 
                   color: '#ffffff', 
                   lineHeight: '1.15',
                   textShadow: '0 1px 3px rgba(0,0,0,0.15)',
                   whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
                   display: 'block'
                 }}
               >
@@ -1594,14 +1592,12 @@ const DashboardModule = ({
               <span 
                 title="o Sueltas"
                 style={{ 
-                  fontSize: '11.5px', 
+                  fontSize: (isMobile || isTablet) ? '10px' : '11.5px', 
                   color: '#fbcada', 
                   fontWeight: '600',
                   marginTop: '2px',
                   letterSpacing: '0.3px',
                   whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
                   display: 'block'
                 }}
               >
