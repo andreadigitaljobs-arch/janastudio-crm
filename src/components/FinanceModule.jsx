@@ -970,9 +970,9 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
   const dayTicket = dayTransactions > 0 ? daySales / dayTransactions : 0;
 
   return (
-    <div className="animate-fade-in" style={{ paddingBottom: isMobile ? '120px' : '80px' }}>
+    <div className="animate-fade-in mi-enter-up" style={{ paddingBottom: isMobile ? '120px' : '80px' }}>
       {/* Header Section */}
-      <div style={{
+      <div className="mi-enter-up" style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -1007,7 +1007,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
           width: isMobile ? '100%' : 'auto',
           flexDirection: isMobile ? 'row' : 'row'
         }}>
-          <button className="btn-pink" onClick={() => handleManualTransaction('income')} style={{ 
+          <button className="btn-pink mi-btn" onClick={() => handleManualTransaction('income')} style={{
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
@@ -1020,7 +1020,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
           }}>
             <Plus size={16} /> Ingreso
           </button>
-          <button onClick={() => handleManualTransaction('expense')} style={{ 
+          <button className="mi-btn" onClick={() => handleManualTransaction('expense')} style={{
             background: 'linear-gradient(145deg, rgba(255, 69, 58, 0.15) 0%, rgba(255, 69, 58, 0.05) 100%)', 
             border: '1px solid rgba(255, 69, 58, 0.3)', 
             color: '#ff6961',
@@ -1044,14 +1044,15 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
       </div>
 
       {/* Tab Cards */}
-      <div style={{ 
+      <div className="mi-enter-up mi-delay-1" style={{
         display: 'grid', 
         gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)', 
         gap: '16px', 
         marginBottom: '28px'
       }}>
         {/* Transacciones Tab */}
-        <div 
+        <div
+          className="mi-card"
           onClick={() => setActiveTab('transactions')}
           style={{
             padding: '20px',
@@ -1080,7 +1081,8 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
         </div>
 
         {/* Nómina y Pagos Tab */}
-        <div 
+        <div
+          className="mi-card"
           onClick={() => setActiveTab('payroll')}
           style={{
             padding: '20px',
@@ -1113,7 +1115,8 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
         </div>
 
         {/* Rentabilidad Tab */}
-        <div 
+        <div
+          className="mi-card"
           onClick={() => setActiveTab('analysis')}
           style={{
             padding: '20px',
@@ -1151,7 +1154,8 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
         </div>
 
         {/* Cuentas por Cobrar Tab */}
-        <div 
+        <div
+          className="mi-card"
           onClick={() => setActiveTab('receivables')}
           style={{
             padding: '20px',
@@ -1191,13 +1195,13 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
           {/* LEFT COLUMN — Main content */}
           <div style={{ flex: 1, minWidth: 0 }}>
             {/* Stats Cards Grid */}
-            <section style={{
+            <section className="mi-enter-up mi-delay-2" style={{
               display: 'grid',
               gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)',
               gap: '16px',
               marginBottom: '28px'
             }}>
-              <div style={{
+              <div className="mi-stat" style={{
                 padding: '20px',
                 borderRadius: '16px',
                 border: '1px solid var(--border-color)',
@@ -1217,7 +1221,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                 </div>
               </div>
 
-              <div style={{
+              <div className="mi-stat mi-delay-1" style={{
                 padding: '20px',
                 borderRadius: '16px',
                 border: '1px solid var(--border-color)',

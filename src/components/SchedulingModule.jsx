@@ -134,13 +134,14 @@ const CalendarComponent = ({ selectedDate, onSelectDate }) => {
 
   return (
     <div className="agenda-glass-card" style={{ padding: '18px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+      <div className="mi-section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
         <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22', margin: 0, textTransform: 'capitalize' }}>
           {monthName}
         </h3>
         <div style={{ display: 'flex', gap: '6px' }}>
           <button
             onClick={handlePrev}
+            className="mi-btn"
             style={{
               width: '30px', height: '30px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.3)',
               background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -161,6 +162,7 @@ const CalendarComponent = ({ selectedDate, onSelectDate }) => {
           </button>
           <button
             onClick={handleNext}
+            className="mi-btn"
             style={{
               width: '30px', height: '30px', borderRadius: '10px', border: '1px solid rgba(223,178,140,0.3)',
               background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -194,6 +196,7 @@ const CalendarComponent = ({ selectedDate, onSelectDate }) => {
               key={i}
               onClick={() => d.currentMonth && onSelectDate(new Date(year, month, d.day))}
               disabled={!d.currentMonth}
+              className="mi-btn"
               style={{
                 width: '100%',
                 maxWidth: '32px',
@@ -486,7 +489,7 @@ const StaffDayColumn = ({
                 }
               }}
               title={`${clientName} · ${app.services?.name || 'Servicio'} · ${formatMinutes(startMinutes)}`}
-              className={isMultipleApp ? "agenda-appointment-multiple-selected" : ""}
+              className={`mi-card ${isMultipleApp ? "agenda-appointment-multiple-selected" : ""}`}
               style={{
                 position: 'absolute', top: `${top}px`, left: '3px', right: '3px', height: `${height}px`,
                 background: '#fff', borderRadius: '8px', borderLeft: `3px solid ${colors.leftBorder}`,
@@ -1184,6 +1187,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           {isMobile && (
             <button
               onClick={onOpenNotifications}
+              className="mi-btn"
               style={{
                 width: '40px', height: '40px', borderRadius: '12px', flexShrink: 0,
                 background: '#ffffff', border: '1px solid rgba(223, 178, 140, 0.3)',
@@ -1212,6 +1216,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             {/* Hoy button */}
             <button
               onClick={() => setSelectedDate(new Date())}
+              className="mi-btn"
               style={{
                 padding: '6px 12px', borderRadius: '8px', border: 'none', background: 'transparent',
                 cursor: 'pointer', fontSize: '0.78rem', fontWeight: '600', color: '#2d1b22',
@@ -1238,6 +1243,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 ref={calendarBtnRef}
                 title="Elegir fecha"
                 onClick={openHeaderCalendar}
+                className="mi-btn"
                 style={{
                   padding: '6px 10px', borderRadius: '10px', border: 'none', background: 'rgba(201, 114, 130, 0.1)',
                   cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
@@ -1279,6 +1285,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                           prev.setMonth(prev.getMonth() - 1);
                           setSelectedDate(prev);
                         }}
+                        className="mi-btn"
                         style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(201, 114, 130, 0.08)', border: 'none', color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
                         onMouseEnter={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.15)' }}
                         onMouseLeave={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)' }}
@@ -1295,6 +1302,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                           next.setMonth(next.getMonth() + 1);
                           setSelectedDate(next);
                         }}
+                        className="mi-btn"
                         style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(201, 114, 130, 0.08)', border: 'none', color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
                         onMouseEnter={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.15)' }}
                         onMouseLeave={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)' }}
@@ -1334,6 +1342,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                 setSelectedDate(dateObj);
                                 setShowHeaderCalendar(false);
                               }}
+                              className="mi-btn"
                               style={{
                                 padding: '8px 0', borderRadius: '8px', border: 'none',
                                 background: isSelected ? 'var(--magenta-primary)' : isToday ? 'rgba(201, 114, 130, 0.15)' : 'transparent',
@@ -1365,6 +1374,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             {/* Navigator Arrows with Date */}
             <button
               onClick={() => goToDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() - 1), 'prev')}
+              className="mi-btn"
               style={{
                 width: '28px', height: '28px', borderRadius: '8px', background: 'transparent',
                 border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -1389,6 +1399,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
             <button
               onClick={() => goToDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + 1), 'next')}
+              className="mi-btn"
               style={{
                 width: '28px', height: '28px', borderRadius: '8px', background: 'transparent',
                 border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -1412,6 +1423,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           {!isMobile && (
             <button
               onClick={onOpenNotifications}
+              className="mi-btn"
               style={{
                 width: '40px', height: '40px', borderRadius: '12px',
                 background: '#ffffff', border: '1px solid rgba(223, 178, 140, 0.3)',
@@ -1435,6 +1447,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           {/* + Nueva cita */}
           <button
             onClick={() => { setScheduleModalPreset(null); setShowScheduleModal(true); }}
+            className="mi-btn"
             style={{
               padding: isMobile ? '12px 20px' : '8px 18px', borderRadius: '12px', border: 'none',
               background: 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)',
@@ -1490,10 +1503,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               }} />
 
               {/* Buttons */}
-              <button onClick={() => setLeftTab('citas')} style={{ flex: 1, position: 'relative', padding: '12px 4px', borderRadius: '14px', border: 'none', background: 'transparent', color: leftTab === 'citas' ? '#c97282' : '#a0909a', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer', transition: 'color 0.3s, transform 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onTouchStart={(e) => e.currentTarget.style.transform = 'scale(0.95)'} onTouchEnd={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+              <button onClick={() => setLeftTab('citas')} className="mi-btn" style={{ flex: 1, position: 'relative', padding: '12px 4px', borderRadius: '14px', border: 'none', background: 'transparent', color: leftTab === 'citas' ? '#c97282' : '#a0909a', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer', transition: 'color 0.3s, transform 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onTouchStart={(e) => e.currentTarget.style.transform = 'scale(0.95)'} onTouchEnd={(e) => e.currentTarget.style.transform = 'scale(1)'}>
                 <Scissors size={16} strokeWidth={leftTab === 'citas' ? 2.5 : 2} /> Citas
               </button>
-              <button onClick={() => setLeftTab('especialistas')} style={{ flex: 1, position: 'relative', padding: '12px 4px', borderRadius: '14px', border: 'none', background: 'transparent', color: leftTab === 'especialistas' ? '#c97282' : '#a0909a', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer', transition: 'color 0.3s, transform 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onTouchStart={(e) => e.currentTarget.style.transform = 'scale(0.95)'} onTouchEnd={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+              <button onClick={() => setLeftTab('especialistas')} className="mi-btn" style={{ flex: 1, position: 'relative', padding: '12px 4px', borderRadius: '14px', border: 'none', background: 'transparent', color: leftTab === 'especialistas' ? '#c97282' : '#a0909a', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer', transition: 'color 0.3s, transform 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }} onTouchStart={(e) => e.currentTarget.style.transform = 'scale(0.95)'} onTouchEnd={(e) => e.currentTarget.style.transform = 'scale(1)'}>
                 <Users size={16} strokeWidth={leftTab === 'especialistas' ? 2.5 : 2} /> Personal
               </button>
             </div>
@@ -1514,7 +1527,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   gap: isMobile ? '12px' : '14px',
                   borderBottom: '1px solid rgba(223, 178, 140, 0.2)', background: 'rgba(255,255,255,0.5)'
                 }}>
-                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                  <h4 className="mi-section-header" style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                     <Clock size={16} color="#c97282" />
                     CITAS DE HOY
                   </h4>
@@ -1541,6 +1554,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       <button
                         key={period.key}
                         onClick={() => setTimeOfDayFilter(period.key)}
+                        className="mi-chip"
                         style={{
                           padding: '7px 10px', borderRadius: '10px', cursor: 'pointer',
                           fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap', textAlign: 'center',
@@ -1572,6 +1586,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     </p>
                     <button 
                       onClick={() => window.dispatchEvent(new Event('jana:open-new-appointment'))}
+                      className="mi-btn"
                       style={{ 
                         background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)', 
                         color: '#fff', border: 'none', padding: '14px 28px', borderRadius: '14px', 
@@ -1645,7 +1660,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                 {h12}:{group.start.getMinutes().toString().padStart(2, '0')} {ampm}
                               </div>
                               {group.apps.length > 1 && (
-                                <div style={{ fontSize: '0.6rem', fontWeight: 800, color: '#a0506a', background: 'rgba(201, 114, 130, 0.1)', padding: '2px 9px', borderRadius: '999px', flexShrink: 0 }}>
+                                <div className="mi-tag" style={{ fontSize: '0.6rem', fontWeight: 800, color: '#a0506a', background: 'rgba(201, 114, 130, 0.1)', padding: '2px 9px', borderRadius: '999px', flexShrink: 0 }}>
                                   {group.apps.length} citas a la misma hora
                                 </div>
                               )}
@@ -1681,6 +1696,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                 return (
                                   <div key={app.id}
                                     onClick={() => setSelectedDetailedApp(app)}
+                                    className="mi-card"
                                     style={{
                                       display: 'flex', alignItems: 'stretch', gap: 0,
                                       background: bgColor, border: `1px solid ${borderColor}`,
@@ -1703,26 +1719,26 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                       </div>
                                     )}
                                     <div style={{ flex: 1, minWidth: 0, padding: '12px 16px' }}>
-                                      <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#2d1b22', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                      <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#2d1b22', display: 'flex', alignItems: 'center', gap: '5px', lineHeight: 1.3 }}>
                                         {app.clients?.name || 'Cliente'}
                                         {isRetrasada && <AlertTriangle size={12} color="#dc2626" style={{ flexShrink: 0 }} />}
                                       </div>
-                                      <div style={{ fontSize: '0.68rem', color: '#8c767b', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                      <div style={{ fontSize: '0.68rem', color: '#8c767b', fontWeight: 600, lineHeight: 1.3, marginTop: '2px' }}>
                                         {app.services?.name || 'Servicio'}{staffMember ? ` · ${staffMember.name.split(' ')[0]}` : ''}
                                       </div>
                                       <div style={{ display: 'flex', gap: '6px', marginTop: '6px' }}>
-                                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '0.7rem', color: '#2d1b22', fontWeight: 800, background: '#fff', border: '1px solid rgba(74,48,54,0.12)', padding: '3px 9px', borderRadius: '8px' }}>
+                                        <span className="mi-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '0.7rem', color: '#2d1b22', fontWeight: 800, background: '#fff', border: '1px solid rgba(74,48,54,0.12)', padding: '3px 9px', borderRadius: '8px' }}>
                                           <Clock size={11} color="#2d1b22" /> {durationLabel}
                                         </span>
                                         {price != null && (
-                                          <span style={{ fontSize: '0.7rem', color: '#2d1b22', fontWeight: 800, background: '#fff', border: '1px solid rgba(74,48,54,0.12)', padding: '3px 9px', borderRadius: '8px' }}>
+                                          <span className="mi-tag" style={{ fontSize: '0.7rem', color: '#2d1b22', fontWeight: 800, background: '#fff', border: '1px solid rgba(74,48,54,0.12)', padding: '3px 9px', borderRadius: '8px' }}>
                                             ${Number(price).toLocaleString('es-VE')}
                                           </span>
                                         )}
                                       </div>
                                     </div>
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px', flexShrink: 0, padding: '12px 16px 12px 0' }}>
-                                      <div style={{ fontSize: '0.62rem', fontWeight: 800, color: accentColor, background: `${accentColor}18`, padding: '4px 10px', borderRadius: '999px', whiteSpace: 'nowrap' }}>
+                                                        <div className="mi-tag" style={{ fontSize: '0.62rem', fontWeight: 800, color: accentColor, background: `${accentColor}18`, padding: '4px 10px', borderRadius: '999px', whiteSpace: 'nowrap' }}>
                                         {app.status}
                                       </div>
                                       <div style={{ display: 'flex', gap: '6px' }}>
@@ -1730,6 +1746,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                           <button
                                             onClick={(e) => { e.stopPropagation(); window.open(`https://wa.me/${getWhatsAppNumber(clientPhone)}`, '_blank'); }}
                                             title="Contactar por WhatsApp"
+                                            className="mi-btn"
                                             style={{ width: '26px', height: '26px', borderRadius: '8px', border: '1px solid rgba(223,178,140,0.25)', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
                                           >
                                             <MessageCircle size={13} color="#8c767b" />
@@ -1748,6 +1765,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                               }
                                             }}
                                             title="Marcar como completada"
+                                            className="mi-btn"
                                             style={{ width: '26px', height: '26px', borderRadius: '8px', border: '1px solid rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
                                           >
                                             <Check size={14} color="#16a34a" />
@@ -1775,21 +1793,21 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
               {/* ESTADO DEL EQUIPO (Moved to Personal Tab) */}
               <div style={{ marginBottom: '0' }}>
-                <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 14px 0', letterSpacing: '0.5px' }}>
+                <h3 className="mi-section-header" style={{ fontSize: '0.9rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 14px 0', letterSpacing: '0.5px' }}>
                   ESTADO DEL EQUIPO
                 </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: (isMobile || isTablet) ? '8px' : '16px' }}>
-                  <div className="hover-lift" style={{ background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(34, 197, 94, 0.02) 100%)', border: '2px solid rgba(34, 197, 94, 0.25)', borderRadius: '16px', padding: (isMobile || isTablet) ? '12px 6px' : '20px', textAlign: 'center', minWidth: 0, animation: 'cardEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0s both' }}>
+                  <div className="mi-stat mi-enter-up mi-delay-1 hover-lift" style={{ background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(34, 197, 94, 0.02) 100%)', border: '2px solid rgba(34, 197, 94, 0.25)', borderRadius: '16px', padding: (isMobile || isTablet) ? '12px 6px' : '20px', textAlign: 'center', minWidth: 0, animation: 'cardEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0s both' }}>
                     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: (isMobile || isTablet) ? '6px' : '10px' }}><Users size={(isMobile || isTablet) ? 20 : 24} color="#16a34a" strokeWidth={1.5} /></div>
                     <div style={{ fontSize: (isMobile || isTablet) ? '0.56rem' : '0.68rem', fontWeight: 700, color: '#16a34a', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: (isMobile || isTablet) ? '4px' : '8px' }}>Disponibles</div>
                     <div style={{ fontSize: (isMobile || isTablet) ? '1.4rem' : '2.2rem', fontWeight: 900, color: '#16a34a', lineHeight: 1 }}>{staffByStatus.libres.length}</div>
                   </div>
-                  <div className="hover-lift" style={{ background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(239, 68, 68, 0.02) 100%)', border: '2px solid rgba(239, 68, 68, 0.25)', borderRadius: '16px', padding: (isMobile || isTablet) ? '12px 6px' : '20px', textAlign: 'center', minWidth: 0, animation: 'cardEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both' }}>
+                  <div className="mi-stat mi-enter-up mi-delay-2 hover-lift" style={{ background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(239, 68, 68, 0.02) 100%)', border: '2px solid rgba(239, 68, 68, 0.25)', borderRadius: '16px', padding: (isMobile || isTablet) ? '12px 6px' : '20px', textAlign: 'center', minWidth: 0, animation: 'cardEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both' }}>
                     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: (isMobile || isTablet) ? '6px' : '10px' }}><Scissors size={(isMobile || isTablet) ? 20 : 24} color="#dc2626" strokeWidth={1.5} /></div>
                     <div style={{ fontSize: (isMobile || isTablet) ? '0.56rem' : '0.68rem', fontWeight: 700, color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: (isMobile || isTablet) ? '4px' : '8px' }}>En Cita</div>
                     <div style={{ fontSize: (isMobile || isTablet) ? '1.4rem' : '2.2rem', fontWeight: 900, color: '#dc2626', lineHeight: 1 }}>{staffByStatus.ocupadas.length}</div>
                   </div>
-                  <div className="hover-lift" style={{ background: 'linear-gradient(135deg, rgba(212, 160, 154, 0.08) 0%, rgba(212, 160, 154, 0.02) 100%)', border: '2px solid rgba(212, 160, 154, 0.3)', borderRadius: '16px', padding: (isMobile || isTablet) ? '12px 6px' : '20px', textAlign: 'center', minWidth: 0, animation: 'cardEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.16s both' }}>
+                  <div className="mi-stat mi-enter-up mi-delay-3 hover-lift" style={{ background: 'linear-gradient(135deg, rgba(212, 160, 154, 0.08) 0%, rgba(212, 160, 154, 0.02) 100%)', border: '2px solid rgba(212, 160, 154, 0.3)', borderRadius: '16px', padding: (isMobile || isTablet) ? '12px 6px' : '20px', textAlign: 'center', minWidth: 0, animation: 'cardEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.16s both' }}>
                     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: (isMobile || isTablet) ? '6px' : '10px' }}><Clock size={(isMobile || isTablet) ? 20 : 24} color="#a0506a" strokeWidth={1.5} /></div>
                     <div style={{ fontSize: (isMobile || isTablet) ? '0.56rem' : '0.68rem', fontWeight: 700, color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: (isMobile || isTablet) ? '4px' : '8px' }}>Almuerzo</div>
                     <div style={{ fontSize: (isMobile || isTablet) ? '1.4rem' : '2.2rem', fontWeight: 900, color: '#a0506a', lineHeight: 1 }}>1</div>
@@ -1798,7 +1816,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               </div>
 
               <div className="agenda-glass-card hover-lift" style={{ padding: '20px', display: 'flex', flexDirection: 'column', minHeight: '400px' }}>
-                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22', margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                <h4 className="mi-section-header" style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22', margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                   <Sparkles size={16} color="#c97282" />
                   ESTADO DE ESPECIALISTAS
                 </h4>
@@ -1811,6 +1829,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     placeholder="Buscar especialista..."
                     value={staffSearchQuery}
                     onChange={e => setStaffSearchQuery(e.target.value)}
+                    className="mi-input"
                     style={{
                       width: '100%',
                       padding: '10px 12px 10px 34px',
@@ -1847,32 +1866,40 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                           key={s.id}
                           {...staffMotionProps}
                           onClick={() => setSelectedStaffDrawer(s)}
+                          className="agenda-staff-card"
                           style={{
-                            padding: '12px',
+                            padding: '10px',
                             background: '#fcfaf9',
                             border: '1.5px dashed rgba(223,178,140,0.2)',
-                            borderRadius: '16px',
+                            borderLeft: '4px solid rgba(180,170,165,0.3)',
+                            borderRadius: '14px',
                             display: 'flex',
-                            flexDirection: 'column',
                             alignItems: 'center',
-                            justifyContent: 'center',
-                            textAlign: 'center',
+                            gap: '10px',
                             cursor: 'pointer',
-                            opacity: 0.8,
+                            opacity: 0.6,
                             transition: 'all 0.2s ease',
+                            position: 'relative',
+                            overflow: 'hidden',
                           }}
-                          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.borderColor = '#c97282'; }}
-                          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(223,178,140,0.2)'; }}
+                          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.opacity = '0.8'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(74,48,54,0.06)'; }}
+                          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.opacity = '0.6'; e.currentTarget.style.boxShadow = 'none'; }}
                         >
-                          <div style={{ position: 'relative', width: '48px', height: '48px', marginBottom: '8px' }}>
+                          <div style={{ position: 'relative', width: '50px', height: '50px', flexShrink: 0, borderRadius: '12px', overflow: 'hidden' }}>
                             <img
                               src={s.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(s.name)}`}
                               alt={s.name}
-                              style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(223,178,140,0.15)', filter: 'grayscale(55%)', opacity: 0.85 }}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(50%)' }}
                             />
+                            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(180,170,165,0.3) 0%, rgba(180,170,165,0.05) 100%)' }} />
                           </div>
-                          <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#8c767b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{s.name}</div>
-                          <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 700, marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.3px' }}>NO TRABAJA</div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#8c767b', lineHeight: 1.3 }}>{s.name}</div>
+                            <div style={{ fontSize: '0.56rem', color: '#a0909a', fontWeight: 600, marginTop: '1px', lineHeight: 1.3 }}>{getStaffRole(s.name)}</div>
+                            <div style={{ marginTop: '4px', fontSize: '0.52rem', fontWeight: 800, color: '#b0a8a3', background: 'rgba(180,170,165,0.1)', padding: '2px 8px', borderRadius: '999px', letterSpacing: '0.3px', display: 'inline-block', whiteSpace: 'nowrap' }}>
+                              NO TRABAJA
+                            </div>
+                          </div>
                         </motion.div>
                       );
                     }
@@ -1906,50 +1933,50 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         key={s.id}
                         {...staffMotionProps}
                         onClick={() => setSelectedStaffDrawer(s)}
+                        className="agenda-staff-card"
                         style={{
-                          padding: '12px',
+                          padding: '10px',
                           background: '#ffffff',
                           border: '1px solid rgba(223,178,140,0.18)',
-                          borderRadius: '16px',
+                          borderLeft: `4px solid ${statusColor}`,
+                          borderRadius: '14px',
                           display: 'flex',
-                          flexDirection: 'column',
                           alignItems: 'center',
-                          textAlign: 'center',
+                          gap: '10px',
                           cursor: 'pointer',
-                          boxShadow: '0 2px 8px rgba(74,48,54,0.01)',
+                          boxShadow: '0 2px 8px rgba(74,48,54,0.04)',
                           transition: 'all 0.2s ease',
+                          position: 'relative',
+                          overflow: 'hidden',
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 15px rgba(212,160,154,0.12)'; e.currentTarget.style.borderColor = 'rgba(212,160,154,0.3)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(74,48,54,0.01)'; e.currentTarget.style.borderColor = 'rgba(223,178,140,0.18)'; }}
+                        onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(74,48,54,0.1)'; e.currentTarget.style.borderColor = 'rgba(212,160,154,0.3)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(74,48,54,0.04)'; e.currentTarget.style.borderColor = 'rgba(223,178,140,0.18)'; }}
                       >
-                        {/* Avatar photo */}
-                        <div style={{ position: 'relative', width: '48px', height: '48px', marginBottom: '8px' }}>
+                        {/* Photo - Rounded Rectangle with gradient overlay */}
+                        <div style={{ position: 'relative', width: '50px', height: '58px', flexShrink: 0, borderRadius: '12px', overflow: 'hidden' }}>
                           <img
                             src={s.photo_url || `https://i.pravatar.cc/150?u=${encodeURIComponent(s.name)}`}
                             alt={s.name}
-                            style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: `2px solid ${statusColor}` }}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                           />
-                          <span style={{ position: 'absolute', right: '1px', bottom: '1px', width: '10px', height: '10px', borderRadius: '50%', background: statusColor, border: '2px solid #fff' }} />
+                          <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(200deg, ${statusColor}55 0%, ${statusColor}00 55%), linear-gradient(0deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 45%)` }} />
+                          <span style={{ position: 'absolute', right: '3px', bottom: '3px', width: '9px', height: '9px', borderRadius: '50%', background: statusColor, border: '2px solid #fff', boxShadow: `0 0 4px ${statusColor}66` }} />
                         </div>
 
-                        {/* Name and role */}
-                        <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#2d1b22', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{s.name}</div>
-                        <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 600, marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>{getStaffRole(s.name)}</div>
-
-                        {/* Status tag */}
-                        <div style={{ marginTop: '6px', fontSize: '0.56rem', fontWeight: 800, color: statusColor, background: statusBg, padding: '2px 8px', borderRadius: '6px', letterSpacing: '0.3px' }}>
-                          {statusText}
+                        {/* Info */}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#2d1b22', lineHeight: 1.3 }}>{s.name}</div>
+                          <div style={{ fontSize: '0.56rem', color: '#a0909a', fontWeight: 600, marginTop: '1px', lineHeight: 1.3 }}>{getStaffRole(s.name)}</div>
+                          <div style={{ marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span className="mi-tag" style={{ fontSize: '0.52rem', fontWeight: 800, color: statusColor, background: `${statusColor}12`, padding: '2px 8px', borderRadius: '999px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>
+                              {statusText}
+                            </span>
+                          </div>
                         </div>
 
-                        {/* Occupancy Mini bar */}
-                        <div style={{ width: '100%', marginTop: '10px' }}>
-                          <div style={{ height: '3px', background: '#fcf6f7', borderRadius: '2px', overflow: 'hidden' }}>
-                            <div style={{ height: '100%', background: statusColor, width: `${metrics.occupancy}%` }} />
-                          </div>
-                          <div style={{ fontSize: '0.55rem', color: '#8c767b', fontWeight: 700, marginTop: '2px', display: 'flex', justifyContent: 'space-between' }}>
-                            <span>Ocupación:</span>
-                            <span>{metrics.occupancy}%</span>
-                          </div>
+                        {/* Occupancy bar */}
+                        <div style={{ position: 'absolute', bottom: 0, left: '4px', right: 0, height: '3px', background: '#fcf6f7', borderRadius: '0 0 14px 0', overflow: 'hidden' }}>
+                          <div style={{ height: '100%', background: statusColor, width: `${metrics.occupancy}%`, transition: 'width 0.4s ease' }} />
                         </div>
                       </motion.div>
                     );
@@ -2006,7 +2033,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           flexShrink: 0
         }}>
           <div>
-            <h3 style={{
+            <h3 className="mi-section-header" style={{
               margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#2d1b22',
               letterSpacing: '-0.3px'
             }}>
@@ -2020,6 +2047,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           </div>
           <button
             onClick={() => setShowQuickAvailModal(false)}
+            className="mi-btn"
             style={{
               width: '32px', height: '32px', borderRadius: '8px',
               background: 'rgba(74,48,54,0.05)',
@@ -2130,10 +2158,12 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           {/* ── ACTION ROW ── */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px' }}>
             <button onClick={() => { setAvailTimeStr('09:00'); setAvailDuration('60'); setAvailServiceId('all'); setAvailStaffId('all'); }}
+              className="mi-btn"
               style={{ background: 'none', border: 'none', color: '#c97282', fontSize: '0.76rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', padding: '4px 0', transition: 'opacity 0.2s' }}
               onMouseEnter={e => e.currentTarget.style.opacity = '0.7'} onMouseLeave={e => e.currentTarget.style.opacity = '1'}
             >✦ Limpiar filtros</button>
             <button
+              className="mi-btn"
               style={{ padding: '12px 28px', borderRadius: '14px', border: 'none', background: 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)', color: '#fff', fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 6px 20px rgba(201, 114, 130,0.3)', transition: 'all 0.2s', letterSpacing: '0.2px' }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(201, 114, 130,0.4)'; }}
               onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(201, 114, 130,0.3)'; }}
@@ -2186,7 +2216,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#2d1b22' }}>Especialistas disponibles ({disponibles.length})</h4>
                   {disponibles.length > 0 && (
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '5px', background: '#f0fdf4', color: '#16a34a', padding: '5px 12px', borderRadius: '20px', fontSize: '0.68rem', fontWeight: 700, border: '1px solid #bbf7d0' }}>
+                    <span className="mi-tag" style={{ display: 'flex', alignItems: 'center', gap: '5px', background: '#f0fdf4', color: '#16a34a', padding: '5px 12px', borderRadius: '20px', fontSize: '0.68rem', fontWeight: 700, border: '1px solid #bbf7d0' }}>
                       <CheckCircle2 size={13} /> {disponibles.length} disponibles
                     </span>
                   )}
@@ -2245,6 +2275,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           }}>
             <button
               onClick={handleCloseStaffDrawer}
+              className="mi-btn"
               style={{
                 background: 'transparent',
                 border: 'none',
@@ -2274,6 +2305,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               {/* Bell Icon */}
               <button
                 onClick={onOpenNotifications}
+                className="mi-btn"
                 style={{
                   width: '38px', height: '38px', borderRadius: '12px',
                   background: '#ffffff', border: '1px solid rgba(223, 178, 140, 0.2)',
@@ -2354,7 +2386,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#2d1b22', margin: 0, }}>
                       {selectedStaffDrawer.name}
                     </h2>
-                    <span style={{ fontSize: '0.72rem', color: '#c97282', background: 'rgba(201, 114, 130,0.1)', padding: '3px 10px', borderRadius: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px' }}>
+                    <span className="mi-tag" style={{ fontSize: '0.72rem', color: '#c97282', background: 'rgba(201, 114, 130,0.1)', padding: '3px 10px', borderRadius: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px' }}>
                       {getStaffRole(selectedStaffDrawer.name)}
                     </span>
                   </div>
@@ -2388,21 +2420,21 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   <div style={{ display: 'flex', gap: '2px', borderLeft: '1px solid rgba(223,178,140,0.15)', paddingLeft: '4px' }}>
                     <button
                       onClick={() => goToDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() - 1), 'prev')}
+                      className="mi-btn btn-hover-scale"
                       style={{
                         width: '32px', height: '32px', borderRadius: '8px', border: 'none', background: 'transparent',
                         color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
                       }}
-                      className="btn-hover-scale"
                     >
                       <ChevronLeft size={16} />
                     </button>
                     <button
                       onClick={() => goToDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + 1), 'next')}
+                      className="mi-btn btn-hover-scale"
                       style={{
                         width: '32px', height: '32px', borderRadius: '8px', border: 'none', background: 'transparent',
                         color: '#c97282', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
                       }}
-                      className="btn-hover-scale"
                     >
                       <ChevronRight size={16} />
                     </button>
@@ -2412,6 +2444,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 {/* Edit Schedule Button */}
                 <button 
                   onClick={() => showToast?.('Abriendo editor de horarios...', 'info')}
+                  className="mi-btn"
                   style={{
                     background: '#fff', 
                     border: '1px solid #c97282', 
@@ -2426,7 +2459,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     gap: '8px',
                     boxShadow: '0 2px 8px rgba(201, 114, 130,0.05)'
                   }}
-                  className="btn-hover-scale"
+                  className="mi-btn btn-hover-scale"
                 >
                   <Clock size={14} /> Editar horario
                 </button>
@@ -2436,7 +2469,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             {/* Quick Status Cards Row */}
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '16px' }}>
               {/* Card 1: Estado Actual */}
-              <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '20px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
+              <div className="mi-stat mi-enter-up mi-delay-1" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '20px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
                 <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#22c55e', flexShrink: 0, boxShadow: '0 0 8px #22c55e' }} />
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado actual</div>
@@ -2445,7 +2478,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               </div>
 
               {/* Card 2: Próxima Cita */}
-              <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '20px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
+              <div className="mi-stat mi-enter-up mi-delay-2" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '20px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
                 <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(217, 119, 6, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706', flexShrink: 0 }}>
                   <CalendarIcon size={16} />
                 </div>
@@ -2458,7 +2491,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               </div>
 
               {/* Card 3: Horario de Hoy */}
-              <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '20px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
+              <div className="mi-stat mi-enter-up mi-delay-3" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '20px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
                 <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(201, 114, 130, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c97282', flexShrink: 0 }}>
                   <Clock size={16} />
                 </div>
@@ -2486,6 +2519,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                    <span 
                      key={tab.id} 
                      onClick={() => setStaffActiveTab(tab.id)}
+                     className="mi-chip"
                      style={{ 
                        fontSize: '0.85rem', 
                        fontWeight: isActive ? 800 : 600, 
@@ -2509,7 +2543,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 
                 {/* Column 1: Daily Agenda Timeline (50% width on Desktop) */}
                 <div style={{ flex: 1.5, background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '24px', minWidth: 0, width: '100%', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 20px 0' }}>
+                  <h3 className="mi-section-header" style={{ fontSize: '1rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 20px 0' }}>
                     Agenda del {selectedDate.toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'long' })}
                   </h3>
 
@@ -2694,12 +2728,12 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                       });
                                       setShowScheduleModal(true);
                                     }}
+                                    className="mi-btn btn-hover-scale"
                                     style={{
                                       width: '28px', height: '28px', borderRadius: '8px', border: 'none',
                                       background: '#c97282', color: '#fff', display: 'flex', alignItems: 'center',
                                       justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(201, 114, 130,0.2)'
                                     }}
-                                    className="btn-hover-scale"
                                   >
                                     <Plus size={14} />
                                   </button>
@@ -2716,9 +2750,9 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 {/* Column 2: Performance Summary & Top Metrics (28% width on Desktop) */}
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
                   <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                    <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 20px 0' }}>
+                    <div className="mi-section-header" style={{ fontSize: '1rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 20px 0' }}>
                       Resumen del día
-                    </h3>
+                    </div>
 
                     {/* Metrics grid */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px' }}>
@@ -2790,8 +2824,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 <div style={{ flex: 0.8, display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
                   
                   {/* Next Client Card */}
-                  <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                    <h3 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#a0909a', margin: '0 0 14px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <div className="mi-card" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
+                    <h3 className="mi-section-header" style={{ fontSize: '0.85rem', fontWeight: 800, color: '#a0909a', margin: '0 0 14px 0', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                       Cliente Siguiente
                     </h3>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
@@ -2808,27 +2842,28 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         setSelectedStaffDrawer(null);
                         window.location.hash = '#clients';
                       }}
+                      className="mi-btn btn-hover-scale"
                       style={{
                         width: '100%', background: 'transparent', border: '1px solid rgba(201, 114, 130,0.25)',
                         color: '#c97282', padding: '8px', borderRadius: '10px', fontSize: '0.72rem',
                         fontWeight: 700, cursor: 'pointer'
                       }}
-                      className="btn-hover-scale"
                     >
                       Ver perfil de clienta
                     </button>
                   </div>
 
                   {/* Internal Notes container */}
-                  <div style={{ background: '#fff0f2', border: '1px solid rgba(201, 114, 130,0.12)', borderRadius: '24px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.01)' }}>
+                      <div className="mi-card" style={{ background: '#fff0f2', border: '1px solid rgba(201, 114, 130,0.12)', borderRadius: '24px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.01)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                      <h3 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#a0506a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      <h3 className="mi-section-header" style={{ fontSize: '0.85rem', fontWeight: 800, color: '#a0506a', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                         Notas rápidas
                       </h3>
                       <Pencil size={12} color="#c97282" style={{ cursor: 'pointer' }} />
                     </div>
                     <textarea 
                       placeholder="Escribe notas de seguimiento..."
+                      className="mi-input"
                       style={{
                         width: '100%', height: '70px', border: 'none',
                         background: 'transparent', fontSize: '0.76rem', color: '#2d1b22', outline: 'none',
@@ -2845,12 +2880,12 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         setScheduleModalPreset({ staff: selectedStaffDrawer });
                         setShowScheduleModal(true);
                       }}
+                      className="mi-btn btn-hover-scale"
                       style={{
                         width: '100%', padding: '12px', borderRadius: '12px', border: 'none',
                         background: 'linear-gradient(135deg, #c48b9f, #c97282)', color: '#fff',
                         fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 15px rgba(201, 114, 130,0.2)'
                       }}
-                      className="btn-hover-scale"
                     >
                       Agendar Nueva Cita
                     </button>
@@ -2859,12 +2894,12 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       onClick={() => {
                         setShowQuickAvailModal?.(true) || showToast?.('Abriendo disponibilidad...', 'info');
                       }}
+                      className="mi-btn btn-hover-scale"
                       style={{
                         width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid rgba(201, 114, 130, 0.25)',
                         background: '#fff', color: '#c97282',
                         fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer'
                       }}
-                      className="btn-hover-scale"
                     >
                       Ver disponibilidad
                     </button>
@@ -2874,20 +2909,20 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         setSelectedStaffDrawer(null);
                         showToast?.('Navegando a reportes de productividad...', 'info');
                       }}
+                      className="mi-btn btn-hover-scale"
                       style={{
                         width: '100%', padding: '12px', borderRadius: '12px', border: 'none',
                         background: 'rgba(74, 48, 54, 0.06)', color: '#2d1b22',
                         fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer'
                       }}
-                      className="btn-hover-scale"
                     >
                       Ver reporte completo
                     </button>
                   </div>
 
                   {/* Day Comparison widget */}
-                  <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                    <h3 style={{ fontSize: '0.78rem', fontWeight: 800, color: '#a0909a', margin: '0 0 14px 0', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
+                  <div className="mi-card" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
+                    <h3 className="mi-section-header" style={{ fontSize: '0.78rem', fontWeight: 800, color: '#a0909a', margin: '0 0 14px 0', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
                       Comparativo del día <br /><span style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 500, textTransform: 'none' }}>vs. día anterior</span>
                     </h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -2917,7 +2952,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             {staffActiveTab === 'resumen' && (
               <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '24px', width: '100%' }} className="animate-fade-in">
                 <div style={{ flex: 2, background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 20px 0' }}>Análisis de Rendimiento (Hoy)</h3>
+                  <h3 className="mi-section-header" style={{ fontSize: '1rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 20px 0' }}>Análisis de Rendimiento (Hoy)</h3>
                   
                   {/* Visual Chart Bars Mockup */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -2962,8 +2997,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
                 {/* Right Side: Quick info */}
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                  <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                    <h4 style={{ margin: '0 0 10px 0', fontSize: '0.85rem', color: '#a0909a', fontWeight: 750 }}>PRODUCTIVIDAD SEMANAL</h4>
+                  <div className="mi-card" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
+                    <h4 className="mi-section-header" style={{ margin: '0 0 10px 0', fontSize: '0.85rem', color: '#a0909a', fontWeight: 750 }}>PRODUCTIVIDAD SEMANAL</h4>
                     <p style={{ fontSize: '0.78rem', color: '#2d1b22', lineHeight: '1.4' }}>Isabella se encuentra en el <strong>top 3 de productividad</strong> de esta semana en el salón, logrando cubrir el 92% de sus horarios habilitados con citas completadas.</p>
                   </div>
                 </div>
@@ -2978,7 +3013,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   { name: 'Extensiones Clásicas', duration: '75 min', price: '$ 28.00', qty: 1, icon: '💅' },
                   { name: 'Retoque Clásico', duration: '45 min', price: '$ 6.00', qty: 1, icon: '🌸' }
                 ].map((srv, idx) => (
-                  <div key={idx} style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.15)', borderRadius: '20px', padding: '20px', display: 'flex', gap: '14px', alignItems: 'center', boxShadow: '0 4px 15px rgba(74,48,54,0.02)' }}>
+                  <div key={idx} className="mi-card" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.15)', borderRadius: '20px', padding: '20px', display: 'flex', gap: '14px', alignItems: 'center', boxShadow: '0 4px 15px rgba(74,48,54,0.02)' }}>
                     <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(201, 114, 130,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>
                       {srv.icon}
                     </div>
@@ -2995,7 +3030,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             {/* TAB CONTENT: HISTORIAL */}
             {staffActiveTab === 'historial' && (
               <div style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '24px', width: '100%', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }} className="animate-fade-in">
-                <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 20px 0' }}>Historial del Día (Operación de Hoy)</h3>
+                <h3 className="mi-section-header" style={{ fontSize: '1rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 20px 0' }}>Historial del Día (Operación de Hoy)</h3>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', position: 'relative', paddingLeft: '20px', borderLeft: '2px solid rgba(223, 178, 140, 0.12)' }}>
                   {[
@@ -3019,9 +3054,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             {staffActiveTab === 'notas' && (
               <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '24px', width: '100%' }} className="animate-fade-in">
                 <div style={{ flex: 1.5, background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '24px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 16px 0' }}>Bloc de Notas Internas</h3>
+                  <h3 className="mi-section-header" style={{ fontSize: '1rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 16px 0' }}>Bloc de Notas Internas</h3>
                   <textarea 
                     placeholder="Escribe notas generales sobre el desempeño, preferencias de materiales o avisos para esta especialista..."
+                    className="mi-input"
                     style={{
                       width: '100%', height: '180px', border: '1px solid rgba(223,178,140,0.15)', borderRadius: '16px',
                       background: '#faf6f5', padding: '16px', fontSize: '0.82rem', color: '#2d1b22', outline: 'none',
@@ -3032,13 +3068,13 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '14px' }}>
                     <button 
                       onClick={() => showToast?.('Notas guardadas correctamente', 'success')}
+                      className="mi-btn btn-hover-scale"
                       style={{
                         padding: '10px 24px', borderRadius: '12px', border: 'none',
                         background: 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)',
                         color: '#ffffff', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer',
                         boxShadow: '0 4px 12px rgba(201, 114, 130, 0.2)'
                       }}
-                      className="btn-hover-scale"
                     >
                       Guardar notas
                     </button>
@@ -3046,8 +3082,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 </div>
 
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                  <div style={{ background: '#fff0f2', border: '1px solid rgba(201, 114, 130,0.12)', borderRadius: '24px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.01)' }}>
-                    <h4 style={{ margin: '0 0 10px 0', fontSize: '0.85rem', color: '#a0506a', fontWeight: 750 }}>RECORDATORIO</h4>
+                  <div className="mi-card" style={{ background: '#fff0f2', border: '1px solid rgba(201, 114, 130,0.12)', borderRadius: '24px', padding: '24px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.01)' }}>
+                    <h4 className="mi-section-header" style={{ margin: '0 0 10px 0', fontSize: '0.85rem', color: '#a0506a', fontWeight: 750 }}>RECORDATORIO</h4>
                     <p style={{ fontSize: '0.78rem', color: '#2d1b22', lineHeight: '1.4' }}>Las notas son privadas y solo visibles para administradoras y dueñas del salón en esta consola de CRM.</p>
                   </div>
                 </div>
@@ -3114,6 +3150,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     </div>
                     <button
                       onClick={triggerCloseDetailedApp}
+                      className="mi-btn"
                       style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(255,255,255,0.15)', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', transition: 'all 0.2s' }}
                       onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.28)'; }}
                       onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; }}
@@ -3130,7 +3167,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.9)', fontWeight: 650 }}>
                         {formattedDate} · {formattedTime}
                       </span>
-                      <span style={{
+                      <span className="mi-tag" style={{
                         padding: '3px 10px', borderRadius: '20px', fontSize: '0.62rem', fontWeight: 800,
                         background: 'rgba(255,255,255,0.22)', color: '#fff', border: '1px solid rgba(255,255,255,0.3)'
                       }}>
@@ -3142,7 +3179,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '22px 24px 4px' }}>
                   {/* Client Card (Foto 2 Inspired) */}
-                  <div style={{
+                  <div className="mi-card" style={{
                     padding: '16px', borderRadius: '16px', border: '1.5px solid rgba(223,178,140,0.22)',
                     background: '#ffffff', boxShadow: '0 4px 12px rgba(74, 48, 54, 0.03)'
                   }}>
@@ -3172,10 +3209,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     </div>
 
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '12px' }}>
-                      <span style={{ fontSize: '0.66rem', fontWeight: 700, color: '#8c767b', background: '#faf6f5', border: '1px solid rgba(223,178,140,0.2)', borderRadius: '8px', padding: '4px 9px' }}>
+                      <span className="mi-tag" style={{ fontSize: '0.66rem', fontWeight: 700, color: '#8c767b', background: '#faf6f5', border: '1px solid rgba(223,178,140,0.2)', borderRadius: '8px', padding: '4px 9px' }}>
                         {clientPastAppointments.length > 0 ? `${clientPastAppointments.length} visita${clientPastAppointments.length === 1 ? '' : 's'} anterior${clientPastAppointments.length === 1 ? '' : 'es'}` : 'Primera visita'}
                       </span>
-                      <span style={{
+                      <span className="mi-tag" style={{
                         fontSize: '0.66rem', fontWeight: 700, borderRadius: '8px', padding: '4px 9px', border: '1px solid',
                         ...(selectedDetailedApp.status === 'Completado'
                           ? { color: '#16a34a', background: 'rgba(34,197,94,0.08)', borderColor: 'rgba(34,197,94,0.25)' }
@@ -3211,7 +3248,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   </div>
 
                   {/* Specialist & Service Card */}
-                  <div style={{
+                  <div className="mi-card" style={{
                     padding: '16px', borderRadius: '16px', border: '1.5px solid rgba(223,178,140,0.18)',
                     display: 'flex', flexDirection: 'column', gap: '12px', background: '#faf8f7'
                   }}>
@@ -3273,7 +3310,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         showToast?.('Cita completada con éxito', 'success');
                         triggerCloseDetailedApp();
                       }}
-                      className="drawer-btn drawer-btn-complete"
+                      className="drawer-btn drawer-btn-complete mi-btn"
                       style={{ height: '44px', fontSize: '0.8rem', borderRadius: '14px' }}
                     >
                       <Check size={14} strokeWidth={2.5} /> Completar
@@ -3287,7 +3324,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                           setShowScheduleModal(true);
                         }, 280);
                       }}
-                      className="drawer-btn drawer-btn-reprogram"
+                      className="drawer-btn drawer-btn-reprogram mi-btn"
                       style={{ height: '44px', fontSize: '0.8rem', borderRadius: '14px' }}
                     >
                       <Clock size={14} /> Reprogramar
@@ -3305,7 +3342,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                           setShowScheduleModal(true);
                         }, 280);
                       }}
-                      className="drawer-btn drawer-btn-edit"
+                      className="drawer-btn drawer-btn-edit mi-btn"
                       style={{ borderRadius: '12px' }}
                     >
                       <Pencil size={12} /> Editar Ficha
@@ -3328,7 +3365,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                             }
                           }
                         }}
-                        className="drawer-btn drawer-btn-noshow"
+                        className="drawer-btn drawer-btn-noshow mi-btn"
                         style={{ borderRadius: '12px' }}
                       >
                         <AlertTriangle size={12} /> No asistió (No-show)
@@ -3381,7 +3418,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         }
                       }
                     }}
-                    className="drawer-btn drawer-btn-danger"
+                    className="drawer-btn drawer-btn-danger mi-btn"
                     style={{ width: '100%', marginTop: '4px', borderRadius: '12px' }}
                   >
                     <XCircle size={12} /> Gestionar Cancelación / Eliminar Cita
@@ -3444,13 +3481,13 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         setLoading(false);
                       }
                     }}
+                    className="mi-btn btn-hover-scale"
                     style={{
                       padding: '5px 8px', fontSize: '0.68rem', textAlign: 'left', border: 'none', borderRadius: '6px',
                       background: isCurrent ? 'rgba(232, 162, 169, 0.15)' : 'transparent',
                       color: isCurrent ? '#a0506a' : '#2d1b22', fontWeight: isCurrent ? 750 : 500, cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between'
                     }}
-                    className="btn-hover-scale"
                   >
                     <span>{st}</span>
                     {isCurrent && <span style={{ fontSize: '0.6rem' }}>✓</span>}
@@ -3490,12 +3527,12 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   }
                 }
               }}
+              className="mi-btn"
               style={{
                 padding: '6px 8px', fontSize: '0.68rem', textAlign: 'left', border: 'none', borderRadius: '6px',
                 background: 'transparent', color: '#c97282', fontWeight: 650, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: '6px'
               }}
-              className="btn-hover-scale"
             >
               ⏰ Posponer / Retrasar...
             </button>
@@ -3521,12 +3558,12 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   }
                 }
               }}
+              className="mi-btn"
               style={{
                 padding: '6px 8px', fontSize: '0.68rem', textAlign: 'left', border: 'none', borderRadius: '6px',
                 background: 'rgba(220, 38, 38, 0.05)', color: '#dc2626', fontWeight: 700, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: '6px'
               }}
-              className="btn-hover-scale"
             >
               🗑️ Eliminar permanentemente
             </button>
@@ -3597,6 +3634,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       setLoading(false);
                     }
                   }}
+                  className="mi-btn"
                   style={{
                     padding: '8px 10px',
                     fontSize: '0.72rem',
@@ -3612,7 +3650,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     gap: '8px',
                     transition: 'all 0.18s'
                   }}
-                  className="btn-hover-scale"
+                  className="mi-btn btn-hover-scale"
                   onMouseEnter={(e) => {
                     e.currentTarget.style.background = st.bg;
                     e.currentTarget.style.color = st.color;

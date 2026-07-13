@@ -562,7 +562,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
   };
 
   return (
-    <div className="animate-fade-in" style={{ paddingBottom: isMobile ? '120px' : '60px' }}>
+    <div className="animate-fade-in mi-enter-up" style={{ paddingBottom: isMobile ? '120px' : '60px' }}>
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '100px' }}>
           <Loader2 className="animate-spin" color="#c97282" size={40} />
@@ -580,7 +580,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
           <div style={{ flex: isMobile ? 1 : 3, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '24px' }}>
             
              {/* Header */}
-             <div style={{ 
+             <div className="mi-enter-up" style={{ 
                display: 'flex', 
                justifyContent: 'space-between', 
                alignItems: 'center', 
@@ -637,9 +637,10 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               >
                 <Table size={14} style={{ marginRight: '6px', verticalAlign: 'middle' }} /> Tabla
               </button>
-              <button 
+              <button
+                className="mi-btn"
                 onClick={() => setIsCategoriesModalOpen(true)}
-                style={{ 
+                style={{
                   padding: '8px 18px', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)',
                   backgroundColor: '#ffffff', color: 'var(--text-secondary)',
                   cursor: 'pointer', fontSize: '13px', fontWeight: '700', transition: 'all 0.2s'
@@ -649,9 +650,10 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               >
                 Categorías
               </button>
-              <button 
+              <button
+                className="mi-btn"
                 onClick={() => setIsStrategiesModalOpen(true)}
-                style={{ 
+                style={{
                   padding: '8px 18px', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)',
                   backgroundColor: '#ffffff', color: 'var(--text-secondary)',
                   cursor: 'pointer', fontSize: '13px', fontWeight: '700', transition: 'all 0.2s'
@@ -661,9 +663,10 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               >
                 Estrategias
               </button>
-              <button 
+              <button
+                className="mi-btn"
                 onClick={() => setIsBillableExtrasModalOpen(true)}
-                style={{ 
+                style={{
                   padding: '8px 18px', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.15)',
                   backgroundColor: '#ffffff', color: 'var(--text-secondary)',
                   cursor: 'pointer', fontSize: '13px', fontWeight: '700', transition: 'all 0.2s'
@@ -674,10 +677,10 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                 Extras
               </button>
               <button 
-                className="btn-pink"
+                className="btn-pink mi-btn"
                 onClick={() => {
                   setIsEditing(false);
-                  setNewService({ 
+                  setNewService({
                     name: '', price: '', icon: 'Scissors', category: 'Estilismo',
                     strategy_type: 'MVP', duration: 30, insumo_cost: 0, variable_cost: 0.50,
                     description: '', included_items: [],
@@ -696,9 +699,9 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
             </div>
             
             {/* Stat Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px' }}>
+            <div className="mi-enter-up mi-delay-1" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px' }}>
               {/* Servicios activos */}
-              <div style={{ background: '#ffffff', borderRadius: '20px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.03)', border: '1px solid rgba(212, 160, 154, 0.15)' }}>
+              <div className="mi-stat" style={{ background: '#ffffff', borderRadius: '20px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.03)', border: '1px solid rgba(212, 160, 154, 0.15)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                   <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: '#fdf3f4', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a' }}>
                     <LayoutGrid size={20} />
@@ -712,7 +715,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               </div>
               
               {/* Categorías */}
-              <div style={{ background: '#ffffff', borderRadius: '20px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.03)', border: '1px solid rgba(212, 160, 154, 0.15)' }}>
+              <div className="mi-stat mi-delay-2" style={{ background: '#ffffff', borderRadius: '20px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.03)', border: '1px solid rgba(212, 160, 154, 0.15)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                   <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: '#f5f6fc', border: '1px solid rgba(99, 102, 241, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6366f1' }}>
                     <Settings size={20} />
@@ -726,7 +729,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               </div>
               
               {/* Más reservado */}
-              <div style={{ background: '#ffffff', borderRadius: '20px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.03)', border: '1px solid rgba(212, 160, 154, 0.15)' }}>
+              <div className="mi-stat mi-delay-3" style={{ background: '#ffffff', borderRadius: '20px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.03)', border: '1px solid rgba(212, 160, 154, 0.15)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                   <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: '#fff5f5', border: '1px solid rgba(239,68,68,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444' }}>
                     <Heart size={20} />
@@ -740,7 +743,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               </div>
               
               {/* Ticket promedio */}
-              <div style={{ background: '#ffffff', borderRadius: '20px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.03)', border: '1px solid rgba(212, 160, 154, 0.15)' }}>
+              <div className="mi-stat mi-delay-4" style={{ background: '#ffffff', borderRadius: '20px', padding: '20px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.03)', border: '1px solid rgba(212, 160, 154, 0.15)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                   <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: '#fff9ef', border: '1px solid rgba(245,158,11,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f59e0b' }}>
                     <DollarSign size={20} />
@@ -759,8 +762,8 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               {/* Search */}
               <div style={{ position: 'relative', flex: '1 1 200px', minWidth: '200px' }}>
                 <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#c48b9f' }} />
-                <input 
-                  className="form-input"
+                <input
+                  className="form-input mi-input"
                   placeholder="Buscar servicio..."
                   value={searchQuery}
                   onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }}
@@ -770,7 +773,8 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               
               {/* Category Filter */}
               <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px', WebkitOverflowScrolling: 'touch' }}>
-                <button 
+                <button
+                  className="mi-btn mi-chip"
                   onClick={() => { setCategoryFilter('Todas'); setCurrentPage(1); }}
                   style={{
                     padding: '8px 14px', borderRadius: '12px', cursor: 'pointer',
@@ -784,6 +788,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                 </button>
                 {categories.map(cat => (
                   <button
+                    className="mi-btn mi-chip"
                     key={cat.id}
                     onClick={() => { setCategoryFilter(cat.name); setCurrentPage(1); }}
                     style={{
@@ -801,7 +806,8 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               
               {/* Sort selector */}
               <div style={{ position: 'relative', marginLeft: isMobile ? '0' : 'auto' }}>
-                <button 
+                <button
+                  className="mi-btn"
                   onClick={() => setSortByOpen(!sortByOpen)}
                   style={{
                     height: '42px', padding: '0 16px', borderRadius: '14px', border: '1px solid rgba(212, 160, 154, 0.25)',
@@ -851,13 +857,13 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
             
             {/* │ │ │  SERVICE CARDS GRID │ │ │  */}
             {viewMode === 'grid' || isMobile ? (
-              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+              <div className="mi-enter-up mi-delay-2" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
                 {paginatedServices.map(service => {
                   const badge = getBadge(service);
                   return (
-                    <div 
+                    <div
                       key={service.id}
-                      className="glass-card"
+                      className="glass-card mi-card"
                       style={{ 
                         background: 'linear-gradient(135deg, #ffffff 0%, #fffbfb 100%)', borderRadius: '22px', boxShadow: '0 6px 20px rgba(74, 48, 54, 0.03)',
                         border: '1px solid rgba(212, 160, 154, 0.2)', padding: '24px',
@@ -881,7 +887,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                           {service.icon ? getIconComponent(service.icon, 22) : getCategoryIcon(service.category)}
                         </div>
                         {badge && (
-                          <span style={{ 
+                          <span className="mi-tag" style={{
                             padding: '4px 10px', borderRadius: '12px', fontSize: '9px', fontWeight: '800',
                             backgroundColor: badge.bg, color: badge.color, textTransform: 'uppercase', letterSpacing: '0.5px'
                           }}>
@@ -893,9 +899,9 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                         <h4 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', }}>
                           {service.name}
                         </h4>
-                        <span style={{ fontSize: '10px', fontWeight: '700', color: '#c97282', textTransform: 'uppercase', letterSpacing: '0.4px', marginTop: '2px', display: 'block' }}>
-                          {service.category}
-                        </span>
+                          <span style={{ fontSize: '10px', fontWeight: '700', color: '#c97282', textTransform: 'uppercase', letterSpacing: '0.4px', marginTop: '2px', display: 'block' }}>
+                           {service.category}
+                         </span>
                       </div>
                       {service.description && (
                         <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0, lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
@@ -918,25 +924,25 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                         </div>
                         <div style={{ display: 'flex', gap: '6px' }} onClick={e => e.stopPropagation()}>
                           {service.isGroup ? (
-                            <button 
+                            <button
                               onClick={() => setSelectedServiceDetail(service)}
-                              className="action-btn"
+                              className="action-btn mi-btn"
                               style={{ width: 'auto', height: '30px', padding: '0 12px', fontSize: '11px', fontWeight: '700', borderRadius: '10px', color: '#c97282', background: '#faf3f2', border: '1px solid rgba(201, 114, 130, 0.15)' }}
                             >
                               Ver opciones
                             </button>
                           ) : (
                             <>
-                              <button 
-                                className="action-btn" 
-                                onClick={() => handleEditClick(service)} 
+                              <button
+                                className="action-btn mi-btn"
+                                onClick={() => handleEditClick(service)}
                                 style={{ width: '30px', height: '30px', borderRadius: '10px', color: 'var(--text-secondary)', background: '#faf3f2', border: '1px solid rgba(201, 114, 130, 0.15)' }}
                               >
                                 <Edit2 size={13} />
                               </button>
-                              <button 
-                                onClick={() => handleDeleteService(service.id, service.name)} 
-                                className="action-btn" 
+                              <button
+                                onClick={() => handleDeleteService(service.id, service.name)}
+                                className="action-btn mi-btn"
                                 style={{ width: '30px', height: '30px', borderRadius: '10px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.05)', border: '1px solid rgba(255,69,58,0.1)' }}
                               >
                                 <Trash2 size={13} />
@@ -985,7 +991,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                           </div>
                         </td>
                         <td style={{ padding: '14px 20px' }}>
-                          <span style={{ fontSize: '10px', fontWeight: '700', color: '#c97282', backgroundColor: '#faf3f2', padding: '4px 10px', borderRadius: '8px', border: '1px solid rgba(201, 114, 130, 0.1)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                          <span className="mi-tag" style={{ fontSize: '10px', fontWeight: '700', color: '#c97282', backgroundColor: '#faf3f2', padding: '4px 10px', borderRadius: '8px', border: '1px solid rgba(201, 114, 130, 0.1)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
                             {service.category}
                           </span>
                         </td>

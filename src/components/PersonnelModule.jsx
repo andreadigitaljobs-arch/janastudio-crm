@@ -426,14 +426,14 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
   };
 
   return (
-    <div className="animate-fade-in" style={{ paddingBottom: isMobile ? '120px' : '60px' }}>
+    <div className="animate-fade-in mi-enter-up" style={{ paddingBottom: isMobile ? '120px' : '60px' }}>
       <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '24px' }}>
         
         {/* LEFT COLUMN */}
         <div style={{ flex: isMobile ? 1 : 3, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
           {/* Header */}
-          <div style={{ 
+          <div className="mi-enter-up" style={{ 
             display: 'flex', 
             justifyContent: 'space-between', 
             alignItems: 'center', 
@@ -461,14 +461,15 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
               </div>
             </div>
             <div style={{ display: 'flex', gap: '12px', width: isMobile ? '100%' : 'auto', flexWrap: 'wrap', zIndex: 1 }}>
-              <button 
+              <button
+                className="mi-btn"
                 onClick={() => setIsRoleModalOpen(true)}
                 style={{ padding: '10px 20px', borderRadius: '14px', border: '1px solid var(--border-color)', background: 'white', color: 'var(--text-secondary)', fontWeight: '700', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
               >
                 <Shield size={16} /> Roles
               </button>
-              <button 
-                className="btn-pink"
+              <button
+                className="btn-pink mi-btn"
                 onClick={() => setShowForm(true)}
                 style={{ padding: '10px 20px', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '700' }}
               >
@@ -479,8 +480,8 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
           </div>
 
           {/* Stat Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px' }}>
-            <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+          <div className="mi-enter-up mi-delay-1" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px' }}>
+            <div className="mi-stat" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                 <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c48b9f' }}><Users size={18} /></div>
                 <div>
@@ -490,7 +491,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
               </div>
               <div style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>+2 este mes <TrendingUp size={14} color="#c48b9f" /></div>
             </div>
-            <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+            <div className="mi-stat mi-delay-2" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                 <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(168,85,247,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a855f7' }}><Calendar size={18} /></div>
                 <div>
@@ -500,7 +501,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
               </div>
               <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{Math.round((availableToday / Math.max(activeCount, 1)) * 100)}% del equipo <TrendingUp size={14} color="#a855f7" /></div>
             </div>
-            <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+            <div className="mi-stat mi-delay-3" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                 <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(34,197,94,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#22c55e' }}><Check size={18} /></div>
                 <div>
@@ -510,7 +511,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
               </div>
               <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Actualizados recientemente <TrendingUp size={14} color="#22c55e" /></div>
             </div>
-            <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+            <div className="mi-stat mi-delay-4" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                 <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(245,158,11,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f59e0b' }}><Star size={18} /></div>
                 <div>
@@ -526,9 +527,9 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
             <div style={{ position: 'relative', flex: '1 1 200px', minWidth: '200px' }}>
               <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-              <input 
-                className="form-input"
-                placeholder="Buscar miembro por nombre, rol o teléfono..."
+                <input
+                  className="form-input mi-input"
+                  placeholder="Buscar miembro por nombre, rol o teléfono..."
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
                 style={{ width: '100%', paddingLeft: '38px', height: '40px', borderRadius: '12px', fontSize: '13px', background: 'white', border: '1px solid var(--border-color)' }}
@@ -537,6 +538,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
               {defaultRoles.map(role => (
                 <button
+                  className="mi-btn mi-chip"
                   key={role}
                   onClick={() => setRoleFilter(role)}
                   style={{
@@ -551,13 +553,15 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                 </button>
               ))}
             </div>
-            <button 
+            <button
+              className="mi-btn"
               onClick={() => setViewMode('grid')}
               style={{ padding: '8px 14px', borderRadius: '10px', border: '1px solid var(--border-color)', background: viewMode === 'grid' ? 'var(--pink-primary)' : 'white', color: viewMode === 'grid' ? 'white' : 'var(--text-muted)', cursor: 'pointer', fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}
             >
               <LayoutGrid size={14} /> Tarjetas
             </button>
-            <button 
+            <button
+              className="mi-btn"
               onClick={() => setViewMode('table')}
               style={{ padding: '8px 14px', borderRadius: '10px', border: '1px solid var(--border-color)', background: viewMode === 'table' ? 'var(--pink-primary)' : 'white', color: viewMode === 'table' ? 'white' : 'var(--text-muted)', cursor: 'pointer', fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}
             >
@@ -593,7 +597,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                     const statusStyle = getStatusInfo(person);
                     return (
                       <React.Fragment key={person.id}>
-                        <tr style={{ borderBottom: '1px solid var(--border-color)' }} className="table-row-hover">
+                        <tr className="table-row-hover mi-row" style={{ borderBottom: '1px solid var(--border-color)' }}>
                           <td style={{ padding: '12px 16px' }}>
                             <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '12px', overflow: 'hidden' }}>
                               {person.image_url ? <img src={person.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : (person.name || '?')[0].toUpperCase()}
@@ -622,10 +626,10 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                           <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--text-secondary)' }}>{person.email || '—'}</td>
                           <td style={{ padding: '12px 16px' }}>
                             <div style={{ display: 'flex', gap: '6px' }}>
-                              <button className="action-btn" onClick={() => setProfileModalData(person)} title="Ver Perfil" style={{ width: '30px', height: '30px' }}><Eye size={14} /></button>
-                              <button className="action-btn" onClick={() => handleEditClick(person)} title="Editar" style={{ width: '30px', height: '30px' }}><Edit2 size={14} /></button>
-                              <button className="action-btn" onClick={() => setIsRoleModalOpen(true)} title="Permisos" style={{ width: '30px', height: '30px' }}><Shield size={14} /></button>
-                              <button className="action-btn" onClick={() => handleDeleteStaff(person.id, person.name)} title="Archivar" style={{ width: '30px', height: '30px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.05)' }}><Trash2 size={14} /></button>
+                              <button className="action-btn mi-btn" onClick={() => setProfileModalData(person)} title="Ver Perfil" style={{ width: '30px', height: '30px' }}><Eye size={14} /></button>
+                              <button className="action-btn mi-btn" onClick={() => handleEditClick(person)} title="Editar" style={{ width: '30px', height: '30px' }}><Edit2 size={14} /></button>
+                              <button className="action-btn mi-btn" onClick={() => setIsRoleModalOpen(true)} title="Permisos" style={{ width: '30px', height: '30px' }}><Shield size={14} /></button>
+                              <button className="action-btn mi-btn" onClick={() => handleDeleteStaff(person.id, person.name)} title="Archivar" style={{ width: '30px', height: '30px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.05)' }}><Trash2 size={14} /></button>
                             </div>
                           </td>
                         </tr>
@@ -643,7 +647,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                 const perf = 88 + (idx * 3 % 12);
                 const statusStyle = getStatusInfo(person);
                 return (
-                  <div key={person.id} style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div key={person.id} className="mi-card" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '14px', overflow: 'hidden', flexShrink: 0 }}>
                         {person.image_url ? <img src={person.image_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : (person.name || '?')[0].toUpperCase()}
@@ -663,9 +667,9 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: '6px' }}>
-                      <button className="action-btn" onClick={() => setProfileModalData(person)} style={{ flex: 1, height: '32px' }}><Eye size={14} /> Perfil</button>
-                      <button className="action-btn" onClick={() => handleEditClick(person)} style={{ flex: 1, height: '32px' }}><Edit2 size={14} /> Editar</button>
-                      <button className="action-btn" onClick={() => handleDeleteStaff(person.id, person.name)} style={{ height: '32px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.05)' }}><Trash2 size={14} /></button>
+                      <button className="action-btn mi-btn" onClick={() => setProfileModalData(person)} style={{ flex: 1, height: '32px' }}><Eye size={14} /> Perfil</button>
+                      <button className="action-btn mi-btn" onClick={() => handleEditClick(person)} style={{ flex: 1, height: '32px' }}><Edit2 size={14} /> Editar</button>
+                      <button className="action-btn mi-btn" onClick={() => handleDeleteStaff(person.id, person.name)} style={{ height: '32px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.05)' }}><Trash2 size={14} /></button>
                     </div>
                   </div>
                 );
@@ -674,7 +678,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
           )}
 
           {/* Próximos turnos */}
-          <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+          <div className="mi-card" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <h4 style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Calendar size={16} color="#c48b9f" /> Próximos turnos del equipo
@@ -708,7 +712,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
           <div style={{ width: '300px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
             
             {/* Resumen del equipo */}
-            <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+            <div className="mi-card" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
               <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '6px' }}><Users size={14} color="#c48b9f" /> Resumen del equipo</h4>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 {[
@@ -726,7 +730,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
             </div>
 
             {/* Top desempeño */}
-            <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+            <div className="mi-card" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}><TrendingUp size={14} color="#c48b9f" /> Top desempeño</h4>
                 <button style={{ fontSize: '11px', color: 'var(--pink-primary)', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer' }}>Ver todo</button>
@@ -755,7 +759,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
             </div>
 
             {/* Notas internas */}
-            <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+            <div className="mi-card" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}><Mail size={14} color="#c48b9f" /> Notas internas</h4>
                 <button style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'var(--pink-primary)', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Plus size={14} /></button>

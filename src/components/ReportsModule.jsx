@@ -197,7 +197,7 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
 
   return (
     <div>
-      <div style={{ 
+      <div className="mi-enter-up" style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center', 
@@ -215,7 +215,7 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
           <div style={{ width: isMobile ? '38px' : '46px', height: isMobile ? '38px' : '46px', borderRadius: isMobile ? '12px' : '14px', background: 'var(--magenta-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 20px rgba(160, 80, 106, 0.15)', flexShrink: 0 }}>
             <BarChart3 size={isMobile ? 16 : 20} color="white" />
           </div>
-          <div>
+    <div className="mi-enter-up">
             <h1 className="jana-page-title" style={{ margin: 0, fontSize: isMobile ? '20px' : '28px', letterSpacing: '-0.6px', fontWeight: '850', color: 'var(--text-primary)' }}>
               Reportes
             </h1>
@@ -225,10 +225,10 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
           </div>
         </div>
         <div style={{ display: 'flex', gap: '10px', width: isMobile ? '100%' : 'auto' }}>
-          <button style={{ padding: '10px 20px', borderRadius: '12px', border: '2px solid var(--pink-primary)', background: 'white', color: 'var(--pink-primary)', fontWeight: '800', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', flex: isMobile ? 1 : 'none', justifyContent: 'center' }}>
+          <button className="mi-btn" style={{ padding: '10px 20px', borderRadius: '12px', border: '2px solid var(--pink-primary)', background: 'white', color: 'var(--pink-primary)', fontWeight: '800', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', flex: isMobile ? 1 : 'none', justifyContent: 'center' }}>
             <Download size={16} /> Exportar PDF
           </button>
-          <button className="btn-pink" style={{ padding: '10px 20px', borderRadius: '12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px', flex: isMobile ? 1 : 'none', justifyContent: 'center' }}>
+          <button className="btn-pink mi-btn" style={{ padding: '10px 20px', borderRadius: '12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px', flex: isMobile ? 1 : 'none', justifyContent: 'center' }}>
             <Calendar size={16} /> Programar Reporte
           </button>
         </div>
@@ -274,14 +274,14 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
         </div>
       </div>
 
-      <section style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px', marginBottom: '28px' }}>
+      <section className="mi-enter-up mi-delay-1" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px', marginBottom: '28px' }}>
         {[
           { label: 'INGRESOS TOTALES', value: `Bs. ${formatBs(ingresosTotales)}`, icon: <BarChart3 size={14} />, trend: '+12.4%', trendUp: true, sub: 'vs período anterior' },
           { label: 'CITAS COMPLETADAS', value: citasCompletadas.toString(), icon: <CheckCircle size={14} />, trend: '+8.1%', trendUp: true, sub: 'vs período anterior' },
           { label: 'TICKET PROMEDIO', value: `Bs. ${formatBs(ticketPromedio)}`, icon: <Target size={14} />, trend: '+5.9%', trendUp: true, sub: 'vs período anterior' },
           { label: 'TASA DE RETENCIÓN', value: `${tasaRetencion}%`, icon: <Users size={14} />, trend: '+6.3%', trendUp: true, sub: 'vs período anterior' },
         ].map((s, i) => (
-          <div key={i} style={statCard}>
+          <div key={i} className={`mi-stat mi-delay-${i + 1}`} style={statCard}>
             <div style={{ fontSize: '10px', color: 'var(--pink-primary)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <div style={{ width: '28px', height: '28px', borderRadius: '8px', backgroundColor: REPORT_COLORS.pinkLight, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {s.icon}
@@ -299,8 +299,8 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
         ))}
       </section>
 
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap: '24px', marginBottom: '28px' }}>
-        <div style={sectionCard}>
+      <div className="mi-enter-up mi-delay-2" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '2fr 1fr', gap: '24px', marginBottom: '28px' }}>
+        <div className="mi-card" style={sectionCard}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
             <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)' }}>Ingresos y Reservas</h3>
             <select style={{ padding: '4px 10px', borderRadius: '8px', border: '1px solid var(--border-color)', fontSize: '11px', fontWeight: '600', color: 'var(--text-secondary)', background: 'white', cursor: 'pointer' }}>
@@ -322,7 +322,7 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
           <MiniLineChart data={chartIngresos} color="#c48b9f" label="ingresos" height={180} />
         </div>
 
-        <div style={sectionCard}>
+        <div className="mi-card" style={sectionCard}>
           <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '20px' }}>Distribución de Ventas</h3>
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
             <DonutChart data={distribucionVentas} size={140} />
@@ -338,7 +338,7 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
           </div>
         </div>
 
-        <div style={sectionCard}>
+        <div className="mi-card" style={sectionCard}>
           <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '20px' }}>Objetivos del Mes</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {[
@@ -365,15 +365,15 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '24px', marginBottom: '28px' }}>
-        <div style={sectionCard}>
+      <div className="mi-enter-up mi-delay-3" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '24px', marginBottom: '28px' }}>
+        <div className="mi-card" style={sectionCard}>
           <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '16px' }}>Servicios Más Rentables</h3>
           {serviciosData.map((s, i) => (
             <HorizontalBar key={i} label={s.name} value={s.value} maxVal={serviciosData[0].value} color={s.color} amount={s.value} />
           ))}
         </div>
 
-        <div style={sectionCard}>
+        <div className="mi-card" style={sectionCard}>
           <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '16px' }}>Rendimiento del Equipo</h3>
           {isMobile ? (
             /* MOBILE: tarjetas de especialista */
@@ -425,7 +425,7 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
           )}
         </div>
 
-        <div style={sectionCard}>
+        <div className="mi-card" style={sectionCard}>
           <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '16px' }}>Horas de Mayor Demanda</h3>
           <div style={{ overflowX: 'auto' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '60px repeat(19, 1fr)', gap: '2px', minWidth: '320px' }}>
@@ -453,8 +453,8 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '24px', marginBottom: '28px' }}>
-        <div style={sectionCard}>
+      <div className="mi-enter-up mi-delay-4" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '24px', marginBottom: '28px' }}>
+        <div className="mi-card" style={sectionCard}>
           <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '16px' }}>Clientes Recurrentes</h3>
           {isMobile ? (
             /* MOBILE: tarjetas de clientes */
@@ -505,7 +505,7 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
           )}
         </div>
 
-        <div style={sectionCard}>
+        <div className="mi-card" style={sectionCard}>
           <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '16px' }}>Resumen Ejecutivo</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {[
@@ -522,7 +522,7 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
           </div>
         </div>
 
-        <div style={sectionCard}>
+        <div className="mi-card" style={sectionCard}>
           <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '16px' }}>Recomendaciones</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {[

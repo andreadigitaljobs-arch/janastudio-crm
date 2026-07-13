@@ -447,7 +447,7 @@ const DashboardModule = ({
                   Recibe avisos al instante
                 </span>
               </div>
-              <span style={{
+              <span className="mi-btn" style={{
                 padding: '6px 14px', borderRadius: '10px',
                 background: 'linear-gradient(135deg, #c97282, #a0506a)',
                 color: '#fff', fontSize: '0.68rem', fontWeight: '700',
@@ -526,6 +526,7 @@ const DashboardModule = ({
             </p>
             <button
               onClick={() => onOpenSale()}
+              className="mi-btn"
               style={{
                 alignSelf: 'flex-start',
                 padding: '8px 16px',
@@ -550,7 +551,7 @@ const DashboardModule = ({
         {/* Stats Grid 2x2 */}
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '10px', width: '100%' }}>
             {/* Card 1: Citas del día */}
-            <div style={{
+            <div className="mi-stat mi-enter-up mi-delay-0" style={{
               background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)',
               backdropFilter: 'blur(16px)',
               borderRadius: '20px',
@@ -591,7 +592,7 @@ const DashboardModule = ({
             </div>
 
             {/* Card 2: Nuevas clientes */}
-            <div style={{
+            <div className="mi-stat mi-enter-up mi-delay-1" style={{
               background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)',
               backdropFilter: 'blur(16px)',
               borderRadius: '20px',
@@ -630,7 +631,7 @@ const DashboardModule = ({
             </div>
 
             {/* Card 3: Más reservado */}
-            <div style={{
+            <div className="mi-stat mi-enter-up mi-delay-2" style={{
               background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)',
               backdropFilter: 'blur(16px)',
               borderRadius: '20px',
@@ -675,7 +676,7 @@ const DashboardModule = ({
             </div>
 
             {/* Card 4: Ocupación del equipo */}
-            <div style={{
+            <div className="mi-stat mi-enter-up mi-delay-3" style={{
               background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)',
               backdropFilter: 'blur(16px)',
               borderRadius: '20px',
@@ -713,7 +714,7 @@ const DashboardModule = ({
         </div>
 
           {/* Divider + Mini Reportes */}
-          <div style={{
+          <div className="mi-card mi-enter-up mi-delay-4" style={{
             background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)',
             backdropFilter: 'blur(16px)',
             borderRadius: '20px',
@@ -725,7 +726,7 @@ const DashboardModule = ({
             boxShadow: '0 4px 20px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h4 style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>
+              <h4 className="mi-section-header" style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>
                 Reportes
               </h4>
               <span onClick={() => onNavigate('reports')} style={{ fontSize: '0.7rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}>
@@ -753,7 +754,7 @@ const DashboardModule = ({
           </div>
 
         {/* Agenda de hoy Timeline Card */}
-        <div style={{
+        <div className="mi-card mi-enter-up mi-delay-5" style={{
           background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)',
           backdropFilter: 'blur(16px)',
           borderRadius: '24px',
@@ -765,7 +766,7 @@ const DashboardModule = ({
           boxShadow: '0 4px 20px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{
+            <h3 className="mi-section-header" style={{
               fontSize: '1rem',
               fontWeight: '700',
               color: 'var(--text-primary)',
@@ -799,7 +800,7 @@ const DashboardModule = ({
                 const sStyle = getStatusStyle(apt.status);
                 const isNext = idx === 0;
                 return (
-                  <div key={idx} style={{
+                  <div key={idx} className="mi-row" style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: '10px',
@@ -872,7 +873,7 @@ const DashboardModule = ({
         </div>
 
         {/* Top Servicios */}
-        <div style={{
+        <div className="mi-card mi-enter-up mi-delay-6" style={{
           background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)',
           backdropFilter: 'blur(16px)',
           borderRadius: '24px',
@@ -884,7 +885,7 @@ const DashboardModule = ({
           boxShadow: '0 4px 20px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{
+            <h3 className="mi-section-header" style={{
               fontSize: '0.9rem',
               fontWeight: '700',
               color: 'var(--text-primary)',
@@ -911,6 +912,7 @@ const DashboardModule = ({
                   <div 
                     key={idx} 
                     onClick={() => onNavigate('services')}
+                    className="mi-row"
                     style={{ 
                       display: 'flex', 
                       flexDirection: 'column', 
@@ -977,7 +979,7 @@ const DashboardModule = ({
         </div>
 
         {/* Top Especialistas */}
-        <div style={{
+        <div className="mi-card mi-enter-up mi-delay-7" style={{
           background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)',
           backdropFilter: 'blur(16px)',
           borderRadius: '24px',
@@ -989,7 +991,7 @@ const DashboardModule = ({
           boxShadow: '0 4px 20px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{
+            <h3 className="mi-section-header" style={{
               fontSize: '0.9rem',
               fontWeight: '700',
               color: 'var(--text-primary)',
@@ -1011,6 +1013,7 @@ const DashboardModule = ({
                 <div 
                   key={idx} 
                   onClick={() => onNavigate('personnel')}
+                  className="mi-row"
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -1059,7 +1062,7 @@ const DashboardModule = ({
 
         {/* Servicios Destacados Gallery */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <h3 style={{
+          <h3 className="mi-section-header" style={{
             fontSize: '0.95rem',
             fontWeight: '700',
             color: 'var(--text-primary)',
@@ -1086,6 +1089,7 @@ const DashboardModule = ({
               <div 
                 key={idx} 
                 onClick={() => onNavigate('services')}
+                className="mi-card"
                 style={{
                   flexShrink: 0,
                   width: '200px',
@@ -1175,6 +1179,7 @@ const DashboardModule = ({
             </span>
           </div>
           <button
+            className="mi-btn"
             onClick={(e) => {
               e.stopPropagation();
               if (!('Notification' in window)) {
@@ -1218,7 +1223,7 @@ const DashboardModule = ({
       )}
 
       {/* ── HERO BANNER ── */}
-      <div style={{
+      <div className="mi-card mi-enter-up mi-delay-0" style={{
         borderRadius: '28px',
         position: 'relative',
         overflow: 'hidden',
@@ -1245,6 +1250,7 @@ const DashboardModule = ({
             Aquí tienes un resumen de tu estudio hoy.
           </p>
           <button
+            className="mi-btn mi-enter-pop"
             onClick={() => onNavigate('scheduling')}
             style={{ alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 22px', borderRadius: '12px', background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)', color: '#ffffff', fontSize: '0.82rem', fontWeight: '600', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(201, 114, 130, 0.35), inset 0 1px 1px rgba(255,255,255,0.15)', transition: 'all 0.2s' }}
             onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(201, 114, 130, 0.45), inset 0 1px 1px rgba(255,255,255,0.2)' }}
@@ -1268,6 +1274,7 @@ const DashboardModule = ({
             <button
               key={idx}
               onClick={item.action}
+              className="mi-btn mi-enter-pop"
               style={{
                 display: 'flex', alignItems: 'center', gap: '8px',
                 padding: '10px 18px', borderRadius: '14px',
@@ -1292,7 +1299,7 @@ const DashboardModule = ({
       {/* ── WIDGETS OPERATIVOS ── */}
       <div className="dashboard-kpi-row">
         {/* Card 1: Citas del día */}
-        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', transition: 'all 0.3s ease' }}>
+        <div className="mi-stat mi-enter-up mi-delay-1" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', transition: 'all 0.3s ease' }}>
           <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'linear-gradient(135deg, #fdf3f4 0%, #fce8ec 100%)', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
             <Calendar size={22} />
           </div>
@@ -1306,7 +1313,7 @@ const DashboardModule = ({
         </div>
 
         {/* Card 2: Nuevas clientes */}
-        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', transition: 'all 0.3s ease' }}>
+        <div className="mi-stat mi-enter-up mi-delay-2" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', transition: 'all 0.3s ease' }}>
           <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'linear-gradient(135deg, #fdf3f4 0%, #fce8ec 100%)', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
             <UserPlus size={22} />
           </div>
@@ -1320,7 +1327,7 @@ const DashboardModule = ({
         </div>
 
         {/* Card 4: Más reservado */}
-        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', transition: 'all 0.3s ease' }}>
+        <div className="mi-stat mi-enter-up mi-delay-3" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', transition: 'all 0.3s ease' }}>
           <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'linear-gradient(135deg, #fdf3f4 0%, #fce8ec 100%)', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
             <Sparkles size={22} />
           </div>
@@ -1331,7 +1338,7 @@ const DashboardModule = ({
           </div>
         </div>
         {/* Card 5: Ocupación del equipo */}
-        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', transition: 'all 0.3s ease' }}>
+        <div className="mi-stat mi-enter-up mi-delay-4" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '20px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', transition: 'all 0.3s ease' }}>
           <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'linear-gradient(135deg, #fdf3f4 0%, #fce8ec 100%)', border: '1px solid rgba(160, 80, 106, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
             <Activity size={22} />
           </div>
@@ -1349,10 +1356,10 @@ const DashboardModule = ({
       <div className="dashboard-main-row">
 
         {/* AGENDA DE HOY */}
-        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '24px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
+        <div className="mi-card mi-enter-up mi-delay-5" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '24px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>
+              <h3 className="mi-section-header" style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>
                 Agenda de hoy
               </h3>
               <span onClick={() => onNavigate('scheduling')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -1370,7 +1377,7 @@ const DashboardModule = ({
                 const sStyle = getStatusStyle(apt.status);
                 const isNext = idx === 0;
                 return (
-                  <div key={idx} style={{
+                  <div key={idx} className="mi-row" style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: '12px',
@@ -1412,6 +1419,7 @@ const DashboardModule = ({
           </div>
 
           <button
+            className="mi-btn"
             onClick={() => onNavigate('scheduling')}
             style={{ width: '100%', padding: '12px 0', borderRadius: '12px', background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)', color: '#ffffff', border: 'none', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer', boxShadow: '0 4px 15px rgba(201, 114, 130, 0.3), inset 0 1px 1px rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', transition: 'all 0.2s', marginTop: 'auto' }}
             onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(201, 114, 130, 0.35)' }}
@@ -1422,9 +1430,9 @@ const DashboardModule = ({
         </div>
 
         {/* TOP SERVICIOS */}
-        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '24px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
+        <div className="mi-card mi-enter-up mi-delay-6" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '24px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>
+            <h3 className="mi-section-header" style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>
               Top servicios
             </h3>
             <span onClick={() => onNavigate('services')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -1444,6 +1452,7 @@ const DashboardModule = ({
                 <div
                   key={idx}
                   onClick={() => onNavigate('services')}
+                  className="mi-row"
                   style={{ display: 'flex', flexDirection: 'column', gap: '4px', background: '#faf3f2', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', border: '1px solid rgba(212, 160, 154, 0.08)' }}
                   onMouseEnter={(e) => { e.currentTarget.style.background = '#f5e8e6'; e.currentTarget.style.transform = 'translateY(-1px)' }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = '#faf3f2'; e.currentTarget.style.transform = 'none' }}
@@ -1581,9 +1590,9 @@ const DashboardModule = ({
         </div>
 
         {/* TOP ESPECIALISTAS */}
-        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '22px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', gap: '0' }}>
+        <div className="mi-card mi-enter-up mi-delay-7" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '22px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', gap: '0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>Top especialistas</h3>
+            <h3 className="mi-section-header" style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>Top especialistas</h3>
             <span onClick={() => onNavigate('personnel')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
               Ver todo <ChevronRight size={13} />
             </span>
@@ -1594,7 +1603,7 @@ const DashboardModule = ({
             {TOP_SPECIALISTS.slice(0, 3).map((spec, idx) => {
               const maxEarnings = TOP_SPECIALISTS[0]?.earnings || 1;
               return (
-                <div key={idx} style={{
+                <div key={idx} className="mi-row" style={{
                   display: 'flex', alignItems: 'center', gap: '10px',
                   padding: '10px 0',
                   borderBottom: idx < 2 ? '1px solid rgba(201,114,130,0.08)' : 'none'
@@ -1636,9 +1645,9 @@ const DashboardModule = ({
         </div>
 
         {/* REPORTES */}
-        <div style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '22px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', gap: '6px', justifyContent: 'center' }}>
+        <div className="mi-card mi-enter-up mi-delay-8" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '22px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', gap: '6px', justifyContent: 'center' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h4 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>Reportes</h4>
+            <h4 className="mi-section-header" style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>Reportes</h4>
             <span onClick={() => onNavigate('reports')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
               Ver todo <ChevronRight size={13} />
             </span>
@@ -1683,7 +1692,7 @@ const DashboardModule = ({
       {/* ── SERVICIOS DESTACADOS ── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>
+          <h3 className="mi-section-header" style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>
             Servicios destacados
           </h3>
           <span onClick={() => onNavigate('services')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -1695,6 +1704,7 @@ const DashboardModule = ({
             <div
               key={idx}
               onClick={() => onNavigate('services')}
+              className="mi-card"
               style={{ height: '160px', borderRadius: '22px', overflow: 'hidden', position: 'relative', border: '1px solid rgba(201, 114, 130, 0.12)', boxShadow: '0 6px 20px rgba(201, 114, 130, 0.06)', cursor: 'pointer', transition: 'all 0.25s ease' }}
               onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(201, 114, 130, 0.12)' }}
               onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(201, 114, 130, 0.06)' }}

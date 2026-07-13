@@ -192,9 +192,9 @@ const ReceptionModule = ({ isMobile }) => {
   };
 
   return (
-    <div className="animate-fade-in" style={{ paddingBottom: '40px' }}>
+    <div className="animate-fade-in mi-enter-up" style={{ paddingBottom: '40px' }}>
       {/* Header */}
-      <div style={{ 
+      <div className="mi-enter-up" style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center', 
@@ -227,18 +227,12 @@ const ReceptionModule = ({ isMobile }) => {
             background: '#fff', color: '#6b6b6b', fontSize: '0.78rem', fontWeight: 600,
             cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'
           }}><UserPlus size={15} /> Nuevo Cliente</button>
-          <button style={{
-            padding: '8px 16px', borderRadius: '10px', border: 'none',
-            background: 'linear-gradient(135deg, #d4a09a, #c48b9f, #a0506a)',
-            color: '#fff', fontSize: '0.78rem', fontWeight: 600,
-            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
-            boxShadow: '0 3px 10px rgba(196,139,159,0.25)'
-          }}><Zap size={15} /> Check-in Rápido</button>
+          <button className="mi-btn" style={{
         </div>
       </div>
 
       {/* Main Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.2fr 1fr', gap: '18px', alignItems: 'start' }}>
+      <div className="mi-enter-up mi-delay-1" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.2fr 1fr', gap: '18px', alignItems: 'start' }}>
         {/* Left Column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           {/* Step 1: Cliente */}
@@ -248,7 +242,7 @@ const ReceptionModule = ({ isMobile }) => {
                 <Users size={16} color="#c48b9f" />
                 <span style={{ fontWeight: 600, fontSize: '0.82rem', color: '#2d2d2d' }}>1. Cliente</span>
               </div>
-              <button onClick={() => setIsNewClientModalOpen(true)} style={{
+          <button className="mi-btn" onClick={() => setIsNewClientModalOpen(true)} style={{
                 background: 'rgba(196,139,159,0.08)', border: 'none', color: '#c48b9f',
                 padding: '4px 10px', borderRadius: '8px', fontSize: '0.7rem', fontWeight: 600, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: '4px'
@@ -271,9 +265,9 @@ const ReceptionModule = ({ isMobile }) => {
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                    <span style={{ padding: '3px 8px', borderRadius: '6px', background: 'rgba(196,139,159,0.08)', color: '#c48b9f', fontSize: '0.62rem', fontWeight: 600 }}>⭐ Frecuente</span>
-                    <span style={{ padding: '3px 8px', borderRadius: '6px', background: '#f0fdf4', color: '#16a34a', fontSize: '0.62rem', fontWeight: 600 }}>✓ Confirmada</span>
-                    <button onClick={() => setSelectedClient(null)} style={{ background: 'none', border: 'none', color: '#9e9e9e', cursor: 'pointer' }}>
+                    <span className="mi-tag" style={{ padding: '3px 8px', borderRadius: '6px', background: 'rgba(196,139,159,0.08)', color: '#c48b9f', fontSize: '0.62rem', fontWeight: 600 }}>⭐ Frecuente</span>
+                    <span className="mi-tag" style={{ padding: '3px 8px', borderRadius: '6px', background: '#f0fdf4', color: '#16a34a', fontSize: '0.62rem', fontWeight: 600 }}>✓ Confirmada</span>
+                    <button className="mi-btn" onClick={() => setSelectedClient(null)} style={{ background: 'none', border: 'none', color: '#9e9e9e', cursor: 'pointer' }}>
                       <MoreVertical size={14} />
                     </button>
                   </div>
@@ -284,11 +278,12 @@ const ReceptionModule = ({ isMobile }) => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.06)', background: '#faf5f5' }}>
                   <Search size={14} color="#9e9e9e" />
                   <input
+                    className="mi-input"
                     type="text" placeholder="Buscar por nombre, cédula o teléfono..."
                     value={idSearch} onChange={(e) => handleSearchInput(e.target.value)}
                     style={{ flex: 1, border: 'none', background: 'none', outline: 'none', fontSize: '0.75rem', color: '#2d2d2d' }}
                   />
-                  <button onClick={() => { if (searchResults.length > 0) handleSelectClient(searchResults[0]); }} style={{
+                  <button className="mi-btn" onClick={() => { if (searchResults.length > 0) handleSelectClient(searchResults[0]); }} style={{
                     width: '30px', height: '30px', borderRadius: '8px', border: 'none',
                     background: 'linear-gradient(135deg, #c48b9f, #a0506a)',
                     color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
@@ -329,7 +324,7 @@ const ReceptionModule = ({ isMobile }) => {
                 { label: '+ Extra', icon: Rocket, color: '#d97706', bg: 'rgba(217,119,6,0.06)', border: 'rgba(217,119,6,0.2)', onClick: () => setIsExtraModalOpen(true) },
                 { label: '+ Producto', icon: ShoppingBag, color: '#16a34a', bg: 'rgba(22,163,74,0.06)', border: 'rgba(22,163,74,0.2)', onClick: () => setIsProductModalOpen(true) },
               ].map((btn, i) => (
-                <button key={i} onClick={btn.onClick} style={{
+                    <button key={i} className="mi-btn" onClick={btn.onClick} style={{
                   padding: '12px 8px', borderRadius: '10px', border: `1px dashed ${btn.border}`,
                   background: btn.bg, color: btn.color, fontSize: '0.7rem', fontWeight: 600,
                   cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px'
@@ -401,7 +396,7 @@ const ReceptionModule = ({ isMobile }) => {
                     <span style={{ fontWeight: 700, color: '#2d2d2d', fontSize: '0.85rem' }}>Total</span>
                     <span style={{ fontWeight: 700, color: '#c48b9f', fontSize: '1rem' }}>Bs. {(total * exchangeRate).toFixed(2)}</span>
                   </div>
-                  <button onClick={() => handleSubmit('En Silla')} disabled={loading || !selectedClient || selectedServices.some(s => !s.staffId)} style={{
+                    <button className="mi-btn" onClick={() => handleSubmit('En Silla')} disabled={loading || !selectedClient || selectedServices.some(s => !s.staffId)} style={{
                     width: '100%', marginTop: '10px', padding: '10px', borderRadius: '10px', border: 'none',
                     background: 'linear-gradient(135deg, #d4a09a, #c48b9f, #a0506a)',
                     color: '#fff', fontSize: '0.78rem', fontWeight: 600,
@@ -422,7 +417,7 @@ const ReceptionModule = ({ isMobile }) => {
               </div>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                 {DEMO_STAFF.map((s, i) => (
-                  <button key={i} onClick={() => setFormData({ ...formData, staffId: staff[i]?.id || '' })} style={{
+                    <button className="mi-btn" onClick={() => setFormData({ ...formData, staffId: staff[i]?.id || '' })} style={{
                     display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 10px',
                     borderRadius: '10px', border: formData.staffId === (staff[i]?.id) ? '1.5px solid #c48b9f' : '1px solid rgba(0,0,0,0.06)',
                     background: formData.staffId === (staff[i]?.id) ? 'rgba(196,139,159,0.06)' : '#faf5f5',
@@ -435,11 +430,11 @@ const ReceptionModule = ({ isMobile }) => {
                     </div>
                   </button>
                 ))}
-                <button style={{
-                  padding: '6px 10px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.06)',
-                  background: 'transparent', color: '#c48b9f', fontSize: '0.68rem', fontWeight: 600,
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px'
-                }}><Users size={12} /> Ver todos</button>
+                  <button className="mi-btn" style={{
+                    padding: '6px 10px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.06)',
+                    background: 'transparent', color: '#c48b9f', fontSize: '0.68rem', fontWeight: 600,
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px'
+                  }}><Users size={12} /> Ver todos</button>
               </div>
             </div>
 
@@ -468,8 +463,8 @@ const ReceptionModule = ({ isMobile }) => {
                   const specialistName = staff.find(s => s.id === apt.staff_id)?.name || 'Especialista';
 
                   return (
-                    <div 
-                      key={apt.id || idx} 
+                    <div
+                      key={apt.id || idx}
                       onClick={async () => {
                         if (String(apt.id).startsWith('mock-')) {
                           showToast('Esta es una cita de demostración. Crea una cita real desde Agenda o Recepción para interactuar.', 'warning');
@@ -533,7 +528,7 @@ const ReceptionModule = ({ isMobile }) => {
                         borderRadius: '10px', background: '#faf5f5', fontSize: '0.72rem', cursor: 'pointer',
                         transition: 'transform 0.15s ease'
                       }}
-                      className="btn-hover-scale"
+                      className="btn-hover-scale mi-row"
                     >
                       <div style={{ width: '50px', textAlign: 'center' }}>
                         <div style={{ fontWeight: 700, color: '#c48b9f', fontSize: '0.75rem' }}>{timeStr.split(' ')[0]}</div>
@@ -549,7 +544,7 @@ const ReceptionModule = ({ isMobile }) => {
                       <div style={{ fontSize: '0.62rem', color: '#6b6b6b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {specialistName.split(' ')[0]}
                       </div>
-                      <span style={{ padding: '3px 8px', borderRadius: '20px', fontSize: '0.58rem', fontWeight: 600, background: sc.bg, color: sc.text, border: `1px solid ${sc.border}` }}>
+                      <span className="mi-tag" style={{ padding: '3px 8px', borderRadius: '20px', fontSize: '0.58rem', fontWeight: 600, background: sc.bg, color: sc.text, border: `1px solid ${sc.border}` }}>
                         {apt.status}
                       </span>
                     </div>
@@ -573,7 +568,7 @@ const ReceptionModule = ({ isMobile }) => {
               <h4 style={{ fontSize: '0.78rem', fontWeight: 600, color: '#2d2d2d', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Clock size={14} color="#c48b9f" /> Módulo de Espera
               </h4>
-              <button style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.06)', background: 'transparent', color: '#c48b9f', fontSize: '0.62rem', fontWeight: 600, cursor: 'pointer' }}>Ver todo →</button>
+              <button className="mi-btn" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.06)', background: 'transparent', color: '#c48b9f', fontSize: '0.62rem', fontWeight: 600, cursor: 'pointer' }}>Ver todo →</button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {DEMO_WAITING.map((w, i) => {
@@ -581,14 +576,14 @@ const ReceptionModule = ({ isMobile }) => {
                   w.status === 'Pasando' ? { bg: '#fffbeb', text: '#d97706', border: '#fde68a' } :
                   { bg: '#faf5f5', text: '#6b6b6b', border: 'rgba(0,0,0,0.06)' };
                 return (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 10px', borderRadius: '10px', background: '#faf5f5' }}>
+                  <div key={i} className="mi-row" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 10px', borderRadius: '10px', background: '#faf5f5' }}>
                     <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, fontSize: '0.68rem', flexShrink: 0 }}>{w.initial}</div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 600, color: '#2d2d2d', fontSize: '0.75rem' }}>{w.name}</div>
                       <div style={{ fontSize: '0.6rem', color: '#9e9e9e' }}>Llegó: {w.arrived}</div>
                     </div>
-                    <span style={{ padding: '3px 8px', borderRadius: '20px', fontSize: '0.58rem', fontWeight: 600, background: wsc.bg, color: wsc.text, border: `1px solid ${wsc.border}` }}>{w.status}</span>
-                    <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9e9e9e' }}><MoreVertical size={12} /></button>
+                    <span className="mi-tag" style={{ padding: '3px 8px', borderRadius: '20px', fontSize: '0.58rem', fontWeight: 600, background: wsc.bg, color: wsc.text, border: `1px solid ${wsc.border}` }}>{w.status}</span>
+                    <button className="mi-btn" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9e9e9e' }}><MoreVertical size={12} /></button>
                   </div>
                 );
               })}
@@ -607,7 +602,7 @@ const ReceptionModule = ({ isMobile }) => {
                 { label: 'Citas de hoy', value: 12, color: '#c48b9f' },
                 { label: 'Walk-ins', value: 3, color: '#c48b9f' },
               ].map((s, i) => (
-                <div key={i} style={{ textAlign: 'center', padding: '8px 4px', borderRadius: '10px', background: '#faf5f5' }}>
+                <div key={i} className="mi-stat" style={{ textAlign: 'center', padding: '8px 4px', borderRadius: '10px', background: '#faf5f5' }}>
                   <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#2d2d2d' }}>{s.value}</div>
                   <div style={{ fontSize: '0.55rem', color: '#9e9e9e', marginTop: '2px' }}>{s.label}</div>
                 </div>
@@ -651,7 +646,7 @@ const ReceptionModule = ({ isMobile }) => {
               <h4 style={{ fontSize: '0.78rem', fontWeight: 600, color: '#2d2d2d', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <StickyNote size={14} color="#c48b9f" /> Notas de Recepción
               </h4>
-              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#c48b9f' }}><Edit3 size={13} /></button>
+                <button className="mi-btn" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#c48b9f' }}><Edit3 size={13} /></button>
             </div>
             <div style={{ fontSize: '0.68rem', color: '#6b6b6b', lineHeight: '1.5' }}>
               <p style={{ margin: '0 0 6px 0' }}>Recordar promoción de hidratación capilar.</p>
@@ -687,13 +682,13 @@ const SelectionModal = ({ isOpen, onClose, title, items, selectedItems, onToggle
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#2d2d2d', margin: 0 }}>{title}</h3>
-          <button onClick={onClose} style={{ background: '#faf5f5', border: 'none', borderRadius: '8px', width: '28px', height: '28px', color: '#6b6b6b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={16} /></button>
+          <button className="mi-btn" onClick={onClose} style={{ background: '#faf5f5', border: 'none', borderRadius: '8px', width: '28px', height: '28px', color: '#6b6b6b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={16} /></button>
         </div>
         <div style={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {(items || []).map(item => {
             const isSel = selectedItems?.find(si => si.id === item.id);
             return (
-              <button key={item.id} onClick={() => onToggle(item)} style={{
+                <button className="mi-btn mi-row" key={item.id} onClick={() => onToggle(item)} style={{
                 padding: '12px', borderRadius: '12px',
                 border: isSel ? '1.5px solid #c48b9f' : '1px solid rgba(0,0,0,0.06)',
                 background: isSel ? 'rgba(196,139,159,0.05)' : '#faf5f5',
@@ -708,7 +703,7 @@ const SelectionModal = ({ isOpen, onClose, title, items, selectedItems, onToggle
             );
           })}
         </div>
-        <button onClick={onClose} style={{
+        <button className="mi-btn" onClick={onClose} style={{
           marginTop: '16px', padding: '10px', borderRadius: '10px', border: 'none',
           background: 'linear-gradient(135deg, #c48b9f, #a0506a)',
           color: '#fff', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer'

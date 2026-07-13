@@ -96,6 +96,7 @@ const TopBar = ({
     <div ref={searchRef} style={{ position: 'relative', width: '100%', ...widthStyle }}>
       <input
         ref={inputRef}
+        className="mi-input"
         type="text"
         placeholder="Buscar clientes, citas, servicios..."
         value={searchQuery}
@@ -267,6 +268,7 @@ const TopBar = ({
 
           {/* Bell Icon on Right */}
           <button
+            className="mi-btn"
             onClick={onOpenNotifications}
             style={{
               width: '40px', height: '40px', borderRadius: '12px',
@@ -378,6 +380,7 @@ const TopBar = ({
         )}
 
         <button
+          className="mi-btn"
           onClick={onOpenNotifications}
           style={{
             width: '40px', height: '40px', borderRadius: '12px',

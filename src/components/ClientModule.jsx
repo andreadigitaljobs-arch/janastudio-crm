@@ -487,11 +487,11 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                     display: 'flex', alignItems: 'center', gap: '6px',
                     boxShadow: '0 4px 15px rgba(160, 80, 106, 0.25)'
                   }}
-                  className="btn-interactive"
+                  className="btn-interactive mi-btn"
                 >
                   <Plus size={16} /> Nueva clienta
                 </button>
-                <button onClick={handleExportClients} style={{ padding: '10px 16px', borderRadius: '20px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }} className="btn-interactive">
+                <button onClick={handleExportClients} style={{ padding: '10px 16px', borderRadius: '20px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }} className="btn-interactive mi-btn">
                   <Download size={15} /> Exportar
                 </button>
               </div>
@@ -532,10 +532,10 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                   fontSize: '13px', fontWeight: '750', cursor: 'pointer',
                   boxShadow: activeTab === t.key ? '0 4px 15px rgba(160, 80, 106, 0.25)' : 'none',
                 }}
-                className="btn-interactive"
-              >
-                <t.icon size={15} /> {t.label}
-              </button>
+              className="btn-interactive mi-btn"
+            >
+              <Plus size={18} /> Nueva clienta
+            </button>
             ))}
           </div>
 
@@ -558,7 +558,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
             ].map((stat, i) => (
               <div
                 key={i}
-                className="glass-card animate-scale-in"
+                className="glass-card animate-scale-in mi-stat"
                 style={{
                   padding: windowWidth < 600 ? '16px 16px' : '16px 20px',
                   borderRadius: '24px',
@@ -622,6 +622,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                     placeholder="Buscar cliente por nombre, cédula, teléfono o servicio..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
+                    className="mi-input"
                     style={{
                       width: '100%',
                       padding: '12px 14px 12px 40px',
@@ -687,9 +688,10 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                   {paginatedClients.map((client, idx) => {
                     const status = getStatusBadge(client);
                     return (
-                      <div
+                        <div
                         key={client.id}
                         onClick={() => { setSelectedClient(client); sessionStorage.setItem('jana_tab_params', JSON.stringify({ clientId: client.id })); }}
+                        className="mi-card mi-row"
                         style={{
                           padding: '16px',
                           borderRadius: '16px',
@@ -722,7 +724,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                               {client.name}
                             </div>
                           </div>
-                          <span style={{
+                          <span className="mi-tag" style={{
                             fontSize: '0.7rem', fontWeight: '800',
                             color: status.color, backgroundColor: status.bg,
                             border: status.border,
@@ -783,7 +785,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '28px' }}>
                 {/* Left Column: Seguimientos pendientes */}
                 <div style={{ minWidth: 0 }}>
-                  <div className="glass-card animate-slide-up" style={{ padding: '20px', borderRadius: '24px', border: '1px solid var(--border-color)', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.03)', display: 'flex', flexDirection: 'column' }}>
+                  <div className="glass-card animate-slide-up mi-card" style={{ padding: '20px', borderRadius: '24px', border: '1px solid var(--border-color)', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.03)', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                       <h3 style={{ fontSize: '15px', fontWeight: '850', color: 'var(--text-primary)', margin: 0 }}>
                         Seguimientos pendientes
@@ -796,7 +798,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                         { text: 'Enviar rutina post cuidado', line1: 'Laura Martínez', line2: '18 may 2025', icon: Mail, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' },
                         { text: 'Recordatorio de evaluación', line1: 'Andrea Rodríguez', line2: '20 may 2025', icon: Bell, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' }
                       ].map((item, i) => (
-                        <div key={i} style={{ padding: isMobile ? '14px 16px' : '12px 14px', borderRadius: '16px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: isMobile ? '14px' : '12px', cursor: 'pointer', background: 'white' }} className="interactive-hover-card stagger-row">
+                        <div key={i} style={{ padding: isMobile ? '14px 16px' : '12px 14px', borderRadius: '16px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: isMobile ? '14px' : '12px', cursor: 'pointer', background: 'white' }} className="interactive-hover-card stagger-row mi-row">
                           <div style={{ width: isMobile ? '42px' : '36px', height: isMobile ? '42px' : '36px', borderRadius: '10px', backgroundColor: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                             <item.icon size={isMobile ? 18 : 15} color={item.color} />
                           </div>
@@ -816,7 +818,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
 
                 {/* Right Column: Próximos cumpleaños */}
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div className="glass-card animate-slide-up interactive-hover-card" style={{ padding: '20px', borderRadius: '24px', border: '1px solid var(--border-color)', backgroundColor: '#f8dbd9', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: '230px' }}>
+                  <div className="glass-card animate-slide-up interactive-hover-card mi-card" style={{ padding: '20px', borderRadius: '24px', border: '1px solid var(--border-color)', backgroundColor: '#f8dbd9', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: '230px' }}>
                     <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundImage: 'linear-gradient(90deg, #f8dbd9 45%, rgba(248, 219, 217, 0) 95%)', zIndex: 1, pointerEvents: 'none' }} />
                     <img 
                       src="/cumpleanos_jana.png" 
@@ -893,6 +895,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                       placeholder="Buscar por nombre, cédula, teléfono o email..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
+                      className="mi-input"
                       style={{
                         width: '100%',
                         padding: '10px 14px 10px 40px',
@@ -932,7 +935,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                             cursor: 'pointer',
                             transition: 'all 0.2s',
                           }}
-                          className="btn-interactive"
+                          className="btn-interactive mi-btn"
                         >
                           {f.label}
                         </button>
@@ -945,7 +948,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                     <div 
                       onClick={() => setShowSortDropdown(!showSortDropdown)}
                       style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#6b7280', fontWeight: '500', cursor: 'pointer', padding: '8px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'white' }}
-                      className="btn-interactive"
+                      className="btn-interactive mi-btn"
                     >
                       {sortBy === 'recent' && 'Más recientes'}
                       {sortBy === 'oldest' && 'Más antiguos'}
@@ -978,6 +981,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                                 setSortBy(opt.key);
                                 setShowSortDropdown(false);
                               }}
+                              className="mi-row"
                               style={{
                                 padding: '8px 12px', fontSize: '12px', borderRadius: '8px', cursor: 'pointer',
                                 fontWeight: '600', color: sortBy === opt.key ? 'var(--pink-primary)' : 'var(--text-primary)',
@@ -1005,6 +1009,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                         placeholder="Buscar por nombre, cédula, teléfono o email..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
+                        className="mi-input"
                         style={{
                           width: '100%',
                           padding: '10px 14px 10px 40px',
@@ -1023,7 +1028,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                       <div 
                         onClick={() => setShowSortDropdown(!showSortDropdown)}
                         style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#6b7280', fontWeight: '500', cursor: 'pointer', padding: '8px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'white' }}
-                        className="btn-interactive"
+                        className="btn-interactive mi-btn"
                       >
                         {sortBy === 'recent' && 'Más recientes'}
                         {sortBy === 'oldest' && 'Más antiguos'}
@@ -1056,6 +1061,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                                   setSortBy(opt.key);
                                   setShowSortDropdown(false);
                                 }}
+                                className="mi-row"
                                 style={{
                                   padding: '8px 12px', fontSize: '12px', borderRadius: '8px', cursor: 'pointer',
                                   fontWeight: '600', color: sortBy === opt.key ? 'var(--pink-primary)' : 'var(--text-primary)',
@@ -1109,7 +1115,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                             transition: 'all 0.2s',
                             whiteSpace: 'nowrap'
                           }}
-                          className="btn-interactive"
+                          className="btn-interactive mi-btn"
                         >
                           {f.label}
                         </button>
@@ -1213,7 +1219,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                                 cursor: 'pointer',
                                 transition: 'background-color 0.15s'
                               }}
-                              className="table-row-hover"
+                              className="table-row-hover mi-row"
                             >
                                <td style={{ padding: '18px 10px 18px 28px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -1278,11 +1284,11 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                               </td>
                               <td style={{ padding: '18px 28px 18px 10px' }}>
                                 {status.label === 'VIP' ? (
-                                  <span style={{ fontSize: '10px', fontWeight: '800', color: '#b47d49', backgroundColor: 'rgba(180, 125, 73, 0.1)', border: '1px solid rgba(180, 125, 73, 0.15)', padding: '5px 10px', borderRadius: '7px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                  <span className="mi-tag" style={{ fontSize: '10px', fontWeight: '800', color: '#b47d49', backgroundColor: 'rgba(180, 125, 73, 0.1)', border: '1px solid rgba(180, 125, 73, 0.15)', padding: '5px 10px', borderRadius: '7px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                     👑 VIP
                                   </span>
                                 ) : (
-                                  <span style={{ fontSize: '11px', fontWeight: '700', color: status.color, backgroundColor: status.bg, border: status.border, padding: '5px 12px', borderRadius: '7px', whiteSpace: 'nowrap' }}>
+                                  <span className="mi-tag" style={{ fontSize: '11px', fontWeight: '700', color: status.color, backgroundColor: status.bg, border: status.border, padding: '5px 12px', borderRadius: '7px', whiteSpace: 'nowrap' }}>
                                     {status.label}
                                   </span>
                                 )}
@@ -1402,7 +1408,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
               {/* Right Column: Ficha Rápida Sidebar */}
               <div ref={quickViewRef} style={{ display: isNarrowScreen ? 'none' : 'flex', flexDirection: 'column', gap: '24px', position: 'sticky', top: '24px' }}>
                 {/* Ficha Rápida Card */}
-                <div className="glass-card" style={{ padding: '20px', borderRadius: '24px', border: '1px solid var(--border-color)', position: 'relative', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)' }}>
+                <div className="glass-card mi-card" style={{ padding: '20px', borderRadius: '24px', border: '1px solid var(--border-color)', position: 'relative', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                     <h3 style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', margin: 0 }}>Ficha rápida</h3>
                     <button 
@@ -1422,7 +1428,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                         gap: '4px',
                         transition: 'all 0.2s'
                       }}
-                      className="btn-interactive"
+                      className="btn-interactive mi-btn"
                     >
                       Ver ficha completa <ArrowUpRight size={13} />
                     </button>
@@ -1461,7 +1467,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                           <a
                             href={`tel:${sidebarClient.phone}`}
                             style={{ flex: 1, textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '12px', color: 'var(--text-primary)', fontWeight: '650', backgroundColor: 'var(--bg-tertiary)', padding: '9px 10px', borderRadius: '12px', border: '1px solid var(--border-color)' }}
-                            className="btn-interactive"
+                            className="btn-interactive mi-btn"
                           >
                             <Phone size={13} color="var(--text-secondary)" /> Llamar
                           </a>
@@ -1470,7 +1476,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{ flex: 1, textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '12px', color: 'var(--text-primary)', fontWeight: '650', backgroundColor: 'var(--bg-tertiary)', padding: '9px 10px', borderRadius: '12px', border: '1px solid var(--border-color)' }}
-                            className="btn-interactive"
+                            className="btn-interactive mi-btn"
                           >
                             <MessageCircle size={13} color="var(--text-secondary)" /> WhatsApp
                           </a>
@@ -1534,6 +1540,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                                 setIsEditingNotes(true);
                               }
                             }}
+                            className="mi-btn"
                             style={{ border: 'none', background: 'none', color: 'var(--pink-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                           >
                             {isEditingNotes ? <Check size={14} /> : <Edit2 size={13} />}
@@ -1541,7 +1548,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                         </div>
                         {isEditingNotes ? (
                           <textarea
-                            className="form-input"
+                            className="form-input mi-input"
                             value={tempNotes}
                             onChange={e => setTempNotes(e.target.value)}
                             style={{ width: '100%', minHeight: '60px', fontSize: '12px', padding: '8px', borderRadius: '8px' }}
@@ -1560,7 +1567,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                         <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)', display: 'block', marginBottom: '8px' }}>Servicios frecuentes</span>
                         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                           {['Láser Diodo', 'Hydrafacial', 'Peeling Químico'].map((tag, i) => (
-                            <span key={i} style={{ fontSize: '10.5px', fontWeight: '700', color: 'var(--pink-primary)', backgroundColor: 'rgba(160, 80, 106, 0.08)', border: '1px solid rgba(160, 80, 106, 0.15)', padding: '4px 10px', borderRadius: '12px' }}>
+                            <span key={i} className="mi-tag" style={{ fontSize: '10.5px', fontWeight: '700', color: 'var(--pink-primary)', backgroundColor: 'rgba(160, 80, 106, 0.08)', border: '1px solid rgba(160, 80, 106, 0.15)', padding: '4px 10px', borderRadius: '12px' }}>
                               {tag}
                             </span>
                           ))}
@@ -1605,7 +1612,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
               {/* Left Column: Seguimientos pendientes */}
               <div style={{ minWidth: 0 }}>
                 {/* Seguimientos pendientes Container Card */}
-                <div className="glass-card animate-slide-up delay-3" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.03)', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <div className="glass-card animate-slide-up delay-3 mi-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', background: 'white', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.03)', height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <h3 style={{ fontSize: '15.5px', fontWeight: '850', color: 'var(--text-primary)', margin: 0 }}>
                       Seguimientos pendientes
@@ -1618,7 +1625,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                       { text: 'Enviar rutina post cuidado', line1: 'Laura Martínez', line2: '18 may 2025', icon: Mail, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' },
                       { text: 'Recordatorio de evaluación', line1: 'Andrea Rodríguez', line2: '20 may 2025', icon: Bell, color: 'var(--magenta-primary)', bg: 'var(--pink-secondary)' }
                     ].map((item, i) => (
-                      <div key={i} style={{ padding: '14px 16px', borderRadius: '16px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', background: 'white', animationDelay: `${i * 60}ms` }} className="interactive-hover-card stagger-row">
+                      <div key={i} style={{ padding: '14px 16px', borderRadius: '16px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', background: 'white', animationDelay: `${i * 60}ms` }} className="interactive-hover-card stagger-row mi-row">
                         <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: item.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           <item.icon size={16} color={item.color} />
                         </div>
@@ -1639,7 +1646,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
               {/* Right Column: Próximos cumpleaños */}
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 {/* Próximos cumpleaños Card (with cute cake drawing) */}
-                <div className="glass-card animate-slide-up delay-3 interactive-hover-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', backgroundColor: '#f8dbd9', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)', position: 'relative', overflow: 'hidden', flex: 1, display: 'flex', flexDirection: 'column', minHeight: '230px' }}>
+                <div className="glass-card animate-slide-up delay-3 interactive-hover-card mi-card" style={{ padding: '24px', borderRadius: '24px', border: '1px solid var(--border-color)', backgroundColor: '#f8dbd9', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)', position: 'relative', overflow: 'hidden', flex: 1, display: 'flex', flexDirection: 'column', minHeight: '230px' }}>
                   {/* Blending Gradient Overlay */}
                   <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundImage: 'linear-gradient(90deg, #f8dbd9 45%, rgba(248, 219, 217, 0) 95%)', zIndex: 1, pointerEvents: 'none' }} />
                   
@@ -1757,7 +1764,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
           pointerEvents: showMessageModal ? 'auto' : 'none',
           transition: 'opacity 0.3s ease, backdrop-filter 0.3s ease, visibility 0.3s'
         }}>
-          <div className="glass-card" style={{
+          <div className="glass-card mi-card" style={{
             width: '100%',
             maxWidth: '460px',
             background: 'white',
@@ -1799,6 +1806,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '18px' }}>
               {[['birthday', 'Cumplea\u00f1os'], ['followup', 'Recurrente']].map(([value, label]) => (
                 <button key={value} type="button" onClick={() => setMessageTemplateTab(value)}
+                  className="mi-btn"
                   style={{ padding: '10px', borderRadius: '10px', cursor: 'pointer', border: '1px solid rgba(160, 80, 106,0.2)', background: messageTemplateTab === value ? 'var(--pink-primary)' : '#faf5f5', color: messageTemplateTab === value ? 'white' : 'var(--text-primary)', fontWeight: '900', fontSize: '12px' }}>
                   {label}
                 </button>
@@ -1832,6 +1840,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                   ? setDefaultBdayMessage(e.target.value)
                   : setDefaultFollowupMessage(e.target.value)}
                 rows={6}
+                className="mi-input"
                 style={{
                   padding: '12px 14px',
                   backgroundColor: '#faf5f5',
@@ -1853,6 +1862,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
               <button 
                 onClick={handleSaveMessageTemplate}
                 disabled={savingTemplate}
+                className="mi-btn"
                 style={{
                   flex: 1,
                   padding: '12px',
@@ -1874,6 +1884,7 @@ const ClientModule = ({ isMobile, clients, onRefresh, initialClientId, rates, on
                   setDefaultBdayMessage(getBirthdayMessageTemplate());
                   setShowMessageModal(false);
                 }}
+                className="mi-btn"
                 style={{
                   flex: 1,
                   padding: '12px',
@@ -2816,7 +2827,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                       <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>NOMBRE DEL TRATAMIENTO</label>
                       <input
-                        className="form-input"
+                        className="form-input mi-input"
                         value={comparisonTitle}
                         onChange={e => setComparisonTitle(e.target.value)}
                         placeholder="Ej. Alisado orgánico + hidratación"
@@ -2858,7 +2869,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                       <button
                         onClick={handleSaveComparison}
                         disabled={isSavingComparison}
-                        className="btn-pink"
+                        className="btn-pink mi-btn"
                         style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', opacity: isSavingComparison ? 0.7 : 1, cursor: isSavingComparison ? 'wait' : 'pointer' }}
                       >
                         {isSavingComparison ? (
@@ -2979,12 +2990,12 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                           alignItems: 'center',
                           gap: '6px'
                         }}
-                        className="btn-interactive"
-                      >
-                        <Camera size={13} color="var(--magenta-primary)" /> Usar cámara
-                      </button>
-                    )}
-                  </div>
+                className="btn-interactive mi-btn"
+              >
+                <t.icon size={15} /> {t.label}
+              </button>
+            ))}
+          </div>
                 </div>
 
                 {comparisons.length > 0 && (
@@ -3006,7 +3017,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                         Tienes fotos de <strong>antes</strong> y <strong>después</strong> sin combinar en una comparativa.
                       </span>
                     </div>
-                    <button onClick={handleUseSuggestedPair} className="btn-pink" style={{ padding: '8px 16px', fontSize: '12px', whiteSpace: 'nowrap' }}>
+                    <button onClick={handleUseSuggestedPair} className="btn-pink mi-btn" style={{ padding: '8px 16px', fontSize: '12px', whiteSpace: 'nowrap' }}>
                       Crear comparativa con estas
                     </button>
                   </div>
@@ -3210,12 +3221,12 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                       <p style={{ margin: '0 0 16px', fontSize: '13.5px', color: 'var(--text-muted)', maxWidth: '400px', lineHeight: 1.45 }}>
                         Aún no hay fotos cargadas en esta sección. Sube imágenes del cabello de la clienta para documentar sus sesiones.
                       </p>
-                      <button 
-                        onClick={() => fileInputRef.current?.click()}
-                        className="btn-pink"
-                        style={{ padding: '8px 18px', fontSize: '12.5px', fontWeight: '750', display: 'flex', alignItems: 'center', gap: '6px' }}
-                      >
-                        <Plus size={16} /> Subir Primera Foto
+                      <button
+                onClick={() => fileInputRef.current?.click()}
+                className="btn-pink mi-btn"
+                style={{ padding: '8px 18px', fontSize: '12.5px', fontWeight: '750', display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                <Plus size={16} /> Subir Primera Foto
                       </button>
                     </div>
                   ) : (
@@ -3383,7 +3394,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                 <>
                   <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: '12px' }}>
                     {/* Card 1: Tipo de Cabello */}
-                    <div className="glass-card" style={{ padding: '16px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '142px' }}>
+                    <div className="glass-card mi-card" style={{ padding: '16px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '142px' }}>
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                           <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--magenta-gradient)', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -3408,7 +3419,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                     </div>
 
                     {/* Card 2: Porosidad */}
-                    <div className="glass-card" style={{ padding: '16px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '142px' }}>
+                    <div className="glass-card mi-card" style={{ padding: '16px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '142px' }}>
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                           <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--magenta-gradient)', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -3433,7 +3444,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                     </div>
 
                     {/* Card 3: Elasticidad */}
-                    <div className="glass-card" style={{ padding: '16px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '142px' }}>
+                    <div className="glass-card mi-card" style={{ padding: '16px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '142px' }}>
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                           <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--magenta-gradient)', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -3458,7 +3469,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                     </div>
 
                     {/* Card 4: Estado General */}
-                    <div className="glass-card" style={{ padding: '16px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '142px' }}>
+                    <div className="glass-card mi-card" style={{ padding: '16px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '142px' }}>
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                           <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--magenta-gradient)', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -3482,7 +3493,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.1fr 0.9fr', gap: '12px' }}>
-                    <div className="glass-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
+                    <div className="glass-card mi-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
                       <h4 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Condición del Cabello</h4>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                         {bars.map((b, i) => {
@@ -3505,7 +3516,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                       </div>
                     </div>
 
-                    <div className="glass-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
+                    <div className="glass-card mi-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
                       <h4 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Salud del Cuero Cabelludo</h4>
                       <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: '20px' }}>
                         <div style={{
@@ -3538,7 +3549,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                   {(observations.length > 0 || images.length > 0) && (
                     <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : (observations.length > 0 && images.length > 0 ? '1.2fr 0.8fr' : '1fr'), gap: '12px' }}>
                       {observations.length > 0 && (
-                        <div className="glass-card" style={{ 
+                        <div className="glass-card mi-card" style={{ 
                           padding: '24px', 
                           borderRadius: '20px', 
                           background: 'rgba(160,80,106,0.015)', 
@@ -3569,7 +3580,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                         </div>
                       )}
                       {images.length > 0 && (
-                        <div className="glass-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
+                        <div className="glass-card mi-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
                           <h4 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Imágenes del Diagnóstico</h4>
                           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                             {images.slice(0, 6).map((img, i) => (
@@ -3584,7 +3595,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
               );
             })()}
 
-            <div className="glass-card" style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+            <div className="glass-card mi-card" style={{ padding: '20px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
             <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center', gap: isMobile ? '12px' : '0', marginBottom: '20px' }}>
               <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>
                 <Activity size={18} color="var(--pink-primary)" /> Historial de Diagnósticos
@@ -3592,7 +3603,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
               {onNavigate && (
                 <button
                   onClick={() => onNavigate('diagnosis', { clientId: client.id })}
-                  className="btn-pink"
+                  className="btn-pink mi-btn"
                   style={isMobile
                     ? { width: '100%', height: '44px', padding: '0 16px', fontSize: '14px', fontWeight: '750', borderRadius: '12px' }
                     : { height: '32px', padding: '0 12px', fontSize: '12px' }}
@@ -3661,7 +3672,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                         ].filter(f => f.value).map((f, i) => {
                           const style = getBadgeStyle(f.value);
                           return (
-                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '6px 12px', borderRadius: '20px', background: style.bg, border: `1px solid ${style.border}`, color: style.color }}>
+                            <div key={i} className="mi-tag" style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '6px 12px', borderRadius: '20px', background: style.bg, border: `1px solid ${style.border}`, color: style.color }}>
                               <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{f.label}:</span>
                               <span style={{ fontSize: '12.5px', fontWeight: '800' }}>{f.value}</span>
                             </div>
@@ -3752,7 +3763,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                 { label: 'Próxima sesión', value: nextSession || 'N/A', sub: nextSession ? (demoPkgs ? '10:00 AM · Mariana R.' : '') : 'Sin citas programadas', iconBg: 'rgba(160,80,106,0.05)', icon: <Clock size={18} color="var(--pink-primary)" /> },
                 { label: 'Valor invertido', value: `$${totalSpent.toLocaleString()}`, sub: 'Ver resumen financiero →', iconBg: 'rgba(160,80,106,0.04)', icon: <Receipt size={18} color="var(--magenta-primary)" /> },
               ].map((s, i) => (
-                <div key={i} className={`ficha-card stagger-${i + 1}`} style={{ padding: '16px 18px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: '14px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)', cursor: 'pointer' }}>
+                <div key={i} className={`ficha-card stagger-${i + 1} mi-stat`} style={{ padding: '16px 18px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: '14px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)', cursor: 'pointer' }}>
                   <div style={{ width: '42px', height: '42px', borderRadius: '14px', backgroundColor: s.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{s.icon}</div>
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
@@ -3766,7 +3777,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
             {/* Main: Active Package + Upcoming Sessions */}
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.2fr 0.8fr', gap: '20px', alignItems: 'start' }}>
               {/* Active Package */}
-              <div className="ficha-card" style={{ padding: '24px', borderRadius: '20px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
+              <div className="ficha-card mi-card" style={{ padding: '24px', borderRadius: '20px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                   <h4 style={{ margin: 0, fontSize: '16px', fontWeight: '850', color: 'var(--text-primary)' }}>Paquete activo</h4>
                   <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: '800', background: 'rgba(34,197,94,0.08)', color: '#22c55e', textTransform: 'uppercase' }}>Activo</span>
@@ -3828,7 +3839,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
               </div>
 
               {/* Upcoming Sessions */}
-              <div className="ficha-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
+              <div className="ficha-card mi-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                   <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '850', color: 'var(--text-primary)' }}>Próximas sesiones</h4>
                   <button className="btn-interactive" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: '700', color: 'var(--pink-primary)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', borderRadius: '8px' }}>
@@ -3837,7 +3848,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {upcomingSessions.map((s, i) => (
-                    <div key={i} className="ficha-row btn-interactive" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px', borderRadius: '12px', background: 'rgba(160,80,106,0.02)', cursor: 'pointer' }}>
+                    <div key={i} className="ficha-row btn-interactive mi-row" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px', borderRadius: '12px', background: 'rgba(160,80,106,0.02)', cursor: 'pointer' }}>
                       <div style={{ textAlign: 'center', minWidth: '40px' }}>
                         <div style={{ fontSize: '18px', fontWeight: '900', color: 'var(--magenta-primary)', lineHeight: '1' }}>{s.day}</div>
                         <div style={{ fontSize: '8px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.month}</div>
@@ -3848,7 +3859,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                         </div>
                         <div style={{ fontSize: '13px', fontWeight: '750', color: 'var(--text-primary)', marginTop: '2px' }}>¡ {s.service}</div>
                       </div>
-                      <span className="ficha-tag" style={{ padding: '3px 8px', borderRadius: '20px', fontSize: '9px', fontWeight: '800', background: 'rgba(46,158,91,0.08)', color: '#2e9e5b', textTransform: 'uppercase', flexShrink: 0 }}>{s.status}</span>
+                      <span className="ficha-tag mi-tag" style={{ padding: '3px 8px', borderRadius: '20px', fontSize: '9px', fontWeight: '800', background: 'rgba(46,158,91,0.08)', color: '#2e9e5b', textTransform: 'uppercase', flexShrink: 0 }}>{s.status}</span>
                       <ChevronRight size={14} color="var(--text-muted)" />
                     </div>
                   ))}
@@ -3864,18 +3875,18 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
             {/* Bottom Row: History + Recent Sessions + Recommendations */}
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '16px' }}>
               {/* Package History */}
-              <div className="ficha-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
+              <div className="ficha-card mi-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
                 <h4 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: '850', color: 'var(--text-primary)' }}>Historial de paquetes</h4>
                 <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 0.6fr 0.7fr', gap: '4px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.3px', padding: '0 0 8px', marginBottom: '4px' }}>
                   <span>Paquete</span><span>Fecha</span><span>Monto</span><span>Estado</span>
                 </div>
                 {pkgHistory.map((p, i) => (
-                  <div key={i} className="ficha-row" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 0.6fr 0.7fr', gap: '4px', padding: '10px 0', alignItems: 'center', cursor: 'pointer' }}>
+                  <div key={i} className="ficha-row mi-row" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 0.6fr 0.7fr', gap: '4px', padding: '10px 0', alignItems: 'center', cursor: 'pointer' }}>
                     <div style={{ fontSize: '12px', fontWeight: '750', color: 'var(--text-primary)' }}>{p.name}</div>
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{p.date}</div>
                     <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>{p.price}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <span className="ficha-tag" style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '9px', fontWeight: '800', background: p.status === 'Activo' ? 'rgba(34,197,94,0.08)' : 'rgba(160,80,106,0.06)', color: p.status === 'Activo' ? '#22c55e' : 'var(--text-muted)', textTransform: 'uppercase' }}>{p.status}</span>
+                      <span className="ficha-tag mi-tag" style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '9px', fontWeight: '800', background: p.status === 'Activo' ? 'rgba(34,197,94,0.08)' : 'rgba(160,80,106,0.06)', color: p.status === 'Activo' ? '#22c55e' : 'var(--text-muted)', textTransform: 'uppercase' }}>{p.status}</span>
                       <ChevronRight size={10} color="var(--text-muted)" />
                     </div>
                   </div>
@@ -3886,21 +3897,21 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
               </div>
 
               {/* Recent Sessions */}
-              <div className="ficha-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
+              <div className="ficha-card mi-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
                 <h4 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: '850', color: 'var(--text-primary)' }}>Sesiones recientes</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   {recentSessions.map((s, i) => (
-                    <div key={i} className="ficha-row" style={{ padding: '12px', borderRadius: '12px', background: 'rgba(160,80,106,0.02)' }}>
+                    <div key={i} className="ficha-row mi-row" style={{ padding: '12px', borderRadius: '12px', background: 'rgba(160,80,106,0.02)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                         <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', fontWeight: '600' }}>{s.date}</div>
-                        <span className="ficha-tag" style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '9px', fontWeight: '800', background: 'rgba(46,158,91,0.08)', color: '#2e9e5b', textTransform: 'uppercase' }}>{s.status}</span>
+                        <span className="ficha-tag mi-tag" style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '9px', fontWeight: '800', background: 'rgba(46,158,91,0.08)', color: '#2e9e5b', textTransform: 'uppercase' }}>{s.status}</span>
                       </div>
                       <div style={{ fontSize: '14px', fontWeight: '850', color: 'var(--text-primary)', marginBottom: '2px' }}>{s.service}</div>
                       <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}>{s.client}</div>
                       <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '6px' }}>Notas: {s.notes}</div>
                       <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                         {s.results.map((r, ri) => (
-                          <span key={ri} className="ficha-tag" style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '9.5px', fontWeight: '700', background: 'rgba(160,80,106,0.04)', color: 'var(--magenta-primary)' }}>{r}</span>
+                          <span key={ri} className="ficha-tag mi-tag" style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '9.5px', fontWeight: '700', background: 'rgba(160,80,106,0.04)', color: 'var(--magenta-primary)' }}>{r}</span>
                         ))}
                       </div>
                     </div>
@@ -3912,17 +3923,17 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
               </div>
 
               {/* Recommendations */}
-              <div className="ficha-card" style={{ padding: '20px', borderRadius: '20px', background: 'linear-gradient(160deg, rgba(160,80,106,0.04) 0%, rgba(160,80,106,0.01) 100%)', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
+              <div className="ficha-card mi-card" style={{ padding: '20px', borderRadius: '20px', background: 'linear-gradient(160deg, rgba(160,80,106,0.04) 0%, rgba(160,80,106,0.01) 100%)', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
                 <h4 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: '850', color: 'var(--text-primary)' }}>Recomendaciones para {clientFirstName}</h4>
-                <div className="ficha-row" style={{ padding: '14px', borderRadius: '14px', background: 'white', boxShadow: '0 1px 6px rgba(160,80,106,0.04)', marginBottom: '12px' }}>
+                <div className="ficha-row mi-row" style={{ padding: '14px', borderRadius: '14px', background: 'white', boxShadow: '0 1px 6px rgba(160,80,106,0.04)', marginBottom: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                     <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Siguiente paso recomendado</span>
                   </div>
                   <div style={{ fontSize: '15px', fontWeight: '850', color: 'var(--text-primary)', marginBottom: '6px' }}>Paquete Fortalece & Crece</div>
                   <p style={{ margin: '0 0 10px', fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5 }}>Estimula el crecimiento, fortalece la fibra capilar y previene la caída.</p>
-                  <button className="btn-pink btn-interactive" style={{ width: '100%', padding: '10px', fontSize: '12px', fontWeight: '750', borderRadius: '12px' }}>Ver detalles del paquete</button>
+                  <button className="btn-pink btn-interactive mi-btn" style={{ width: '100%', padding: '10px', fontSize: '12px', fontWeight: '750', borderRadius: '12px' }}>Ver detalles del paquete</button>
                 </div>
-                <div className="ficha-row" style={{ padding: '12px', borderRadius: '12px', background: 'white', boxShadow: '0 1px 6px rgba(160,80,106,0.04)' }}>
+                <div className="ficha-row mi-row" style={{ padding: '12px', borderRadius: '12px', background: 'white', boxShadow: '0 1px 6px rgba(160,80,106,0.04)' }}>
                   <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '6px' }}>Producto sugerido</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(160,80,106,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Droplet size={16} color="var(--pink-primary)" /></div>
@@ -3984,7 +3995,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                 </h3>
                 <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--text-muted)', fontWeight: '500' }}>Registro completo de todas las visitas y tratamientos realizados.</p>
               </div>
-              <button className="btn-pink btn-interactive" style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 18px', fontSize: '13px', fontWeight: '750', borderRadius: '14px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+              <button className="btn-pink btn-interactive mi-btn" style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 18px', fontSize: '13px', fontWeight: '750', borderRadius: '14px', whiteSpace: 'nowrap', flexShrink: 0 }}>
                 <Plus size={16} /> Nueva Sesión
               </button>
             </div>
@@ -3997,7 +4008,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                 { label: 'Servicio favorito', value: hFavService[0], sub: `${hFavService[1]} sesiones realizadas`, iconBg: 'rgba(217,70,168,0.06)', icon: <Star size={18} color="var(--pink-primary)" /> },
                 { label: 'Última visita', value: hLastVisit ? new Date(hLastVisit).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A', sub: hLastAgo, iconBg: 'rgba(160,80,106,0.05)', icon: <Clock size={18} color="var(--magenta-primary)" /> },
               ].map((s, i) => (
-                <div key={i} className={`ficha-card stagger-${i + 1}`} style={{ padding: '16px 18px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: '14px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)', cursor: 'pointer' }}>
+                <div key={i} className={`ficha-card stagger-${i + 1} mi-stat`} style={{ padding: '16px 18px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: '14px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)', cursor: 'pointer' }}>
                   <div style={{ width: '42px', height: '42px', borderRadius: '14px', backgroundColor: s.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{s.icon}</div>
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
@@ -4068,7 +4079,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                                     <span style={{ margin: '0 2px' }}>·</span>
                                     <span>{v.client}</span>
                                   </div>
-                                   <span className="ficha-tag" style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: '800', backgroundColor: sts === 'Completada' ? 'rgba(46,158,91,0.08)' : 'rgba(230,159,60,0.08)', color: sts === 'Completada' ? '#2e9e5b' : '#c9821f', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{sts}</span>
+                                   <span className="ficha-tag mi-tag" style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: '800', backgroundColor: sts === 'Completada' ? 'rgba(46,158,91,0.08)' : 'rgba(230,159,60,0.08)', color: sts === 'Completada' ? '#2e9e5b' : '#c9821f', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{sts}</span>
                                 </div>
                                 <div style={{ fontSize: '15px', fontWeight: '850', color: 'var(--text-primary)', marginBottom: '6px' }}>{svc}</div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '6px' }}>
@@ -4079,7 +4090,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                                 {tags.length > 0 && (
                                   <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                                     {tags.map((tag, ti) => (
-                                      <span key={ti} className="ficha-tag" style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: '700', background: 'rgba(160,80,106,0.06)', color: 'var(--magenta-primary)' }}>{tag}</span>
+                                      <span key={ti} className="ficha-tag mi-tag" style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: '700', background: 'rgba(160,80,106,0.06)', color: 'var(--magenta-primary)' }}>{tag}</span>
                                     ))}
                                   </div>
                                 )}
@@ -4158,7 +4169,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
               {!isMobile && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                    {/* Patrones de visitas */}
-                   <div className="ficha-card" style={{ padding: '18px', borderRadius: '18px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
+                   <div className="ficha-card mi-card" style={{ padding: '18px', borderRadius: '18px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
                      <h5 style={{ margin: '0 0 14px', fontSize: '13px', fontWeight: '850', color: 'var(--text-primary)' }}>Patrones de visitas</h5>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                       {[
@@ -4179,18 +4190,18 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                   </div>
 
                   {/* Próxima recomendación */}
-                   <div className="ficha-card" style={{ padding: '18px', borderRadius: '18px', background: 'linear-gradient(135deg, rgba(160,80,106,0.04) 0%, rgba(160,80,106,0.01) 100%)', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
-                    <h5 style={{ margin: '0 0 6px', fontSize: '13px', fontWeight: '850', color: 'var(--text-primary)' }}>Próxima recomendación</h5>
+                   <div className="ficha-card mi-card" style={{ padding: '18px', borderRadius: '18px', background: 'linear-gradient(135deg, rgba(160,80,106,0.04) 0%, rgba(160,80,106,0.01) 100%)', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
+                     <h5 style={{ margin: '0 0 6px', fontSize: '13px', fontWeight: '850', color: 'var(--text-primary)' }}>Próxima recomendación</h5>
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px' }}>Tu próxima sesión sugerida</div>
                     <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--magenta-primary)', marginBottom: '4px' }}>21 jun 2025</div>
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '12px' }}>En 36 días</div>
-                    <button className="btn-pink btn-interactive" style={{ width: '100%', padding: '10px', fontSize: '12px', fontWeight: '750', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                    <button className="btn-pink btn-interactive mi-btn" style={{ width: '100%', padding: '10px', fontSize: '12px', fontWeight: '750', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                       <Calendar size={14} /> Agendar visita
                     </button>
                   </div>
 
                    {/* Estadísticas rápidas */}
-                   <div className="ficha-card" style={{ padding: '18px', borderRadius: '18px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
+                   <div className="ficha-card mi-card" style={{ padding: '18px', borderRadius: '18px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
                      <h5 style={{ margin: '0 0 14px', fontSize: '13px', fontWeight: '850', color: 'var(--text-primary)' }}>Estadísticas rápidas</h5>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                       {/* Donut */}
@@ -4250,7 +4261,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
               transition: 'all 0.2s',
               flexShrink: 0
             }}
-            className="btn-interactive"
+            className="btn-interactive mi-btn"
           >
             &larr; Volver
           </button>
@@ -4269,7 +4280,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
             fontWeight: '750',
             transition: 'all 0.2s'
           }}
-          className="btn-interactive"
+          className="btn-interactive mi-btn"
         >
           Eliminar Ficha
         </button>
@@ -4279,7 +4290,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {/* Mobile Profile Card */}
           <div 
-            className="glass-card" 
+            className="glass-card mi-card"
             style={{ 
               padding: '24px 20px', 
               borderRadius: '28px', 
@@ -4327,7 +4338,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                           background: 'var(--magenta-gradient)', padding: '5px 12px', borderRadius: '14px',
                           boxShadow: '0 4px 10px rgba(160,80,106,0.2)', whiteSpace: 'nowrap'
                         }}
-                        className="btn-interactive"
+                        className="btn-interactive mi-btn"
                       >
                         <Phone size={10} color="white" /> Llamar
                       </a>
@@ -4341,7 +4352,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                           backgroundColor: '#25D366', padding: '5px 12px', borderRadius: '14px',
                           boxShadow: '0 4px 10px rgba(37,211,102,0.2)', whiteSpace: 'nowrap'
                         }}
-                        className="btn-interactive"
+                        className="btn-interactive mi-btn"
                       >
                         <MessageCircle size={10} color="white" /> WhatsApp
                       </a>
@@ -4394,17 +4405,17 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                   <FileText size={14} color="var(--magenta-primary)" /> Información del Cliente
                 </h4>
                 {!isEditing && (
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    className="btn-interactive"
-                    style={{
-                      background: 'none', border: 'none', color: 'var(--magenta-primary)',
-                      fontSize: '11px', fontWeight: '750', cursor: 'pointer', padding: '4px 10px',
-                      borderRadius: '10px', backgroundColor: 'rgba(160,80,106,0.06)'
-                    }}
-                  >
-                    Editar
-                  </button>
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="btn-interactive mi-btn"
+                      style={{
+                        background: 'none', border: 'none', color: 'var(--magenta-primary)',
+                        fontSize: '11px', fontWeight: '750', cursor: 'pointer', padding: '4px 10px',
+                        borderRadius: '10px', backgroundColor: 'rgba(160,80,106,0.06)'
+                      }}
+                    >
+                      Editar
+                    </button>
                 )}
               </div>
 
@@ -4413,15 +4424,15 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                   <div style={{ display: 'grid', gridTemplateColumns: detailWidth > 580 ? '1fr 1fr' : '1fr', gap: '12px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                       <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '700' }}>NOMBRE</label>
-                      <input className="form-input" value={editData.name} onChange={e => setEditData({...editData, name: formatName(e.target.value)})} placeholder="Nombre" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
+                      <input className="form-input mi-input" value={editData.name} onChange={e => setEditData({...editData, name: formatName(e.target.value)})} placeholder="Nombre" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                       <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '700' }}>TELÉFONO</label>
-                      <input className="form-input" value={editData.phone} onChange={e => setEditData({...editData, phone: e.target.value})} placeholder="Teléfono" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
+                      <input className="form-input mi-input" value={editData.phone} onChange={e => setEditData({...editData, phone: e.target.value})} placeholder="Teléfono" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                       <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '700' }}>CÉDULA</label>
-                      <input className="form-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="Cédula" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
+                      <input className="form-input mi-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="Cédula" style={{ width: '100%', fontSize: '12px', padding: '8px' }} />
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                       <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '700' }}>FECHA DE NACIMIENTO</label>
@@ -4435,8 +4446,8 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '10px', marginTop: '8px', maxWidth: '360px', width: '100%' }}>
-                    <button className="btn-pink" onClick={async () => { const r = await onUpdate(editData); if (r) showToast('Datos actualizados'); setIsEditing(false); }} style={{ flex: 1.5, fontSize: '12px', padding: '10px', fontWeight: '750', background: 'var(--magenta-gradient)', border: 'none', borderRadius: '12px' }}>Guardar</button>
-                    <button onClick={() => setIsEditing(false)} style={{ flex: 1, background: 'none', border: '1px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '12px', borderRadius: '12px', cursor: 'pointer', padding: '10px' }}>Cancelar</button>
+                    <button className="btn-pink mi-btn" onClick={async () => { const r = await onUpdate(editData); if (r) showToast('Datos actualizados'); setIsEditing(false); }} style={{ flex: 1.5, fontSize: '12px', padding: '10px', fontWeight: '750', background: 'var(--magenta-gradient)', border: 'none', borderRadius: '12px' }}>Guardar</button>
+                    <button onClick={() => setIsEditing(false)} className="mi-btn" style={{ flex: 1, background: 'none', border: '1px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '12px', borderRadius: '12px', cursor: 'pointer', padding: '10px' }}>Cancelar</button>
                   </div>
                 </div>
               ) : (
@@ -4523,7 +4534,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                 <button
                   key={tab.id}
                   onClick={() => { setActiveSubTab(tab.id); setShowCollage(false); }}
-                  className="btn-interactive"
+                  className="btn-interactive mi-btn"
                   style={{
                     display: 'flex', 
                     flexDirection: 'column',
@@ -4560,7 +4571,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
         <div className="animate-ficha-enter" style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '28px', alignItems: 'start' }}>
           {/* Sidebar: Profile + Ficha Técnica */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div className="glass-card" style={{ padding: '28px 24px', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)', textAlign: 'center' }}>
+            <div className="glass-card mi-card" style={{ padding: '28px 24px', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)', textAlign: 'center' }}>
               <div style={{
                 width: '96px', height: '96px', borderRadius: '50%', margin: '0 auto 16px',
                 background: client.image_url ? 'var(--bg-tertiary)' : 'var(--magenta-gradient)', 
@@ -4621,23 +4632,23 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
               {/* Quick Communication Actions (WhatsApp & Call) */}
               {client.phone && (
                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '14px' }}>
-                  <a 
-                    href={`tel:${client.phone}`}
-                    className="btn-interactive"
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11.5px', fontWeight: '750',
-                      color: 'var(--magenta-primary)', backgroundColor: 'rgba(160,80,106,0.06)', 
-                      border: '1px solid rgba(160,80,106,0.12)', padding: '7px 14px', borderRadius: '12px',
-                      textDecoration: 'none', transition: 'all 0.2s'
-                    }}
-                  >
-                    <Phone size={11} /> Llamar
-                  </a>
-                  <a 
-                    href={`https://wa.me/${getWhatsAppNumber(client.phone)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-interactive"
+                    <a 
+                      href={`tel:${client.phone}`}
+                      className="btn-interactive mi-btn"
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11.5px', fontWeight: '750',
+                        color: 'var(--magenta-primary)', backgroundColor: 'rgba(160,80,106,0.06)', 
+                        border: '1px solid rgba(160,80,106,0.12)', padding: '7px 14px', borderRadius: '12px',
+                        textDecoration: 'none', transition: 'all 0.2s'
+                      }}
+                    >
+                      <Phone size={11} /> Llamar
+                    </a>
+                    <a 
+                      href={`https://wa.me/${getWhatsAppNumber(client.phone)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-interactive mi-btn"
                     style={{
                       display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11.5px', fontWeight: '750',
                       color: '#128C7E', backgroundColor: 'rgba(18,140,126,0.06)', 
@@ -4688,7 +4699,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
               {!isEditing && (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="btn-interactive"
+                  className="btn-interactive mi-btn"
                   style={{
                     marginTop: '18px', width: '100%', padding: '11px', borderRadius: '12px',
                     border: 'none', background: 'var(--magenta-gradient)', color: 'white',
@@ -4700,7 +4711,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
               )}
             </div>
 
-            <div className="glass-card" style={{ padding: '22px', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
+            <div className="glass-card mi-card" style={{ padding: '22px', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
               <h4 style={{ margin: '0 0 16px 0', fontSize: '13px', fontWeight: '850', color: 'var(--magenta-primary)', display: 'flex', alignItems: 'center', gap: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 <FileText size={14} /> Información del Cliente
               </h4>
@@ -4709,15 +4720,15 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>NOMBRE</label>
-                    <input className="form-input" value={editData.name} onChange={e => setEditData({...editData, name: formatName(e.target.value)})} placeholder="Nombre" style={{ width: '100%', padding: '8px 12px' }} />
+                    <input className="form-input mi-input" value={editData.name} onChange={e => setEditData({...editData, name: formatName(e.target.value)})} placeholder="Nombre" style={{ width: '100%', padding: '8px 12px' }} />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>CÉDULA</label>
-                    <input className="form-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="Cédula" style={{ width: '100%', padding: '8px 12px' }} />
+                    <input className="form-input mi-input" value={editData.id_card} onChange={e => setEditData({...editData, id_card: e.target.value})} placeholder="Cédula" style={{ width: '100%', padding: '8px 12px' }} />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>TELÉFONO</label>
-                    <input className="form-input" value={editData.phone} onChange={e => setEditData({...editData, phone: e.target.value})} placeholder="Teléfono" style={{ width: '100%', padding: '8px 12px' }} />
+                    <input className="form-input mi-input" value={editData.phone} onChange={e => setEditData({...editData, phone: e.target.value})} placeholder="Teléfono" style={{ width: '100%', padding: '8px 12px' }} />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>CUMPLEANOS</label>
@@ -4732,7 +4743,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800' }}>NOTAS RÁPIDAS</label>
                     <textarea
-                      className="form-input"
+                      className="form-input mi-input"
                       value={editData.notes}
                       onChange={e => setEditData({...editData, notes: e.target.value})}
                       onInput={(e) => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }}
@@ -4742,8 +4753,8 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                     />
                   </div>
                   <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                    <button className="btn-pink" style={{ flex: 1, padding: '10px', background: 'var(--magenta-gradient)', border: 'none', fontWeight: '750' }} onClick={async () => { const r = await onUpdate(editData); if (r) showToast('Datos actualizados'); setIsEditing(false); }}>Guardar</button>
-                    <button className="btn-interactive" style={{ flex: 1, padding: '10px', background: 'none', border: '1px solid var(--border-color)', color: 'var(--text-muted)', borderRadius: '12px', fontSize: '13px', fontWeight: '600' }} onClick={() => setIsEditing(false)}>Cancelar</button>
+                    <button className="btn-pink mi-btn" style={{ flex: 1, padding: '10px', background: 'var(--magenta-gradient)', border: 'none', fontWeight: '750' }} onClick={async () => { const r = await onUpdate(editData); if (r) showToast('Datos actualizados'); setIsEditing(false); }}>Guardar</button>
+                    <button className="btn-interactive mi-btn" style={{ flex: 1, padding: '10px', background: 'none', border: '1px solid var(--border-color)', color: 'var(--text-muted)', borderRadius: '12px', fontSize: '13px', fontWeight: '600' }} onClick={() => setIsEditing(false)}>Cancelar</button>
                   </div>
                 </div>
               ) : (
@@ -4765,7 +4776,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                     {editingNotes ? (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         <textarea
-                          className="form-input"
+                          className="form-input mi-input"
                           value={localNotes}
                           onChange={e => setLocalNotes(e.target.value)}
                           onInput={(e) => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }}
@@ -4776,6 +4787,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                         <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
                           <button
                             onClick={() => setEditingNotes(false)}
+                            className="mi-btn"
                             style={{ background: 'none', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '3px 8px', fontSize: '10px', fontWeight: '700', color: 'var(--text-secondary)', cursor: 'pointer' }}
                           >
                             Cancelar
@@ -4788,6 +4800,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                                 setEditingNotes(false);
                               }
                             }}
+                            className="mi-btn"
                             style={{ background: 'var(--magenta-gradient)', border: 'none', borderRadius: '6px', padding: '3px 10px', fontSize: '10px', fontWeight: '800', color: 'white', cursor: 'pointer' }}
                           >
                             Guardar
@@ -4827,7 +4840,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                     onClick={() => { setActiveSubTab(tab.id); setShowCollage(false); }}
                     role="button"
                     tabIndex={0}
-                    className="btn-interactive"
+                    className="btn-interactive mi-btn"
                     style={{
                       display: 'flex',
                       alignItems: 'center',

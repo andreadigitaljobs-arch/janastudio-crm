@@ -121,7 +121,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
   return (
     <div className="sidebar" ref={sidebarRef} style={sidebarStyle}>
       {/* Mobile close button + Logo header */}
-      <div style={{
+      <div className="mi-enter-up mi-delay-1" style={{
         gap: effectiveCollapsed ? '16px' : '16px',
         display: 'flex', flexDirection: 'column', alignItems: 'center',
         position: 'relative',
@@ -193,6 +193,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
       </div>
 
       <nav
+        className="mi-enter-up mi-delay-2"
         onMouseLeave={() => setHoveredTab(null)}
         style={{ display: 'flex', flexDirection: 'column', gap: '1px', position: 'relative', flex: 1, minHeight: 0, overflowY: 'hidden', overflowX: 'hidden' }}
       >
@@ -214,6 +215,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
           const colors = MENU_COLORS[index % MENU_COLORS.length];
           return (
             <button
+              className="mi-nav"
               key={item.id + item.label}
               ref={el => itemRefs.current[index] = el}
               onClick={() => handleItemClick(item.id)}
@@ -266,9 +268,10 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
         })}
       </nav>
 
-      <div style={{ flexShrink: 0, paddingTop: '8px', display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative' }}>
+      <div className="mi-enter-up mi-delay-3" style={{ flexShrink: 0, paddingTop: '8px', display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative' }}>
         {!effectiveCollapsed ? (
           <button
+            className="mi-btn"
             onClick={handleLogout}
             style={{
               display: 'flex', alignItems: 'center', gap: '12px',
@@ -297,6 +300,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
           </button>
         ) : (
           <button
+            className="mi-btn"
             onClick={handleLogout}
             aria-label="Cerrar Sesión"
             style={{

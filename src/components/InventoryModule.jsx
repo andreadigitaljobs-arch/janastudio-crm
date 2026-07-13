@@ -192,7 +192,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
   const formatBs = (val) => `Bs. ${Number(val).toLocaleString('es-VE', { minimumFractionDigits: 2 })}`;
 
   return (
-    <div className="animate-fade-in" style={{ paddingBottom: isMobile ? '120px' : '60px' }}>
+    <div className="animate-fade-in mi-enter-up" style={{ paddingBottom: isMobile ? '120px' : '60px' }}>
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '100px' }}>
           <Loader2 className="animate-spin" color="var(--pink-primary)" size={40} />
@@ -204,7 +204,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
           <div style={{ flex: isMobile ? 1 : 3, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
             
             {/* Header */}
-            <div style={{ 
+            <div className="mi-enter-up" style={{ 
               display: 'flex', 
               justifyContent: 'space-between', 
               alignItems: 'center', 
@@ -232,8 +232,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '12px', width: isMobile ? '100%' : 'auto', zIndex: 1 }}>
-                <button 
-                  className="btn-pink"
+                <button className="btn-pink mi-btn"
                   onClick={async () => {
                     setShowHistoryModal(true);
                     setLoadingHistory(true);
@@ -243,8 +242,8 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                 >
                   <History size={16} /> Movimientos
                 </button>
-                <button 
-                  className="btn-pink"
+                <button
+                  className="btn-pink mi-btn"
                   onClick={() => setShowAddForm(!showAddForm)}
                   style={{ padding: '10px 20px', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: '700' }}
                 >
@@ -291,17 +290,18 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
               <div style={{ position: 'relative', flex: 1 }}>
                 <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                <input 
+                <input
+                  className="mi-input"
                   type="text" placeholder="Buscar producto, categoría o proveedor..." value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   style={{ width: '100%', paddingLeft: '38px', height: '40px', borderRadius: '12px', fontSize: '13px', background: 'white', border: '1px solid var(--border-color)' }}
                 />
               </div>
               <div style={{ display: 'flex', borderRadius: '10px', border: '1px solid var(--border-color)', overflow: 'hidden' }}>
-                <button onClick={() => setViewMode('grid')} style={{ padding: '8px 14px', border: 'none', background: viewMode === 'grid' ? 'var(--pink-primary)' : 'white', color: viewMode === 'grid' ? 'white' : 'var(--text-muted)', cursor: 'pointer', fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <button className="mi-btn" onClick={() => setViewMode('grid')} style={{ padding: '8px 14px', border: 'none', background: viewMode === 'grid' ? 'var(--pink-primary)' : 'white', color: viewMode === 'grid' ? 'white' : 'var(--text-muted)', cursor: 'pointer', fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <Package size={14} /> Cuadrícula
                 </button>
-                <button onClick={() => setViewMode('list')} style={{ padding: '8px 14px', border: 'none', background: viewMode === 'list' ? 'var(--pink-primary)' : 'white', color: viewMode === 'list' ? 'white' : 'var(--text-muted)', cursor: 'pointer', fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <button className="mi-btn" onClick={() => setViewMode('list')} style={{ padding: '8px 14px', border: 'none', background: viewMode === 'list' ? 'var(--pink-primary)' : 'white', color: viewMode === 'list' ? 'white' : 'var(--text-muted)', cursor: 'pointer', fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <BarChart3 size={14} /> Lista
                 </button>
               </div>
@@ -310,21 +310,21 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
             {/* Category Chips */}
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
               {defaultCategories.map(cat => (
-                <button key={cat} onClick={() => setCategoryFilter(cat)} style={{ padding: '6px 14px', borderRadius: '20px', cursor: 'pointer', fontSize: '12px', fontWeight: '700', transition: 'all 0.2s', backgroundColor: categoryFilter === cat ? 'var(--pink-primary)' : '#faf5f5', color: categoryFilter === cat ? 'white' : 'var(--text-muted)', border: categoryFilter === cat ? 'none' : '1px solid var(--border-color)' }}>
+                <button key={cat} className="mi-chip" onClick={() => setCategoryFilter(cat)} style={{ padding: '6px 14px', borderRadius: '20px', cursor: 'pointer', fontSize: '12px', fontWeight: '700', transition: 'all 0.2s', backgroundColor: categoryFilter === cat ? 'var(--pink-primary)' : '#faf5f5', color: categoryFilter === cat ? 'white' : 'var(--text-muted)', border: categoryFilter === cat ? 'none' : '1px solid var(--border-color)' }}>
                   {cat}
                 </button>
               ))}
-              <button style={{ padding: '6px 14px', borderRadius: '20px', cursor: 'pointer', fontSize: '12px', fontWeight: '700', backgroundColor: '#faf5f5', color: '#ef4444', border: '1px solid rgba(239,68,68,0.2)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#ef4444' }} /> Bajo stock
-              </button>
-              <button style={{ padding: '6px 14px', borderRadius: '20px', cursor: 'pointer', fontSize: '12px', fontWeight: '700', backgroundColor: '#faf5f5', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.2)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <button className="mi-chip" style={{ padding: '6px 14px', borderRadius: '20px', cursor: 'pointer', fontSize: '12px', fontWeight: '700', backgroundColor: '#faf5f5', color: '#ef4444', border: '1px solid rgba(239,68,68,0.2)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#ef4444' }} /> Bajo stock
+                </button>
+                <button className="mi-chip" style={{ padding: '6px 14px', borderRadius: '20px', cursor: 'pointer', fontSize: '12px', fontWeight: '700', backgroundColor: '#faf5f5', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.2)', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#f59e0b' }} /> Agotados
               </button>
             </div>
 
             {/* Stat Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px' }}>
-              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+            <div className="mi-enter-up mi-delay-1" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px' }}>
+              <div className="mi-stat" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                   <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c48b9f' }}><Package size={18} /></div>
                   <div>
@@ -334,7 +334,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                 </div>
                 <div style={{ fontSize: '11px', color: '#22c55e', fontWeight: '600' }}>↑ 12 este mes</div>
               </div>
-              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+              <div className="mi-stat mi-delay-2" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                   <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(245,158,11,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f59e0b' }}><AlertTriangle size={18} /></div>
                   <div>
@@ -344,7 +344,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                 </div>
                 <div style={{ fontSize: '11px', color: '#ef4444', fontWeight: '600' }}>↓ -3 vs. mes anterior</div>
               </div>
-              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+              <div className="mi-stat mi-delay-3" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                   <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(239,68,68,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444' }}><TrendingUp size={18} /></div>
                   <div>
@@ -354,7 +354,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                 </div>
                 <div style={{ fontSize: '11px', color: '#ef4444', fontWeight: '600' }}>↑ +1 vs. mes anterior</div>
               </div>
-              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+              <div className="mi-stat mi-delay-4" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                   <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(168,85,247,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a855f7' }}><ShoppingCart size={18} /></div>
                   <div>
@@ -367,7 +367,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
             </div>
 
             {/* Product Table / Cards */}
-            <div style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+            <div className="mi-enter-up mi-delay-2" style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
               {isMobile ? (
                 /* ── MOBILE: tarjetas de producto ── */
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
@@ -431,7 +431,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                         const statusBg = item.stock === 0 ? 'rgba(239,68,68,0.1)' : item.stock <= (item.min_stock || 5) ? 'rgba(245,158,11,0.1)' : 'rgba(34,197,94,0.1)';
                         const statusColor = item.stock === 0 ? '#ef4444' : item.stock <= (item.min_stock || 5) ? '#f59e0b' : '#22c55e';
                         return (
-                          <tr key={item.id} style={{ borderBottom: '1px solid var(--border-color)' }} className="table-row-hover">
+                          <tr key={item.id} className="table-row-hover mi-row" style={{ borderBottom: '1px solid var(--border-color)' }}>
                             <td style={{ padding: '12px 14px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: item.image_url ? 'transparent' : 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
@@ -455,11 +455,11 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                             </td>
                             <td style={{ padding: '12px 14px' }}>
                               <div style={{ display: 'flex', gap: '4px' }}>
-                                <button className="action-btn" onClick={() => setEditingItem(item)} style={{ width: '28px', height: '28px' }}><Eye size={12} /></button>
-                                <button className="action-btn" onClick={() => handeAdjustStock(item.id, item.stock, -1)} style={{ width: '28px', height: '28px' }}><Minus size={12} /></button>
-                                <button className="action-btn" onClick={() => handeAdjustStock(item.id, item.stock, 1)} style={{ width: '28px', height: '28px' }}><Plus size={12} /></button>
-                                <button className="action-btn" onClick={() => setEditingItem(item)} style={{ width: '28px', height: '28px' }}><Edit3 size={12} /></button>
-                                <button className="action-btn" onClick={() => handleDeleteItem(item.id, item.name)} style={{ width: '28px', height: '28px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.05)' }}><Trash2 size={12} /></button>
+                                <button className="action-btn mi-btn" onClick={() => setEditingItem(item)} style={{ width: '28px', height: '28px' }}><Eye size={12} /></button>
+                                <button className="action-btn mi-btn" onClick={() => handeAdjustStock(item.id, item.stock, -1)} style={{ width: '28px', height: '28px' }}><Minus size={12} /></button>
+                                <button className="action-btn mi-btn" onClick={() => handeAdjustStock(item.id, item.stock, 1)} style={{ width: '28px', height: '28px' }}><Plus size={12} /></button>
+                                <button className="action-btn mi-btn" onClick={() => setEditingItem(item)} style={{ width: '28px', height: '28px' }}><Edit3 size={12} /></button>
+                                <button className="action-btn mi-btn" onClick={() => handleDeleteItem(item.id, item.name)} style={{ width: '28px', height: '28px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.05)' }}><Trash2 size={12} /></button>
                               </div>
                             </td>
                           </tr>
@@ -472,12 +472,12 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
             </div>
 
             {/* Próximas reposiciones */}
-            <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+            <div className="mi-card" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <h4 style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Calendar size={16} color="#c48b9f" /> Próximas reposiciones
                 </h4>
-                <button style={{ fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer' }}>Ver todas →</button>
+                <button className="mi-btn" style={{ fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer' }}>Ver todas →</button>
               </div>
               <div style={{ display: 'flex', gap: '12px', overflowX: 'auto' }}>
                 {[
@@ -508,7 +508,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
             <div style={{ width: '300px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
               
               {/* Alertas de reposición */}
-              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+              <div className="mi-card" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
                 <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <AlertTriangle size={14} color="#ef4444" /> Alertas de reposición
                 </h4>
@@ -523,11 +523,11 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                     </div>
                   </div>
                 ))}
-                <button style={{ width: '100%', padding: '8px', marginTop: '8px', borderRadius: '8px', border: 'none', background: 'rgba(196,139,159,0.1)', color: 'var(--pink-primary)', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}>Ver todas las alertas →</button>
+                <button className="mi-btn" style={{ width: '100%', padding: '8px', marginTop: '8px', borderRadius: '8px', border: 'none', background: 'rgba(196,139,159,0.1)', color: 'var(--pink-primary)', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}>Ver todas las alertas →</button>
               </div>
 
               {/* Categorías con más movimiento */}
-              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+              <div className="mi-card" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
                 <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <BarChart3 size={14} color="#c48b9f" /> Categorías con más movimiento
                 </h4>
@@ -550,7 +550,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
               </div>
 
               {/* Movimientos recientes */}
-              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+              <div className="mi-card" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
                 <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <History size={14} color="#c48b9f" /> Movimientos recientes
                 </h4>
@@ -566,11 +566,11 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                     <span style={{ fontWeight: '800', color: m.color }}>{m.amount}</span>
                   </div>
                 ))}
-                <button style={{ width: '100%', padding: '8px', marginTop: '8px', borderRadius: '8px', border: 'none', background: 'rgba(196,139,159,0.1)', color: 'var(--pink-primary)', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}>Ver historial completo →</button>
+                <button className="mi-btn" style={{ width: '100%', padding: '8px', marginTop: '8px', borderRadius: '8px', border: 'none', background: 'rgba(196,139,159,0.1)', color: 'var(--pink-primary)', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}>Ver historial completo →</button>
               </div>
 
               {/* Próxima compra sugerida */}
-              <div style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
+              <div className="mi-card" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
                 <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <ShoppingCart size={14} color="#c48b9f" /> Próxima compra sugerida
                 </h4>
@@ -579,7 +579,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                   <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Total estimado</span>
                   <span style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text-primary)' }}>{formatBs(1248 * (rates?.usd || 550))}</span>
                 </div>
-                <button className="btn-pink" style={{ width: '100%', padding: '10px', borderRadius: '12px', fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                <button className="btn-pink mi-btn" style={{ width: '100%', padding: '10px', borderRadius: '12px', fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                   <ShoppingCart size={14} /> Generar pedido
                 </button>
               </div>
