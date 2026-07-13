@@ -2351,7 +2351,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           </div>
 
           {/* Main content padding area */}
-          <div style={{ padding: isMobile ? '16px 16px calc(140px + env(safe-area-inset-bottom, 12px)) 16px' : '24px 32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div style={{ padding: isMobile ? '16px 16px calc(130px + env(safe-area-inset-bottom, 12px)) 16px' : '24px 32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
             
             {/* Identity Card & Date Selector Ribbon */}
             <div style={{ 
@@ -2876,53 +2876,6 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       }}
                       defaultValue="Prefiere rizo C. Productos hipoalergénicos. No usar adhesivo fuerte."
                     />
-                  </div>
-
-                  {/* Action buttons list */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <button
-                      onClick={() => {
-                        setScheduleModalPreset({ staff: selectedStaffDrawer });
-                        setShowScheduleModal(true);
-                      }}
-                      className="mi-btn btn-hover-scale"
-                      style={{
-                        width: '100%', padding: '12px', borderRadius: '12px', border: 'none',
-                        background: 'linear-gradient(135deg, #c48b9f, #c97282)', color: '#fff',
-                        fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 15px rgba(201, 114, 130,0.2)'
-                      }}
-                    >
-                      Agendar Nueva Cita
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setShowQuickAvailModal?.(true) || showToast?.('Abriendo disponibilidad...', 'info');
-                      }}
-                      className="mi-btn btn-hover-scale"
-                      style={{
-                        width: '100%', padding: '12px', borderRadius: '12px', border: '1px solid rgba(201, 114, 130, 0.25)',
-                        background: '#fff', color: '#c97282',
-                        fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer'
-                      }}
-                    >
-                      Ver disponibilidad
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setSelectedStaffDrawer(null);
-                        showToast?.('Navegando a reportes de productividad...', 'info');
-                      }}
-                      className="mi-btn btn-hover-scale"
-                      style={{
-                        width: '100%', padding: '12px', borderRadius: '12px', border: 'none',
-                        background: 'rgba(74, 48, 54, 0.06)', color: '#2d1b22',
-                        fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer'
-                      }}
-                    >
-                      Ver reporte completo
-                    </button>
                   </div>
 
                   {/* Day Comparison widget */}
