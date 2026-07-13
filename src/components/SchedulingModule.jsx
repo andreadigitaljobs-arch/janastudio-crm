@@ -2093,13 +2093,13 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                           </div>
                           {/* Next appointment — directly visible on the card layout */}
                           {nextApp ? (
-                            <div style={{ fontSize: '0.54rem', color: '#c97282', fontWeight: 800, marginTop: '4px', display: 'flex', alignItems: 'center', justifyContent: isMobileCard ? 'center' : 'flex-start', gap: '3px' }}>
-                              <Clock size={9} color="#c97282" />
+                            <div style={{ fontSize: '0.64rem', color: '#c97282', fontWeight: 800, marginTop: '5px', display: 'flex', alignItems: 'center', justifyContent: isMobileCard ? 'center' : 'flex-start', gap: '4px' }}>
+                              <Clock size={11} color="#c97282" />
                               <span>Próxima: {nextApp.timeStr}</span>
                             </div>
                           ) : (
-                            <div style={{ fontSize: '0.54rem', color: '#a0909a', fontWeight: 600, marginTop: '4px', display: 'flex', alignItems: 'center', justifyContent: isMobileCard ? 'center' : 'flex-start', gap: '3px' }}>
-                              <Clock size={9} color="#a0909a" />
+                            <div style={{ fontSize: '0.6rem', color: '#a0909a', fontWeight: 600, marginTop: '5px', display: 'flex', alignItems: 'center', justifyContent: isMobileCard ? 'center' : 'flex-start', gap: '4px' }}>
+                              <Clock size={10} color="#a0909a" />
                               <span>Sin más citas hoy</span>
                             </div>
                           )}
