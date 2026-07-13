@@ -2350,7 +2350,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           </div>
 
           {/* Main content padding area */}
-          <div style={{ padding: isMobile ? '16px' : '24px 32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div style={{ padding: isMobile ? '16px 16px calc(90px + env(safe-area-inset-bottom, 12px)) 16px' : '24px 32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
             
             {/* Identity Card & Date Selector Ribbon */}
             <div style={{ 
