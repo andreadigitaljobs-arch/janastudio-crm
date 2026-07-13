@@ -1574,7 +1574,7 @@ const DashboardModule = ({
                 lineHeight: '1.15',
                 textShadow: '0 1px 3px rgba(0,0,0,0.15)'
               }}>
-                Adicional de Ondas
+                Ondas Sirena
               </h4>
               <span style={{ 
                 fontSize: '11.5px', 
@@ -1583,7 +1583,7 @@ const DashboardModule = ({
                 marginTop: '2px',
                 letterSpacing: '0.3px'
               }}>
-                (Sirena o Sueltas)
+                o Sueltas
               </span>
               <span style={{ 
                 fontSize: '11px', 
