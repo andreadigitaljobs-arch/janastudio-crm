@@ -3272,15 +3272,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             }}>
               {/* Header */}
               <div style={{
-                background: 'linear-gradient(135deg, #fdf6f5 0%, #fae5e3 100%)',
+                background: 'linear-gradient(135deg, #faf0ef 0%, #ebd0ce 100%)',
                 padding: '30px 24px 24px', position: 'relative', overflow: 'hidden',
                 borderBottom: '1px solid rgba(223,178,140,0.15)'
               }}>
-                {/* Logo JANA Studio overlay on the right */}
-                <div style={{ position: 'absolute', right: '24px', bottom: '14px', top: 'auto', opacity: 0.7, pointerEvents: 'none' }}>
-                  <img src="/logo.webp" alt="JANA Studio" style={{ height: '40px', objectFit: 'contain' }} />
-                </div>
-
                 {/* Circular top buttons */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <button
@@ -3307,7 +3302,12 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   </button>
                 </div>
 
-                <div style={{ marginTop: '20px' }}>
+                <div style={{ marginTop: '20px', position: 'relative', paddingRight: '70px' }}>
+                  {/* Logo JANA Studio overlay on the right, centered vertically with the title text */}
+                  <div style={{ position: 'absolute', right: '0', top: '50%', transform: 'translateY(-50%)', opacity: 0.85, pointerEvents: 'none' }}>
+                    <img src="/logo.webp" alt="JANA Studio" style={{ height: '48px', objectFit: 'contain' }} />
+                  </div>
+
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                     <CalendarIcon size={12} color="#a0506a" />
                     <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
