@@ -2589,7 +2589,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               const nextApp = getStaffNextApp(selectedStaffDrawer.id);
               
               return (
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: (isMobile || isTablet) ? '10px' : '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : 'repeat(3, 1fr)', gap: (isMobile || isTablet) ? '10px' : '16px' }}>
                   {/* Card 1: Estado Actual */}
                   <div className="mi-stat mi-enter-up mi-delay-1" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.15)', borderRadius: '16px', padding: '16px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
                     <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: `${statusColor}08`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: statusColor, flexShrink: 0 }}>
