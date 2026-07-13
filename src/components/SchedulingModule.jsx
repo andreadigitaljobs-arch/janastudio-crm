@@ -1605,7 +1605,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 ) : (
                   /* Chronological single-column agenda list — one appointment below the other,
                      grouped by time so it's obvious when several staff have a cita at the same hour. */
-                  <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: '#fff', padding: '16px' }} className="no-scrollbar">
+                  <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: '#fff', padding: '16px' }} className="jana-scrollbar">
                     {(() => {
                       const activeFilter = mobileStaffFilter || visibleStaff[0]?.id;
                       const activePeriod = TIME_PERIODS.find(p => p.key === timeOfDayFilter);
@@ -1850,7 +1850,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 </p>
 
                 {/* Stylists Compact Grid */}
-                <div className="no-scrollbar" style={{ display: 'grid', gridTemplateColumns: `repeat(${(isMobile || isTablet) ? 2 : 3}, minmax(0, 1fr))`, gap: '10px', overflowY: 'auto', flex: 1, paddingRight: '4px', paddingTop: '6px', paddingBottom: '6px', overflowX: 'hidden' }}>
+                <div className="jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: `repeat(${(isMobile || isTablet) ? 2 : 3}, minmax(0, 1fr))`, gap: '10px', overflowY: 'auto', flex: 1, paddingRight: '4px', paddingTop: '6px', paddingBottom: '6px', overflowX: 'visible' }}>
                   <AnimatePresence mode="popLayout">
                   {visibleStaff.map((s, staffIdx) => {
                     const window = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
@@ -2112,7 +2112,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
         </div>
 
         {/* ── SCROLLABLE BODY ── */}
-        <div style={{ overflowY: 'auto', flex: 1, padding: '24px 32px 32px' }} className="no-scrollbar">
+        <div style={{ overflowY: 'auto', flex: 1, padding: '24px 32px 32px' }} className="jana-scrollbar">
 
           {/* ── FILTER ROW 1: Fecha | Hora | Duración ── */}
           <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : 'repeat(3, 1fr)', gap: '16px', marginBottom: '16px' }}>
@@ -2507,33 +2507,32 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               </div>
             </div>
 
-             {/* Pills Tabs Menu */}
-             <div style={{ display: 'flex', flexWrap: 'wrap', gap: isMobile ? '4px' : '8px', background: 'rgba(223,178,140,0.08)', borderRadius: '14px', padding: isMobile ? '4px' : '5px', maxWidth: '100%' }}>
+             {/* Horizontal Tabs Menu */}
+             <div style={{ display: 'flex', gap: isMobile ? '0' : '24px', borderBottom: '1px solid rgba(223, 178, 140, 0.15)', paddingBottom: '2px', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }} className="no-scrollbar">
                {[
                  { id: 'agenda', label: 'Agenda' },
                  { id: 'resumen', label: 'Resumen' },
                  { id: 'servicios', label: 'Servicios' },
                  { id: 'historial', label: 'Historial' },
                  { id: 'notas', label: 'Notas' }
-               ].map((tab) => {
+               ].map((tab, tIdx) => {
                  const isActive = staffActiveTab === tab.id;
                  return (
                    <span 
                      key={tab.id} 
                      onClick={() => setStaffActiveTab(tab.id)}
+                     className="mi-chip"
                      style={{ 
-                       fontSize: isMobile ? '0.62rem' : '0.82rem', 
+                       fontSize: isMobile ? '0.72rem' : '0.85rem', 
                        fontWeight: isActive ? 800 : 600, 
-                       color: isActive ? '#fff' : '#8a7080', 
-                       background: isActive ? 'linear-gradient(135deg, #c97282, #a0506a)' : 'transparent',
-                       borderRadius: isMobile ? '8px' : '10px',
-                       padding: isMobile ? '7px 11px' : '10px 18px',
+                       color: isActive ? '#c97282' : '#a0909a', 
+                       borderBottom: isActive ? '3px solid #c97282' : '3px solid transparent', 
+                       paddingBottom: isMobile ? '8px' : '10px', 
                        cursor: 'pointer',
-                       transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                       transition: 'all 0.15s',
                        whiteSpace: 'nowrap',
-                       flexShrink: 0,
-                       boxShadow: isActive ? '0 2px 8px rgba(201,114,130,0.3)' : 'none',
-                       letterSpacing: '0.2px'
+                       padding: isMobile ? '6px 12px' : undefined,
+                       flexShrink: 0
                      }}
                    >
                      {tab.label}
