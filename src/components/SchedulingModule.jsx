@@ -1791,6 +1791,9 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                         )}
                                       </div>
                                     </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', paddingRight: '12px', flexShrink: 0 }}>
+                                      <ChevronRight size={16} color="#8c767b" className="card-chevron" style={{ opacity: 0.35, transition: 'all 0.2s ease' }} />
+                                    </div>
                                   </div>
                                 );
                               })}
