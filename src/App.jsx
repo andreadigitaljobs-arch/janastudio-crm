@@ -115,6 +115,25 @@ function App() {
     window.isJanaAppLoading = isAppLoading;
   }, [isAppLoading]);
 
+  // Preload all staff photos for instant rendering in dropdowns/lists
+  useEffect(() => {
+    const photosToPreload = [
+      '/staff/Beautician_smiling_in_beauty_salon_202607131301.jpeg',
+      '/staff/Hairdresser_smiling_in_beauty_salon_202607131301 (1).jpeg',
+      '/staff/Hairdresser_smiling_in_beauty_salon_202607131301.jpeg',
+      '/staff/Hairstylist_smiling_in_beauty_salon_202607131301.jpeg',
+      '/staff/Manicurist_smiling_in_beauty_salon_202607131301 (1).jpeg',
+      '/staff/Manicurist_smiling_in_beauty_salon_202607131301.jpeg',
+      '/staff/Massage_therapist_smiling_in_salon_202607131301.jpeg',
+      '/staff/Retrato_de_una_manicurista_profesional_202607131302.jpeg',
+      '/staff/Retrato_de_una_masajista_profesional_202607131301.jpeg'
+    ];
+    photosToPreload.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
+
   useEffect(() => {
     if (!isMobile || !user) return;
     if (localStorage.getItem('jana_fab_hint_seen')) return;
