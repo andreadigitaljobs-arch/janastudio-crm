@@ -131,6 +131,44 @@ function App() {
     localStorage.setItem('jana_fab_hint_seen', 'true');
   };
 
+  useEffect(() => {
+    if (user) {
+      const syncStaffPhotos = async () => {
+        try {
+          const staff = await dataService.getStaff({ includeImages: true });
+          const photos = [
+            '/staff/Beautician_smiling_in_beauty_salon_202607131301.jpeg',
+            '/staff/Hairdresser_smiling_in_beauty_salon_202607131301 (1).jpeg',
+            '/staff/Hairdresser_smiling_in_beauty_salon_202607131301.jpeg',
+            '/staff/Hairstylist_smiling_in_beauty_salon_202607131301.jpeg',
+            '/staff/Manicurist_smiling_in_beauty_salon_202607131301 (1).jpeg',
+            '/staff/Manicurist_smiling_in_beauty_salon_202607131301.jpeg',
+            '/staff/Massage_therapist_smiling_in_salon_202607131301.jpeg',
+            '/staff/Retrato_de_una_manicurista_profesional_202607131302.jpeg',
+            '/staff/Retrato_de_una_masajista_profesional_202607131301.jpeg'
+          ];
+          let updatedCount = 0;
+          for (let i = 0; i < staff.length; i++) {
+            const member = staff[i];
+            const targetPhoto = photos[i % photos.length];
+            if (member.image_url !== targetPhoto) {
+              await dataService.updateStaff(member.id, { image_url: targetPhoto });
+              updatedCount++;
+            }
+          }
+          if (updatedCount > 0) {
+            console.log(`[JANA CRM] Se actualizaron ${updatedCount} fotos de perfil del staff.`);
+            dataService.invalidateSpecificCache('staff');
+            window.location.reload();
+          }
+        } catch (err) {
+          console.error('[JANA CRM] Error sincronizando fotos del staff:', err);
+        }
+      };
+      syncStaffPhotos();
+    }
+  }, [user]);
+
   const allMenuItems = useMemo(() => [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { id: 'scheduling', label: 'Agenda', icon: Calendar },
