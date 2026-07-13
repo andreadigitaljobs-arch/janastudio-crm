@@ -2982,24 +2982,22 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '12px' : '16px', width: '100%' }} className="animate-fade-in">
 
                 {/* Comparativo vs Ayer */}
-                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : '1fr 1fr 1fr', gap: isMobile ? '10px' : '14px' }}>
-                  <div className="mi-stat mi-enter-up" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '14px' : '18px', padding: isMobile ? '14px' : '16px', boxShadow: '0 2px 12px rgba(74,48,54,0.02)' }}>
-                    <div style={{ fontSize: isMobile ? '0.72rem' : '0.6rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Ingresos Hoy</div>
-                    <div style={{ fontSize: isMobile ? '1.4rem' : '1.3rem', fontWeight: 900, color: '#2d1b22', marginTop: '4px' }}>${m.revenue.toLocaleString()}</div>
-                    <div style={{ fontSize: isMobile ? '0.68rem' : '0.55rem', fontWeight: 700, color: revenueUp ? '#16a34a' : '#dc2626', marginTop: '4px' }}>{revenueUp ? '↑' : '↓'} ${Math.abs(revenueDiff)} vs ayer</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: isMobile ? '8px' : '14px' }}>
+                  <div className="mi-stat mi-enter-up" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '12px' : '18px', padding: isMobile ? '10px 8px' : '16px', boxShadow: '0 2px 12px rgba(74,48,54,0.02)' }}>
+                    <div style={{ fontSize: isMobile ? '0.65rem' : '0.6rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px', lineHeight: 1.2 }}>Ingresos Hoy</div>
+                    <div style={{ fontSize: isMobile ? '1.25rem' : '1.3rem', fontWeight: 900, color: '#2d1b22', marginTop: '2px' }}>${m.revenue.toLocaleString()}</div>
+                    <div style={{ fontSize: isMobile ? '0.58rem' : '0.55rem', fontWeight: 700, color: revenueUp ? '#16a34a' : '#dc2626', marginTop: '2px' }}>{revenueUp ? '↑' : '↓'} ${Math.abs(revenueDiff)}</div>
                   </div>
-                  <div className="mi-stat mi-enter-up mi-delay-1" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '14px' : '18px', padding: isMobile ? '14px' : '16px', boxShadow: '0 2px 12px rgba(74,48,54,0.02)' }}>
-                    <div style={{ fontSize: isMobile ? '0.72rem' : '0.6rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Citas Hoy</div>
-                    <div style={{ fontSize: isMobile ? '1.4rem' : '1.3rem', fontWeight: 900, color: '#2d1b22', marginTop: '4px' }}>{m.citasCount}</div>
-                    <div style={{ fontSize: isMobile ? '0.68rem' : '0.55rem', fontWeight: 700, color: citasUp ? '#16a34a' : '#dc2626', marginTop: '4px' }}>{citasUp ? '↑' : '↓'} {Math.abs(citasDiff)} vs ayer</div>
+                  <div className="mi-stat mi-enter-up mi-delay-1" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '12px' : '18px', padding: isMobile ? '10px 8px' : '16px', boxShadow: '0 2px 12px rgba(74,48,54,0.02)' }}>
+                    <div style={{ fontSize: isMobile ? '0.65rem' : '0.6rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px', lineHeight: 1.2 }}>Citas Hoy</div>
+                    <div style={{ fontSize: isMobile ? '1.25rem' : '1.3rem', fontWeight: 900, color: '#2d1b22', marginTop: '2px' }}>{m.citasCount}</div>
+                    <div style={{ fontSize: isMobile ? '0.58rem' : '0.55rem', fontWeight: 700, color: citasUp ? '#16a34a' : '#dc2626', marginTop: '2px' }}>{citasUp ? '↑' : '↓'} {Math.abs(citasDiff)}</div>
                   </div>
-                  {(!isMobile || true) && (
-                  <div className="mi-stat mi-enter-up mi-delay-2" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '14px' : '18px', padding: isMobile ? '14px' : '16px', boxShadow: '0 2px 12px rgba(74,48,54,0.02)', ...(isMobile ? { gridColumn: '1 / -1' } : {}) }}>
-                    <div style={{ fontSize: isMobile ? '0.72rem' : '0.6rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px' }}>Ticket Promedio</div>
-                    <div style={{ fontSize: isMobile ? '1.4rem' : '1.3rem', fontWeight: 900, color: '#2d1b22', marginTop: '4px' }}>${ticket}</div>
-                    <div style={{ fontSize: isMobile ? '0.68rem' : '0.55rem', fontWeight: 700, color: ticketDiff >= 0 ? '#16a34a' : '#dc2626', marginTop: '4px' }}>{ticketDiff >= 0 ? '↑' : '↓'} ${Math.abs(ticketDiff)} vs ayer</div>
+                  <div className="mi-stat mi-enter-up mi-delay-2" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '12px' : '18px', padding: isMobile ? '10px 8px' : '16px', boxShadow: '0 2px 12px rgba(74,48,54,0.02)' }}>
+                    <div style={{ fontSize: isMobile ? '0.65rem' : '0.6rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.3px', lineHeight: 1.2 }}>Ticket Prom.</div>
+                    <div style={{ fontSize: isMobile ? '1.25rem' : '1.3rem', fontWeight: 900, color: '#2d1b22', marginTop: '2px' }}>${ticket}</div>
+                    <div style={{ fontSize: isMobile ? '0.58rem' : '0.55rem', fontWeight: 700, color: ticketDiff >= 0 ? '#16a34a' : '#dc2626', marginTop: '2px' }}>{ticketDiff >= 0 ? '↑' : '↓'} ${Math.abs(ticketDiff)}</div>
                   </div>
-                  )}
                 </div>
 
                 {/* Barras de progreso */}
