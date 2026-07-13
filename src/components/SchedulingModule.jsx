@@ -2589,49 +2589,51 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               const nextApp = getStaffNextApp(selectedStaffDrawer.id);
               
               return (
-                <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : 'repeat(3, 1fr)', gap: (isMobile || isTablet) ? '10px' : '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: (isMobile || isTablet) ? '10px' : '16px' }}>
                   {/* Card 1: Estado Actual */}
-                  <div className="mi-stat mi-enter-up mi-delay-1" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.15)', borderRadius: '16px', padding: '16px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                    <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: `${statusColor}08`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: statusColor, flexShrink: 0 }}>
+                  <div className="mi-stat mi-enter-up mi-delay-1" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.15)', borderRadius: '16px', padding: (isMobile || isTablet) ? '10px 12px' : '16px 20px', display: 'flex', alignItems: 'center', gap: (isMobile || isTablet) ? '8px' : '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
+                    <div style={{ width: (isMobile || isTablet) ? '30px' : '36px', height: (isMobile || isTablet) ? '30px' : '36px', borderRadius: '10px', background: `${statusColor}08`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: statusColor, flexShrink: 0 }}>
                       <span className="staff-dot-pulse" style={{ width: '8px', height: '8px', borderRadius: '50%', background: statusColor }} />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '0.64rem', color: '#6b5a5f', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado actual</div>
-                      <div style={{ fontSize: '0.84rem', fontWeight: 800, color: statusColor, marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {statusText} <span style={{ color: '#a0909a', fontSize: '0.68rem', fontWeight: 500 }}>· {statusMsg}</span>
+                      <div style={{ fontSize: (isMobile || isTablet) ? '0.56rem' : '0.64rem', color: '#6b5a5f', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado actual</div>
+                      <div style={{ marginTop: '2px' }}>
+                        <span style={{ fontSize: (isMobile || isTablet) ? '0.74rem' : '0.84rem', fontWeight: 800, color: statusColor, display: 'block' }}>{statusText}</span>
+                        <span style={{ color: '#a0909a', fontSize: '0.58rem', fontWeight: 500, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{statusMsg}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Card 2: Próxima Cita */}
-                  <div className="mi-stat mi-enter-up mi-delay-2" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.15)', borderRadius: '16px', padding: '16px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                    <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(160, 80, 106, 0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
-                      <CalendarIcon size={16} />
+                  <div className="mi-stat mi-enter-up mi-delay-2" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.15)', borderRadius: '16px', padding: (isMobile || isTablet) ? '10px 12px' : '16px 20px', display: 'flex', alignItems: 'center', gap: (isMobile || isTablet) ? '8px' : '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
+                    <div style={{ width: (isMobile || isTablet) ? '30px' : '36px', height: (isMobile || isTablet) ? '30px' : '36px', borderRadius: '10px', background: 'rgba(160, 80, 106, 0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
+                      <CalendarIcon size={(isMobile || isTablet) ? 14 : 16} />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '0.64rem', color: '#6b5a5f', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Próxima cita</div>
-                      <div style={{ fontSize: '0.84rem', fontWeight: 800, color: '#a0506a', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div style={{ fontSize: (isMobile || isTablet) ? '0.56rem' : '0.64rem', color: '#6b5a5f', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Próxima cita</div>
+                      <div style={{ marginTop: '2px' }}>
                         {nextApp ? (
                           <>
-                            {nextApp.timeStr} <span style={{ color: '#a0909a', fontSize: '0.68rem', fontWeight: 500 }}>· {nextApp.serviceName || 'Servicio'}</span>
+                            <span style={{ fontSize: (isMobile || isTablet) ? '0.74rem' : '0.84rem', fontWeight: 800, color: '#a0506a', display: 'block' }}>{nextApp.timeStr}</span>
+                            <span style={{ color: '#a0909a', fontSize: '0.58rem', fontWeight: 500, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{nextApp.serviceName || 'Servicio'}</span>
                           </>
                         ) : (
-                          'Sin más citas hoy'
+                          <span style={{ fontSize: (isMobile || isTablet) ? '0.7rem' : '0.8rem', fontWeight: 700, color: '#a0909a', display: 'block' }}>Sin más citas hoy</span>
                         )}
                       </div>
                     </div>
                   </div>
 
                   {/* Card 3: Horario de Hoy */}
-                  <div className="mi-stat mi-enter-up mi-delay-3" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.15)', borderRadius: '16px', padding: '16px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                    <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(201, 114, 130, 0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c97282', flexShrink: 0 }}>
-                      <Clock size={16} />
+                  <div className="mi-stat mi-enter-up mi-delay-3" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.15)', borderRadius: '16px', padding: (isMobile || isTablet) ? '10px 12px' : '16px 20px', display: 'flex', alignItems: 'center', gap: (isMobile || isTablet) ? '8px' : '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
+                    <div style={{ width: (isMobile || isTablet) ? '30px' : '36px', height: (isMobile || isTablet) ? '30px' : '36px', borderRadius: '10px', background: 'rgba(201, 114, 130, 0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c97282', flexShrink: 0 }}>
+                      <Clock size={(isMobile || isTablet) ? 14 : 16} />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '0.64rem', color: '#6b5a5f', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Horario de hoy</div>
-                      <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#2d1b22', marginTop: '2px', lineHeight: '1.3' }}>
-                        9:00 AM - 6:00 PM
-                        <span style={{ color: '#a0909a', fontSize: '0.66rem', fontWeight: 500, display: 'block' }}>1:00 PM - 2:00 PM (descanso)</span>
+                      <div style={{ fontSize: (isMobile || isTablet) ? '0.56rem' : '0.64rem', color: '#6b5a5f', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Horario de hoy</div>
+                      <div style={{ marginTop: '2px' }}>
+                        <span style={{ fontSize: (isMobile || isTablet) ? '0.74rem' : '0.84rem', fontWeight: 800, color: '#2d1b22', display: 'block', whiteSpace: 'nowrap' }}>9:00 AM - 6:00 PM</span>
+                        <span style={{ color: '#a0909a', fontSize: '0.56rem', fontWeight: 500, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>1:00 - 2:00 PM (descanso)</span>
                       </div>
                     </div>
                   </div>
