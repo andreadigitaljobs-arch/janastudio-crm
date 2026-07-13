@@ -1540,10 +1540,15 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   gap: isMobile ? '12px' : '14px',
                   borderBottom: '1px solid rgba(223, 178, 140, 0.2)', background: 'rgba(255,255,255,0.5)'
                 }}>
-                  <h4 className="mi-section-header" style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-                    <Clock size={16} color="#c97282" />
-                    CITAS DE HOY
-                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <h4 className="mi-section-header" style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                      <Clock size={16} color="#c97282" />
+                      CITAS DE HOY
+                    </h4>
+                    <span style={{ fontSize: '0.66rem', color: '#a0909a', fontWeight: 600, marginLeft: '24px' }}>
+                      👆 Toca una cita para ver sus detalles
+                    </span>
+                  </div>
                   {visibleStaff.length > 0 && (
                     <div style={{ width: isMobile ? '100%' : '150px', minWidth: '120px', flexShrink: 1 }}>
                       <JanaSelect
