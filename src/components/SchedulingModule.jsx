@@ -3276,6 +3276,14 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 padding: '30px 24px 24px', position: 'relative', overflow: 'hidden',
                 borderBottom: '1px solid rgba(223,178,140,0.15)'
               }}>
+                {/* Decorative chic glow orb */}
+                <div style={{
+                  position: 'absolute', right: '-20px', top: '-20px',
+                  width: '120px', height: '120px', borderRadius: '50%',
+                  background: 'radial-gradient(circle, rgba(251, 203, 198, 0.5) 0%, rgba(251, 203, 198, 0) 70%)',
+                  filter: 'blur(10px)', pointerEvents: 'none'
+                }} />
+
                 {/* Circular top buttons */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <button
@@ -3302,19 +3310,28 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   </button>
                 </div>
 
-                <div style={{ marginTop: '20px', position: 'relative', paddingRight: '70px' }}>
-                  {/* Logo JANA Studio overlay on the right, centered vertically with the title text */}
-                  <div style={{ position: 'absolute', right: '0', top: '50%', transform: 'translateY(-50%)', opacity: 0.85, pointerEvents: 'none' }}>
-                    <img src="/logo.webp" alt="JANA Studio" style={{ height: '48px', objectFit: 'contain' }} />
+                <div style={{ marginTop: '20px', position: 'relative', paddingRight: '80px' }}>
+                  {/* Chic Glassmorphism Badge framing the logo */}
+                  <div style={{
+                    position: 'absolute', right: '0', top: '50%', transform: 'translateY(-50%)',
+                    width: '64px', height: '64px', borderRadius: '50%',
+                    background: 'rgba(255, 255, 255, 0.45)',
+                    backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+                    border: '1.5px solid rgba(223, 178, 140, 0.35)',
+                    boxShadow: '0 8px 24px rgba(74, 48, 54, 0.08)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    pointerEvents: 'none'
+                  }}>
+                    <img src="/logo.webp" alt="JANA Studio" style={{ height: '42px', width: '42px', objectFit: 'contain' }} />
                   </div>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                    <CalendarIcon size={12} color="#a0506a" />
-                    <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+                    <CalendarIcon size={11} color="#a0506a" />
+                    <span style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0506a', textTransform: 'uppercase', letterSpacing: '2px' }}>
                       Detalle de Visita
                     </span>
                   </div>
-                  <h2 style={{ fontSize: '1.45rem', fontWeight: 850, color: '#2d1b22', margin: '0 0 8px 0', letterSpacing: '-0.3px', fontFamily: 'Georgia, serif' }}>
+                  <h2 style={{ fontSize: '1.45rem', fontWeight: 850, color: '#24151b', margin: '0 0 8px 0', letterSpacing: '-0.3px', fontFamily: 'Georgia, serif' }}>
                     {selectedDetailedApp.clients?.name || 'Cliente'}
                   </h2>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
@@ -3344,6 +3361,18 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     <div style={{ marginBottom: '14px' }}>
                       <div style={{ fontSize: '0.7rem', color: '#6b5a5f', fontWeight: 700, marginBottom: '6px' }}>
                         ¿Qué clienta es?
+                      </div>
+                      <div style={{ fontSize: '0.86rem', fontWeight: 800, color: clientPastAppointments.length === 0 ? '#16a34a' : '#a0506a' }}>
+                        {clientPastAppointments.length === 0 ? 'Clienta Nueva (Primera Visita)' : 'Clienta Frecuente'}
+                      </div>
+                    </div>
+
+                    <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.12)', margin: '14px 0' }} />
+
+                    {/* Teléfono de contacto */}
+                    <div style={{ marginBottom: '14px' }}>
+                      <div style={{ fontSize: '0.7rem', color: '#6b5a5f', fontWeight: 700, marginBottom: '6px' }}>
+                        Teléfono de contacto
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.88rem', fontWeight: 800, color: '#2d1b22' }}>
                         <Phone size={13} color="#a0506a" />
