@@ -5,7 +5,7 @@ import {
   Calendar as CalendarIcon, Clock, User, Plus, ChevronLeft, ChevronRight,
   ChevronDown, Search, Pencil,
   CheckCircle2, Users, UserCheck,
-  CalendarDays, StickyNote, BarChart3, XCircle, Bell,
+  CalendarDays, StickyNote, BarChart3, XCircle, Bell, X,
   DollarSign, Info, AlertTriangle, Coffee, Sliders, Check, HelpCircle, Scissors, Sparkles, Sun, MessageCircle, Circle, Star, Phone
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
@@ -3284,29 +3284,22 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   filter: 'blur(10px)', pointerEvents: 'none'
                 }} />
 
-                {/* Circular top buttons */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                {/* Top close button */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                   <button
                     onClick={triggerCloseDetailedApp}
                     style={{
-                      width: '36px', height: '36px', borderRadius: '50%',
-                      backgroundColor: '#fff', border: '1px solid rgba(223,178,140,0.2)',
-                      boxShadow: '0 2px 6px rgba(0,0,0,0.04)', display: 'flex',
-                      alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+                      width: '30px', height: '30px', borderRadius: '50%',
+                      backgroundColor: 'rgba(255, 255, 255, 0.65)',
+                      backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)',
+                      border: '1.2px solid rgba(223, 178, 140, 0.3)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                      transition: 'all 0.22s ease', outline: 'none'
                     }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.95)'; e.currentTarget.style.transform = 'scale(1.08)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.65)'; e.currentTarget.style.transform = 'scale(1)'; }}
                   >
-                    <ChevronLeft size={16} color="#a0506a" />
-                  </button>
-                  <button
-                    onClick={triggerCloseDetailedApp}
-                    style={{
-                      width: '36px', height: '36px', borderRadius: '50%',
-                      backgroundColor: '#fff', border: '1px solid rgba(223,178,140,0.2)',
-                      boxShadow: '0 2px 6px rgba(0,0,0,0.04)', display: 'flex',
-                      alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
-                    }}
-                  >
-                    <XCircle size={16} color="#a0506a" />
+                    <X size={14} color="#a0506a" strokeWidth={2.5} />
                   </button>
                 </div>
 
