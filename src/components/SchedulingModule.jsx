@@ -3343,25 +3343,27 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       </div>
                     )}
 
-                    {(selectedDetailedApp.clients?.notes || selectedDetailedApp.clients?.hair_type) && (
-                      <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px dashed rgba(223,178,140,0.25)' }}>
-                        <div style={{ fontSize: '0.6rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '6px' }}>Preferencias de la clienta</div>
-                        {selectedDetailedApp.clients?.hair_type && (
-                          <div style={{ fontSize: '0.74rem', color: '#2d1b22', fontWeight: 700, marginBottom: '4px' }}>
-                            💇‍♀️ Cabello: <span style={{ fontWeight: 600, color: 'var(--pink-primary)' }}>{selectedDetailedApp.clients.hair_type}</span>
-                          </div>
-                        )}
-                        {selectedDetailedApp.clients?.notes && (
-                          <div style={{ fontSize: '0.72rem', color: '#6b5a62', fontStyle: 'italic', lineHeight: 1.35, background: '#faf8f7', padding: '8px 10px', borderRadius: '8px', border: '1px solid rgba(160,80,106,0.05)' }}>
-                            "{selectedDetailedApp.clients.notes}"
-                          </div>
-                        )}
-                      </div>
-                    )}
+                    <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px dashed rgba(223,178,140,0.25)' }}>
+                      <div style={{ fontSize: '0.6rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '6px' }}>Preferencias de la clienta</div>
+                      {selectedDetailedApp.clients?.hair_type && (
+                        <div style={{ fontSize: '0.74rem', color: '#2d1b22', fontWeight: 700, marginBottom: '4px' }}>
+                          💇‍♀️ Cabello: <span style={{ fontWeight: 600, color: 'var(--pink-primary)' }}>{selectedDetailedApp.clients.hair_type}</span>
+                        </div>
+                      )}
+                      {selectedDetailedApp.clients?.notes ? (
+                        <div style={{ fontSize: '0.72rem', color: '#6b5a62', fontStyle: 'italic', lineHeight: 1.35, background: '#faf8f7', padding: '8px 10px', borderRadius: '8px', border: '1px solid rgba(160,80,106,0.05)' }}>
+                          "{selectedDetailedApp.clients.notes}"
+                        </div>
+                      ) : (
+                        (!selectedDetailedApp.clients?.hair_type) && (
+                          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>Sin preferencias o notas registradas en su ficha.</span>
+                        )
+                      )}
+                    </div>
 
-                    {clientPastAppointments.length > 0 && (
-                      <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px dashed rgba(223,178,140,0.25)' }}>
-                        <div style={{ fontSize: '0.6rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '6px' }}>Últimos servicios</div>
+                    <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px dashed rgba(223,178,140,0.25)' }}>
+                      <div style={{ fontSize: '0.6rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: '6px' }}>Historial (Últimas Visitas)</div>
+                      {clientPastAppointments.length > 0 ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                           {clientPastAppointments.slice(0, 3).map(pa => (
                             <div key={pa.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem' }}>
@@ -3370,8 +3372,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                             </div>
                           ))}
                         </div>
-                      </div>
-                    )}
+                      ) : (
+                        <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>No registra visitas anteriores (Primera visita).</span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Specialist & Service Card */}
