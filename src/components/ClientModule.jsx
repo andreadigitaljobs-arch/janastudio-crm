@@ -2976,6 +2976,7 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); setShowCamera(true); }}
+                        className="btn-interactive mi-btn"
                         style={{ 
                           fontSize: '12px', 
                           color: 'var(--magenta-primary)', 
@@ -2990,12 +2991,11 @@ const ClientDetail = ({ isMobile, client, onBack, onDelete, onUpdate, onNavigate
                           alignItems: 'center',
                           gap: '6px'
                         }}
-                className="btn-interactive mi-btn"
-              >
-                <t.icon size={15} /> {t.label}
-              </button>
-            ))}
-          </div>
+                      >
+                        <Camera size={15} /> Cámara
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {comparisons.length > 0 && (
