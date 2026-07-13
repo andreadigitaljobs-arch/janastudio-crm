@@ -1470,7 +1470,7 @@ const DashboardModule = ({
             </span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', flex: 1 }}>
             {[
               { name: 'Pestañas clásicas', value: 42, icon: Sparkles },
               { name: 'Laminado cejas', value: 24, icon: Star },
@@ -1483,18 +1483,18 @@ const DashboardModule = ({
                   key={idx}
                   onClick={() => onNavigate('services')}
                   className="mi-row"
-                  style={{ display: 'flex', flexDirection: 'column', gap: '4px', background: '#faf3f2', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', border: '1px solid rgba(212, 160, 154, 0.08)' }}
+                  style={{ display: 'flex', flexDirection: 'column', gap: '6px', background: '#faf3f2', padding: '10px 14px', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s', border: '1px solid rgba(212, 160, 154, 0.08)' }}
                   onMouseEnter={(e) => { e.currentTarget.style.background = '#f5e8e6'; e.currentTarget.style.transform = 'translateY(-1px)' }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = '#faf3f2'; e.currentTarget.style.transform = 'none' }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.80rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-primary)', fontWeight: '600' }}>
-                      <IconComp size={13} style={{ color: '#c97282' }} />
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '120px' }}>{serv.name}</span>
+                      <IconComp size={14} style={{ color: '#c97282' }} />
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '140px' }}>{serv.name}</span>
                     </div>
                     <span style={{ color: 'var(--text-secondary)', fontWeight: '700' }}>{serv.value}%</span>
                   </div>
-                  <div style={{ width: '100%', height: '4px', borderRadius: '2px', background: '#f5e9e7', overflow: 'hidden' }}>
+                  <div style={{ width: '100%', height: '6px', borderRadius: '3px', background: '#f5e9e7', overflow: 'hidden' }}>
                     <div style={{ width: `${serv.value}%`, height: '100%', background: 'linear-gradient(90deg, #c97282, #a0506a)', borderRadius: '2px' }} />
                   </div>
                 </div>
@@ -1515,8 +1515,7 @@ const DashboardModule = ({
               background: 'linear-gradient(140deg, #a0506a 0%, #964a63 30%, #8a4560 60%, #7a3f55 100%)',
               boxShadow: '0 10px 30px rgba(160, 80, 106, 0.25), 0 4px 12px rgba(112, 48, 80, 0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
               transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-              display: 'flex',
-              flex: 1
+              display: 'flex'
             }}
             onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-3px) scale(1.005)'; e.currentTarget.style.boxShadow = '0 16px 40px rgba(160, 80, 106, 0.35), 0 6px 16px rgba(112, 48, 80, 0.2), inset 0 1px 0 rgba(255,255,255,0.15)' }}
             onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 10px 30px rgba(160, 80, 106, 0.25), 0 4px 12px rgba(112, 48, 80, 0.15), inset 0 1px 0 rgba(255,255,255,0.1)' }}
