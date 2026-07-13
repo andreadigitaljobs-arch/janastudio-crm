@@ -2508,7 +2508,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             </div>
 
              {/* Pills Tabs Menu */}
-             <div style={{ display: 'flex', gap: isMobile ? '6px' : '8px', background: 'rgba(223,178,140,0.08)', borderRadius: '14px', padding: isMobile ? '4px' : '5px', width: 'fit-content', maxWidth: '100%' }}>
+             <div style={{ display: 'flex', flexWrap: 'wrap', gap: isMobile ? '4px' : '8px', background: 'rgba(223,178,140,0.08)', borderRadius: '14px', padding: isMobile ? '4px' : '5px', maxWidth: '100%' }}>
                {[
                  { id: 'agenda', label: 'Agenda' },
                  { id: 'resumen', label: 'Resumen' },
@@ -2522,12 +2522,12 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                      key={tab.id} 
                      onClick={() => setStaffActiveTab(tab.id)}
                      style={{ 
-                       fontSize: isMobile ? '0.7rem' : '0.82rem', 
+                       fontSize: isMobile ? '0.62rem' : '0.82rem', 
                        fontWeight: isActive ? 800 : 600, 
                        color: isActive ? '#fff' : '#8a7080', 
                        background: isActive ? 'linear-gradient(135deg, #c97282, #a0506a)' : 'transparent',
-                       borderRadius: '10px',
-                       padding: isMobile ? '8px 14px' : '10px 18px',
+                       borderRadius: isMobile ? '8px' : '10px',
+                       padding: isMobile ? '7px 11px' : '10px 18px',
                        cursor: 'pointer',
                        transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                        whiteSpace: 'nowrap',
