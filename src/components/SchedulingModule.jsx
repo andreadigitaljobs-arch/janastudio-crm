@@ -3276,9 +3276,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 borderBottom: '1px solid rgba(223,178,140,0.15)'
               }}>
                 {/* Logo JANA Studio overlay on the right */}
-                <div style={{ position: 'absolute', right: '20px', top: '24px', opacity: 0.15, pointerEvents: 'none', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                  <span style={{ fontFamily: 'Georgia, serif', fontSize: '1.6rem', fontWeight: 'bold', color: '#a0506a', letterSpacing: '1px' }}>JANA</span>
-                  <span style={{ fontFamily: 'Georgia, serif', fontSize: '0.8rem', fontStyle: 'italic', color: '#a0506a', marginTop: '-5px' }}>Studio</span>
+                <div style={{ position: 'absolute', right: '20px', top: '22px', opacity: 0.7, pointerEvents: 'none' }}>
+                  <img src="/logo.webp" alt="JANA Studio" style={{ height: '40px', objectFit: 'contain' }} />
                 </div>
 
                 {/* Circular top buttons */}
