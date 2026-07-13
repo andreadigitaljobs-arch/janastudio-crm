@@ -2562,77 +2562,130 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             </div>
 
             {/* Quick Status Cards Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: (isMobile || isTablet) ? '10px' : '16px' }}>
-              {/* Card 1: Estado Actual */}
-              <div className="mi-stat mi-enter-up mi-delay-1" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '14px' : '20px', padding: isMobile ? '12px' : '16px 20px', display: 'flex', alignItems: 'center', gap: isMobile ? '10px' : '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                <div style={{ width: isMobile ? '8px' : '10px', height: isMobile ? '8px' : '10px', borderRadius: '50%', background: '#22c55e', flexShrink: 0, boxShadow: '0 0 8px #22c55e' }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: isMobile ? '0.55rem' : '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado actual</div>
-                  <div style={{ fontSize: isMobile ? '0.78rem' : '0.9rem', fontWeight: 800, color: '#22c55e', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Ocupada <span style={{ color: '#a0909a', fontSize: isMobile ? '0.65rem' : '0.78rem', fontWeight: 500 }}>Hasta 11:30 AM</span></div>
-                </div>
-              </div>
+            {(() => {
+              const refMin = checkingTime != null ? checkingTime : nowMinutes;
+              const isLunch = refMin >= 13 * 60 && refMin < 14 * 60;
+              const activeApp = dayApps.find(a => {
+                const start = new Date(a.scheduled_at || a.created_at);
+                const startM = start.getHours() * 60 + start.getMinutes();
+                const duration = 60;
+                return a.staff_id === selectedStaffDrawer.id && refMin >= startM && refMin < (startM + duration);
+              });
 
-              {/* Card 2: Próxima Cita */}
-              <div className="mi-stat mi-enter-up mi-delay-2" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '14px' : '20px', padding: isMobile ? '12px' : '16px 20px', display: 'flex', alignItems: 'center', gap: isMobile ? '10px' : '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                <div style={{ width: isMobile ? '30px' : '36px', height: isMobile ? '30px' : '36px', borderRadius: '10px', background: 'rgba(160, 80, 106, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
-                  <CalendarIcon size={isMobile ? 14 : 16} />
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: isMobile ? '0.55rem' : '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Próxima cita</div>
-                  <div style={{ fontSize: isMobile ? '0.78rem' : '0.9rem', fontWeight: 800, color: '#a0506a', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    12:00 PM <span style={{ color: '#a0909a', fontSize: isMobile ? '0.65rem' : '0.78rem', fontWeight: 500 }}>· Volumen 3D</span>
+              let statusText = 'LIBRE';
+              let statusColor = '#16a34a';
+              let statusMsg = 'Disponible para recibir citas';
+
+              if (isLunch) {
+                statusText = 'ALMUERZO';
+                statusColor = '#c97282';
+                statusMsg = 'En horario de descanso';
+              } else if (activeApp) {
+                statusText = 'OCUPADA';
+                statusColor = '#dc2626';
+                statusMsg = `En cita con ${activeApp.clients?.name || 'Cliente'}`;
+              }
+
+              const nextApp = getStaffNextApp(selectedStaffDrawer.id);
+              
+              return (
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: (isMobile || isTablet) ? '10px' : '16px' }}>
+                  {/* Card 1: Estado Actual */}
+                  <div className="mi-stat mi-enter-up mi-delay-1" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.15)', borderRadius: '16px', padding: '16px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: `${statusColor}08`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: statusColor, flexShrink: 0 }}>
+                      <span className="staff-dot-pulse" style={{ width: '8px', height: '8px', borderRadius: '50%', background: statusColor }} />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '0.64rem', color: '#6b5a5f', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Estado actual</div>
+                      <div style={{ fontSize: '0.84rem', fontWeight: 800, color: statusColor, marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {statusText} <span style={{ color: '#a0909a', fontSize: '0.68rem', fontWeight: 500 }}>· {statusMsg}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card 2: Próxima Cita */}
+                  <div className="mi-stat mi-enter-up mi-delay-2" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.15)', borderRadius: '16px', padding: '16px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(160, 80, 106, 0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0506a', flexShrink: 0 }}>
+                      <CalendarIcon size={16} />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '0.64rem', color: '#6b5a5f', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Próxima cita</div>
+                      <div style={{ fontSize: '0.84rem', fontWeight: 800, color: '#a0506a', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {nextApp ? (
+                          <>
+                            {nextApp.timeStr} <span style={{ color: '#a0909a', fontSize: '0.68rem', fontWeight: 500 }}>· {nextApp.serviceName || 'Servicio'}</span>
+                          </>
+                        ) : (
+                          'Sin más citas hoy'
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card 3: Horario de Hoy */}
+                  <div className="mi-stat mi-enter-up mi-delay-3" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.15)', borderRadius: '16px', padding: '16px', display: 'flex', alignItems: 'center', gap: '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(201, 114, 130, 0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c97282', flexShrink: 0 }}>
+                      <Clock size={16} />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '0.64rem', color: '#6b5a5f', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Horario de hoy</div>
+                      <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#2d1b22', marginTop: '2px', lineHeight: '1.3' }}>
+                        9:00 AM - 6:00 PM
+                        <span style={{ color: '#a0909a', fontSize: '0.66rem', fontWeight: 500, display: 'block' }}>1:00 PM - 2:00 PM (descanso)</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              );
+            })()}
 
-              {/* Card 3: Horario de Hoy */}
-              <div className="mi-stat mi-enter-up mi-delay-3" style={{ background: '#fff', border: '1px solid rgba(223,178,140,0.18)', borderRadius: isMobile ? '14px' : '20px', padding: isMobile ? '12px' : '16px 20px', display: 'flex', alignItems: 'center', gap: isMobile ? '10px' : '14px', boxShadow: '0 4px 20px rgba(74, 48, 54, 0.02)' }}>
-                <div style={{ width: isMobile ? '30px' : '36px', height: isMobile ? '30px' : '36px', borderRadius: '10px', background: 'rgba(201, 114, 130, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c97282', flexShrink: 0 }}>
-                  <Clock size={isMobile ? 14 : 16} />
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: isMobile ? '0.55rem' : '0.62rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Horario de hoy</div>
-                  <div style={{ fontSize: isMobile ? '0.68rem' : '0.78rem', fontWeight: 800, color: '#2d1b22', marginTop: '2px', lineHeight: '1.2' }}>
-                    9:00 AM - 6:00 PM <br />
-                    <span style={{ color: '#a0909a', fontSize: isMobile ? '0.58rem' : '0.68rem', fontWeight: 500 }}>1:00 PM - 2:00 PM (descanso)</span>
-                  </div>
-                </div>
-              </div>
+            {/* Horizontal Tabs Menu */}
+            <div style={{
+              display: 'flex',
+              gap: '6px',
+              background: '#f5ebe8',
+              padding: '4px',
+              borderRadius: '12px',
+              border: '1px solid rgba(223, 178, 140, 0.15)',
+              width: 'max-content',
+              maxWidth: '100%',
+              overflowX: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              marginTop: '10px'
+            }} className="no-scrollbar">
+              {[
+                { id: 'agenda', label: 'Agenda' },
+                { id: 'resumen', label: 'Resumen' },
+                { id: 'servicios', label: 'Servicios' },
+                { id: 'historial', label: 'Historial' },
+                { id: 'notas', label: 'Notas' }
+              ].map((tab) => {
+                const isActive = staffActiveTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setStaffActiveTab(tab.id)}
+                    className="btn-hover-scale"
+                    style={{
+                      padding: '8px 16px',
+                      fontSize: '0.78rem',
+                      fontWeight: isActive ? 800 : 600,
+                      color: isActive ? '#a0506a' : '#6b5a5f',
+                      background: isActive ? '#ffffff' : 'transparent',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      boxShadow: isActive ? '0 2px 6px rgba(74, 48, 54, 0.06)' : 'none',
+                      transition: 'all 0.2s ease',
+                      outline: 'none',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
             </div>
-
-             {/* Horizontal Tabs Menu */}
-             <div style={{ display: 'flex', gap: isMobile ? '0' : '24px', borderBottom: '1px solid rgba(223, 178, 140, 0.15)', paddingBottom: '2px', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }} className="no-scrollbar">
-               {[
-                 { id: 'agenda', label: 'Agenda' },
-                 { id: 'resumen', label: 'Resumen' },
-                 { id: 'servicios', label: 'Servicios' },
-                 { id: 'historial', label: 'Historial' },
-                 { id: 'notas', label: 'Notas' }
-               ].map((tab, tIdx) => {
-                 const isActive = staffActiveTab === tab.id;
-                 return (
-                   <span 
-                     key={tab.id} 
-                     onClick={() => setStaffActiveTab(tab.id)}
-                     className="mi-chip"
-                     style={{ 
-                        fontSize: isMobile ? (isLargePhone ? '0.82rem' : '0.72rem') : isTablet ? '1rem' : '1.1rem', 
-                        fontWeight: isActive ? 800 : 600, 
-                        color: isActive ? '#c97282' : '#a0909a', 
-                        borderBottom: isActive ? '3px solid #c97282' : '3px solid transparent', 
-                        paddingBottom: isMobile ? '8px' : '10px', 
-                        cursor: 'pointer',
-                        transition: 'all 0.15s',
-                        whiteSpace: 'nowrap',
-                        padding: isMobile ? '6px 12px' : undefined,
-                       flexShrink: 0
-                     }}
-                   >
-                     {tab.label}
-                   </span>
-                 );
-               })}
-             </div>
 
             {/* Dashboard Content Layout conditioned by active tab */}
             {staffActiveTab === 'agenda' && (
