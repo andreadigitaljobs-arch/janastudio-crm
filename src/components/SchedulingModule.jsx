@@ -1891,7 +1891,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   Toca en una especialista para ver su ficha
                 </p>
 
-                <div className="jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(155px, 1fr))', gap: '10px', overflow: 'visible', flex: 1, paddingRight: '4px', paddingTop: '6px', paddingBottom: '6px' }}>
+                <div className="jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '10px', overflow: 'visible', flex: 1, paddingRight: '4px', paddingTop: '6px', paddingBottom: '6px' }}>
                   <AnimatePresence mode="popLayout">
                   {visibleStaff.map((s, staffIdx) => {
                     const window = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
@@ -2014,7 +2014,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       >
                         {/* Desktop tooltip on hover */}
                         {hoveredStaffId === s.id && (
-                          <div className="staff-tooltip" style={{ left: '50%', transform: 'translateX(-50%)', background: '#a0506a', whiteSpace: 'normal', width: 'max-content', maxWidth: '170px', textAlign: 'center' }}>
+                          <div className="staff-tooltip" style={{ left: '50%', right: 'auto', transform: 'translateX(-50%)', background: '#a0506a', whiteSpace: 'normal', width: 'max-content', maxWidth: '170px', textAlign: 'center' }}>
                             <div style={{ fontWeight: 700, marginBottom: '2px' }}>{s.name}</div>
                             <div style={{ opacity: 0.8 }}>{metrics.citasCount} cita{metrics.citasCount !== 1 ? 's' : ''} · {metrics.occupancy}% ocupación</div>
                             {nextApp && <div style={{ opacity: 0.65, marginTop: '2px' }}>Próxima: {nextApp.timeStr}</div>}
