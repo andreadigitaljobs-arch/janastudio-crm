@@ -2062,19 +2062,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                           cursor: 'pointer',
                           boxShadow: '0 2px 8px rgba(74,48,54,0.04)',
                           position: 'relative',
-                          overflow: 'visible',
                         }}
                       >
-                        {/* Desktop tooltip on hover */}
-                        {hoveredStaffId === s.id && (
-                          <div className="staff-tooltip" style={{ left: '50%', right: 'auto', transform: 'translateX(-50%)', background: '#a0506a', whiteSpace: 'normal', width: 'max-content', maxWidth: '170px', textAlign: 'center' }}>
-                            <div style={{ fontWeight: 700, marginBottom: '2px' }}>{s.name}</div>
-                            <div style={{ opacity: 0.8 }}>{metrics.citasCount} cita{metrics.citasCount !== 1 ? 's' : ''} · {metrics.occupancy}% ocupación</div>
-                            {nextApp && <div style={{ opacity: 0.65, marginTop: '2px' }}>Próxima: {nextApp.timeStr}</div>}
-                            <div style={{ position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)', border: '5px solid transparent', borderTopColor: '#a0506a' }} />
-                          </div>
-                        )}
-
                         {/* Photo */}
                         <div style={{ position: 'relative', width: isMobileCard ? '42px' : '50px', height: isMobileCard ? '42px' : '58px', flexShrink: 0, borderRadius: isMobileCard ? '10px' : '12px', overflow: 'hidden', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <span style={{ fontSize: isMobileCard ? '1rem' : '1.2rem', fontWeight: 800, color: '#fff' }}>{(s.name || '?').charAt(0).toUpperCase()}</span>
@@ -2098,11 +2087,20 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                 {metrics.citasCount} {metrics.citasCount === 1 ? 'cita' : 'citas'}
                               </span>
                             )}
+                            <span style={{ fontSize: '0.56rem', fontWeight: 700, color: '#a0506a', background: 'rgba(160,80,106,0.06)', padding: '3px 8px', borderRadius: '999px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                              {metrics.occupancy}% ocupación
+                            </span>
                           </div>
-                          {/* Next appointment — desktop only */}
-                          {!isMobileCard && nextApp && statusText === 'LIBRE' && (
-                            <div style={{ fontSize: '0.46rem', color: '#c9a0a8', fontWeight: 500, marginTop: '2px' }}>
-                              Próxima: {nextApp.timeStr}
+                          {/* Next appointment — directly visible on the card layout */}
+                          {nextApp ? (
+                            <div style={{ fontSize: '0.54rem', color: '#c97282', fontWeight: 800, marginTop: '4px', display: 'flex', alignItems: 'center', justifyContent: isMobileCard ? 'center' : 'flex-start', gap: '3px' }}>
+                              <Clock size={9} color="#c97282" />
+                              <span>Próxima: {nextApp.timeStr}</span>
+                            </div>
+                          ) : (
+                            <div style={{ fontSize: '0.54rem', color: '#a0909a', fontWeight: 600, marginTop: '4px', display: 'flex', alignItems: 'center', justifyContent: isMobileCard ? 'center' : 'flex-start', gap: '3px' }}>
+                              <Clock size={9} color="#a0909a" />
+                              <span>Sin más citas hoy</span>
                             </div>
                           )}
                         </div>
