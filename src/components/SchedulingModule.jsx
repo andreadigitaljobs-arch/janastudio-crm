@@ -1043,6 +1043,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
   const [staffSearchQuery, setStaffSearchQuery] = useState('');
   const [hoveredStaffId, setHoveredStaffId] = useState(null);
   const [showHeaderCalendar, setShowHeaderCalendar] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('all'); // 'all' | 'laser' | 'lash' | 'nails' | 'brows' | 'hair'
 
   const handleCloseStaffDrawer = () => {
     setIsClosingStaffDrawer(true);
@@ -1320,6 +1321,18 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
       list = list.filter(s => s.name.toLowerCase().includes(term) || (getStaffRole(s.name) || '').toLowerCase().includes(term));
     }
 
+    if (selectedCategory !== 'all') {
+      list = list.filter(s => {
+        const role = (getStaffRole(s.name) || '').toLowerCase();
+        if (selectedCategory === 'laser') return role.includes('láser') || role.includes('laser');
+        if (selectedCategory === 'lash') return role.includes('lash') || role.includes('pestaña');
+        if (selectedCategory === 'nails') return role.includes('uña') || role.includes('nail') || role.includes('manicurista');
+        if (selectedCategory === 'brows') return role.includes('ceja') || role.includes('brow');
+        if (selectedCategory === 'hair') return role.includes('estilista') || role.includes('peluquera') || role.includes('cabello') || role.includes('colorista');
+        return true;
+      });
+    }
+
     if (checkingTime != null) {
       // Ordenar por disponibilidad en ese minuto
       list = [...list].sort((a, b) => {
@@ -1351,7 +1364,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
       });
     }
     return list;
-  }, [staff, isWorkerView, user?.id, filterStaffId, checkingTime, dateKey, schedules, timeOff, dayApps, staffSearchQuery]);
+  }, [staff, isWorkerView, user?.id, filterStaffId, checkingTime, dateKey, schedules, timeOff, dayApps, staffSearchQuery, selectedCategory]);
 
   const availabilityCtx = { schedules, timeOff, appointmentsForDay: dayApps };
 
@@ -1882,18 +1895,72 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
         </div>
       )}
 
-      {/* WEEKLY RIBBON — 7-day navigator */}
-      {!isMobile && (
-        <WeeklyRibbon
-          selectedDate={selectedDate}
-          onSelectDate={(d) => { setDateNavDir('next'); setSelectedDate(d); }}
-          allAppointments={allAppointments}
-        />
-      )}
+
 
       {/* RENDER MODE: OPERACIÓN DE HOY */}
       {viewMode === 'operation' && (
         <div className="staff-control-container">
+
+          {/* BARRA DE FILTROS POR CATEGORÍA DE ESPECIALISTA */}
+          {!isMobile && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '6px 8px',
+              background: 'rgba(255, 255, 255, 0.6)',
+              backdropFilter: 'blur(8px)',
+              borderRadius: '16px',
+              border: '1px solid rgba(223, 178, 140, 0.2)',
+              boxShadow: '0 4px 12px rgba(74, 48, 54, 0.03)',
+              marginBottom: '16px',
+              width: 'fit-content'
+            }}>
+              {[
+                { key: 'all', label: 'Todas las especialistas' },
+                { key: 'laser', label: 'Centro Láser' },
+                { key: 'lash', label: 'Pestañas (Lashes)' },
+                { key: 'brows', label: 'Cejas (Brows)' },
+                { key: 'nails', label: 'Manicura & Pedicura' },
+                { key: 'hair', label: 'Estilistas & Cabello' }
+              ].map(cat => {
+                const isActive = selectedCategory === cat.key;
+                return (
+                  <button
+                    key={cat.key}
+                    onClick={() => setSelectedCategory(cat.key)}
+                    className="mi-btn"
+                    style={{
+                      padding: '8px 16px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: isActive ? 'linear-gradient(135deg, #C07088 0%, #D4899A 100%)' : 'transparent',
+                      color: isActive ? '#fff' : '#8a6870',
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      boxShadow: isActive ? '0 4px 12px rgba(192, 112, 136, 0.25)' : 'none',
+                      transition: 'all 0.25s ease'
+                    }}
+                    onMouseEnter={e => {
+                      if (!isActive) {
+                        e.currentTarget.style.color = '#C07088';
+                        e.currentTarget.style.background = 'rgba(192, 112, 136, 0.05)';
+                      }
+                    }}
+                    onMouseLeave={e => {
+                      if (!isActive) {
+                        e.currentTarget.style.color = '#8a6870';
+                        e.currentTarget.style.background = 'transparent';
+                      }
+                    }}
+                  >
+                    {cat.label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           {/* THREE-COLUMN CONTENT GRID */}
           {(isMobile || isTablet) && (
@@ -1922,10 +1989,341 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               </button>
             </div>
           )}
-          <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : 'repeat(2, 1fr)', gap: (isMobile || isTablet) ? '16px' : '24px', width: '100%', alignItems: 'start', marginTop: '0' }}>
+          {/* DESKTOP: New Google Calendar-style grid layout */}
+          {!(isMobile || isTablet) && (
+            <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', width: '100%', minWidth: 0, marginTop: '10px' }}>
+              {/* ── LEFT: MAIN CALENDAR AREA ── */}
+              <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                
+                {/* Grid container with card styling */}
+                <div className="agenda-glass-card" style={{ padding: 0, overflow: 'hidden' }}>
+                  {/* Outer scroll area for both axes */}
+                  <div style={{ overflow: 'auto', maxHeight: '720px' }} className="jana-scrollbar">
+                    <div style={{ minWidth: `${56 + Math.max(visibleStaff.length, 1) * 185}px`, position: 'relative' }}>
+                      
+                      {/* Sticky header row */}
+                      <div style={{ display: 'flex', position: 'sticky', top: 0, zIndex: 20, background: 'rgba(255, 255, 255, 0.98)', borderBottom: '2px solid rgba(223, 178, 140, 0.2)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
+                        {/* Top-left corner */}
+                        <div style={{ width: '56px', flexShrink: 0, height: '64px', position: 'sticky', left: 0, zIndex: 25, background: 'rgba(255, 255, 255, 0.98)', borderRight: '1px solid rgba(223, 178, 140, 0.15)' }} />
+                        {/* Staff column headers */}
+                        {visibleStaff.length === 0 ? (
+                          <div style={{ flex: 1, height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0909a', fontSize: '0.8rem', fontWeight: 600 }}>
+                            No hay especialistas que mostrar
+                          </div>
+                        ) : (
+                          visibleStaff.map(s => {
+                            const ww = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
+                            return (
+                              <div key={s.id} style={{ flex: 1, minWidth: '185px', height: '64px', borderLeft: '1px solid rgba(223, 178, 140, 0.1)', padding: '10px 12px', display: 'flex', alignItems: 'center', gap: '8px', boxSizing: 'border-box' }}>
+                                <div style={{ width: '34px', height: '34px', borderRadius: '50%', flexShrink: 0, background: 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                  {getStaffPhoto(s) ? (
+                                    <img src={getStaffPhoto(s)} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                  ) : (
+                                    <User size={15} color="#fff" />
+                                  )}
+                                </div>
+                                <div style={{ minWidth: 0, flex: 1 }}>
+                                  <div style={{ fontSize: '0.74rem', fontWeight: 700, color: '#2d1b22', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</div>
+                                  <div style={{ fontSize: '0.59rem', color: '#a0909a', fontWeight: 600 }}>
+                                    {ww.isWorking ? `${formatMinutes(ww.startMinutes)} – ${formatMinutes(ww.endMinutes)}` : '🌴 Día libre'}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
 
-            {/* Column 1 - Próximas Citas */}
-            <div style={{ display: (!(isMobile || isTablet) || leftTab === 'citas') ? 'flex' : 'none', flexDirection: 'column', gap: '24px', minWidth: 0, animation: ((isMobile || isTablet) && leftTab === 'citas') ? 'fadeInUpWow 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards' : 'none' }}>
+                      {/* Grid Body */}
+                      <div style={{ display: 'flex', position: 'relative' }}>
+                        {/* Time axis */}
+                        <div style={{ width: '56px', flexShrink: 0, position: 'sticky', left: 0, zIndex: 8, background: 'rgba(255, 255, 255, 0.98)', borderRight: '1px solid rgba(223, 178, 140, 0.15)' }}>
+                          {Array.from({ length: Math.ceil(GRID_HEIGHT / 60) }, (_, i) => {
+                            const min = VIEW_START_MIN + i * 60;
+                            return (
+                              <div key={min} style={{ height: '60px', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingRight: '6px', paddingTop: '4px', boxSizing: 'border-box', borderBottom: '1px solid rgba(223, 178, 140, 0.08)' }}>
+                                <span style={{ fontSize: '0.57rem', fontWeight: 700, color: '#b0a0a5', whiteSpace: 'nowrap' }}>{formatMinutes(min)}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* Specialist Columns */}
+                        {visibleStaff.length === 0 ? (
+                          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: `${GRID_HEIGHT}px`, flexDirection: 'column', gap: '10px' }}>
+                            <Search size={28} color="#c97282" style={{ opacity: 0.4 }} />
+                            <span style={{ fontSize: '0.8rem', color: '#a0909a', fontWeight: 600 }}>No hay especialistas</span>
+                          </div>
+                        ) : (
+                          visibleStaff.map(s => {
+                            const ww = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
+                            const staffApps = dayApps.filter(a => a.staff_id === s.id);
+                            const busyIntervals = getStaffBusyIntervals(s.id, dayApps);
+                            const isSlotBusy = (time) => busyIntervals.some(b => time >= b.startMinutes && time < b.endMinutes);
+                            return (
+                              <div
+                                key={s.id}
+                                style={{
+                                  flex: 1, minWidth: '185px', position: 'relative', height: `${GRID_HEIGHT}px`,
+                                  borderLeft: '1px solid rgba(223, 178, 140, 0.1)',
+                                  cursor: ww.isWorking ? 'crosshair' : 'default',
+                                  background: ww.isWorking
+                                    ? 'repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0px, rgba(255, 255, 255, 0.5) 59px, rgba(223, 178, 140, 0.1) 60px)'
+                                    : 'repeating-linear-gradient(45deg, rgba(200, 190, 192, 0.06) 0px, rgba(200, 190, 192, 0.06) 8px, rgba(200, 190, 192, 0.12) 8px, rgba(200, 190, 192, 0.12) 16px)'
+                                }}
+                                onClick={e => {
+                                  if (!ww.isWorking) return;
+                                  const rect = e.currentTarget.getBoundingClientRect();
+                                  const y = e.clientY - rect.top;
+                                  const clickedMin = Math.round((VIEW_START_MIN + y / PX_PER_MIN) / 30) * 30;
+                                  if (isSlotBusy(clickedMin)) return;
+                                  handleSlotClick(s, clickedMin);
+                                }}
+                              >
+                                {/* Day off label */}
+                                {!ww.isWorking && (
+                                  <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: '0.7rem', fontWeight: 700, color: '#a0848a', background: 'rgba(255, 255, 255, 0.95)', padding: '6px 14px', borderRadius: '20px', border: '1px solid rgba(223, 178, 140, 0.3)', whiteSpace: 'nowrap', zIndex: 3, pointerEvents: 'none' }}>
+                                    🌴 Día libre
+                                  </div>
+                                )}
+                                {/* Off-hours shading */}
+                                {ww.isWorking && ww.startMinutes > VIEW_START_MIN && (
+                                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: `${minutesToY(ww.startMinutes)}px`, background: 'rgba(200, 190, 192, 0.1)', pointerEvents: 'none' }} />
+                                )}
+                                {ww.isWorking && ww.endMinutes < VIEW_END_MIN && (
+                                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: `${GRID_HEIGHT - minutesToY(ww.endMinutes)}px`, background: 'rgba(200, 190, 192, 0.1)', pointerEvents: 'none' }} />
+                                )}
+                                {/* Checking time highlight */}
+                                {checkingTime != null && ww.isWorking && (() => {
+                                  const insideWork = checkingTime >= ww.startMinutes && checkingTime < ww.endMinutes;
+                                  const busy = isSlotBusy(checkingTime);
+                                  const free = insideWork && !busy;
+                                  return (
+                                    <div
+                                      className={free ? 'agenda-slot-highlight-free' : 'agenda-slot-highlight-busy'}
+                                      style={{ position: 'absolute', top: `${minutesToY(checkingTime)}px`, left: 0, right: 0, height: '60px', pointerEvents: 'none', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                    >
+                                      {free && <span style={{ fontSize: '0.58rem', fontWeight: 700, color: '#16a34a', background: '#fff', padding: '2px 6px', borderRadius: '6px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>Disponible</span>}
+                                    </div>
+                                  );
+                                })()}
+                                {/* Now line */}
+                                {isToday && nowMinutes >= VIEW_START_MIN && nowMinutes <= VIEW_END_MIN && (
+                                  <div style={{ position: 'absolute', left: 0, right: 0, top: `${minutesToY(nowMinutes)}px`, height: '2px', background: '#c97282', zIndex: 5, boxShadow: '0 0 4px rgba(201, 114, 130, 0.6)', pointerEvents: 'none' }}>
+                                    <div style={{ position: 'absolute', left: -4, top: -4, width: 10, height: 10, borderRadius: '50%', background: '#c97282' }} />
+                                  </div>
+                                )}
+                                {/* Appointments */}
+                                {staffApps.map(app => {
+                                  const d = new Date(app.scheduled_at || app.created_at);
+                                  const startMin = d.getHours() * 60 + d.getMinutes();
+                                  const duration = getAppointmentDuration(app);
+                                  const top = minutesToY(startMin);
+                                  const height = Math.max(22, duration * PX_PER_MIN - 2);
+                                  const colors = STATUS_COLORS[app.status] || STATUS_COLORS.Agendado;
+                                  return (
+                                    <div
+                                      key={app.id}
+                                      onClick={e => { e.stopPropagation(); setSelectedDetailedApp(app); }}
+                                      title={`${app.clients?.name} · ${app.services?.name} · ${formatMinutes(startMin)}`}
+                                      className="mi-card"
+                                      style={{ position: 'absolute', top: `${top}px`, left: '3px', right: '3px', height: `${height}px`, background: '#fff', borderRadius: '8px', borderLeft: `3px solid ${colors.leftBorder}`, boxShadow: '0 2px 6px rgba(167, 102, 115, 0.1)', padding: '3px 6px', cursor: 'pointer', overflow: 'hidden', zIndex: 2, transition: 'all 0.2s ease', boxSizing: 'border-box' }}
+                                      onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.04) translateX(2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(167, 102, 115, 0.2)'; e.currentTarget.style.zIndex = '4'; }}
+                                      onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 2px 6px rgba(167, 102, 115, 0.1)'; e.currentTarget.style.zIndex = '2'; }}
+                                    >
+                                      <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#2d1b22', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                        {app.clients?.name || 'Cliente'}
+                                      </div>
+                                      {height > 30 && (
+                                        <div style={{ fontSize: '0.55rem', color: '#a0909a', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                          {app.services?.name}
+                                        </div>
+                                      )}
+                                      {height > 48 && (
+                                        <div style={{ fontSize: '0.52rem', color: colors.text, fontWeight: 700 }}>
+                                          {formatMinutes(startMin)} · {duration}min
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── CITAS DEL DÍA TABLE (Escritorio) ── */}
+                <div className="agenda-glass-card" style={{ padding: '20px', overflow: 'hidden' }}>
+                  <h4 style={{ fontSize: '0.82rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '0.3px' }}>
+                    <Scissors size={16} color="#c97282" />
+                    CITAS DEL DÍA
+                    <span style={{ marginLeft: 'auto', fontSize: '0.68rem', fontWeight: 700, color: '#a0506a', background: 'rgba(160,80,106,0.08)', padding: '3px 10px', borderRadius: '999px' }}>
+                      {dayApps.length} {dayApps.length === 1 ? 'cita' : 'citas'}
+                    </span>
+                  </h4>
+                  <div style={{ overflowX: 'auto' }} className="jana-scrollbar">
+                    <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
+                      <thead>
+                        <tr>
+                          {['HORA', 'CLIENTE', 'SERVICIO', 'ESPECIALISTA', 'DUR.', 'ESTADO', ''].map(col => (
+                            <th key={col} style={{ padding: '8px 14px', textAlign: 'left', fontSize: '0.6rem', fontWeight: 800, color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.8px', borderBottom: '2px solid rgba(223, 178, 140, 0.2)', whiteSpace: 'nowrap', background: 'rgba(252,249,248,0.8)' }}>{col}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {dayApps.length === 0 ? (
+                          <tr>
+                            <td colSpan={7} style={{ padding: '30px', textAlign: 'center', fontSize: '0.8rem', color: '#a0909a', fontStyle: 'italic' }}>
+                              No hay citas programadas para este día.
+                            </td>
+                          </tr>
+                        ) : (
+                          [...dayApps]
+                            .sort((a, b) => new Date(a.scheduled_at || a.created_at) - new Date(b.scheduled_at || b.created_at))
+                            .map((app, idx) => {
+                              const d = new Date(app.scheduled_at || app.created_at);
+                              const startMin = d.getHours() * 60 + d.getMinutes();
+                              const duration = getAppointmentDuration(app);
+                              const colors = STATUS_COLORS[app.status] || STATUS_COLORS.Agendado;
+                              const staffMember = visibleStaff.find(s => s.id === app.staff_id);
+                              const rowBg = idx % 2 === 0 ? 'rgba(252,249,248,0.4)' : 'transparent';
+                              return (
+                                <tr
+                                  key={app.id}
+                                  onClick={() => setSelectedDetailedApp(app)}
+                                  style={{ cursor: 'pointer', background: rowBg, borderBottom: '1px solid rgba(223, 178, 140, 0.1)', transition: 'background 0.15s' }}
+                                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(201, 114, 130, 0.05)'}
+                                  onMouseLeave={e => e.currentTarget.style.background = rowBg}
+                                >
+                                  <td style={{ padding: '10px 14px', fontSize: '0.74rem', fontWeight: 800, color: '#2d1b22', whiteSpace: 'nowrap' }}>{formatMinutes(startMin)}</td>
+                                  <td style={{ padding: '10px 14px', fontSize: '0.74rem', fontWeight: 700, color: '#2d1b22' }}>{app.clients?.name || '—'}</td>
+                                  <td style={{ padding: '10px 14px', fontSize: '0.7rem', color: '#6b5a60', fontWeight: 600, maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{app.services?.name || '—'}</td>
+                                  <td style={{ padding: '10px 14px', fontSize: '0.7rem', color: '#6b5a60', fontWeight: 700, whiteSpace: 'nowrap' }}>{staffMember?.name?.split(' ')[0] || '—'}</td>
+                                  <td style={{ padding: '10px 14px', fontSize: '0.68rem', color: '#a0909a', fontWeight: 600, whiteSpace: 'nowrap' }}>{duration}min</td>
+                                  <td style={{ padding: '10px 14px' }}>
+                                    <span style={{ fontSize: '0.58rem', fontWeight: 800, color: colors.text, background: colors.bg, padding: '3px 10px', borderRadius: '999px', whiteSpace: 'nowrap', border: `1px solid ${colors.border}` }}>{app.status || 'Agendado'}</span>
+                                  </td>
+                                  <td style={{ padding: '10px 14px' }}>
+                                    <button
+                                      onClick={e => { e.stopPropagation(); setSelectedDetailedApp(app); }}
+                                      className="mi-btn"
+                                      style={{ background: 'none', border: '1px solid rgba(201, 114, 130, 0.3)', borderRadius: '8px', padding: '4px 10px', cursor: 'pointer', fontSize: '0.62rem', fontWeight: 700, color: '#c97282', transition: 'all 0.2s' }}
+                                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.1)'; }}
+                                      onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
+                                    >
+                                      Ver
+                                    </button>
+                                  </td>
+                                </tr>
+                              );
+                            })
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── RIGHT: ESPECIALISTAS PANEL ── */}
+              <div style={{ width: '218px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div className="agenda-glass-card" style={{ padding: '18px' }}>
+                  <h4 style={{ fontSize: '0.74rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 14px 0', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <UserCheck size={14} color="#c97282" />
+                    ESPECIALISTAS
+                  </h4>
+
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    {visibleStaff.map(s => {
+                      const ww = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
+                      const refMin = checkingTime != null ? checkingTime : nowMinutes;
+                      const busyIntervals = getStaffBusyIntervals(s.id, dayApps);
+                      const inWork = ww.isWorking && refMin >= ww.startMinutes && refMin < ww.endMinutes;
+                      const isBusy = inWork && busyIntervals.some(b => refMin >= b.startMinutes && refMin < b.endMinutes);
+                      const status = !ww.isWorking ? 'Día libre' : (isBusy ? 'Ocupada' : 'Libre');
+                      const statusColor = !ww.isWorking ? '#a0909a' : (isBusy ? '#dc2626' : '#16a34a');
+                      const metrics = getStaffMetrics(s.id);
+                      return (
+                        <div
+                          key={s.id}
+                          style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0', borderBottom: '1px solid rgba(223, 178, 140, 0.1)', cursor: 'pointer', transition: 'background 0.15s', borderRadius: '4px' }}
+                          onMouseEnter={e => e.currentTarget.style.background = 'rgba(201, 114, 130, 0.04)'}
+                          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                          onClick={() => setSelectedDetailedApp(null)}
+                        >
+                          <div style={{ width: '32px', height: '32px', borderRadius: '50%', flexShrink: 0, background: 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `2px solid ${statusColor}30` }}>
+                            {getStaffPhoto(s) ? (
+                              <img src={getStaffPhoto(s)} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                              <User size={14} color="#fff" />
+                            )}
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#2d1b22', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</div>
+                            <div style={{ fontSize: '0.57rem', color: '#a0909a', fontWeight: 600 }}>
+                              {ww.isWorking ? `${formatMinutes(ww.startMinutes)}–${formatMinutes(ww.endMinutes)}` : '🌴 Libre'}
+                              {metrics.citasCount > 0 && ` · ${metrics.citasCount} cita${metrics.citasCount > 1 ? 's' : ''}`}
+                            </div>
+                          </div>
+                          <span style={{ fontSize: '0.52rem', fontWeight: 800, color: statusColor, background: `${statusColor}15`, padding: '2px 7px', borderRadius: '999px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                            {status}
+                          </span>
+                        </div>
+                      );
+                    })}
+                    {visibleStaff.length === 0 && (
+                      <div style={{ textAlign: 'center', padding: '20px 0', color: '#a0909a', fontSize: '0.75rem' }}>
+                        Sin especialistas
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Legend */}
+                  <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px solid rgba(223, 178, 140, 0.15)', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {[{ color: '#16a34a', label: 'Libre' }, { color: '#dc2626', label: 'Ocupada' }, { color: '#a0909a', label: 'Día libre' }].map(l => (
+                      <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: l.color, flexShrink: 0 }} />
+                        <span style={{ fontSize: '0.57rem', color: '#a0909a', fontWeight: 600 }}>{l.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Quick stats card */}
+                <div className="agenda-glass-card" style={{ padding: '16px' }}>
+                  <h4 style={{ fontSize: '0.7rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 12px 0', letterSpacing: '0.3px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <BarChart3 size={13} color="#c97282" />
+                    RESUMEN HOY
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {[
+                      { label: 'Total citas', value: dayApps.length, color: '#c97282', icon: CalendarDays },
+                      { label: 'Especialistas libres', value: staffByStatus.libres.length, color: '#16a34a', icon: Users },
+                      { label: 'En cita ahora', value: staffByStatus.ocupadas.length, color: '#dc2626', icon: Scissors },
+                    ].map(item => (
+                      <div key={item.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <item.icon size={12} color={item.color} />
+                          <span style={{ fontSize: '0.65rem', color: '#6b5a60', fontWeight: 600 }}>{item.label}</span>
+                        </div>
+                        <span style={{ fontSize: '0.82rem', fontWeight: 900, color: item.color }}>{item.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* MOBILE/TABLET: existing tab-based list view */}
+          {(isMobile || isTablet) && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '16px', width: '100%', alignItems: 'start', marginTop: '0' }}>
+
+              {/* Column 1 - Próximas Citas */}
+              <div style={{ display: leftTab === 'citas' ? 'flex' : 'none', flexDirection: 'column', gap: '24px', minWidth: 0, animation: leftTab === 'citas' ? 'fadeInUpWow 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards' : 'none' }}>
 
               {/* TIMELINE AGENDA - PREMIUM */}
               <div className="agenda-glass-card" style={{ padding: '0', display: 'flex', flexDirection: 'column', minHeight: '600px', overflow: 'hidden' }}>
@@ -2086,7 +2484,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             </div>
 
             {/* Column 2 - Especialistas */}
-            <div style={{ display: (!(isMobile || isTablet) || leftTab === 'especialistas') ? 'flex' : 'none', flexDirection: 'column', gap: '24px', minWidth: 0, animation: ((isMobile || isTablet) && leftTab === 'especialistas') ? 'fadeInUpWow 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards' : 'none' }}>
+            <div style={{ display: leftTab === 'especialistas' ? 'flex' : 'none', flexDirection: 'column', gap: '24px', minWidth: 0, animation: leftTab === 'especialistas' ? 'fadeInUpWow 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards' : 'none' }}>
 
               {/* ESTADO DEL EQUIPO (Moved to Personal Tab) */}
               <div style={{ marginBottom: '0' }}>
@@ -2398,6 +2796,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             </div>
 
           </div>
+          )}
         </div>
       )}
 
