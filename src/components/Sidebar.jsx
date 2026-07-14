@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import {
   BarChart3, Users, UserCircle, Sparkles, Package, Wallet,
   Star, Calendar, LogOut, PanelLeftClose, PanelLeftOpen,
@@ -161,32 +161,35 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
         onMouseLeave={() => setHoveredTab(null)}
         style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'relative', flex: 1, minHeight: 0, overflowY: 'hidden', overflowX: 'hidden', marginTop: '10px' }}
       >
+        <LayoutGroup>
         {menuItems.map((item, index) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
           return (
             <div key={item.id} style={{ position: 'relative', width: '100%' }}>
               <motion.div
-                className="relative"
+                style={{ position: 'relative' }}
                 initial={false}
                 whileHover="hover"
               >
                 {/* Floating Active Indicator (The "Liquid" Drop) */}
-                <AnimatePresence>
-                  {isActive && (
-                    <motion.div
-                      layoutId="active-pill-jana"
-                      className="absolute inset-0"
-                      style={{
-                        background: 'linear-gradient(to right, #a0506a, #c97282)',
-                        borderRadius: '1.8rem',
-                        boxShadow: '0 8px 24px rgba(160, 80, 106, 0.25)',
-                        zIndex: 0,
-                      }}
-                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                    />
-                  )}
-                </AnimatePresence>
+                {isActive && (
+                  <motion.div
+                    layoutId="active-pill-jana"
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      background: 'linear-gradient(135deg, #8B1A4A 0%, #B5326E 100%)',
+                      borderRadius: '1.8rem',
+                      boxShadow: '0 4px 18px rgba(139, 26, 74, 0.30)',
+                      zIndex: 0,
+                    }}
+                    transition={{ type: 'spring', stiffness: 350, damping: 35 }}
+                  />
+                )}
 
                 <button
                   onClick={() => handleItemClick(item.id)}
@@ -250,6 +253,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
             </div>
           );
         })}
+        </LayoutGroup>
       </nav>
  
       <div className="mi-enter-up mi-delay-3 no-scrollbar" style={{ flexShrink: 0, paddingTop: '16px', marginTop: '12px', borderTop: '1px dashed rgba(201, 114, 130, 0.15)', display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative' }}>
