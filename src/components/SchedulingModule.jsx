@@ -2037,9 +2037,9 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
                 {/* Grid container with card styling */}
                 <div className="agenda-glass-card" style={{ padding: 0, overflow: 'hidden' }}>
-                  {/* Scroll only vertically */}
-                  <div style={{ overflowY: 'auto', overflowX: 'hidden', maxHeight: '720px' }} className="jana-scrollbar">
-                    <div style={{ width: '100%', position: 'relative' }}>
+                  {/* Scroll vertical + horizontal fallback */}
+                  <div style={{ overflow: 'auto', maxHeight: '720px' }} className="jana-scrollbar">
+                    <div style={{ minWidth: `${56 + paginatedStaff.length * 220}px`, width: '100%', position: 'relative' }}>
                       
                       {/* Sticky header row */}
                       <div style={{ display: 'flex', position: 'sticky', top: 0, zIndex: 20, background: 'rgba(255, 255, 255, 0.98)', borderBottom: '2px solid rgba(223, 178, 140, 0.2)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
