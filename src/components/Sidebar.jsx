@@ -159,7 +159,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
       <nav
         className="mi-enter-up mi-delay-2"
         onMouseLeave={() => setHoveredTab(null)}
-        style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'relative', flex: 1, minHeight: 0, overflowY: 'hidden', overflowX: 'hidden', marginTop: '10px' }}
+        style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'relative', flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'visible', marginTop: '10px' }}
       >
         <LayoutGroup>
         {menuItems.map((item, index) => {
@@ -206,12 +206,12 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
                     border: 'none',
                     outline: 'none',
                     background: 'transparent',
-                    color: isActive ? '#ffffff' : '#8a6870',
+                    color: isActive ? '#ffffff' : hoveredTab === item.id ? '#C07088' : '#8a6870',
                     cursor: 'pointer',
                     fontSize: '14px',
-                    fontWeight: '600',
+                    fontWeight: hoveredTab === item.id && !isActive ? '700' : '600',
                     letterSpacing: '0.025em',
-                    transition: 'all 0.3s ease',
+                    transition: 'all 0.2s ease',
                     textAlign: 'left',
                     justifyContent: effectiveCollapsed ? 'center' : 'flex-start',
                     position: 'relative',
@@ -225,11 +225,19 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
                     transition={{ type: 'spring', stiffness: 400, damping: 10 }}
                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                   >
-                    <Icon size={18} style={{ color: isActive ? '#ffffff' : 'rgba(138, 104, 112, 0.6)' }} strokeWidth={2.0} />
+                    <Icon size={18} style={{ color: isActive ? '#ffffff' : hoveredTab === item.id ? '#C07088' : 'rgba(138, 104, 112, 0.6)' }} strokeWidth={2.0} />
                   </motion.div>
 
                   {!effectiveCollapsed && (
-                    <span style={{ fontFamily: "'Manrope', sans-serif", whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <span style={{
+                      fontFamily: "'Manrope', sans-serif",
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      borderBottom: hoveredTab === item.id && !isActive ? '1.5px solid #C07088' : '1.5px solid transparent',
+                      paddingBottom: '1px',
+                      transition: 'border-color 0.2s ease',
+                    }}>
                       {item.label}
                     </span>
                   )}
