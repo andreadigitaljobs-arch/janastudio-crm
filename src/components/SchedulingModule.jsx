@@ -1366,6 +1366,17 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
     return list;
   }, [staff, isWorkerView, user?.id, filterStaffId, checkingTime, dateKey, schedules, timeOff, dayApps, staffSearchQuery, selectedCategory]);
 
+  const [desktopStaffPage, setDesktopStaffPage] = useState(0);
+
+  useEffect(() => {
+    setDesktopStaffPage(0);
+  }, [selectedCategory, staffSearchQuery]);
+
+  const ITEMS_PER_PAGE = 3;
+  const totalPages = Math.ceil(visibleStaff.length / ITEMS_PER_PAGE);
+  const activePageIndex = Math.min(desktopStaffPage, Math.max(0, totalPages - 1));
+  const paginatedStaff = visibleStaff.slice(activePageIndex * ITEMS_PER_PAGE, (activePageIndex + 1) * ITEMS_PER_PAGE);
+
   const availabilityCtx = { schedules, timeOff, appointmentsForDay: dayApps };
 
   const staffStats = useMemo(() => visibleStaff.map(s => {
@@ -1994,24 +2005,53 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', width: '100%', minWidth: 0, marginTop: '10px' }}>
               {/* ── LEFT: MAIN CALENDAR AREA ── */}
               <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 16px', background: 'rgba(252,249,248,0.8)', borderRadius: '14px', border: '1px solid rgba(223,178,140,0.2)' }}>
+                    <button
+                      disabled={activePageIndex === 0}
+                      onClick={() => setDesktopStaffPage(p => Math.max(0, p - 1))}
+                      style={{ width: '34px', height: '34px', borderRadius: '10px', border: '1.5px solid rgba(201,114,130,0.25)', background: activePageIndex === 0 ? 'transparent' : '#fff', cursor: activePageIndex === 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: activePageIndex === 0 ? 0.4 : 1, transition: 'all 0.2s' }}
+                    >
+                      <ChevronLeft size={16} color="#c97282" />
+                    </button>
+                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                      {Array.from({ length: totalPages }, (_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setDesktopStaffPage(i)}
+                          style={{ width: i === activePageIndex ? '28px' : '8px', height: '8px', borderRadius: '999px', background: i === activePageIndex ? '#c97282' : 'rgba(201,114,130,0.25)', border: 'none', cursor: 'pointer', transition: 'all 0.25s', padding: 0 }}
+                        />
+                      ))}
+                    </div>
+                    <button
+                      disabled={activePageIndex >= totalPages - 1}
+                      onClick={() => setDesktopStaffPage(p => Math.min(totalPages - 1, p + 1))}
+                      style={{ width: '34px', height: '34px', borderRadius: '10px', border: '1.5px solid rgba(201,114,130,0.25)', background: activePageIndex >= totalPages - 1 ? 'transparent' : '#fff', cursor: activePageIndex >= totalPages - 1 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: activePageIndex >= totalPages - 1 ? 0.4 : 1, transition: 'all 0.2s' }}
+                    >
+                      <ChevronRight size={16} color="#c97282" />
+                    </button>
+                  </div>
+                )}
+
                 {/* Grid container with card styling */}
                 <div className="agenda-glass-card" style={{ padding: 0, overflow: 'hidden' }}>
-                  {/* Outer scroll area for both axes */}
-                  <div style={{ overflow: 'auto', maxHeight: '720px' }} className="jana-scrollbar">
-                    <div style={{ minWidth: `${56 + Math.max(visibleStaff.length, 1) * 185}px`, position: 'relative' }}>
+                  {/* Scroll only vertically */}
+                  <div style={{ overflowY: 'auto', overflowX: 'hidden', maxHeight: '720px' }} className="jana-scrollbar">
+                    <div style={{ width: '100%', position: 'relative' }}>
                       
                       {/* Sticky header row */}
                       <div style={{ display: 'flex', position: 'sticky', top: 0, zIndex: 20, background: 'rgba(255, 255, 255, 0.98)', borderBottom: '2px solid rgba(223, 178, 140, 0.2)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
                         {/* Top-left corner */}
                         <div style={{ width: '56px', flexShrink: 0, height: '64px', position: 'sticky', left: 0, zIndex: 25, background: 'rgba(255, 255, 255, 0.98)', borderRight: '1px solid rgba(223, 178, 140, 0.15)' }} />
                         {/* Staff column headers */}
-                        {visibleStaff.length === 0 ? (
+                        {paginatedStaff.length === 0 ? (
                           <div style={{ flex: 1, height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0909a', fontSize: '0.8rem', fontWeight: 600 }}>
                             No hay especialistas que mostrar
                           </div>
                         ) : (
-                          visibleStaff.map(s => {
+                          paginatedStaff.map(s => {
                             const ww = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
                             return (
                               <div key={s.id} style={{ flex: 1, minWidth: '185px', height: '64px', borderLeft: '1px solid rgba(223, 178, 140, 0.1)', padding: '10px 12px', display: 'flex', alignItems: 'center', gap: '8px', boxSizing: 'border-box' }}>
@@ -2049,13 +2089,13 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         </div>
 
                         {/* Specialist Columns */}
-                        {visibleStaff.length === 0 ? (
+                        {paginatedStaff.length === 0 ? (
                           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: `${GRID_HEIGHT}px`, flexDirection: 'column', gap: '10px' }}>
                             <Search size={28} color="#c97282" style={{ opacity: 0.4 }} />
                             <span style={{ fontSize: '0.8rem', color: '#a0909a', fontWeight: 600 }}>No hay especialistas</span>
                           </div>
                         ) : (
-                          visibleStaff.map(s => {
+                          paginatedStaff.map(s => {
                             const ww = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
                             const staffApps = dayApps.filter(a => a.staff_id === s.id);
                             const busyIntervals = getStaffBusyIntervals(s.id, dayApps);
@@ -2064,7 +2104,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                               <div
                                 key={s.id}
                                 style={{
-                                  flex: 1, minWidth: '185px', position: 'relative', height: `${GRID_HEIGHT}px`,
+                                  flex: 1, minWidth: 0, width: `calc(100% / ${paginatedStaff.length})`, position: 'relative', height: `${GRID_HEIGHT}px`,
                                   borderLeft: '1px solid rgba(223, 178, 140, 0.1)',
                                   cursor: ww.isWorking ? 'crosshair' : 'default',
                                   background: ww.isWorking
