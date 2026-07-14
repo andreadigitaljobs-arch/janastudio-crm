@@ -1372,7 +1372,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
     setDesktopStaffPage(0);
   }, [selectedCategory, staffSearchQuery]);
 
-  const ITEMS_PER_PAGE = 3;
+  const ITEMS_PER_PAGE = 4;
   const totalPages = Math.ceil(visibleStaff.length / ITEMS_PER_PAGE);
   const activePageIndex = Math.min(desktopStaffPage, Math.max(0, totalPages - 1));
   const paginatedStaff = visibleStaff.slice(activePageIndex * ITEMS_PER_PAGE, (activePageIndex + 1) * ITEMS_PER_PAGE);
