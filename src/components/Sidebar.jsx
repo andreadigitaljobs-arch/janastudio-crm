@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   BarChart3, Users, UserCircle, Sparkles, Package, Wallet,
   Star, Calendar, LogOut, PanelLeftClose, PanelLeftOpen,
@@ -36,8 +36,11 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
     .filter((item, index, self) => self.findIndex(i => i.label === item.label) === index);
 
   const sidebarRef = useRef(null);
+  const itemRefs = useRef({});
   const [hoveredTab, setHoveredTab] = useState(null);
   const [tooltip, setTooltip] = useState(null);
+  const [pillPos, setPillPos] = useState({ top: 0, height: 40 });
+
 
   const showTooltip = (e, label) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -46,6 +49,13 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
   const hideTooltip = () => setTooltip(null);
 
   const effectiveCollapsed = isMobile ? false : isCollapsed;
+
+  useEffect(() => {
+    const el = itemRefs.current[activeTab];
+    if (el) {
+      setPillPos({ top: el.offsetTop, height: el.offsetHeight });
+    }
+  }, [activeTab, menuItems.length, effectiveCollapsed]);
 
   const sidebarStyle = {
     width: effectiveCollapsed ? '70px' : '230px',
@@ -159,109 +169,97 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
       <nav
         className="mi-enter-up mi-delay-2"
         onMouseLeave={() => setHoveredTab(null)}
-        style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'relative', flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'visible', marginTop: '10px' }}
+        style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'relative', flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', marginTop: '10px' }}
       >
-        <LayoutGroup>
+        {/* Single sliding pill - animates position with spring */}
+        <motion.div
+          animate={{ y: pillPos.top, height: pillPos.height }}
+          transition={{ type: 'spring', stiffness: 380, damping: 36 }}
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            background: 'linear-gradient(135deg, #C07088 0%, #D4899A 100%)',
+            borderRadius: '1.8rem',
+            boxShadow: '0 4px 16px rgba(192, 112, 136, 0.28)',
+            zIndex: 0,
+            pointerEvents: 'none',
+          }}
+        />
+
         {menuItems.map((item, index) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
           return (
-            <div key={item.id} style={{ position: 'relative', width: '100%' }}>
-              <motion.div
-                style={{ position: 'relative' }}
-                initial={false}
-                whileHover="hover"
+            <div
+              key={item.id}
+              ref={el => itemRefs.current[item.id] = el}
+              style={{ position: 'relative', width: '100%', zIndex: 1 }}
+            >
+              <button
+                onClick={() => handleItemClick(item.id)}
+                onMouseEnter={(e) => { setHoveredTab(item.id); if (effectiveCollapsed) showTooltip(e, item.label); }}
+                onMouseLeave={hideTooltip}
+                aria-label={effectiveCollapsed ? item.label : undefined}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: effectiveCollapsed ? '0' : '14px',
+                  padding: effectiveCollapsed ? '10px' : '10px 18px',
+                  borderRadius: '1.8rem',
+                  border: 'none',
+                  outline: 'none',
+                  background: 'transparent',
+                  color: isActive ? '#ffffff' : hoveredTab === item.id ? '#C07088' : '#8a6870',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: hoveredTab === item.id && !isActive ? '700' : '600',
+                  letterSpacing: '0.025em',
+                  transition: 'color 0.2s ease',
+                  textAlign: 'left',
+                  justifyContent: effectiveCollapsed ? 'center' : 'flex-start',
+                }}
               >
-                {/* Floating Active Indicator (The "Liquid" Drop) */}
-                {isActive && (
-                  <motion.div
-                    layoutId="active-pill-jana"
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      background: 'linear-gradient(135deg, #C07088 0%, #D4899A 100%)',
-                      borderRadius: '1.8rem',
-                      boxShadow: '0 4px 16px rgba(192, 112, 136, 0.30)',
-                      zIndex: 0,
-                    }}
-                    transition={{ type: 'spring', stiffness: 350, damping: 35 }}
-                  />
+                <motion.div
+                  animate={hoveredTab === item.id ? { rotate: index % 2 === 0 ? 8 : -8, scale: 1.15 } : { rotate: 0, scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <Icon size={18} style={{ color: isActive ? '#ffffff' : hoveredTab === item.id ? '#C07088' : 'rgba(138, 104, 112, 0.6)' }} strokeWidth={2.0} />
+                </motion.div>
+
+                {!effectiveCollapsed && (
+                  <span style={{
+                    fontFamily: "'Manrope', sans-serif",
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    borderBottom: hoveredTab === item.id && !isActive ? '1.5px solid #C07088' : '1.5px solid transparent',
+                    paddingBottom: '1px',
+                    transition: 'border-color 0.2s ease',
+                  }}>
+                    {item.label}
+                  </span>
                 )}
 
-                <button
-                  onClick={() => handleItemClick(item.id)}
-                  onMouseEnter={(e) => { setHoveredTab(item.id); if (effectiveCollapsed) showTooltip(e, item.label); }}
-                  onMouseLeave={hideTooltip}
-                  aria-label={effectiveCollapsed ? item.label : undefined}
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: effectiveCollapsed ? '0' : '14px',
-                    padding: effectiveCollapsed ? '10px' : '10px 18px',
-                    borderRadius: '1.8rem',
-                    border: 'none',
-                    outline: 'none',
-                    background: 'transparent',
-                    color: isActive ? '#ffffff' : hoveredTab === item.id ? '#C07088' : '#8a6870',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontWeight: hoveredTab === item.id && !isActive ? '700' : '600',
-                    letterSpacing: '0.025em',
-                    transition: 'all 0.2s ease',
-                    textAlign: 'left',
-                    justifyContent: effectiveCollapsed ? 'center' : 'flex-start',
-                    position: 'relative',
-                    zIndex: 10,
-                  }}
-                >
+                {isActive && !effectiveCollapsed && (
                   <motion.div
-                    variants={{
-                      hover: { rotate: index % 2 === 0 ? 10 : -10, scale: 1.2 }
-                    }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    style={{ position: 'absolute', right: '16px', display: 'flex', alignItems: 'center' }}
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.15 }}
                   >
-                    <Icon size={18} style={{ color: isActive ? '#ffffff' : hoveredTab === item.id ? '#C07088' : 'rgba(138, 104, 112, 0.6)' }} strokeWidth={2.0} />
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="white">
+                      <path d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z" />
+                    </svg>
                   </motion.div>
-
-                  {!effectiveCollapsed && (
-                    <span style={{
-                      fontFamily: "'Manrope', sans-serif",
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      borderBottom: hoveredTab === item.id && !isActive ? '1.5px solid #C07088' : '1.5px solid transparent',
-                      paddingBottom: '1px',
-                      transition: 'border-color 0.2s ease',
-                    }}>
-                      {item.label}
-                    </span>
-                  )}
-
-                  {/* Sparkle effect on active */}
-                  {isActive && !effectiveCollapsed && (
-                    <motion.div
-                      className="absolute right-4"
-                      initial={{ opacity: 0, scale: 0 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.2 }}
-                      style={{ display: 'flex', alignItems: 'center' }}
-                    >
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="white" className="animate-pulse">
-                        <path d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z" />
-                      </svg>
-                    </motion.div>
-                  )}
-                </button>
-              </motion.div>
+                )}
+              </button>
             </div>
           );
         })}
-        </LayoutGroup>
       </nav>
  
       <div className="mi-enter-up mi-delay-3 no-scrollbar" style={{ flexShrink: 0, paddingTop: '16px', marginTop: '12px', borderTop: '1px dashed rgba(201, 114, 130, 0.15)', display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative' }}>
