@@ -1276,6 +1276,60 @@ const ScheduleModal = ({
                                  </div>
                                 </div>
 
+                                {/* Disponibilidad slots en creación */}
+                                {svc.staffId && staffAvailability[svc.staffId] && (() => {
+                                  const ctx = staffAvailability[svc.staffId];
+                                  const durationMinutes = svc.duration_minutes || 60;
+                                  const dateKey = dateToISO(selectedDate);
+                                  const startHour = 8;
+                                  const endHour = 20;
+                                  const now = new Date();
+                                  const isToday = selectedDate.toDateString() === now.toDateString();
+                                  const currentHour = now.getHours();
+                                  const currentMinutes = now.getMinutes();
+
+                                  const slots = [];
+                                  for (let hour = startHour; hour < endHour; hour++) {
+                                    for (let min of [0, 30]) {
+                                      if (isToday && (hour < currentHour || (hour === currentHour && min <= currentMinutes))) {
+                                        continue;
+                                      }
+                                      const timeStr = `${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
+                                      const result = isStaffFreeAt(svc.staffId, dateKey, hour * 60 + min, durationMinutes, ctx);
+                                      slots.push({ time: timeStr, isAvailable: result.free });
+                                    }
+                                  }
+
+                                  return (
+                                    <div style={{ marginTop: '6px', borderTop: '1px solid rgba(223,178,140,0.1)', paddingTop: '8px' }}>
+                                      <label style={{ fontSize: '0.62rem', fontWeight: 800, color: '#a0909a', display: 'block', marginBottom: '6px', letterSpacing: '0.3px', textTransform: 'uppercase' }}>Turnos libres:</label>
+                                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '5px', maxHeight: '76px', overflowY: 'auto' }} className="jana-scrollbar">
+                                        {slots.slice(0, 12).map(slot => {
+                                          const isSel = svc.time === slot.time;
+                                          return (
+                                            <button
+                                              key={slot.time}
+                                              type="button"
+                                              disabled={!slot.isAvailable}
+                                              onClick={() => setRowTime(svc._uid, slot.time)}
+                                              style={{
+                                                padding: '5px 0', borderRadius: '6px', fontSize: '0.68rem', fontWeight: '750', cursor: slot.isAvailable ? 'pointer' : 'not-allowed',
+                                                backgroundColor: isSel ? '#c97282' : slot.isAvailable ? '#fff5f6' : '#faf7f5',
+                                                border: isSel ? '1px solid #c97282' : '1px solid rgba(223,178,140,0.12)',
+                                                color: isSel ? '#fff' : slot.isAvailable ? '#a0506a' : '#c8b6ba',
+                                                transition: 'all 0.15s'
+                                              }}
+                                            >
+                                              {getDisplayTime(slot.time)}
+                                            </button>
+                                          );
+                                        })}
+                                      </div>
+                                    </div>
+                                  );
+                                })()}
+
+
                                {conflict && (
                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.64rem', fontWeight: 650, color: '#d97706', background: '#fffbeb', border: '1px solid #fde68a', padding: '6px 10px', borderRadius: '8px' }}>
                                    <AlertTriangle size={12} style={{ flexShrink: 0 }} />

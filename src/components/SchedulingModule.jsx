@@ -560,6 +560,322 @@ const getWhatsAppNumber = (phone) => {
   return clean;
 };
 
+/* ── TIME GROUP SECTION (MORNING/AFTERNOON/NIGHT) ─────────── */
+const TimeGroupSection = ({
+  group, tgIdx, visibleStaff, isMobile, isTablet, isNarrowAgendaColumn,
+  getStaffPhoto, getAppointmentDuration, setSelectedDetailedApp, getWhatsAppNumber,
+  dataService, showToast, loadFilteredAppointments
+}) => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // Agrupar por hora exacta para mostrar juntas las citas que coinciden en horario
+  const timeSubgroups = [];
+  group.apps.forEach(app => {
+    const start = new Date(app.scheduled_at || app.created_at);
+    const timeKey = `${start.getHours()}:${start.getMinutes()}`;
+    const lastGroup = timeSubgroups[timeSubgroups.length - 1];
+    if (!lastGroup || lastGroup.timeKey !== timeKey) {
+      timeSubgroups.push({ timeKey, start, apps: [app] });
+    } else {
+      lastGroup.apps.push(app);
+    }
+  });
+
+  return (
+    <div style={{ marginBottom: '24px', border: '1px solid rgba(223,178,140,0.18)', borderRadius: '16px', background: 'rgba(255,255,255,0.4)', padding: '12px', overflow: 'hidden' }}>
+      {/* Header colapsable */}
+      <button
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        className="mi-btn"
+        style={{
+          width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          border: 'none', background: 'transparent', cursor: 'pointer', padding: '4px 8px',
+          color: '#2d1b22', transition: 'opacity 0.2s'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '1.1rem' }}>{group.icon}</span>
+          <span style={{ fontSize: '0.8rem', fontWeight: 800, letterSpacing: '0.5px', textTransform: 'uppercase', color: '#c97282' }}>
+            {group.label}
+          </span>
+          <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#a0909a', background: 'rgba(201, 114, 130, 0.08)', padding: '2px 8px', borderRadius: '10px' }}>
+            {group.apps.length} {group.apps.length === 1 ? 'cita' : 'citas'}
+          </span>
+        </div>
+        <ChevronDown
+          size={16}
+          color="#c97282"
+          style={{ transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)', transition: 'transform 0.25s' }}
+        />
+      </button>
+
+      {/* Contenedor animable/colapsable */}
+      <div style={{
+        maxHeight: isCollapsed ? '0px' : '2000px',
+        opacity: isCollapsed ? 0 : 1,
+        overflow: 'hidden',
+        transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+        marginTop: isCollapsed ? '0px' : '12px'
+      }}>
+        {timeSubgroups.map((subgroup, subgroupIdx) => {
+          const h12 = subgroup.start.getHours() % 12 || 12;
+          const ampm = subgroup.start.getHours() >= 12 ? 'PM' : 'AM';
+          return (
+            <motion.div
+              key={subgroup.timeKey}
+              layout
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.25, delay: Math.min(subgroupIdx * 0.05, 0.3) }}
+              style={{ marginBottom: '14px' }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#c97282', flexShrink: 0 }}>
+                  {h12}:{subgroup.start.getMinutes().toString().padStart(2, '0')} {ampm}
+                </div>
+                {subgroup.apps.length > 1 && (
+                  <div className="mi-tag" style={{ fontSize: '0.58rem', fontWeight: 800, color: '#a0506a', background: 'rgba(201, 114, 130, 0.08)', padding: '1px 8px', borderRadius: '999px', flexShrink: 0 }}>
+                    {subgroup.apps.length} citas simultáneas
+                  </div>
+                )}
+                <div style={{ flex: 1, height: '1px', background: 'rgba(223, 178, 140, 0.15)' }} />
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {subgroup.apps.map(app => {
+                  const start = new Date(app.scheduled_at || app.created_at);
+                  const staffMember = visibleStaff.find(s => s.id === app.staff_id);
+                  const isRetrasada = Math.floor((new Date().getTime() - start.getTime()) / 60000) > 15 && app.status !== 'Completado' && app.status !== 'Cancelada';
+
+                  let bgColor = '#fcfaf9';
+                  let borderColor = 'rgba(160, 80, 106, 0.2)';
+                  let accentColor = '#a0506a';
+                  if (app.status === 'Completado') {
+                    bgColor = 'rgba(34, 197, 94, 0.03)'; borderColor = 'rgba(34, 197, 94, 0.2)'; accentColor = '#16a34a';
+                  } else if (isRetrasada) {
+                    bgColor = 'rgba(239, 68, 68, 0.03)'; borderColor = 'rgba(239, 68, 68, 0.2)'; accentColor = '#dc2626';
+                  } else if (app.status === 'En Curso') {
+                    bgColor = 'rgba(245, 158, 11, 0.03)'; borderColor = 'rgba(245, 158, 11, 0.2)'; accentColor = '#d97706';
+                  }
+
+                  const durationMin = getAppointmentDuration(app);
+                  const durationLabel = durationMin >= 60
+                    ? `${Math.floor(durationMin / 60)}h${durationMin % 60 ? ` ${durationMin % 60}m` : ''}`
+                    : `${durationMin}m`;
+                  const price = app.total_price ?? app.services?.price;
+
+                  const canComplete = app.status !== 'Completado' && app.status !== 'Cancelada';
+                  const clientPhone = app.clients?.phone;
+
+                  return (
+                    <div key={app.id}
+                      onClick={() => setSelectedDetailedApp(app)}
+                      className="mi-card"
+                      style={{
+                        display: 'flex', flexDirection: (isMobile || isTablet || isNarrowAgendaColumn) ? 'column' : 'row', alignItems: 'stretch', gap: 0,
+                        background: bgColor, border: `1px solid ${borderColor}`,
+                        borderLeft: `5px solid ${accentColor}`, borderRadius: '12px',
+                        overflow: 'visible', cursor: 'pointer',
+                        boxShadow: '0 2px 6px rgba(74, 48, 54, 0.02)',
+                        transition: 'transform 0.2s ease, box-shadow 0.2s'
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(74, 48, 54, 0.08)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 6px rgba(74, 48, 54, 0.02)'; }}
+                    >
+                      <div style={{ display: 'flex', flex: (isMobile || isTablet || isNarrowAgendaColumn) ? 'none' : 1, minWidth: 0 }}>
+                        {staffMember && (
+                          <div style={{ position: 'relative', width: '50px', minHeight: (isMobile || isTablet || isNarrowAgendaColumn) ? '100%' : '74px', flexShrink: 0, borderRadius: (isMobile || isTablet || isNarrowAgendaColumn) ? '11px 0 0 0' : '11px 0 0 11px', overflow: 'hidden', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifycontent: 'center' }}>
+                            {getStaffPhoto(staffMember) ? (
+                              <img src={getStaffPhoto(staffMember)} alt={staffMember.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                              <User size={20} color="#fff" />
+                            )}
+                            <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(200deg, ${accentColor}44 0%, ${accentColor}00 55%), linear-gradient(0deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 45%)` }} />
+                          </div>
+                        )}
+                        <div style={{ flex: 1, minWidth: 0, padding: '10px 14px' }}>
+                          <div style={{ fontSize: (isMobile || isTablet || isNarrowAgendaColumn) ? '0.88rem' : '0.78rem', fontWeight: 800, color: '#2d1b22', display: 'flex', alignItems: 'center', gap: '5px', lineHeight: 1.3 }}>
+                            <span>{app.clients?.name || 'Cliente'}</span>
+                            {isRetrasada && <AlertTriangle size={12} color="#dc2626" style={{ flexShrink: 0 }} />}
+                          </div>
+                          <div style={{ fontSize: (isMobile || isTablet || isNarrowAgendaColumn) ? '0.78rem' : '0.66rem', color: '#8c767b', fontWeight: 600, lineHeight: 1.4, marginTop: '2px' }}>
+                            {app.services?.name || 'Servicio'}
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '5px', flexWrap: 'wrap' }}>
+                            {staffMember && (
+                              <span style={{ fontSize: (isMobile || isTablet || isNarrowAgendaColumn) ? '0.78rem' : '0.66rem', color: '#a0506a', fontWeight: 700 }}>
+                                {staffMember.name.split(' ')[0]}
+                              </span>
+                            )}
+                            <span className="mi-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: (isMobile || isTablet || isNarrowAgendaColumn) ? '0.75rem' : '0.68rem', color: '#2d1b22', fontWeight: 800, background: '#fff', border: '1px solid rgba(74,48,54,0.1)', padding: '2px 8px', borderRadius: '6px' }}>
+                              <Clock size={10} color="#2d1b22" /> {durationLabel}
+                            </span>
+                            {price != null && (
+                              <span className="mi-tag" style={{ fontSize: (isMobile || isTablet || isNarrowAgendaColumn) ? '0.75rem' : '0.68rem', color: '#2d1b22', fontWeight: 800, background: '#fff', border: '1px solid rgba(74,48,54,0.1)', padding: '2px 8px', borderRadius: '6px' }}>
+                                ${Number(price).toLocaleString('es-VE')}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {!(isMobile || isTablet || isNarrowAgendaColumn) && (
+                          <>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', flexShrink: 0, padding: '10px 14px 10px 0', justifyContent: 'center' }}>
+                              <div className="mi-tag" style={{ fontSize: '0.6rem', fontWeight: 800, color: accentColor, background: `${accentColor}12`, padding: '3px 8px', borderRadius: '999px', whiteSpace: 'nowrap' }}>
+                                {app.status}
+                              </div>
+                              <div style={{ display: 'flex', gap: '6px' }}>
+                                {clientPhone && (
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); window.open(`https://wa.me/${getWhatsAppNumber(clientPhone)}`, '_blank'); }}
+                                    className="mi-btn"
+                                    style={{ width: '24px', height: '24px', borderRadius: '6px', border: '1px solid rgba(223,178,140,0.2)', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
+                                  >
+                                    <MessageCircle size={12} color="#8c767b" />
+                                  </button>
+                                )}
+                                {canComplete && (
+                                  <button
+                                    onClick={async (e) => {
+                                      e.stopPropagation();
+                                      try {
+                                        await dataService.updateAppointment(app.id, { status: 'Completado' });
+                                        showToast('Cita completada', 'success');
+                                        loadFilteredAppointments();
+                                      } catch (err) {
+                                        showToast('Error al actualizar', 'error');
+                                      }
+                                    }}
+                                    className="mi-btn"
+                                    style={{ width: '24px', height: '24px', borderRadius: '6px', border: '1px solid rgba(34,197,94,0.25)', background: 'rgba(34,197,94,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
+                                  >
+                                    <Check size={12} color="#16a34a" />
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', paddingRight: '10px', flexShrink: 0 }}>
+                              <ChevronRight size={14} color="#8c767b" style={{ opacity: 0.35 }} />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                      {(isMobile || isTablet || isNarrowAgendaColumn) && (
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 14px 10px 14px', borderTop: '1px solid rgba(74,48,54,0.05)', marginTop: '2px', paddingTop: '8px' }}>
+                          <div className="mi-tag" style={{ fontSize: '0.68rem', fontWeight: 800, color: accentColor, background: `${accentColor}12`, padding: '3px 8px', borderRadius: '999px', whiteSpace: 'nowrap' }}>
+                            {app.status}
+                          </div>
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            {clientPhone && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); window.open(`https://wa.me/${getWhatsAppNumber(clientPhone)}`, '_blank'); }}
+                                className="mi-btn"
+                                style={{ width: '28px', height: '28px', borderRadius: '6px', border: '1px solid rgba(223,178,140,0.2)', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
+                              >
+                                <MessageCircle size={14} color="#8c767b" />
+                              </button>
+                            )}
+                            {canComplete && (
+                              <button
+                                onClick={async (e) => {
+                                  e.stopPropagation();
+                                  try {
+                                    await dataService.updateAppointment(app.id, { status: 'Completado' });
+                                    showToast('Cita completada', 'success');
+                                    loadFilteredAppointments();
+                                  } catch (err) {
+                                    showToast('Error', 'error');
+                                  }
+                                }}
+                                className="mi-btn"
+                                style={{ width: '28px', height: '28px', borderRadius: '6px', border: '1px solid rgba(34,197,94,0.25)', background: 'rgba(34,197,94,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
+                              >
+                                <Check size={14} color="#16a34a" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+/* ── WEEKLY RIBBON ─────────────────────────────────────────── */
+const WeeklyRibbon = ({ selectedDate, onSelectDate, allAppointments }) => {
+  const days = [];
+  for (let i = -3; i <= 3; i++) {
+    const d = new Date(selectedDate);
+    d.setDate(selectedDate.getDate() + i);
+    days.push(d);
+  }
+  const DAY_NAMES = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const today = new Date();
+
+  const hasCitas = (d) => {
+    const dKey = d.toDateString();
+    return (allAppointments || []).some(a => {
+      const ad = new Date(a.scheduled_at || a.created_at);
+      return ad.toDateString() === dKey && a.status !== 'Cancelada';
+    });
+  };
+
+  return (
+    <div style={{
+      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+      background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(12px)',
+      border: '1px solid rgba(223,178,140,0.22)', borderRadius: '18px',
+      padding: '10px 14px', marginBottom: '24px', gap: '6px',
+      boxShadow: '0 4px 16px rgba(74,48,54,0.05)'
+    }}>
+      {days.map((d, i) => {
+        const isSelected = d.toDateString() === selectedDate.toDateString();
+        const isToday = d.toDateString() === today.toDateString();
+        const hasDot = hasCitas(d);
+        return (
+          <button
+            key={i}
+            onClick={() => onSelectDate(d)}
+            className="mi-btn"
+            style={{
+              flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
+              justifyContent: 'center', padding: '8px 4px', borderRadius: '13px',
+              border: isToday && !isSelected ? '1px solid rgba(201,114,130,0.4)' : '1px solid transparent',
+              background: isSelected
+                ? 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)'
+                : isToday ? 'rgba(201,114,130,0.08)' : 'transparent',
+              color: isSelected ? '#fff' : isToday ? '#c97282' : '#6b5a60',
+              cursor: 'pointer', transition: 'all 0.22s cubic-bezier(0.34,1.56,0.64,1)',
+              boxShadow: isSelected ? '0 4px 14px rgba(201,114,130,0.28)' : 'none',
+              minWidth: '36px'
+            }}
+            onMouseEnter={e => { if (!isSelected) { e.currentTarget.style.background = 'rgba(201,114,130,0.1)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}}
+            onMouseLeave={e => { if (!isSelected) { e.currentTarget.style.background = isToday ? 'rgba(201,114,130,0.08)' : 'transparent'; e.currentTarget.style.transform = 'translateY(0)'; }}}
+          >
+            <span style={{ fontSize: '0.58rem', fontWeight: 900, letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: '3px', opacity: isSelected ? 1 : 0.75 }}>
+              {DAY_NAMES[d.getDay()]}
+            </span>
+            <span style={{ fontSize: '0.92rem', fontWeight: 800, lineHeight: 1 }}>
+              {d.getDate()}
+            </span>
+            <div style={{
+              width: '5px', height: '5px', borderRadius: '50%', marginTop: '4px',
+              background: hasDot ? (isSelected ? 'rgba(255,255,255,0.9)' : '#c97282') : 'transparent',
+              transition: 'background 0.2s'
+            }} />
+          </button>
+        );
+      })}
+    </div>
+  );
+};
+
 const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rates, openScheduleModal = false, modalKey = null, onOpenNotifications, onNavigate }) => {
   const { user } = useAuth();
   const { showToast } = useNotifs();
@@ -593,6 +909,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
   };
 
   const [appointments, setAppointments] = useState([]);
+  const [allAppointments, setAllAppointments] = useState([]); // for ribbon dots
   const [staff, setStaff] = useState([]);
   const [clients, setClients] = useState([]);
   const [services, setServices] = useState([]);
@@ -833,6 +1150,14 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
       setServices(sv);
       setSchedules(loadStoredSchedules(st));
       setTimeOff(loadStoredTimeOff());
+      // Load all appointments for ribbon dots
+      try {
+        const allApps = await dataService.getAppointmentServicesFlat(
+          new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toISOString(),
+          new Date(new Date().getFullYear(), new Date().getMonth() + 2, 0).toISOString()
+        );
+        setAllAppointments(allApps || []);
+      } catch (_) { setAllAppointments([]); }
     } catch (err) {
       console.error(err);
     }
@@ -1557,6 +1882,15 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
         </div>
       )}
 
+      {/* WEEKLY RIBBON — 7-day navigator */}
+      {!isMobile && (
+        <WeeklyRibbon
+          selectedDate={selectedDate}
+          onSelectDate={(d) => { setDateNavDir('next'); setSelectedDate(d); }}
+          allAppointments={allAppointments}
+        />
+      )}
+
       {/* RENDER MODE: OPERACIÓN DE HOY */}
       {viewMode === 'operation' && (
         <div className="staff-control-container">
@@ -1709,211 +2043,40 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         );
                       }
 
-                      // Agrupar por hora exacta para mostrar juntas las citas que coinciden en horario
-                      const groups = [];
-                      filteredApps.forEach(app => {
-                        const start = new Date(app.scheduled_at || app.created_at);
-                        const timeKey = `${start.getHours()}:${start.getMinutes()}`;
-                        const lastGroup = groups[groups.length - 1];
-                        if (!lastGroup || lastGroup.timeKey !== timeKey) {
-                          groups.push({ timeKey, start, apps: [app] });
-                        } else {
-                          lastGroup.apps.push(app);
-                        }
-                      });
+                      // ── Group by Morning / Afternoon / Night ──────────────────
+                      const timeGroups = [
+                        { key: 'manana',  label: 'Mañana',  icon: '🌅', startH: 0,  endH: 12 },
+                        { key: 'tarde',   label: 'Tarde',   icon: '☀️', startH: 12, endH: 19 },
+                        { key: 'noche',   label: 'Noche',   icon: '🌙', startH: 19, endH: 24 },
+                      ];
+                      const grouped = timeGroups.map(g => ({
+                        ...g,
+                        apps: filteredApps.filter(a => {
+                          const h = new Date(a.scheduled_at || a.created_at).getHours();
+                          return h >= g.startH && h < g.endH;
+                        })
+                      })).filter(g => g.apps.length > 0);
 
                       return (
                         <AnimatePresence mode="popLayout">
-                          {groups.map((group, groupIdx) => {
-                        const h12 = group.start.getHours() % 12 || 12;
-                        const ampm = group.start.getHours() >= 12 ? 'PM' : 'AM';
-                        return (
-                          <motion.div
-                            key={group.timeKey}
-                            layout
-                            initial={{ opacity: 0, x: -16 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 16, transition: { duration: 0.2 } }}
-                            transition={{ duration: 0.32, delay: Math.min(groupIdx * 0.05, 0.4), ease: [0.16, 1, 0.3, 1] }}
-                            style={{ marginBottom: '18px' }}
-                          >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                              <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#c97282', flexShrink: 0 }}>
-                                {h12}:{group.start.getMinutes().toString().padStart(2, '0')} {ampm}
-                              </div>
-                              {group.apps.length > 1 && (
-                                <div className="mi-tag" style={{ fontSize: '0.6rem', fontWeight: 800, color: '#a0506a', background: 'rgba(201, 114, 130, 0.1)', padding: '2px 9px', borderRadius: '999px', flexShrink: 0 }}>
-                                  {group.apps.length} citas a la misma hora
-                                </div>
-                              )}
-                              <div style={{ flex: 1, height: '1px', background: 'rgba(223, 178, 140, 0.2)' }} />
-                            </div>
-
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                              {group.apps.map(app => {
-                                const start = new Date(app.scheduled_at || app.created_at);
-                                const staffMember = visibleStaff.find(s => s.id === app.staff_id);
-                                const isRetrasada = Math.floor((new Date().getTime() - start.getTime()) / 60000) > 15 && app.status !== 'Completado' && app.status !== 'Cancelada';
-
-                                let bgColor = '#fcfaf9';
-                                let borderColor = 'rgba(160, 80, 106, 0.25)';
-                                let accentColor = '#a0506a';
-                                if (app.status === 'Completado') {
-                                  bgColor = 'rgba(34, 197, 94, 0.05)'; borderColor = 'rgba(34, 197, 94, 0.3)'; accentColor = '#16a34a';
-                                } else if (isRetrasada) {
-                                  bgColor = 'rgba(239, 68, 68, 0.05)'; borderColor = 'rgba(239, 68, 68, 0.3)'; accentColor = '#dc2626';
-                                } else if (app.status === 'En Curso') {
-                                  bgColor = 'rgba(245, 158, 11, 0.05)'; borderColor = 'rgba(245, 158, 11, 0.3)'; accentColor = '#d97706';
-                                }
-
-                                const durationMin = getAppointmentDuration(app);
-                                const durationLabel = durationMin >= 60
-                                  ? `${Math.floor(durationMin / 60)}h${durationMin % 60 ? ` ${durationMin % 60}m` : ''}`
-                                  : `${durationMin}m`;
-                                const price = app.total_price ?? app.services?.price;
-
-                                const canComplete = app.status !== 'Completado' && app.status !== 'Cancelada';
-                                const clientPhone = app.clients?.phone;
-
-                                return (
-                                  <div key={app.id}
-                                    onClick={() => setSelectedDetailedApp(app)}
-                                    className="mi-card"
-                                    style={{
-                                      display: 'flex', flexDirection: (isMobile || isTablet || isNarrowAgendaColumn) ? 'column' : 'row', alignItems: 'stretch', gap: 0,
-                                      background: bgColor, border: `1px solid ${borderColor}`,
-                                      borderLeft: `6px solid ${accentColor}`, borderRadius: '12px',
-                                      overflow: 'visible', cursor: 'pointer',
-                                      boxShadow: '0 2px 8px rgba(74, 48, 54, 0.04)',
-                                      transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s'
-                                    }}
-                                    onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(74, 48, 54, 0.1)'; }}
-                                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(74, 48, 54, 0.04)'; }}
-                                  >
-                                    <div style={{ display: 'flex', flex: (isMobile || isTablet || isNarrowAgendaColumn) ? 'none' : 1, minWidth: 0 }}>
-                                      {staffMember && (
-                                        <div style={{ position: 'relative', width: '58px', minHeight: (isMobile || isTablet || isNarrowAgendaColumn) ? '100%' : '82px', flexShrink: 0, borderRadius: (isMobile || isTablet || isNarrowAgendaColumn) ? '11px 0 0 0' : '11px 0 0 11px', overflow: 'hidden', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                          {getStaffPhoto(staffMember) ? (
-                                            <img src={getStaffPhoto(staffMember)} alt={staffMember.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                          ) : (
-                                            <User size={24} color="#fff" />
-                                          )}
-                                          <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(200deg, ${accentColor}66 0%, ${accentColor}00 55%), linear-gradient(0deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0) 45%)` }} />
-                                        </div>
-                                      )}
-                                      <div style={{ flex: 1, minWidth: 0, padding: '12px 16px' }}>
-                                        <div style={{ fontSize: (isMobile || isTablet || isNarrowAgendaColumn) ? '0.92rem' : '0.8rem', fontWeight: 800, color: '#2d1b22', display: 'flex', alignItems: 'center', gap: '5px', lineHeight: 1.3 }}>
-                                          <span>{app.clients?.name || 'Cliente'}</span>
-                                          {isRetrasada && <AlertTriangle size={12} color="#dc2626" style={{ flexShrink: 0 }} />}
-                                        </div>
-                                        <div style={{ fontSize: (isMobile || isTablet || isNarrowAgendaColumn) ? '0.8rem' : '0.68rem', color: '#8c767b', fontWeight: 600, lineHeight: 1.4, marginTop: '3px' }}>
-                                          {app.services?.name || 'Servicio'}
-                                        </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px', flexWrap: 'wrap' }}>
-                                          {staffMember && (
-                                            <span style={{ fontSize: (isMobile || isTablet || isNarrowAgendaColumn) ? '0.8rem' : '0.68rem', color: '#a0506a', fontWeight: 700 }}>
-                                              {staffMember.name.split(' ')[0]}
-                                            </span>
-                                          )}
-                                          <span className="mi-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: (isMobile || isTablet || isNarrowAgendaColumn) ? '0.8rem' : '0.7rem', color: '#2d1b22', fontWeight: 800, background: '#fff', border: '1px solid rgba(74,48,54,0.12)', padding: '3px 9px', borderRadius: '8px' }}>
-                                            <Clock size={11} color="#2d1b22" /> {durationLabel}
-                                          </span>
-                                          {price != null && (
-                                            <span className="mi-tag" style={{ fontSize: (isMobile || isTablet || isNarrowAgendaColumn) ? '0.8rem' : '0.7rem', color: '#2d1b22', fontWeight: 800, background: '#fff', border: '1px solid rgba(74,48,54,0.12)', padding: '3px 9px', borderRadius: '8px' }}>
-                                              ${Number(price).toLocaleString('es-VE')}
-                                            </span>
-                                          )}
-                                        </div>
-                                      </div>
-                                      {!(isMobile || isTablet || isNarrowAgendaColumn) && (
-                                        <>
-                                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px', flexShrink: 0, padding: '12px 16px 12px 0' }}>
-                                            <div className="mi-tag" style={{ fontSize: '0.62rem', fontWeight: 800, color: accentColor, background: `${accentColor}18`, padding: '4px 10px', borderRadius: '999px', whiteSpace: 'nowrap' }}>
-                                              {app.status}
-                                            </div>
-                                            <div style={{ display: 'flex', gap: '6px' }}>
-                                              {clientPhone && (
-                                                <button
-                                                  onClick={(e) => { e.stopPropagation(); window.open(`https://wa.me/${getWhatsAppNumber(clientPhone)}`, '_blank'); }}
-                                                  className="mi-btn jana-tooltip"
-                                                  data-tooltip="Contactar por WhatsApp"
-                                                  style={{ width: '26px', height: '26px', borderRadius: '8px', border: '1px solid rgba(223,178,140,0.25)', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
-                                                >
-                                                  <MessageCircle size={13} color="#8c767b" />
-                                                </button>
-                                              )}
-                                              {canComplete && (
-                                                <button
-                                                  onClick={async (e) => {
-                                                    e.stopPropagation();
-                                                    try {
-                                                      await dataService.updateAppointment(app.id, { status: 'Completado' });
-                                                      showToast('Cita marcada como completada', 'success');
-                                                      loadFilteredAppointments();
-                                                    } catch (err) {
-                                                      showToast('Error al actualizar la cita', 'error');
-                                                    }
-                                                  }}
-                                                  className="mi-btn jana-tooltip"
-                                                  data-tooltip="Marcar como completada"
-                                                  style={{ width: '26px', height: '26px', borderRadius: '8px', border: '1px solid rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
-                                                >
-                                                  <Check size={14} color="#16a34a" />
-                                                </button>
-                                              )}
-                                            </div>
-                                          </div>
-                                          <div style={{ display: 'flex', alignItems: 'center', paddingRight: '12px', flexShrink: 0 }}>
-                                            <ChevronRight size={16} color="#8c767b" className="card-chevron" style={{ opacity: 0.35, transition: 'all 0.2s ease' }} />
-                                          </div>
-                                        </>
-                                      )}
-                                    </div>
-                                    {(isMobile || isTablet || isNarrowAgendaColumn) && (
-                                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px 12px 16px', borderTop: '1px solid rgba(74,48,54,0.06)', marginTop: '2px', paddingTop: '10px' }}>
-                                        <div className="mi-tag" style={{ fontSize: '0.7rem', fontWeight: 800, color: accentColor, background: `${accentColor}18`, padding: '4px 10px', borderRadius: '999px', whiteSpace: 'nowrap' }}>
-                                          {app.status}
-                                        </div>
-                                        <div style={{ display: 'flex', gap: '8px' }}>
-                                          {clientPhone && (
-                                            <button
-                                              onClick={(e) => { e.stopPropagation(); window.open(`https://wa.me/${getWhatsAppNumber(clientPhone)}`, '_blank'); }}
-                                              className="mi-btn jana-tooltip"
-                                              data-tooltip="Contactar por WhatsApp"
-                                              style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid rgba(223,178,140,0.25)', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
-                                            >
-                                              <MessageCircle size={15} color="#8c767b" />
-                                            </button>
-                                          )}
-                                          {canComplete && (
-                                            <button
-                                              onClick={async (e) => {
-                                                e.stopPropagation();
-                                                try {
-                                                  await dataService.updateAppointment(app.id, { status: 'Completado' });
-                                                  showToast('Cita marcada como completada', 'success');
-                                                  loadFilteredAppointments();
-                                                } catch (err) {
-                                                  showToast('Error al actualizar la cita', 'error');
-                                                }
-                                              }}
-                                              className="mi-btn jana-tooltip"
-                                              data-tooltip="Marcar como completada"
-                                              style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid rgba(34,197,94,0.3)', background: 'rgba(34,197,94,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
-                                            >
-                                              <Check size={16} color="#16a34a" />
-                                            </button>
-                                          )}
-                                        </div>
-                                      </div>
-                                    )}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </motion.div>
-                        );
-                          })}
+                          {grouped.map((timeGroup, tgIdx) => (
+                            <TimeGroupSection
+                              key={timeGroup.key}
+                              group={timeGroup}
+                              tgIdx={tgIdx}
+                              visibleStaff={visibleStaff}
+                              isMobile={isMobile}
+                              isTablet={isTablet}
+                              isNarrowAgendaColumn={isNarrowAgendaColumn}
+                              getStaffPhoto={getStaffPhoto}
+                              getAppointmentDuration={getAppointmentDuration}
+                              setSelectedDetailedApp={setSelectedDetailedApp}
+                              getWhatsAppNumber={getWhatsAppNumber}
+                              dataService={dataService}
+                              showToast={showToast}
+                              loadFilteredAppointments={loadFilteredAppointments}
+                            />
+                          ))}
                         </AnimatePresence>
                       );
                     })()}

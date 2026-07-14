@@ -11,17 +11,17 @@ import { useModal } from '../context/ModalContext';
 import { canAccessModule } from '../utils/roles';
 
 const MENU_COLORS = [
-  { bg: 'rgba(201, 114, 130, 0.14)', icon: '#c97282', gradient: 'linear-gradient(135deg, rgba(201,114,130,0.18) 0%, rgba(160,80,106,0.12) 100%)' },
-  { bg: 'rgba(219, 140, 100, 0.14)', icon: '#c87850', gradient: 'linear-gradient(135deg, rgba(219,140,100,0.18) 0%, rgba(190,110,70,0.12) 100%)' },
-  { bg: 'rgba(160, 80, 106, 0.14)', icon: '#a0506a', gradient: 'linear-gradient(135deg, rgba(160,80,106,0.18) 0%, rgba(130,55,82,0.12) 100%)' },
-  { bg: 'rgba(180, 100, 150, 0.14)', icon: '#b46496', gradient: 'linear-gradient(135deg, rgba(180,100,150,0.18) 0%, rgba(150,75,120,0.12) 100%)' },
-  { bg: 'rgba(140, 90, 160, 0.14)', icon: '#8c5aa0', gradient: 'linear-gradient(135deg, rgba(140,90,160,0.18) 0%, rgba(110,65,130,0.12) 100%)' },
-  { bg: 'rgba(195, 125, 100, 0.14)', icon: '#c37d64', gradient: 'linear-gradient(135deg, rgba(195,125,100,0.18) 0%, rgba(165,95,70,0.12) 100%)' },
-  { bg: 'rgba(210, 130, 80, 0.14)', icon: '#d28250', gradient: 'linear-gradient(135deg, rgba(210,130,80,0.18) 0%, rgba(180,100,55,0.12) 100%)' },
-  { bg: 'rgba(170, 110, 140, 0.14)', icon: '#aa6e8c', gradient: 'linear-gradient(135deg, rgba(170,110,140,0.18) 0%, rgba(140,85,110,0.12) 100%)' },
-  { bg: 'rgba(185, 80, 100, 0.14)', icon: '#b95064', gradient: 'linear-gradient(135deg, rgba(185,80,100,0.18) 0%, rgba(155,55,75,0.12) 100%)' },
-  { bg: 'rgba(145, 110, 165, 0.14)', icon: '#916ea5', gradient: 'linear-gradient(135deg, rgba(145,110,165,0.18) 0%, rgba(115,82,135,0.12) 100%)' },
-  { bg: 'rgba(200, 160, 80, 0.14)', icon: '#c8a050', gradient: 'linear-gradient(135deg, rgba(200,160,80,0.18) 0%, rgba(170,130,55,0.12) 100%)' },
+  { bg: 'rgba(201, 114, 130, 0.12)', icon: '#c97282', gradient: 'linear-gradient(135deg, rgba(201,114,130,0.18) 0%, rgba(160,80,106,0.12) 100%)' },
+  { bg: 'rgba(160, 80, 106, 0.12)', icon: '#a0506a', gradient: 'linear-gradient(135deg, rgba(160,80,106,0.18) 0%, rgba(130,55,82,0.12) 100%)' },
+  { bg: 'rgba(212, 160, 154, 0.12)', icon: '#d4a09a', gradient: 'linear-gradient(135deg, rgba(212,160,154,0.18) 0%, rgba(180,120,115,0.12) 100%)' },
+  { bg: 'rgba(201, 114, 130, 0.12)', icon: '#c97282', gradient: 'linear-gradient(135deg, rgba(201,114,130,0.18) 0%, rgba(160,80,106,0.12) 100%)' },
+  { bg: 'rgba(160, 80, 106, 0.12)', icon: '#a0506a', gradient: 'linear-gradient(135deg, rgba(160,80,106,0.18) 0%, rgba(130,55,82,0.12) 100%)' },
+  { bg: 'rgba(212, 160, 154, 0.12)', icon: '#d4a09a', gradient: 'linear-gradient(135deg, rgba(212,160,154,0.18) 0%, rgba(180,120,115,0.12) 100%)' },
+  { bg: 'rgba(201, 114, 130, 0.12)', icon: '#c97282', gradient: 'linear-gradient(135deg, rgba(201,114,130,0.18) 0%, rgba(160,80,106,0.12) 100%)' },
+  { bg: 'rgba(160, 80, 106, 0.12)', icon: '#a0506a', gradient: 'linear-gradient(135deg, rgba(160,80,106,0.18) 0%, rgba(130,55,82,0.12) 100%)' },
+  { bg: 'rgba(212, 160, 154, 0.12)', icon: '#d4a09a', gradient: 'linear-gradient(135deg, rgba(212,160,154,0.18) 0%, rgba(180,120,115,0.12) 100%)' },
+  { bg: 'rgba(201, 114, 130, 0.12)', icon: '#c97282', gradient: 'linear-gradient(135deg, rgba(201,114,130,0.18) 0%, rgba(160,80,106,0.12) 100%)' },
+  { bg: 'rgba(160, 80, 106, 0.12)', icon: '#a0506a', gradient: 'linear-gradient(135deg, rgba(160,80,106,0.18) 0%, rgba(130,55,82,0.12) 100%)' },
 ];
 
 const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsCollapsed, activeRateType, onToggleRateType, isOpen, onClose }) => {
@@ -89,10 +89,10 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
     width: effectiveCollapsed ? '70px' : '230px',
     minWidth: effectiveCollapsed ? '70px' : '230px',
     flexShrink: 0,
-    height: 'calc(100vh - 32px)',
+    height: 'calc(100vh - 20px)',
     position: 'sticky',
-    top: '16px',
-    margin: '16px 0 16px 16px',
+    top: '10px',
+    margin: '10px 0 10px 10px',
     background: 'rgba(255, 255, 255, 0.70)',
     backdropFilter: 'blur(20px)',
     WebkitBackdropFilter: 'blur(20px)',
@@ -101,7 +101,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
     boxShadow: '0 8px 32px rgba(160, 80, 106, 0.06)',
     display: 'flex', 
     flexDirection: 'column',
-    padding: effectiveCollapsed ? '10px 8px' : '10px 10px',
+    padding: effectiveCollapsed ? '8px 8px' : '8px 8px',
     overflowY: 'hidden', 
     overflowX: 'hidden',
     transition: 'all 0.3s ease',
@@ -197,7 +197,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
       <nav
         className="mi-enter-up mi-delay-2"
         onMouseLeave={() => setHoveredTab(null)}
-        style={{ display: 'flex', flexDirection: 'column', gap: '1px', position: 'relative', flex: 1, minHeight: 0, overflowY: 'hidden', overflowX: 'hidden', marginTop: '10px' }}
+        style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'relative', flex: 1, minHeight: 0, overflowY: 'hidden', overflowX: 'hidden', marginTop: '10px' }}
       >
         <div
           style={{
@@ -225,15 +225,15 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
               onMouseLeave={hideTooltip}
               aria-label={effectiveCollapsed ? item.label : undefined}
               style={{
-                display: 'flex', alignItems: 'center', gap: effectiveCollapsed ? '0' : '10px',
-                padding: effectiveCollapsed ? '9px' : '7px 10px',
+                display: 'flex', alignItems: 'center', gap: effectiveCollapsed ? '0' : '12px',
+                padding: effectiveCollapsed ? '8px' : '6px 12px',
                 borderRadius: '14px',
                 border: isActive ? `1px solid rgba(201, 114, 130, 0.18)` : '1px solid transparent',
                 background: 'transparent',
                 color: isActive ? '#7a3a50' : '#8a6870',
                 cursor: 'pointer',
-                fontSize: '0.75rem',
-                fontWeight: isActive ? 700 : 500,
+                fontSize: '0.86rem',
+                fontWeight: isActive ? 800 : 600,
                 letterSpacing: isActive ? '0.35px' : '0.2px',
                 transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)', width: '100%',
                 textAlign: 'left',
@@ -252,18 +252,17 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
                 e.currentTarget.style.color = isActive ? '#7a3a50' : '#8a6870';
               }}
             >
-              {/* Icon wrapper with unique color per item */}
+              {/* Icon wrapper with unified color */}
               <div style={{
-                width: '28px', height: '28px', borderRadius: '9px',
-                background: isActive ? colors.gradient : `${colors.bg.replace('0.14', '0.07')}`,
+                width: '32px', height: '32px', borderRadius: '10px',
+                background: isActive ? 'rgba(160, 80, 106, 0.12)' : 'rgba(160, 80, 106, 0.04)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                 flexShrink: 0,
-                transform: isActive ? 'scale(1.08)' : 'scale(1)',
-                boxShadow: isActive ? `0 3px 10px ${colors.bg}` : 'none',
-                border: isActive ? `1px solid ${colors.icon}22` : '1px solid transparent',
+                transform: isActive ? 'scale(1.06)' : 'scale(1)',
+                border: isActive ? `1px solid rgba(160, 80, 106, 0.25)` : '1px solid transparent',
               }}>
-                <Icon size={14} style={{ color: isActive ? colors.icon : `${colors.icon}99` }} strokeWidth={isActive ? 2.2 : 1.8} />
+                <Icon size={17} style={{ color: isActive ? '#a0506a' : '#8a6870' }} strokeWidth={2.0} />
               </div>
               {!effectiveCollapsed && (
                 <span style={{
@@ -276,8 +275,8 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
           );
         })}
       </nav>
-
-      <div className="mi-enter-up mi-delay-3" style={{ flexShrink: 0, paddingTop: '8px', display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative' }}>
+ 
+      <div className="mi-enter-up mi-delay-3 no-scrollbar" style={{ flexShrink: 0, paddingTop: '16px', marginTop: '12px', borderTop: '1px dashed rgba(201, 114, 130, 0.15)', display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative' }}>
         {!effectiveCollapsed ? (
           <button
             className="mi-btn"

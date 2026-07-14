@@ -28,14 +28,14 @@
   --border-color: rgba(160, 80, 106, 0.2);
   --accent-color: #a0506a;
 
-  --spacing-xs: 3px;
-  --spacing-sm: 6px;
-  --spacing-md: 12px;
-  --spacing-lg: 18px;
-  --spacing-xl: 24px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
 
-  --radius-md: 10px;
-  --radius-xl: 16px;
+  --radius-md: 12px;
+  --radius-xl: 20px;
   --radius-pill: 100px;
 
   --glass-bg: rgba(255, 255, 255, 0.88);
@@ -111,8 +111,9 @@ html, body {
   overflow-x: hidden;
 }
 
+/* Reducido a 6px para pegar más los títulos al borde superior */
 .p-container {
-  padding: var(--spacing-xl);
+  padding: 6px var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
   animation: pageFadeIn 0.3s ease;
 }
 
