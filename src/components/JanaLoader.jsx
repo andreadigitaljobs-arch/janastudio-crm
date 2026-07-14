@@ -246,20 +246,33 @@ const JanaLoader = ({ visible }) => {
           margin-bottom: 25px;
         }
         .loader-logo {
-          width: 420px;
-          max-width: 85%;
+          width: clamp(160px, 18vw, 260px);
+          max-width: 80%;
           height: auto;
           object-fit: contain;
           filter: drop-shadow(0 4px 10px rgba(122, 88, 83, 0.08));
         }
-        @media (max-width: 1200px) {
+        @media (min-width: 1025px) and (max-width: 1440px) {
           .loader-logo {
-            width: 340px;
+            width: 240px;
+          }
+        }
+        @media (min-width: 1441px) {
+          .loader-logo {
+            width: 380px;
+          }
+          .loader-logo-wrapper {
+            margin-bottom: 32px;
+          }
+        }
+        @media (max-width: 1024px) {
+          .loader-logo {
+            width: 300px;
           }
         }
         @media (max-width: 480px) {
           .loader-logo {
-            width: 220px;
+            width: 200px;
           }
         }
 
@@ -282,17 +295,34 @@ const JanaLoader = ({ visible }) => {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
         }
-        @media (max-width: 1200px) {
+        @media (min-width: 1025px) and (max-width: 1440px) {
           .rose-gold-spinner {
-            width: 50px;
-            height: 50px;
+            width: 42px;
+            height: 42px;
+            border-width: 3px;
+          }
+        }
+        @media (min-width: 1441px) {
+          .rose-gold-spinner {
+            width: 72px;
+            height: 72px;
+            border-width: 5px;
+          }
+          .loader-spinner-wrapper {
+            margin-bottom: 38px;
+          }
+        }
+        @media (max-width: 1024px) {
+          .rose-gold-spinner {
+            width: 48px;
+            height: 48px;
             border-width: 3.5px;
           }
         }
         @media (max-width: 480px) {
           .rose-gold-spinner {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-width: 3px;
           }
         }
@@ -303,32 +333,51 @@ const JanaLoader = ({ visible }) => {
         }
         .loader-title {
           font-family: 'Playfair Display', Georgia, serif;
-          font-size: 30px;
+          font-size: clamp(14px, 1.5vw, 22px);
           font-weight: 500;
           color: #7a5853;
-          margin: 0 0 8px 0;
+          margin: 0 0 6px 0;
           letter-spacing: 0.02em;
           text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
         }
         .loader-subtitle {
           font-family: 'Manrope', sans-serif;
-          font-size: 17px;
+          font-size: clamp(11px, 1vw, 15px);
           font-weight: 500;
           color: #9e7f7b;
           margin: 0;
           letter-spacing: 0.03em;
         }
-        @media (max-width: 1200px) {
+        @media (min-width: 1025px) and (max-width: 1440px) {
           .loader-title {
-            font-size: 25px;
+            font-size: 20px;
           }
           .loader-subtitle {
-            font-size: 15px;
+            font-size: 13px;
+          }
+        }
+        @media (min-width: 1441px) {
+          .loader-title {
+            font-size: 34px;
+          }
+          .loader-subtitle {
+            font-size: 18px;
+          }
+          .loader-info-wrapper {
+            margin-bottom: 32px;
+          }
+        }
+        @media (max-width: 1024px) {
+          .loader-title {
+            font-size: 22px;
+          }
+          .loader-subtitle {
+            font-size: 14px;
           }
         }
         @media (max-width: 480px) {
           .loader-title {
-            font-size: 18px;
+            font-size: 16px;
           }
           .loader-subtitle {
             font-size: 12px;
@@ -373,16 +422,22 @@ const JanaLoader = ({ visible }) => {
           0% { background-position: 200% 0; }
           100% { background-position: -200% 0; }
         }
-        @media (max-width: 1200px) {
+        @media (min-width: 1025px) and (max-width: 1440px) {
           .loader-progress-row {
-            max-width: 340px;
-            margin-bottom: clamp(16px, 2.5vh, 30px);
+            max-width: 300px;
+            margin-bottom: clamp(12px, 2vh, 24px);
+          }
+        }
+        @media (max-width: 1024px) {
+          .loader-progress-row {
+            max-width: 320px;
+            margin-bottom: clamp(14px, 2.5vh, 28px);
           }
         }
         @media (max-width: 480px) {
           .loader-progress-row {
-            max-width: 280px;
-            margin-bottom: clamp(14px, 2vh, 24px);
+            max-width: 260px;
+            margin-bottom: clamp(12px, 2vh, 20px);
           }
         }
 

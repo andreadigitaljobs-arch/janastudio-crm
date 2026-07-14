@@ -397,10 +397,10 @@ html, body {
 
 .salon-login-form-wrapper {
   width: 100%;
-  max-width: clamp(420px, 24vw, 620px);
+  max-width: clamp(300px, 22vw, 400px);
   display: flex;
   flex-direction: column;
-  gap: clamp(24px, 1.6vw, 36px);
+  gap: clamp(16px, 1.2vw, 28px);
   position: relative;
   z-index: 5;
   opacity: 0;
@@ -438,8 +438,8 @@ html, body {
 }
 
 .salon-logo-image {
-  max-width: clamp(180px, 11vw, 260px);
-  width: 75%;
+  max-width: clamp(120px, 9vw, 180px);
+  width: 65%;
   object-fit: contain;
   filter: drop-shadow(0 2px 8px rgba(167, 102, 115, 0.08));
   transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -460,7 +460,7 @@ html, body {
 
 .salon-form-title {
   font-family: 'Manrope', sans-serif;
-  font-size: clamp(1.45rem, 1.3vw, 2.1rem);
+  font-size: clamp(1.1rem, 1vw, 1.6rem);
   font-weight: 500;
   color: #4a3036;
   margin: 0;
@@ -726,9 +726,9 @@ html, body {
 }
 
 .salon-decorative-icon-wrapper {
-  width: clamp(48px, 3vw, 68px);
-  height: clamp(48px, 3vw, 68px);
-  border-radius: 14px;
+  width: clamp(36px, 2.4vw, 52px);
+  height: clamp(36px, 2.4vw, 52px);
+  border-radius: 12px;
   background: linear-gradient(135deg, rgba(232,162,169,0.08) 0%, rgba(223,178,140,0.08) 100%);
   border: 1px solid rgba(223, 178, 140, 0.2);
   display: flex;
@@ -752,13 +752,13 @@ html, body {
 }
 
 .salon-decorative-label {
-  font-size: clamp(11px, 0.6vw, 15px);
+  font-size: clamp(9px, 0.5vw, 12px);
   font-weight: 600;
   color: #6b4a52;
 }
 
 .salon-decorative-sub {
-  font-size: clamp(10px, 0.55vw, 13px);
+  font-size: clamp(8px, 0.45vw, 11px);
   color: #a07880;
   font-weight: 400;
 }
@@ -877,6 +877,104 @@ html, body {
   background: linear-gradient(135deg, #e8a2a9, #c97282);
   color: #fff;
   border-color: transparent;
+}
+
+/* ── LAPTOP: Pantallas medianas 1025-1440px ── */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .salon-login-outer {
+    padding: 20px;
+  }
+
+  .salon-login-right {
+    padding: 28px 40px;
+  }
+
+  .salon-login-form-wrapper {
+    max-width: 360px;
+    gap: 18px;
+  }
+
+  .salon-logo-image {
+    max-width: 160px;
+    width: 65%;
+  }
+
+  .salon-form-title {
+    font-size: 1.3rem;
+  }
+
+  .salon-form-subtitle {
+    font-size: 0.82rem;
+  }
+
+  .salon-decorative-section {
+    margin-top: 8px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+
+  .salon-decorative-icon-wrapper {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+  }
+
+  .salon-decorative-label {
+    font-size: 11px;
+  }
+
+  .salon-decorative-sub {
+    font-size: 10px;
+  }
+}
+
+/* ── FULL HD: Monitores grandes 1441px+ ── */
+@media (min-width: 1441px) {
+  .salon-login-outer {
+    padding: 40px;
+  }
+
+  .salon-login-right {
+    padding: 48px 80px;
+  }
+
+  .salon-login-form-wrapper {
+    max-width: 480px;
+    gap: 28px;
+  }
+
+  .salon-logo-image {
+    max-width: 220px;
+    width: 75%;
+  }
+
+  .salon-form-title {
+    font-size: 1.9rem;
+  }
+
+  .salon-form-subtitle {
+    font-size: 1rem;
+  }
+
+  .salon-decorative-section {
+    margin-top: 16px;
+    padding-top: 22px;
+    padding-bottom: 22px;
+  }
+
+  .salon-decorative-icon-wrapper {
+    width: 62px;
+    height: 62px;
+    border-radius: 16px;
+  }
+
+  .salon-decorative-label {
+    font-size: 13px;
+  }
+
+  .salon-decorative-sub {
+    font-size: 11px;
+  }
 }
 
 /* ── TABLET: Layout optimizado ── */
