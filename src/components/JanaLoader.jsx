@@ -252,12 +252,15 @@ const JanaLoader = ({ visible }) => {
           object-fit: contain;
           filter: drop-shadow(0 4px 10px rgba(122, 88, 83, 0.08));
         }
-        @media (min-width: 1025px) and (max-width: 1440px) {
+        @media (min-width: 1025px) and (max-width: 1600px) {
           .loader-logo {
-            width: 240px;
+            width: 300px;
+          }
+          .loader-logo-wrapper {
+            margin-bottom: 28px;
           }
         }
-        @media (min-width: 1441px) {
+        @media (min-width: 1601px) {
           .loader-logo {
             width: 380px;
           }
@@ -295,14 +298,17 @@ const JanaLoader = ({ visible }) => {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
         }
-        @media (min-width: 1025px) and (max-width: 1440px) {
+        @media (min-width: 1025px) and (max-width: 1600px) {
           .rose-gold-spinner {
-            width: 42px;
-            height: 42px;
-            border-width: 3px;
+            width: 54px;
+            height: 54px;
+            border-width: 4px;
+          }
+          .loader-spinner-wrapper {
+            margin-bottom: 32px;
           }
         }
-        @media (min-width: 1441px) {
+        @media (min-width: 1601px) {
           .rose-gold-spinner {
             width: 72px;
             height: 72px;
@@ -348,15 +354,18 @@ const JanaLoader = ({ visible }) => {
           margin: 0;
           letter-spacing: 0.03em;
         }
-        @media (min-width: 1025px) and (max-width: 1440px) {
+        @media (min-width: 1025px) and (max-width: 1600px) {
           .loader-title {
-            font-size: 20px;
+            font-size: 28px;
           }
           .loader-subtitle {
-            font-size: 13px;
+            font-size: 16px;
+          }
+          .loader-info-wrapper {
+            margin-bottom: 28px;
           }
         }
-        @media (min-width: 1441px) {
+        @media (min-width: 1601px) {
           .loader-title {
             font-size: 34px;
           }
@@ -422,7 +431,7 @@ const JanaLoader = ({ visible }) => {
           0% { background-position: 200% 0; }
           100% { background-position: -200% 0; }
         }
-        @media (min-width: 1025px) and (max-width: 1440px) {
+        @media (min-width: 1025px) and (max-width: 1600px) {
           .loader-progress-row {
             max-width: 300px;
             margin-bottom: clamp(12px, 2vh, 24px);

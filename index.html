@@ -69,8 +69,8 @@
 
       .loader-logo-wrapper { margin-bottom: 25px; }
       .loader-logo {
-        width: 420px;
-        max-width: 85%;
+        width: clamp(160px, 18vw, 260px);
+        max-width: 80%;
         height: auto;
         object-fit: contain;
         filter: drop-shadow(0 4px 10px rgba(122, 88, 83, 0.08));
@@ -90,12 +90,12 @@
 
       .loader-info-wrapper { margin-bottom: 25px; }
       .loader-title {
-        font-size: 30px; font-weight: 500; color: #7a5853;
-        margin: 0 0 8px 0; letter-spacing: 0.02em;
+        font-size: clamp(14px, 1.5vw, 22px); font-weight: 500; color: #7a5853;
+        margin: 0 0 6px 0; letter-spacing: 0.02em;
         text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
       }
       .loader-subtitle {
-        font-family: 'Manrope', sans-serif; font-size: 17px;
+        font-family: 'Manrope', sans-serif; font-size: clamp(11px, 1vw, 15px);
         font-weight: 500; color: #9e7f7b; margin: 0; letter-spacing: 0.03em;
       }
 
@@ -123,27 +123,55 @@
       }
       .loader-heart-icon { color: #b38279; font-size: 16px; }
       .loader-slogan {
-        font-size: 16px; font-style: italic; color: #7a5853; margin: 0;
+        font-size: 14px; font-style: italic; color: #7a5853; margin: 0;
         letter-spacing: 0.05em; text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
         background: rgba(255, 255, 255, 0.4); padding: 6px 16px;
         border-radius: 20px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
       }
 
-      @media (max-width: 1200px) {
-        .loader-logo { width: 340px; }
-        .rose-gold-spinner { width: 50px; height: 50px; border-width: 3.5px; }
-        .loader-title { font-size: 25px; }
-        .loader-subtitle { font-size: 15px; }
-        .loader-progress-row { max-width: 340px; margin-bottom: clamp(16px, 2.5vh, 30px); }
-        .loader-slogan { font-size: 14px; }
+      /* Laptop: 1025–1920px */
+      @media (min-width: 1025px) and (max-width: 1600px) {
+        .loader-logo { width: 300px; }
+        .loader-logo-wrapper { margin-bottom: 28px; }
+        .rose-gold-spinner { width: 54px; height: 54px; border-width: 4px; }
+        .loader-spinner-wrapper { margin-bottom: 32px; }
+        .loader-title { font-size: 28px; }
+        .loader-subtitle { font-size: 16px; }
+        .loader-info-wrapper { margin-bottom: 28px; }
+        .loader-progress-row { max-width: 380px; }
+        .loader-slogan { font-size: 15px; }
       }
+      /* Full HD monitor: 1921px+ */
+      @media (min-width: 1601px) {
+        .loader-logo { width: 380px; }
+        .loader-logo-wrapper { margin-bottom: 32px; }
+        .rose-gold-spinner { width: 72px; height: 72px; border-width: 5px; }
+        .loader-spinner-wrapper { margin-bottom: 38px; }
+        .loader-title { font-size: 34px; }
+        .loader-subtitle { font-size: 18px; }
+        .loader-info-wrapper { margin-bottom: 32px; }
+        .loader-progress-row { max-width: 480px; }
+      }
+      /* Mobile */
       @media (max-width: 480px) {
-        .loader-logo { width: 220px; }
-        .rose-gold-spinner { width: 40px; height: 40px; border-width: 3px; }
-        .loader-title { font-size: 18px; }
+        .loader-logo { width: 200px; }
+        .rose-gold-spinner { width: 36px; height: 36px; border-width: 3px; }
+        .loader-title { font-size: 16px; }
         .loader-subtitle { font-size: 12px; }
-        .loader-progress-row { max-width: 280px; margin-bottom: clamp(14px, 2vh, 24px); }
+        .loader-progress-row { max-width: 260px; }
         .loader-slogan { font-size: 12px; }
+      }
+      /* Tablet: 481–1024px */
+      @media (min-width: 481px) and (max-width: 1024px) {
+        .loader-logo { width: 300px; }
+        .loader-logo-wrapper { margin-bottom: 24px; }
+        .rose-gold-spinner { width: 48px; height: 48px; border-width: 3.5px; }
+        .loader-spinner-wrapper { margin-bottom: 28px; }
+        .loader-title { font-size: 22px; }
+        .loader-subtitle { font-size: 14px; }
+        .loader-info-wrapper { margin-bottom: 24px; }
+        .loader-progress-row { max-width: 340px; }
+        .loader-slogan { font-size: 13px; }
       }
 
       @keyframes luxurySpin {

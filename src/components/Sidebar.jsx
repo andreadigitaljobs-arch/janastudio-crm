@@ -11,17 +11,17 @@ import { useModal } from '../context/ModalContext';
 import { canAccessModule } from '../utils/roles';
 
 const MENU_COLORS = [
-  { bg: 'rgba(201, 114, 130, 0.12)', icon: '#c97282' },
-  { bg: 'rgba(160, 80, 106, 0.12)', icon: '#a0506a' },
-  { bg: 'rgba(186, 130, 160, 0.12)', icon: '#ba82a0' },
-  { bg: 'rgba(190, 120, 145, 0.12)', icon: '#be7891' },
-  { bg: 'rgba(170, 90, 120, 0.12)', icon: '#aa5a78' },
-  { bg: 'rgba(180, 100, 130, 0.12)', icon: '#b46482' },
-  { bg: 'rgba(195, 125, 150, 0.12)', icon: '#c37d96' },
-  { bg: 'rgba(155, 85, 110, 0.12)', icon: '#9b556e' },
-  { bg: 'rgba(185, 115, 140, 0.12)', icon: '#b9738c' },
-  { bg: 'rgba(201, 114, 130, 0.12)', icon: '#c97282' },
-  { bg: 'rgba(165, 95, 115, 0.12)', icon: '#a55f73' },
+  { bg: 'rgba(201, 114, 130, 0.14)', icon: '#c97282', gradient: 'linear-gradient(135deg, rgba(201,114,130,0.18) 0%, rgba(160,80,106,0.12) 100%)' },
+  { bg: 'rgba(219, 140, 100, 0.14)', icon: '#c87850', gradient: 'linear-gradient(135deg, rgba(219,140,100,0.18) 0%, rgba(190,110,70,0.12) 100%)' },
+  { bg: 'rgba(160, 80, 106, 0.14)', icon: '#a0506a', gradient: 'linear-gradient(135deg, rgba(160,80,106,0.18) 0%, rgba(130,55,82,0.12) 100%)' },
+  { bg: 'rgba(180, 100, 150, 0.14)', icon: '#b46496', gradient: 'linear-gradient(135deg, rgba(180,100,150,0.18) 0%, rgba(150,75,120,0.12) 100%)' },
+  { bg: 'rgba(140, 90, 160, 0.14)', icon: '#8c5aa0', gradient: 'linear-gradient(135deg, rgba(140,90,160,0.18) 0%, rgba(110,65,130,0.12) 100%)' },
+  { bg: 'rgba(195, 125, 100, 0.14)', icon: '#c37d64', gradient: 'linear-gradient(135deg, rgba(195,125,100,0.18) 0%, rgba(165,95,70,0.12) 100%)' },
+  { bg: 'rgba(210, 130, 80, 0.14)', icon: '#d28250', gradient: 'linear-gradient(135deg, rgba(210,130,80,0.18) 0%, rgba(180,100,55,0.12) 100%)' },
+  { bg: 'rgba(170, 110, 140, 0.14)', icon: '#aa6e8c', gradient: 'linear-gradient(135deg, rgba(170,110,140,0.18) 0%, rgba(140,85,110,0.12) 100%)' },
+  { bg: 'rgba(185, 80, 100, 0.14)', icon: '#b95064', gradient: 'linear-gradient(135deg, rgba(185,80,100,0.18) 0%, rgba(155,55,75,0.12) 100%)' },
+  { bg: 'rgba(145, 110, 165, 0.14)', icon: '#916ea5', gradient: 'linear-gradient(135deg, rgba(145,110,165,0.18) 0%, rgba(115,82,135,0.12) 100%)' },
+  { bg: 'rgba(200, 160, 80, 0.14)', icon: '#c8a050', gradient: 'linear-gradient(135deg, rgba(200,160,80,0.18) 0%, rgba(170,130,55,0.12) 100%)' },
 ];
 
 const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsCollapsed, activeRateType, onToggleRateType, isOpen, onClose }) => {
@@ -125,7 +125,9 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
         gap: effectiveCollapsed ? '16px' : '16px',
         display: 'flex', flexDirection: 'column', alignItems: 'center',
         position: 'relative',
-        marginBottom: effectiveCollapsed ? '8px' : '0'
+        marginBottom: effectiveCollapsed ? '8px' : '0',
+        paddingBottom: '10px',
+        borderBottom: '1px solid rgba(201, 114, 130, 0.12)',
       }}>
         {isMobile && (
           <button
@@ -195,15 +197,15 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
       <nav
         className="mi-enter-up mi-delay-2"
         onMouseLeave={() => setHoveredTab(null)}
-        style={{ display: 'flex', flexDirection: 'column', gap: '1px', position: 'relative', flex: 1, minHeight: 0, overflowY: 'hidden', overflowX: 'hidden' }}
+        style={{ display: 'flex', flexDirection: 'column', gap: '1px', position: 'relative', flex: 1, minHeight: 0, overflowY: 'hidden', overflowX: 'hidden', marginTop: '10px' }}
       >
         <div
           style={{
             position: 'absolute', left: 0, width: '100%',
-            background: 'linear-gradient(135deg, rgba(201, 114, 130, 0.15) 0%, rgba(160, 80, 106, 0.1) 100%)',
+            background: 'linear-gradient(135deg, rgba(201,114,130,0.22) 0%, rgba(160,80,106,0.14) 60%, rgba(223,178,140,0.10) 100%)',
             borderRadius: '14px',
-            border: '1px solid rgba(201, 114, 130, 0.15)',
-            boxShadow: '0 2px 8px rgba(201, 114, 130, 0.08)',
+            border: '1px solid rgba(201, 114, 130, 0.20)',
+            boxShadow: '0 2px 12px rgba(201, 114, 130, 0.12), inset 0 1px 0 rgba(255,255,255,0.6)',
             transition: 'transform 0.22s cubic-bezier(0.25, 1, 0.5, 1), height 0.22s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.2s ease',
             pointerEvents: 'none', zIndex: 0,
             ...indicatorStyle
@@ -223,13 +225,16 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
               onMouseLeave={hideTooltip}
               aria-label={effectiveCollapsed ? item.label : undefined}
               style={{
-                display: 'flex', alignItems: 'center', gap: effectiveCollapsed ? '0' : '12px',
-                padding: effectiveCollapsed ? '9px' : '8px 12px',
-                borderRadius: '12px', border: isActive ? '1px solid rgba(201, 114, 130, 0.12)' : '1px solid transparent',
+                display: 'flex', alignItems: 'center', gap: effectiveCollapsed ? '0' : '10px',
+                padding: effectiveCollapsed ? '9px' : '7px 10px',
+                borderRadius: '14px',
+                border: isActive ? `1px solid rgba(201, 114, 130, 0.18)` : '1px solid transparent',
                 background: 'transparent',
-                color: isActive ? '#a0506a' : 'var(--text-secondary)',
-                cursor: 'pointer', fontSize: '0.8rem',
+                color: isActive ? '#7a3a50' : '#8a6870',
+                cursor: 'pointer',
+                fontSize: '0.75rem',
                 fontWeight: isActive ? 700 : 500,
+                letterSpacing: isActive ? '0.35px' : '0.2px',
                 transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)', width: '100%',
                 textAlign: 'left',
                 justifyContent: effectiveCollapsed ? 'center' : 'flex-start',
@@ -238,29 +243,33 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
               }}
               onMouseOver={(e) => {
                 if (!isActive) {
-                  e.currentTarget.style.transform = 'scale(1.02)';
-                  e.currentTarget.style.transformOrigin = 'left center';
+                  e.currentTarget.style.transform = 'translateX(3px)';
+                  e.currentTarget.style.color = colors.icon;
                 }
               }}
               onMouseOut={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.transform = 'translateX(0)';
+                e.currentTarget.style.color = isActive ? '#7a3a50' : '#8a6870';
               }}
             >
+              {/* Icon wrapper with unique color per item */}
               <div style={{
-                width: '30px', height: '30px', borderRadius: '10px',
-                background: isActive ? colors.bg : 'rgba(212, 160, 154, 0.06)',
+                width: '28px', height: '28px', borderRadius: '9px',
+                background: isActive ? colors.gradient : `${colors.bg.replace('0.14', '0.07')}`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                 flexShrink: 0,
-                transform: isActive ? 'scale(1.05)' : 'scale(1)',
-                boxShadow: isActive ? `0 2px 8px ${colors.bg}` : 'none'
+                transform: isActive ? 'scale(1.08)' : 'scale(1)',
+                boxShadow: isActive ? `0 3px 10px ${colors.bg}` : 'none',
+                border: isActive ? `1px solid ${colors.icon}22` : '1px solid transparent',
               }}>
-                <Icon size={16} style={{ color: isActive ? colors.icon : 'var(--text-muted)' }} />
+                <Icon size={14} style={{ color: isActive ? colors.icon : `${colors.icon}99` }} strokeWidth={isActive ? 2.2 : 1.8} />
               </div>
               {!effectiveCollapsed && (
                 <span style={{
-                  transition: 'color 0.2s ease',
-                  letterSpacing: '0.2px'
+                  transition: 'all 0.2s ease',
+                  letterSpacing: isActive ? '0.35px' : '0.15px',
+                  fontFamily: "'Manrope', sans-serif",
                 }}>{item.label}</span>
               )}
             </button>

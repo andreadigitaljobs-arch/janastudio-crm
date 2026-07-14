@@ -880,7 +880,7 @@ html, body {
 }
 
 /* ── LAPTOP: Pantallas medianas 1025-1440px ── */
-@media (min-width: 1025px) and (max-width: 1440px) {
+@media (min-width: 1025px) and (max-width: 1600px) {
   .salon-login-outer {
     padding: 20px;
   }
@@ -929,7 +929,7 @@ html, body {
 }
 
 /* ── FULL HD: Monitores grandes 1441px+ ── */
-@media (min-width: 1441px) {
+@media (min-width: 1601px) {
   .salon-login-outer {
     padding: 40px;
   }
