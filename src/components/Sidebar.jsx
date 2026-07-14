@@ -21,7 +21,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
     { id: 'reception', label: 'Recepción', icon: UserCircle, roles: ['Admin', 'Recepcionista'] },
     { id: 'laser', label: 'Centro Láser', icon: LaserGunIcon, roles: ['Admin', 'Recepcionista'] },
     { id: 'clients', label: 'Clientes', icon: Users, roles: ['Admin', 'Recepcionista', 'Manicurista', 'Lashista'] },
-    { id: 'diagnosis', label: 'Diagnóstico Capilar', icon: Activity, roles: ['Admin', 'Recepcionista', 'Manicurista', 'Lashista'] },
+    { id: 'diagnosis', label: 'Diagnóstico', icon: Activity, roles: ['Admin', 'Recepcionista', 'Manicurista', 'Lashista'] },
     { id: 'services', label: 'Servicios', icon: Star, roles: ['Admin'] },
     { id: 'personnel', label: 'Equipo', icon: Sparkles, roles: ['Admin'] },
     { id: 'inventory', label: 'Inventario', icon: Package, roles: ['Admin', 'Caja'] },
@@ -182,9 +182,9 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
                       left: 0,
                       right: 0,
                       bottom: 0,
-                      background: 'linear-gradient(135deg, #8B1A4A 0%, #B5326E 100%)',
+                      background: 'linear-gradient(135deg, #C07088 0%, #D4899A 100%)',
                       borderRadius: '1.8rem',
-                      boxShadow: '0 4px 18px rgba(139, 26, 74, 0.30)',
+                      boxShadow: '0 4px 16px rgba(192, 112, 136, 0.30)',
                       zIndex: 0,
                     }}
                     transition={{ type: 'spring', stiffness: 350, damping: 35 }}
@@ -229,7 +229,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
                   </motion.div>
 
                   {!effectiveCollapsed && (
-                    <span className="text-[14px] tracking-wide relative overflow-hidden" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                    <span style={{ fontFamily: "'Manrope', sans-serif", whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {item.label}
                     </span>
                   )}
