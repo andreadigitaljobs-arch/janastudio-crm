@@ -2093,139 +2093,147 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
         <div className="staff-control-container">
 
           {/* STATS ROW: Total de citas / Horas ocupadas / % Ocupación / ¿Quién está libre ahora? */}
-          {(
-            <div style={{ display: 'flex', gap: isMobile ? '10px' : '16px', marginBottom: isMobile ? '14px' : '20px', flexWrap: 'wrap' }}>
-              <div className="agenda-glass-card" style={{ flex: '1 1 170px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(201,114,130,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <CalendarDays size={20} color="#c97282" />
-                </div>
-                <div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#2d1b22', lineHeight: 1.1 }}>{totalCitas}</div>
-                  <div style={{ fontSize: '0.68rem', color: '#a0909a', fontWeight: 600 }}>Total de citas</div>
-                </div>
-              </div>
+          {(() => {
+            const [showMobileStats, setShowMobileStats] = useState(false);
+            return (
+              <div className="agenda-glass-card" style={{ padding: isMobile ? '12px' : '16px 20px', marginBottom: isMobile ? '12px' : '20px' }}>
+                {isMobile ? (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }} onClick={() => setShowMobileStats(!showMobileStats)}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <BarChart3 size={15} color="#c97282" />
+                      <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#2d1b22', letterSpacing: '0.3px' }}>RESUMEN DE HOY</span>
+                      <span style={{ fontSize: '0.65rem', fontWeight: 700, color: '#a0506a', background: 'rgba(160,80,106,0.08)', padding: '2px 8px', borderRadius: '999px' }}>
+                        {totalCitas} citas · {occupancyPct}%
+                      </span>
+                    </div>
+                    <ChevronDown size={14} color="#c97282" style={{ transform: showMobileStats ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                  </div>
+                ) : (
+                  <h4 style={{ fontSize: '0.74rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 14px 0', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <BarChart3 size={14} color="#c97282" />
+                    RESUMEN DE HOY
+                  </h4>
+                )}
 
-              <div className="agenda-glass-card" style={{ flex: '1 1 170px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(14,165,233,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Clock size={20} color="#0ea5e9" />
-                </div>
-                <div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#2d1b22', lineHeight: 1.1 }}>{formatHM(totalBusyMinutes)}</div>
-                  <div style={{ fontSize: '0.68rem', color: '#a0909a', fontWeight: 600 }}>Horas ocupadas</div>
-                </div>
-              </div>
-
-              <div className="agenda-glass-card" style={{ flex: '1 1 170px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <svg width="44" height="44" viewBox="0 0 44 44" style={{ flexShrink: 0, transform: 'rotate(-90deg)' }}>
-                  <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(201,114,130,0.15)" strokeWidth="5" />
-                  <circle
-                    cx="22" cy="22" r="18" fill="none" stroke="#c97282" strokeWidth="5" strokeLinecap="round"
-                    strokeDasharray={`${2 * Math.PI * 18}`}
-                    strokeDashoffset={`${2 * Math.PI * 18 * (1 - occupancyPct / 100)}`}
-                    style={{ transition: 'stroke-dashoffset 0.4s ease' }}
-                  />
-                </svg>
-                <div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#2d1b22', lineHeight: 1.1 }}>{occupancyPct}%</div>
-                  <div style={{ fontSize: '0.68rem', color: '#a0909a', fontWeight: 600 }}>Ocupación del día</div>
-                </div>
-              </div>
-
-              <div className="agenda-glass-card" style={{ flex: '1.3 1 230px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                  <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#2d1b22', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    ¿Quién está libre?
-                    <InfoTooltip text="Elige una hora para ver quién está libre en ese momento y resaltarlo en la grilla." />
-                  </span>
-                </div>
-                <div style={{ position: 'relative', flex: 1, minWidth: 0 }}>
-                  <button
-                    ref={timeDropdownBtnRef}
-                    type="button"
-                    onClick={openTimeDropdown}
-                    className="mi-btn"
-                    style={{
-                      width: '100%', padding: '8px 12px', borderRadius: '10px', border: showTimeDropdown ? '1px solid #c97282' : '1px solid rgba(223, 178, 140, 0.3)',
-                      background: '#fff', fontSize: '0.78rem', fontWeight: 700, color: '#2d1b22',
-                      cursor: 'pointer', outline: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px',
-                      transition: 'all 0.2s', boxShadow: showTimeDropdown ? '0 0 0 3px rgba(201, 114, 130, 0.12)' : 'none'
-                    }}
-                  >
-                    <span>{checkingTime == null ? `Ahora (${formatMinutes(nowMinutes)})` : formatMinutes(checkingTime)}</span>
-                    <ChevronDown size={14} color="#c97282" style={{ transform: showTimeDropdown ? 'rotate(180deg)' : 'none', transition: '0.2s', flexShrink: 0 }} />
-                  </button>
-
-                  {showTimeDropdown && createPortal(
-                    <>
-                      <div
-                        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999 }}
-                        onClick={() => setShowTimeDropdown(false)}
-                      />
-                      <div
-                        style={{
-                          position: 'fixed', top: `${timeDropdownPos.top}px`, left: `${timeDropdownPos.left}px`, width: `${timeDropdownPos.width}px`,
-                          maxHeight: '300px', display: 'flex', flexDirection: 'column',
-                          background: 'rgba(252, 249, 248, 0.98)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
-                          borderRadius: '14px', boxShadow: '0 16px 40px rgba(74, 48, 54, 0.12)',
-                          border: '1px solid rgba(223, 178, 140, 0.3)', padding: '6px', zIndex: 100000,
-                          animation: 'fadeInUpWow 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards'
-                        }}
-                      >
-                        <div style={{ padding: '2px 2px 6px 2px', flexShrink: 0 }}>
-                          <input
-                            type="text"
-                            autoFocus
-                            placeholder="Escribe una hora... ej. 3:00 PM"
-                            value={timeSearchQuery}
-                            onChange={e => setTimeSearchQuery(e.target.value)}
-                            onClick={e => e.stopPropagation()}
-                            style={{
-                              width: '100%', padding: '8px 12px', borderRadius: '10px',
-                              border: '1.5px solid rgba(201, 114, 130, 0.25)', background: '#fff',
-                              color: '#2d1b22', fontSize: '0.76rem', fontWeight: 600, outline: 'none',
-                              boxSizing: 'border-box', transition: 'border-color 0.2s'
-                            }}
-                            onFocus={e => { e.target.style.borderColor = '#c97282'; }}
-                            onBlur={e => { e.target.style.borderColor = 'rgba(201, 114, 130, 0.25)'; }}
-                          />
-                        </div>
-                        <div className="jana-scrollbar" style={{ overflowY: 'auto', flex: 1 }}>
-                          {(() => {
-                            const norm = s => s.toLowerCase().replace(/\s+/g, '');
-                            const query = norm(timeSearchQuery);
-                            const allOptions = [{ value: 'now', label: `Ahora (${formatMinutes(nowMinutes)})` }, ...TIME_OPTIONS.map(m => ({ value: String(m), label: formatMinutes(m) }))];
-                            const filtered = query ? allOptions.filter(opt => norm(opt.label).includes(query)) : allOptions;
-                            if (filtered.length === 0) {
-                              return <div style={{ padding: '14px', textAlign: 'center', fontSize: '0.74rem', color: '#a0909a' }}>Sin resultados</div>;
-                            }
-                            return filtered.map(opt => {
-                              const isSelected = (checkingTime == null ? 'now' : String(checkingTime)) === opt.value;
-                              return (
-                                <div
-                                  key={opt.value}
-                                  onClick={() => { setCheckingTime(opt.value === 'now' ? null : parseInt(opt.value, 10)); setShowTimeDropdown(false); }}
-                                  style={{
-                                    padding: '8px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.76rem',
-                                    fontWeight: isSelected ? 800 : 600, color: isSelected ? '#c97282' : '#2d1b22',
-                                    background: isSelected ? 'rgba(201, 114, 130, 0.1)' : 'transparent', transition: 'background 0.15s'
-                                  }}
-                                  onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'rgba(201, 114, 130, 0.06)'; }}
-                                  onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
-                                >
-                                  {opt.label}
-                                </div>
-                              );
-                            });
-                          })()}
-                        </div>
+                {(!isMobile || showMobileStats) && (
+                  <div style={{ display: 'flex', gap: isMobile ? '8px' : '16px', marginTop: isMobile ? '12px' : '0', flexWrap: 'wrap' }}>
+                    <div style={{ flex: '1 1 120px', padding: '10px 14px', background: 'rgba(252,249,248,0.5)', borderRadius: '12px', border: '1px solid rgba(223,178,140,0.1)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <CalendarDays size={16} color="#c97282" />
+                      <div>
+                        <div style={{ fontSize: '1.05rem', fontWeight: 900, color: '#2d1b22', lineHeight: 1 }}>{totalCitas}</div>
+                        <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 600, marginTop: '2px' }}>Total citas</div>
                       </div>
-                    </>,
-                    document.body
-                  )}
-                </div>
+                    </div>
+
+                    <div style={{ flex: '1 1 120px', padding: '10px 14px', background: 'rgba(252,249,248,0.5)', borderRadius: '12px', border: '1px solid rgba(223,178,140,0.1)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <Clock size={16} color="#0ea5e9" />
+                      <div>
+                        <div style={{ fontSize: '1.05rem', fontWeight: 900, color: '#2d1b22', lineHeight: 1 }}>{formatHM(totalBusyMinutes)}</div>
+                        <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 600, marginTop: '2px' }}>Horas ocupadas</div>
+                      </div>
+                    </div>
+
+                    <div style={{ flex: '1 1 120px', padding: '10px 14px', background: 'rgba(252,249,248,0.5)', borderRadius: '12px', border: '1px solid rgba(223,178,140,0.1)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ width: '22px', height: '22px', borderRadius: '50%', border: '2.5px solid rgba(201,114,130,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <span style={{ fontSize: '0.52rem', fontWeight: 950, color: '#c97282' }}>%</span>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '1.05rem', fontWeight: 900, color: '#2d1b22', lineHeight: 1 }}>{occupancyPct}%</div>
+                        <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 600, marginTop: '2px' }}>Ocupación</div>
+                      </div>
+                    </div>
+
+                    <div style={{ flex: '1.3 1 200px', padding: '8px 12px', background: 'rgba(252,249,248,0.5)', borderRadius: '12px', border: '1px solid rgba(223,178,140,0.1)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '0.62rem', fontWeight: 800, color: '#2d1b22', whiteSpace: 'nowrap' }}>
+                        ¿Quién libre?
+                      </span>
+                      <div style={{ position: 'relative', flex: 1, minWidth: 0 }}>
+                        <button
+                          ref={timeDropdownBtnRef}
+                          type="button"
+                          onClick={openTimeDropdown}
+                          className="mi-btn"
+                          style={{
+                            width: '100%', padding: '6px 10px', borderRadius: '8px', border: showTimeDropdown ? '1px solid #c97282' : '1px solid rgba(223, 178, 140, 0.2)',
+                            background: '#fff', fontSize: '0.74rem', fontWeight: 700, color: '#2d1b22',
+                            cursor: 'pointer', outline: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{checkingTime == null ? `Ahora` : formatMinutes(checkingTime)}</span>
+                          <ChevronDown size={12} color="#c97282" style={{ transform: showTimeDropdown ? 'rotate(180deg)' : 'none', transition: '0.2s', flexShrink: 0 }} />
+                        </button>
+
+                        {showTimeDropdown && createPortal(
+                          <>
+                            <div
+                              style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999 }}
+                              onClick={() => setShowTimeDropdown(false)}
+                            />
+                            <div
+                              style={{
+                                position: 'fixed', top: `${timeDropdownPos.top}px`, left: `${timeDropdownPos.left}px`, width: `${timeDropdownPos.width}px`,
+                                maxHeight: '250px', display: 'flex', flexDirection: 'column',
+                                background: 'rgba(252, 249, 248, 0.98)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+                                borderRadius: '14px', boxShadow: '0 16px 40px rgba(74, 48, 54, 0.12)',
+                                border: '1px solid rgba(223, 178, 140, 0.3)', padding: '6px', zIndex: 100000,
+                                animation: 'fadeInUpWow 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+                              }}
+                            >
+                              <div style={{ padding: '2px 2px 6px 2px', flexShrink: 0 }}>
+                                <input
+                                  type="text"
+                                  autoFocus
+                                  placeholder="Escribe hora..."
+                                  value={timeSearchQuery}
+                                  onChange={e => setTimeSearchQuery(e.target.value)}
+                                  onClick={e => e.stopPropagation()}
+                                  style={{
+                                    width: '100%', padding: '6px 10px', borderRadius: '8px',
+                                    border: '1.5px solid rgba(201, 114, 130, 0.25)', background: '#fff',
+                                    color: '#2d1b22', fontSize: '0.72rem', fontWeight: 600, outline: 'none',
+                                    boxSizing: 'border-box'
+                                  }}
+                                />
+                              </div>
+                              <div className="jana-scrollbar" style={{ overflowY: 'auto', flex: 1 }}>
+                                {(() => {
+                                  const norm = s => s.toLowerCase().replace(/\s+/g, '');
+                                  const query = norm(timeSearchQuery);
+                                  const allOptions = [{ value: 'now', label: `Ahora` }, ...TIME_OPTIONS.map(m => ({ value: String(m), label: formatMinutes(m) }))];
+                                  const filtered = query ? allOptions.filter(opt => norm(opt.label).includes(query)) : allOptions;
+                                  if (filtered.length === 0) {
+                                    return <div style={{ padding: '10px', textAlign: 'center', fontSize: '0.7rem', color: '#a0909a' }}>Sin resultados</div>;
+                                  }
+                                  return filtered.map(opt => {
+                                    const isSelected = (checkingTime == null ? 'now' : String(checkingTime)) === opt.value;
+                                    return (
+                                      <div
+                                        key={opt.value}
+                                        onClick={() => { setCheckingTime(opt.value === 'now' ? null : parseInt(opt.value, 10)); setShowTimeDropdown(false); }}
+                                        style={{
+                                          padding: '6px 10px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.74rem',
+                                          fontWeight: isSelected ? 800 : 600, color: isSelected ? '#c97282' : '#2d1b22',
+                                          background: isSelected ? 'rgba(201, 114, 130, 0.1)' : 'transparent'
+                                        }}
+                                      >
+                                        {opt.label}
+                                      </div>
+                                    );
+                                  });
+                                })()}
+                              </div>
+                            </div>
+                          </>,
+                          document.body
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Filtro de categoría (mobile/tablet) */}
           {(isMobile || isTablet) && (
@@ -2596,7 +2604,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   ))}
                 </div>
                 {/* Per-staff availability rows */}
-                <div style={{ marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '0' }}>
+                <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '0' }}>
                   {visibleStaff.map((s, i) => {
                     const ww = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
                     const refMin = checkingTime != null ? checkingTime : nowMinutes;
@@ -2607,19 +2615,27 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     const statusColor = !ww.isWorking ? '#a0909a' : isBusy ? '#dc2626' : '#16a34a';
                     const metrics = getStaffMetrics(s.id);
                     return (
-                      <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 0', borderBottom: i < visibleStaff.length - 1 ? '1px solid rgba(223,178,140,0.1)' : 'none' }}
+                      <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 0', borderBottom: i < visibleStaff.length - 1 ? '1px solid rgba(223,178,140,0.07)' : 'none' }}
                         onClick={() => setSelectedStaffDrawer(s)}>
-                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', flexShrink: 0, background: 'linear-gradient(135deg,#c48b9f,#c97282)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `2px solid ${statusColor}40` }}>
-                          {getStaffPhoto(s) ? <img src={getStaffPhoto(s)} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <User size={13} color="#fff" />}
+                        <div style={{ width: '26px', height: '26px', borderRadius: '50%', flexShrink: 0, background: 'linear-gradient(135deg,#c48b9f,#c97282)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {getStaffPhoto(s) ? <img src={getStaffPhoto(s)} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <User size={11} color="#fff" />}
                         </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#2d1b22', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{getStaffDisplayName(s)}</div>
-                          <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 600 }}>
-                            {ww.isWorking ? `${formatMinutes(ww.startMinutes)}–${formatMinutes(ww.endMinutes)}` : 'No trabaja hoy'}
-                            {metrics.citasCount > 0 && ` · ${metrics.citasCount} cita${metrics.citasCount > 1 ? 's' : ''}`}
+                        <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
+                          <div>
+                            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#2d1b22' }}>{getStaffDisplayName(s)}</span>
+                            <span style={{ fontSize: '0.55rem', color: '#a0909a', fontWeight: 550, marginLeft: '6px' }}>
+                              ({ww.isWorking ? `${formatMinutes(ww.startMinutes)}–${formatMinutes(ww.endMinutes)}` : 'Libre'})
+                            </span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            {metrics.citasCount > 0 && (
+                              <span style={{ fontSize: '0.52rem', color: '#6b5a60', background: 'rgba(160,144,154,0.08)', padding: '1px 5px', borderRadius: '4px', fontWeight: 600 }}>
+                                {metrics.citasCount} {metrics.citasCount === 1 ? 'cita' : 'citas'}
+                              </span>
+                            )}
+                            <span style={{ fontSize: '0.52rem', fontWeight: 800, color: statusColor, background: `${statusColor}10`, padding: '2px 6px', borderRadius: '6px', whiteSpace: 'nowrap' }}>{statusLabel}</span>
                           </div>
                         </div>
-                        <span style={{ fontSize: '0.55rem', fontWeight: 800, color: statusColor, background: `${statusColor}15`, padding: '3px 8px', borderRadius: '999px', whiteSpace: 'nowrap', flexShrink: 0 }}>{statusLabel}</span>
                       </div>
                     );
                   })}
