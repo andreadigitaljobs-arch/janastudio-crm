@@ -1583,7 +1583,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 const min = VIEW_START_MIN + i * 60;
                 return (
                   <div key={min} style={{ height: '60px', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingRight: '6px', paddingTop: '4px', boxSizing: 'border-box', borderBottom: '1px solid rgba(223, 178, 140, 0.08)' }}>
-                    <span style={{ fontSize: '0.57rem', fontWeight: 700, color: '#b0a0a5', whiteSpace: 'nowrap' }}>{formatMinutes(min)}</span>
+                    <span style={{ fontSize: '0.68rem', fontWeight: 850, color: '#7a666e', whiteSpace: 'nowrap' }}>{formatMinutes(min)}</span>
                   </div>
                 );
               })}
@@ -2532,7 +2532,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                               {metrics.citasCount > 0 && ` · ${metrics.citasCount} cita${metrics.citasCount > 1 ? 's' : ''}`}
                             </div>
                           </div>
-                          <span style={{ fontSize: '0.58rem', fontWeight: 800, color: statusColor, background: `${statusColor}15`, padding: '3px 8px', borderRadius: '999px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                          <span style={{ fontSize: '0.58rem', fontWeight: 800, color: statusColor, background: `${statusColor}15`, padding: '3px 8px', borderRadius: '999px', whiteSpace: 'nowrap', flexShrink: 0, marginLeft: 'auto' }}>
                             {status}
                           </span>
                         </div>

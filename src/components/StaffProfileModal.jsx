@@ -301,7 +301,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                 fontSize: isMobileView ? '11px' : '14px' 
               }}
             >
-              <TrendingUp size={isMobileView ? 14 : 18} /> {isMobileView ? 'Rendimiento' : 'Rendimiento Histórico'}
+              <TrendingUp size={isMobileView ? 14 : 18} color={activeTab === 'rendimiento' ? 'white' : '#6b5a60'} /> {isMobileView ? 'Rendimiento' : 'Rendimiento Histórico'}
             </button>
             <button 
               onClick={() => setActiveTab('inventario')}
@@ -321,7 +321,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                 fontSize: isMobileView ? '11px' : '14px' 
               }}
             >
-              <Wrench size={isMobileView ? 14 : 18} /> {isMobileView ? 'Inventario' : 'Inventario Personal'}
+              <Wrench size={isMobileView ? 14 : 18} color={activeTab === 'inventario' ? 'white' : '#6b5a60'} /> {isMobileView ? 'Inventario' : 'Inventario Personal'}
             </button>
             <button
               onClick={() => setActiveTab('horario')}
@@ -341,7 +341,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                 fontSize: isMobileView ? '11px' : '14px'
               }}
             >
-              <CalendarClock size={isMobileView ? 14 : 18} /> Horario
+              <CalendarClock size={isMobileView ? 14 : 18} color={activeTab === 'horario' ? 'white' : '#6b5a60'} /> Horario
             </button>
           </div>
         </div>
