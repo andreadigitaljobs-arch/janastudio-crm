@@ -665,11 +665,91 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                           </td>
                           <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--text-secondary)' }}>{person.email || '—'}</td>
                           <td style={{ padding: '12px 16px' }}>
-                            <div style={{ display: 'flex', gap: '6px' }}>
-                              <button className="action-btn mi-btn" onClick={() => setProfileModalData(person)} title="Ver Perfil" style={{ width: '30px', height: '30px' }}><Eye size={14} /></button>
-                              <button className="action-btn mi-btn" onClick={() => handleEditClick(person)} title="Editar" style={{ width: '30px', height: '30px' }}><Edit2 size={14} /></button>
-                              <button className="action-btn mi-btn" onClick={() => setIsRoleModalOpen(true)} title="Permisos" style={{ width: '30px', height: '30px' }}><Shield size={14} /></button>
-                              <button className="action-btn mi-btn" onClick={() => handleDeleteStaff(person.id, person.name)} title="Archivar" style={{ width: '30px', height: '30px', color: '#ff453a', backgroundColor: 'rgba(255,69,58,0.05)' }}><Trash2 size={14} /></button>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                              <button 
+                                onClick={() => setProfileModalData(person)} 
+                                title="Ver Perfil" 
+                                style={{ 
+                                  width: '32px', 
+                                  height: '32px', 
+                                  borderRadius: '10px', 
+                                  border: '1px solid rgba(201, 114, 130, 0.12)', 
+                                  background: 'rgba(201, 114, 130, 0.06)', 
+                                  color: 'var(--pink-primary)', 
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  transition: 'all 0.2s'
+                                }}
+                                onMouseOver={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.15)'; }}
+                                onMouseOut={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.06)'; }}
+                              >
+                                <Eye size={15} />
+                              </button>
+                              <button 
+                                onClick={() => handleEditClick(person)} 
+                                title="Editar" 
+                                style={{ 
+                                  width: '32px', 
+                                  height: '32px', 
+                                  borderRadius: '10px', 
+                                  border: '1px solid rgba(201, 114, 130, 0.12)', 
+                                  background: 'rgba(201, 114, 130, 0.06)', 
+                                  color: 'var(--pink-primary)', 
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  transition: 'all 0.2s'
+                                }}
+                                onMouseOver={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.15)'; }}
+                                onMouseOut={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.06)'; }}
+                              >
+                                <Edit2 size={15} />
+                              </button>
+                              <button 
+                                onClick={() => setIsRoleModalOpen(true)} 
+                                title="Permisos" 
+                                style={{ 
+                                  width: '32px', 
+                                  height: '32px', 
+                                  borderRadius: '10px', 
+                                  border: '1px solid rgba(201, 114, 130, 0.12)', 
+                                  background: 'rgba(201, 114, 130, 0.06)', 
+                                  color: 'var(--pink-primary)', 
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  transition: 'all 0.2s'
+                                }}
+                                onMouseOver={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.15)'; }}
+                                onMouseOut={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.06)'; }}
+                              >
+                                <Shield size={15} />
+                              </button>
+                              <button 
+                                onClick={() => handleDeleteStaff(person.id, person.name)} 
+                                title="Archivar" 
+                                style={{ 
+                                  width: '32px', 
+                                  height: '32px', 
+                                  borderRadius: '10px', 
+                                  border: '1px solid rgba(255, 69, 58, 0.15)', 
+                                  background: 'rgba(255, 69, 58, 0.06)', 
+                                  color: '#ff453a', 
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  transition: 'all 0.2s'
+                                }}
+                                onMouseOver={e => { e.currentTarget.style.background = 'rgba(255, 69, 58, 0.15)'; }}
+                                onMouseOut={e => { e.currentTarget.style.background = 'rgba(255, 69, 58, 0.06)'; }}
+                              >
+                                <Trash2 size={15} />
+                              </button>
                             </div>
                           </td>
                         </tr>
