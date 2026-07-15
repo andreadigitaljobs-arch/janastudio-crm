@@ -1038,6 +1038,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
   const [showHeaderCalendar, setShowHeaderCalendar] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all'); // 'all' | 'laser' | 'lash' | 'nails' | 'brows' | 'hair'
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
+  const [agendaDesktopTab, setAgendaDesktopTab] = useState('grid'); // 'grid' | 'citas'
   const [timeSearchQuery, setTimeSearchQuery] = useState('');
 
   const handleCloseStaffDrawer = () => {
@@ -1264,6 +1265,13 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
     }
     return list;
   }, [staff, isWorkerView, user?.id, filterStaffId, checkingTime, dateKey, schedules, timeOff, dayApps, staffSearchQuery, selectedCategory]);
+
+  // Citas del día filtradas por la misma categoría/búsqueda de especialista que la Grilla y el panel lateral
+  const categoryFilteredDayApps = useMemo(() => {
+    if (selectedCategory === 'all' && !staffSearchQuery.trim()) return dayApps;
+    const visibleIds = new Set(visibleStaff.map(s => s.id));
+    return dayApps.filter(app => visibleIds.has(app.staff_id));
+  }, [dayApps, visibleStaff, selectedCategory, staffSearchQuery]);
 
   const [desktopStaffPage, setDesktopStaffPage] = useState(0);
 
@@ -1990,25 +1998,64 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               {/* ── LEFT: MAIN CALENDAR AREA ── */}
               <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-                {/* Filtro de categoría + Paginación */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
-                  <div style={{ width: '230px', flexShrink: 0 }}>
-                    <JanaSelect
-                      variant="light"
-                      value={selectedCategory}
-                      onChange={setSelectedCategory}
-                      options={[
-                        { value: 'all', label: 'Todas las especialistas' },
-                        { value: 'laser', label: 'Centro Láser' },
-                        { value: 'lash', label: 'Pestañas (Lashes)' },
-                        { value: 'brows', label: 'Cejas (Brows)' },
-                        { value: 'nails', label: 'Manicura & Pedicura' },
-                        { value: 'hair', label: 'Estilistas & Cabello' }
-                      ]}
-                    />
+                {/* Filtro de categoría + Tabs (Grilla/Citas del día) + Paginación */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                    <div style={{ width: '230px', flexShrink: 0 }}>
+                      <JanaSelect
+                        variant="light"
+                        value={selectedCategory}
+                        onChange={setSelectedCategory}
+                        options={[
+                          { value: 'all', label: 'Todas las especialistas' },
+                          { value: 'laser', label: 'Centro Láser' },
+                          { value: 'lash', label: 'Pestañas (Lashes)' },
+                          { value: 'brows', label: 'Cejas (Brows)' },
+                          { value: 'nails', label: 'Manicura & Pedicura' },
+                          { value: 'hair', label: 'Estilistas & Cabello' }
+                        ]}
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      {[
+                        { key: 'grid', label: 'Grilla', icon: CalendarDays },
+                        { key: 'citas', label: 'Citas del día', icon: Scissors, count: dayApps.length }
+                      ].map(tab => {
+                        const isActive = agendaDesktopTab === tab.key;
+                        const Icon = tab.icon;
+                        return (
+                          <button
+                            key={tab.key}
+                            onClick={() => setAgendaDesktopTab(tab.key)}
+                            className="mi-btn"
+                            style={{
+                              display: 'flex', alignItems: 'center', gap: '6px', padding: '9px 16px', borderRadius: '12px',
+                              border: isActive ? 'none' : '1px solid rgba(223, 178, 140, 0.3)',
+                              background: isActive ? 'linear-gradient(135deg, #C07088 0%, #D4899A 100%)' : '#fff',
+                              color: isActive ? '#fff' : '#8a6870', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer',
+                              boxShadow: isActive ? '0 4px 12px rgba(192, 112, 136, 0.25)' : '0 2px 8px rgba(74, 48, 54, 0.03)',
+                              transition: 'all 0.25s ease'
+                            }}
+                          >
+                            <Icon size={14} />
+                            {tab.label}
+                            {tab.count > 0 && (
+                              <span style={{
+                                fontSize: '0.62rem', fontWeight: 800, padding: '1px 7px', borderRadius: '999px',
+                                background: isActive ? 'rgba(255,255,255,0.25)' : 'rgba(160,80,106,0.08)',
+                                color: isActive ? '#fff' : '#a0506a'
+                              }}>
+                                {tab.count}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
 
-                  {totalPages > 1 && (
+                  {agendaDesktopTab === 'grid' && totalPages > 1 && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 16px', background: 'rgba(252,249,248,0.8)', borderRadius: '14px', border: '1px solid rgba(223,178,140,0.2)', flexShrink: 0 }}>
                       <button
                         disabled={activePageIndex === 0}
@@ -2038,6 +2085,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                 </div>
 
                 {/* Grid container with card styling */}
+                {agendaDesktopTab === 'grid' && (
                 <div className="agenda-glass-card" style={{ padding: 0, overflow: 'hidden' }}>
                   {/* Scroll vertical + horizontal fallback */}
                   <div style={{ overflow: 'auto', maxHeight: '720px' }} className="jana-scrollbar">
@@ -2197,14 +2245,16 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     </div>
                   </div>
                 </div>
+                )}
 
                 {/* ── CITAS DEL DÍA TABLE (Escritorio) ── */}
+                {agendaDesktopTab === 'citas' && (
                 <div className="agenda-glass-card" style={{ padding: '20px', overflow: 'hidden' }}>
                   <h4 style={{ fontSize: '0.82rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px', letterSpacing: '0.3px' }}>
                     <Scissors size={16} color="#c97282" />
                     CITAS DEL DÍA
                     <span style={{ marginLeft: 'auto', fontSize: '0.68rem', fontWeight: 700, color: '#a0506a', background: 'rgba(160,80,106,0.08)', padding: '3px 10px', borderRadius: '999px' }}>
-                      {dayApps.length} {dayApps.length === 1 ? 'cita' : 'citas'}
+                      {categoryFilteredDayApps.length} {categoryFilteredDayApps.length === 1 ? 'cita' : 'citas'}
                     </span>
                   </h4>
                   <div style={{ overflowX: 'auto' }} className="jana-scrollbar">
@@ -2217,14 +2267,14 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         </tr>
                       </thead>
                       <tbody>
-                        {dayApps.length === 0 ? (
+                        {categoryFilteredDayApps.length === 0 ? (
                           <tr>
                             <td colSpan={6} style={{ padding: '30px', textAlign: 'center', fontSize: '0.8rem', color: '#a0909a', fontStyle: 'italic' }}>
                               No hay citas programadas para este día.
                             </td>
                           </tr>
                         ) : (
-                          [...dayApps]
+                          [...categoryFilteredDayApps]
                             .sort((a, b) => new Date(a.scheduled_at || a.created_at) - new Date(b.scheduled_at || b.created_at))
                             .map((app, idx) => {
                               const d = new Date(app.scheduled_at || app.created_at);
@@ -2278,10 +2328,11 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     </table>
                   </div>
                 </div>
+                )}
               </div>
 
               {/* ── RIGHT: ESPECIALISTAS PANEL ── */}
-              <div style={{ width: '218px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ width: '250px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <div className="agenda-glass-card" style={{ padding: '18px' }}>
                   <h4 style={{ fontSize: '0.74rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 14px 0', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <UserCheck size={14} color="#c97282" />
@@ -2301,12 +2352,12 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       return (
                         <div
                           key={s.id}
-                          style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0', borderBottom: '1px solid rgba(223, 178, 140, 0.1)', cursor: 'pointer', transition: 'background 0.15s', borderRadius: '4px' }}
+                          style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 0', borderBottom: '1px solid rgba(223, 178, 140, 0.1)', cursor: 'pointer', transition: 'background 0.15s', borderRadius: '4px' }}
                           onMouseEnter={e => e.currentTarget.style.background = 'rgba(201, 114, 130, 0.04)'}
                           onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                           onClick={() => setSelectedDetailedApp(null)}
                         >
-                          <div style={{ width: '32px', height: '32px', borderRadius: '50%', flexShrink: 0, background: 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `2px solid ${statusColor}30` }}>
+                          <div style={{ width: '36px', height: '36px', borderRadius: '50%', flexShrink: 0, background: 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `2px solid ${statusColor}30` }}>
                             {getStaffPhoto(s) ? (
                               <img src={getStaffPhoto(s)} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             ) : (
@@ -2314,13 +2365,13 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                             )}
                           </div>
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#2d1b22', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{getStaffDisplayName(s)}</div>
-                            <div style={{ fontSize: '0.57rem', color: '#a0909a', fontWeight: 600 }}>
+                            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#2d1b22', lineHeight: 1.25, wordBreak: 'break-word' }}>{getStaffDisplayName(s)}</div>
+                            <div style={{ fontSize: '0.64rem', color: '#a0909a', fontWeight: 600 }}>
                               {ww.isWorking ? `${formatMinutes(ww.startMinutes)}–${formatMinutes(ww.endMinutes)}` : '🌴 Libre'}
                               {metrics.citasCount > 0 && ` · ${metrics.citasCount} cita${metrics.citasCount > 1 ? 's' : ''}`}
                             </div>
                           </div>
-                          <span style={{ fontSize: '0.52rem', fontWeight: 800, color: statusColor, background: `${statusColor}15`, padding: '2px 7px', borderRadius: '999px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                          <span style={{ fontSize: '0.58rem', fontWeight: 800, color: statusColor, background: `${statusColor}15`, padding: '3px 8px', borderRadius: '999px', whiteSpace: 'nowrap', flexShrink: 0 }}>
                             {status}
                           </span>
                         </div>
