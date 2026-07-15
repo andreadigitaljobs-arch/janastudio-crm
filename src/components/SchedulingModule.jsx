@@ -427,9 +427,35 @@ const StaffDayColumn = ({
         {/* Línea de "ahora" */}
         {isToday && nowMinutes >= VIEW_START_MIN && nowMinutes <= VIEW_END_MIN && (
           <div style={{
-            position: 'absolute', left: 0, right: 0, top: `${minutesToY(nowMinutes)}px`,
-            height: '2px', background: '#c97282', zIndex: 5, boxShadow: '0 0 4px rgba(201, 114, 130,0.6)'
-          }} />
+            position: 'absolute', 
+            left: 0, 
+            right: 0, 
+            top: `${minutesToY(nowMinutes)}px`,
+            height: 0, 
+            borderTop: '2.5px dashed rgba(201, 114, 130, 0.85)', 
+            zIndex: 10, 
+            pointerEvents: 'none'
+          }}>
+            {/* Pequeño indicador de hora en el extremo izquierdo */}
+            <div style={{
+              position: 'absolute',
+              left: '4px',
+              top: '-9px',
+              background: '#c97282',
+              color: 'white',
+              fontSize: '10px',
+              fontWeight: '800',
+              padding: '2px 6px',
+              borderRadius: '6px',
+              boxShadow: '0 2px 8px rgba(201, 114, 130, 0.4)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              whiteSpace: 'nowrap'
+            }}>
+              {now.toLocaleTimeString('es-VE', { hour: 'numeric', minute: '2-digit', hour12: true })}
+            </div>
+          </div>
         )}
 
         {/* Bloqueos manuales (Almuerzo, etc.) */}
@@ -1625,12 +1651,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         </div>
                       );
                     })()}
-                    {/* Now line */}
-                    {isToday && nowMinutes >= VIEW_START_MIN && nowMinutes <= VIEW_END_MIN && (
-                      <div style={{ position: 'absolute', left: 0, right: 0, top: `${minutesToY(nowMinutes)}px`, height: '2px', background: '#c97282', zIndex: 5, boxShadow: '0 0 4px rgba(201, 114, 130, 0.6)', pointerEvents: 'none' }}>
-                        <div style={{ position: 'absolute', left: -4, top: -4, width: 10, height: 10, borderRadius: '50%', background: '#c97282' }} />
-                      </div>
-                    )}
+
                     {/* Appointments */}
                     {staffApps.map(app => {
                       const d = new Date(app.scheduled_at || app.created_at);
