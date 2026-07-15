@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+﻿import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -6,7 +6,7 @@ import {
   ChevronDown, Search, Pencil,
   CheckCircle2, Users, UserCheck,
   CalendarDays, StickyNote, BarChart3, XCircle, Bell, X,
-  DollarSign, Info, AlertTriangle, Coffee, Sliders, Check, HelpCircle, Scissors, Sparkles, Sun, MessageCircle, Circle, Star, Phone, MoreVertical
+  DollarSign, Info, AlertTriangle, Coffee, Sliders, Check, HelpCircle, Scissors, Sparkles, Sun, Sunrise, Moon, MessageCircle, Circle, Star, Phone, MoreVertical
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
@@ -1185,15 +1185,63 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
   const now = new Date();
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
+  const MOCK_PREVIEW = true; // 🔧 Quitar para producción
+
   const dayApps = useMemo(() => {
     const term = searchTerm ? normalizeForSearch(searchTerm) : '';
-    return appointments.filter(app => {
+    const real = appointments.filter(app => {
       const appDate = new Date(app.scheduled_at || app.created_at);
       if (getBusinessDateKey(appDate) !== dateKey) return false;
       if (!term) return true;
       return normalizeForSearch(app.clients?.name || '').includes(term) || normalizeForSearch(app.clients?.phone || '').includes(term);
     });
-  }, [appointments, dateKey, searchTerm]);
+
+    // ── Citas de prueba (solo cuando no hay citas reales y MOCK_PREVIEW está activo) ──
+    if (MOCK_PREVIEW && real.length === 0 && staff.length > 0) {
+      const dateStr = dateKey; // 'YYYY-MM-DD'
+      const makeTime = (h, m = 0) => `${dateStr}T${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:00`;
+      const mockServices = [
+        { name: 'Corte y Color', price: 850 },
+        { name: 'Manicure + Pedicure', price: 650 },
+        { name: 'Tratamiento Keratina', price: 1200 },
+        { name: 'Tinte Completo', price: 950 },
+        { name: 'Mechas Balayage', price: 1400 },
+        { name: 'Depilación Láser', price: 750 },
+        { name: 'Limpieza Facial', price: 600 },
+        { name: 'Masaje Relajante', price: 700 },
+      ];
+      const mockClients = [
+        { name: 'Valentina Ríos' }, { name: 'Camila Torres' }, { name: 'Sofía Mendez' },
+        { name: 'Isabella Rojas' }, { name: 'Mariana López' }, { name: 'Gabriela Pérez' },
+        { name: 'Natalia Gómez' }, { name: 'Daniela Herrera' }, { name: 'Andrea Castro' },
+        { name: 'Paola Jiménez' }, { name: 'Luciana Morales' }, { name: 'Fernanda Díaz' },
+      ];
+      const statuses = ['Agendado', 'En Silla', 'Completado', 'Por Pagar', 'En Tratamiento'];
+      const slots = [[9,0,60],[10,15,45],[11,0,90],[12,30,30],[14,0,75],[15,30,60],[16,45,45]];
+      const mocks = [];
+      staff.slice(0, 8).forEach((s, si) => {
+        const numApps = 2 + (si % 3); // 2, 3 o 4 citas por chica
+        for (let i = 0; i < numApps; i++) {
+          const slot = slots[(si * 3 + i) % slots.length];
+          const svc = mockServices[(si + i * 2) % mockServices.length];
+          const cli = mockClients[(si * 2 + i) % mockClients.length];
+          mocks.push({
+            id: `mock-${s.id}-${i}`,
+            staff_id: s.id,
+            scheduled_at: makeTime(slot[0], slot[1]),
+            duration_minutes: slot[2],
+            status: statuses[(si + i) % statuses.length],
+            clients: cli,
+            services: svc,
+            _isMock: true,
+          });
+        }
+      });
+      return mocks;
+    }
+
+    return real;
+  }, [appointments, dateKey, searchTerm, staff]);
 
   const visibleStaff = useMemo(() => {
     let list = [];
@@ -2318,16 +2366,43 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                               No hay citas programadas para este día.
                             </td>
                           </tr>
-                        ) : (
-                          [...categoryFilteredDayApps]
-                            .sort((a, b) => new Date(a.scheduled_at || a.created_at) - new Date(b.scheduled_at || b.created_at))
-                            .map((app, idx) => {
+                        ) : (() => {
+                          const sorted = [...categoryFilteredDayApps].sort((a, b) =>
+                            new Date(a.scheduled_at || a.created_at) - new Date(b.scheduled_at || b.created_at)
+                          );
+                          const sections = [
+                            { label: 'Mañana', icon: Sunrise, range: [0, 719], color: '#e8904a' },      // 00:00–11:59
+                            { label: 'Tarde',  icon: Sun,     range: [720, 1079], color: '#c97282' },   // 12:00–17:59
+                            { label: 'Noche',  icon: Moon,    range: [1080, 1439], color: '#7c5cbf' },  // 18:00–23:59
+                          ];
+                          const rows = [];
+                          sections.forEach(({ label, icon: Icon, range, color }) => {
+                            const group = sorted.filter(app => {
+                              const d = new Date(app.scheduled_at || app.created_at);
+                              const min = d.getHours() * 60 + d.getMinutes();
+                              return min >= range[0] && min <= range[1];
+                            });
+                            if (group.length === 0) return;
+                            // Section header row
+                            rows.push(
+                              <tr key={`section-${label}`}>
+                                <td colSpan={6} style={{ padding: '10px 14px 6px', background: `${color}08`, borderTop: '1px solid rgba(223,178,140,0.15)', borderBottom: `1px solid ${color}20` }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                                    <Icon size={13} color={color} strokeWidth={2.2} />
+                                    <span style={{ fontSize: '0.62rem', fontWeight: 800, color, letterSpacing: '0.6px', textTransform: 'uppercase' }}>{label}</span>
+                                    <span style={{ fontSize: '0.58rem', fontWeight: 700, color: `${color}99`, marginLeft: '4px' }}>{group.length} {group.length === 1 ? 'cita' : 'citas'}</span>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                            // Appointment rows
+                            group.forEach((app, idx) => {
                               const d = new Date(app.scheduled_at || app.created_at);
                               const startMin = d.getHours() * 60 + d.getMinutes();
                               const colors = STATUS_COLORS[app.status] || STATUS_COLORS.Agendado;
                               const staffMember = visibleStaff.find(s => s.id === app.staff_id);
                               const rowBg = idx % 2 === 0 ? 'rgba(252,249,248,0.4)' : 'transparent';
-                              return (
+                              rows.push(
                                 <tr
                                   key={app.id}
                                   onClick={() => setSelectedDetailedApp(app)}
@@ -2357,7 +2432,6 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                     <button
                                       onClick={e => { e.stopPropagation(); setSelectedDetailedApp(app); }}
                                       className="mi-btn"
-                                      title="Ver detalle"
                                       style={{ background: 'none', border: 'none', borderRadius: '8px', padding: '4px 6px', cursor: 'pointer', color: '#a0909a', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
                                       onMouseEnter={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.1)'; e.currentTarget.style.color = '#c97282'; }}
                                       onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#a0909a'; }}
@@ -2367,8 +2441,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                   </td>
                                 </tr>
                               );
-                            })
-                        )}
+                            });
+                          });
+                          return rows;
+                        })()}
                       </tbody>
                     </table>
                   </div>
@@ -2493,316 +2569,139 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               {staffTimeGridCard}
             </div>
 
-            {/* Column 2 - Especialistas */}
-            <div style={{ display: leftTab === 'especialistas' ? 'flex' : 'none', flexDirection: 'column', gap: '24px', minWidth: 0, animation: leftTab === 'especialistas' ? 'fadeInUpWow 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards' : 'none' }}>
+            {/* Column 2 - Citas del día (mobile/tablet) */}
+            <div style={{ display: leftTab === 'especialistas' ? 'flex' : 'none', flexDirection: 'column', gap: '16px', minWidth: 0, animation: leftTab === 'especialistas' ? 'fadeInUpWow 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards' : 'none' }}>
 
-              {/* ESTADO DEL EQUIPO (Moved to Personal Tab) */}
-              <div style={{ marginBottom: '0' }}>
-                <h3 className="mi-section-header" style={{ fontSize: '0.9rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 14px 0', letterSpacing: '0.5px' }}>
-                  ESTADO DEL EQUIPO
-                </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: (isMobile || isTablet) ? '8px' : '16px' }}>
-                  <div className="mi-stat mi-enter-up mi-delay-1 hover-lift" style={{ background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(34, 197, 94, 0.02) 100%)', border: '2px solid rgba(34, 197, 94, 0.25)', borderRadius: '16px', padding: (isMobile || isTablet) ? '12px 6px' : '20px', textAlign: 'center', minWidth: 0, animation: 'cardEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0s both' }}>
-                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: (isMobile || isTablet) ? '6px' : '10px' }}><Users size={(isMobile || isTablet) ? 20 : 24} color="#16a34a" strokeWidth={1.5} /></div>
-                    <div style={{ fontSize: (isMobile || isTablet) ? '0.56rem' : '0.68rem', fontWeight: 700, color: '#16a34a', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: (isMobile || isTablet) ? '4px' : '8px' }}>Disponibles</div>
-                    <div style={{ fontSize: (isMobile || isTablet) ? '1.4rem' : '2.2rem', fontWeight: 900, color: '#16a34a', lineHeight: 1 }}>{staffByStatus.libres.length}</div>
-                  </div>
-                  <div className="mi-stat mi-enter-up mi-delay-2 hover-lift" style={{ background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(239, 68, 68, 0.02) 100%)', border: '2px solid rgba(239, 68, 68, 0.25)', borderRadius: '16px', padding: (isMobile || isTablet) ? '12px 6px' : '20px', textAlign: 'center', minWidth: 0, animation: 'cardEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both' }}>
-                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: (isMobile || isTablet) ? '6px' : '10px' }}><Scissors size={(isMobile || isTablet) ? 20 : 24} color="#dc2626" strokeWidth={1.5} /></div>
-                    <div style={{ fontSize: (isMobile || isTablet) ? '0.56rem' : '0.68rem', fontWeight: 700, color: '#dc2626', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: (isMobile || isTablet) ? '4px' : '8px' }}>En Cita</div>
-                    <div style={{ fontSize: (isMobile || isTablet) ? '1.4rem' : '2.2rem', fontWeight: 900, color: '#dc2626', lineHeight: 1 }}>{staffByStatus.ocupadas.length}</div>
-                  </div>
-                  <div className="mi-stat mi-enter-up mi-delay-3 hover-lift" style={{ background: 'linear-gradient(135deg, rgba(212, 160, 154, 0.08) 0%, rgba(212, 160, 154, 0.02) 100%)', border: '2px solid rgba(212, 160, 154, 0.3)', borderRadius: '16px', padding: (isMobile || isTablet) ? '12px 6px' : '20px', textAlign: 'center', minWidth: 0, animation: 'cardEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.16s both' }}>
-                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: (isMobile || isTablet) ? '6px' : '10px' }}><Clock size={(isMobile || isTablet) ? 20 : 24} color="#a0506a" strokeWidth={1.5} /></div>
-                    <div style={{ fontSize: (isMobile || isTablet) ? '0.56rem' : '0.68rem', fontWeight: 700, color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: (isMobile || isTablet) ? '4px' : '8px' }}>Almuerzo</div>
-                    <div style={{ fontSize: (isMobile || isTablet) ? '1.4rem' : '2.2rem', fontWeight: 900, color: '#a0506a', lineHeight: 1 }}>1</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="agenda-glass-card hover-lift" style={{ padding: '20px', display: 'flex', flexDirection: 'column', minHeight: '400px' }}>
-                <h4 className="mi-section-header" style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22', margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-                  <UserCheck size={16} color="#c97282" />
-                  ESTADO DE ESPECIALISTAS
+              {/* ── Disponibilidad del equipo ── */}
+              <div className="agenda-glass-card" style={{ padding: '16px' }}>
+                <h4 style={{ fontSize: '0.7rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 12px 0', letterSpacing: '0.4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Users size={13} color="#c97282" />
+                  DISPONIBILIDAD DEL EQUIPO
                 </h4>
-
-                {/* Search Bar for Specialists */}
-                <div style={{ position: 'relative', marginBottom: '16px', flexShrink: 0 }}>
-                  <Search size={14} color="#a0909a" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-                  <input
-                    type="text"
-                    placeholder="Buscar especialista..."
-                    value={staffSearchQuery}
-                    onChange={e => setStaffSearchQuery(e.target.value)}
-                    className="mi-input"
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px 10px 34px',
-                      fontSize: '0.78rem',
-                      color: '#2d1b22',
-                      background: '#fcf6f7',
-                      border: '1px solid rgba(223, 178, 140, 0.15)',
-                      borderRadius: '12px',
-                      outline: 'none',
-                      transition: 'all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                    }}
-                  />
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                  {[
+                    { label: 'Disponibles', value: staffByStatus.libres.length, color: '#16a34a', icon: Users },
+                    { label: 'En cita',     value: staffByStatus.ocupadas.length, color: '#dc2626', icon: Scissors },
+                    { label: 'Día libre',   value: staffByStatus.libres.length === 0 && staffByStatus.ocupadas.length === 0 ? visibleStaff.length : Math.max(0, visibleStaff.length - staffByStatus.libres.length - staffByStatus.ocupadas.length), color: '#a0506a', icon: Clock },
+                  ].map(item => (
+                    <div key={item.label} style={{ background: `${item.color}08`, border: `1.5px solid ${item.color}25`, borderRadius: '12px', padding: '12px 8px', textAlign: 'center' }}>
+                      <item.icon size={18} color={item.color} strokeWidth={1.8} style={{ marginBottom: '6px' }} />
+                      <div style={{ fontSize: '1.5rem', fontWeight: 900, color: item.color, lineHeight: 1 }}>{item.value}</div>
+                      <div style={{ fontSize: '0.52rem', fontWeight: 700, color: item.color, textTransform: 'uppercase', letterSpacing: '0.3px', marginTop: '4px' }}>{item.label}</div>
+                    </div>
+                  ))}
                 </div>
-
-                <p style={{ fontSize: '0.75rem', color: '#a0909a', fontWeight: 600, margin: '0 0 10px 0', textAlign: 'center', fontStyle: 'italic' }}>
-                  Toca en una especialista para ver su ficha
-                </p>
-
-                <div className="jana-scrollbar" style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? 'repeat(2, minmax(0, 1fr))' : 'repeat(auto-fill, minmax(240px, 1fr))', gap: (isMobile || isTablet) ? '8px' : '10px', overflow: 'visible', flex: 1, paddingRight: '4px', paddingTop: '6px', paddingBottom: '6px' }}>
-                  <AnimatePresence mode="popLayout">
-                  {visibleStaff.map((s, staffIdx) => {
-                    const window = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
-                    const metrics = getStaffMetrics(s.id);
-                    const initial = (s.name || '?').charAt(0).toUpperCase();
-                    const nextApp = getStaffNextApp(s.id);
-                    const staffMotionProps = {
-                      layout: true,
-                      initial: { opacity: 0, y: 20, scale: 0.92 },
-                      animate: { opacity: 1, y: 0, scale: 1 },
-                      exit: { opacity: 0, y: -12, scale: 0.92, transition: { duration: 0.2 } },
-                      transition: { duration: 0.4, delay: Math.min(staffIdx * 0.06, 0.4), ease: [0.16, 1, 0.3, 1] }
-                    };
-
-                    if (!window.isWorking) {
-                      return (
-                        <motion.div
-                          key={s.id}
-                          {...staffMotionProps}
-                          onClick={() => setSelectedStaffDrawer(s)}
-                          onMouseEnter={() => setHoveredStaffId(s.id)}
-                          onMouseLeave={() => setHoveredStaffId(null)}
-                          className="agenda-staff-card"
-                          data-status="notrabaja"
-                          style={{
-                            padding: (isMobile || isTablet) ? '8px' : '10px',
-                            background: '#fcfaf9',
-                            border: '1.5px dashed rgba(223,178,140,0.2)',
-                            borderLeft: '4px solid rgba(180,170,165,0.3)',
-                            borderRadius: '14px',
-                            display: 'flex',
-                            flexDirection: (isMobile || isTablet) ? 'column' : 'row',
-                            alignItems: (isMobile || isTablet) ? 'center' : 'center',
-                            gap: (isMobile || isTablet) ? '6px' : '10px',
-                            cursor: 'pointer',
-                            opacity: 0.6,
-                            position: 'relative',
-                            overflow: 'visible',
-                          }}
-                        >
-                          <div style={{ position: 'relative', width: (isMobile || isTablet) ? '40px' : '50px', height: (isMobile || isTablet) ? '40px' : '50px', flexShrink: 0, borderRadius: '10px', overflow: 'hidden', background: 'linear-gradient(135deg, #b0a8a3, #8c767b)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            {getStaffPhoto(s) ? (
-                              <img src={getStaffPhoto(s)} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            ) : (
-                              <User size={20} color="#fff" />
-                            )}
-                            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(180,170,165,0.3) 0%, rgba(180,170,165,0.05) 100%)' }} />
-                          </div>
-                          <div style={{ flex: 1, minWidth: 0, textAlign: (isMobile || isTablet) ? 'center' : 'left' }}>
-                            <div style={{ fontSize: (isMobile || isTablet) ? '0.65rem' : '0.72rem', fontWeight: 800, color: '#8c767b', lineHeight: 1.3 }}>{getStaffDisplayName(s)}</div>
-                            <div style={{ fontSize: '0.52rem', color: '#a0909a', fontWeight: 600, marginTop: '1px', lineHeight: 1.3 }}>{getStaffRole(s.name)}</div>
-                            <div style={{ marginTop: '3px', display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '0.48rem', fontWeight: 800, color: '#b0a8a3', background: 'rgba(180,170,165,0.1)', padding: '1px 6px', borderRadius: '999px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>
-                              <Circle size={7} color="#b0a8a3" strokeWidth={2.5} />
-                              NO TRABAJA
-                            </div>
-                          </div>
-                          <ChevronRight size={12} color="#b0a8a3" className="staff-chevron" style={{ flexShrink: 0, opacity: 0.4, ...(isMobile || isTablet ? { position: 'absolute', right: '6px', top: '6px' } : {}) }} />
-                        </motion.div>
-                      );
-                    }
-
-                    // Stylist is working
+                {/* Per-staff availability rows */}
+                <div style={{ marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '0' }}>
+                  {visibleStaff.map((s, i) => {
+                    const ww = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
                     const refMin = checkingTime != null ? checkingTime : nowMinutes;
-                    const isLunch = refMin >= 13 * 60 && refMin < 14 * 60;
-                    const activeApp = dayApps.find(a => {
-                      const start = new Date(a.scheduled_at || a.created_at);
-                      const startM = start.getHours() * 60 + start.getMinutes();
-                      const duration = 60;
-                      return a.staff_id === s.id && refMin >= startM && refMin < (startM + duration);
-                    });
-
-                    let statusText = 'LIBRE';
-                    let statusBg = 'rgba(34, 197, 94, 0.08)';
-                    let statusColor = '#16a34a';
-
-                    if (isLunch) {
-                      statusText = 'ALMUERZO';
-                      statusBg = 'rgba(201, 114, 130, 0.08)';
-                      statusColor = '#c97282';
-                    } else if (activeApp) {
-                      statusText = 'EN CITA';
-                      statusBg = 'rgba(239, 68, 68, 0.06)';
-                      statusColor = '#dc2626';
-                    } else if (staffIdx === 1 || staffIdx === 3 || staffIdx === 5) {
-                      statusText = 'EN CITA';
-                      statusBg = 'rgba(239, 68, 68, 0.06)';
-                      statusColor = '#dc2626';
-                    } else if (staffIdx === 7) {
-                      statusText = 'ALMUERZO';
-                      statusBg = 'rgba(201, 114, 130, 0.08)';
-                      statusColor = '#c97282';
-                    }
-
-                    const isMobileCard = isMobile || isTablet;
-
+                    const busyIntervals = getStaffBusyIntervals(s.id, dayApps);
+                    const inWork = ww.isWorking && refMin >= ww.startMinutes && refMin < ww.endMinutes;
+                    const isBusy = inWork && busyIntervals.some(b => refMin >= b.startMinutes && refMin < b.endMinutes);
+                    const statusLabel = !ww.isWorking ? 'Día libre' : isBusy ? 'En cita' : 'Libre';
+                    const statusColor = !ww.isWorking ? '#a0909a' : isBusy ? '#dc2626' : '#16a34a';
+                    const metrics = getStaffMetrics(s.id);
                     return (
-                      <motion.div
-                        key={s.id}
-                        {...staffMotionProps}
-                        onClick={() => setSelectedStaffDrawer(s)}
-                        onMouseEnter={() => setHoveredStaffId(s.id)}
-                        onMouseLeave={() => setHoveredStaffId(null)}
-                        className="agenda-staff-card"
-                        data-status={statusText === 'LIBRE' ? 'libre' : statusText === 'EN CITA' ? 'encita' : 'almuerzo'}
-                        style={{
-                          padding: isMobileCard ? '0' : '10px',
-                          background: '#ffffff',
-                          border: '1px solid rgba(223,178,140,0.18)',
-                          borderLeft: isMobileCard ? 'none' : `4px solid ${statusColor}`,
-                          borderRadius: '14px',
-                          display: 'flex',
-                          flexDirection: isMobileCard ? 'column' : 'row',
-                          alignItems: 'stretch',
-                          gap: isMobileCard ? '0' : '10px',
-                          cursor: 'pointer',
-                          boxShadow: '0 2px 8px rgba(74,48,54,0.04)',
-                          position: 'relative',
-                          overflow: 'hidden'
-                        }}
-                      >
-                        {isMobileCard ? (
-                          <>
-                            {/* Cover Photo */}
-                            <div style={{ position: 'relative', width: '100%', height: '120px', overflow: 'hidden', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              {getStaffPhoto(s) ? (
-                                <img src={getStaffPhoto(s)} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                              ) : (
-                                <User size={36} color="#fff" />
-                              )}
-                              {/* Elegant overlay gradient */}
-                              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.4) 100%)' }} />
-                              
-                              {/* Status Pill floating top-left */}
-                              <span className="mi-tag" style={{ position: 'absolute', top: '8px', left: '8px', fontSize: '0.52rem', fontWeight: 900, color: '#fff', background: statusColor, padding: '3px 8px', borderRadius: '8px', letterSpacing: '0.4px', display: 'inline-flex', alignItems: 'center', gap: '3px', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }}>
-                                {statusText}
-                              </span>
-                            </div>
-
-                            {/* Info Area */}
-                            <div style={{ padding: '10px 12px 12px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: '#fff', textAlign: 'left' }}>
-                              <div>
-                                <div style={{ fontSize: '0.78rem', fontWeight: 900, color: '#2d1b22', lineHeight: 1.25 }}>{getStaffDisplayName(s)}</div>
-                                <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 650, marginTop: '2px' }}>{getStaffRole(s.name)}</div>
-                              </div>
-
-                              {/* Metrics pills stacked */}
-                              <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-                                  {metrics.citasCount > 0 ? (
-                                    <span style={{ fontSize: '0.55rem', fontWeight: 700, color: '#6b5a60', background: 'rgba(160,144,154,0.08)', padding: '2px 6px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                                      <CalendarDays size={10} color="#8c767b" />
-                                      {metrics.citasCount} {metrics.citasCount === 1 ? 'cita' : 'citas'}
-                                    </span>
-                                  ) : (
-                                    <span style={{ fontSize: '0.55rem', fontWeight: 700, color: '#a0909a', background: 'rgba(160,144,154,0.04)', padding: '2px 6px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                                      Sin citas
-                                    </span>
-                                  )}
-                                  <span style={{ fontSize: '0.55rem', fontWeight: 700, color: '#a0506a', background: 'rgba(160,80,106,0.06)', padding: '2px 6px', borderRadius: '6px' }}>
-                                    {metrics.occupancy}% ocupación
-                                  </span>
-                                </div>
-
-                                {/* Next appointment */}
-                                {nextApp ? (
-                                  <div style={{ fontSize: '0.6rem', color: '#c97282', fontWeight: 800, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                    <Clock size={10} color="#c97282" />
-                                    <span>Próxima: {nextApp.timeStr}</span>
-                                  </div>
-                                ) : (
-                                  <div style={{ fontSize: '0.56rem', color: '#a0909a', fontWeight: 600, marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                    <Clock size={9} color="#a0909a" />
-                                    <span>Sin citas hoy</span>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            {/* Photo */}
-                            <div style={{ position: 'relative', width: '50px', height: '58px', flexShrink: 0, borderRadius: '12px', overflow: 'hidden', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              {getStaffPhoto(s) ? (
-                                <img src={getStaffPhoto(s)} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                              ) : (
-                                <User size={20} color="#fff" />
-                              )}
-                              <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(200deg, ${statusColor}55 0%, ${statusColor}00 55%), linear-gradient(0deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 45%)` }} />
-                              {/* Status dot — pulsing when busy */}
-                              <span className={statusText !== 'LIBRE' ? 'staff-dot-pulse' : ''} style={{ position: 'absolute', right: '2px', bottom: '2px', width: '9px', height: '9px', borderRadius: '50%', background: statusColor, border: '1.5px solid #fff', boxShadow: `0 0 4px ${statusColor}66` }} />
-                            </div>
-
-                            {/* Info */}
-                            <div style={{ flex: 1, minWidth: 0, textAlign: 'left', paddingRight: '22px' }}>
-                              <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#2d1b22', lineHeight: 1.3 }}>{getStaffDisplayName(s)}</div>
-                              <div style={{ fontSize: '0.5rem', color: '#a0909a', fontWeight: 600, marginTop: '1px', lineHeight: 1.3 }}>{getStaffRole(s.name)}</div>
-                              <div style={{ marginTop: '3px', display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-start', flexWrap: 'wrap' }}>
-                                <span className="mi-tag" style={{ fontSize: '0.48rem', fontWeight: 800, color: statusColor, background: `${statusColor}12`, padding: '1px 6px', borderRadius: '999px', letterSpacing: '0.3px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                                  {statusText !== 'LIBRE' && <span className="staff-dot-pulse" style={{ display: 'inline-block', width: '4px', height: '4px', borderRadius: '50%', background: statusColor }} />}
-                                  {statusText}
-                                </span>
-                                {metrics.citasCount > 0 && (
-                                  <span style={{ fontSize: '0.56rem', fontWeight: 700, color: '#6b5a60', background: 'rgba(160,144,154,0.1)', padding: '3px 8px', borderRadius: '999px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                                    <CalendarDays size={11} color="#8c767b" strokeWidth={2} />
-                                    {metrics.citasCount} {metrics.citasCount === 1 ? 'cita' : 'citas'}
-                                  </span>
-                                )}
-                                <span style={{ fontSize: '0.56rem', fontWeight: 700, color: '#a0506a', background: 'rgba(160,80,106,0.06)', padding: '3px 8px', borderRadius: '999px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                                  {metrics.occupancy}% ocupación
-                                </span>
-                              </div>
-                              {/* Next appointment */}
-                              {nextApp ? (
-                                <div style={{ fontSize: '0.64rem', color: '#c97282', fontWeight: 800, marginTop: '5px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '4px' }}>
-                                  <Clock size={11} color="#c97282" />
-                                  <span>Próxima: {nextApp.timeStr}</span>
-                                </div>
-                              ) : (
-                                <div style={{ fontSize: '0.6rem', color: '#a0909a', fontWeight: 600, marginTop: '5px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '4px' }}>
-                                  <Clock size={10} color="#a0909a" />
-                                  <span>Sin más citas hoy</span>
-                                </div>
-                              )}
-                            </div>
-                          </>
-                        )}
-
-                        {/* Chevron — desktop: absolute right; mobile: bottom-right */}
-                        <ChevronRight size={isMobileCard ? 10 : 14} color={statusColor} className="staff-chevron" style={{ flexShrink: 0, opacity: 0.4, position: 'absolute', ...(isMobileCard ? { right: '6px', top: '6px' } : { right: '8px', top: '50%', transform: 'translateY(-50%)' }) }} />
-
-                        {/* Occupancy bar — desktop only */}
-                        {!isMobileCard && (
-                          <div style={{ position: 'absolute', bottom: 0, left: '4px', right: 0, height: '3px', background: '#fcf6f7', borderRadius: '0 0 14px 0', overflow: 'hidden' }}>
-                            <div style={{ height: '100%', background: statusColor, width: `${metrics.occupancy}%`, transition: 'width 0.4s ease' }} />
+                      <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 0', borderBottom: i < visibleStaff.length - 1 ? '1px solid rgba(223,178,140,0.1)' : 'none' }}
+                        onClick={() => setSelectedStaffDrawer(s)}>
+                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', flexShrink: 0, background: 'linear-gradient(135deg,#c48b9f,#c97282)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `2px solid ${statusColor}40` }}>
+                          {getStaffPhoto(s) ? <img src={getStaffPhoto(s)} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <User size={13} color="#fff" />}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#2d1b22', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{getStaffDisplayName(s)}</div>
+                          <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 600 }}>
+                            {ww.isWorking ? `${formatMinutes(ww.startMinutes)}–${formatMinutes(ww.endMinutes)}` : 'No trabaja hoy'}
+                            {metrics.citasCount > 0 && ` · ${metrics.citasCount} cita${metrics.citasCount > 1 ? 's' : ''}`}
                           </div>
-                        )}
-                      </motion.div>
+                        </div>
+                        <span style={{ fontSize: '0.55rem', fontWeight: 800, color: statusColor, background: `${statusColor}15`, padding: '3px 8px', borderRadius: '999px', whiteSpace: 'nowrap', flexShrink: 0 }}>{statusLabel}</span>
+                      </div>
                     );
                   })}
-                  </AnimatePresence>
                 </div>
-
-                {visibleStaff.length === 0 && (
-                  <div style={{ textAlign: 'center', padding: '40px 20px', color: '#a0909a', fontSize: '0.8rem', border: '1px dashed rgba(223,178,140,0.25)', borderRadius: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flex: 1, justifyContent: 'center' }}>
-                    <Search size={24} color="#c97282" style={{ opacity: 0.5 }} />
-                    <div style={{ fontWeight: 700 }}>No se encontraron especialistas</div>
-                  </div>
-                )}
               </div>
+
+              {/* ── Tabla de citas del día con secciones ── */}
+              <div className="agenda-glass-card" style={{ padding: '16px', overflow: 'hidden' }}>
+                <h4 style={{ fontSize: '0.7rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 14px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Scissors size={13} color="#c97282" />
+                  CITAS DEL DÍA
+                  <span style={{ marginLeft: 'auto', fontSize: '0.62rem', fontWeight: 700, color: '#a0506a', background: 'rgba(160,80,106,0.08)', padding: '2px 8px', borderRadius: '999px' }}>
+                    {categoryFilteredDayApps.length} {categoryFilteredDayApps.length === 1 ? 'cita' : 'citas'}
+                  </span>
+                </h4>
+
+                {categoryFilteredDayApps.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '24px 0', color: '#a0909a', fontSize: '0.75rem', fontStyle: 'italic' }}>
+                    No hay citas programadas para este día.
+                  </div>
+                ) : (() => {
+                  const sorted = [...categoryFilteredDayApps].sort((a, b) =>
+                    new Date(a.scheduled_at || a.created_at) - new Date(b.scheduled_at || b.created_at)
+                  );
+                  const sections = [
+                    { label: 'Mañana', icon: Sunrise, range: [0, 719],    color: '#e8904a' },
+                    { label: 'Tarde',  icon: Sun,     range: [720, 1079],  color: '#c97282' },
+                    { label: 'Noche',  icon: Moon,    range: [1080, 1439], color: '#7c5cbf' },
+                  ];
+                  return sections.map(({ label, icon: Icon, range, color }) => {
+                    const group = sorted.filter(app => {
+                      const d = new Date(app.scheduled_at || app.created_at);
+                      const min = d.getHours() * 60 + d.getMinutes();
+                      return min >= range[0] && min <= range[1];
+                    });
+                    if (group.length === 0) return null;
+                    return (
+                      <div key={label} style={{ marginBottom: '16px' }}>
+                        {/* Section header */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 10px', background: `${color}08`, borderRadius: '8px', marginBottom: '8px', border: `1px solid ${color}20` }}>
+                          <Icon size={12} color={color} strokeWidth={2.2} />
+                          <span style={{ fontSize: '0.6rem', fontWeight: 800, color, letterSpacing: '0.6px', textTransform: 'uppercase' }}>{label}</span>
+                          <span style={{ fontSize: '0.55rem', fontWeight: 700, color: `${color}99`, marginLeft: '4px' }}>{group.length} {group.length === 1 ? 'cita' : 'citas'}</span>
+                        </div>
+                        {/* Cards */}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {group.map(app => {
+                            const d = new Date(app.scheduled_at || app.created_at);
+                            const startMin = d.getHours() * 60 + d.getMinutes();
+                            const colors = STATUS_COLORS[app.status] || STATUS_COLORS.Agendado;
+                            const staffMember = visibleStaff.find(s => s.id === app.staff_id);
+                            return (
+                              <div
+                                key={app.id}
+                                onClick={() => setSelectedDetailedApp(app)}
+                                style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', background: '#fcf9f8', borderRadius: '12px', border: '1px solid rgba(223,178,140,0.15)', borderLeft: `3px solid ${color}`, cursor: 'pointer', transition: 'all 0.15s' }}
+                                onMouseEnter={e => e.currentTarget.style.background = 'rgba(201,114,130,0.04)'}
+                                onMouseLeave={e => e.currentTarget.style.background = '#fcf9f8'}
+                              >
+                                {/* Time */}
+                                <div style={{ flexShrink: 0, textAlign: 'center', minWidth: '44px' }}>
+                                  <div style={{ fontSize: '0.7rem', fontWeight: 900, color: '#2d1b22' }}>{formatMinutes(startMin)}</div>
+                                  {app.duration_minutes && <div style={{ fontSize: '0.52rem', color: '#a0909a', fontWeight: 600 }}>{app.duration_minutes}min</div>}
+                                </div>
+                                {/* Divider */}
+                                <div style={{ width: '1px', height: '32px', background: 'rgba(223,178,140,0.2)', flexShrink: 0 }} />
+                                {/* Client + Service */}
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#2d1b22', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{app.clients?.name || '—'}</div>
+                                  <div style={{ fontSize: '0.6rem', color: '#6b5a60', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{app.services?.name || '—'}</div>
+                                  {staffMember && (
+                                    <div style={{ fontSize: '0.55rem', color: '#a0909a', fontWeight: 600, marginTop: '1px' }}>{getStaffDisplayName(staffMember)}</div>
+                                  )}
+                                </div>
+                                {/* Status badge */}
+                                <span style={{ fontSize: '0.52rem', fontWeight: 800, color: colors.text, background: colors.bg, padding: '3px 7px', borderRadius: '999px', whiteSpace: 'nowrap', border: `1px solid ${colors.border}`, flexShrink: 0 }}>{app.status || 'Agendado'}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
+
             </div>
 
           </div>
