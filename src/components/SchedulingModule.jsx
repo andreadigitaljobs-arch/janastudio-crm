@@ -1579,7 +1579,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   <div
                     key={s.id}
                     style={{
-                      flex: 1, minWidth: 0, width: `calc(100% / ${paginatedStaff.length})`, position: 'relative', height: `${GRID_HEIGHT}px`,
+                      flex: 1,
+                      minWidth: (isMobile || isTablet) ? '150px' : '0',
+                      width: (isMobile || isTablet) ? '150px' : `calc(100% / ${paginatedStaff.length})`,
+                      position: 'relative', height: `${GRID_HEIGHT}px`,
                       borderLeft: '1px solid rgba(223, 178, 140, 0.1)',
                       cursor: ww.isWorking ? 'crosshair' : 'default',
                       background: ww.isWorking
@@ -1666,7 +1669,11 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                               background: 'linear-gradient(135deg, #c97282, #e8a4b0)',
                               color: '#fff', fontSize: '0.65rem', fontWeight: 700,
                               padding: '5px 10px', borderRadius: '8px',
-                              whiteSpace: 'nowrap', pointerEvents: 'none',
+                              whiteSpace: isMobile ? 'normal' : 'nowrap',
+                              maxWidth: isMobile ? '130px' : 'none',
+                              width: 'max-content',
+                              textAlign: 'center',
+                              pointerEvents: 'none',
                               boxShadow: '0 4px 12px rgba(201,114,130,0.35)',
                               opacity: 0, transition: 'opacity 0.18s ease', zIndex: 99,
                             }}
