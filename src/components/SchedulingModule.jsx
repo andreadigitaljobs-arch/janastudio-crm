@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -1314,6 +1314,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
   }, [dayApps, visibleStaff, selectedCategory, staffSearchQuery]);
 
   const [desktopStaffPage, setDesktopStaffPage] = useState(0);
+  const [collapsedSections, setCollapsedSections] = useState({}); // { Mañana: true } = collapsed
+  const toggleSection = (label) => setCollapsedSections(prev => ({ ...prev, [label]: !prev[label] }));
 
   useEffect(() => {
     setDesktopStaffPage(0);
@@ -2383,20 +2385,22 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                               return min >= range[0] && min <= range[1];
                             });
                             if (group.length === 0) return;
-                            // Section header row
+                            // Section header row (clickeable para colapsar)
+                            const isCollapsed = !!collapsedSections[label];
                             rows.push(
-                              <tr key={`section-${label}`}>
-                                <td colSpan={6} style={{ padding: '10px 14px 6px', background: `${color}08`, borderTop: '1px solid rgba(223,178,140,0.15)', borderBottom: `1px solid ${color}20` }}>
+                              <tr key={`section-${label}`} onClick={() => toggleSection(label)} style={{ cursor: 'pointer' }}>
+                                <td colSpan={6} style={{ padding: '10px 14px 6px', background: `${color}08`, borderTop: '1px solid rgba(223,178,140,0.15)', borderBottom: `1px solid ${color}20`, userSelect: 'none' }}>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
                                     <Icon size={13} color={color} strokeWidth={2.2} />
                                     <span style={{ fontSize: '0.62rem', fontWeight: 800, color, letterSpacing: '0.6px', textTransform: 'uppercase' }}>{label}</span>
                                     <span style={{ fontSize: '0.58rem', fontWeight: 700, color: `${color}99`, marginLeft: '4px' }}>{group.length} {group.length === 1 ? 'cita' : 'citas'}</span>
+                                    <ChevronDown size={13} color={color} style={{ marginLeft: 'auto', transition: 'transform 0.2s', transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }} />
                                   </div>
                                 </td>
                               </tr>
                             );
-                            // Appointment rows
-                            group.forEach((app, idx) => {
+                            // Appointment rows (solo si no está colapsada)
+                            if (!isCollapsed) group.forEach((app, idx) => {
                               const d = new Date(app.scheduled_at || app.created_at);
                               const startMin = d.getHours() * 60 + d.getMinutes();
                               const colors = STATUS_COLORS[app.status] || STATUS_COLORS.Agendado;
@@ -2652,50 +2656,57 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       return min >= range[0] && min <= range[1];
                     });
                     if (group.length === 0) return null;
+                    const isCollapsed = !!collapsedSections[label];
                     return (
                       <div key={label} style={{ marginBottom: '16px' }}>
-                        {/* Section header */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 10px', background: `${color}08`, borderRadius: '8px', marginBottom: '8px', border: `1px solid ${color}20` }}>
+                        {/* Section header — clickeable para colapsar */}
+                        <div
+                          onClick={() => toggleSection(label)}
+                          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 10px', background: `${color}08`, borderRadius: '8px', marginBottom: isCollapsed ? '0' : '8px', border: `1px solid ${color}20`, cursor: 'pointer', userSelect: 'none' }}
+                        >
                           <Icon size={12} color={color} strokeWidth={2.2} />
                           <span style={{ fontSize: '0.6rem', fontWeight: 800, color, letterSpacing: '0.6px', textTransform: 'uppercase' }}>{label}</span>
                           <span style={{ fontSize: '0.55rem', fontWeight: 700, color: `${color}99`, marginLeft: '4px' }}>{group.length} {group.length === 1 ? 'cita' : 'citas'}</span>
+                          <ChevronDown size={12} color={color} style={{ marginLeft: 'auto', transition: 'transform 0.2s', transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }} />
                         </div>
-                        {/* Cards */}
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                          {group.map(app => {
-                            const d = new Date(app.scheduled_at || app.created_at);
-                            const startMin = d.getHours() * 60 + d.getMinutes();
-                            const colors = STATUS_COLORS[app.status] || STATUS_COLORS.Agendado;
-                            const staffMember = visibleStaff.find(s => s.id === app.staff_id);
-                            return (
-                              <div
-                                key={app.id}
-                                onClick={() => setSelectedDetailedApp(app)}
-                                style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', background: '#fcf9f8', borderRadius: '12px', border: '1px solid rgba(223,178,140,0.15)', borderLeft: `3px solid ${color}`, cursor: 'pointer', transition: 'all 0.15s' }}
-                                onMouseEnter={e => e.currentTarget.style.background = 'rgba(201,114,130,0.04)'}
-                                onMouseLeave={e => e.currentTarget.style.background = '#fcf9f8'}
-                              >
-                                {/* Time */}
-                                <div style={{ flexShrink: 0, textAlign: 'center', minWidth: '44px' }}>
-                                  <div style={{ fontSize: '0.7rem', fontWeight: 900, color: '#2d1b22' }}>{formatMinutes(startMin)}</div>
-                                  {app.duration_minutes && <div style={{ fontSize: '0.52rem', color: '#a0909a', fontWeight: 600 }}>{app.duration_minutes}min</div>}
+                        {/* Cards — ocultas si colapsada */}
+                        {!isCollapsed && (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            {group.map(app => {
+                              const d = new Date(app.scheduled_at || app.created_at);
+                              const startMin = d.getHours() * 60 + d.getMinutes();
+                              const colors = STATUS_COLORS[app.status] || STATUS_COLORS.Agendado;
+                              const staffMember = visibleStaff.find(s => s.id === app.staff_id);
+                              return (
+                                <div
+                                  key={app.id}
+                                  onClick={() => setSelectedDetailedApp(app)}
+                                  style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', background: '#fcf9f8', borderRadius: '12px', border: '1px solid rgba(223,178,140,0.15)', borderLeft: `3px solid ${color}`, cursor: 'pointer', transition: 'all 0.15s' }}
+                                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(201,114,130,0.04)'}
+                                  onMouseLeave={e => e.currentTarget.style.background = '#fcf9f8'}
+                                >
+                                  {/* Time */}
+                                  <div style={{ flexShrink: 0, textAlign: 'center', minWidth: '44px' }}>
+                                    <div style={{ fontSize: '0.7rem', fontWeight: 900, color: '#2d1b22' }}>{formatMinutes(startMin)}</div>
+                                    {app.duration_minutes && <div style={{ fontSize: '0.52rem', color: '#a0909a', fontWeight: 600 }}>{app.duration_minutes}min</div>}
+                                  </div>
+                                  {/* Divider */}
+                                  <div style={{ width: '1px', height: '32px', background: 'rgba(223,178,140,0.2)', flexShrink: 0 }} />
+                                  {/* Client + Service */}
+                                  <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#2d1b22', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{app.clients?.name || '—'}</div>
+                                    <div style={{ fontSize: '0.6rem', color: '#6b5a60', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{app.services?.name || '—'}</div>
+                                    {staffMember && (
+                                      <div style={{ fontSize: '0.55rem', color: '#a0909a', fontWeight: 600, marginTop: '1px' }}>{getStaffDisplayName(staffMember)}</div>
+                                    )}
+                                  </div>
+                                  {/* Status badge */}
+                                  <span style={{ fontSize: '0.52rem', fontWeight: 800, color: colors.text, background: colors.bg, padding: '3px 7px', borderRadius: '999px', whiteSpace: 'nowrap', border: `1px solid ${colors.border}`, flexShrink: 0 }}>{app.status || 'Agendado'}</span>
                                 </div>
-                                {/* Divider */}
-                                <div style={{ width: '1px', height: '32px', background: 'rgba(223,178,140,0.2)', flexShrink: 0 }} />
-                                {/* Client + Service */}
-                                <div style={{ flex: 1, minWidth: 0 }}>
-                                  <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#2d1b22', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{app.clients?.name || '—'}</div>
-                                  <div style={{ fontSize: '0.6rem', color: '#6b5a60', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{app.services?.name || '—'}</div>
-                                  {staffMember && (
-                                    <div style={{ fontSize: '0.55rem', color: '#a0909a', fontWeight: 600, marginTop: '1px' }}>{getStaffDisplayName(staffMember)}</div>
-                                  )}
-                                </div>
-                                {/* Status badge */}
-                                <span style={{ fontSize: '0.52rem', fontWeight: 800, color: colors.text, background: colors.bg, padding: '3px 7px', borderRadius: '999px', whiteSpace: 'nowrap', border: `1px solid ${colors.border}`, flexShrink: 0 }}>{app.status || 'Agendado'}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
                     );
                   });
