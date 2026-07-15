@@ -26,6 +26,7 @@ import JanaDatePicker from './JanaDatePicker';
 import { ModalShield } from '../context/ModalContext';
 import AnimatedModal from './AnimatedModal';
 import JanaSelect from './JanaSelect';
+import StaffProfileModal from './StaffProfileModal';
 
 const getStaffPhoto = (member) => {
   if (!member) return null;
@@ -908,6 +909,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
   };
 
   const [appointments, setAppointments] = useState([]);
+  const [profileModalData, setProfileModalData] = useState(null);
   const [allAppointments, setAllAppointments] = useState([]); // for ribbon dots
   const [staff, setStaff] = useState([]);
   const [clients, setClients] = useState([]);
@@ -2516,7 +2518,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                           style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 0', borderBottom: '1px solid rgba(223, 178, 140, 0.1)', cursor: 'pointer', transition: 'background 0.15s', borderRadius: '4px' }}
                           onMouseEnter={e => e.currentTarget.style.background = 'rgba(201, 114, 130, 0.04)'}
                           onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                          onClick={() => setSelectedDetailedApp(null)}
+                          onClick={() => { setSelectedDetailedApp(null); setProfileModalData(s); }}
                         >
                           <div style={{ width: '36px', height: '36px', borderRadius: '50%', flexShrink: 0, background: 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `2px solid ${statusColor}30` }}>
                             {getStaffPhoto(s) ? (
@@ -3992,6 +3994,17 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           onClientCreated={(c) => { setClients(prev => [...prev, c]); setShowNewClientModal(false); }}
         />
       )}
+
+      <StaffProfileModal 
+        isOpen={!!profileModalData}
+        onClose={() => setProfileModalData(null)}
+        staffMember={profileModalData}
+        inventory={[]}
+        onUpdate={() => {
+          // Refrescar citas si es necesario
+          if (typeof loadFilteredAppointments === 'function') loadFilteredAppointments();
+        }}
+      />
 
       {/* DETALLE DE CITA LATERAL DESLIZANTE */}
       {selectedDetailedApp && detailedAppDetails && (() => {
