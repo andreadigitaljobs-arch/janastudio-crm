@@ -1578,11 +1578,11 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
           {/* Grid Body */}
           <div style={{ display: 'flex', position: 'relative' }}>
             {/* Time axis */}
-            <div style={{ width: '56px', flexShrink: 0, position: 'sticky', left: 0, zIndex: 8, background: 'rgba(255, 255, 255, 0.98)', borderRight: '1px solid rgba(223, 178, 140, 0.15)' }}>
+            <div style={{ width: '72px', flexShrink: 0, position: 'sticky', left: 0, zIndex: 8, background: 'rgba(255, 255, 255, 0.98)', borderRight: '1px solid rgba(223, 178, 140, 0.15)' }}>
               {Array.from({ length: Math.ceil(GRID_HEIGHT / 60) }, (_, i) => {
                 const min = VIEW_START_MIN + i * 60;
                 return (
-                  <div key={min} style={{ height: '60px', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingRight: '6px', paddingTop: '4px', boxSizing: 'border-box', borderBottom: '1px solid rgba(223, 178, 140, 0.08)' }}>
+                  <div key={min} style={{ height: '60px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: '4px', boxSizing: 'border-box', borderBottom: '1px solid rgba(223, 178, 140, 0.08)' }}>
                     <span style={{ fontSize: '0.68rem', fontWeight: 850, color: '#7a666e', whiteSpace: 'nowrap' }}>{formatMinutes(min)}</span>
                   </div>
                 );
