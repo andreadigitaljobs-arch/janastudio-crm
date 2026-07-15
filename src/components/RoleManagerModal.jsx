@@ -77,8 +77,8 @@ const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, av
       {(overlayClass, cardClass) => (
         <div className={overlayClass} style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.85)',
-          backdropFilter: 'blur(12px)',
+          backgroundColor: 'rgba(74, 48, 54, 0.4)',
+          backdropFilter: 'blur(8px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           zIndex: 2000, padding: '20px'
         }}>
@@ -87,17 +87,17 @@ const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, av
             borderRadius: '28px',
             display: 'flex', flexDirection: 'column',
             overflow: 'hidden',
-            background: 'linear-gradient(145deg, rgba(22,22,28,0.98) 0%, rgba(14,14,18,0.99) 100%)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(196,139,159,0.08)'
+            background: 'rgba(255, 255, 255, 0.98)',
+            border: '1px solid rgba(223, 178, 140, 0.3)',
+            boxShadow: '0 24px 60px rgba(74, 48, 54, 0.15)'
           }}>
 
             {/* Header */}
             <div style={{
               padding: '24px 28px',
-              borderBottom: '1px solid rgba(255,255,255,0.06)',
+              borderBottom: '1px solid rgba(223, 178, 140, 0.15)',
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              background: 'linear-gradient(90deg, rgba(196,139,159,0.06) 0%, transparent 60%)'
+              background: 'linear-gradient(90deg, rgba(201, 114, 130, 0.05) 0%, transparent 60%)'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                 <div style={{
@@ -110,20 +110,20 @@ const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, av
                   <Shield size={22} color="var(--pink-primary)" />
                 </div>
                 <div>
-                  <h2 style={{ fontSize: '19px', fontWeight: '900', margin: 0, letterSpacing: '-0.3px' }}>Gestión de Roles</h2>
+                  <h2 style={{ fontSize: '19px', fontWeight: '900', margin: 0, letterSpacing: '-0.3px', color: '#2d1b22' }}>Gestión de Roles</h2>
                   <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '2px 0 0', fontWeight: '500' }}>Define accesos y permisos por cargo</p>
                 </div>
               </div>
               <button
                 onClick={onClose}
                 style={{
-                  background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)',
+                  background: 'rgba(201, 114, 130, 0.08)', border: '1px solid rgba(201, 114, 130, 0.12)',
                   borderRadius: '50%', width: '36px', height: '36px',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   cursor: 'pointer', color: 'var(--text-muted)', transition: 'all 0.2s'
                 }}
                 onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,69,58,0.15)'; e.currentTarget.style.color = '#ff453a'; }}
-                onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                onMouseOut={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)'; e.currentTarget.style.color = '#2d1b22'; }}
               >
                 <X size={18} />
               </button>
@@ -139,7 +139,7 @@ const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, av
                     </span>
                     <button
                       onClick={handleCreateClick}
-                      className="btn-pink"
+                      className="btn-pink" style={{ color: 'white' }}
                       style={{ padding: '8px 18px', borderRadius: '50px', fontSize: '12px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
                     >
                       <Plus size={15} /> Nuevo Rol
@@ -156,13 +156,13 @@ const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, av
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
-                        background: 'rgba(255,255,255,0.025)',
-                        border: '1px solid rgba(255,255,255,0.06)',
+                        background: 'rgba(201, 114, 130, 0.04)',
+                        border: '1px solid rgba(223, 178, 140, 0.2)',
                         transition: 'all 0.2s',
                         gap: '12px'
                       }}
-                        onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
-                        onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.025)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
+                        onMouseOver={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)'; e.currentTarget.style.borderColor = 'rgba(223, 178, 140, 0.35)'; }}
+                        onMouseOut={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.04)'; e.currentTarget.style.borderColor = 'rgba(223, 178, 140, 0.2)'; }}
                       >
                         {/* Role icon badge */}
                         <div style={{
@@ -177,7 +177,7 @@ const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, av
 
                         {/* Role info */}
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontWeight: '800', fontSize: '15px', marginBottom: '6px', color: 'white' }}>{name}</div>
+                          <div style={{ fontWeight: '800', fontSize: '15px', marginBottom: '6px', color: '#2d1b22' }}>{name}</div>
                           <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
                             {perms.slice(0, 4).map(p => (
                               <span key={p} style={{
@@ -196,9 +196,9 @@ const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, av
                             {perms.length > 4 && (
                               <span style={{
                                 fontSize: '10px', color: 'var(--text-muted)',
-                                background: 'rgba(255,255,255,0.05)',
+                                background: 'rgba(201, 114, 130, 0.08)',
                                 padding: '2px 10px', borderRadius: '50px',
-                                fontWeight: '700', border: '1px solid rgba(255,255,255,0.08)'
+                                fontWeight: '700', border: '1px solid rgba(223, 178, 140, 0.2)'
                               }}>+{perms.length - 4} más</span>
                             )}
                           </div>
@@ -209,12 +209,12 @@ const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, av
                           <button
                             onClick={() => handleEditClick(name, perms)}
                             style={{
-                              background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
-                              padding: '8px 10px', borderRadius: '10px', cursor: 'pointer', color: 'white',
+                              background: 'rgba(201, 114, 130, 0.06)', border: '1px solid rgba(201, 114, 130, 0.12)',
+                              padding: '8px 10px', borderRadius: '10px', cursor: 'pointer', color: 'var(--pink-primary)',
                               transition: 'all 0.2s', display: 'flex', alignItems: 'center'
                             }}
-                            onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-                            onMouseOut={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+                            onMouseOver={e => e.currentTarget.style.background = 'rgba(201, 114, 130, 0.15)'}
+                            onMouseOut={e => e.currentTarget.style.background = 'rgba(201, 114, 130, 0.06)'}
                           >
                             <Edit2 size={16} />
                           </button>
@@ -248,10 +248,10 @@ const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, av
                     />
                   </div>
 
-                  <div style={{ padding: '20px', backgroundColor: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div style={{ padding: '20px', backgroundColor: 'rgba(201, 114, 130, 0.04)', borderRadius: '20px', border: '1px solid rgba(223, 178, 140, 0.2)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
                       <Key size={16} color="var(--pink-primary)" />
-                      <label style={{ fontSize: '11px', fontWeight: '900', color: 'white', letterSpacing: '1px', textTransform: 'uppercase' }}>Permisos</label>
+                      <label style={{ fontSize: '11px', fontWeight: '900', color: '#2d1b22', letterSpacing: '1px', textTransform: 'uppercase' }}>Permisos</label>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
@@ -265,21 +265,21 @@ const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, av
                               display: 'flex', alignItems: 'center', gap: '10px',
                               padding: '12px 14px',
                               borderRadius: '14px',
-                              backgroundColor: active ? 'rgba(196,139,159,0.1)' : 'rgba(255,255,255,0.03)',
-                              border: `1px solid ${active ? 'rgba(196,139,159,0.5)' : 'rgba(255,255,255,0.06)'}`,
+                              backgroundColor: active ? 'rgba(196,139,159,0.12)' : '#fff',
+                              border: `1px solid ${active ? 'rgba(196,139,159,0.55)' : 'rgba(223, 178, 140, 0.2)'}`,
                               cursor: 'pointer', transition: 'all 0.18s'
                             }}
                           >
                             <div style={{
                               width: '20px', height: '20px', borderRadius: '6px',
-                              border: `1.5px solid ${active ? 'var(--pink-primary)' : 'rgba(255,255,255,0.2)'}`,
+                              border: `1.5px solid ${active ? 'var(--pink-primary)' : 'rgba(223, 178, 140, 0.4)'}`,
                               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                               backgroundColor: active ? 'var(--pink-primary)' : 'transparent',
                               transition: 'all 0.18s'
                             }}>
                               {active && <Check size={13} color="black" strokeWidth={3} />}
                             </div>
-                            <span style={{ fontSize: '13px', fontWeight: '600', color: active ? 'white' : 'var(--text-secondary)' }}>{mod.label}</span>
+                            <span style={{ fontSize: '13px', fontWeight: '600', color: active ? '#2d1b22' : 'var(--text-secondary)' }}>{mod.label}</span>
                           </div>
                         );
                       })}
@@ -289,9 +289,9 @@ const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, av
                   <div style={{ display: 'flex', gap: '10px', marginTop: '24px' }}>
                     <button
                       onClick={() => setEditingRole(null)}
-                      style={{ flex: 1, height: '50px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.04)', color: 'white', fontWeight: '700', cursor: 'pointer', transition: 'all 0.2s' }}
-                      onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
-                      onMouseOut={e => e.currentTarget.style.background = 'rgba(255,255,255,0.04)'}
+                      style={{ flex: 1, height: '50px', borderRadius: '14px', border: '1px solid rgba(201, 114, 130, 0.12)', background: 'rgba(201, 114, 130, 0.08)', color: '#2d1b22', fontWeight: '700', cursor: 'pointer', transition: 'all 0.2s' }}
+                      onMouseOver={e => e.currentTarget.style.background = 'rgba(201, 114, 130, 0.15)'}
+                      onMouseOut={e => e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)'}
                     >
                       Cancelar
                     </button>
@@ -310,12 +310,12 @@ const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, av
             {/* Footer */}
             <div style={{
               padding: '14px 28px',
-              background: 'linear-gradient(90deg, rgba(196,139,159,0.06) 0%, transparent 70%)',
-              borderTop: '1px solid rgba(196,139,159,0.1)',
+              background: 'linear-gradient(90deg, rgba(201, 114, 130, 0.05) 0%, transparent 70%)',
+              borderTop: '1px solid rgba(223, 178, 140, 0.15)',
               display: 'flex', alignItems: 'center', gap: '10px'
             }}>
               <Info size={15} color="var(--pink-primary)" style={{ flexShrink: 0 }} />
-              <p style={{ fontSize: '11px', color: 'rgba(196,139,159,0.8)', margin: 0, fontWeight: '600' }}>
+              <p style={{ fontSize: '11px', color: '#6b5a60', margin: 0, fontWeight: '600' }}>
                 Los cambios en los permisos se aplicarán a los nuevos miembros que se unan con este rol.
               </p>
             </div>
