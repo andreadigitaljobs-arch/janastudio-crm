@@ -72,6 +72,16 @@ const rolePresets = {
 
 const PersonnelModule = ({ isMobile, inventory = [] }) => {
   const isTablet = window.innerWidth > 480 && window.innerWidth <= 1024;
+  
+  const formatShortName = (fullName) => {
+    if (!fullName) return '';
+    const parts = fullName.trim().split(/\s+/).filter(Boolean);
+    if (parts.length <= 2) return fullName;
+    const firstName = parts[0];
+    const lastName = parts.length === 3 ? parts[1] : parts[2];
+    return `${firstName} ${lastName}`;
+  };
+
   const { showToast } = useNotifs();
   const { user, refreshUser } = useAuth();
   const { confirm } = useDialog();
@@ -634,7 +644,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                             </div>
                           </td>
                           <td style={{ padding: '12px 16px' }}>
-                            <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '13px' }}>{person.name}</div>
+                            <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '13px' }}>{formatShortName(person.name)}</div>
                             <div style={{ fontSize: '11px', color: '#c48b9f', fontWeight: '600' }}>{rolePart}</div>
                           </td>
                           <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--text-secondary)' }}>{person.specialty || rolePart}</td>
@@ -684,7 +694,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                         {(person.name || '?')[0].toUpperCase()}
                       </div>
                       <div style={{ minWidth: 0, flex: 1 }}>
-                        <div style={{ fontWeight: '800', color: 'var(--text-primary)', fontSize: '14px', lineHeight: '1.3' }}>{person.name}</div>
+                        <div style={{ fontWeight: '800', color: 'var(--text-primary)', fontSize: '14px', lineHeight: '1.3' }}>{formatShortName(person.name)}</div>
                         <div style={{ fontSize: '12px', color: '#c48b9f', fontWeight: '600' }}>{rolePart}</div>
                       </div>
                       <span style={{ padding: '4px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: '700', background: statusStyle.bg, color: statusStyle.text, border: `1px solid ${statusStyle.border}`, display: 'inline-flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
@@ -729,7 +739,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                         {(person.name || '?')[0].toUpperCase()}
                       </div>
                       <div style={{ minWidth: 0 }}>
-                        <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '12px' }}>{person.name}</div>
+                        <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '12px' }}>{formatShortName(person.name)}</div>
                         <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{rolePart}</div>
                       </div>
                       <span style={{ fontSize: '11px', fontWeight: '700', color: '#c48b9f', marginLeft: 'auto', whiteSpace: 'nowrap' }}>{times[idx] || 'Hoy 10:00 AM'}</span>
