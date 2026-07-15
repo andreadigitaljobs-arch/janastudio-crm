@@ -78,7 +78,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
     const parts = fullName.trim().split(/\s+/).filter(Boolean);
     if (parts.length <= 2) return fullName;
     const firstName = parts[0];
-    const lastName = parts.length === 3 ? parts[1] : parts[2];
+    const lastName = parts[parts.length - 2];
     return `${firstName} ${lastName}`;
   };
 
