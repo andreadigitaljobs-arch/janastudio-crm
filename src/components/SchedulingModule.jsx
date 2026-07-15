@@ -6,7 +6,7 @@ import {
   ChevronDown, Search, Pencil,
   CheckCircle2, Users, UserCheck,
   CalendarDays, StickyNote, BarChart3, XCircle, Bell, X,
-  DollarSign, Info, AlertTriangle, Coffee, Sliders, Check, HelpCircle, Scissors, Sparkles, Sun, MessageCircle, Circle, Star, Phone
+  DollarSign, Info, AlertTriangle, Coffee, Sliders, Check, HelpCircle, Scissors, Sparkles, Sun, MessageCircle, Circle, Star, Phone, MoreVertical
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
@@ -18,36 +18,21 @@ import {
   getNextFreeMinutes, getAppointmentDuration, formatMinutes
 } from '../utils/availability';
 import { loadStoredSchedules, loadStoredTimeOff } from '../utils/mockStaffSchedules';
-import { getBusinessDateKey, businessDateStart } from '../utils/dateTime';
+import { getBusinessDateKey } from '../utils/dateTime';
 import ScheduleModal from './ScheduleModal';
 import NewClientModal from './NewClientModal';
-import { normalizeForSearch } from '../utils/stringUtils';
+import { normalizeForSearch, getStaffDisplayName } from '../utils/stringUtils';
 import JanaDatePicker from './JanaDatePicker';
 import { ModalShield } from '../context/ModalContext';
 import AnimatedModal from './AnimatedModal';
 import JanaSelect from './JanaSelect';
-
-const STAFF_PHOTO_FALLBACKS = {
-  'isabella': '/staff/Beautician_smiling_in_beauty_salon_202607131301.jpeg',
-  'laura': '/staff/Hairdresser_smiling_in_beauty_salon_202607131301 (1).jpeg',
-  'sofia': '/staff/Hairdresser_smiling_in_beauty_salon_202607131301.jpeg',
-  'valentina': '/staff/Hairstylist_smiling_in_beauty_salon_202607131301.jpeg',
-  'mariana': '/staff/Manicurist_smiling_in_beauty_salon_202607131301 (1).jpeg',
-  'camila': '/staff/Manicurist_smiling_in_beauty_salon_202607131301.jpeg',
-  'andrea': '/staff/Massage_therapist_smiling_in_salon_202607131301.jpeg',
-  'gabriela': '/staff/Retrato_de_una_manicurista_profesional_202607131302.jpeg',
-  'valeria': '/staff/Retrato_de_una_masajista_profesional_202607131301.jpeg',
-  'lucia': '/staff/Retrato_de_una_manicurista_profesional_202607131302.jpeg',
-  'daniela': '/staff/Hairdresser_smiling_in_beauty_salon_202607131301 (1).jpeg'
-};
 
 const getStaffPhoto = (member) => {
   if (!member) return null;
   if (member.image_url && member.image_url.trim() !== '') {
     return member.image_url;
   }
-  const nameKey = String(member.name || '').split(' ')[0].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  return STAFF_PHOTO_FALLBACKS[nameKey] || null;
+  return null;
 };
 
 const STATUS_COLORS = {
@@ -127,6 +112,12 @@ const InfoTooltip = ({ text }) => {
 
 const HOUR_MARKS = [];
 for (let m = VIEW_START_MIN; m <= VIEW_END_MIN; m += 60) HOUR_MARKS.push(m);
+
+// El selector de "¿Quién está libre?" cubre todo el día (7:00 AM a 12:00 AM),
+// independiente del rango visible de la grilla (VIEW_START_MIN–VIEW_END_MIN).
+const TIME_OPTIONS_END_MIN = 24 * 60;
+const TIME_OPTIONS = [];
+for (let m = VIEW_START_MIN; m <= TIME_OPTIONS_END_MIN; m += 30) TIME_OPTIONS.push(m);
 
 const CalendarComponent = ({ selectedDate, onSelectDate }) => {
   const [viewDate, setViewDate] = useState(new Date());
@@ -364,7 +355,7 @@ const StaffDayColumn = ({
         </div>
         <div style={{ minWidth: 0, flex: 1 }}>
           <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#2d1b22', lineHeight: 1.3 }}>
-            {staffMember.name}
+            {getStaffDisplayName(staffMember)}
           </div>
           <div style={{ fontSize: '0.62rem', color: '#a0909a', fontWeight: 600 }}>
             {workingWindow.isWorking ? `${formatMinutes(workingWindow.startMinutes)} – ${formatMinutes(workingWindow.endMinutes)}` : 'Día libre'}
@@ -892,20 +883,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const staffRoles = {
-    'Isabella': 'Lashista Senior',
-    'Valentina': 'Especialista en Uñas',
-    'Andrea': 'Diseñadora de Cejas',
-    'Camila': 'Lashista Esteticista',
-    'Mariana': 'Colorista & Peinado',
-    'Paola': 'Manicurista Nail Art',
-    'Sofía': 'Especialista en Cejas',
-    'Test QA': 'Personal de Prueba'
-  };
-
   const getStaffRole = (name) => {
-    const firstName = (name || '').split(' ')[0];
-    return staffRoles[firstName] || 'Especialista';
+    const member = staff.find(s => s.name === name);
+    const rolePart = (member?.role || '').split('|')[0].trim();
+    return rolePart || 'Especialista';
   };
 
   const [appointments, setAppointments] = useState([]);
@@ -934,6 +915,18 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
       setCalendarPos({ top: rect.bottom + 12, left: clampedLeft });
     }
     setShowHeaderCalendar(prev => !prev);
+  };
+
+  const timeDropdownBtnRef = useRef(null);
+  const [timeDropdownPos, setTimeDropdownPos] = useState({ top: 0, left: 0, width: 0 });
+
+  const openTimeDropdown = () => {
+    const rect = timeDropdownBtnRef.current?.getBoundingClientRect();
+    if (rect) {
+      setTimeDropdownPos({ top: rect.bottom + 6, left: rect.left, width: rect.width });
+    }
+    setTimeSearchQuery('');
+    setShowTimeDropdown(prev => !prev);
   };
   const [loading, setLoading] = useState(true);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
@@ -1044,6 +1037,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
   const [hoveredStaffId, setHoveredStaffId] = useState(null);
   const [showHeaderCalendar, setShowHeaderCalendar] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all'); // 'all' | 'laser' | 'lash' | 'nails' | 'brows' | 'hair'
+  const [showTimeDropdown, setShowTimeDropdown] = useState(false);
+  const [timeSearchQuery, setTimeSearchQuery] = useState('');
 
   const handleCloseStaffDrawer = () => {
     setIsClosingStaffDrawer(true);
@@ -1183,91 +1178,6 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
         appointments = [];
       }
 
-      // Si no hay citas y es hoy, añadir citas demo
-      if (appointments.length === 0 && filterType === 'day') {
-        const todayKey = getBusinessDateKey(new Date());
-        const selectedKey = getBusinessDateKey(selectedDate);
-        if (todayKey === selectedKey) {
-          // Anclado a la medianoche de la fecha de negocio seleccionada (no a "ahora"),
-          // para que las citas no se corran al día siguiente según la hora en que se cargue la página.
-          const dayStart = businessDateStart(selectedKey).getTime();
-          const at = (hour) => new Date(dayStart + hour * 60 * 60000).toISOString();
-          const demoAppts = [
-            {
-              id: 'demo-1', client_id: '1', staff_id: staff[0]?.id || 'demo-staff-1',
-              clients: { name: 'María Fernández', phone: '04121234567' },
-              services: { name: 'Extensión de Pestañas', price: 600 },
-              scheduled_at: at(9),
-              status: 'En Silla'
-            },
-            {
-              id: 'demo-2', client_id: '2', staff_id: staff[1]?.id || 'demo-staff-2',
-              clients: { name: 'Valentina Gómez', phone: '04149876543' },
-              services: { name: 'Diseño de Cejas', price: 400 },
-              scheduled_at: at(9.5),
-              status: 'En Proceso'
-            },
-            {
-              id: 'demo-3', client_id: '3', staff_id: staff[2]?.id || 'demo-staff-3',
-              clients: { name: 'Camila Torres', phone: '04162341234' },
-              services: { name: 'Corte y Color', price: 800 },
-              scheduled_at: at(10),
-              status: 'En Silla'
-            },
-            {
-              id: 'demo-4', client_id: '4', staff_id: staff[3]?.id || 'demo-staff-4',
-              clients: { name: 'Daniela Rojas', phone: '04125678901' },
-              services: { name: 'Manicura + Pedicura', price: 500 },
-              scheduled_at: at(10.5),
-              status: 'En Tratamiento'
-            },
-            {
-              id: 'demo-5', client_id: '5', staff_id: staff[4]?.id || 'demo-staff-5',
-              clients: { name: 'Andrea Castillo', phone: '04149234567' },
-              services: { name: 'Microblading', price: 1200 },
-              scheduled_at: at(11),
-              status: 'Completado'
-            },
-            {
-              id: 'demo-6', client_id: '6', staff_id: staff[5]?.id || 'demo-staff-6',
-              clients: { name: 'Lucía Méndez', phone: '04128765432' },
-              services: { name: 'Tratamiento Facial', price: 550 },
-              scheduled_at: at(11.5),
-              status: 'Agendado'
-            },
-            {
-              id: 'demo-7', client_id: '7', staff_id: staff[0]?.id || 'demo-staff-1',
-              clients: { name: 'Paula Martínez', phone: '04141234567' },
-              services: { name: 'Extensión de Pestañas', price: 600 },
-              scheduled_at: at(14.5),
-              status: 'Agendado'
-            },
-            {
-              id: 'demo-8', client_id: '8', staff_id: staff[1]?.id || 'demo-staff-2',
-              clients: { name: 'Sofía López', phone: '04169876543' },
-              services: { name: 'Diseño de Cejas', price: 400 },
-              scheduled_at: at(15),
-              status: 'Agendado'
-            },
-            {
-              id: 'demo-9', client_id: '9', staff_id: staff[2]?.id || 'demo-staff-3',
-              clients: { name: 'Valentina Ruiz', phone: '04162341234' },
-              services: { name: 'Corte y Arreglo', price: 450 },
-              scheduled_at: at(15.5),
-              status: 'Agendado'
-            },
-            {
-              id: 'demo-10', client_id: '10', staff_id: staff[3]?.id || 'demo-staff-4',
-              clients: { name: 'Karla Sánchez', phone: '04125678901' },
-              services: { name: 'Pedicura Decorada', price: 350 },
-              scheduled_at: at(16),
-              status: 'Agendado'
-            }
-          ];
-          appointments = demoAppts;
-        }
-      }
-
       setAppointments(appointments);
     } catch (err) {
       console.error(err);
@@ -1298,21 +1208,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
     else if (filterStaffId === 'all') list = staff;
     else list = staff.filter(s => s.id === filterStaffId);
 
-    if (viewMode === 'operation') {
-      const demoNames = [
-        'Isabella Rodríguez', 'Laura Pérez', 'Sofía Gómez', 'Camila Silva', 
-        'Valeria Rojas', 'Mariana Torres', 'Andrea Castro', 'Lucía Méndez', 
-        'Gabriela Ortiz', 'Daniela Vargas'
-      ];
-      list = demoNames.map((name, i) => {
-        const idStr = `demo-staff-${i + 1}`;
-        const existing = staff[i];
-        return {
-          id: existing?.id || idStr,
-          name: name,
-          email: existing?.email || `${name.toLowerCase().replace(' ', '.')}@janastudio.com`,
-          role: existing?.role || (i === 0 ? 'Lashista Senior' : i === 1 ? 'Especialista' : i === 2 ? 'Estilista' : 'Manicurista')
-        };
+    if (!isWorkerView) {
+      list = list.filter(s => {
+        const r = (s.role?.split('|')[0] || '').toLowerCase();
+        return !r.includes('admin') && !r.includes('recepcionista') && !r.includes('caja');
       });
     }
 
@@ -1442,14 +1341,6 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
     : null;
 
   const getStaffMetrics = (sId) => {
-    if (String(sId).startsWith('demo-staff-')) {
-      const index = parseInt(sId.replace('demo-staff-', '')) || 1;
-      const citasCount = (index * 3) % 4 + 2; 
-      const occupancy = (index * 13) % 31 + 60; 
-      const cancelaciones = (index * 7) % 3 === 0 ? 1 : 0;
-      const revenue = citasCount * 450 + (index * 150) % 400;
-      return { citasCount, revenue, occupancy, cancelaciones };
-    }
     const sApps = dayApps.filter(a => a.staff_id === sId);
     const window = getStaffWorkingWindow(sId, dateKey, schedules, timeOff);
     const busy = window.isWorking ? getStaffBusyIntervals(sId, dayApps).filter(b => b.endMinutes > window.startMinutes && b.startMinutes < window.endMinutes) : [];
@@ -1463,19 +1354,11 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
       citasCount: sApps.length,
       revenue: revenue,
       occupancy: occupancy,
-      cancelaciones: sApps.filter(a => a.status === 'Cancelada' || a.status === 'Cancelado').length || (sId.charCodeAt(0) % 2 === 0 ? 1 : 0)
+      cancelaciones: sApps.filter(a => a.status === 'Cancelada' || a.status === 'Cancelado').length
     };
   };
 
   const getStaffNextApp = (sId) => {
-    if (String(sId).startsWith('demo-staff-')) {
-      const index = parseInt(sId.replace('demo-staff-', '')) || 1;
-      const hour = (index * 2) % 4 + 13; 
-      const mins = (index * 15) % 60;
-      const hour12 = hour > 12 ? hour - 12 : hour;
-      const ampm = hour >= 12 ? 'PM' : 'AM';
-      return { timeStr: `${hour12}:${String(mins).padStart(2, '0')} ${ampm}` };
-    }
     const refMin = checkingTime != null ? checkingTime : nowMinutes;
     const futureApps = dayApps
       .filter(a => a.staff_id === sId)
@@ -1845,6 +1728,33 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             </button>
           </div>
 
+          {/* Buscador de clientes (desktop) */}
+          {!isMobile && (
+            <div style={{ position: 'relative', width: '220px', flexShrink: 1, minWidth: '140px' }}>
+              <Search size={14} color="#a0909a" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
+              <input
+                type="text"
+                placeholder="Buscar cliente..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                className="mi-input"
+                style={{
+                  width: '100%',
+                  padding: '9px 14px 9px 34px',
+                  fontSize: '0.76rem',
+                  fontWeight: 600,
+                  color: '#2d1b22',
+                  background: '#fff',
+                  border: '1px solid rgba(223, 178, 140, 0.3)',
+                  borderRadius: '12px',
+                  outline: 'none',
+                  boxShadow: '0 2px 8px rgba(74, 48, 54, 0.03)',
+                  transition: 'all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                }}
+              />
+            </div>
+          )}
+
           {/* Bell Notifications (desktop only — on mobile it moved up next to the title) */}
           {!isMobile && (
             <button
@@ -1912,64 +1822,138 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
       {viewMode === 'operation' && (
         <div className="staff-control-container">
 
-          {/* BARRA DE FILTROS POR CATEGORÍA DE ESPECIALISTA */}
-          {!isMobile && (
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '6px 8px',
-              background: 'rgba(255, 255, 255, 0.6)',
-              backdropFilter: 'blur(8px)',
-              borderRadius: '16px',
-              border: '1px solid rgba(223, 178, 140, 0.2)',
-              boxShadow: '0 4px 12px rgba(74, 48, 54, 0.03)',
-              marginBottom: '16px',
-              width: 'fit-content'
-            }}>
-              {[
-                { key: 'all', label: 'Todas las especialistas' },
-                { key: 'laser', label: 'Centro Láser' },
-                { key: 'lash', label: 'Pestañas (Lashes)' },
-                { key: 'brows', label: 'Cejas (Brows)' },
-                { key: 'nails', label: 'Manicura & Pedicura' },
-                { key: 'hair', label: 'Estilistas & Cabello' }
-              ].map(cat => {
-                const isActive = selectedCategory === cat.key;
-                return (
+          {/* STATS ROW: Total de citas / Horas ocupadas / % Ocupación / ¿Quién está libre ahora? */}
+          {!(isMobile || isTablet) && (
+            <div style={{ display: 'flex', gap: '16px', marginBottom: '20px', flexWrap: 'wrap' }}>
+              <div className="agenda-glass-card" style={{ flex: '1 1 170px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(201,114,130,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <CalendarDays size={20} color="#c97282" />
+                </div>
+                <div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#2d1b22', lineHeight: 1.1 }}>{totalCitas}</div>
+                  <div style={{ fontSize: '0.68rem', color: '#a0909a', fontWeight: 600 }}>Total de citas</div>
+                </div>
+              </div>
+
+              <div className="agenda-glass-card" style={{ flex: '1 1 170px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(14,165,233,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Clock size={20} color="#0ea5e9" />
+                </div>
+                <div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#2d1b22', lineHeight: 1.1 }}>{formatHM(totalBusyMinutes)}</div>
+                  <div style={{ fontSize: '0.68rem', color: '#a0909a', fontWeight: 600 }}>Horas ocupadas</div>
+                </div>
+              </div>
+
+              <div className="agenda-glass-card" style={{ flex: '1 1 170px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <svg width="44" height="44" viewBox="0 0 44 44" style={{ flexShrink: 0, transform: 'rotate(-90deg)' }}>
+                  <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(201,114,130,0.15)" strokeWidth="5" />
+                  <circle
+                    cx="22" cy="22" r="18" fill="none" stroke="#c97282" strokeWidth="5" strokeLinecap="round"
+                    strokeDasharray={`${2 * Math.PI * 18}`}
+                    strokeDashoffset={`${2 * Math.PI * 18 * (1 - occupancyPct / 100)}`}
+                    style={{ transition: 'stroke-dashoffset 0.4s ease' }}
+                  />
+                </svg>
+                <div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#2d1b22', lineHeight: 1.1 }}>{occupancyPct}%</div>
+                  <div style={{ fontSize: '0.68rem', color: '#a0909a', fontWeight: 600 }}>Ocupación del día</div>
+                </div>
+              </div>
+
+              <div className="agenda-glass-card" style={{ flex: '1.3 1 230px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#2d1b22', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    ¿Quién está libre?
+                    <InfoTooltip text="Elige una hora para ver quién está libre en ese momento y resaltarlo en la grilla." />
+                  </span>
+                </div>
+                <div style={{ position: 'relative', flex: 1, minWidth: 0 }}>
                   <button
-                    key={cat.key}
-                    onClick={() => setSelectedCategory(cat.key)}
+                    ref={timeDropdownBtnRef}
+                    type="button"
+                    onClick={openTimeDropdown}
                     className="mi-btn"
                     style={{
-                      padding: '8px 16px',
-                      borderRadius: '10px',
-                      border: 'none',
-                      background: isActive ? 'linear-gradient(135deg, #C07088 0%, #D4899A 100%)' : 'transparent',
-                      color: isActive ? '#fff' : '#8a6870',
-                      fontSize: '0.78rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      boxShadow: isActive ? '0 4px 12px rgba(192, 112, 136, 0.25)' : 'none',
-                      transition: 'all 0.25s ease'
-                    }}
-                    onMouseEnter={e => {
-                      if (!isActive) {
-                        e.currentTarget.style.color = '#C07088';
-                        e.currentTarget.style.background = 'rgba(192, 112, 136, 0.05)';
-                      }
-                    }}
-                    onMouseLeave={e => {
-                      if (!isActive) {
-                        e.currentTarget.style.color = '#8a6870';
-                        e.currentTarget.style.background = 'transparent';
-                      }
+                      width: '100%', padding: '8px 12px', borderRadius: '10px', border: showTimeDropdown ? '1px solid #c97282' : '1px solid rgba(223, 178, 140, 0.3)',
+                      background: '#fff', fontSize: '0.78rem', fontWeight: 700, color: '#2d1b22',
+                      cursor: 'pointer', outline: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px',
+                      transition: 'all 0.2s', boxShadow: showTimeDropdown ? '0 0 0 3px rgba(201, 114, 130, 0.12)' : 'none'
                     }}
                   >
-                    {cat.label}
+                    <span>{checkingTime == null ? `Ahora (${formatMinutes(nowMinutes)})` : formatMinutes(checkingTime)}</span>
+                    <ChevronDown size={14} color="#c97282" style={{ transform: showTimeDropdown ? 'rotate(180deg)' : 'none', transition: '0.2s', flexShrink: 0 }} />
                   </button>
-                );
-              })}
+
+                  {showTimeDropdown && createPortal(
+                    <>
+                      <div
+                        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 99999 }}
+                        onClick={() => setShowTimeDropdown(false)}
+                      />
+                      <div
+                        style={{
+                          position: 'fixed', top: `${timeDropdownPos.top}px`, left: `${timeDropdownPos.left}px`, width: `${timeDropdownPos.width}px`,
+                          maxHeight: '300px', display: 'flex', flexDirection: 'column',
+                          background: 'rgba(252, 249, 248, 0.98)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+                          borderRadius: '14px', boxShadow: '0 16px 40px rgba(74, 48, 54, 0.12)',
+                          border: '1px solid rgba(223, 178, 140, 0.3)', padding: '6px', zIndex: 100000,
+                          animation: 'fadeInUpWow 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+                        }}
+                      >
+                        <div style={{ padding: '2px 2px 6px 2px', flexShrink: 0 }}>
+                          <input
+                            type="text"
+                            autoFocus
+                            placeholder="Escribe una hora... ej. 3:00 PM"
+                            value={timeSearchQuery}
+                            onChange={e => setTimeSearchQuery(e.target.value)}
+                            onClick={e => e.stopPropagation()}
+                            style={{
+                              width: '100%', padding: '8px 12px', borderRadius: '10px',
+                              border: '1.5px solid rgba(201, 114, 130, 0.25)', background: '#fff',
+                              color: '#2d1b22', fontSize: '0.76rem', fontWeight: 600, outline: 'none',
+                              boxSizing: 'border-box', transition: 'border-color 0.2s'
+                            }}
+                            onFocus={e => { e.target.style.borderColor = '#c97282'; }}
+                            onBlur={e => { e.target.style.borderColor = 'rgba(201, 114, 130, 0.25)'; }}
+                          />
+                        </div>
+                        <div className="jana-scrollbar" style={{ overflowY: 'auto', flex: 1 }}>
+                          {(() => {
+                            const norm = s => s.toLowerCase().replace(/\s+/g, '');
+                            const query = norm(timeSearchQuery);
+                            const allOptions = [{ value: 'now', label: `Ahora (${formatMinutes(nowMinutes)})` }, ...TIME_OPTIONS.map(m => ({ value: String(m), label: formatMinutes(m) }))];
+                            const filtered = query ? allOptions.filter(opt => norm(opt.label).includes(query)) : allOptions;
+                            if (filtered.length === 0) {
+                              return <div style={{ padding: '14px', textAlign: 'center', fontSize: '0.74rem', color: '#a0909a' }}>Sin resultados</div>;
+                            }
+                            return filtered.map(opt => {
+                              const isSelected = (checkingTime == null ? 'now' : String(checkingTime)) === opt.value;
+                              return (
+                                <div
+                                  key={opt.value}
+                                  onClick={() => { setCheckingTime(opt.value === 'now' ? null : parseInt(opt.value, 10)); setShowTimeDropdown(false); }}
+                                  style={{
+                                    padding: '8px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.76rem',
+                                    fontWeight: isSelected ? 800 : 600, color: isSelected ? '#c97282' : '#2d1b22',
+                                    background: isSelected ? 'rgba(201, 114, 130, 0.1)' : 'transparent', transition: 'background 0.15s'
+                                  }}
+                                  onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'rgba(201, 114, 130, 0.06)'; }}
+                                  onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
+                                >
+                                  {opt.label}
+                                </div>
+                              );
+                            });
+                          })()}
+                        </div>
+                      </div>
+                    </>,
+                    document.body
+                  )}
+                </div>
+              </div>
             </div>
           )}
 
@@ -2006,34 +1990,52 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               {/* ── LEFT: MAIN CALENDAR AREA ── */}
               <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-                {/* Pagination Controls */}
-                {totalPages > 1 && (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 16px', background: 'rgba(252,249,248,0.8)', borderRadius: '14px', border: '1px solid rgba(223,178,140,0.2)' }}>
-                    <button
-                      disabled={activePageIndex === 0}
-                      onClick={() => setDesktopStaffPage(p => Math.max(0, p - 1))}
-                      style={{ width: '34px', height: '34px', borderRadius: '10px', border: '1.5px solid rgba(201,114,130,0.25)', background: activePageIndex === 0 ? 'transparent' : '#fff', cursor: activePageIndex === 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: activePageIndex === 0 ? 0.4 : 1, transition: 'all 0.2s' }}
-                    >
-                      <ChevronLeft size={16} color="#c97282" />
-                    </button>
-                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                      {Array.from({ length: totalPages }, (_, i) => (
-                        <button
-                          key={i}
-                          onClick={() => setDesktopStaffPage(i)}
-                          style={{ width: i === activePageIndex ? '28px' : '8px', height: '8px', borderRadius: '999px', background: i === activePageIndex ? '#c97282' : 'rgba(201,114,130,0.25)', border: 'none', cursor: 'pointer', transition: 'all 0.25s', padding: 0 }}
-                        />
-                      ))}
-                    </div>
-                    <button
-                      disabled={activePageIndex >= totalPages - 1}
-                      onClick={() => setDesktopStaffPage(p => Math.min(totalPages - 1, p + 1))}
-                      style={{ width: '34px', height: '34px', borderRadius: '10px', border: '1.5px solid rgba(201,114,130,0.25)', background: activePageIndex >= totalPages - 1 ? 'transparent' : '#fff', cursor: activePageIndex >= totalPages - 1 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: activePageIndex >= totalPages - 1 ? 0.4 : 1, transition: 'all 0.2s' }}
-                    >
-                      <ChevronRight size={16} color="#c97282" />
-                    </button>
+                {/* Filtro de categoría + Paginación */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
+                  <div style={{ width: '230px', flexShrink: 0 }}>
+                    <JanaSelect
+                      variant="light"
+                      value={selectedCategory}
+                      onChange={setSelectedCategory}
+                      options={[
+                        { value: 'all', label: 'Todas las especialistas' },
+                        { value: 'laser', label: 'Centro Láser' },
+                        { value: 'lash', label: 'Pestañas (Lashes)' },
+                        { value: 'brows', label: 'Cejas (Brows)' },
+                        { value: 'nails', label: 'Manicura & Pedicura' },
+                        { value: 'hair', label: 'Estilistas & Cabello' }
+                      ]}
+                    />
                   </div>
-                )}
+
+                  {totalPages > 1 && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 16px', background: 'rgba(252,249,248,0.8)', borderRadius: '14px', border: '1px solid rgba(223,178,140,0.2)', flexShrink: 0 }}>
+                      <button
+                        disabled={activePageIndex === 0}
+                        onClick={() => setDesktopStaffPage(p => Math.max(0, p - 1))}
+                        style={{ width: '34px', height: '34px', borderRadius: '10px', border: '1.5px solid rgba(201,114,130,0.25)', background: activePageIndex === 0 ? 'transparent' : '#fff', cursor: activePageIndex === 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: activePageIndex === 0 ? 0.4 : 1, transition: 'all 0.2s' }}
+                      >
+                        <ChevronLeft size={16} color="#c97282" />
+                      </button>
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        {Array.from({ length: totalPages }, (_, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setDesktopStaffPage(i)}
+                            style={{ width: i === activePageIndex ? '28px' : '8px', height: '8px', borderRadius: '999px', background: i === activePageIndex ? '#c97282' : 'rgba(201,114,130,0.25)', border: 'none', cursor: 'pointer', transition: 'all 0.25s', padding: 0 }}
+                          />
+                        ))}
+                      </div>
+                      <button
+                        disabled={activePageIndex >= totalPages - 1}
+                        onClick={() => setDesktopStaffPage(p => Math.min(totalPages - 1, p + 1))}
+                        style={{ width: '34px', height: '34px', borderRadius: '10px', border: '1.5px solid rgba(201,114,130,0.25)', background: activePageIndex >= totalPages - 1 ? 'transparent' : '#fff', cursor: activePageIndex >= totalPages - 1 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: activePageIndex >= totalPages - 1 ? 0.4 : 1, transition: 'all 0.2s' }}
+                      >
+                        <ChevronRight size={16} color="#c97282" />
+                      </button>
+                    </div>
+                  )}
+                </div>
 
                 {/* Grid container with card styling */}
                 <div className="agenda-glass-card" style={{ padding: 0, overflow: 'hidden' }}>
@@ -2063,7 +2065,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                   )}
                                 </div>
                                 <div style={{ minWidth: 0, flex: 1 }}>
-                                  <div style={{ fontSize: '0.74rem', fontWeight: 700, color: '#2d1b22', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</div>
+                                  <div style={{ fontSize: '0.74rem', fontWeight: 700, color: '#2d1b22', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{getStaffDisplayName(s)}</div>
                                   <div style={{ fontSize: '0.59rem', color: '#a0909a', fontWeight: 600 }}>
                                     {ww.isWorking ? `${formatMinutes(ww.startMinutes)} – ${formatMinutes(ww.endMinutes)}` : '🌴 Día libre'}
                                   </div>
@@ -2167,7 +2169,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                       onClick={e => { e.stopPropagation(); setSelectedDetailedApp(app); }}
                                       title={`${app.clients?.name} · ${app.services?.name} · ${formatMinutes(startMin)}`}
                                       className="mi-card"
-                                      style={{ position: 'absolute', top: `${top}px`, left: '3px', right: '3px', height: `${height}px`, background: '#fff', borderRadius: '8px', borderLeft: `3px solid ${colors.leftBorder}`, boxShadow: '0 2px 6px rgba(167, 102, 115, 0.1)', padding: '3px 6px', cursor: 'pointer', overflow: 'hidden', zIndex: 2, transition: 'all 0.2s ease', boxSizing: 'border-box' }}
+                                      style={{ position: 'absolute', top: `${top}px`, left: '3px', right: '3px', height: `${height}px`, background: colors.bg, borderRadius: '8px', borderLeft: `3px solid ${colors.leftBorder}`, boxShadow: '0 2px 6px rgba(167, 102, 115, 0.1)', padding: '3px 6px', cursor: 'pointer', overflow: 'hidden', zIndex: 2, transition: 'all 0.2s ease', boxSizing: 'border-box' }}
                                       onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.04) translateX(2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(167, 102, 115, 0.2)'; e.currentTarget.style.zIndex = '4'; }}
                                       onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 2px 6px rgba(167, 102, 115, 0.1)'; e.currentTarget.style.zIndex = '2'; }}
                                     >
@@ -2175,13 +2177,13 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                         {app.clients?.name || 'Cliente'}
                                       </div>
                                       {height > 30 && (
-                                        <div style={{ fontSize: '0.55rem', color: '#a0909a', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                        <div style={{ fontSize: '0.55rem', color: colors.text, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                           {app.services?.name}
                                         </div>
                                       )}
                                       {height > 48 && (
                                         <div style={{ fontSize: '0.52rem', color: colors.text, fontWeight: 700 }}>
-                                          {formatMinutes(startMin)} · {duration}min
+                                          {formatMinutes(startMin)} · {formatHM(duration)}
                                         </div>
                                       )}
                                     </div>
@@ -2209,7 +2211,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
                       <thead>
                         <tr>
-                          {['HORA', 'CLIENTE', 'SERVICIO', 'ESPECIALISTA', 'DUR.', 'ESTADO', ''].map(col => (
+                          {['HORA', 'CLIENTE', 'SERVICIO', 'ESPECIALISTA', 'ESTADO', ''].map(col => (
                             <th key={col} style={{ padding: '8px 14px', textAlign: 'left', fontSize: '0.6rem', fontWeight: 800, color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.8px', borderBottom: '2px solid rgba(223, 178, 140, 0.2)', whiteSpace: 'nowrap', background: 'rgba(252,249,248,0.8)' }}>{col}</th>
                           ))}
                         </tr>
@@ -2217,7 +2219,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       <tbody>
                         {dayApps.length === 0 ? (
                           <tr>
-                            <td colSpan={7} style={{ padding: '30px', textAlign: 'center', fontSize: '0.8rem', color: '#a0909a', fontStyle: 'italic' }}>
+                            <td colSpan={6} style={{ padding: '30px', textAlign: 'center', fontSize: '0.8rem', color: '#a0909a', fontStyle: 'italic' }}>
                               No hay citas programadas para este día.
                             </td>
                           </tr>
@@ -2227,7 +2229,6 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                             .map((app, idx) => {
                               const d = new Date(app.scheduled_at || app.created_at);
                               const startMin = d.getHours() * 60 + d.getMinutes();
-                              const duration = getAppointmentDuration(app);
                               const colors = STATUS_COLORS[app.status] || STATUS_COLORS.Agendado;
                               const staffMember = visibleStaff.find(s => s.id === app.staff_id);
                               const rowBg = idx % 2 === 0 ? 'rgba(252,249,248,0.4)' : 'transparent';
@@ -2242,8 +2243,18 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                   <td style={{ padding: '10px 14px', fontSize: '0.74rem', fontWeight: 800, color: '#2d1b22', whiteSpace: 'nowrap' }}>{formatMinutes(startMin)}</td>
                                   <td style={{ padding: '10px 14px', fontSize: '0.74rem', fontWeight: 700, color: '#2d1b22' }}>{app.clients?.name || '—'}</td>
                                   <td style={{ padding: '10px 14px', fontSize: '0.7rem', color: '#6b5a60', fontWeight: 600, maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{app.services?.name || '—'}</td>
-                                  <td style={{ padding: '10px 14px', fontSize: '0.7rem', color: '#6b5a60', fontWeight: 700, whiteSpace: 'nowrap' }}>{staffMember?.name?.split(' ')[0] || '—'}</td>
-                                  <td style={{ padding: '10px 14px', fontSize: '0.68rem', color: '#a0909a', fontWeight: 600, whiteSpace: 'nowrap' }}>{duration}min</td>
+                                  <td style={{ padding: '10px 14px', fontSize: '0.7rem', color: '#6b5a60', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                      <div style={{ width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0, background: 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        {staffMember && getStaffPhoto(staffMember) ? (
+                                          <img src={getStaffPhoto(staffMember)} alt={staffMember.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        ) : (
+                                          <User size={10} color="#fff" />
+                                        )}
+                                      </div>
+                                      {staffMember ? getStaffDisplayName(staffMember) : '—'}
+                                    </div>
+                                  </td>
                                   <td style={{ padding: '10px 14px' }}>
                                     <span style={{ fontSize: '0.58rem', fontWeight: 800, color: colors.text, background: colors.bg, padding: '3px 10px', borderRadius: '999px', whiteSpace: 'nowrap', border: `1px solid ${colors.border}` }}>{app.status || 'Agendado'}</span>
                                   </td>
@@ -2251,11 +2262,12 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                                     <button
                                       onClick={e => { e.stopPropagation(); setSelectedDetailedApp(app); }}
                                       className="mi-btn"
-                                      style={{ background: 'none', border: '1px solid rgba(201, 114, 130, 0.3)', borderRadius: '8px', padding: '4px 10px', cursor: 'pointer', fontSize: '0.62rem', fontWeight: 700, color: '#c97282', transition: 'all 0.2s' }}
-                                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.1)'; }}
-                                      onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
+                                      title="Ver detalle"
+                                      style={{ background: 'none', border: 'none', borderRadius: '8px', padding: '4px 6px', cursor: 'pointer', color: '#a0909a', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.1)'; e.currentTarget.style.color = '#c97282'; }}
+                                      onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#a0909a'; }}
                                     >
-                                      Ver
+                                      <MoreVertical size={15} />
                                     </button>
                                   </td>
                                 </tr>
@@ -2302,7 +2314,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                             )}
                           </div>
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#2d1b22', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</div>
+                            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#2d1b22', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{getStaffDisplayName(s)}</div>
                             <div style={{ fontSize: '0.57rem', color: '#a0909a', fontWeight: 600 }}>
                               {ww.isWorking ? `${formatMinutes(ww.startMinutes)}–${formatMinutes(ww.endMinutes)}` : '🌴 Libre'}
                               {metrics.citasCount > 0 && ` · ${metrics.citasCount} cita${metrics.citasCount > 1 ? 's' : ''}`}
@@ -2394,7 +2406,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                         onChange={(val) => setMobileStaffFilter(val)}
                         options={[
                           { value: 'all', label: 'Todos' },
-                          ...visibleStaff.map(s => ({ value: s.id, label: s.name.split(' ')[0], image: s.image_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100' }))
+                          ...visibleStaff.map(s => ({ value: s.id, label: getStaffDisplayName(s), image: s.image_url || undefined }))
                         ]}
                       />
                     </div>
@@ -2633,7 +2645,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(180,170,165,0.3) 0%, rgba(180,170,165,0.05) 100%)' }} />
                           </div>
                           <div style={{ flex: 1, minWidth: 0, textAlign: (isMobile || isTablet) ? 'center' : 'left' }}>
-                            <div style={{ fontSize: (isMobile || isTablet) ? '0.65rem' : '0.72rem', fontWeight: 800, color: '#8c767b', lineHeight: 1.3 }}>{s.name}</div>
+                            <div style={{ fontSize: (isMobile || isTablet) ? '0.65rem' : '0.72rem', fontWeight: 800, color: '#8c767b', lineHeight: 1.3 }}>{getStaffDisplayName(s)}</div>
                             <div style={{ fontSize: '0.52rem', color: '#a0909a', fontWeight: 600, marginTop: '1px', lineHeight: 1.3 }}>{getStaffRole(s.name)}</div>
                             <div style={{ marginTop: '3px', display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '0.48rem', fontWeight: 800, color: '#b0a8a3', background: 'rgba(180,170,165,0.1)', padding: '1px 6px', borderRadius: '999px', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>
                               <Circle size={7} color="#b0a8a3" strokeWidth={2.5} />
@@ -2725,7 +2737,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                             {/* Info Area */}
                             <div style={{ padding: '10px 12px 12px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: '#fff', textAlign: 'left' }}>
                               <div>
-                                <div style={{ fontSize: '0.78rem', fontWeight: 900, color: '#2d1b22', lineHeight: 1.25 }}>{s.name}</div>
+                                <div style={{ fontSize: '0.78rem', fontWeight: 900, color: '#2d1b22', lineHeight: 1.25 }}>{getStaffDisplayName(s)}</div>
                                 <div style={{ fontSize: '0.58rem', color: '#a0909a', fontWeight: 650, marginTop: '2px' }}>{getStaffRole(s.name)}</div>
                               </div>
 
@@ -2778,7 +2790,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
                             {/* Info */}
                             <div style={{ flex: 1, minWidth: 0, textAlign: 'left', paddingRight: '22px' }}>
-                              <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#2d1b22', lineHeight: 1.3 }}>{s.name}</div>
+                              <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#2d1b22', lineHeight: 1.3 }}>{getStaffDisplayName(s)}</div>
                               <div style={{ fontSize: '0.5rem', color: '#a0909a', fontWeight: 600, marginTop: '1px', lineHeight: 1.3 }}>{getStaffRole(s.name)}</div>
                               <div style={{ marginTop: '3px', display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-start', flexWrap: 'wrap' }}>
                                 <span className="mi-tag" style={{ fontSize: '0.48rem', fontWeight: 800, color: statusColor, background: `${statusColor}12`, padding: '1px 6px', borderRadius: '999px', letterSpacing: '0.3px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>

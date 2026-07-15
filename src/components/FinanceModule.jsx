@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { useNotifs } from '../context/NotificationContext';
 import { useAuth } from '../context/AuthContext';
+import { getStaffDisplayName } from '../utils/stringUtils';
 import { 
   Plus, 
   Minus, 
@@ -1707,8 +1708,14 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
         const pendingCount = processedPayroll.filter(s => s.balanceBs > 0).length;
 
         const stylistPercent = totalPayroll > 0 ? (processedPayroll.filter(s => s.isStylist).reduce((sum, s) => sum + s.netIncomeBs, 0) / totalPayroll * 100) : 0;
-        const nailPercent = 23.2;
-        const lashPercent = 18.1;
+        const isNailRole = (s) => { const r = (s.role?.split('|')[0] || '').toLowerCase(); return r.includes('uña') || r.includes('nail') || r.includes('manicur'); };
+        const isLashRole = (s) => { const r = (s.role?.split('|')[0] || '').toLowerCase(); return r.includes('lash') || r.includes('pestañ'); };
+        const nailMembers = processedPayroll.filter(s => !s.isStylist && !s.isAssistant && isNailRole(s));
+        const lashMembers = processedPayroll.filter(s => !s.isStylist && !s.isAssistant && isLashRole(s));
+        const nailCount = nailMembers.length;
+        const lashCount = lashMembers.length;
+        const nailPercent = totalPayroll > 0 ? (nailMembers.reduce((sum, s) => sum + s.netIncomeBs, 0) / totalPayroll * 100) : 0;
+        const lashPercent = totalPayroll > 0 ? (lashMembers.reduce((sum, s) => sum + s.netIncomeBs, 0) / totalPayroll * 100) : 0;
         const estheticPercent = totalPayroll > 0 ? Math.max(0, 100 - stylistPercent - nailPercent - lashPercent) : 0;
 
         return (
@@ -1857,7 +1864,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                               <td style={{ padding: '14px 16px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                   <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'rgba(196,139,159,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--pink-primary)', fontWeight: '800', fontSize: '13px', flexShrink: 0 }}>{st.name.charAt(0)}</div>
-                                  <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)' }}>{st.name}</span>
+                                  <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)' }}>{getStaffDisplayName(st)}</span>
                                 </div>
                               </td>
                               <td style={{ padding: '14px 16px' }}>
@@ -1897,7 +1904,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                       return (
                         <div key={st.id} style={{ padding: '14px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                            <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)' }}>{st.name}</span>
+                            <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)' }}>{getStaffDisplayName(st)}</span>
                             <span style={{ fontSize: '11px', fontWeight: '700', padding: '3px 8px', borderRadius: '6px', backgroundColor: status === 'Pagado' ? 'rgba(50,215,75,0.1)' : status === 'En revisión' ? 'rgba(255,149,0,0.1)' : 'rgba(255,69,58,0.1)', color: status === 'Pagado' ? '#32d74b' : status === 'En revisión' ? '#ff9500' : '#ff453a' }}>{status}</span>
                           </div>
                           <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}>{st.role?.split('|')[0]} · {st.servicesCount} servicios</div>
@@ -2040,21 +2047,21 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ff9500' }}></div>
-                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>Nail Artist (1)</span>
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>Nail Artist ({nailCount})</span>
                     </div>
-                    <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>{nailPercent}%</span>
+                    <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>{nailPercent.toFixed(1)}%</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#00bfff' }}></div>
-                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>Lash Expert (1)</span>
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>Lash Expert ({lashCount})</span>
                     </div>
-                    <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>{lashPercent}%</span>
+                    <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>{lashPercent.toFixed(1)}%</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#32d74b' }}></div>
-                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>Esteticistas ({Math.max(0, totalMembers - stylistCount - assistantCount)})</span>
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>Esteticistas ({Math.max(0, totalMembers - stylistCount - assistantCount - nailCount - lashCount)})</span>
                     </div>
                     <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>{estheticPercent.toFixed(1)}%</span>
                   </div>
@@ -2070,7 +2077,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'rgba(196,139,159,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--pink-primary)', fontWeight: '800', fontSize: '12px', flexShrink: 0 }}>{st.name.charAt(0)}</div>
                         <div>
-                          <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{st.name}</div>
+                          <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{getStaffDisplayName(st)}</div>
                           <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{st.role?.split('|')[0]}</div>
                         </div>
                       </div>
@@ -2383,7 +2390,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {processedPayroll.filter(s => s.balanceBs > 0).slice(0, 3).map(st => (
                     <div key={st.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>
-                      <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{st.name}</span>
+                      <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{getStaffDisplayName(st)}</span>
                       <span style={{ fontSize: '12px', fontWeight: '800', color: '#ff453a' }}>Bs. {formatBs(st.balanceBs)}</span>
                     </div>
                   ))}
@@ -2557,7 +2564,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                     {eligibleStylists.map(s => (
                       <div key={s.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                         <div>
-                          <span style={{ fontSize: '14px', fontWeight: '600' }}>{s.name}</span>
+                          <span style={{ fontSize: '14px', fontWeight: '600' }}>{getStaffDisplayName(s)}</span>
                           <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '8px' }}>
                             ({s.role?.split('|')[0] || 'Miembro'})
                           </span>

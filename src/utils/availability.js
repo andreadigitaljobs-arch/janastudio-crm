@@ -115,7 +115,7 @@ export const getNextFreeMinutes = (staffId, dateKey, nowMinutes, ctx) => {
 
 export const formatMinutes = (totalMinutes) => {
   if (totalMinutes == null) return '';
-  const h = Math.floor(totalMinutes / 60);
+  const h = Math.floor(totalMinutes / 60) % 24;
   const m = totalMinutes % 60;
   const ampm = h >= 12 ? 'PM' : 'AM';
   const h12 = h % 12 || 12;

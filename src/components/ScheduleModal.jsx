@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { GiEyelashes } from 'react-icons/gi';
 import { PiHairDryer } from 'react-icons/pi';
-import { normalizeForSearch } from '../utils/stringUtils';
+import { normalizeForSearch, getStaffDisplayName as getSharedStaffDisplayName } from '../utils/stringUtils';
 import NailsIcon from './NailsIcon';
 import LaserGunIcon from './LaserGunIcon';
 import { dataService } from '../services/dataService';
@@ -52,7 +52,11 @@ const getDisplayTime = (timeStr) => {
   return `${h12}:${m} ${ampm}`;
 };
 
-const getStaffDisplayName = (member) => String(member?.name || '').split('(')[0].trim();
+const getStaffDisplayName = (member) => {
+  if (!member) return '';
+  const cleanName = String(member.name || '').split('(')[0].trim();
+  return getSharedStaffDisplayName({ ...member, name: cleanName });
+};
 
 const formatDuration = (minutes) => {
   if (!minutes || minutes < 1) return '0 min';
@@ -766,7 +770,7 @@ const ScheduleModal = ({
                         options={staffArray.filter(s => getRoleKind(s.role) !== 'admin').map(s => ({
                                   value: s.id,
                                   label: getStaffDisplayName(s),
-                                  image: s.image_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100',
+                                  image: s.image_url || undefined,
                                   subLabel: getRoleName(s.role)
                                 }))}
                         showSearch={true}
@@ -1183,7 +1187,7 @@ const ScheduleModal = ({
                                       return {
                                         value: s.id,
                                         label: getStaffDisplayName(s),
-                                        image: s.image_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100',
+                                        image: s.image_url || undefined,
                                         subLabel: isRecommended ? `✨ Recomendada (${rawRole})` : rawRole,
                                         isRecommended
                                       };
@@ -1252,7 +1256,7 @@ const ScheduleModal = ({
                                             return {
                                               value: s.id,
                                               label: getStaffDisplayName(s),
-                                              image: s.image_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100',
+                                              image: s.image_url || undefined,
                                               subLabel: isRecommended ? `✨ Recomendada (${rawRole})` : rawRole,
                                               isRecommended
                                             };
@@ -1414,11 +1418,17 @@ const ScheduleModal = ({
                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '10px' }}>
                                      {/* Fila de la especialista asignada */}
                                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
-                                       <img 
-                                         src={staffObj?.image_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100'} 
-                                         alt={staffObj?.name}
-                                         style={{ width: '18px', height: '18px', borderRadius: '50%', objectFit: 'cover' }}
-                                       />
+                                       {staffObj?.image_url ? (
+                                         <img
+                                           src={staffObj.image_url}
+                                           alt={staffObj?.name}
+                                           style={{ width: '18px', height: '18px', borderRadius: '50%', objectFit: 'cover' }}
+                                         />
+                                       ) : (
+                                         <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                           <User size={10} color="#fff" />
+                                         </div>
+                                       )}
                                        <span style={{ fontSize: '0.68rem', color: '#8b7076', fontWeight: 650, lineHeight: '1.3' }}>
                                          {getStaffDisplayName(staffObj)} · <span style={{ color: '#c97282', fontWeight: 700 }}>{getDisplayTime(svc.time)}</span>
                                        </span>

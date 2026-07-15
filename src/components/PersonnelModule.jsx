@@ -33,14 +33,15 @@ import {
   Star,
   Search,
   LayoutGrid,
-  Table
+  Table,
+  Percent
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import JanaSelect from './JanaSelect';
 import JanaCamera from './JanaCamera';
 import StaffProfileModal from './StaffProfileModal';
 import BirthdayTextInput from './BirthdayTextInput';
-import { formatName } from '../utils/stringUtils';
+import { formatName, getStaffDisplayName } from '../utils/stringUtils';
 
 import { useAuth } from '../context/AuthContext';
 import { useDialog } from '../context/DialogContext';
@@ -96,7 +97,10 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
     username: '',
     permissions: rolePresets['Estilista'],
     washing_rate: 0,
-    birth_date: ''
+    birth_date: '',
+    commission_pct: 40,
+    id_card: '',
+    display_name: ''
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -195,7 +199,10 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
       username: person.username || '',
       permissions: perms,
       washing_rate: person.washing_rate || 0,
-      birth_date: person.birth_date || ''
+      birth_date: person.birth_date || '',
+      commission_pct: person.commission_pct ?? 40,
+      id_card: person.id_card || '',
+      display_name: person.display_name || ''
     });
     setEditingId(person.id);
     setIsEditing(true);
@@ -220,7 +227,10 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
         permissions: rolePresets['Estilista'],
         washing_rate: 0,
         roles: ['Estilista'],
-        birth_date: ''
+        birth_date: '',
+        commission_pct: 40,
+        id_card: '',
+        display_name: ''
       });
       setIsCreatingNewRole(false);
       setNewRoleName('');
@@ -332,7 +342,9 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
         address: formData.address,
         email: formData.email ? formData.email.trim().toLowerCase() : null,
         username: formData.username,
-        commission_pct: 40,
+        commission_pct: Number(formData.commission_pct) || 0,
+        id_card: formData.id_card || null,
+        display_name: formData.display_name || null,
         washing_rate: formData.washing_rate || 0,
         birth_date: formData.birth_date || null
       };
@@ -587,8 +599,9 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
               <p style={{ color: 'var(--text-muted)', marginTop: '8px' }}>Comienza agregando a los miembros que harán brillar tu marca.</p>
             </div>
           ) : viewMode === 'table' ? (
-            <div style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <div style={{ background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+              <div style={{ overflowX: 'auto' }} className="jana-scrollbar">
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '920px' }}>
                 <thead>
                   <tr style={{ backgroundColor: '#faf5f5', borderBottom: '1px solid var(--border-color)' }}>
                     {['MIEMBRO', 'NOMBRE / ROL', 'ESPECIALIDAD', 'TELÉFONO', 'HORARIO', 'RENDIMIENTO', 'ESTADO', 'ACCESO', 'ACCIONES'].map(h => (
@@ -644,6 +657,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                   })}
                 </tbody>
               </table>
+              </div>
             </div>
           ) : (
             /* GRID VIEW */
@@ -894,6 +908,38 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                     <input className="jana-client-input" placeholder="Ej. Marco Silva" value={formData.name} onChange={e => setFormData({...formData, name: formatName(e.target.value)})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
                   </div>
                 </div>
+                <div className="form-group">
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>CÉDULA</label>
+                  <div style={{ position: 'relative' }}>
+                    <CreditCard size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
+                    <input className="jana-client-input" placeholder="Ej. 25.662.949" value={formData.id_card} onChange={e => setFormData({...formData, id_card: e.target.value})} style={{ width: '100%', height: '50px', paddingLeft: '48px' }} />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', letterSpacing: '1px' }}>NOMBRE PARA MOSTRAR</label>
+                    {formData.name && (
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, display_name: getStaffDisplayName(formData.name) })}
+                        style={{ background: 'transparent', border: 'none', color: 'var(--pink-primary)', fontSize: '10px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                      >
+                        <Sparkles size={12} /> SUGERIR
+                      </button>
+                    )}
+                  </div>
+                  <div style={{ position: 'relative' }}>
+                    <User size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
+                    <input
+                      className="jana-client-input"
+                      placeholder={formData.name ? getStaffDisplayName(formData.name) : 'Ej. Francimar Estevez'}
+                      value={formData.display_name}
+                      onChange={e => setFormData({ ...formData, display_name: e.target.value })}
+                      style={{ width: '100%', height: '50px', paddingLeft: '48px' }}
+                    />
+                  </div>
+                  <p style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '6px' }}>Así se va a ver en la Agenda y demás listados, en vez del nombre completo.</p>
+                </div>
                 <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '4px', letterSpacing: '1px' }}>ROL EN EL EQUIPO</label>
                   
@@ -958,6 +1004,24 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                       </div>
                     </div>
                   )}
+                </div>
+
+                <div className="form-group">
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '1px' }}>COMISIÓN (%)</label>
+                  <div style={{ position: 'relative' }}>
+                    <Percent size={18} style={{ position: 'absolute', left: '16px', top: '16px', color: 'var(--pink-primary)' }} />
+                    <input
+                      className="jana-client-input"
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="1"
+                      placeholder="Ej. 40"
+                      value={formData.commission_pct}
+                      onChange={e => setFormData({ ...formData, commission_pct: e.target.value })}
+                      style={{ width: '100%', height: '50px', paddingLeft: '48px' }}
+                    />
+                  </div>
                 </div>
 
                 {formData.roles.includes('Asistente de Tratamiento') && (

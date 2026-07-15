@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
-import { normalizeForSearch } from '../utils/stringUtils';
+import { normalizeForSearch, getStaffDisplayName } from '../utils/stringUtils';
 import NewClientModal from './NewClientModal';
 import ScheduleModal from './ScheduleModal';
 import JanaDialog from './JanaDialog';
@@ -19,18 +19,6 @@ const DEMO_WAITING = [
   { name: 'Jana V.', arrived: '10:35 AM', status: 'Lista', initial: 'J' },
   { name: 'Laura G.', arrived: '10:40 AM', status: 'Pasando', initial: 'L' },
   { name: 'Diana R.', arrived: '10:45 AM', status: 'En espera', initial: 'D' },
-];
-
-const DEMO_UPCOMING = [
-  { time: '11:00 AM', client: 'Valentina S.', service: 'Uñas Acrílicas', staff: 'Valeria M.', status: 'Confirmada', initial: 'V' },
-  { time: '12:30 PM', client: 'Daniela P.', service: 'Limpieza Facial Premium', staff: 'Camila P.', status: 'Pendiente', initial: 'D' },
-  { time: '3:30 PM', client: 'Andrea L.', service: 'Extensiones de Pestañas', staff: 'Isabella R.', status: 'Confirmada', initial: 'A' },
-];
-
-const DEMO_STAFF = [
-  { name: 'Isabella R.', role: 'Estilista Senior', initial: 'I', available: true },
-  { name: 'Valeria M.', role: 'Nail Artist', initial: 'V', available: true },
-  { name: 'Camila P.', role: 'Esteticista', initial: 'C', available: true },
 ];
 
 const ReceptionModule = ({ isMobile }) => {
@@ -364,7 +352,7 @@ const ReceptionModule = ({ isMobile }) => {
                     >
                       <option value="">Elegir...</option>
                       {staff.map(st => (
-                        <option key={st.id} value={st.id}>{st.name}</option>
+                        <option key={st.id} value={st.id}>{getStaffDisplayName(st)}</option>
                       ))}
                     </select>
                     <span style={{ color: '#6b6b6b' }}>{s.duration_minutes || 60} min</span>
@@ -422,17 +410,16 @@ const ReceptionModule = ({ isMobile }) => {
                 <span style={{ fontWeight: 600, fontSize: '0.75rem', color: '#2d2d2d' }}>Estilistas Disponibles</span>
               </div>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                {DEMO_STAFF.map((s, i) => (
-                    <button className="mi-btn" onClick={() => setFormData({ ...formData, staffId: staff[i]?.id || '' })} style={{
+                {staff.slice(0, 4).map((s) => (
+                    <button key={s.id} className="mi-btn" onClick={() => setFormData({ ...formData, staffId: s.id })} style={{
                     display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 10px',
-                    borderRadius: '10px', border: formData.staffId === (staff[i]?.id) ? '1.5px solid #c48b9f' : '1px solid rgba(0,0,0,0.06)',
-                    background: formData.staffId === (staff[i]?.id) ? 'rgba(196,139,159,0.06)' : '#faf5f5',
+                    borderRadius: '10px', border: formData.staffId === s.id ? '1.5px solid #c48b9f' : '1px solid rgba(0,0,0,0.06)',
+                    background: formData.staffId === s.id ? 'rgba(196,139,159,0.06)' : '#faf5f5',
                     cursor: 'pointer', fontSize: '0.7rem'
                   }}>
-                    <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, fontSize: '0.65rem' }}>{s.initial}</div>
+                    <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, fontSize: '0.65rem' }}>{s.name?.charAt(0)?.toUpperCase() || '?'}</div>
                     <div style={{ textAlign: 'left' }}>
-                      <div style={{ fontWeight: 600, color: '#2d2d2d' }}>{s.name}</div>
-                      <div style={{ fontSize: '0.58rem', color: '#16a34a' }}>● Disponible</div>
+                      <div style={{ fontWeight: 600, color: '#2d2d2d' }}>{getStaffDisplayName(s)}</div>
                     </div>
                   </button>
                 ))}
@@ -451,14 +438,11 @@ const ReceptionModule = ({ isMobile }) => {
                 <span style={{ fontWeight: 600, fontSize: '0.75rem', color: '#2d2d2d' }}>Próximas Citas (Agenda Hoy)</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {(upcomingAppointments.length > 0 ? upcomingAppointments : DEMO_UPCOMING.map(d => ({
-                  id: `mock-${d.client}`,
-                  scheduled_at: new Date().toISOString(),
-                  clients: { name: d.client, phone: '0412-0000000' },
-                  services: { name: d.service },
-                  staff_id: d.staff,
-                  status: d.status
-                }))).map((apt, idx) => {
+                {upcomingAppointments.length === 0 ? (
+                  <p style={{ fontSize: '0.72rem', color: '#9e9e9e', textAlign: 'center', padding: '10px 0', fontStyle: 'italic' }}>
+                    No hay citas próximas.
+                  </p>
+                ) : upcomingAppointments.map((apt, idx) => {
                   const sc = apt.status === 'Confirmada' || apt.status === 'Agendado' || apt.status === 'Completado' 
                     ? { bg: '#f0fdf4', text: '#16a34a', border: '#bbf7d0' } 
                     : { bg: '#fffbeb', text: '#d97706', border: '#fde68a' };

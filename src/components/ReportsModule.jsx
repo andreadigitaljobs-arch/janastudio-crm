@@ -170,12 +170,7 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
     { label: '15 jun', y: 400 }, { label: '22 jun', y: 385 }, { label: '29 jun', y: 420 }, { label: '4 jul', y: 440 },
   ];
 
-  const teamPerformance = [
-    { rank: 1, name: 'Isabella R.', avatar: 'I', ingresos: 14820, citas: 118, rendimiento: 92, color: '#c48b9f' },
-    { rank: 2, name: 'Valeria M.', avatar: 'V', ingresos: 13460, citas: 104, rendimiento: 88, color: '#bf5af2' },
-    { rank: 3, name: 'Camila P.', avatar: 'C', ingresos: 10250, citas: 87, rendimiento: 78, color: '#ff9f0a' },
-    { rank: 4, name: 'Sofia A.', avatar: 'S', ingresos: 9790, citas: 77, rendimiento: 72, color: '#30d158' },
-  ];
+  const teamPerformance = [];
 
   const heatMapData = [
     { day: 'Lunes', hours: [0, 1, 2, 3, 2, 3, 3, 2, 1, 1, 0, 0, 1, 2, 3, 3, 2, 1, 0] },
@@ -378,7 +373,9 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
           {isMobile ? (
             /* MOBILE: tarjetas de especialista */
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {teamPerformance.map((t, i) => (
+              {teamPerformance.length === 0 ? (
+                <p style={{ fontSize: '12px', color: 'var(--text-muted)', textAlign: 'center', padding: '12px 0', fontStyle: 'italic' }}>Sin datos disponibles todavía.</p>
+              ) : teamPerformance.map((t, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', borderRadius: '10px', background: '#faf5f5', border: '1px solid var(--border-color)' }}>
                   <span style={{ fontSize: '11px', fontWeight: '800', color: t.rank <= 3 ? t.color : 'var(--text-muted)', minWidth: '18px' }}>{t.rank <= 3 ? `#${t.rank}` : t.rank}</span>
                   <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '800', color: t.color, flexShrink: 0 }}>{t.avatar}</div>
@@ -403,7 +400,9 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
                   </tr>
                 </thead>
                 <tbody>
-                  {teamPerformance.map((t, i) => (
+                  {teamPerformance.length === 0 ? (
+                    <tr><td colSpan={4} style={{ padding: '16px 8px', textAlign: 'center', fontSize: '12px', color: 'var(--text-muted)', fontStyle: 'italic' }}>Sin datos disponibles todavía.</td></tr>
+                  ) : teamPerformance.map((t, i) => (
                     <tr key={i} style={{ borderBottom: '1px solid var(--border-color)' }}>
                       <td style={{ padding: '8px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -512,7 +511,6 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
               { icon: <BarChart3 size={16} color="#c48b9f" />, text: 'Balayage Premium lidera la facturación.' },
               { icon: <Calendar size={16} color="#bf5af2" />, text: 'Los sábados muestran mayor ocupación.' },
               { icon: <TrendingUp size={16} color="#32d74b" />, text: 'La retención creció respecto al mes anterior.' },
-              { icon: <Users size={16} color="#ff9f0a" />, text: 'Valeria M. lidera en número de citas.' },
             ].map((item, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 12px', borderRadius: '10px', background: '#faf5f5' }}>
                 <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{item.icon}</div>

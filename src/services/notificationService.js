@@ -143,7 +143,7 @@ class NotificationService {
     const testNotifs = [
       {
         title: "Nueva Cita Registrada 📅",
-        body: "María Corina reservó Extensiones de Pestañas con Isabella R. para mañana a las 3:00 PM.",
+        body: "María Corina reservó Extensiones de Pestañas para mañana a las 3:00 PM.",
         date: now.toISOString()
       },
       {

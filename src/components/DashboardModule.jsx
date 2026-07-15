@@ -11,6 +11,7 @@ import {
 } from 'chart.js';
 import { Line, Doughnut } from 'react-chartjs-2';
 import { useAuth } from '../context/AuthContext';
+import { getStaffDisplayName } from '../utils/stringUtils';
 
 ChartJS.register(
   CategoryScale, LinearScale, PointElement, LineElement,
@@ -22,13 +23,6 @@ const FALLBACK_APPOINTMENTS = [
   { time: '11:00 AM', client: 'Valentina García', service: 'Diseño de Cejas', status: 'Confirmada', initial: 'V' },
   { time: '1:00 PM', client: 'Mariana Sánchez', service: 'Lifting de Pestañas', status: 'Pendiente', initial: 'M' },
   { time: '3:30 PM', client: 'Andrea López', service: 'Efecto Híbrido', status: 'Confirmada', initial: 'A' },
-];
-
-const TOP_SPECIALISTS = [
-  { name: 'Isabella Rodríguez', role: 'Estilista Senior', earnings: 2450, initial: 'I' },
-  { name: 'Valeria Martínez', role: 'Nail Artist', earnings: 1980, initial: 'V' },
-  { name: 'Camila Pérez', role: 'Lash Expert', earnings: 1560, initial: 'C' },
-  { name: 'Sofía Alonso', role: 'Esteticista', earnings: 1250, initial: 'S' },
 ];
 
 
@@ -152,6 +146,22 @@ const DashboardModule = ({
       list = FALLBACK_APPOINTMENTS;
     }
     return list.slice(0, 4);
+  }, [dbData]);
+
+  // Ranking real de especialistas por ingresos, a partir de las citas completadas
+  const topSpecialists = useMemo(() => {
+    const apps = dbData?.appointments || [];
+    const byStaff = {};
+    apps.forEach(apt => {
+      const s = apt.staff;
+      if (!s?.id) return;
+      if (!byStaff[s.id]) byStaff[s.id] = { name: getStaffDisplayName(s), role: (s.role || '').split('|')[0] || 'Especialista', earnings: 0, citas: 0 };
+      byStaff[s.id].earnings += apt.services?.price || 0;
+      byStaff[s.id].citas += 1;
+    });
+    return Object.values(byStaff)
+      .sort((a, b) => b.earnings - a.earnings)
+      .map(s => ({ ...s, initial: s.name?.charAt(0)?.toUpperCase() || '?' }));
   }, [dbData]);
 
   // Dynamic calculations for premium operational widgets
@@ -1023,10 +1033,14 @@ const DashboardModule = ({
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-            {TOP_SPECIALISTS.slice(0, 3).map((spec, idx) => {
+            {topSpecialists.length === 0 ? (
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textAlign: 'center', padding: '12px 0', fontStyle: 'italic' }}>
+                Aún no hay datos suficientes.
+              </p>
+            ) : topSpecialists.slice(0, 3).map((spec, idx) => {
               return (
-                <div 
-                  key={idx} 
+                <div
+                  key={idx}
                   onClick={() => onNavigate('personnel')}
                   className="mi-row"
                   style={{
@@ -1641,8 +1655,11 @@ const DashboardModule = ({
 
           {/* Specialists list */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-            {TOP_SPECIALISTS.slice(0, 3).map((spec, idx) => {
-              const maxEarnings = TOP_SPECIALISTS[0]?.earnings || 1;
+            {topSpecialists.length === 0 ? (
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textAlign: 'center', padding: '12px 0', fontStyle: 'italic' }}>
+                Aún no hay datos suficientes.
+              </p>
+            ) : topSpecialists.slice(0, 3).map((spec, idx) => {
               return (
                 <div key={idx} className="mi-row" style={{
                   display: 'flex', alignItems: 'center', gap: '10px',

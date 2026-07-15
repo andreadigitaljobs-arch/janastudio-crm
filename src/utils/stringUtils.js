@@ -114,7 +114,33 @@ export const formatName = (fullName) => {
   return formattedParts.join('');
 };
 
+/**
+ * Devuelve el nombre corto de una especialista (primer nombre + primer apellido)
+ * para mostrar en la Agenda y demás listados, en vez del nombre completo.
+ * Usa `display_name` si está definido; si no, arma un nombre corto a partir de `name`.
+ * @param {{ display_name?: string, name?: string }|string} staffOrName Objeto de staff, o directamente el nombre completo
+ * @returns {string}
+ */
+export const getStaffDisplayName = (staffOrName) => {
+  if (!staffOrName) return '';
+  if (typeof staffOrName === 'string') {
+    return shortenName(staffOrName);
+  }
+  if (staffOrName.display_name && staffOrName.display_name.trim() !== '') {
+    return staffOrName.display_name.trim();
+  }
+  return shortenName(staffOrName.name);
+};
+
+const shortenName = (fullName) => {
+  if (!fullName) return '';
+  const words = fullName.trim().split(/\s+/);
+  if (words.length <= 2) return fullName.trim();
+  return `${words[0]} ${words[words.length - 1]}`;
+};
+
 export default {
   normalizeForSearch,
-  formatName
+  formatName,
+  getStaffDisplayName
 };

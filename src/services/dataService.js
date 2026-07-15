@@ -3,7 +3,7 @@ import { notificationService } from './notificationService';
 
 // ─── Smart In-Memory Cache ────────────────────────────────────────────────────
 const _cache = {};
-const STAFF_LIST_SELECT = 'id, auth_user_id, email, name, role, commission_pct, active, created_at, phone, address, specialties, birth_date';
+const STAFF_LIST_SELECT = 'id, auth_user_id, email, name, display_name, role, commission_pct, active, created_at, phone, address, specialties, birth_date, id_card';
 const STAFF_DETAIL_SELECT = `${STAFF_LIST_SELECT}, image_url`;
 
 async function _invokeAdminStaff(action, payload = {}) {
@@ -352,7 +352,7 @@ export const dataService = {
         *,
         clients (id, name, phone, allergies),
         services (id, name, price, duration_minutes),
-        staff!appointments_staff_id_fkey (id, name, role),
+        staff!appointments_staff_id_fkey (id, name, display_name, role),
         appointment_staff (id, staff_id, commission_earned, tip_amount)
       `)
       .gte('scheduled_at', startDate)
@@ -372,7 +372,7 @@ export const dataService = {
   async getClientPastAppointments(clientId, excludeAppointmentId) {
     let query = supabase
       .from('appointments')
-      .select('id, scheduled_at, status, total_price, services (name, price), appointment_services (staff_id, staff (id, name))')
+      .select('id, scheduled_at, status, total_price, services (name, price), appointment_services (staff_id, staff (id, name, display_name))')
       .eq('client_id', clientId)
       .eq('status', 'Completado')
       .order('scheduled_at', { ascending: false })
@@ -394,7 +394,7 @@ export const dataService = {
         *,
         clients (id, name, phone, allergies),
         services (id, name, price, duration_minutes),
-        staff!appointments_staff_id_fkey (id, name, role),
+        staff!appointments_staff_id_fkey (id, name, display_name, role),
         appointment_staff (id, staff_id, commission_earned, tip_amount)
       `)
       .in('status', states);
@@ -583,7 +583,7 @@ export const dataService = {
         scheduled_at,
         duration_minutes,
         services (id, name, price, duration_minutes),
-        staff (id, name, role),
+        staff (id, name, display_name, role),
         appointments!inner (id, client_id, status, notes, clients (id, name, phone, allergies, notes, hair_type))
       `)
       .gte('scheduled_at', startDate)
@@ -630,7 +630,7 @@ export const dataService = {
           started_at,
           completed_at,
           services (id, name, price, duration_minutes, commission_pct),
-          staff (id, name, role, photo_url)
+          staff (id, name, display_name, role, photo_url)
         ),
         appointment_extras (
           id,
