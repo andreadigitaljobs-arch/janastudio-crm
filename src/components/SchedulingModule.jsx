@@ -1681,16 +1681,16 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                             {app.clients?.name} · {app.services?.name} · {formatMinutes(startMin)}
                             <div style={{ position: 'absolute', bottom: '-5px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid #c97282' }} />
                           </div>
-                          <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#2d1b22', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                           <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#2d1b22', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {app.clients?.name || 'Cliente'}
                           </div>
                           {height > 30 && (
-                            <div style={{ fontSize: '0.55rem', color: colors.text, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            <div style={{ fontSize: '0.65rem', color: colors.text, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                               {app.services?.name}
                             </div>
                           )}
                           {height > 48 && (
-                            <div style={{ fontSize: '0.52rem', color: colors.text, fontWeight: 700 }}>
+                            <div style={{ fontSize: '0.62rem', color: colors.text, fontWeight: 700 }}>
                               {formatMinutes(startMin)} · {formatHM(duration)}
                             </div>
                           )}
