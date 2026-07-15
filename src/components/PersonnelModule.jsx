@@ -648,8 +648,8 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                             <div style={{ fontSize: '11px', color: '#c48b9f', fontWeight: '600' }}>{rolePart}</div>
                           </td>
                           <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--text-secondary)' }}>{person.specialty || rolePart}</td>
-                          <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--text-secondary)' }}>{person.phone || '—'}</td>
-                          <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--text-secondary)' }}>{person.schedule || '9:00 AM – 6:00 PM'}</td>
+                          <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{person.phone || '—'}</td>
+                          <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{person.schedule || '9:00 AM – 6:00 PM'}</td>
                           <td style={{ padding: '12px 16px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                               <span style={{ fontWeight: '800', color: getPerformanceColor(perf), fontSize: '13px' }}>{perf}%</span>
