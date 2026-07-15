@@ -289,8 +289,8 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
               style={{ 
                 padding: isMobileView ? '10px 6px' : '12px 14px',
                 borderRadius: '50px', 
-                background: activeTab === 'rendimiento' ? 'var(--pink-primary)' : 'rgba(255,255,255,0.05)', 
-                color: activeTab === 'rendimiento' ? 'black' : 'white', 
+                background: activeTab === 'rendimiento' ? 'var(--pink-primary)' : 'rgba(201, 114, 130, 0.08)', 
+                color: activeTab === 'rendimiento' ? 'white' : '#6b5a60', 
                 fontWeight: '800', 
                 border: 'none', 
                 cursor: 'pointer', 
@@ -309,8 +309,8 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
               style={{ 
                 padding: isMobileView ? '10px 6px' : '12px 14px',
                 borderRadius: '50px', 
-                background: activeTab === 'inventario' ? 'var(--pink-primary)' : 'rgba(255,255,255,0.05)', 
-                color: activeTab === 'inventario' ? 'black' : 'white', 
+                background: activeTab === 'inventario' ? 'var(--pink-primary)' : 'rgba(201, 114, 130, 0.08)', 
+                color: activeTab === 'inventario' ? 'white' : '#6b5a60', 
                 fontWeight: '800', 
                 border: 'none', 
                 cursor: 'pointer', 
@@ -329,8 +329,8 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
               style={{
                 padding: isMobileView ? '10px 6px' : '12px 14px',
                 borderRadius: '50px',
-                background: activeTab === 'horario' ? 'var(--pink-primary)' : 'rgba(255,255,255,0.05)',
-                color: activeTab === 'horario' ? 'black' : 'white',
+                background: activeTab === 'horario' ? 'var(--pink-primary)' : 'rgba(201, 114, 130, 0.08)',
+                color: activeTab === 'horario' ? 'white' : '#6b5a60',
                 fontWeight: '800',
                 border: 'none',
                 cursor: 'pointer',
