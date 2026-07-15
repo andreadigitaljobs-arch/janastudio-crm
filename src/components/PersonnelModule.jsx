@@ -452,10 +452,10 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
 
   return (
     <div className="animate-fade-in mi-enter-up" style={{ paddingBottom: isMobile ? '120px' : '60px' }}>
-      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '24px' }}>
+      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '24px' }}>
         
-        {/* LEFT COLUMN */}
-        <div style={{ flex: isMobile ? 1 : 3, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        {/* MAIN COLUMN */}
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
           {/* Header */}
           <div className="mi-enter-up" style={{ 
@@ -708,106 +708,63 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
             </div>
           )}
 
-          {/* Próximos turnos */}
-          <div className="mi-card" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h4 style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Calendar size={16} color="#c48b9f" /> Próximos turnos del equipo
-              </h4>
-              <button style={{ fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer' }}>Ver agenda completa →</button>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
-              {filteredStaff.slice(0, 4).map((person, idx) => {
-                const rolePart = (person.role || '').split('|')[0].split(',')[0].trim();
-                const times = ['Hoy 10:00 AM', 'Hoy 11:00 AM', 'Hoy 9:00 AM', 'Hoy 9:00 AM'];
-                return (
-                  <div key={person.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px', borderRadius: '12px', backgroundColor: '#faf5f5', border: '1px solid var(--border-color)', width: '100%', boxSizing: 'border-box' }}>
-                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '12px', overflow: 'hidden', flexShrink: 0 }}>
-                      {(person.name || '?')[0].toUpperCase()}
-                    </div>
-                    <div style={{ minWidth: 0 }}>
-                      <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '12px' }}>{person.name}</div>
-                      <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{rolePart}</div>
-                    </div>
-                    <span style={{ fontSize: '11px', fontWeight: '700', color: '#c48b9f', marginLeft: 'auto', whiteSpace: 'nowrap' }}>{times[idx] || 'Hoy 10:00 AM'}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-        </div>
-
-        {/* RIGHT SIDEBAR */}
-        {!isMobile && (
-          <div style={{ width: '300px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Fila Inferior: Próximos Turnos y Notas Internas lado a lado */}
+          <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : '1.2fr 1fr', gap: '20px', marginTop: '20px' }}>
             
-            {/* Resumen del equipo */}
-            <div className="mi-card" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
-              <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '6px' }}><Users size={14} color="#c48b9f" /> Resumen del equipo</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            {/* Próximos turnos */}
+            <div className="mi-card" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)', height: 'fit-content' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <h4 style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Calendar size={16} color="#c48b9f" /> Próximos turnos del equipo
+                </h4>
+                <button style={{ fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer' }}>Ver agenda completa →</button>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
+                {filteredStaff.slice(0, 4).map((person, idx) => {
+                  const rolePart = (person.role || '').split('|')[0].split(',')[0].trim();
+                  const times = ['Hoy 10:00 AM', 'Hoy 11:00 AM', 'Hoy 9:00 AM', 'Hoy 9:00 AM'];
+                  return (
+                    <div key={person.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px', borderRadius: '12px', backgroundColor: '#faf5f5', border: '1px solid var(--border-color)', width: '100%', boxSizing: 'border-box' }}>
+                      <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '12px', overflow: 'hidden', flexShrink: 0 }}>
+                        {(person.name || '?')[0].toUpperCase()}
+                      </div>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '12px' }}>{person.name}</div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{rolePart}</div>
+                      </div>
+                      <span style={{ fontSize: '11px', fontWeight: '700', color: '#c48b9f', marginLeft: 'auto', whiteSpace: 'nowrap' }}>{times[idx] || 'Hoy 10:00 AM'}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Notas internas */}
+            <div className="mi-card" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)', height: 'fit-content' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <h4 style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Mail size={16} color="#c48b9f" /> Notas internas
+                </h4>
+                <button style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'var(--pink-primary)', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Plus size={14} />
+                </button>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {[
-                  { label: 'Total especialistas', value: activeCount, color: 'var(--text-primary)' },
-                  { label: 'En servicio', value: Math.ceil(activeCount * 0.33), color: '#c48b9f' },
-                  { label: 'Disponibles', value: availableToday, color: '#22c55e' },
-                  { label: 'En descanso', value: activeCount - availableToday - Math.ceil(activeCount * 0.33), color: '#6b6b6b' },
-                ].map((s, i) => (
-                  <div key={i} style={{ textAlign: 'center', padding: '12px 8px', borderRadius: '12px', background: '#faf5f5' }}>
-                    <div style={{ fontSize: '1.4rem', fontWeight: '800', color: s.color }}>{s.value}</div>
-                    <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>{s.label}</div>
+                  { title: 'Recordar capacitación en nuevas técnicas de balayage.', date: '10 Jul 2026' },
+                  { title: 'Reunión de equipo mensual este lunes 7 de julio.', date: '07 Jul 2026' }
+                ].map((note, idx) => (
+                  <div key={idx} style={{ padding: '12px', borderRadius: '10px', backgroundColor: '#faf5f5', border: '1px solid var(--border-color)' }}>
+                    <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{note.title}</div>
+                    <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px' }}>{note.date}</div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Top desempeño */}
-            <div className="mi-card" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}><TrendingUp size={14} color="#c48b9f" /> Top desempeño</h4>
-                <button style={{ fontSize: '11px', color: 'var(--pink-primary)', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer' }}>Ver todo</button>
-              </div>
-              {activeStaff.slice(0, 3).map((person, idx) => {
-                const perf = [94, 91, 89][idx] || 88;
-                const rolePart = (person.role || '').split('|')[0].split(',')[0].trim();
-                return (
-                  <div key={person.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 0', borderBottom: idx < 2 ? '1px solid var(--border-color)' : 'none' }}>
-                    <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '10px', overflow: 'hidden', flexShrink: 0 }}>
-                      {(person.name || '?')[0].toUpperCase()}
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '12px' }}>{person.name}</div>
-                      <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{rolePart}</div>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontWeight: '800', color: getPerformanceColor(perf), fontSize: '12px' }}>{perf}%</div>
-                      <div style={{ width: '40px', height: '3px', borderRadius: '2px', background: '#f5f5f5', overflow: 'hidden', marginTop: '2px' }}>
-                        <div style={{ width: `${perf}%`, height: '100%', background: getPerformanceColor(perf), borderRadius: '2px' }} />
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Notas internas */}
-            <div className="mi-card" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '6px' }}><Mail size={14} color="#c48b9f" /> Notas internas</h4>
-                <button style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'var(--pink-primary)', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Plus size={14} /></button>
-              </div>
-              {[
-                { title: 'Recordar capacitación en nuevas técnicas de balayage.', date: '10 Jul 2026', icon: '📋' },
-                { title: 'Reunión de equipo mensual este lunes 7 de julio.', date: '07 Jul 2026', icon: '📅' },
-              ].map((note, idx) => (
-                <div key={idx} style={{ padding: '12px', borderRadius: '10px', backgroundColor: '#faf5f5', marginBottom: idx === 0 ? '8px' : 0, border: '1px solid var(--border-color)' }}>
-                  <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{note.title}</div>
-                  <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px' }}>{note.date}</div>
-                </div>
-              ))}
-            </div>
-
           </div>
-        )}
+
+        </div>
 
       </div>
 
