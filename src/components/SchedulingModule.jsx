@@ -51,14 +51,6 @@ const STATUS_COLORS = {
 const VIEW_START_MIN = 7 * 60;
 const VIEW_END_MIN = 20 * 60;
 
-// Franjas horarias para filtrar el listado de "Citas de hoy"
-const TIME_PERIODS = [
-  { key: 'all', label: 'Todo el día' },
-  { key: 'manana', label: 'Mañana', startMin: 0, endMin: 12 * 60 },
-  { key: 'mediodia', label: 'Mediodía', startMin: 12 * 60, endMin: 14 * 60 },
-  { key: 'tarde', label: 'Tarde', startMin: 14 * 60, endMin: 18 * 60 },
-  { key: 'noche', label: 'Noche', startMin: 18 * 60, endMin: 24 * 60 },
-];
 const PX_PER_MIN = 1; // 60px por hora
 const GRID_HEIGHT = (VIEW_END_MIN - VIEW_START_MIN) * PX_PER_MIN;
 const minutesToY = (minutes) => Math.max(0, (minutes - VIEW_START_MIN) * PX_PER_MIN);
@@ -1279,7 +1271,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
     setDesktopStaffPage(0);
   }, [selectedCategory, staffSearchQuery]);
 
-  const ITEMS_PER_PAGE = 4;
+  const ITEMS_PER_PAGE = isMobile ? 1 : isTablet ? 2 : 4;
   const totalPages = Math.ceil(visibleStaff.length / ITEMS_PER_PAGE);
   const activePageIndex = Math.min(desktopStaffPage, Math.max(0, totalPages - 1));
   const paginatedStaff = visibleStaff.slice(activePageIndex * ITEMS_PER_PAGE, (activePageIndex + 1) * ITEMS_PER_PAGE);
@@ -1466,6 +1458,226 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
     const byCitas = [...list].sort((a, b) => b.metrics.citasCount - a.metrics.citasCount);
     return { byRevenue, byCitas };
   }, [visibleStaff, dayApps, schedules, timeOff, dateKey]);
+
+  // Grilla de horarios por especialista (columnas) — compartida entre desktop y tablet
+  const staffTimeGridCard = (
+    <div className="agenda-glass-card" style={{ padding: 0, overflow: 'hidden' }}>
+      {/* Scroll vertical + horizontal fallback */}
+      <div style={{ overflow: 'auto', maxHeight: '720px' }} className="jana-scrollbar">
+        <div style={{ minWidth: `${56 + paginatedStaff.length * 220}px`, width: '100%', position: 'relative' }}>
+
+          {/* Sticky header row */}
+          <div style={{ display: 'flex', position: 'sticky', top: 0, zIndex: 20, background: 'rgba(255, 255, 255, 0.98)', borderBottom: '2px solid rgba(223, 178, 140, 0.2)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
+            {/* Top-left corner */}
+            <div style={{ width: '56px', flexShrink: 0, height: '64px', position: 'sticky', left: 0, zIndex: 25, background: 'rgba(255, 255, 255, 0.98)', borderRight: '1px solid rgba(223, 178, 140, 0.15)' }} />
+            {/* Staff column headers */}
+            {paginatedStaff.length === 0 ? (
+              <div style={{ flex: 1, height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0909a', fontSize: '0.8rem', fontWeight: 600 }}>
+                No hay especialistas que mostrar
+              </div>
+            ) : (
+              paginatedStaff.map(s => {
+                const ww = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
+                return (
+                  <div key={s.id} style={{ flex: 1, minWidth: '185px', height: '64px', borderLeft: '1px solid rgba(223, 178, 140, 0.1)', padding: '10px 12px', display: 'flex', alignItems: 'center', gap: '8px', boxSizing: 'border-box' }}>
+                    <div style={{ width: '34px', height: '34px', borderRadius: '50%', flexShrink: 0, background: 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {getStaffPhoto(s) ? (
+                        <img src={getStaffPhoto(s)} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        <User size={15} color="#fff" />
+                      )}
+                    </div>
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <div style={{ fontSize: '0.74rem', fontWeight: 700, color: '#2d1b22', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{getStaffDisplayName(s)}</div>
+                      <div style={{ fontSize: '0.59rem', color: '#a0909a', fontWeight: 600 }}>
+                        {ww.isWorking ? `${formatMinutes(ww.startMinutes)} – ${formatMinutes(ww.endMinutes)}` : '🌴 Día libre'}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          {/* Grid Body */}
+          <div style={{ display: 'flex', position: 'relative' }}>
+            {/* Time axis */}
+            <div style={{ width: '56px', flexShrink: 0, position: 'sticky', left: 0, zIndex: 8, background: 'rgba(255, 255, 255, 0.98)', borderRight: '1px solid rgba(223, 178, 140, 0.15)' }}>
+              {Array.from({ length: Math.ceil(GRID_HEIGHT / 60) }, (_, i) => {
+                const min = VIEW_START_MIN + i * 60;
+                return (
+                  <div key={min} style={{ height: '60px', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingRight: '6px', paddingTop: '4px', boxSizing: 'border-box', borderBottom: '1px solid rgba(223, 178, 140, 0.08)' }}>
+                    <span style={{ fontSize: '0.57rem', fontWeight: 700, color: '#b0a0a5', whiteSpace: 'nowrap' }}>{formatMinutes(min)}</span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Specialist Columns */}
+            {paginatedStaff.length === 0 ? (
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: `${GRID_HEIGHT}px`, flexDirection: 'column', gap: '10px' }}>
+                <Search size={28} color="#c97282" style={{ opacity: 0.4 }} />
+                <span style={{ fontSize: '0.8rem', color: '#a0909a', fontWeight: 600 }}>No hay especialistas</span>
+              </div>
+            ) : (
+              paginatedStaff.map(s => {
+                const ww = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
+                const staffApps = dayApps.filter(a => a.staff_id === s.id);
+                const busyIntervals = getStaffBusyIntervals(s.id, dayApps);
+                const isSlotBusy = (time) => busyIntervals.some(b => time >= b.startMinutes && time < b.endMinutes);
+                return (
+                  <div
+                    key={s.id}
+                    style={{
+                      flex: 1, minWidth: 0, width: `calc(100% / ${paginatedStaff.length})`, position: 'relative', height: `${GRID_HEIGHT}px`,
+                      borderLeft: '1px solid rgba(223, 178, 140, 0.1)',
+                      cursor: ww.isWorking ? 'crosshair' : 'default',
+                      background: ww.isWorking
+                        ? 'repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0px, rgba(255, 255, 255, 0.5) 59px, rgba(223, 178, 140, 0.1) 60px)'
+                        : 'repeating-linear-gradient(45deg, rgba(200, 190, 192, 0.06) 0px, rgba(200, 190, 192, 0.06) 8px, rgba(200, 190, 192, 0.12) 8px, rgba(200, 190, 192, 0.12) 16px)'
+                    }}
+                    onClick={e => {
+                      if (!ww.isWorking) return;
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const y = e.clientY - rect.top;
+                      const clickedMin = Math.round((VIEW_START_MIN + y / PX_PER_MIN) / 30) * 30;
+                      if (isSlotBusy(clickedMin)) return;
+                      handleSlotClick(s, clickedMin);
+                    }}
+                  >
+                    {/* Day off label */}
+                    {!ww.isWorking && (
+                      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: '0.7rem', fontWeight: 700, color: '#a0848a', background: 'rgba(255, 255, 255, 0.95)', padding: '6px 14px', borderRadius: '20px', border: '1px solid rgba(223, 178, 140, 0.3)', whiteSpace: 'nowrap', zIndex: 3, pointerEvents: 'none' }}>
+                        🌴 Día libre
+                      </div>
+                    )}
+                    {/* Off-hours shading */}
+                    {ww.isWorking && ww.startMinutes > VIEW_START_MIN && (
+                      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: `${minutesToY(ww.startMinutes)}px`, background: 'rgba(200, 190, 192, 0.1)', pointerEvents: 'none' }} />
+                    )}
+                    {ww.isWorking && ww.endMinutes < VIEW_END_MIN && (
+                      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: `${GRID_HEIGHT - minutesToY(ww.endMinutes)}px`, background: 'rgba(200, 190, 192, 0.1)', pointerEvents: 'none' }} />
+                    )}
+                    {/* Checking time highlight */}
+                    {checkingTime != null && ww.isWorking && (() => {
+                      const insideWork = checkingTime >= ww.startMinutes && checkingTime < ww.endMinutes;
+                      const busy = isSlotBusy(checkingTime);
+                      const free = insideWork && !busy;
+                      return (
+                        <div
+                          className={free ? 'agenda-slot-highlight-free' : 'agenda-slot-highlight-busy'}
+                          style={{ position: 'absolute', top: `${minutesToY(checkingTime)}px`, left: 0, right: 0, height: '60px', pointerEvents: 'none', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                          {free && <span style={{ fontSize: '0.58rem', fontWeight: 700, color: '#16a34a', background: '#fff', padding: '2px 6px', borderRadius: '6px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>Disponible</span>}
+                        </div>
+                      );
+                    })()}
+                    {/* Now line */}
+                    {isToday && nowMinutes >= VIEW_START_MIN && nowMinutes <= VIEW_END_MIN && (
+                      <div style={{ position: 'absolute', left: 0, right: 0, top: `${minutesToY(nowMinutes)}px`, height: '2px', background: '#c97282', zIndex: 5, boxShadow: '0 0 4px rgba(201, 114, 130, 0.6)', pointerEvents: 'none' }}>
+                        <div style={{ position: 'absolute', left: -4, top: -4, width: 10, height: 10, borderRadius: '50%', background: '#c97282' }} />
+                      </div>
+                    )}
+                    {/* Appointments */}
+                    {staffApps.map(app => {
+                      const d = new Date(app.scheduled_at || app.created_at);
+                      const startMin = d.getHours() * 60 + d.getMinutes();
+                      const duration = getAppointmentDuration(app);
+                      const top = minutesToY(startMin);
+                      const height = Math.max(22, duration * PX_PER_MIN - 2);
+                      const colors = STATUS_COLORS[app.status] || STATUS_COLORS.Agendado;
+                      return (
+                        <div
+                          key={app.id}
+                          onClick={e => { e.stopPropagation(); setSelectedDetailedApp(app); }}
+                          className="mi-card"
+                          style={{ position: 'absolute', top: `${top}px`, left: '3px', right: '3px', height: `${height}px`, background: colors.bg, borderRadius: '8px', borderLeft: `3px solid ${colors.leftBorder}`, boxShadow: '0 2px 6px rgba(167, 102, 115, 0.1)', padding: '3px 6px', cursor: 'pointer', overflow: 'visible', zIndex: 2, transition: 'all 0.2s ease', boxSizing: 'border-box' }}
+                          onMouseEnter={e => {
+                            e.currentTarget.style.transform = 'scale(1.04) translateX(2px)';
+                            e.currentTarget.style.boxShadow = '0 6px 16px rgba(167, 102, 115, 0.2)';
+                            e.currentTarget.style.zIndex = '10';
+                            const tip = e.currentTarget.querySelector('.app-tooltip');
+                            if (tip) tip.style.opacity = '1';
+                          }}
+                          onMouseLeave={e => {
+                            e.currentTarget.style.transform = '';
+                            e.currentTarget.style.boxShadow = '0 2px 6px rgba(167, 102, 115, 0.1)';
+                            e.currentTarget.style.zIndex = '2';
+                            const tip = e.currentTarget.querySelector('.app-tooltip');
+                            if (tip) tip.style.opacity = '0';
+                          }}
+                        >
+                          {/* Custom pink tooltip */}
+                          <div
+                            className="app-tooltip"
+                            style={{
+                              position: 'absolute', bottom: 'calc(100% + 6px)', left: '50%',
+                              transform: 'translateX(-50%)',
+                              background: 'linear-gradient(135deg, #c97282, #e8a4b0)',
+                              color: '#fff', fontSize: '0.65rem', fontWeight: 700,
+                              padding: '5px 10px', borderRadius: '8px',
+                              whiteSpace: 'nowrap', pointerEvents: 'none',
+                              boxShadow: '0 4px 12px rgba(201,114,130,0.35)',
+                              opacity: 0, transition: 'opacity 0.18s ease', zIndex: 99,
+                            }}
+                          >
+                            {app.clients?.name} · {app.services?.name} · {formatMinutes(startMin)}
+                            <div style={{ position: 'absolute', bottom: '-5px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid #c97282' }} />
+                          </div>
+                          <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#2d1b22', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {app.clients?.name || 'Cliente'}
+                          </div>
+                          {height > 30 && (
+                            <div style={{ fontSize: '0.55rem', color: colors.text, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {app.services?.name}
+                            </div>
+                          )}
+                          {height > 48 && (
+                            <div style={{ fontSize: '0.52rem', color: colors.text, fontWeight: 700 }}>
+                              {formatMinutes(startMin)} · {formatHM(duration)}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Controles de paginación de especialistas (compartidos entre desktop y tablet)
+  const staffGridPaginationControls = totalPages > 1 && (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 16px', background: 'rgba(252,249,248,0.8)', borderRadius: '14px', border: '1px solid rgba(223,178,140,0.2)', flexShrink: 0 }}>
+      <button
+        disabled={activePageIndex === 0}
+        onClick={() => setDesktopStaffPage(p => Math.max(0, p - 1))}
+        style={{ width: '34px', height: '34px', borderRadius: '10px', border: '1.5px solid rgba(201,114,130,0.25)', background: activePageIndex === 0 ? 'transparent' : '#fff', cursor: activePageIndex === 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: activePageIndex === 0 ? 0.4 : 1, transition: 'all 0.2s' }}
+      >
+        <ChevronLeft size={16} color="#c97282" />
+      </button>
+      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+        {Array.from({ length: totalPages }, (_, i) => (
+          <button
+            key={i}
+            onClick={() => setDesktopStaffPage(i)}
+            style={{ width: i === activePageIndex ? '28px' : '8px', height: '8px', borderRadius: '999px', background: i === activePageIndex ? '#c97282' : 'rgba(201,114,130,0.25)', border: 'none', cursor: 'pointer', transition: 'all 0.25s', padding: 0 }}
+          />
+        ))}
+      </div>
+      <button
+        disabled={activePageIndex >= totalPages - 1}
+        onClick={() => setDesktopStaffPage(p => Math.min(totalPages - 1, p + 1))}
+        style={{ width: '34px', height: '34px', borderRadius: '10px', border: '1.5px solid rgba(201,114,130,0.25)', background: activePageIndex >= totalPages - 1 ? 'transparent' : '#fff', cursor: activePageIndex >= totalPages - 1 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: activePageIndex >= totalPages - 1 ? 0.4 : 1, transition: 'all 0.2s' }}
+      >
+        <ChevronRight size={16} color="#c97282" />
+      </button>
+    </div>
+  );
 
   return (
     <div className="animate-fade-in agenda-module" style={{ paddingBottom: isMobile ? 'calc(100px + env(safe-area-inset-bottom, 12px))' : '40px' }}>
@@ -1831,8 +2043,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
         <div className="staff-control-container">
 
           {/* STATS ROW: Total de citas / Horas ocupadas / % Ocupación / ¿Quién está libre ahora? */}
-          {!(isMobile || isTablet) && (
-            <div style={{ display: 'flex', gap: '16px', marginBottom: '20px', flexWrap: 'wrap' }}>
+          {(
+            <div style={{ display: 'flex', gap: isMobile ? '10px' : '16px', marginBottom: isMobile ? '14px' : '20px', flexWrap: 'wrap' }}>
               <div className="agenda-glass-card" style={{ flex: '1 1 170px', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
                 <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(201,114,130,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <CalendarDays size={20} color="#c97282" />
@@ -1965,10 +2177,29 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             </div>
           )}
 
+          {/* Filtro de categoría (mobile/tablet) */}
+          {(isMobile || isTablet) && (
+            <div style={{ width: isMobile ? '100%' : '230px', marginBottom: '12px' }}>
+              <JanaSelect
+                variant="light"
+                value={selectedCategory}
+                onChange={setSelectedCategory}
+                options={[
+                  { value: 'all', label: 'Todas las especialistas' },
+                  { value: 'laser', label: 'Centro Láser' },
+                  { value: 'lash', label: 'Pestañas (Lashes)' },
+                  { value: 'brows', label: 'Cejas (Brows)' },
+                  { value: 'nails', label: 'Manicura & Pedicura' },
+                  { value: 'hair', label: 'Estilistas & Cabello' }
+                ]}
+              />
+            </div>
+          )}
+
           {/* THREE-COLUMN CONTENT GRID */}
           {(isMobile || isTablet) && (
-            <div style={{ 
-              display: 'flex', position: 'relative', marginBottom: '24px', 
+            <div style={{
+              display: 'flex', position: 'relative', marginBottom: '24px',
               background: 'rgba(252, 249, 248, 0.7)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
               padding: '6px', borderRadius: '18px', border: '1px solid rgba(223, 178, 140, 0.25)', 
               flexShrink: 0, boxShadow: '0 8px 32px rgba(74, 48, 54, 0.04)'
@@ -2055,197 +2286,11 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     </div>
                   </div>
 
-                  {agendaDesktopTab === 'grid' && totalPages > 1 && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 16px', background: 'rgba(252,249,248,0.8)', borderRadius: '14px', border: '1px solid rgba(223,178,140,0.2)', flexShrink: 0 }}>
-                      <button
-                        disabled={activePageIndex === 0}
-                        onClick={() => setDesktopStaffPage(p => Math.max(0, p - 1))}
-                        style={{ width: '34px', height: '34px', borderRadius: '10px', border: '1.5px solid rgba(201,114,130,0.25)', background: activePageIndex === 0 ? 'transparent' : '#fff', cursor: activePageIndex === 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: activePageIndex === 0 ? 0.4 : 1, transition: 'all 0.2s' }}
-                      >
-                        <ChevronLeft size={16} color="#c97282" />
-                      </button>
-                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                        {Array.from({ length: totalPages }, (_, i) => (
-                          <button
-                            key={i}
-                            onClick={() => setDesktopStaffPage(i)}
-                            style={{ width: i === activePageIndex ? '28px' : '8px', height: '8px', borderRadius: '999px', background: i === activePageIndex ? '#c97282' : 'rgba(201,114,130,0.25)', border: 'none', cursor: 'pointer', transition: 'all 0.25s', padding: 0 }}
-                          />
-                        ))}
-                      </div>
-                      <button
-                        disabled={activePageIndex >= totalPages - 1}
-                        onClick={() => setDesktopStaffPage(p => Math.min(totalPages - 1, p + 1))}
-                        style={{ width: '34px', height: '34px', borderRadius: '10px', border: '1.5px solid rgba(201,114,130,0.25)', background: activePageIndex >= totalPages - 1 ? 'transparent' : '#fff', cursor: activePageIndex >= totalPages - 1 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: activePageIndex >= totalPages - 1 ? 0.4 : 1, transition: 'all 0.2s' }}
-                      >
-                        <ChevronRight size={16} color="#c97282" />
-                      </button>
-                    </div>
-                  )}
+                  {agendaDesktopTab === 'grid' && staffGridPaginationControls}
                 </div>
 
                 {/* Grid container with card styling */}
-                {agendaDesktopTab === 'grid' && (
-                <div className="agenda-glass-card" style={{ padding: 0, overflow: 'hidden' }}>
-                  {/* Scroll vertical + horizontal fallback */}
-                  <div style={{ overflow: 'auto', maxHeight: '720px' }} className="jana-scrollbar">
-                    <div style={{ minWidth: `${56 + paginatedStaff.length * 220}px`, width: '100%', position: 'relative' }}>
-                      
-                      {/* Sticky header row */}
-                      <div style={{ display: 'flex', position: 'sticky', top: 0, zIndex: 20, background: 'rgba(255, 255, 255, 0.98)', borderBottom: '2px solid rgba(223, 178, 140, 0.2)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
-                        {/* Top-left corner */}
-                        <div style={{ width: '56px', flexShrink: 0, height: '64px', position: 'sticky', left: 0, zIndex: 25, background: 'rgba(255, 255, 255, 0.98)', borderRight: '1px solid rgba(223, 178, 140, 0.15)' }} />
-                        {/* Staff column headers */}
-                        {paginatedStaff.length === 0 ? (
-                          <div style={{ flex: 1, height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0909a', fontSize: '0.8rem', fontWeight: 600 }}>
-                            No hay especialistas que mostrar
-                          </div>
-                        ) : (
-                          paginatedStaff.map(s => {
-                            const ww = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
-                            return (
-                              <div key={s.id} style={{ flex: 1, minWidth: '185px', height: '64px', borderLeft: '1px solid rgba(223, 178, 140, 0.1)', padding: '10px 12px', display: 'flex', alignItems: 'center', gap: '8px', boxSizing: 'border-box' }}>
-                                <div style={{ width: '34px', height: '34px', borderRadius: '50%', flexShrink: 0, background: 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                  {getStaffPhoto(s) ? (
-                                    <img src={getStaffPhoto(s)} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                  ) : (
-                                    <User size={15} color="#fff" />
-                                  )}
-                                </div>
-                                <div style={{ minWidth: 0, flex: 1 }}>
-                                  <div style={{ fontSize: '0.74rem', fontWeight: 700, color: '#2d1b22', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{getStaffDisplayName(s)}</div>
-                                  <div style={{ fontSize: '0.59rem', color: '#a0909a', fontWeight: 600 }}>
-                                    {ww.isWorking ? `${formatMinutes(ww.startMinutes)} – ${formatMinutes(ww.endMinutes)}` : '🌴 Día libre'}
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })
-                        )}
-                      </div>
-
-                      {/* Grid Body */}
-                      <div style={{ display: 'flex', position: 'relative' }}>
-                        {/* Time axis */}
-                        <div style={{ width: '56px', flexShrink: 0, position: 'sticky', left: 0, zIndex: 8, background: 'rgba(255, 255, 255, 0.98)', borderRight: '1px solid rgba(223, 178, 140, 0.15)' }}>
-                          {Array.from({ length: Math.ceil(GRID_HEIGHT / 60) }, (_, i) => {
-                            const min = VIEW_START_MIN + i * 60;
-                            return (
-                              <div key={min} style={{ height: '60px', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end', paddingRight: '6px', paddingTop: '4px', boxSizing: 'border-box', borderBottom: '1px solid rgba(223, 178, 140, 0.08)' }}>
-                                <span style={{ fontSize: '0.57rem', fontWeight: 700, color: '#b0a0a5', whiteSpace: 'nowrap' }}>{formatMinutes(min)}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-
-                        {/* Specialist Columns */}
-                        {paginatedStaff.length === 0 ? (
-                          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', height: `${GRID_HEIGHT}px`, flexDirection: 'column', gap: '10px' }}>
-                            <Search size={28} color="#c97282" style={{ opacity: 0.4 }} />
-                            <span style={{ fontSize: '0.8rem', color: '#a0909a', fontWeight: 600 }}>No hay especialistas</span>
-                          </div>
-                        ) : (
-                          paginatedStaff.map(s => {
-                            const ww = getStaffWorkingWindow(s.id, dateKey, schedules, timeOff);
-                            const staffApps = dayApps.filter(a => a.staff_id === s.id);
-                            const busyIntervals = getStaffBusyIntervals(s.id, dayApps);
-                            const isSlotBusy = (time) => busyIntervals.some(b => time >= b.startMinutes && time < b.endMinutes);
-                            return (
-                              <div
-                                key={s.id}
-                                style={{
-                                  flex: 1, minWidth: 0, width: `calc(100% / ${paginatedStaff.length})`, position: 'relative', height: `${GRID_HEIGHT}px`,
-                                  borderLeft: '1px solid rgba(223, 178, 140, 0.1)',
-                                  cursor: ww.isWorking ? 'crosshair' : 'default',
-                                  background: ww.isWorking
-                                    ? 'repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0px, rgba(255, 255, 255, 0.5) 59px, rgba(223, 178, 140, 0.1) 60px)'
-                                    : 'repeating-linear-gradient(45deg, rgba(200, 190, 192, 0.06) 0px, rgba(200, 190, 192, 0.06) 8px, rgba(200, 190, 192, 0.12) 8px, rgba(200, 190, 192, 0.12) 16px)'
-                                }}
-                                onClick={e => {
-                                  if (!ww.isWorking) return;
-                                  const rect = e.currentTarget.getBoundingClientRect();
-                                  const y = e.clientY - rect.top;
-                                  const clickedMin = Math.round((VIEW_START_MIN + y / PX_PER_MIN) / 30) * 30;
-                                  if (isSlotBusy(clickedMin)) return;
-                                  handleSlotClick(s, clickedMin);
-                                }}
-                              >
-                                {/* Day off label */}
-                                {!ww.isWorking && (
-                                  <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: '0.7rem', fontWeight: 700, color: '#a0848a', background: 'rgba(255, 255, 255, 0.95)', padding: '6px 14px', borderRadius: '20px', border: '1px solid rgba(223, 178, 140, 0.3)', whiteSpace: 'nowrap', zIndex: 3, pointerEvents: 'none' }}>
-                                    🌴 Día libre
-                                  </div>
-                                )}
-                                {/* Off-hours shading */}
-                                {ww.isWorking && ww.startMinutes > VIEW_START_MIN && (
-                                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: `${minutesToY(ww.startMinutes)}px`, background: 'rgba(200, 190, 192, 0.1)', pointerEvents: 'none' }} />
-                                )}
-                                {ww.isWorking && ww.endMinutes < VIEW_END_MIN && (
-                                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: `${GRID_HEIGHT - minutesToY(ww.endMinutes)}px`, background: 'rgba(200, 190, 192, 0.1)', pointerEvents: 'none' }} />
-                                )}
-                                {/* Checking time highlight */}
-                                {checkingTime != null && ww.isWorking && (() => {
-                                  const insideWork = checkingTime >= ww.startMinutes && checkingTime < ww.endMinutes;
-                                  const busy = isSlotBusy(checkingTime);
-                                  const free = insideWork && !busy;
-                                  return (
-                                    <div
-                                      className={free ? 'agenda-slot-highlight-free' : 'agenda-slot-highlight-busy'}
-                                      style={{ position: 'absolute', top: `${minutesToY(checkingTime)}px`, left: 0, right: 0, height: '60px', pointerEvents: 'none', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                    >
-                                      {free && <span style={{ fontSize: '0.58rem', fontWeight: 700, color: '#16a34a', background: '#fff', padding: '2px 6px', borderRadius: '6px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>Disponible</span>}
-                                    </div>
-                                  );
-                                })()}
-                                {/* Now line */}
-                                {isToday && nowMinutes >= VIEW_START_MIN && nowMinutes <= VIEW_END_MIN && (
-                                  <div style={{ position: 'absolute', left: 0, right: 0, top: `${minutesToY(nowMinutes)}px`, height: '2px', background: '#c97282', zIndex: 5, boxShadow: '0 0 4px rgba(201, 114, 130, 0.6)', pointerEvents: 'none' }}>
-                                    <div style={{ position: 'absolute', left: -4, top: -4, width: 10, height: 10, borderRadius: '50%', background: '#c97282' }} />
-                                  </div>
-                                )}
-                                {/* Appointments */}
-                                {staffApps.map(app => {
-                                  const d = new Date(app.scheduled_at || app.created_at);
-                                  const startMin = d.getHours() * 60 + d.getMinutes();
-                                  const duration = getAppointmentDuration(app);
-                                  const top = minutesToY(startMin);
-                                  const height = Math.max(22, duration * PX_PER_MIN - 2);
-                                  const colors = STATUS_COLORS[app.status] || STATUS_COLORS.Agendado;
-                                  return (
-                                    <div
-                                      key={app.id}
-                                      onClick={e => { e.stopPropagation(); setSelectedDetailedApp(app); }}
-                                      title={`${app.clients?.name} · ${app.services?.name} · ${formatMinutes(startMin)}`}
-                                      className="mi-card"
-                                      style={{ position: 'absolute', top: `${top}px`, left: '3px', right: '3px', height: `${height}px`, background: colors.bg, borderRadius: '8px', borderLeft: `3px solid ${colors.leftBorder}`, boxShadow: '0 2px 6px rgba(167, 102, 115, 0.1)', padding: '3px 6px', cursor: 'pointer', overflow: 'hidden', zIndex: 2, transition: 'all 0.2s ease', boxSizing: 'border-box' }}
-                                      onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.04) translateX(2px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(167, 102, 115, 0.2)'; e.currentTarget.style.zIndex = '4'; }}
-                                      onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 2px 6px rgba(167, 102, 115, 0.1)'; e.currentTarget.style.zIndex = '2'; }}
-                                    >
-                                      <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#2d1b22', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                        {app.clients?.name || 'Cliente'}
-                                      </div>
-                                      {height > 30 && (
-                                        <div style={{ fontSize: '0.55rem', color: colors.text, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                          {app.services?.name}
-                                        </div>
-                                      )}
-                                      {height > 48 && (
-                                        <div style={{ fontSize: '0.52rem', color: colors.text, fontWeight: 700 }}>
-                                          {formatMinutes(startMin)} · {formatHM(duration)}
-                                        </div>
-                                      )}
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            );
-                          })
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                )}
+                {agendaDesktopTab === 'grid' && staffTimeGridCard}
 
                 {/* ── CITAS DEL DÍA TABLE (Escritorio) ── */}
                 {agendaDesktopTab === 'citas' && (
@@ -2428,162 +2473,24 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
               {/* Column 1 - Próximas Citas */}
               <div style={{ display: leftTab === 'citas' ? 'flex' : 'none', flexDirection: 'column', gap: '24px', minWidth: 0, animation: leftTab === 'citas' ? 'fadeInUpWow 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards' : 'none' }}>
 
-              {/* TIMELINE AGENDA - PREMIUM */}
-              <div className="agenda-glass-card" style={{ padding: '0', display: 'flex', flexDirection: 'column', minHeight: '600px', overflow: 'hidden' }}>
-                
-                {/* Header of Timeline */}
-                <div style={{
-                  padding: '20px 20px 15px', display: 'flex', flexWrap: 'wrap',
-                  flexDirection: isMobile ? 'column' : 'row',
-                  justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center',
-                  gap: isMobile ? '12px' : '14px',
-                  borderBottom: '1px solid rgba(223, 178, 140, 0.2)', background: 'rgba(255,255,255,0.5)'
-                }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    <h4 className="mi-section-header" style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-                      <Clock size={16} color="#c97282" />
-                      CITAS DE HOY
-                    </h4>
-                    <span style={{ fontSize: '0.66rem', color: '#a0909a', fontWeight: 600, marginLeft: '24px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <Info size={12} color="#a0909a" /> Toca una cita para ver sus detalles
-                    </span>
-                  </div>
-                  {visibleStaff.length > 0 && (
-                    <div style={{ width: isMobile ? '100%' : '150px', minWidth: '120px', flexShrink: 1 }}>
-                      <JanaSelect
-                        variant="light"
-                        label=""
-                        value={mobileStaffFilter || visibleStaff[0].id}
-                        onChange={(val) => setMobileStaffFilter(val)}
-                        options={[
-                          { value: 'all', label: 'Todos' },
-                          ...visibleStaff.map(s => ({ value: s.id, label: getStaffDisplayName(s), image: s.image_url || undefined }))
-                        ]}
-                      />
-                    </div>
-                  )}
+              {/* TABLET/TELÉFONO: misma grilla de horarios de escritorio, con menos especialistas por página */}
+              {visibleStaff.length > 0 && (
+                <div style={{ width: '100%' }}>
+                  <JanaSelect
+                    variant="light"
+                    label=""
+                    placeholder="Saltar a una especialista..."
+                    value={paginatedStaff[0]?.id || ''}
+                    onChange={(val) => {
+                      const idx = visibleStaff.findIndex(s => s.id === val);
+                      if (idx >= 0) setDesktopStaffPage(Math.floor(idx / ITEMS_PER_PAGE));
+                    }}
+                    options={visibleStaff.map(s => ({ value: s.id, label: getStaffDisplayName(s), image: s.image_url || undefined }))}
+                  />
                 </div>
-
-                {/* Filtro de franja horaria */}
-                {dayApps.length > 0 && (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(85px, 1fr))', gap: '6px', padding: '12px 20px', borderBottom: '1px solid rgba(223, 178, 140, 0.15)', background: 'rgba(255,255,255,0.3)' }}>
-                    {TIME_PERIODS.map(period => (
-                      <button
-                        key={period.key}
-                        onClick={() => setTimeOfDayFilter(period.key)}
-                        className="mi-chip"
-                        style={{
-                          padding: '7px 10px', borderRadius: '10px', cursor: 'pointer',
-                          fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap', textAlign: 'center',
-                          background: timeOfDayFilter === period.key ? '#c97282' : '#faf3f2',
-                          color: timeOfDayFilter === period.key ? '#fff' : '#a0506a',
-                          border: '1px solid ' + (timeOfDayFilter === period.key ? '#c97282' : 'rgba(160,80,106,0.15)'),
-                          transition: 'all 0.2s'
-                        }}
-                      >
-                        {period.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* Empty State Override if NO appointments for the WHOLE DAY (across all selected staff) */}
-                {dayApps.length === 0 ? (
-                  <div style={{ padding: '40px 20px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, background: 'rgba(252, 249, 248, 0.5)' }}>
-                    <div style={{
-                      width: '90px', height: '90px', borderRadius: '50%', background: 'linear-gradient(135deg, #fdf4f5 0%, #fae6e9 100%)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px',
-                      boxShadow: '0 8px 24px rgba(201, 114, 130, 0.15), inset 0 0 20px rgba(255,255,255,1)'
-                    }}>
-                      <Sun size={42} strokeWidth={1.5} color="#c97282" />
-                    </div>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#2d1b22', margin: '0 0 8px 0', letterSpacing: '-0.3px' }}>Día Libre</h3>
-                    <p style={{ fontSize: '0.85rem', color: '#a0909a', margin: '0 0 24px 0', maxWidth: '240px', lineHeight: 1.5 }}>
-                      No hay citas programadas para hoy. Aprovecha el día o agrega una nueva cita.
-                    </p>
-                    <button 
-                      onClick={() => window.dispatchEvent(new Event('jana:open-new-appointment'))}
-                      className="mi-btn"
-                      style={{ 
-                        background: 'linear-gradient(135deg, #c97282 0%, #a0506a 100%)', 
-                        color: '#fff', border: 'none', padding: '14px 28px', borderRadius: '14px', 
-                        fontWeight: 800, fontSize: '0.9rem', cursor: 'pointer', 
-                        boxShadow: '0 8px 20px rgba(201, 114, 130, 0.35), 0 2px 4px rgba(201, 114, 130, 0.2)', 
-                        transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-                        display: 'flex', alignItems: 'center', gap: '8px'
-                      }}
-                      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(201, 114, 130, 0.4), 0 4px 8px rgba(201, 114, 130, 0.3)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(201, 114, 130, 0.35), 0 2px 4px rgba(201, 114, 130, 0.2)'; }}
-                    >
-                      <Plus size={18} strokeWidth={2.5} /> Agendar Primera Cita
-                    </button>
-                  </div>
-                ) : (
-                  /* Chronological single-column agenda list — one appointment below the other,
-                     grouped by time so it's obvious when several staff have a cita at the same hour. */
-                  <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: '#fff', padding: '16px' }} className="jana-scrollbar">
-                    {(() => {
-                      const activeFilter = mobileStaffFilter || visibleStaff[0]?.id;
-                      const activePeriod = TIME_PERIODS.find(p => p.key === timeOfDayFilter);
-                      const filteredApps = dayApps
-                        .filter(app => activeFilter === 'all' ? true : app.staff_id === activeFilter)
-                        .filter(app => {
-                          if (!activePeriod || activePeriod.key === 'all') return true;
-                          const start = new Date(app.scheduled_at || app.created_at);
-                          const startMin = start.getHours() * 60 + start.getMinutes();
-                          return startMin >= activePeriod.startMin && startMin < activePeriod.endMin;
-                        })
-                        .slice()
-                        .sort((a, b) => new Date(a.scheduled_at || a.created_at) - new Date(b.scheduled_at || b.created_at));
-
-                      if (filteredApps.length === 0) {
-                        return (
-                          <div style={{ padding: '30px 10px', textAlign: 'center', fontSize: '0.8rem', color: '#a0909a', fontWeight: 600 }}>
-                            No hay citas en esta franja horaria.
-                          </div>
-                        );
-                      }
-
-                      // ── Group by Morning / Afternoon / Night ──────────────────
-                      const timeGroups = [
-                        { key: 'manana',  label: 'Mañana',  icon: '🌅', startH: 0,  endH: 12 },
-                        { key: 'tarde',   label: 'Tarde',   icon: '☀️', startH: 12, endH: 19 },
-                        { key: 'noche',   label: 'Noche',   icon: '🌙', startH: 19, endH: 24 },
-                      ];
-                      const grouped = timeGroups.map(g => ({
-                        ...g,
-                        apps: filteredApps.filter(a => {
-                          const h = new Date(a.scheduled_at || a.created_at).getHours();
-                          return h >= g.startH && h < g.endH;
-                        })
-                      })).filter(g => g.apps.length > 0);
-
-                      return (
-                        <AnimatePresence mode="popLayout">
-                          {grouped.map((timeGroup, tgIdx) => (
-                            <TimeGroupSection
-                              key={timeGroup.key}
-                              group={timeGroup}
-                              tgIdx={tgIdx}
-                              visibleStaff={visibleStaff}
-                              isMobile={isMobile}
-                              isTablet={isTablet}
-                              isNarrowAgendaColumn={isNarrowAgendaColumn}
-                              getStaffPhoto={getStaffPhoto}
-                              getAppointmentDuration={getAppointmentDuration}
-                              setSelectedDetailedApp={setSelectedDetailedApp}
-                              getWhatsAppNumber={getWhatsAppNumber}
-                              dataService={dataService}
-                              showToast={showToast}
-                              loadFilteredAppointments={loadFilteredAppointments}
-                            />
-                          ))}
-                        </AnimatePresence>
-                      );
-                    })()}
-                  </div>
-                )}
-              </div>
+              )}
+              {staffGridPaginationControls}
+              {staffTimeGridCard}
             </div>
 
             {/* Column 2 - Especialistas */}
