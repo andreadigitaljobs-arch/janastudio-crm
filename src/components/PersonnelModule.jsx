@@ -79,7 +79,13 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('Todos');
-  const [viewMode, setViewMode] = useState('table');
+  const [viewMode, setViewMode] = useState((window.innerWidth <= 768) ? 'grid' : 'table');
+
+  useEffect(() => {
+    if (isMobile || isTablet) {
+      setViewMode('grid');
+    }
+  }, [isMobile, isTablet]);
 
   // Form & Editing State
   const [showForm, setShowForm] = useState(false);
@@ -571,20 +577,24 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                 </button>
               ))}
             </div>
-            <button
-              className="mi-btn"
-              onClick={() => setViewMode('grid')}
-              style={{ padding: '8px 14px', borderRadius: '10px', border: '1px solid var(--border-color)', background: viewMode === 'grid' ? 'var(--pink-primary)' : 'white', color: viewMode === 'grid' ? 'white' : 'var(--text-muted)', cursor: 'pointer', fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}
-            >
-              <LayoutGrid size={14} /> Tarjetas
-            </button>
-            <button
-              className="mi-btn"
-              onClick={() => setViewMode('table')}
-              style={{ padding: '8px 14px', borderRadius: '10px', border: '1px solid var(--border-color)', background: viewMode === 'table' ? 'var(--pink-primary)' : 'white', color: viewMode === 'table' ? 'white' : 'var(--text-muted)', cursor: 'pointer', fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}
-            >
-              <Table size={14} /> Tabla
-            </button>
+            {!(isMobile || isTablet) && (
+              <>
+                <button
+                  className="mi-btn"
+                  onClick={() => setViewMode('grid')}
+                  style={{ padding: '8px 14px', borderRadius: '10px', border: '1px solid var(--border-color)', background: viewMode === 'grid' ? 'var(--pink-primary)' : 'white', color: viewMode === 'grid' ? 'white' : 'var(--text-muted)', cursor: 'pointer', fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}
+                >
+                  <LayoutGrid size={14} /> Tarjetas
+                </button>
+                <button
+                  className="mi-btn"
+                  onClick={() => setViewMode('table')}
+                  style={{ padding: '8px 14px', borderRadius: '10px', border: '1px solid var(--border-color)', background: viewMode === 'table' ? 'var(--pink-primary)' : 'white', color: viewMode === 'table' ? 'white' : 'var(--text-muted)', cursor: 'pointer', fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}
+                >
+                  <Table size={14} /> Tabla
+                </button>
+              </>
+            )}
           </div>
 
           {/* TABLE VIEW */}
@@ -705,12 +715,12 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
               </h4>
               <button style={{ fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer' }}>Ver agenda completa →</button>
             </div>
-            <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '4px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
               {filteredStaff.slice(0, 4).map((person, idx) => {
                 const rolePart = (person.role || '').split('|')[0].split(',')[0].trim();
                 const times = ['Hoy 10:00 AM', 'Hoy 11:00 AM', 'Hoy 9:00 AM', 'Hoy 9:00 AM'];
                 return (
-                  <div key={person.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px', borderRadius: '12px', backgroundColor: '#faf5f5', border: '1px solid var(--border-color)', minWidth: '200px', flexShrink: 0 }}>
+                  <div key={person.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px', borderRadius: '12px', backgroundColor: '#faf5f5', border: '1px solid var(--border-color)', width: '100%', boxSizing: 'border-box' }}>
                     <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '12px', overflow: 'hidden', flexShrink: 0 }}>
                       {(person.name || '?')[0].toUpperCase()}
                     </div>

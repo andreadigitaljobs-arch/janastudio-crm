@@ -204,8 +204,8 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
         <div className={overlayClass} style={{
           position: 'fixed',
           top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.85)',
-          backdropFilter: 'blur(10px)',
+          backgroundColor: 'rgba(74, 48, 54, 0.4)',
+          backdropFilter: 'blur(8px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -221,16 +221,16 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
             flexDirection: 'column',
             overflow: 'hidden',
             position: 'relative',
-            background: 'linear-gradient(145deg, rgba(22,22,28,0.98) 0%, rgba(14,14,18,0.99) 100%)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(196,139,159,0.08)'
+            background: 'rgba(255, 255, 255, 0.98)',
+            border: '1px solid rgba(223, 178, 140, 0.3)',
+            boxShadow: '0 24px 60px rgba(74, 48, 54, 0.15)'
           }}>
         
         {/* Header Section */}
         <div style={{ 
           padding: isMobileView ? '24px 16px 16px' : '32px 32px 24px', 
-          background: 'linear-gradient(90deg, rgba(196,139,159,0.06) 0%, transparent 60%)', 
-          borderBottom: '1px solid rgba(255,255,255,0.06)' 
+          background: 'linear-gradient(90deg, rgba(201, 114, 130, 0.05) 0%, transparent 60%)', 
+          borderBottom: '1px solid rgba(223, 178, 140, 0.15)' 
         }}>
           <button 
             onClick={onClose}
@@ -238,8 +238,8 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
               position: 'absolute', 
               top: isMobileView ? '16px' : '24px', 
               right: isMobileView ? '16px' : '24px', 
-              background: 'rgba(255,255,255,0.06)', 
-              border: '1px solid rgba(255,255,255,0.08)', 
+              background: 'rgba(201, 114, 130, 0.08)', 
+              border: '1px solid rgba(201, 114, 130, 0.12)', 
               borderRadius: '50%', 
               width: '40px', 
               height: '40px', 
@@ -252,7 +252,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
               transition: 'all 0.2s'
             }}
             onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,69,58,0.15)'; e.currentTarget.style.color = '#ff453a'; }}
-            onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+            onMouseOut={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)'; e.currentTarget.style.color = '#2d1b22'; }}
           >
             <X size={20} />
           </button>
@@ -262,7 +262,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
               width: isMobileView ? '70px' : '90px', 
               height: isMobileView ? '70px' : '90px', 
               borderRadius: isMobileView ? '16px' : '24px', 
-              backgroundColor: 'rgba(255,255,255,0.05)', 
+              backgroundColor: 'rgba(201, 114, 130, 0.08)', 
               overflow: 'hidden', 
               border: '2px solid var(--pink-primary)', 
               display: 'flex', 
@@ -273,7 +273,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
               <span style={{ fontSize: isMobileView ? '1.6rem' : '2rem', fontWeight: 800, color: 'var(--pink-primary)' }}>{(staffMember.name || '?').charAt(0).toUpperCase()}</span>
             </div>
             <div>
-              <h2 style={{ fontSize: isMobileView ? '22px' : '28px', fontWeight: '900', color: 'white', margin: 0 }}>{staffMember.name}</h2>
+              <h2 style={{ fontSize: isMobileView ? '22px' : '28px', fontWeight: '900', color: '#2d1b22', margin: 0 }}>{staffMember.name}</h2>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--pink-primary)', fontWeight: '700', fontSize: isMobileView ? '12px' : '14px', marginTop: '4px' }}>
                 <Star size={14} fill="var(--pink-primary)" />
                 {staffMember.role?.split('|')[0] || 'Estilista'}
@@ -358,61 +358,61 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
               <div style={{ display: 'grid', gridTemplateColumns: isMobileView ? '1fr' : 'repeat(3, 1fr)', gap: isMobileView ? '12px' : '16px', marginBottom: isMobileView ? '20px' : '32px' }}>
                 <div 
                   style={{ 
-                    background: 'rgba(255,255,255,0.025)', 
+                    background: 'rgba(201, 114, 130, 0.04)', 
                     padding: isMobileView ? '16px' : '24px', 
                     borderRadius: '20px', 
-                    border: '1px solid rgba(255,255,255,0.06)', 
+                    border: '1px solid rgba(223, 178, 140, 0.2)', 
                     display: 'flex', 
                     alignItems: 'center', 
                     gap: isMobileView ? '12px' : '20px',
                     transition: 'all 0.2s'
                   }}
-                  onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
-                  onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.025)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
+                  onMouseOver={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)'; e.currentTarget.style.borderColor = 'rgba(223, 178, 140, 0.35)'; }}
+                  onMouseOut={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.04)'; e.currentTarget.style.borderColor = 'rgba(223, 178, 140, 0.2)'; }}
                 >
                   <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(50,215,75,0.1)', color: '#32d74b', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <Scissors size={24} />
                   </div>
                   <div>
                     <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '900', letterSpacing: '1px', marginBottom: '4px' }}>COMISIONES SERVICIOS</div>
-                    <div style={{ fontSize: '20px', fontWeight: '900', color: 'white' }}>${stats.totalServiceComm.toFixed(2)}</div>
+                    <div style={{ fontSize: '20px', fontWeight: '900', color: '#2d1b22' }}>${stats.totalServiceComm.toFixed(2)}</div>
                   </div>
                 </div>
                 <div 
                   style={{ 
-                    background: 'rgba(255,255,255,0.025)', 
+                    background: 'rgba(201, 114, 130, 0.04)', 
                     padding: isMobileView ? '16px' : '24px', 
                     borderRadius: '20px', 
-                    border: '1px solid rgba(255,255,255,0.06)', 
+                    border: '1px solid rgba(223, 178, 140, 0.2)', 
                     display: 'flex', 
                     alignItems: 'center', 
                     gap: isMobileView ? '12px' : '20px',
                     transition: 'all 0.2s'
                   }}
-                  onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
-                  onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.025)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
+                  onMouseOver={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)'; e.currentTarget.style.borderColor = 'rgba(223, 178, 140, 0.35)'; }}
+                  onMouseOut={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.04)'; e.currentTarget.style.borderColor = 'rgba(223, 178, 140, 0.2)'; }}
                 >
                   <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(10,132,255,0.1)', color: '#0a84ff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <ShoppingBag size={24} />
                   </div>
                   <div>
                     <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '900', letterSpacing: '1px', marginBottom: '4px' }}>COMISIONES PRODUCTOS</div>
-                    <div style={{ fontSize: '20px', fontWeight: '900', color: 'white' }}>${stats.totalProductComm.toFixed(2)}</div>
+                    <div style={{ fontSize: '20px', fontWeight: '900', color: '#2d1b22' }}>${stats.totalProductComm.toFixed(2)}</div>
                   </div>
                 </div>
                 <div 
                   style={{ 
-                    background: 'rgba(196,139,159,0.025)', 
+                    background: 'rgba(201, 114, 130, 0.04)', 
                     padding: isMobileView ? '16px' : '24px', 
                     borderRadius: '20px', 
-                    border: '1px solid rgba(196,139,159,0.12)', 
+                    border: '1px solid rgba(223, 178, 140, 0.2)', 
                     display: 'flex', 
                     alignItems: 'center', 
                     gap: isMobileView ? '12px' : '20px',
                     transition: 'all 0.2s'
                   }}
-                  onMouseOver={e => { e.currentTarget.style.background = 'rgba(196,139,159,0.04)'; e.currentTarget.style.borderColor = 'rgba(196,139,159,0.25)'; }}
-                  onMouseOut={e => { e.currentTarget.style.background = 'rgba(196,139,159,0.025)'; e.currentTarget.style.borderColor = 'rgba(196,139,159,0.12)'; }}
+                  onMouseOver={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)'; e.currentTarget.style.borderColor = 'rgba(223, 178, 140, 0.35)'; }}
+                  onMouseOut={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.04)'; e.currentTarget.style.borderColor = 'rgba(223, 178, 140, 0.2)'; }}
                 >
                   <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(196,139,159,0.1)', color: 'var(--pink-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <TrendingUp size={24} />
@@ -429,14 +429,14 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                 {/* Time & Volume */}
                 <div 
                   style={{ 
-                    background: 'rgba(196,139,159,0.025)', 
+                    background: 'rgba(201, 114, 130, 0.04)', 
                     padding: '24px', 
                     borderRadius: '20px', 
-                    border: '1px solid rgba(196,139,159,0.12)',
+                    border: '1px solid rgba(223, 178, 140, 0.2)',
                     transition: 'all 0.2s'
                   }}
-                  onMouseOver={e => { e.currentTarget.style.background = 'rgba(196,139,159,0.04)'; e.currentTarget.style.borderColor = 'rgba(196,139,159,0.25)'; }}
-                  onMouseOut={e => { e.currentTarget.style.background = 'rgba(196,139,159,0.025)'; e.currentTarget.style.borderColor = 'rgba(196,139,159,0.12)'; }}
+                  onMouseOver={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)'; e.currentTarget.style.borderColor = 'rgba(223, 178, 140, 0.35)'; }}
+                  onMouseOut={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.04)'; e.currentTarget.style.borderColor = 'rgba(223, 178, 140, 0.2)'; }}
                 >
                   <h4 style={{ color: 'var(--pink-primary)', fontSize: '14px', fontWeight: '900', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Clock size={16} /> Volumen y Tiempos
@@ -444,27 +444,27 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                   
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                     <span style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>Servicios Totales</span>
-                    <span style={{ color: 'white', fontWeight: '900', fontSize: '18px' }}>{stats.totalAppointments}</span>
+                    <span style={{ color: '#2d1b22', fontWeight: '900', fontSize: '18px' }}>{stats.totalAppointments}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>Tiempo Promedio</span>
-                    <span style={{ color: 'white', fontWeight: '900', fontSize: '18px' }}>{stats.avgDurationMin > 0 ? `${stats.avgDurationMin} min` : 'N/A'}</span>
+                    <span style={{ color: '#2d1b22', fontWeight: '900', fontSize: '18px' }}>{stats.avgDurationMin > 0 ? `${stats.avgDurationMin} min` : 'N/A'}</span>
                   </div>
                 </div>
 
                 {/* Top Services */}
                 <div 
                   style={{ 
-                    background: 'rgba(255,255,255,0.025)', 
+                    background: 'rgba(201, 114, 130, 0.04)', 
                     padding: '24px', 
                     borderRadius: '20px', 
-                    border: '1px solid rgba(255,255,255,0.06)',
+                    border: '1px solid rgba(223, 178, 140, 0.2)',
                     transition: 'all 0.2s'
                   }}
-                  onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
-                  onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.025)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
+                  onMouseOver={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)'; e.currentTarget.style.borderColor = 'rgba(223, 178, 140, 0.35)'; }}
+                  onMouseOut={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.04)'; e.currentTarget.style.borderColor = 'rgba(223, 178, 140, 0.2)'; }}
                 >
-                  <h4 style={{ color: 'white', fontSize: '14px', fontWeight: '900', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <h4 style={{ color: '#2d1b22', fontSize: '14px', fontWeight: '900', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <TrendingUp size={16} color="var(--pink-primary)" /> Servicios Más Realizados
                   </h4>
                   
@@ -487,15 +487,15 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
             <div className="animate-fade-in">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                 <div>
-                  <h3 style={{ fontSize: '18px', fontWeight: '900', color: 'white' }}>Equipamiento de {staffMember.name.split(' ')[0]}</h3>
+                  <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#2d1b22' }}>Equipamiento de {staffMember.name.split(' ')[0]}</h3>
                   <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginTop: '4px' }}>Control de herramientas asignadas o propias.</p>
                 </div>
                 <button
                   onClick={() => setShowAddTool(!showAddTool)}
                   style={{ 
-                    background: showAddTool ? 'rgba(255,255,255,0.06)' : 'var(--pink-primary)', 
-                    color: showAddTool ? 'white' : 'black', 
-                    border: showAddTool ? '1px solid rgba(255,255,255,0.08)' : 'none', 
+                    background: showAddTool ? 'rgba(201, 114, 130, 0.08)' : 'var(--pink-primary)', 
+                    color: showAddTool ? '#2d1b22' : 'white', 
+                    border: showAddTool ? '1px solid rgba(223, 178, 140, 0.2)' : 'none', 
                     padding: '10px 20px', 
                     borderRadius: '50px', 
                     fontWeight: '800', 
@@ -507,14 +507,14 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                   }}
                   onMouseOver={e => {
                     if (showAddTool) {
-                      e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                      e.currentTarget.style.background = 'rgba(201, 114, 130, 0.12)';
                     } else {
                       e.currentTarget.style.background = '#c48b9f';
                     }
                   }}
                   onMouseOut={e => {
                     if (showAddTool) {
-                      e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
+                      e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)';
                     } else {
                       e.currentTarget.style.background = 'var(--pink-primary)';
                     }
@@ -525,7 +525,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
               </div>
 
               {showAddTool && (
-                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '20px', borderRadius: '16px', marginBottom: '24px' }}>
+                <div style={{ background: 'rgba(201, 114, 130, 0.04)', border: '1px solid rgba(223, 178, 140, 0.2)', padding: '20px', borderRadius: '16px', marginBottom: '24px' }}>
                   <div style={{ display: 'grid', gridTemplateColumns: isMobileView ? '1fr' : '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                     
                     {newTool.ownership === 'Propia' ? (
@@ -600,7 +600,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
               )}
 
               {tools.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '40px', background: 'rgba(255,255,255,0.01)', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.1)' }}>
+                <div style={{ textAlign: 'center', padding: '40px', background: 'rgba(201, 114, 130, 0.02)', borderRadius: '16px', border: '1px dashed rgba(223, 178, 140, 0.2)' }}>
                   <Wrench size={40} color="var(--text-muted)" opacity={0.5} style={{ marginBottom: '16px' }} />
                   <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>No hay herramientas registradas para este empleado.</p>
                 </div>
@@ -613,23 +613,23 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                         display: 'flex', 
                         justifyContent: 'space-between', 
                         alignItems: 'center', 
-                        background: 'rgba(255,255,255,0.025)', 
+                        background: 'rgba(201, 114, 130, 0.04)', 
                         padding: isMobileView ? '12px 16px' : '16px 24px', 
                         borderRadius: '20px', 
-                        border: '1px solid rgba(255,255,255,0.06)', 
+                        border: '1px solid rgba(223, 178, 140, 0.2)', 
                         flexWrap: 'wrap', 
                         gap: '12px',
                         transition: 'all 0.2s'
                       }}
-                      onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
-                      onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.025)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
+                      onMouseOver={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.08)'; e.currentTarget.style.borderColor = 'rgba(223, 178, 140, 0.35)'; }}
+                      onMouseOut={e => { e.currentTarget.style.background = 'rgba(201, 114, 130, 0.04)'; e.currentTarget.style.borderColor = 'rgba(223, 178, 140, 0.2)'; }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: isMobileView ? '12px' : '16px' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: tool.ownership === 'Asignada' ? 'rgba(196,139,159,0.1)' : 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <Wrench size={18} color={tool.ownership === 'Asignada' ? 'var(--pink-primary)' : 'white'} />
+                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: tool.ownership === 'Asignada' ? 'rgba(196,139,159,0.15)' : 'rgba(201, 114, 130, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <Wrench size={18} color={tool.ownership === 'Asignada' ? 'var(--pink-primary)' : '#2d1b22'} />
                         </div>
                         <div>
-                          <div style={{ fontWeight: '800', color: 'white', fontSize: '15px' }}>{tool.name}</div>
+                          <div style={{ fontWeight: '800', color: '#2d1b22', fontSize: '15px' }}>{tool.name}</div>
                           <div style={{ color: 'var(--text-muted)', fontSize: '12px', fontWeight: '600' }}>{tool.brand}</div>
                         </div>
                       </div>
@@ -641,9 +641,9 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                             fontWeight: '800', 
                             padding: '2px 10px', 
                             borderRadius: '50px', 
-                            background: tool.ownership === 'Asignada' ? 'var(--pink-primary)' : 'rgba(255,255,255,0.08)', 
-                            color: tool.ownership === 'Asignada' ? 'black' : 'white',
-                            border: tool.ownership === 'Asignada' ? 'none' : '1px solid rgba(255,255,255,0.08)'
+                            background: tool.ownership === 'Asignada' ? 'var(--pink-primary)' : 'rgba(201, 114, 130, 0.08)', 
+                            color: tool.ownership === 'Asignada' ? 'white' : '#6b5a60',
+                            border: tool.ownership === 'Asignada' ? 'none' : '1px solid rgba(223, 178, 140, 0.2)'
                           }}>
                             {tool.ownership}
                           </span>
@@ -687,7 +687,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
           ) : (
             <div className="animate-fade-in">
               <div style={{ marginBottom: '24px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '900', color: 'white' }}>Horario de {staffMember.name.split(' ')[0]}</h3>
+                <h3 style={{ fontSize: '18px', fontWeight: '900', color: '#2d1b22' }}>Horario de {staffMember.name.split(' ')[0]}</h3>
                 <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginTop: '4px' }}>Define qué días trabaja y en qué horario — esto controla su disponibilidad real en la Agenda.</p>
               </div>
 
@@ -697,18 +697,18 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                   return (
                     <div key={day} style={{
                       display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap',
-                      background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)',
+                      background: 'rgba(201, 114, 130, 0.04)', border: '1px solid rgba(223, 178, 140, 0.2)',
                       borderRadius: '16px', padding: '14px 18px'
                     }}>
-                      <div style={{ width: '90px', flexShrink: 0, fontWeight: '800', color: 'white', fontSize: '13px' }}>{getDayLabel(day)}</div>
+                      <div style={{ width: '90px', flexShrink: 0, fontWeight: '800', color: '#2d1b22', fontSize: '13px' }}>{getDayLabel(day)}</div>
 
                       <button
                         disabled={!isAdmin}
                         onClick={() => updateDayRow(day, { is_working: !row.is_working })}
                         style={{
                           padding: '6px 14px', borderRadius: '50px', fontSize: '11px', fontWeight: '800',
-                          border: row.is_working ? 'none' : '1px solid rgba(255,255,255,0.1)',
-                          background: row.is_working ? 'rgba(50,215,75,0.15)' : 'rgba(255,255,255,0.05)',
+                          border: row.is_working ? 'none' : '1px solid rgba(223, 178, 140, 0.2)',
+                          background: row.is_working ? 'rgba(50,215,75,0.15)' : 'rgba(201, 114, 130, 0.05)',
                           color: row.is_working ? '#32d74b' : 'var(--text-muted)',
                           cursor: isAdmin ? 'pointer' : 'default', flexShrink: 0
                         }}
@@ -738,7 +738,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
 
               {isAdmin && (
                 <button onClick={handleSaveSchedule} disabled={savingSchedule} style={{
-                  width: '100%', background: 'white', color: 'black', border: 'none', borderRadius: '50px',
+                  width: '100%', background: 'var(--pink-primary)', color: 'white', border: 'none', borderRadius: '50px',
                   height: '44px', fontWeight: '800', cursor: 'pointer', marginBottom: '28px', transition: 'all 0.2s',
                   opacity: savingSchedule ? 0.6 : 1
                 }}
@@ -755,7 +755,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                 </h4>
 
                 {isAdmin && (
-                  <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-end', flexWrap: 'wrap', marginBottom: '18px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', padding: '16px', borderRadius: '16px' }}>
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-end', flexWrap: 'wrap', marginBottom: '18px', background: 'rgba(201, 114, 130, 0.04)', border: '1px solid rgba(223, 178, 140, 0.2)', padding: '16px', borderRadius: '16px' }}>
                     <div style={{ minWidth: '160px' }}>
                       <JanaDatePicker value={newTimeOffDate} onChange={(e) => setNewTimeOffDate(e.target.value)} />
                     </div>
@@ -777,7 +777,7 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                 )}
 
                 {timeOffList.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '24px', background: 'rgba(255,255,255,0.01)', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.1)', color: 'var(--text-muted)', fontSize: '13px' }}>
+                  <div style={{ textAlign: 'center', padding: '24px', background: 'rgba(201, 114, 130, 0.02)', borderRadius: '16px', border: '1px dashed rgba(223, 178, 140, 0.2)', color: 'var(--text-muted)', fontSize: '13px' }}>
                     Sin días libres puntuales registrados.
                   </div>
                 ) : (
@@ -785,10 +785,10 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                     {[...timeOffList].sort((a, b) => a.date.localeCompare(b.date)).map(t => (
                       <div key={t.id} style={{
                         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                        background: 'rgba(255,255,255,0.025)', padding: '12px 18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.06)'
+                        background: 'rgba(201, 114, 130, 0.04)', padding: '12px 18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.06)'
                       }}>
                         <div>
-                          <div style={{ fontWeight: '800', color: 'white', fontSize: '13px', textTransform: 'capitalize' }}>{new Date(`${t.date}T00:00:00`).toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'long' })}</div>
+                          <div style={{ fontWeight: '800', color: '#2d1b22', fontSize: '13px', textTransform: 'capitalize' }}>{new Date(`${t.date}T00:00:00`).toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'long' })}</div>
                           {t.reason && <div style={{ color: 'var(--text-muted)', fontSize: '12px' }}>{t.reason}</div>}
                         </div>
                         {isAdmin && (
