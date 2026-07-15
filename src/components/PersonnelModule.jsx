@@ -71,6 +71,7 @@ const rolePresets = {
 };
 
 const PersonnelModule = ({ isMobile, inventory = [] }) => {
+  const isTablet = window.innerWidth > 480 && window.innerWidth <= 1024;
   const { showToast } = useNotifs();
   const { user, refreshUser } = useAuth();
   const { confirm } = useDialog();
