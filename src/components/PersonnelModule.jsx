@@ -659,7 +659,7 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
                             </div>
                           </td>
                           <td style={{ padding: '12px 16px' }}>
-                            <span style={{ padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', background: statusStyle.bg, color: statusStyle.text, border: `1px solid ${statusStyle.border}`, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <span style={{ padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', background: statusStyle.bg, color: statusStyle.text, border: `1px solid ${statusStyle.border}`, display: 'inline-flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}>
                               <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: statusStyle.dot }} />{statusStyle.label}
                             </span>
                           </td>
