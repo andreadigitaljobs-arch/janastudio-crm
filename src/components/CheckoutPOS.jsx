@@ -145,6 +145,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
   // Selection State
   const [selectedApp, setSelectedApp] = useState(null);
   const [selectedClient, setSelectedClient] = useState(null);
+  const [isExpressService, setIsExpressService] = useState(true);
   const [isDirectSale, setIsDirectSale] = useState(false);
   const [idSearch, setIdSearch] = useState('');
   const [directSaleIdSearch, setDirectSaleIdSearch] = useState('');
@@ -1036,16 +1037,28 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
         return;
       }
 
-      const newApp = await dataService.createAppointment({
-        client_id: clientId,
-        service_id: selectedServiceForStylist.id,
-        staff_id: stylistId,
-        status: 'En Silla',
-        total_price: selectedServiceForStylist.price
-      });
+      let newApp = null;
+      if (selectedApp) {
+        // Add service to existing appointment
+        await dataService.addServiceToAppointment(selectedApp.id, {
+          service_id: selectedServiceForStylist.id,
+          staff_id: stylistId,
+          price_paid: selectedServiceForStylist.price,
+          scheduled_at: isExpressService ? null : selectedApp.scheduled_at,
+          duration_minutes: selectedServiceForStylist.duration_minutes
+        });
+      } else {
+        newApp = await dataService.createAppointment({
+          client_id: clientId,
+          service_id: selectedServiceForStylist.id,
+          staff_id: stylistId,
+          status: 'En Silla',
+          total_price: selectedServiceForStylist.price
+        });
+      }
       
       // MIGRAR ITEMS EN CART (Extras o Productos) A LA NUEVA CITA
-      if (!selectedApp && cart && cart.length > 0) {
+      if (!selectedApp && newApp && cart && cart.length > 0) {
         for (const item of cart) {
           if (item.type === 'extra') {
             const realExtraId = item.id.replace('extra_', '');
@@ -1061,15 +1074,17 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
       if (selectedApp) {
         const currentAppResel = filtered.find(a => a.id === selectedApp.id);
         if (currentAppResel) setSelectedApp(currentAppResel);
-        showToast("Servicio añadido y estilista asignado.");
+        showToast(isExpressService ? "Servicio Express añadido a la cita sin agendar." : "Servicio añadido y estilista asignado.");
       } else {
-        const fullyLoadedApp = filtered.find(a => a.id === newApp.id);
-        if (fullyLoadedApp) {
-          setIsDirectSale(false);
-          setSelectedApp(fullyLoadedApp);
-          showToast("Servicio añadido y estilista asignado.");
-        } else {
-          showToast("Cita creada. Selecciona el servicio en la lista.");
+        if (newApp) {
+          const fullyLoadedApp = filtered.find(a => a.id === newApp.id);
+          if (fullyLoadedApp) {
+            setIsDirectSale(false);
+            setSelectedApp(fullyLoadedApp);
+            showToast("Servicio añadido y estilista asignado.");
+          } else {
+            showToast("Cita creada. Selecciona el servicio en la lista.");
+          }
         }
       }
       setSelectedServiceForStylist(null);
@@ -2777,13 +2792,29 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                 <h2 style={{ fontWeight: '900', fontSize: '20px' }}>Seleccionar Estilista</h2>
                 <button onClick={() => { setShowStylistModal(false); setIsChangingStylist(false); }} style={{ background: 'none', border: 'none', color: 'white', fontSize: '24px', cursor: 'pointer' }}>&times;</button>
               </div>
-              <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', fontSize: '13px' }}>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', fontSize: '13px' }}>
                 {isChangingStylist ? (
                   "Selecciona el nuevo estilista para esta cita."
                 ) : (
                   <>Selecciona el estilista al que se le asignará la comisión por el servicio <strong>{selectedServiceForStylist?.name}</strong>.</>
                 )}
               </p>
+
+              {selectedApp && !isChangingStylist && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', padding: '14px', borderRadius: '16px' }}>
+                  <input 
+                    type="checkbox" 
+                    id="isExpressCheckbox"
+                    checked={isExpressService}
+                    onChange={(e) => setIsExpressService(e.target.checked)}
+                    style={{ cursor: 'pointer', width: '16px', height: '16px', accentColor: 'var(--pink-primary)' }}
+                  />
+                  <label htmlFor="isExpressCheckbox" style={{ fontSize: '12px', color: 'white', fontWeight: '800', cursor: 'pointer', userSelect: 'none' }}>
+                    Servicio Express / Add-on (No agendar visualmente)
+                  </label>
+                </div>
+              )}
+
               <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '10px', maxHeight: '400px', overflowY: 'auto', paddingRight: '8px' }}>
                 {allStaff.filter(s => {
                   const roleName = (s.role?.split('|')[0] || '').toLowerCase();

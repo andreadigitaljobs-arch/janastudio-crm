@@ -1,21 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar as CalendarIcon, Clock, TrendingUp, Plus, Search, Filter, AlertCircle, X, ChevronRight, CheckCircle2, User, Trash2, CalendarClock, Package, PlayCircle } from 'lucide-react';
 import LaserPackageModal from './LaserPackageModal';
 import LaserSessionModal from './LaserSessionModal';
 import AnimatedModal from './AnimatedModal';
-
-const DUMMY_PACKAGES = [
-  { id: 1, client: 'María Fernández', phone: '+58 412-1234567', package: '8 Sesiones (Piernas + Brasilera)', currentSession: 3, totalSessions: 8, lastSession: 'Hace 20 días', nextSession: 'Hoy', price: 145, paid: 100, pending: 45, status: 'Al día' },
-  { id: 2, client: 'Ana López', phone: '+58 424-9876543', package: '5 Sesiones (Axilas)', currentSession: 1, totalSessions: 5, lastSession: 'N/A', nextSession: 'Mañana', price: 60, paid: 20, pending: 40, status: 'Cuota Pendiente' },
-  { id: 3, client: 'Sofía Rodríguez', phone: '+58 414-5551212', package: '10 Sesiones (Cuerpo Completo)', currentSession: 8, totalSessions: 10, lastSession: 'Hace 30 días', nextSession: 'Próxima semana', price: 300, paid: 300, pending: 0, status: 'Pagado' },
-];
+import { dataService } from '../services/dataService';
 
 const LaserModule = ({ isMobile }) => {
+  const [packages, setPackages] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('packages'); // 'packages' | 'calendar'
   const [searchQuery, setSearchQuery] = useState('');
   
   const [isSellPackageOpen, setIsSellPackageOpen] = useState(false);
   const [selectedPackageForSession, setSelectedPackageForSession] = useState(null);
+  
+  const loadPackages = async () => {
+    try {
+      setLoading(true);
+      const data = await dataService.getAllActiveLaserPackages();
+      const formatted = data.map(pkg => {
+        const installments = pkg.package_installments || [];
+        const paid = installments.filter(i => i.status === 'paid').reduce((sum, i) => sum + Number(i.amount), 0);
+        const total = Number(pkg.total_amount) || 0;
+        const pending = total - paid;
+        
+        let status = 'Al día';
+        if (installments.some(i => i.status === 'pending' && i.installment_number <= pkg.used_sessions + 1)) {
+          status = 'Cuota Pendiente';
+        }
+        if (pending <= 0) status = 'Pagado';
+
+        return {
+          id: pkg.id,
+          client: pkg.clients?.name || 'S/N',
+          phone: pkg.clients?.phone || '',
+          package: pkg.services?.name || 'Paquete Láser',
+          currentSession: pkg.used_sessions || 0,
+          totalSessions: pkg.total_sessions || 8,
+          lastSession: 'N/A', // Se podría calcular si traemos package_sessions
+          nextSession: 'Pendiente',
+          price: total,
+          paid,
+          pending: pending > 0 ? pending : 0,
+          status,
+          raw: pkg
+        };
+      });
+      setPackages(formatted);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadPackages();
+  }, []);
   
   // New states for calendar mockups
   const [isBlockTimeOpen, setIsBlockTimeOpen] = useState(false);
@@ -173,7 +214,9 @@ const LaserModule = ({ isMobile }) => {
 
             {/* Packages List */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '24px' }}>
-              {DUMMY_PACKAGES.map(pkg => (
+              {loading ? (
+                <div style={{ padding: '24px', textAlign: 'center', color: '#a0909a' }}>Cargando paquetes...</div>
+              ) : packages.filter(p => p.client.toLowerCase().includes(searchQuery.toLowerCase()) || p.phone.includes(searchQuery)).map(pkg => (
                 <div key={pkg.id} className="agenda-glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.7)', transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 16px 40px rgba(74, 48, 54, 0.08)'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(74, 48, 54, 0.04)'; }}>
                   
                   {/* Header */}
@@ -189,9 +232,9 @@ const LaserModule = ({ isMobile }) => {
                     </div>
                     <div style={{ 
                       padding: '6px 14px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 800, 
-                      backgroundColor: pkg.status === 'Al día' ? '#fff0f2' : pkg.status === 'Cuota Pendiente' ? '#ffe1e6' : '#fcf9f8', 
-                      color: pkg.status === 'Al día' ? '#c97282' : pkg.status === 'Cuota Pendiente' ? '#a0506a' : '#a0909a', 
-                      border: `1px solid ${pkg.status === 'Al día' ? 'rgba(201,114,130,0.2)' : pkg.status === 'Cuota Pendiente' ? 'rgba(160,80,106,0.2)' : 'rgba(160,144,154,0.2)'}` 
+                      backgroundColor: pkg.status === 'Al día' ? '#fff0f2' : pkg.status === 'Cuota Pendiente' ? '#ffe1e6' : pkg.status === 'Pagado' ? '#ecfdf5' : '#fcf9f8', 
+                      color: pkg.status === 'Al día' ? '#c97282' : pkg.status === 'Cuota Pendiente' ? '#a0506a' : pkg.status === 'Pagado' ? '#059669' : '#a0909a', 
+                      border: `1px solid ${pkg.status === 'Al día' ? 'rgba(201,114,130,0.2)' : pkg.status === 'Cuota Pendiente' ? 'rgba(160,80,106,0.2)' : pkg.status === 'Pagado' ? 'rgba(5,150,105,0.2)' : 'rgba(160,144,154,0.2)'}` 
                     }}>
                       {pkg.status}
                     </div>
@@ -223,7 +266,7 @@ const LaserModule = ({ isMobile }) => {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '4px' }}>
                     <div>
                       <div style={{ fontSize: '0.7rem', color: '#a0909a', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Deuda Pendiente</div>
-                      <div style={{ fontSize: '1.4rem', fontWeight: 900, color: pkg.pending > 0 ? '#a0506a' : '#c97282', letterSpacing: '-0.5px' }}>${pkg.pending}</div>
+                      <div style={{ fontSize: '1.4rem', fontWeight: 900, color: pkg.pending > 0 ? '#a0506a' : '#c97282', letterSpacing: '-0.5px' }}>${pkg.pending.toFixed(2)}</div>
                     </div>
                     
                     <button 
@@ -372,13 +415,13 @@ const LaserModule = ({ isMobile }) => {
 
       <LaserPackageModal 
         isOpen={isSellPackageOpen} 
-        onClose={() => setIsSellPackageOpen(false)} 
+        onClose={() => { setIsSellPackageOpen(false); loadPackages(); }} 
         isMobile={isMobile} 
       />
 
       <LaserSessionModal 
         isOpen={!!selectedPackageForSession} 
-        onClose={() => setSelectedPackageForSession(null)} 
+        onClose={() => { setSelectedPackageForSession(null); loadPackages(); }} 
         isMobile={isMobile} 
         packageData={selectedPackageForSession} 
       />

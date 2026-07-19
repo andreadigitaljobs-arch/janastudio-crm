@@ -23,6 +23,8 @@ const MODULE_ROLES = {
   costing: ['admin'],
   inventory: ['admin', 'cashier'],
   finance: ['admin', 'cashier'],
+  accounting: ['admin'],
+  laser: ['admin', 'reception', 'worker'],
   reports: ['admin'],
   notifications: ['admin', 'reception', 'cashier', 'worker'],
 };

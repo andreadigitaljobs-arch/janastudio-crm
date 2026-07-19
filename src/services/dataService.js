@@ -974,11 +974,29 @@ export const dataService = {
   async getClientPackages(clientId) {
     const { data, error } = await supabase
       .from('client_packages')
-      .select('*, services(name)')
+      .select('*, services(name), package_installments(*)')
       .eq('client_id', clientId)
       .order('created_at', { ascending: false });
     if (error) throw error;
     return data || [];
+  },
+
+  async getAllActiveLaserPackages() {
+    const { data, error } = await supabase
+      .from('client_packages')
+      .select('*, clients(name, phone), services(name, category), package_installments(*)')
+      .eq('status', 'active')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    
+    // Filtramos solo los de láser en memoria si no podemos asegurar que el service_id sea de láser
+    const result = (data || []).filter(pkg => {
+      const sName = (pkg.services?.name || '').toLowerCase();
+      const sCat = (pkg.services?.category || '').toLowerCase();
+      return sName.includes('láser') || sName.includes('laser') || sName.includes('depilación') ||
+             sCat.includes('laser') || sCat.includes('depilación');
+    });
+    return result;
   },
 
   async addClientPackage(pkg) {
@@ -991,7 +1009,27 @@ export const dataService = {
     return data;
   },
 
-  async usePackageSession(clientPackageId, appointmentId = null, notes = '') {
+  async addPackageInstallments(installments) {
+    const { data, error } = await supabase
+      .from('package_installments')
+      .insert(installments)
+      .select();
+    if (error) throw error;
+    return data;
+  },
+
+  async updatePackageInstallment(installmentId, updates) {
+    const { data, error } = await supabase
+      .from('package_installments')
+      .update(updates)
+      .eq('id', installmentId)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async usePackageSession(clientPackageId, appointmentId = null, notes = '', suppliesCost = 0) {
     const { data: pkg, error: getErr } = await supabase
       .from('client_packages')
       .select('used_sessions, total_sessions')
@@ -1017,7 +1055,8 @@ export const dataService = {
       .insert([{
         client_package_id: clientPackageId,
         appointment_id: appointmentId,
-        notes
+        notes,
+        supplies_cost: suppliesCost
       }])
       .select()
       .single();
@@ -1187,6 +1226,84 @@ export const dataService = {
     }
 
     return { success: true };
+  },
+
+  async checkLaserPackageExpirations() {
+    try {
+      const { data: packages, error } = await supabase
+        .from('client_packages')
+        .select('*, clients(id, name, phone), services(name, category)')
+        .eq('status', 'active');
+      
+      if (error) throw error;
+      if (!packages || packages.length === 0) return;
+
+      const now = new Date();
+
+      for (const pkg of packages) {
+        const serviceName = pkg.services?.name || '';
+        const serviceCategory = pkg.services?.category || '';
+        const isLaser = serviceName.toLowerCase().includes('láser') || 
+                        serviceName.toLowerCase().includes('laser') || 
+                        serviceName.toLowerCase().includes('depilación') ||
+                        serviceCategory.toLowerCase().includes('laser') || 
+                        serviceCategory.toLowerCase().includes('depilación');
+
+        if (!isLaser) continue;
+
+        const createdAt = new Date(pkg.created_at);
+        const diffTime = Math.abs(now - createdAt);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        // 9 months = 270 days, 10 months = 300 days
+        const nineMonthsDays = 270;
+        const tenMonthsDays = 300;
+
+        if (diffDays >= nineMonthsDays && diffDays < tenMonthsDays) {
+          const { data: existingNotif, error: notifError } = await supabase
+            .from('notifications')
+            .select('id')
+            .eq('metadata->>client_package_id', pkg.id)
+            .limit(1);
+
+          if (notifError) {
+            console.error('Error checking existing notifications:', notifError);
+            continue;
+          }
+
+          if (!existingNotif || existingNotif.length === 0) {
+            const clientName = pkg.clients?.name || 'Cliente';
+            const title = 'Paquete Láser por Vencer ⚡';
+            const message = `A la clienta ${clientName} le queda 1 mes para culminar su paquete de depilación láser de 8 sesiones (Plazo de 10 meses). Consumidas: ${pkg.used_sessions || 0}/8.`;
+            
+            const { error: insertError } = await supabase
+              .from('notifications')
+              .insert([{
+                title,
+                message,
+                type: 'warning',
+                read: false,
+                metadata: {
+                  client_package_id: pkg.id,
+                  client_id: pkg.client_id
+                }
+              }]);
+
+            if (insertError) {
+              console.error('Error inserting laser package warning notification:', insertError);
+            } else {
+              try {
+                notificationService.sendNotification(title, message);
+              } catch (e) {
+                console.error(e);
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.error('Error in checkLaserPackageExpirations:', e);
+    }
   },
 
   // ─── Auth ───────────────────────────────────────────────────────────────────

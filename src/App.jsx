@@ -21,7 +21,9 @@ import {
   Home,
   Crown,
   ChevronRight,
-  Activity
+  Activity,
+  Zap,
+  Calculator
 } from 'lucide-react';
 import LaserGunIcon from './components/LaserGunIcon';
 import { dataService } from './services/dataService';
@@ -59,6 +61,7 @@ const LaserModule = lazy(() => import('./components/LaserModule'));
 const ScheduleModal = lazy(() => import('./components/ScheduleModal'));
 
 const ModuleFallback = () => <MiniLoader text="Preparando vista..." />;
+const AccountingModule = lazy(() => import('./components/AccountingModule'));
 
 
 function App() {
@@ -141,7 +144,10 @@ function App() {
     { id: 'services', label: 'Servicios', icon: Star },
     { id: 'personnel', label: 'Equipo', icon: Sparkles },
     { id: 'inventory', label: 'Inventario', icon: Package },
+    { id: 'costing', label: 'Estruct. de Costos', icon: Calculator },
     { id: 'finance', label: 'Finanzas', icon: Wallet },
+    { id: 'accounting', label: 'Contabilidad', icon: Receipt },
+    { id: 'laser', label: 'Láser', icon: Zap },
     { id: 'reports', label: 'Reportes', icon: FileText },
     { id: 'promotions', label: 'Promociones', icon: Percent },
     { id: 'settings', label: 'Configuración', icon: Sliders },
@@ -301,6 +307,10 @@ function App() {
     const initApp = async () => {
       try {
         await fetchCriticalData();
+        // Check for active laser package expirations (non-blocking)
+        dataService.checkLaserPackageExpirations().catch(err => {
+          console.warn('Error checking laser package expirations:', err);
+        });
       } catch (error) {
         console.error('Initial app load failed:', error);
       } finally {
@@ -519,6 +529,7 @@ function App() {
       case 'costing': return <div className="p-container"><CostingModule isMobile={isMobile} services={dbData.services} inventory={dbData.inventory} /></div>;
       case 'inventory': return <div className="p-container"><InventoryModule isMobile={isMobile} currency={currency} rates={effectiveRates} /></div>;
       case 'finance': return <div className="p-container"><FinanceModule isMobile={isMobile} currency={currency} rates={effectiveRates} staff={dbData.staff} /></div>;
+      case 'accounting': return <div className="p-container"><AccountingModule isMobile={isMobile} /></div>;
       case 'reports': return <div className="p-container"><ReportsModule isMobile={isMobile} rates={effectiveRates} staff={dbData.staff || []} services={dbData.services || []} clients={dbData.clients || []} /></div>;
       case 'clients': return <div className="p-container"><ClientModule isMobile={isMobile} isTablet={isTablet} clients={dbData.clients} onRefresh={fetchInitialData} initialClientId={tabParams.clientId} rates={effectiveRates} onNavigate={handleTabChange} /></div>;
       case 'diagnosis': return <div className="p-container"><CapillaryDiagnosisModule isMobile={isMobile} clients={dbData.clients} onNavigate={handleTabChange} prefillClientId={tabParams.clientId} /></div>;
