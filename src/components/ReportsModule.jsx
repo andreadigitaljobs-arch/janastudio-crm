@@ -47,7 +47,7 @@ const DonutChart = ({ data, size = 160 }) => {
       ))}
       <circle cx={cx} cy={cy} r={radius * 0.55} fill="white" />
       <text x={cx} y={cy - 6} textAnchor="middle" fontSize="11" fontWeight="800" fill="var(--text-primary)">Total</text>
-      <text x={cx} y={cy + 12} textAnchor="middle" fontSize="13" fontWeight="900" fill="var(--pink-primary)">Bs. {formatBs(total)}</text>
+      <text x={cx} y={cy + 12} textAnchor="middle" fontSize="13" fontWeight="900" fill="var(--pink-primary)">${formatBs(total / (exchangeRate || 550))} USD</text>
     </svg>
   );
 };
@@ -95,7 +95,7 @@ const HorizontalBar = ({ label, value, maxVal, color = '#c48b9f', amount }) => {
     <div style={{ marginBottom: '12px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
         <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{label}</span>
-        <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>Bs. {formatBs(amount || value)}</span>
+        <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>${formatBs((amount || value) / (exchangeRate || 550))} USD</span>
       </div>
       <div style={{ height: '8px', background: '#f0e4e8', borderRadius: '4px', overflow: 'hidden' }}>
         <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: '4px', transition: 'width 0.6s ease' }}></div>
@@ -271,9 +271,9 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
 
       <section className="mi-enter-up mi-delay-1" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px', marginBottom: '28px' }}>
         {[
-          { label: 'INGRESOS TOTALES', value: `Bs. ${formatBs(ingresosTotales)}`, icon: <BarChart3 size={14} />, trend: '+12.4%', trendUp: true, sub: 'vs período anterior' },
+          { label: 'INGRESOS TOTALES', value: `$ ${formatBs(ingresosTotales / (exchangeRate || 550))} USD`, icon: <BarChart3 size={14} />, trend: '+12.4%', trendUp: true, sub: 'vs período anterior' },
           { label: 'CITAS COMPLETADAS', value: citasCompletadas.toString(), icon: <CheckCircle size={14} />, trend: '+8.1%', trendUp: true, sub: 'vs período anterior' },
-          { label: 'TICKET PROMEDIO', value: `Bs. ${formatBs(ticketPromedio)}`, icon: <Target size={14} />, trend: '+5.9%', trendUp: true, sub: 'vs período anterior' },
+          { label: 'TICKET PROMEDIO', value: `$ ${formatBs(ticketPromedio / (exchangeRate || 550))} USD`, icon: <Target size={14} />, trend: '+5.9%', trendUp: true, sub: 'vs período anterior' },
           { label: 'TASA DE RETENCIÓN', value: `${tasaRetencion}%`, icon: <Users size={14} />, trend: '+6.3%', trendUp: true, sub: 'vs período anterior' },
         ].map((s, i) => (
           <div key={i} className={`mi-stat mi-delay-${i + 1}`} style={statCard}>
@@ -307,7 +307,7 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
           <div style={{ display: 'flex', gap: '16px', marginBottom: '12px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <div style={{ width: '10px', height: '3px', borderRadius: '2px', background: '#c48b9f' }}></div>
-              <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>Ingresos (Bs.)</span>
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>Ingresos</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <div style={{ width: '10px', height: '3px', borderRadius: '2px', background: '#bf5af2', borderStyle: 'dashed' }}></div>
@@ -337,7 +337,7 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
           <h3 style={{ fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '20px' }}>Objetivos del Mes</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {[
-              { label: 'Ingresos', current: 48320, target: 60000, unit: 'Bs.', pct: 80, color: '#c48b9f' },
+              { label: 'Ingresos', current: 48320, target: 60000, unit: 'USD', pct: 80, color: '#c48b9f' },
               { label: 'Reservas', current: 386, target: 500, unit: '', pct: 77, color: '#bf5af2' },
               { label: 'Retención', current: 74, target: 75, unit: '%', pct: 99, color: '#32d74b' },
             ].map((o, i) => (
@@ -345,7 +345,7 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                   <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{o.label}</span>
                   <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-                    {o.unit === 'Bs.' ? `Bs. ${formatBs(o.current)} / Bs. ${formatBs(o.target)}` : o.unit === '%' ? `${o.current}% / ${o.target}%` : `${o.current} / ${o.target}`}
+                    {o.unit === 'Bs.' ? `$${formatBs(o.current / (exchangeRate || 550))} / $${formatBs(o.target / (exchangeRate || 550))}` : o.unit === '%' ? `${o.current}% / ${o.target}%` : `${o.current} / ${o.target}`}
                   </span>
                 </div>
                 <div style={{ height: '8px', background: '#f0e4e8', borderRadius: '4px', overflow: 'hidden', position: 'relative' }}>
@@ -381,7 +381,7 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
                   <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '800', color: t.color, flexShrink: 0 }}>{t.avatar}</div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)', lineHeight: '1.3' }}>{t.name}</div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Bs. {formatBs(t.ingresos)} · {t.citas} citas</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>${formatBs(t.ingresos / (exchangeRate || 550))} USD · {t.citas} citas</div>
                   </div>
                   <span style={{ fontSize: '13px', fontWeight: '800', color: t.rendimiento >= 85 ? '#32d74b' : t.rendimiento >= 75 ? '#ff9f0a' : '#ff453a', flexShrink: 0 }}>{t.rendimiento}%</span>
                 </div>
@@ -411,7 +411,7 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
                           <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{t.name}</span>
                         </div>
                       </td>
-                      <td style={{ padding: '8px', textAlign: 'right', fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>Bs. {formatBs(t.ingresos)}</td>
+                      <td style={{ padding: '8px', textAlign: 'right', fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>${formatBs(t.ingresos / (exchangeRate || 550))} USD</td>
                       <td style={{ padding: '8px', textAlign: 'center', fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{t.citas}</td>
                       <td style={{ padding: '8px', textAlign: 'center' }}>
                         <span style={{ fontSize: '12px', fontWeight: '800', color: t.rendimiento >= 85 ? '#32d74b' : t.rendimiento >= 75 ? '#ff9f0a' : '#ff453a' }}>{t.rendimiento}%</span>
@@ -466,7 +466,7 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
                     <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)', lineHeight: '1.3' }}>{c.name}</div>
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{c.visits} visitas</div>
                   </div>
-                  <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--pink-primary)', flexShrink: 0 }}>Bs. {formatBs(c.total)}</span>
+                  <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--pink-primary)', flexShrink: 0 }}>${formatBs(c.total / (exchangeRate || 550))} USD</span>
                 </div>
               ))}
             </div>
@@ -495,7 +495,7 @@ const ReportsModule = ({ isMobile, rates, staff = [], services = [], clients = [
                       </td>
                       <td style={{ padding: '8px', textAlign: 'center', fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{c.visits}</td>
                       <td style={{ padding: '8px', fontSize: '11px', color: 'var(--text-secondary)' }}>{c.lastService}</td>
-                      <td style={{ padding: '8px', textAlign: 'right', fontSize: '12px', fontWeight: '800', color: 'var(--pink-primary)' }}>Bs. {formatBs(c.total)}</td>
+                      <td style={{ padding: '8px', textAlign: 'right', fontSize: '12px', fontWeight: '800', color: 'var(--pink-primary)' }}>${formatBs(c.total / (exchangeRate || 550))} USD</td>
                     </tr>
                   ))}
                 </tbody>

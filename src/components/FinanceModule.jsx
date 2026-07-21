@@ -1215,7 +1215,8 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                   SALDO ACTUAL
                 </div>
                 <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
-                  Bs. {formatBs(balance * (rates?.usd || 550))}
+                  ${formatBs(balance)} USD
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '800', marginTop: '4px' }}>Ref: Bs. {formatBs(balance * (rates?.usd || 550))}</div>
                 </div>
                 <div style={{ fontSize: '11px', color: '#32d74b', fontWeight: '700', marginTop: '4px' }}>
                   vs ayer <span style={{ color: '#32d74b' }}>&#8593;</span> 5.6%
@@ -1874,7 +1875,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                               <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)' }}>{st.commission_pct || 60}%</td>
                               <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: '13px', fontWeight: '700', color: '#32d74b' }}>Bs. {formatBs(st.propinasBs)}</td>
                               <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: '13px', fontWeight: '700', color: '#ff453a' }}>Bs. {formatBs(st.valesBs)}</td>
-                              <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)' }}>Bs. {formatBs(st.balanceBs)}</td>
+                              <td style={{ padding: '14px 16px', textAlign: 'right', fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)' }}>${formatBs(st.balanceBs / (rates?.usd || 550))} USD <span style={{fontSize:'10px', color:'var(--text-muted)'}}>Ref: Bs. {formatBs(st.balanceBs)}</span></td>
                               <td style={{ padding: '14px 16px', textAlign: 'center' }}>
                                 <span style={{ fontSize: '11px', fontWeight: '700', padding: '4px 10px', borderRadius: '6px', backgroundColor: status === 'Pagado' ? 'rgba(50,215,75,0.1)' : status === 'En revisión' ? 'rgba(255,149,0,0.1)' : 'rgba(255,69,58,0.1)', color: status === 'Pagado' ? '#32d74b' : status === 'En revisión' ? '#ff9500' : '#ff453a' }}>
                                   {status === 'Pagado' ? '✓ ' : status === 'En revisión' ? '◐ ' : '○ '}{status}
@@ -1910,7 +1911,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                           <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}>{st.role?.split('|')[0]} · {st.servicesCount} servicios</div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
                             <span style={{ color: 'var(--text-muted)' }}>Por pagar:</span>
-                            <span style={{ fontWeight: '800', color: 'var(--pink-primary)' }}>Bs. {formatBs(st.balanceBs)}</span>
+                            <span style={{ fontWeight: '800', color: 'var(--pink-primary)' }}>${formatBs(st.balanceBs / (rates?.usd || 550))} USD <span style={{fontSize:'10px', color:'var(--text-muted)'}}>Ref: Bs. {formatBs(st.balanceBs)}</span></span>
                           </div>
                         </div>
                       );
@@ -2082,7 +2083,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                         </div>
                       </div>
                       <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-primary)' }}>Bs. {formatBs(st.balanceBs)}</div>
+                        <div style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-primary)' }}>${formatBs(st.balanceBs / (rates?.usd || 550))} USD <span style={{fontSize:'10px', color:'var(--text-muted)'}}>Ref: Bs. {formatBs(st.balanceBs)}</span></div>
                         <div style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'flex-end' }}>
                           <Calendar size={10} /> 5 Jul 2026
                         </div>
@@ -2132,7 +2133,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                       </div>
                       <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>Ticket promedio por estilista</span>
                     </div>
-                    <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--pink-primary)' }}>Bs. {formatBs(totalMembers > 0 ? totalPayroll / totalMembers : 0)}</span>
+                    <span style={{ fontSize: '14px', fontWeight: '800', color: 'var(--pink-primary)' }}>${formatBs((totalMembers > 0 ? totalPayroll / totalMembers : 0) / (rates?.usd || 550))} USD <span style={{fontSize:'10px', color:'var(--text-muted)'}}>Ref: Bs. {formatBs(totalMembers > 0 ? totalPayroll / totalMembers : 0)}</span></span>
                   </div>
                 </div>
               </div>
@@ -2178,7 +2179,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                     UTILIDAD NETA
                   </div>
                   <div style={{ fontSize: '24px', fontWeight: '900', color: utilidadNetaCalculada >= 0 ? '#32d74b' : '#ff453a', letterSpacing: '-0.5px' }}>
-                    Bs. {formatBs(utilidadNetaCalculada)}
+                    ${formatBs(utilidadNetaCalculada / (rates?.usd || 550))} USD <span style={{fontSize:'10px', color:'var(--text-muted)'}}>Ref: Bs. {formatBs(utilidadNetaCalculada)}</span>
                   </div>
                 </div>
                 <div style={{ padding: '20px', borderRadius: '16px', border: '1px solid var(--border-color)', background: 'white' }}>
@@ -2200,7 +2201,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                     PTO. DE EQUILIBRIO
                   </div>
                   <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
-                    Bs. {formatBs(ptoEquilibrio)}
+                    ${formatBs(ptoEquilibrio / (rates?.usd || 550))} USD <span style={{fontSize:'10px', color:'var(--text-muted)'}}>Ref: Bs. {formatBs(ptoEquilibrio)}</span>
                   </div>
                   <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>Facturación Necesaria</div>
                 </div>
@@ -2212,7 +2213,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                     TICKET PROMEDIO
                   </div>
                   <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
-                    Bs. {formatBs(ticketProm)}
+                    ${formatBs(ticketProm / (rates?.usd || 550))} USD <span style={{fontSize:'10px', color:'var(--text-muted)'}}>Ref: Bs. {formatBs(ticketProm)}</span>
                   </div>
                 </div>
               </section>
@@ -2223,15 +2224,15 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border-color)' }}>
                       <span style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: '700' }}>Ingresos Brutos (Facturación)</span>
-                      <span style={{ fontWeight: '800', color: '#32d74b' }}>Bs. {formatBs(ingresosTotales)}</span>
+                      <span style={{ fontWeight: '800', color: '#32d74b' }}>${formatBs(ingresosTotales / (rates?.usd || 550))} USD <span style={{fontSize:'10px', color:'var(--text-muted)'}}>Ref: Bs. {formatBs(ingresosTotales)}</span></span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border-color)' }}>
                       <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Egresos Totales a Estilistas</span>
-                      <span style={{ fontWeight: '700', color: '#ff453a' }}>-Bs. {formatBs(egresosEstilistas)}</span>
+                      <span style={{ fontWeight: '700', color: '#ff453a' }}>-${formatBs(egresosEstilistas / (rates?.usd || 550))} USD <span style={{fontSize:'10px', color:'var(--text-muted)'}}>Ref: -Bs. {formatBs(egresosEstilistas)}</span></span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border-color)' }}>
                       <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Costos Fijos Operativos</span>
-                      <span style={{ fontWeight: '700', color: '#ff453a' }}>-Bs. {formatBs(totalFixedCosts)}</span>
+                      <span style={{ fontWeight: '700', color: '#ff453a' }}>-${formatBs(totalFixedCosts / (rates?.usd || 550))} USD <span style={{fontSize:'10px', color:'var(--text-muted)'}}>Ref: -Bs. {formatBs(totalFixedCosts)}</span></span>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 20px', padding: '12px 16px', background: '#faf5f5', borderRadius: '12px', margin: '4px 0' }}>
                       {[
@@ -2244,23 +2245,23 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                       ].map(c => (
                         <div key={c.key} style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}>
                           <span style={{ fontSize: '11px', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>↳ {fixedCosts.customLabels?.[c.key] || c.defaultLabel}</span>
-                          <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-secondary)', marginLeft: '8px' }}>-Bs. {formatBs(fixedCosts[c.key] || 0)}</span>
+                          <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-secondary)', marginLeft: '8px' }}>-${formatBs((fixedCosts[c.key] || 0) / (rates?.usd || 550))} USD <span style={{fontSize:'10px', color:'var(--text-muted)'}}>Ref: -Bs. {formatBs(fixedCosts[c.key] || 0)}</span></span>
                         </div>
                       ))}
                       {fixedCosts.extraCosts?.map((c, i) => (
                         <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}>
                           <span style={{ fontSize: '11px', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>↳ {c.label || 'Sin nombre'}</span>
-                          <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-secondary)', marginLeft: '8px' }}>-Bs. {formatBs(c.value)}</span>
+                          <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-secondary)', marginLeft: '8px' }}>-${formatBs(c.value / (rates?.usd || 550))} USD <span style={{fontSize:'10px', color:'var(--text-muted)'}}>Ref: -Bs. {formatBs(c.value)}</span></span>
                         </div>
                       ))}
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border-color)' }}>
                       <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Costos Variables (Caja Chica)</span>
-                      <span style={{ fontWeight: '700', color: '#ff453a' }}>-Bs. {formatBs(costosVariables)}</span>
+                      <span style={{ fontWeight: '700', color: '#ff453a' }}>-${formatBs(costosVariables / (rates?.usd || 550))} USD <span style={{fontSize:'10px', color:'var(--text-muted)'}}>Ref: -Bs. {formatBs(costosVariables)}</span></span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', fontWeight: '900', marginTop: '4px', fontSize: '18px' }}>
                       <span style={{ color: 'var(--pink-primary)' }}>Utilidad Neta</span>
-                      <span style={{ color: utilidadNetaCalculada >= 0 ? '#32d74b' : '#ff453a' }}>Bs. {formatBs(utilidadNetaCalculada)}</span>
+                      <span style={{ color: utilidadNetaCalculada >= 0 ? '#32d74b' : '#ff453a' }}>${formatBs(utilidadNetaCalculada / (rates?.usd || 550))} USD <span style={{fontSize:'10px', color:'var(--text-muted)'}}>Ref: Bs. {formatBs(utilidadNetaCalculada)}</span></span>
                     </div>
                   </div>
                 </div>
@@ -2321,9 +2322,9 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                           <tr key={b.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                             <td style={{ padding: '10px 12px', fontWeight: '700', color: 'var(--text-primary)' }}>{staffName}</td>
                             <td style={{ padding: '10px 12px', textAlign: 'center', color: 'var(--text-primary)' }}>{b.services}</td>
-                            <td style={{ padding: '10px 12px', textAlign: 'right', color: 'var(--text-primary)', fontWeight: '700' }}>Bs. {formatBs(b.incomeBs)}</td>
-                            <td style={{ padding: '10px 12px', textAlign: 'right', color: '#ff453a', fontWeight: '700' }}>-Bs. {formatBs(netCostoBs)}</td>
-                            <td style={{ padding: '10px 12px', textAlign: 'right', color: '#32d74b', fontWeight: '800' }}>Bs. {formatBs(gananciaSalonBs)}</td>
+                            <td style={{ padding: '10px 12px', textAlign: 'right', color: 'var(--text-primary)', fontWeight: '700' }}>${formatBs(b.incomeBs / (rates?.usd || 550))} USD <span style={{fontSize:'10px', color:'var(--text-muted)'}}>Ref: Bs. {formatBs(b.incomeBs)}</span></td>
+                            <td style={{ padding: '10px 12px', textAlign: 'right', color: '#ff453a', fontWeight: '700' }}>-${formatBs(netCostoBs / (rates?.usd || 550))} USD <span style={{fontSize:'10px', color:'var(--text-muted)'}}>Ref: -Bs. {formatBs(netCostoBs)}</span></td>
+                            <td style={{ padding: '10px 12px', textAlign: 'right', color: '#32d74b', fontWeight: '800' }}>${formatBs(gananciaSalonBs / (rates?.usd || 550))} USD <span style={{fontSize:'10px', color:'var(--text-muted)'}}>Ref: Bs. {formatBs(gananciaSalonBs)}</span></td>
                           </tr>
                         );
                       })}
@@ -2391,7 +2392,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                   {processedPayroll.filter(s => s.balanceBs > 0).slice(0, 3).map(st => (
                     <div key={st.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>
                       <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{getStaffDisplayName(st)}</span>
-                      <span style={{ fontSize: '12px', fontWeight: '800', color: '#ff453a' }}>Bs. {formatBs(st.balanceBs)}</span>
+                      <span style={{ fontSize: '12px', fontWeight: '800', color: '#ff453a' }}>${formatBs(st.balanceBs / (rates?.usd || 550))} USD <span style={{fontSize:'10px', color:'var(--text-muted)'}}>Ref: Bs. {formatBs(st.balanceBs)}</span></span>
                     </div>
                   ))}
                   {processedPayroll.filter(s => s.balanceBs > 0).length === 0 && (

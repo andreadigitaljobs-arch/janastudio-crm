@@ -421,7 +421,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
   };
 
   const formatBs = (price) => {
-    return `${(Number(price) * (rates?.usd || 550)).toLocaleString('es-VE')} Bs.`;
+    return `$${Number(price).toLocaleString('es-VE')} USD (Ref: ${(Number(price) * (rates?.usd || 550)).toLocaleString('es-VE')} Bs.)`;
   };
 
   const itemsPerPage = 8;
@@ -750,7 +750,8 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                   </div>
                   <div>
                     <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Ticket Promedio</div>
-                    <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-primary)' }}>{formatBs(avgTicket)}</div>
+                    <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-primary)' }}>${formatBs(avgTicket / (rates?.usd || 550))} USD
+                      <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '800', marginTop: '4px' }}>Ref: Bs. {formatBs(avgTicket)}</div></div>
                   </div>
                 </div>
                 <div style={{ fontSize: '11px', color: '#22c55e', fontWeight: '700' }}>↑ 8% <span style={{ color: 'var(--text-muted)', fontWeight: '500' }}>vs ayer</span></div>
@@ -1453,13 +1454,14 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                     <div className="details-price-row" style={{ display: 'flex', justifyContent: 'space-between', padding: '16px', backgroundColor: '#faf5f5', borderRadius: '16px', marginBottom: '20px', border: '1px solid rgba(196,139,159,0.1)' }}>
                       <div>
                         <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Precio Base</div>
-                        <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text-primary)' }}>{formatBs(selectedServiceDetail.price)}</div>
+                        <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--text-primary)' }}>${formatBs(selectedServiceDetail.price / rates.usd)} USD
+                          <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '800', marginTop: '4px' }}>Ref: Bs. {formatBs(selectedServiceDetail.price)}</div></div>
                       </div>
                       {rates?.usd > 0 && (
                         <div style={{ textAlign: 'right' }}>
                           <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Precio en Bolívares</div>
                           <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--pink-primary)' }}>
-                            {Math.round(selectedServiceDetail.price * rates.usd).toLocaleString()} Bs.
+                            ${selectedServiceDetail.price} USD (Ref: {Math.round(selectedServiceDetail.price * rates.usd).toLocaleString()} Bs.)
                           </div>
                         </div>
                       )}
@@ -1512,11 +1514,11 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                           
                           <div style={{ textAlign: 'right', flexShrink: 0 }}>
                             <div style={{ fontWeight: '800', color: 'var(--pink-primary)', fontSize: '13px' }}>
-                              {formatBs(variation.price)}
+                              ${formatBs(variation.price / rates.usd)} USD (Ref: Bs. {formatBs(variation.price)})
                             </div>
                             {rates?.usd > 0 && (
                               <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '1px' }}>
-                                {Math.round(variation.price * rates.usd).toLocaleString()} Bs.
+                                ${variation.price} USD (Ref: {Math.round(variation.price * rates.usd).toLocaleString()} Bs.)
                               </div>
                             )}
                           </div>
@@ -1922,7 +1924,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                             />
                             {rates?.usd > 0 && (
                               <div style={{ position: 'absolute', right: '10px', fontSize: '11px', fontWeight: '700', color: '#a0506a', backgroundColor: '#faf3f2', padding: '3px 8px', borderRadius: '6px' }}>
-                                ≈ {Math.round((Number(newService.price) || 0) * rates.usd).toLocaleString()} Bs.
+                                ≈ ${Number(newService.price) || 0} USD (Ref: {Math.round((Number(newService.price) || 0) * rates.usd).toLocaleString()} Bs.)
                               </div>
                             )}
                           </div>
@@ -2009,9 +2011,9 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                               </div>
                               {rates?.usd > 0 && (
                                 <div style={{ textAlign: 'right' }}>
-                                  <div style={{ fontSize: '9px', color: '#7a5960', fontWeight: '700' }}>EQUIVALENTE BS.</div>
+                                  <div style={{ fontSize: '9px', color: '#7a5960', fontWeight: '700' }}>EQUIVALENTE</div>
                                   <div style={{ fontSize: '12px', fontWeight: '800', color: '#2f9e44', marginTop: '1px' }}>
-                                    {Math.round(((Number(newService.price) || 0) - ((Number(newService.price) || 0) * (Number(newService.commission_stylist) || 0) / 100)) * rates.usd).toLocaleString()} Bs.
+                                    ${(Number(newService.price) || 0) - ((Number(newService.price) || 0) * (Number(newService.commission_stylist) || 0) / 100)} USD (Ref: {Math.round(((Number(newService.price) || 0) - ((Number(newService.price) || 0) * (Number(newService.commission_stylist) || 0) / 100)) * rates.usd).toLocaleString()} Bs.)
                                   </div>
                                 </div>
                               )}
@@ -2037,9 +2039,9 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                               </div>
                               {rates?.usd > 0 && (
                                 <div style={{ textAlign: 'right' }}>
-                                  <div style={{ fontSize: '9px', color: '#7a5960', fontWeight: '700' }}>EQUIVALENTE BS.</div>
+                                  <div style={{ fontSize: '9px', color: '#7a5960', fontWeight: '700' }}>EQUIVALENTE</div>
                                   <div style={{ fontSize: '12px', fontWeight: '800', color: '#a0506a', marginTop: '1px' }}>
-                                    {Math.round((((Number(newService.price) || 0) * (Number(newService.commission_stylist) || 0)) / 100) * rates.usd).toLocaleString()} Bs.
+                                    ${(((Number(newService.price) || 0) * (Number(newService.commission_stylist) || 0)) / 100)} USD (Ref: {Math.round((((Number(newService.price) || 0) * (Number(newService.commission_stylist) || 0)) / 100) * rates.usd).toLocaleString()} Bs.)
                                   </div>
                                 </div>
                               )}

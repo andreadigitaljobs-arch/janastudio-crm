@@ -356,7 +356,7 @@ const ReceptionModule = ({ isMobile }) => {
                       ))}
                     </select>
                     <span style={{ color: '#6b6b6b' }}>{s.duration_minutes || 60} min</span>
-                    <div style={{ textAlign: 'right', fontWeight: 600, color: '#2d2d2d' }}>Bs. {(s.price * exchangeRate).toFixed(2)}</div>
+                    <div style={{ textAlign: 'right', fontWeight: 600, color: '#2d2d2d' }}>${Number(s.price).toFixed(2)} (Ref: Bs. {(s.price * exchangeRate).toFixed(2)})</div>
                   </div>
                 ))}
                 {selectedServices.some(s => !s.staffId) && (
@@ -373,22 +373,22 @@ const ReceptionModule = ({ isMobile }) => {
                     <span style={{ color: '#6b6b6b' }}>{p.quantity || 1}</span>
                     <span style={{ color: '#6b6b6b' }}>—</span>
                     <span style={{ color: '#6b6b6b' }}>—</span>
-                    <div style={{ textAlign: 'right', fontWeight: 600, color: '#2d2d2d' }}>Bs. {(p.price * exchangeRate).toFixed(2)}</div>
+                    <div style={{ textAlign: 'right', fontWeight: 600, color: '#2d2d2d' }}>${Number(p.price).toFixed(2)} (Ref: Bs. {(p.price * exchangeRate).toFixed(2)})</div>
                   </div>
                 ))}
 
                 <div style={{ padding: '10px 8px', borderTop: '1px solid rgba(0,0,0,0.04)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', marginBottom: '4px' }}>
                     <span style={{ color: '#6b6b6b' }}>Subtotal</span>
-                    <span style={{ color: '#2d2d2d' }}>Bs. {(subtotal * exchangeRate).toFixed(2)}</span>
+                    <span style={{ color: '#2d2d2d' }}>${Number(subtotal).toFixed(2)} (Ref: Bs. {(subtotal * exchangeRate).toFixed(2)})</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', marginBottom: '6px' }}>
                     <span style={{ color: '#6b6b6b' }}>Descuento</span>
-                    <span style={{ color: '#dc2626' }}>- Bs. {(discount * exchangeRate).toFixed(2)}</span>
+                    <span style={{ color: '#dc2626' }}>- ${Number(discount).toFixed(2)} (Ref: - Bs. {(discount * exchangeRate).toFixed(2)})</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '6px', borderTop: '1px solid rgba(0,0,0,0.04)' }}>
                     <span style={{ fontWeight: 700, color: '#2d2d2d', fontSize: '0.85rem' }}>Total</span>
-                    <span style={{ fontWeight: 700, color: '#c48b9f', fontSize: '1rem' }}>Bs. {(total * exchangeRate).toFixed(2)}</span>
+                    <span style={{ fontWeight: 700, color: '#c48b9f', fontSize: '1rem' }}>${Number(total).toFixed(2)} (Ref: Bs. {(total * exchangeRate).toFixed(2)})</span>
                   </div>
                     <button className="mi-btn" onClick={() => handleSubmit('En Silla')} disabled={loading || !selectedClient || selectedServices.some(s => !s.staffId)} style={{
                     width: '100%', marginTop: '10px', padding: '10px', borderRadius: '10px', border: 'none',
@@ -686,7 +686,7 @@ const SelectionModal = ({ isOpen, onClose, title, items, selectedItems, onToggle
               }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600, color: '#2d2d2d', fontSize: '0.82rem' }}>{item.name}</div>
-                  <div style={{ fontSize: '0.68rem', color: '#9e9e9e', marginTop: '2px' }}>Bs. {(item.price * exchangeRate).toFixed(2)}</div>
+                  <div style={{ fontSize: '0.68rem', color: '#9e9e9e', marginTop: '2px' }}>${Number(item.price).toFixed(2)} USD (Ref: Bs. {(item.price * exchangeRate).toFixed(2)})</div>
                 </div>
                 {isSel && <CheckCircle2 size={18} color="#c48b9f" />}
               </button>

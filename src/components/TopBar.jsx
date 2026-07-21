@@ -311,12 +311,12 @@ const TopBar = ({
             }}>
               <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '4px' }}>
                 <span style={{ color: 'var(--text-muted)', fontSize: '0.58rem', fontWeight: 500 }}>BCV</span>
-                <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>Bs. {rates.bcv?.toFixed(2)}</span>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>${rates.bcv?.toFixed(2)} Bs</span>
               </div>
               <div style={{ width: '1px', height: '22px', background: 'var(--border-color)' }} />
               <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '4px' }}>
                 <span style={{ color: 'var(--text-muted)', fontSize: '0.58rem', fontWeight: 500 }}>USDT</span>
-                <span style={{ color: 'var(--magenta-primary)', fontWeight: 700 }}>Bs. {rates.usdt?.toFixed(2)}</span>
+                <span style={{ color: 'var(--magenta-primary)', fontWeight: 700 }}>${rates.usdt?.toFixed(2)} Bs</span>
               </div>
             </div>
           )}
@@ -369,12 +369,12 @@ const TopBar = ({
           }}>
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '5px' }}>
               <span style={{ color: 'var(--text-muted)', fontSize: '0.65rem', fontWeight: 500 }}>BCV</span>
-              <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>Bs. {rates.bcv?.toFixed(2)}</span>
+              <span style={{ color: 'var(--text-primary)', fontWeight: 700 }}>${rates.bcv?.toFixed(2)} Bs</span>
             </div>
             <div style={{ width: '1px', height: '28px', background: 'var(--border-color)' }} />
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '5px' }}>
               <span style={{ color: 'var(--text-muted)', fontSize: '0.65rem', fontWeight: 500 }}>USDT</span>
-              <span style={{ color: 'var(--magenta-primary)', fontWeight: 700 }}>Bs. {rates.usdt?.toFixed(2)}</span>
+              <span style={{ color: 'var(--magenta-primary)', fontWeight: 700 }}>${rates.usdt?.toFixed(2)} Bs</span>
             </div>
           </div>
         )}
