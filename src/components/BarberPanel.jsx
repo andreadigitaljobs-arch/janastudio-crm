@@ -815,10 +815,10 @@ const BarberPanel = ({ isMobile, rates }) => {
                       </div>
                       <div style={{ textAlign: 'right' }}>
                         <div style={{ fontSize: '18px', fontWeight: '900', color: 'white' }}>
-                          {Math.round(Number(app.total_price !== undefined && app.total_price !== null && Number(app.total_price) > 0 ? app.total_price : (app.services?.price || 0)) * (rates?.usd || 550)).toLocaleString('es-VE')} Bs.
+                          ${Number(app.total_price !== undefined && app.total_price !== null && Number(app.total_price) > 0 ? app.total_price : (app.services?.price || 0)).toFixed(2)} USD
                         </div>
                         <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '800', marginTop: '2px' }}>
-                          Ref: ${Number(app.total_price !== undefined && app.total_price !== null && Number(app.total_price) > 0 ? app.total_price : (app.services?.price || 0)).toFixed(2)} USD
+                          Ref: {Math.round(Number(app.total_price !== undefined && app.total_price !== null && Number(app.total_price) > 0 ? app.total_price : (app.services?.price || 0)) * (rates?.usd || 550)).toLocaleString('es-VE')} Bs.
                         </div>
                       </div>
                     </div>
@@ -1198,10 +1198,10 @@ const BarberPanel = ({ isMobile, rates }) => {
                         </div>
                         <div style={{ textAlign: 'right' }}>
                           <div style={{ fontSize: '22px', fontWeight: '900', color: 'white' }}>
-                            {Math.round(Number(app.total_price !== undefined && app.total_price !== null && Number(app.total_price) > 0 ? app.total_price : (app.services?.price || 0)) * (rates?.usd || 550)).toLocaleString('es-VE')} Bs.
+                            ${Number(app.total_price !== undefined && app.total_price !== null && Number(app.total_price) > 0 ? app.total_price : (app.services?.price || 0)).toFixed(2)} USD
                           </div>
                           <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '800', marginTop: '2px' }}>
-                            Ref: ${Number(app.total_price !== undefined && app.total_price !== null && Number(app.total_price) > 0 ? app.total_price : (app.services?.price || 0)).toFixed(2)} USD
+                            Ref: {Math.round(Number(app.total_price !== undefined && app.total_price !== null && Number(app.total_price) > 0 ? app.total_price : (app.services?.price || 0)) * (rates?.usd || 550)).toLocaleString('es-VE')} Bs.
                           </div>
                         </div>
                       </div>
@@ -1546,10 +1546,10 @@ const BarberPanel = ({ isMobile, rates }) => {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '8px' }}>
               <div style={{ fontSize: '24px', fontWeight: '900', color: isStylist ? '#007aff' : 'var(--pink-primary)', textShadow: isStylist ? '0 0 15px rgba(0,122,255,0.4)' : '0 0 15px rgba(236,72,153,0.4)' }}>
-                {Math.round(stats.production * (rates?.usd || 550)).toLocaleString('es-VE')} Bs.
+                ${stats.production.toFixed(2)} USD
               </div>
               <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '800', marginTop: '4px' }}>
-                Ref: ${stats.production.toFixed(2)} USD
+                Ref: {Math.round(stats.production * (rates?.usd || 550)).toLocaleString('es-VE')} Bs.
               </div>
             </div>
           </div>
@@ -1562,10 +1562,10 @@ const BarberPanel = ({ isMobile, rates }) => {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '8px' }}>
                 <div style={{ fontSize: '24px', fontWeight: '900', color: '#32d74b', textShadow: '0 0 15px rgba(50,215,75,0.4)' }}>
-                  {Math.round(stats.earnings * (rates?.usd || 550)).toLocaleString('es-VE')} Bs.
+                  ${stats.earnings.toFixed(2)} USD
                 </div>
                 <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '800', marginTop: '4px' }}>
-                  Ref: ${stats.earnings.toFixed(2)} USD
+                  Ref: {Math.round(stats.earnings * (rates?.usd || 550)).toLocaleString('es-VE')} Bs.
                 </div>
               </div>
             </div>
@@ -1590,10 +1590,10 @@ const BarberPanel = ({ isMobile, rates }) => {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '8px' }}>
               <div style={{ fontSize: '24px', fontWeight: '900', color: '#ff9f0a', textShadow: '0 0 15px rgba(255, 159, 10, 0.4)' }}>
-                {Math.round(stats.tips * (rates?.usd || 550)).toLocaleString('es-VE')} Bs.
+                ${stats.tips.toFixed(2)} USD
               </div>
               <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '800', marginTop: '4px' }}>
-                Ref: ${stats.tips.toFixed(2)} USD
+                Ref: {Math.round(stats.tips * (rates?.usd || 550)).toLocaleString('es-VE')} Bs.
               </div>
             </div>
           </div>
@@ -1687,10 +1687,10 @@ const BarberPanel = ({ isMobile, rates }) => {
                       </div>
                       <div style={{ textAlign: 'right' }}>
                         <div style={{ fontSize: '18px', fontWeight: '900', color: isStylist ? '#007aff' : '#32d74b', textShadow: isStylist ? '0 0 10px rgba(0,122,255,0.4)' : '0 0 10px rgba(50,215,75,0.4)' }}>
-                          {Math.round(displayVal * (rates?.usd || 550)).toLocaleString('es-VE')} Bs. {isStylist && <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>(Comisión)</span>}
+                          ${displayVal.toFixed(2)} USD {isStylist && <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>(Comisión)</span>}
                         </div>
                         <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '800', marginTop: '2px' }}>
-                          Ref: ${displayVal.toFixed(2)} USD
+                          Ref: {Math.round(displayVal * (rates?.usd || 550)).toLocaleString('es-VE')} Bs.
                         </div>
                       </div>
                     </div>
@@ -2000,10 +2000,10 @@ const BarberPanel = ({ isMobile, rates }) => {
                     <span style={{ fontSize: '14px', fontWeight: '900', color: isStylist ? '#007aff' : '#32d74b' }}>TOTAL</span>
                     <div style={{ textAlign: 'right' }}>
                       <div style={{ fontSize: '22px', fontWeight: '950', color: isStylist ? '#007aff' : '#32d74b' }}>
-                        {totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs.
+                        ${totalUsd.toFixed(2)} USD
                       </div>
                       <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px', fontWeight: '800' }}>
-                        Ref: ${totalUsd.toFixed(2)} USD
+                        Ref: {totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs.
                       </div>
                     </div>
                   </div>

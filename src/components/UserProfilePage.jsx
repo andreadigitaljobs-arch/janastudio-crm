@@ -51,9 +51,9 @@ const MoneyValue = ({ usd, rate }) => {
   const bcv = Number(rate || 0);
   return (
     <span style={{ display: 'inline-block', lineHeight: 1.05 }}>
-      <span style={{ display: 'block' }}>{formatBs(ref * bcv)} Bs.</span>
+      <span style={{ display: 'block' }}>${ref.toFixed(2)} USD</span>
       <span style={{ display: 'block', fontSize: '10px', color: 'rgba(255,255,255,0.48)', fontWeight: '700', marginTop: '5px', letterSpacing: 0 }}>
-        Ref: ${ref.toFixed(2)} USD
+        Ref: {formatBs(ref * bcv)} Bs.
       </span>
     </span>
   );

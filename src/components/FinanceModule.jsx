@@ -1,4 +1,4 @@
-﻿import React, {  useState, useEffect , useMemo } from 'react';
+import React, {  useState, useEffect , useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { useNotifs } from '../context/NotificationContext';
@@ -2852,8 +2852,8 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                                 )}
                               </div>
                               <div style={{ textAlign: 'right' }}>
-                                <div style={{ color: '#ff453a', fontWeight: '950', fontSize: '16px' }}>-{formatCurrency(amountBs, '')} Bs</div>
-                                <div style={{ color: 'var(--text-muted)', fontSize: '11px', fontWeight: '800' }}>-${formatCurrency(amountUsd, '')} USD</div>
+                                <div style={{ color: '#ff453a', fontWeight: '950', fontSize: '16px' }}>-${formatCurrency(amountUsd, '')} USD</div>
+                                <div style={{ color: 'var(--text-muted)', fontSize: '11px', fontWeight: '800' }}>Ref: -{formatCurrency(amountBs, '')} Bs</div>
                               </div>
                             </div>
                             
@@ -2932,8 +2932,8 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                               </span>
                             </div>
                             <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }}>
-                              <div style={{ color: '#32d74b', fontWeight: '900', fontSize: '20px', letterSpacing: '-0.5px', whiteSpace: 'nowrap' }}>+{formatCurrency(totalEarningsBs, '')} Bs</div>
-                              <div style={{ color: '#32d74b', opacity: 0.9, fontSize: '12px', fontWeight: '800', background: 'rgba(50, 215, 75, 0.15)', padding: '2px 8px', borderRadius: '12px', marginTop: '4px', whiteSpace: 'nowrap' }}>+${formatCurrency(totalEarningsUsd, '')} USD</div>
+                              <div style={{ color: '#32d74b', fontWeight: '900', fontSize: '20px', letterSpacing: '-0.5px', whiteSpace: 'nowrap' }}>+${formatCurrency(totalEarningsUsd, '')} USD</div>
+                              <div style={{ color: '#32d74b', opacity: 0.9, fontSize: '12px', fontWeight: '800', background: 'rgba(50, 215, 75, 0.15)', padding: '2px 8px', borderRadius: '12px', marginTop: '4px', whiteSpace: 'nowrap' }}>Ref: +{formatCurrency(totalEarningsBs, '')} Bs</div>
                             </div>
                           </div>
                           

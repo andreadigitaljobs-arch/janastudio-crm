@@ -298,10 +298,10 @@ const HistoryModule = ({ isMobile, rates, onNavigate }) => {
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <span style={{ fontSize: '14px', fontWeight: '900', color: item._txType === 'expense' ? '#f87171' : '#34d399', whiteSpace: 'nowrap' }}>
-                    {item._txType === 'expense' ? '-' : '+'}{formatCurrency(item._totalBs)} Bs.
+                    ${item._txType === 'expense' ? '-' : '+'}${formatCurrency(item._amountUSD)}
                   </span>
                   <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', fontWeight: '700' }}>
-                    Ref: {item._txType === 'expense' ? '-' : ''}${formatCurrency(item._amountUSD)}
+                    Ref: {item._txType === 'expense' ? '-' : ''}{formatCurrency(item._totalBs)} Bs.
                   </span>
                 </div>
               </div>
@@ -426,10 +426,10 @@ const HistoryModule = ({ isMobile, rates, onNavigate }) => {
                 {user.role !== 'Asistente de Tratamiento' && (
                   <div style={{ textAlign: isMobile ? 'left' : 'right' }}>
                     <span style={{ fontSize: '14px', fontWeight: '900', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>
-                      {formatCurrency((item.total_price !== undefined && item.total_price !== null && Number(item.total_price) > 0 ? Number(item.total_price) : Number(item.services?.price || 0)) * Number(item.exchange_rate || rates?.bcv || rates?.usd || 550))} Bs.
+                      ${formatCurrency(item.total_price !== undefined && item.total_price !== null && Number(item.total_price) > 0 ? Number(item.total_price) : Number(item.services?.price || 0))}
                     </span>
                     <span style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', fontWeight: '750' }}>
-                      Ref: ${formatCurrency(item.total_price !== undefined && item.total_price !== null && Number(item.total_price) > 0 ? Number(item.total_price) : Number(item.services?.price || 0))}
+                      Ref: {formatCurrency((item.total_price !== undefined && item.total_price !== null && Number(item.total_price) > 0 ? Number(item.total_price) : Number(item.services?.price || 0)) * Number(item.exchange_rate || rates?.bcv || rates?.usd || 550))} Bs.
                     </span>
                   </div>
                 )}
@@ -456,7 +456,7 @@ const HistoryModule = ({ isMobile, rates, onNavigate }) => {
                         <span style={{ color: 'white', fontWeight: '700' }}>{ex.service_extras?.name}</span>
                       </div>
                       <span style={{ fontWeight: '800', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>
-                        +{formatCurrency(Number(ex.price) * Number(item.exchange_rate || rates?.bcv || rates?.usd || 550))} Bs. (Ref: +${ex.price})
+                        +${ex.price} (Ref: +{formatCurrency(Number(ex.price) * Number(item.exchange_rate || rates?.bcv || rates?.usd || 550))} Bs.)
                       </span>
                     </div>
                   ))}
@@ -478,7 +478,7 @@ const HistoryModule = ({ isMobile, rates, onNavigate }) => {
                         <span style={{ color: 'white', fontWeight: '700' }}>{pr.inventory?.name} <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>({pr.quantity}u)</span></span>
                       </div>
                       <span style={{ fontWeight: '800', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>
-                        +{formatCurrency(Number(pr.price) * Number(item.exchange_rate || rates?.bcv || rates?.usd || 550))} Bs. (Ref: +${pr.price})
+                        +${pr.price} (Ref: +{formatCurrency(Number(pr.price) * Number(item.exchange_rate || rates?.bcv || rates?.usd || 550))} Bs.)
                       </span>
                     </div>
                   ))}
@@ -499,7 +499,7 @@ const HistoryModule = ({ isMobile, rates, onNavigate }) => {
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '4px' }}>
                         <span>Total Propinas ({item.appointment_staff?.filter(s => Number(s.tip_amount) > 0).length} pers.)</span>
                         <span style={{ fontWeight: '700', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>
-                          +{formatCurrency(totalTips * rate)} Bs. (Ref: +${formatCurrency(totalTips)})
+                          +${formatCurrency(totalTips)} (Ref: +{formatCurrency(totalTips * rate)} Bs.)
                         </span>
                       </div>
                     </div>
@@ -591,10 +591,10 @@ const HistoryModule = ({ isMobile, rates, onNavigate }) => {
                           <span style={{ fontSize: '12px', color: 'white', fontWeight: '900', letterSpacing: '0.5px' }}>TOTAL COBRADO</span>
                           <div style={{ textAlign: 'right' }}>
                             <div style={{ fontSize: '18px', fontWeight: '950', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>
-                              {formatCurrency(item._totalBsOverride || (totalReceipt * rate))} Bs.
+                              ${formatCurrency(totalReceipt)}
                             </div>
                             <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '800', whiteSpace: 'nowrap' }}>
-                              Ref: ${formatCurrency(totalReceipt)}
+                              Ref: {formatCurrency(item._totalBsOverride || (totalReceipt * rate))} Bs.
                             </div>
                           </div>
                         </div>
@@ -625,10 +625,10 @@ const HistoryModule = ({ isMobile, rates, onNavigate }) => {
                           </div>
                           <div style={{ textAlign: 'right' }}>
                             <span style={{ fontSize: '13px', fontWeight: '900', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>
-                              +{formatCurrency(staffTotal * rate)} Bs.
+                              +${formatCurrency(staffTotal)}
                             </span>
                             <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '700', whiteSpace: 'nowrap' }}>
-                              Ref: +${formatCurrency(staffTotal)}
+                              Ref: +{formatCurrency(staffTotal * rate)} Bs.
                             </div>
                           </div>
                         </div>
@@ -680,10 +680,10 @@ const HistoryModule = ({ isMobile, rates, onNavigate }) => {
                           </div>
                           <div style={{ textAlign: isMobile ? 'left' : 'right' }}>
                             <div style={{ fontSize: '14px', fontWeight: '950', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>
-                              +{formatCurrency(janaProfit * rate)} Bs.
+                              +${formatCurrency(janaProfit)}
                             </div>
                             <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', fontWeight: '800', whiteSpace: 'nowrap' }}>
-                              Ref: +${formatCurrency(janaProfit)}
+                              Ref: +{formatCurrency(janaProfit * rate)} Bs.
                             </div>
                           </div>
                         </div>
@@ -703,10 +703,10 @@ const HistoryModule = ({ isMobile, rates, onNavigate }) => {
                     </span>
                     <div style={{ textAlign: 'right' }}>
                       <span style={{ fontSize: '14px', fontWeight: '800', color: 'white', whiteSpace: 'nowrap' }}>
-                        {formatCurrency((item.commission_earned || 0) * Number(item.exchange_rate || rates?.bcv || rates?.usd || 550))} Bs.
+                        ${formatCurrency(item.commission_earned || 0)}
                       </span>
                       <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '700', whiteSpace: 'nowrap' }}>
-                        Ref: ${formatCurrency(item.commission_earned || 0)}
+                        Ref: {formatCurrency((item.commission_earned || 0) * Number(item.exchange_rate || rates?.bcv || rates?.usd || 550))} Bs.
                       </div>
                     </div>
                   </div>
@@ -714,10 +714,10 @@ const HistoryModule = ({ isMobile, rates, onNavigate }) => {
                     <span style={{ fontSize: '13px', color: 'var(--pink-primary)', fontWeight: '900' }}>Tu Propina</span>
                     <div style={{ textAlign: 'right' }}>
                       <span style={{ fontSize: '14px', fontWeight: '900', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>
-                        +{formatCurrency((item.tip_amount || 0) * Number(item.exchange_rate || rates?.bcv || rates?.usd || 550))} Bs.
+                        +${formatCurrency(item.tip_amount || 0)}
                       </span>
                       <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '750', whiteSpace: 'nowrap' }}>
-                        Ref: +${formatCurrency(item.tip_amount || 0)}
+                        Ref: +{formatCurrency((item.tip_amount || 0) * Number(item.exchange_rate || rates?.bcv || rates?.usd || 550))} Bs.
                       </div>
                     </div>
                   </div>
@@ -751,9 +751,9 @@ const HistoryModule = ({ isMobile, rates, onNavigate }) => {
                   {isAdmin ? 'VENTAS FILTRADAS' : 'MIS GANANCIAS'}
                 </div>
                 <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--pink-primary)', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                  <span>{formatCurrency(totalIncome * (rates?.bcv || rates?.usd || 550))} Bs.</span>
+                  <span>${formatCurrency(totalIncome)}</span>
                   <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '750', marginTop: '2px' }}>
-                    Ref: ${formatCurrency(totalIncome)}
+                    Ref: {formatCurrency(totalIncome * (rates?.bcv || rates?.usd || 550))} Bs.
                   </span>
                 </div>
              </div>
@@ -878,10 +878,10 @@ const HistoryModule = ({ isMobile, rates, onNavigate }) => {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', textAlign: 'right', flexShrink: 0 }}>
                     <div>
                       <div style={{ fontSize: '15px', fontWeight: '900', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>
-                        {formatCurrency(finalBs)} Bs.
+                        ${formatCurrency(val)}
                       </div>
                       <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', whiteSpace: 'nowrap' }}>
-                        Ref: ${formatCurrency(val)}
+                        Ref: {formatCurrency(finalBs)} Bs.
                       </div>
                     </div>
                     <div style={{ color: isSelected ? 'var(--pink-primary)' : 'var(--text-muted)', transform: isSelected ? 'rotate(180deg)' : 'rotate(0)' }}>
@@ -978,10 +978,10 @@ const HistoryModule = ({ isMobile, rates, onNavigate }) => {
                         </td>
                         <td style={{ padding: '18px 24px', textAlign: 'right' }}>
                           <div style={{ fontSize: '15px', fontWeight: '850', color: 'var(--pink-primary)' }}>
-                            {formatCurrency(finalBs)} Bs.
+                            ${formatCurrency(val)}
                           </div>
                           <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', marginTop: '2px' }}>
-                            Ref: ${formatCurrency(val)}
+                            Ref: {formatCurrency(finalBs)} Bs.
                           </div>
                         </td>
                         <td style={{ padding: '18px 24px', textAlign: 'right' }}>
@@ -1077,10 +1077,10 @@ const MiniBreakdown = ({ label, amount, rate, formatCurrency }) => (
   <div style={{ background: 'rgba(0,0,0,0.16)', borderRadius: '10px', padding: '8px' }}>
     <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800', textTransform: 'uppercase', marginBottom: '4px' }}>{label}</div>
     <div style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '800' }}>
-      {formatCurrency(Number(amount || 0) * rate)} Bs.
+      ${formatCurrency(Number(amount || 0))}
     </div>
     <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '700', marginTop: '2px' }}>
-      Ref: ${formatCurrency(Number(amount || 0))}
+      Ref: {formatCurrency(Number(amount || 0) * rate)} Bs.
     </div>
   </div>
 );
@@ -1099,10 +1099,10 @@ const ReceiptLine = ({ line, rate, formatCurrency }) => (
     </div>
     <div style={{ textAlign: 'right', flexShrink: 0 }}>
       <div style={{ fontSize: '13px', fontWeight: '900', color: line.isTip ? 'var(--pink-primary)' : 'white', whiteSpace: 'nowrap' }}>
-        {line.isTip ? '+' : ''}{formatCurrency(Number(line.amount || 0) * rate)} Bs.
+        {line.isTip ? '+' : ''}${formatCurrency(Number(line.amount || 0))}
       </div>
       <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '750', marginTop: '2px', whiteSpace: 'nowrap' }}>
-        Ref: {line.isTip ? '+' : ''}${formatCurrency(Number(line.amount || 0))}
+        Ref: {line.isTip ? '+' : ''}{formatCurrency(Number(line.amount || 0) * rate)} Bs.
       </div>
     </div>
   </div>

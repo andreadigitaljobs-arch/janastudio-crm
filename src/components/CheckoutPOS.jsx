@@ -1442,8 +1442,8 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                           <Sparkles size={12} /> {serviceNames} • <span style={{ fontWeight: '600' }}>{staffNames}</span>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
-                          <span style={{ fontWeight: '700', color: 'var(--pink-primary)' }}>{(totalUsd * fixedRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.</span>
-                          <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Ref: ${Number(totalUsd).toFixed(2)}</span>
+                          <span style={{ fontWeight: '700', color: 'var(--pink-primary)' }}>${Number(totalUsd).toFixed(2)}</span>
+                          <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Ref: {(totalUsd * fixedRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.</span>
                         </div>
                       </div>
                     </div>
@@ -1788,9 +1788,9 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                               >
                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0px' }}>
                                   <span style={{ fontWeight: '800', fontSize: isMobile ? '12px' : '14px', color: 'white' }}>
-                                    {isMobile ? `${Math.round(sPrice * fixedRate).toLocaleString('es-VE')} Bs.` : `${(sPrice * fixedRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.`}
+                                    ${Number(sPrice).toFixed(2)}
                                   </span>
-                                  <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>Ref: ${Number(sPrice).toFixed(2)}</span>
+                                  <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>Ref: {isMobile ? `${Math.round(sPrice * fixedRate).toLocaleString('es-VE')} Bs.` : `${(sPrice * fixedRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.`}</span>
                                 </div>
                                 <Edit3 size={12} color="var(--pink-primary)" style={{ opacity: 0.8 }} />
                               </div>
@@ -1860,9 +1860,9 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                     </span>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0px', flexShrink: 0 }}>
                       <span style={{ fontWeight: '800', fontSize: isMobile ? '12px' : '14px', color: 'white' }}>
-                        {isMobile ? `${Math.round(p.price * p.quantity * fixedRate).toLocaleString('es-VE')} Bs.` : `${(p.price * p.quantity * fixedRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.`}
+                        ${(p.price * p.quantity).toFixed(2)}
                       </span>
-                      <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>Ref: ${(p.price * p.quantity).toFixed(2)}</span>
+                      <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>Ref: {isMobile ? `${Math.round(p.price * p.quantity * fixedRate).toLocaleString('es-VE')} Bs.` : `${(p.price * p.quantity * fixedRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.`}</span>
                     </div>
                   </div>
                 ))}
@@ -1909,9 +1909,9 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                         >
                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0px' }}>
                             <span style={{ fontWeight: '800', fontSize: isMobile ? '12px' : '14px' }}>
-                              {isMobile ? `${Math.round(extra.price * fixedRate).toLocaleString('es-VE')} Bs.` : `${(extra.price * fixedRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.`}
+                              ${Number(extra.price).toFixed(2)}
                             </span>
-                            <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>Ref: ${Number(extra.price).toFixed(2)}</span>
+                            <span style={{ fontSize: '9px', color: 'var(--text-muted)' }}>Ref: {isMobile ? `${Math.round(extra.price * fixedRate).toLocaleString('es-VE')} Bs.` : `${(extra.price * fixedRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.`}</span>
                           </div>
                           <Edit3 size={12} color="var(--pink-primary)" style={{ opacity: 0.8 }} />
                         </div>
@@ -2260,8 +2260,8 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: '12px' }}>
                   <span style={{ fontSize: isMobile ? '13px' : '16px', fontWeight: '900' }}>TOTAL A PAGAR</span>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: '950', color: 'var(--pink-primary)' }}>{formatCurrency(totalBs)} Bs.</div>
-                    <div style={{ fontSize: isMobile ? '11px' : '13px', color: 'var(--text-muted)' }}>Ref: ${formatCurrency(totalUsd)}</div>
+                    <div style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: '950', color: 'var(--pink-primary)' }}>${formatCurrency(totalUsd)}</div>
+                    <div style={{ fontSize: isMobile ? '11px' : '13px', color: 'var(--text-muted)' }}>Ref: {formatCurrency(totalBs)} Bs.</div>
                   </div>
                 </div>
               </div>
@@ -2884,8 +2884,8 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                             <div style={{ textAlign: 'right' }}>
-                              <div style={{ fontWeight: '700', color: 'var(--pink-primary)', fontSize: '13px' }}>{(tPrice * fixedRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.</div>
-                              <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Ref: ${Number(tPrice).toFixed(2)}</div>
+                              <div style={{ fontWeight: '700', color: 'var(--pink-primary)', fontSize: '13px' }}>${Number(tPrice).toFixed(2)}</div>
+                              <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Ref: {(tPrice * fixedRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.</div>
                             </div>
                             <button 
                               onClick={() => {

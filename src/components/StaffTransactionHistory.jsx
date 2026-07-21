@@ -53,8 +53,8 @@ const MoneyRow = ({ label, usd, transactionRate, accent = false, strong = false 
   <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', marginBottom: '8px', paddingBottom: strong ? '8px' : 0, borderBottom: strong ? '1px dashed rgba(255,255,255,0.08)' : 'none' }}>
     <span style={{ color: accent ? '#32d74b' : 'var(--text-secondary)', fontSize: '12px', fontWeight: accent || strong ? '850' : '650' }}>{label}</span>
     <span style={{ textAlign: 'right', color: accent ? '#32d74b' : strong ? 'var(--pink-primary)' : 'white', fontSize: strong ? '14px' : '12px', fontWeight: '900' }}>
-      {Math.round(Number(usd || 0) * transactionRate).toLocaleString('es-VE')} Bs.
-      <small style={{ display: 'block', color: 'var(--text-muted)', fontSize: '9px', marginTop: '2px' }}>Ref: ${Number(usd || 0).toFixed(2)}</small>
+      ${Number(usd || 0).toFixed(2)}
+      <small style={{ display: 'block', color: 'var(--text-muted)', fontSize: '9px', marginTop: '2px' }}>Ref: {Math.round(Number(usd || 0) * transactionRate).toLocaleString('es-VE')} Bs.</small>
     </span>
   </div>
 );
@@ -296,8 +296,8 @@ const StaffTransactionHistory = ({ staffMember, rates, isMobile }) => {
                   <div style={{ textAlign: isMobile ? 'left' : 'right' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: isMobile ? 'space-between' : 'flex-end', gap: '10px' }}>
                       <div>
-                        <div style={{ color: '#32d74b', fontSize: '16px', fontWeight: '950' }}>+{Math.round(personalBs).toLocaleString('es-VE')} Bs.</div>
-                        <div style={{ color: 'var(--text-muted)', fontSize: '10px', marginTop: '3px' }}>Ref: +${formatUsd(transaction.staffAmounts.earnings)}</div>
+                        <div style={{ color: '#32d74b', fontSize: '16px', fontWeight: '950' }}>+${formatUsd(transaction.staffAmounts.earnings)}</div>
+                        <div style={{ color: 'var(--text-muted)', fontSize: '10px', marginTop: '3px' }}>Ref: +{Math.round(personalBs).toLocaleString('es-VE')} Bs.</div>
                       </div>
                       <ChevronDown size={16} color={'var(--text-muted)'} style={{ transform: selected ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
                     </div>
@@ -352,7 +352,7 @@ const StaffTransactionHistory = ({ staffMember, rates, isMobile }) => {
 
                       <div style={{ marginTop: '12px', padding: '13px 15px', borderRadius: '13px', background: 'rgba(219,112,147,0.07)', display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                         <span style={{ color: 'var(--text-secondary)', fontSize: '12px', fontWeight: '750' }}>Transacción completa</span>
-                        <span style={{ color: 'var(--pink-primary)', fontSize: '16px', fontWeight: '950' }}>{Math.round(totalBs).toLocaleString('es-VE')} Bs. <small style={{ color: 'var(--text-muted)', fontSize: '10px' }}>· Ref: ${formatUsd(transaction.amount)}</small></span>
+                        <span style={{ color: 'var(--pink-primary)', fontSize: '16px', fontWeight: '950' }}>${formatUsd(transaction.amount)} <small style={{ color: 'var(--text-muted)', fontSize: '10px' }}>· Ref: {Math.round(totalBs).toLocaleString('es-VE')} Bs.</small></span>
                       </div>
                     </div>
                   )}
