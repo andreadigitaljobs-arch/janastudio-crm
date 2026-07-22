@@ -29,7 +29,7 @@ Haz clic en "Deploy" y espera a que termine.
 
 ## URL del Proyecto
 Después del deploy, tu proyecto estará disponible en:
-`https://janastudio-crm.vercel.app`
+`https://janastudio.vercel.app`
 
 ## Actualizaciones Futuras
 Cada vez que hagas push a la rama `master`, Vercel desplegará automáticamente los cambios.
