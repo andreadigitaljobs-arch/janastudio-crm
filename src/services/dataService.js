@@ -48,11 +48,23 @@ function _asArray(value) {
 
 function _normalizeAppointment(app) {
   if (!app || typeof app !== 'object') return app;
+  const appointmentServices = _asArray(app.appointment_services);
+  const firstService = appointmentServices[0];
+  const serviceTotal = appointmentServices.reduce((sum, row) => (
+    sum + Number(row.price_paid ?? row.services?.price ?? 0)
+  ), 0);
   return {
     ...app,
     clients: app.clients || null,
-    services: app.services || null,
-    appointment_staff: _asArray(app.appointment_staff)
+    service_id: app.service_id || firstService?.service_id || null,
+    staff_id: app.staff_id || firstService?.staff_id || null,
+    services: app.services || firstService?.services || null,
+    staff: app.staff || firstService?.staff || null,
+    total_price: appointmentServices.length ? serviceTotal : Number(app.total_price || 0),
+    appointment_services: appointmentServices,
+    appointment_staff: _asArray(app.appointment_staff),
+    appointment_extras: _asArray(app.appointment_extras),
+    appointment_products: _asArray(app.appointment_products),
   };
 }
 
@@ -376,9 +388,17 @@ export const dataService = {
       .select(`
         *,
         clients (id, name, phone, allergies),
-        services (id, name, price, duration_minutes),
+        services (id, name, price, duration_minutes, commission_pct, included_items),
         staff!appointments_staff_id_fkey (id, name, display_name, role),
-        appointment_staff (id, staff_id, commission_earned, tip_amount)
+        appointment_staff (id, staff_id, commission_earned, tip_amount),
+        appointment_services (
+          id, service_id, staff_id, price_paid, status, scheduled_at, duration_minutes,
+          client_package_id, package_supplies_cost, before_photo_url, after_photo_url,
+          services (id, name, price, duration_minutes, commission_pct, included_items),
+          staff (id, name, display_name, role, commission_pct)
+        ),
+        appointment_extras (id, price, service_extras (id, name, price, commission_pct)),
+        appointment_products (id, quantity, price, cost, inventory (id, name, commission_pct))
       `)
       .gte('scheduled_at', startDate)
       .lte('scheduled_at', endDate)
@@ -418,9 +438,17 @@ export const dataService = {
       .select(`
         *,
         clients (id, name, phone, allergies),
-        services (id, name, price, duration_minutes),
+        services (id, name, price, duration_minutes, commission_pct, included_items),
         staff!appointments_staff_id_fkey (id, name, display_name, role),
-        appointment_staff (id, staff_id, commission_earned, tip_amount)
+        appointment_staff (id, staff_id, commission_earned, tip_amount),
+        appointment_services (
+          id, service_id, staff_id, price_paid, status, scheduled_at, duration_minutes,
+          client_package_id, package_supplies_cost, before_photo_url, after_photo_url,
+          services (id, name, price, duration_minutes, commission_pct, included_items),
+          staff (id, name, display_name, role, commission_pct)
+        ),
+        appointment_extras (id, price, service_extras (id, name, price, commission_pct)),
+        appointment_products (id, quantity, price, cost, inventory (id, name, commission_pct))
       `)
       .in('status', states);
 
@@ -1133,7 +1161,7 @@ export const dataService = {
     const { data, error } = await supabase
       .from('client_packages')
       .select('*, clients(name, phone), services(name, category, price, duration_minutes), package_installments(*), package_sessions(*)')
-      .eq('status', 'active')
+      .in('status', ['active', 'completed', 'expired'])
       .order('created_at', { ascending: false });
     if (error) throw error;
     
@@ -1145,6 +1173,30 @@ export const dataService = {
              sCat.includes('laser') || sCat.includes('depilación');
     });
     return result;
+  },
+
+  async uploadLaserProgressPhoto(file, clientPackageId, kind) {
+    if (!file || !clientPackageId || !['before', 'after'].includes(kind)) {
+      throw new Error('Faltan datos para guardar la foto láser.');
+    }
+    const extension = String(file.name || 'foto.jpg').split('.').pop().toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+    const path = `${clientPackageId}/${crypto.randomUUID()}-${kind}.${extension}`;
+    const { error } = await supabase.storage.from('janastudio-laser-progress').upload(path, file, {
+      cacheControl: '3600',
+      contentType: file.type || 'image/jpeg',
+      upsert: false,
+    });
+    if (error) throw error;
+    return path;
+  },
+
+  async getLaserProgressPhotoUrl(path, expiresIn = 3600) {
+    if (!path) return '';
+    const { data, error } = await supabase.storage
+      .from('janastudio-laser-progress')
+      .createSignedUrl(path, expiresIn);
+    if (error) throw error;
+    return data?.signedUrl || '';
   },
 
   async addClientPackage(pkg) {
@@ -1327,79 +1379,17 @@ export const dataService = {
 
   async checkLaserPackageExpirations() {
     try {
-      const { data: packages, error } = await supabase
-        .from('client_packages')
-        .select('*, clients(id, name, phone), services(name, category)')
-        .eq('status', 'active');
-      
+      const { data, error } = await supabase.rpc('process_laser_package_lifecycle', {
+        p_now: new Date().toISOString(),
+      });
       if (error) throw error;
-      if (!packages || packages.length === 0) return;
-
-      const now = new Date();
-
-      for (const pkg of packages) {
-        const serviceName = pkg.services?.name || '';
-        const serviceCategory = pkg.services?.category || '';
-        const isLaser = serviceName.toLowerCase().includes('láser') || 
-                        serviceName.toLowerCase().includes('laser') || 
-                        serviceName.toLowerCase().includes('depilación') ||
-                        serviceCategory.toLowerCase().includes('laser') || 
-                        serviceCategory.toLowerCase().includes('depilación');
-
-        if (!isLaser) continue;
-
-        const createdAt = new Date(pkg.created_at);
-        const diffTime = Math.abs(now - createdAt);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
-        // 9 months = 270 days, 10 months = 300 days
-        const nineMonthsDays = 270;
-        const tenMonthsDays = 300;
-
-        if (diffDays >= nineMonthsDays && diffDays < tenMonthsDays) {
-          const { data: existingNotif, error: notifError } = await supabase
-            .from('notifications')
-            .select('id')
-            .eq('metadata->>client_package_id', pkg.id)
-            .limit(1);
-
-          if (notifError) {
-            console.error('Error checking existing notifications:', notifError);
-            continue;
-          }
-
-          if (!existingNotif || existingNotif.length === 0) {
-            const clientName = pkg.clients?.name || 'Cliente';
-            const title = 'Paquete Láser por Vencer ⚡';
-            const message = `A la clienta ${clientName} le queda 1 mes para culminar su paquete de depilación láser de 8 sesiones (Plazo de 10 meses). Consumidas: ${pkg.used_sessions || 0}/8.`;
-            
-            const { error: insertError } = await supabase
-              .from('notifications')
-              .insert([{
-                title,
-                message,
-                type: 'warning',
-                read: false,
-                metadata: {
-                  client_package_id: pkg.id,
-                  client_id: pkg.client_id
-                }
-              }]);
-
-            if (insertError) {
-              console.error('Error inserting laser package warning notification:', insertError);
-            } else {
-              try {
-                notificationService.sendNotification(title, message);
-              } catch (e) {
-                console.error(e);
-              }
-            }
-          }
-        }
+      if (Number(data?.warned || 0) > 0) {
+        notificationService.sendNotification('Paquetes láser', `${data.warned} paquete(s) están cerca de vencer.`);
       }
+      return data || { warned: 0, expired: 0 };
     } catch (e) {
       console.error('Error in checkLaserPackageExpirations:', e);
+      return { warned: 0, expired: 0, error: e.message };
     }
   },
 

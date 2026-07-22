@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Calendar as CalendarIcon, Clock, TrendingUp, Plus, Search, Filter, AlertCircle, X, ChevronRight, CheckCircle2, User, Trash2, CalendarClock, Package, PlayCircle } from 'lucide-react';
 import LaserPackageModal from './LaserPackageModal';
 import LaserSessionModal from './LaserSessionModal';
+import LaserProgressGallery from './LaserProgressGallery';
+import LaserSettingsPanel from './LaserSettingsPanel';
 import AnimatedModal from './AnimatedModal';
 import { dataService } from '../services/dataService';
 
@@ -24,11 +26,15 @@ const LaserModule = ({ isMobile }) => {
         const total = Number(pkg.total_amount) || 0;
         const pending = total - paid;
         
+        const sessions = pkg.package_sessions || [];
+        const sessionDates = sessions.map(session => session.consumed_at || session.scheduled_at).filter(Boolean).sort();
         let status = 'Al día';
-        if (installments.some(i => i.status === 'pending' && i.installment_number <= pkg.used_sessions + 1)) {
+        if (pkg.status === 'expired') status = 'Vencido';
+        else if (pkg.status === 'completed') status = 'Completado';
+        if (pkg.status === 'active' && installments.some(i => i.status === 'pending' && i.installment_number <= pkg.used_sessions + 1)) {
           status = 'Cuota Pendiente';
         }
-        if (pending <= 0) status = 'Pagado';
+        if (pending <= 0 && pkg.status === 'active') status = 'Pagado';
 
         return {
           id: pkg.id,
@@ -37,12 +43,13 @@ const LaserModule = ({ isMobile }) => {
           package: pkg.services?.name || 'Paquete Láser',
           currentSession: pkg.used_sessions || 0,
           totalSessions: pkg.total_sessions || 8,
-          lastSession: 'N/A', // Se podría calcular si traemos package_sessions
+          lastSession: sessionDates.length ? sessionDates.at(-1) : null,
           nextSession: 'Pendiente',
           price: total,
           paid,
           pending: pending > 0 ? pending : 0,
           status,
+          expiredSessions: Number(pkg.expired_sessions || 0),
           raw: pkg
         };
       });
@@ -176,13 +183,15 @@ const LaserModule = ({ isMobile }) => {
         </button>
       </div>
 
+      <LaserSettingsPanel isMobile={isMobile} />
+
       {/* Tabs */}
       <div style={{ display: 'flex', gap: '24px', borderBottom: '1px solid rgba(223, 178, 140, 0.15)', marginBottom: '24px' }}>
         <button
           onClick={() => setActiveTab('packages')}
           style={{ padding: '0 0 12px 0', background: 'none', border: 'none', borderBottom: activeTab === 'packages' ? '3px solid #c97282' : '3px solid transparent', color: activeTab === 'packages' ? '#2d1b22' : '#a0909a', fontWeight: activeTab === 'packages' ? 800 : 600, fontSize: '0.95rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s', marginBottom: '-2px' }}
         >
-          <Package size={18} /> Paquetes Activos
+          <Package size={18} /> Paquetes
         </button>
         <button
           onClick={() => setActiveTab('calendar')}
@@ -240,13 +249,16 @@ const LaserModule = ({ isMobile }) => {
                     </div>
                     <div style={{ 
                       padding: '6px 14px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 800, 
-                      backgroundColor: pkg.status === 'Al día' ? '#fff0f2' : pkg.status === 'Cuota Pendiente' ? '#ffe1e6' : pkg.status === 'Pagado' ? '#ecfdf5' : '#fcf9f8', 
-                      color: pkg.status === 'Al día' ? '#c97282' : pkg.status === 'Cuota Pendiente' ? '#a0506a' : pkg.status === 'Pagado' ? '#059669' : '#a0909a', 
-                      border: `1px solid ${pkg.status === 'Al día' ? 'rgba(201,114,130,0.2)' : pkg.status === 'Cuota Pendiente' ? 'rgba(160,80,106,0.2)' : pkg.status === 'Pagado' ? 'rgba(5,150,105,0.2)' : 'rgba(160,144,154,0.2)'}` 
+                      backgroundColor: pkg.status === 'Vencido' ? '#fef2f2' : pkg.status === 'Al día' ? '#fff0f2' : pkg.status === 'Cuota Pendiente' ? '#ffe1e6' : ['Pagado', 'Completado'].includes(pkg.status) ? '#ecfdf5' : '#fcf9f8',
+                      color: pkg.status === 'Vencido' ? '#b42318' : pkg.status === 'Al día' ? '#c97282' : pkg.status === 'Cuota Pendiente' ? '#a0506a' : ['Pagado', 'Completado'].includes(pkg.status) ? '#059669' : '#a0909a',
+                      border: `1px solid ${pkg.status === 'Vencido' ? '#fecaca' : pkg.status === 'Al día' ? 'rgba(201,114,130,0.2)' : pkg.status === 'Cuota Pendiente' ? 'rgba(160,80,106,0.2)' : ['Pagado', 'Completado'].includes(pkg.status) ? 'rgba(5,150,105,0.2)' : 'rgba(160,144,154,0.2)'}`
                     }}>
                       {pkg.status}
                     </div>
                   </div>
+
+                  {pkg.status === 'Vencido' && <div style={{ padding: '10px 12px', borderRadius: 12, background: '#fef2f2', color: '#b42318', fontSize: 12, fontWeight: 800 }}>Se vencieron {pkg.expiredSessions} sesión(es) no utilizadas.</div>}
+                  <LaserProgressGallery sessions={pkg.raw.package_sessions || []} />
 
                   {/* Info Box */}
                   <div style={{ background: 'rgba(255, 255, 255, 0.6)', borderRadius: '16px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '14px', border: '1px solid rgba(223, 178, 140, 0.15)' }}>
@@ -279,12 +291,13 @@ const LaserModule = ({ isMobile }) => {
                     
                     <button 
                       onClick={() => setSelectedPackageForSession(pkg)}
+                      disabled={pkg.raw.status !== 'active'}
                       className="btn-press"
-                      style={{ padding: '10px 20px', borderRadius: '14px', background: '#fff', color: '#c97282', border: '1px solid rgba(201,114,130,0.2)', fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 2px 8px rgba(201,114,130,0.05)' }} 
+                      style={{ padding: '10px 20px', borderRadius: '14px', background: '#fff', color: '#c97282', border: '1px solid rgba(201,114,130,0.2)', fontWeight: 800, fontSize: '0.85rem', cursor: pkg.raw.status === 'active' ? 'pointer' : 'not-allowed', opacity: pkg.raw.status === 'active' ? 1 : .5, transition: 'all 0.2s', boxShadow: '0 2px 8px rgba(201,114,130,0.05)' }}
                       onMouseEnter={e => { e.currentTarget.style.background = '#fff0f2'; e.currentTarget.style.borderColor = 'rgba(201,114,130,0.4)'; }} 
                       onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'rgba(201,114,130,0.2)'; }}
                     >
-                      Agendar Sesión
+                      {pkg.raw.status === 'active' ? 'Agendar Sesión' : pkg.status}
                     </button>
                   </div>
 

@@ -302,7 +302,11 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
       setCart(mergedProducts);
 
       // 2. Initialize tips for all unique staff in the bundle, preserving existing values
-      const uniqueStaffIds = Array.from(new Set(totalAppsInCheckout.map(a => a.staff_id).filter(Boolean)));
+      const uniqueStaffIds = Array.from(new Set(totalAppsInCheckout.flatMap(app => (
+        app.appointment_services?.length
+          ? app.appointment_services.map(service => service.staff_id)
+          : [app.staff_id]
+      )).filter(Boolean)));
       setTips(prevTips => {
         const existingMap = {};
         prevTips.forEach(t => {
@@ -841,9 +845,20 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
           const involved = [];
           const treatmentStaff = allStaff.find(s => s.id === selectedTreatmentStaffId);
           const treatmentRate = treatmentStaff ? Number(treatmentStaff.treatment_rate || 0) : 0;
+          const performedServices = totalAppsInCheckout.flatMap(app => (
+            app.appointment_services?.length
+              ? app.appointment_services.map(service => ({
+                  ...app,
+                  ...service,
+                  services: service.services || app.services,
+                  staff: service.staff || app.staff,
+                  total_price: Number(service.price_paid ?? service.services?.price ?? 0),
+                }))
+              : [app]
+          ));
           
           let appliedWashes = 0;
-          totalAppsInCheckout
+          performedServices
             .filter(app => app.service_id !== null && app.service_id !== undefined)
             .forEach(app => {
               if (!app.staff_id) return;

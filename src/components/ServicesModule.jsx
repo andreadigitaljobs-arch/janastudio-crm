@@ -319,6 +319,9 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
   const [newService, setNewService] = useState({ 
     name: '', 
     price: '', 
+    laser_price_single: '',
+    laser_price_4: '',
+    laser_price_8: '',
     icon: 'Scissors',
     category: 'Estilismo',
     strategy_type: 'MVP',
@@ -345,6 +348,9 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
       id: service.id,
       name: service.name,
       price: service.price,
+      laser_price_single: service.laser_price_single ?? service.price ?? '',
+      laser_price_4: service.laser_price_4 ?? '',
+      laser_price_8: service.laser_price_8 ?? '',
       icon: service.icon || 'Scissors',
       category: service.category,
       strategy_type: service.strategy_type || 'MVP',
@@ -379,6 +385,12 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
         base_cost: Number(newService.insumo_cost || 0),
         variable_cost: Number(newService.variable_cost || 0.50)
       };
+      const laserCategory = String(newService.category || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      if (laserCategory.includes('laser') || laserCategory.includes('depilacion')) {
+        dbPayload.laser_price_single = Number(newService.laser_price_single || newService.price || 0);
+        dbPayload.laser_price_4 = Number(newService.laser_price_4 || 0);
+        dbPayload.laser_price_8 = Number(newService.laser_price_8 || 0);
+      }
 
       if (isEditing && newService.id) {
         await dataService.updateService(newService.id, dbPayload);
@@ -392,6 +404,9 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
       setNewService({ 
         name: '', 
         price: '', 
+        laser_price_single: '',
+        laser_price_4: '',
+        laser_price_8: '',
         category: 'Estilismo',
         strategy_type: 'MVP',
         duration: 30,
@@ -1987,6 +2002,32 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                           </div>
                         </div>
                       </div>
+
+                      {(() => {
+                        const category = String(newService.category || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+                        if (!category.includes('laser') && !category.includes('depilacion')) return null;
+                        return (
+                          <div style={{ padding: 14, borderRadius: 14, background: '#fff7f8', border: '1px solid rgba(201,114,130,.24)' }}>
+                            <label style={{ display: 'block', fontSize: 11, fontWeight: 850, color: '#a0506a', marginBottom: 10, textTransform: 'uppercase', letterSpacing: '.7px' }}>Tarifas de paquetes láser</label>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 9 }}>
+                              {[
+                                ['laser_price_single', '1 sesión'],
+                                ['laser_price_4', '4 sesiones'],
+                                ['laser_price_8', '8 sesiones'],
+                              ].map(([field, label]) => (
+                                <div key={field}>
+                                  <label htmlFor={field} style={{ display: 'block', fontSize: 10, color: '#7a5960', fontWeight: 750, marginBottom: 4 }}>{label}</label>
+                                  <div style={{ position: 'relative' }}>
+                                    <span style={{ position: 'absolute', left: 9, top: 10, color: '#c97282', fontWeight: 850 }}>$</span>
+                                    <input id={field} type="number" min="0" step="0.01" value={newService[field]} onChange={event => setNewService({ ...newService, [field]: event.target.value })} style={{ width: '100%', height: 38, padding: '0 8px 0 22px', borderRadius: 9, border: '1px solid rgba(212,160,154,.35)', color: '#4a3036', fontWeight: 800 }} />
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                            <div style={{ marginTop: 7, fontSize: 10, color: '#a0909a' }}>Estos valores quedan guardados en el catálogo; todavía pueden ajustarse al vender.</div>
+                          </div>
+                        );
+                      })()}
 
                       {/* Category & Strategy Selects */}
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>

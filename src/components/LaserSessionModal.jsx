@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Calendar, Clock, AlertTriangle, CheckSquare, Sparkles, Plus, DollarSign, Loader } from 'lucide-react';
+import { X, Calendar, AlertTriangle, CheckSquare, Sparkles, Loader, Camera } from 'lucide-react';
 import AnimatedModal from './AnimatedModal';
 import { dataService } from '../services/dataService';
 import { notificationService } from '../services/notificationService';
@@ -20,6 +20,9 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
   const [exchangeRate, setExchangeRate] = useState(1);
   const [staff, setStaff] = useState([]);
   const [selectedStaffId, setSelectedStaffId] = useState('');
+  const [beforePhoto, setBeforePhoto] = useState(null);
+  const [afterPhoto, setAfterPhoto] = useState(null);
+  const [photoPreviews, setPhotoPreviews] = useState({ before: '', after: '' });
 
   const dates = [
     { day: 'Hoy', date: new Date().toISOString().split('T')[0] },
@@ -38,6 +41,9 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
       setNotes('');
       setSuppliesCost(0);
       setPayingInstallmentId(null);
+      setBeforePhoto(null);
+      setAfterPhoto(null);
+      setPhotoPreviews({ before: '', after: '' });
       loadExchangeRate();
       dataService.getStaff().then(rows => {
         const workers = rows.filter(s => !String(s.role || '').toLowerCase().includes('admin'));
@@ -56,6 +62,15 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const handlePhotoChange = (kind, file) => {
+    if (!file) return;
+    if (kind === 'before') setBeforePhoto(file);
+    else setAfterPhoto(file);
+    const reader = new FileReader();
+    reader.onload = () => setPhotoPreviews(current => ({ ...current, [kind]: String(reader.result || '') }));
+    reader.readAsDataURL(file);
   };
 
   const handlePayInstallment = async (inst) => {
@@ -91,6 +106,10 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
       if (match?.[3]?.toUpperCase() === 'PM' && hour < 12) hour += 12;
       if (match?.[3]?.toUpperCase() === 'AM' && hour === 12) hour = 0;
       const scheduledAt = new Date(`${selectedDate}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00`);
+      const [beforePhotoPath, afterPhotoPath] = await Promise.all([
+        beforePhoto ? dataService.uploadLaserProgressPhoto(beforePhoto, packageData.id, 'before') : Promise.resolve(''),
+        afterPhoto ? dataService.uploadLaserProgressPhoto(afterPhoto, packageData.id, 'after') : Promise.resolve(''),
+      ]);
       await dataService.createAppointmentWithServices({
         client_id: packageData.raw.client_id,
         status: 'Agendado',
@@ -100,7 +119,11 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
         staff_id: selectedStaffId,
         price_paid: 0,
         scheduled_at: scheduledAt.toISOString(),
-        duration_minutes: packageData.raw.services?.duration_minutes || 60
+        duration_minutes: packageData.raw.services?.duration_minutes || 60,
+        client_package_id: packageData.id,
+        package_supplies_cost: Number(suppliesCost) || 0,
+        before_photo_url: beforePhotoPath || null,
+        after_photo_url: afterPhotoPath || null,
       }]);
 
       setIsSuccess(true);
@@ -176,6 +199,7 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
                         <AlertTriangle size={20} color="#dc2626" style={{ marginTop: '2px' }} />
                         <div>
                           <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#991b1b' }}>Cuota {nextInstallment.installment_number} Pendiente: ${nextInstallment.amount}</div>
+                          {nextInstallment.due_at && <div style={{ fontSize: '0.74rem', color: '#991b1b', marginTop: 2 }}>Vence: {new Date(nextInstallment.due_at).toLocaleDateString()}</div>}
                           <div style={{ fontSize: '0.8rem', color: '#b91c1c', marginTop: '4px', fontWeight: 500 }}>
                             {packageData.totalSessions === 8 && nextInstallment.installment_number === 2 && 'Esta cuota corresponde al 40% (Insumos/Socia).'}
                             {packageData.totalSessions === 8 && nextInstallment.installment_number === 3 && 'Esta cuota corresponde al 30% (Local).'}
@@ -261,6 +285,27 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
                     <div><label style={{ fontSize: '0.95rem', fontWeight: 800, color: '#2d1b22', marginBottom: 8, display: 'block' }}>Profesional</label><select value={selectedStaffId} onChange={e => setSelectedStaffId(e.target.value)} style={{ width: '100%', padding: 12, borderRadius: 12, border: '1px solid rgba(223,178,140,0.4)' }}><option value="">Selecciona profesional</option>{staff.map(s => <option key={s.id} value={s.id}>{s.display_name || s.name}</option>)}</select></div>
                   </div>
 
+                  {/* Private progress photos */}
+                  <div>
+                    <label style={{ fontSize: '0.95rem', fontWeight: 800, color: '#2d1b22', marginBottom: 8, display: 'block' }}>
+                      Seguimiento fotográfico
+                    </label>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                      {[
+                        { kind: 'before', label: 'Antes', preview: photoPreviews.before },
+                        { kind: 'after', label: 'Después', preview: photoPreviews.after },
+                      ].map(photo => (
+                        <label key={photo.kind} style={{ minHeight: 112, border: '1px dashed rgba(201,114,130,.45)', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', cursor: 'pointer', background: '#fcf9f8', position: 'relative' }}>
+                          {photo.preview
+                            ? <img src={photo.preview} alt={`Vista previa ${photo.label.toLowerCase()}`} style={{ width: '100%', height: 112, objectFit: 'cover' }} />
+                            : <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, color: '#a0506a', fontSize: 12, fontWeight: 800 }}><Camera size={20} />Foto {photo.label}</span>}
+                          <input type="file" accept="image/jpeg,image/png,image/webp" capture="environment" onChange={event => handlePhotoChange(photo.kind, event.target.files?.[0])} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} />
+                        </label>
+                      ))}
+                    </div>
+                    <span style={{ fontSize: '0.72rem', color: '#a0909a', marginTop: 5, display: 'block' }}>Las imágenes quedan privadas y vinculadas a esta sesión.</span>
+                  </div>
+
                   {/* Notes */}
                   <div>
                     <label style={{ fontSize: '0.95rem', fontWeight: 800, color: '#2d1b22', marginBottom: '8px', display: 'block' }}>Notas de la sesión</label>
@@ -310,9 +355,9 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
                 <div style={{ width: '80px', height: '80px', borderRadius: '24px', background: 'linear-gradient(135deg, #fff0f2 0%, #ffe1e6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c97282', boxShadow: '0 12px 32px rgba(201, 114, 130, 0.2)', marginBottom: '24px' }}>
                   <Sparkles size={40} />
                 </div>
-                <h2 style={{ fontSize: '1.8rem', fontWeight: 900, color: '#2d1b22', marginBottom: '12px', letterSpacing: '-0.5px' }}>¡Sesión Registrada!</h2>
+                <h2 style={{ fontSize: '1.8rem', fontWeight: 900, color: '#2d1b22', marginBottom: '12px', letterSpacing: '-0.5px' }}>¡Sesión agendada!</h2>
                 <p style={{ fontSize: '0.95rem', color: '#8c767b', fontWeight: 500, lineHeight: 1.5, marginBottom: '32px', maxWidth: '300px' }}>
-                  La sesión de <span style={{ fontWeight: 800, color: '#c97282' }}>{packageData?.client || 'la clienta'}</span> ha sido registrada exitosamente.
+                  La sesión de <span style={{ fontWeight: 800, color: '#c97282' }}>{packageData?.client || 'la clienta'}</span> quedó en Agenda. Se consumirá del paquete únicamente al completarla en Caja.
                 </p>
                 <button 
                   onClick={onClose}
