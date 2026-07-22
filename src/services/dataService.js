@@ -304,7 +304,28 @@ export const dataService = {
 
   // ─── Service Costs (Costeo) ────────────────────────────────────────────────
   async getServiceCosts(serviceId) {
-    const { data, error } = await supabase.rpc('get_service_costs', { p_service_id: serviceId });
+    const { data, error } = await supabase
+      .from('service_costs')
+      .select('*')
+      .eq('service_id', serviceId)
+      .order('created_at');
+    if (error) throw error;
+    return _asArray(data);
+  },
+
+  async replaceServiceCosts(serviceId, costs = []) {
+    const { error: deleteError } = await supabase.from('service_costs').delete().eq('service_id', serviceId);
+    if (deleteError) throw deleteError;
+    if (costs.length === 0) return [];
+    const rows = costs.map((cost) => ({
+      service_id: serviceId,
+      inventory_item_id: cost.inventory_item_id,
+      item_name: cost.item_name,
+      quantity_per_service: Number(cost.quantity_per_service) || 0,
+      unit_cost: Number(cost.unit_cost) || 0,
+      unit: cost.unit || 'unidad',
+    }));
+    const { data, error } = await supabase.from('service_costs').insert(rows).select();
     if (error) throw error;
     return _asArray(data);
   },
@@ -872,6 +893,10 @@ export const dataService = {
     return data;
   },
 
+  async updateStock(id, stock) {
+    return this.updateInventoryItem(id, { stock: Math.max(0, Number(stock) || 0) });
+  },
+
   async deleteInventoryItem(id) {
     _cacheInvalidate('inventory');
     const { error } = await supabase.from('inventory').delete().eq('id', id);
@@ -887,6 +912,29 @@ export const dataService = {
       .single();
     if (error) throw error;
     return data;
+  },
+
+  async logInventoryMovement(movement) {
+    return this.addInventoryMovement(movement);
+  },
+
+  async getInventoryMovements() {
+    const { data, error } = await supabase
+      .from('inventory_movements')
+      .select('*, inventory(name)')
+      .order('created_at', { ascending: false })
+      .limit(500);
+    if (error) throw error;
+    return _asArray(data);
+  },
+
+  async getProfitabilityReport(startDate, endDate) {
+    const { data, error } = await supabase.rpc('get_profitability_report', {
+      p_start_date: startDate,
+      p_end_date: endDate,
+    });
+    if (error) throw error;
+    return _asArray(data);
   },
 
   // ─── Worker Stats ───────────────────────────────────────────────────────────

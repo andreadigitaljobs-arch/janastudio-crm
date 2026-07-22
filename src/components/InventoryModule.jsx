@@ -48,12 +48,16 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
     name: '', 
     stock: 0, 
     price: 0, 
-    cost_price: 0,
+    cost: 0,
+    unit: 'unidad',
+    location: 'studio',
+    package_size: 1,
+    expected_services: 0,
     commission_pct: 10,
     category: 'Venta', 
     image_url: '',
     staff_id: null,
-    cost_price_dirty: false,
+    cost_dirty: false,
     price_dirty: false,
     stock_dirty: false,
     commission_pct_dirty: false
@@ -118,13 +122,15 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
     try {
       setSaving(true);
       // Sanitize object: Only send database-columns
-      const { cost_price_dirty, price_dirty, stock_dirty, commission_pct_dirty, ...cleanItem } = newItem;
+      const { cost_dirty, price_dirty, stock_dirty, commission_pct_dirty, ...cleanItem } = newItem;
       
       // Ensure empty strings are treated as 0
       const finalItem = {
         ...cleanItem,
         price: Number(cleanItem.price) || 0,
-        cost_price: Number(cleanItem.cost_price) || 0,
+        cost: Number(cleanItem.cost) || 0,
+        package_size: Number(cleanItem.package_size) || 1,
+        expected_services: Number(cleanItem.expected_services) || 0,
         stock: Number(cleanItem.stock) || 0,
         commission_pct: Number(cleanItem.commission_pct) || 0
       };
@@ -142,7 +148,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
       }
 
       setShowAddForm(false);
-      setNewItem({ name: '', stock: 0, price: 0, cost_price: 0, commission_pct: 10, category: 'Venta', image_url: '', cost_price_dirty: false, price_dirty: false, stock_dirty: false, commission_pct_dirty: false });
+      setNewItem({ name: '', stock: 0, price: 0, cost: 0, unit: 'unidad', location: 'studio', package_size: 1, expected_services: 0, commission_pct: 10, category: 'Venta', image_url: '', cost_dirty: false, price_dirty: false, stock_dirty: false, commission_pct_dirty: false });
       fetchInventory();
       showToast('Producto agregado al almacén');
     } catch (error) {
@@ -265,8 +271,12 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                   <JanaSelect label="CATEGORÍA" value={newItem.category} onChange={(val) => setNewItem({...newItem, category: val})} options={[{ label: 'Venta', value: 'Venta' }, { label: 'Uso Interno', value: 'Uso Interno' }, { label: 'Accesorios', value: 'Accesorios' }, { label: 'Herramienta', value: 'Herramienta' }]} />
                   <div>
                     <label style={{ display: 'block', marginBottom: '6px', fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)' }}>PRECIO COSTO ($)</label>
-                    <input type="number" placeholder="0.00" value={newItem.cost_price === 0 && !newItem.cost_price_dirty ? '' : newItem.cost_price} onChange={(e) => setNewItem({...newItem, cost_price: e.target.value === '' ? '' : Number(e.target.value), cost_price_dirty: true})} style={{ width: '100%', height: '44px', borderRadius: '12px', border: '1px solid var(--border-color)', padding: '0 14px', fontSize: '13px' }} />
+                    <input type="number" placeholder="0.00" value={newItem.cost === 0 && !newItem.cost_dirty ? '' : newItem.cost} onChange={(e) => setNewItem({...newItem, cost: e.target.value === '' ? '' : Number(e.target.value), cost_dirty: true})} style={{ width: '100%', height: '44px', borderRadius: '12px', border: '1px solid var(--border-color)', padding: '0 14px', fontSize: '13px' }} />
                   </div>
+                  <JanaSelect label="UBICACIÓN" value={newItem.location} onChange={(val) => setNewItem({...newItem, location: val})} options={[{ label: 'Studio', value: 'studio' }, { label: 'Casa', value: 'home' }]} />
+                  <div><label style={{ display: 'block', marginBottom: '6px', fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)' }}>UNIDAD DE CONSUMO</label><input type="text" value={newItem.unit} onChange={(e) => setNewItem({...newItem, unit: e.target.value})} placeholder="ml, gramo, unidad" style={{ width: '100%', height: '44px', borderRadius: '12px', border: '1px solid var(--border-color)', padding: '0 14px', fontSize: '13px' }} /></div>
+                  <div><label style={{ display: 'block', marginBottom: '6px', fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)' }}>CONTENIDO DEL ENVASE</label><input type="number" min="0" step="0.001" value={newItem.package_size} onChange={(e) => setNewItem({...newItem, package_size: e.target.value})} style={{ width: '100%', height: '44px', borderRadius: '12px', border: '1px solid var(--border-color)', padding: '0 14px', fontSize: '13px' }} /></div>
+                  <div><label style={{ display: 'block', marginBottom: '6px', fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)' }}>SERVICIOS ESPERADOS</label><input type="number" min="0" value={newItem.expected_services} onChange={(e) => setNewItem({...newItem, expected_services: e.target.value})} placeholder="Ej. 50" style={{ width: '100%', height: '44px', borderRadius: '12px', border: '1px solid var(--border-color)', padding: '0 14px', fontSize: '13px' }} /></div>
                   {(newItem.category === 'Venta' || newItem.category === 'Accesorios') && (
                     <div>
                       <label style={{ display: 'block', marginBottom: '6px', fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)' }}>PRECIO VENTA ($)</label>
@@ -597,7 +607,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
         onSave={async (updates) => {
           try {
             // Sanitize updates
-            const { cost_price_dirty, price_dirty, stock_dirty, ...cleanUpdates } = updates;
+            const { cost_dirty, price_dirty, stock_dirty, ...cleanUpdates } = updates;
             await dataService.updateInventoryItem(editingItem.id, cleanUpdates);
             fetchInventory();
             setEditingItem(null);
@@ -885,12 +895,19 @@ const EditInventoryModal = ({ isOpen, item, onClose, onSave }) => {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                 <div>
                   <label style={{ display: 'block', marginBottom: '8px', fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)' }}>PRECIO COSTO ($)</label>
-                  <input type="number" className="astro-input" value={formData.cost_price || 0} onChange={(e) => setFormData({...formData, cost_price: Number(e.target.value)})} style={{ width: '100%' }} />
+                  <input type="number" className="astro-input" value={formData.cost || 0} onChange={(e) => setFormData({...formData, cost: Number(e.target.value)})} style={{ width: '100%' }} />
                 </div>
                 <div>
                   <label style={{ display: 'block', marginBottom: '8px', fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)' }}>PRECIO VENTA ($)</label>
                   <input type="number" className="astro-input" value={formData.price || 0} onChange={(e) => setFormData({...formData, price: Number(e.target.value)})} style={{ width: '100%' }} />
                 </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <JanaSelect label="UBICACIÓN" value={formData.location || 'studio'} onChange={(val) => setFormData({...formData, location: val})} options={[{ label: 'Studio', value: 'studio' }, { label: 'Casa', value: 'home' }]} />
+                <div><label style={{ display: 'block', marginBottom: '8px', fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)' }}>UNIDAD DE CONSUMO</label><input type="text" className="astro-input" value={formData.unit || 'unidad'} onChange={(e) => setFormData({...formData, unit: e.target.value})} style={{ width: '100%' }} /></div>
+                <div><label style={{ display: 'block', marginBottom: '8px', fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)' }}>CONTENIDO DEL ENVASE</label><input type="number" min="0" step="0.001" className="astro-input" value={formData.package_size || 1} onChange={(e) => setFormData({...formData, package_size: Number(e.target.value)})} style={{ width: '100%' }} /></div>
+                <div><label style={{ display: 'block', marginBottom: '8px', fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)' }}>SERVICIOS ESPERADOS</label><input type="number" min="0" className="astro-input" value={formData.expected_services || 0} onChange={(e) => setFormData({...formData, expected_services: Number(e.target.value)})} style={{ width: '100%' }} /></div>
               </div>
 
               {(formData.category === 'Venta' || formData.category === 'Accesorios') && (

@@ -15,6 +15,7 @@ import JanaSelect from './JanaSelect';
 import AnimatedModal from './AnimatedModal';
 import NailsIcon from './NailsIcon';
 import LaserGunIcon from './LaserGunIcon';
+import ServiceRecipeEditor from './ServiceRecipeEditor';
 
 const AVAILABLE_ICONS = [
   { name: 'Scissors',    label: 'Corte general' },
@@ -73,6 +74,8 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
   const [newStrategyValue, setNewStrategyValue] = useState('');
   const [newStrategyLabel, setNewStrategyLabel] = useState('');
   const [baseItems, setBaseItems] = useState([]);
+  const [inventory, setInventory] = useState([]);
+  const [serviceRecipe, setServiceRecipe] = useState([]);
   const [billableExtras, setBillableExtras] = useState([]);
   const [editingItem, setEditingItem] = useState(null);
   const [editingExtra, setEditingExtra] = useState(null);
@@ -96,6 +99,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
     fetchBillableExtras();
     fetchCategories();
     fetchStrategies();
+    dataService.getInventory().then(setInventory).catch(() => showToast('Error al cargar inventario.', 'error'));
   }, []);
 
   const fetchServices = async () => {
@@ -335,7 +339,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
     (Number(newService.commission_receptionist) || 0);
   const netMargin = (Number(newService.price) || 0) - ((Number(newService.price) || 0) * totalCommissions / 100);
 
-  const handleEditClick = (service) => {
+  const handleEditClick = async (service) => {
     setIsEditing(true);
     setNewService({
       id: service.id,
@@ -353,6 +357,12 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
       commission_receptionist: service.commission_receptionist || 0
     });
     setShowAddForm(true);
+    try {
+      setServiceRecipe(await dataService.getServiceCosts(service.id));
+    } catch {
+      setServiceRecipe([]);
+      showToast('No se pudo cargar la receta del servicio.', 'error');
+    }
   };
 
   const handleCreateService = async () => {
@@ -372,9 +382,11 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
 
       if (isEditing && newService.id) {
         await dataService.updateService(newService.id, dbPayload);
+        await dataService.replaceServiceCosts(newService.id, serviceRecipe);
         showToast(`¡Servicio ${newService.name} actualizado!`);
       } else {
-        await dataService.addService(dbPayload);
+        const createdService = await dataService.addService(dbPayload);
+        await dataService.replaceServiceCosts(createdService.id, serviceRecipe);
         showToast(`¡Servicio ${newService.name} agregado al catálogo!`);
       }
       setNewService({ 
@@ -393,6 +405,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
         commission_receptionist: 0
       });
       setIsEditing(false);
+      setServiceRecipe([]);
       setShowAddForm(false);
       await fetchServices();
     } catch (e) {
@@ -713,6 +726,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                     description: '', included_items: [],
                     commission_stylist: 40, commission_washer: 0, commission_cashier: 0, commission_receptionist: 0
                   });
+                  setServiceRecipe([]);
                   setShowAddForm(true);
                 }}
                 style={{ 
@@ -2084,6 +2098,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
 
                     {/* Right Column: Checklist */}
                     <div style={{ backgroundColor: '#faf3f2', padding: '20px', borderRadius: '16px', border: '1px solid rgba(212, 160, 154, 0.2)', display: 'flex', flexDirection: 'column', height: '100%', boxSizing: 'border-box' }}>
+                      <ServiceRecipeEditor inventory={inventory} value={serviceRecipe} onChange={setServiceRecipe} />
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                         <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: '800', color: '#a0506a', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
                           <LayoutList size={15} /> Checklist (Incluido)

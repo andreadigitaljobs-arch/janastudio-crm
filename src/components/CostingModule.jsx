@@ -123,11 +123,10 @@ const CostingModule = ({ isMobile, services = [], inventory = [] }) => {
     setNewItem({
       ...newItem,
       item_name: item.name,
-      unit_cost: item.cost,
+      unit_cost: (Number(item.cost) || 0) / Math.max(Number(item.package_size) || 1, 0.000001),
       unit: item.unit,
       inventory_item_id: item.id
     });
-    setShowAddItem(false);
   };
 
   const getProfitColor = (margin) => {
