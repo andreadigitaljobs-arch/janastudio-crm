@@ -1306,6 +1306,110 @@ export const dataService = {
     }
   },
 
+  // ─── Service Categories ─────────────────────────────────────────────────────
+  async getServiceCategories() {
+    try {
+      const val = await this.getSystemSetting('service_categories', '[]');
+      let list = JSON.parse(val);
+      if (!list || list.length === 0) {
+        list = [
+          { name: 'Estilismo', icon: 'Scissors' },
+          { name: 'Cejas', icon: 'Brush' },
+          { name: 'Pestañas', icon: 'Sparkles' },
+          { name: 'Uñas', icon: 'NailPolish' },
+          { name: 'Facial', icon: 'Smile' },
+          { name: 'Combos', icon: 'Crown' }
+        ];
+        await this.setSystemSetting('service_categories', JSON.stringify(list));
+      }
+      return list;
+    } catch (e) {
+      console.error(e);
+      return [];
+    }
+  },
+
+  async addServiceCategory(name, icon) {
+    const list = await this.getServiceCategories();
+    list.push({ name, icon });
+    await this.setSystemSetting('service_categories', JSON.stringify(list));
+    return { name, icon };
+  },
+
+  async updateServiceCategory(oldName, oldIcon, newName, newIcon) {
+    const list = await this.getServiceCategories();
+    const idx = list.findIndex(c => c.name === oldName);
+    if (idx !== -1) {
+      list[idx] = { name: newName, icon: newIcon };
+      await this.setSystemSetting('service_categories', JSON.stringify(list));
+    }
+    return { name: newName, icon: newIcon };
+  },
+
+  // ─── Service Strategies ─────────────────────────────────────────────────────
+  async getServiceStrategies() {
+    try {
+      const val = await this.getSystemSetting('service_strategies', '[]');
+      let list = JSON.parse(val);
+      if (!list || list.length === 0) {
+        list = [
+          { value: 'MVP', label: 'Servicio Base / MVP' },
+          { value: 'Premium', label: 'Servicio Premium / Alta Rentabilidad' }
+        ];
+        await this.setSystemSetting('service_strategies', JSON.stringify(list));
+      }
+      return list;
+    } catch (e) {
+      console.error(e);
+      return [];
+    }
+  },
+
+  async addServiceStrategy(value, label) {
+    const list = await this.getServiceStrategies();
+    list.push({ value, label });
+    await this.setSystemSetting('service_strategies', JSON.stringify(list));
+    return { value, label };
+  },
+
+  // ─── Checklist Items ────────────────────────────────────────────────────────
+  async getChecklistItems() {
+    try {
+      const val = await this.getSystemSetting('checklist_items', '[]');
+      let list = JSON.parse(val);
+      if (!list || list.length === 0) {
+        list = [
+          { id: '1', name: 'Cera Depilatoria Cejas (gr)', base_cost: 0.05 },
+          { id: '2', name: 'Espuma Limpiadora Facial', base_cost: 0.15 },
+          { id: '3', name: 'Bandana Depilatoria Cejas', base_cost: 0.04 }
+        ];
+        await this.setSystemSetting('checklist_items', JSON.stringify(list));
+      }
+      return list;
+    } catch (e) {
+      console.error(e);
+      return [];
+    }
+  },
+
+  async addChecklistItem(item) {
+    const list = await this.getChecklistItems();
+    const newItem = {
+      id: String(Date.now()),
+      name: item.name,
+      base_cost: Number(item.base_cost || 0)
+    };
+    list.push(newItem);
+    await this.setSystemSetting('checklist_items', JSON.stringify(list));
+    return newItem;
+  },
+
+  async deleteChecklistItem(id) {
+    const list = await this.getChecklistItems();
+    const filtered = list.filter(item => String(item.id) !== String(id));
+    await this.setSystemSetting('checklist_items', JSON.stringify(filtered));
+  },
+
   // ─── Auth ───────────────────────────────────────────────────────────────────
   async signIn(email, password) {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });

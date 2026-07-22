@@ -558,11 +558,24 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
   const paginatedServices = groupedServices.slice(startIndex, startIndex + itemsPerPage);
 
   const formatServicePrice = (s) => {
-    if (s.isGroup) {
-      if (s.minPrice === s.maxPrice) return formatBs(s.minPrice);
-      return `Desde ${formatBs(s.minPrice)}`;
-    }
-    return formatBs(s.price);
+    const isGroup = s.isGroup;
+    const price = isGroup ? s.minPrice : s.price;
+    const usd = Number(price || 0);
+    const bs = Math.round(usd * (rates?.usd || 550));
+    
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', lineHeight: '1.2' }}>
+        <span style={{ fontWeight: '800', fontSize: '14px', color: 'var(--pink-primary)' }}>
+          {isGroup && s.minPrice !== s.maxPrice ? 'Desde ' : ''}
+          ${usd.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD
+        </span>
+        {rates?.usd > 0 && (
+          <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '700', marginTop: '1px' }}>
+            Ref: {bs.toLocaleString('es-VE')} Bs.
+          </span>
+        )}
+      </div>
+    );
   };
 
   const getBadge = (service) => {
