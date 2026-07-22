@@ -1,1 +1,1 @@
-SELECT name, encode(name::bytea, 'hex') FROM janastudio.services WHERE name LIKE '%Depilaci%';
+SELECT id, name FROM janastudio.services WHERE name LIKE '%??%' OR description LIKE '%??%';

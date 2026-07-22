@@ -1,77 +1,11 @@
--- Fix services name and description encoding issues using CHR() to avoid Windows pipeline encoding bugs
-UPDATE janastudio.services SET 
-  name = replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(
-    name, 
-    'Depilaci??n', 'Depilaci' || CHR(243) || 'n'),
-    'depilaci??n', 'depilaci' || CHR(243) || 'n'),
-    'Dise??o', 'Dise' || CHR(241) || 'o'),
-    'dise??o', 'dise' || CHR(241) || 'o'),
-    'U??as', 'U' || CHR(241) || 'as'),
-    'u??as', 'u' || CHR(241) || 'as'),
-    'Pesta??as', 'Pesta' || CHR(241) || 'as'),
-    'pesta??as', 'pesta' || CHR(241) || 'as'),
-    'Hidrataci??n', 'Hidrataci' || CHR(243) || 'n'),
-    'hidrataci??n', 'hidrataci' || CHR(243) || 'n'),
-    '??rea', CHR(225) || 'rea'),
-    'aplicaci??n', 'aplicaci' || CHR(243) || 'n'),
-    'exfoliaci??n', 'exfoliaci' || CHR(243) || 'n'),
-    'manicur??a', 'manicura'),
-    'pedicur??a', 'pedicura'),
-    '??tem', 'Ítem'),
-  description = replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(
-    description, 
-    'Depilaci??n', 'Depilaci' || CHR(243) || 'n'),
-    'depilaci??n', 'depilaci' || CHR(243) || 'n'),
-    'Dise??o', 'Dise' || CHR(241) || 'o'),
-    'dise??o', 'dise' || CHR(241) || 'o'),
-    'U??as', 'U' || CHR(241) || 'as'),
-    'u??as', 'u' || CHR(241) || 'as'),
-    'Pesta??as', 'Pesta' || CHR(241) || 'as'),
-    'pesta??as', 'pesta' || CHR(241) || 'as'),
-    'Hidrataci??n', 'Hidrataci' || CHR(243) || 'n'),
-    'hidrataci??n', 'hidrataci' || CHR(243) || 'n'),
-    '??rea', CHR(225) || 'rea'),
-    'aplicaci??n', 'aplicaci' || CHR(243) || 'n'),
-    'exfoliaci??n', 'exfoliaci' || CHR(243) || 'n'),
-    'manicur??a', 'manicura'),
-    'pedicur??a', 'pedicura'),
-    '??tem', 'Ítem');
-
--- Fix inventory name and category encoding issues
-UPDATE janastudio.inventory SET 
-  name = replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(
-    name, 
-    'Depilaci??n', 'Depilaci' || CHR(243) || 'n'),
-    'depilaci??n', 'depilaci' || CHR(243) || 'n'),
-    'Dise??o', 'Dise' || CHR(241) || 'o'),
-    'dise??o', 'dise' || CHR(241) || 'o'),
-    'U??as', 'U' || CHR(241) || 'as'),
-    'u??as', 'u' || CHR(241) || 'as'),
-    'Pesta??as', 'Pesta' || CHR(241) || 'as'),
-    'pesta??as', 'pesta' || CHR(241) || 'as'),
-    'Hidrataci??n', 'Hidrataci' || CHR(243) || 'n'),
-    'hidrataci??n', 'hidrataci' || CHR(243) || 'n'),
-    '??rea', CHR(225) || 'rea'),
-    'aplicaci??n', 'aplicaci' || CHR(243) || 'n'),
-    'exfoliaci??n', 'exfoliaci' || CHR(243) || 'n'),
-    'manicur??a', 'manicura'),
-    'pedicur??a', 'pedicura'),
-    '??tem', 'Ítem'),
-  category = replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(
-    category, 
-    'Depilaci??n', 'Depilaci' || CHR(243) || 'n'),
-    'depilaci??n', 'depilaci' || CHR(243) || 'n'),
-    'Dise??o', 'Dise' || CHR(241) || 'o'),
-    'dise??o', 'dise' || CHR(241) || 'o'),
-    'U??as', 'U' || CHR(241) || 'as'),
-    'u??as', 'u' || CHR(241) || 'as'),
-    'Pesta??as', 'Pesta' || CHR(241) || 'as'),
-    'pesta??as', 'pesta' || CHR(241) || 'as'),
-    'Hidrataci??n', 'Hidrataci' || CHR(243) || 'n'),
-    'hidrataci??n', 'hidrataci' || CHR(243) || 'n'),
-    '??rea', CHR(225) || 'rea'),
-    'aplicaci??n', 'aplicaci' || CHR(243) || 'n'),
-    'exfoliaci??n', 'exfoliaci' || CHR(243) || 'n'),
-    'manicur??a', 'manicura'),
-    'pedicur??a', 'pedicura'),
-    '??tem', 'Ítem');
+-- Final targets
+UPDATE janastudio.services SET
+  name = replace(replace(
+    name,
+    'Acr??lico', 'Acr' || CHR(237) || 'lico'),
+    'Acr??licos', 'Acr' || CHR(237) || 'licos'),
+  description = replace(replace(replace(
+    description,
+    'Acr??lico', 'Acr' || CHR(237) || 'lico'),
+    'Construcci??n', 'Construcci' || CHR(243) || 'n'),
+    'Reparaci??n', 'Reparaci' || CHR(243) || 'n');
