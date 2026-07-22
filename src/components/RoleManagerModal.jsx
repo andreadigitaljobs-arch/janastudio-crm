@@ -139,8 +139,8 @@ const RoleManagerModal = ({ isOpen, onClose, roles, onSaveRole, onDeleteRole, av
                     </span>
                     <button
                       onClick={handleCreateClick}
-                      className="btn-pink" style={{ color: 'white' }}
-                      style={{ padding: '8px 18px', borderRadius: '50px', fontSize: '12px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
+                      className="btn-pink"
+                      style={{ color: 'white', padding: '8px 18px', borderRadius: '50px', fontSize: '12px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}
                     >
                       <Plus size={15} /> Nuevo Rol
                     </button>
