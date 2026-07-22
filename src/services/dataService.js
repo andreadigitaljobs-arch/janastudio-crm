@@ -1,5 +1,9 @@
 import { supabase } from '../lib/supabase';
 import { notificationService } from './notificationService';
+import {
+  inferServiceCategories,
+  normalizeServiceCategories,
+} from '../domain/serviceCategoryRules.js';
 
 // ─── Smart In-Memory Cache ────────────────────────────────────────────────────
 const _cache = {};
@@ -941,8 +945,11 @@ export const dataService = {
   async setSystemSetting(key, value) {
     const { data, error } = await supabase
       .from('system_settings')
-      .update({ value: String(value || '').trim(), updated_at: new Date().toISOString() })
-      .eq('key', key)
+      .upsert({
+        key,
+        value: String(value || '').trim(),
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'key' })
       .select('key, value')
       .single();
     if (error) throw error;
@@ -1239,17 +1246,35 @@ export const dataService = {
   async getServiceCategories() {
     try {
       const val = await this.getSystemSetting('service_categories', '[]');
-      let list = JSON.parse(val);
-      if (!list || list.length === 0) {
-        list = [
-          { name: 'Estilismo', icon: 'Scissors' },
-          { name: 'Cejas', icon: 'Brush' },
-          { name: 'Pestañas', icon: 'Sparkles' },
-          { name: 'Uñas', icon: 'NailPolish' },
-          { name: 'Facial', icon: 'Smile' },
-          { name: 'Combos', icon: 'Crown' }
-        ];
-        await this.setSystemSetting('service_categories', JSON.stringify(list));
+      let list = normalizeServiceCategories(JSON.parse(val));
+
+      if (list.length === 0) {
+        const { data: serviceRows, error } = await supabase
+          .from('services')
+          .select('category')
+          .not('category', 'is', null)
+          .order('category');
+        if (error) throw error;
+
+        list = inferServiceCategories(serviceRows);
+        if (list.length === 0) {
+          list = normalizeServiceCategories([
+            { name: 'Estilismo', icon: 'Scissors' },
+            { name: 'Cejas', icon: 'Brush' },
+            { name: 'Pestañas', icon: 'Sparkles' },
+            { name: 'Uñas', icon: 'NailPolish' },
+            { name: 'Facial', icon: 'Smile' },
+            { name: 'Combos', icon: 'Crown' },
+          ]);
+        }
+
+        // El listado inferido debe mostrarse incluso si el usuario actual no
+        // tiene permisos administrativos para persistir la configuración.
+        try {
+          await this.setSystemSetting('service_categories', JSON.stringify(list));
+        } catch (persistError) {
+          console.warn('No se pudo persistir service_categories:', persistError);
+        }
       }
       return list;
     } catch (e) {
@@ -1260,19 +1285,56 @@ export const dataService = {
 
   async addServiceCategory(name, icon) {
     const list = await this.getServiceCategories();
-    list.push({ name, icon });
-    await this.setSystemSetting('service_categories', JSON.stringify(list));
-    return { name, icon };
+    const normalizedName = String(name || '').trim();
+    if (!normalizedName) throw new Error('El nombre de la categoría es obligatorio.');
+    if (list.some(category => category.name.toLocaleLowerCase('es') === normalizedName.toLocaleLowerCase('es'))) {
+      throw new Error('Esa categoría ya existe.');
+    }
+
+    const category = { name: normalizedName, icon };
+    await this.setSystemSetting('service_categories', JSON.stringify([...list, category]));
+    return category;
   },
 
   async updateServiceCategory(oldName, oldIcon, newName, newIcon) {
     const list = await this.getServiceCategories();
     const idx = list.findIndex(c => c.name === oldName);
-    if (idx !== -1) {
-      list[idx] = { name: newName, icon: newIcon };
-      await this.setSystemSetting('service_categories', JSON.stringify(list));
+    if (idx === -1) throw new Error('La categoría ya no existe.');
+
+    const normalizedName = String(newName || '').trim();
+    if (!normalizedName) throw new Error('El nombre de la categoría es obligatorio.');
+    const duplicate = list.some((category, index) => (
+      index !== idx && category.name.toLocaleLowerCase('es') === normalizedName.toLocaleLowerCase('es')
+    ));
+    if (duplicate) throw new Error('Esa categoría ya existe.');
+
+    if (oldName !== normalizedName) {
+      const { error } = await supabase
+        .from('services')
+        .update({ category: normalizedName })
+        .eq('category', oldName);
+      if (error) throw error;
+      _cacheInvalidate('services');
     }
-    return { name: newName, icon: newIcon };
+
+    list[idx] = { name: normalizedName, icon: newIcon };
+    await this.setSystemSetting('service_categories', JSON.stringify(list));
+    return list[idx];
+  },
+
+  async deleteServiceCategory(name) {
+    const { count, error } = await supabase
+      .from('services')
+      .select('id', { count: 'exact', head: true })
+      .eq('category', name);
+    if (error) throw error;
+    if (count > 0) {
+      throw new Error(`No puedes eliminar "${name}" porque tiene ${count} servicio${count === 1 ? '' : 's'} asociado${count === 1 ? '' : 's'}.`);
+    }
+
+    const list = await this.getServiceCategories();
+    const filtered = list.filter(category => category.name !== name);
+    await this.setSystemSetting('service_categories', JSON.stringify(filtered));
   },
 
   // ─── Service Strategies ─────────────────────────────────────────────────────
