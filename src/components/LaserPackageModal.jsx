@@ -18,6 +18,13 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectedService, setSelectedService] = useState(null);
   const [totalSessions, setTotalSessions] = useState(8);
+  const [customPrice, setCustomPrice] = useState('');
+  const catalogPrice = Number(totalSessions === 8
+    ? selectedService?.laser_price_8
+    : totalSessions === 4
+      ? selectedService?.laser_price_4
+      : selectedService?.laser_price_single ?? selectedService?.price) || Number(selectedService?.price || 0);
+  const packagePrice = customPrice === '' ? catalogPrice : Math.max(0, Number(customPrice) || 0);
 
   const [paymentMode, setPaymentMode] = useState('full_usd'); // 'full_usd', 'full_bs', 'financed'
   const [methodUsd, setMethodUsd] = useState('Efectivo');
@@ -94,7 +101,7 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
       setLoading(true);
 
       const isFullBs = paymentMode === 'full_bs';
-      const totalAmount = selectedService.price;
+      const totalAmount = packagePrice;
       let finalMethod = isFullBs ? methodBs : methodUsd;
       if (paymentMode === 'financed') finalMethod = `Cuota 1 (${methodUsd})`;
       await dataService.sellLaserPackage({
@@ -242,7 +249,7 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
                     {services.map((svc) => (
                       <div 
                         key={svc.id} 
-                        onClick={() => { setSelectedService(svc); setStep(3); }} 
+                        onClick={() => { setSelectedService(svc); setCustomPrice(''); setStep(3); }}
                         className="hover-lift" 
                         style={{ padding: '20px', borderRadius: '16px', border: selectedService?.id === svc.id ? '2px solid #c97282' : '1px solid rgba(223, 178, 140, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', transition: 'all 0.2s', background: selectedService?.id === svc.id ? '#fff0f2' : '#fff' }}
                       >
@@ -250,7 +257,7 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
                           <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#2d1b22' }}>{svc.name}</div>
                           <div style={{ fontSize: '0.8rem', color: '#a0909a', fontWeight: 500, marginTop: '4px' }}>Incluye revisión inicial</div>
                         </div>
-                        <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#c97282' }}>${svc.price}</div>
+                        <div style={{ textAlign: 'right' }}><div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#c97282' }}>${svc.laser_price_8 || svc.price}</div><div style={{ fontSize: '0.68rem', color: '#a0909a' }}>paquete de 8</div></div>
                       </div>
                     ))}
                   </div>
@@ -265,13 +272,13 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
                     <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#2d1b22', marginTop: '4px' }}>{selectedService.name}</div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '16px', paddingTop: '16px', borderTop: '1px solid rgba(223, 178, 140, 0.2)' }}>
                       <div style={{ fontSize: '0.9rem', color: '#a0909a', fontWeight: 600 }}>Total del Paquete</div>
-                      <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#c97282' }}>${selectedService.price}</div>
+                      <div style={{ position: 'relative', width: 120 }}><span style={{ position: 'absolute', left: 10, top: 9, color: '#c97282', fontWeight: 900 }}>$</span><input aria-label="Precio del paquete" type="number" min="0" step="0.01" value={customPrice === '' ? catalogPrice : customPrice} onChange={e => setCustomPrice(e.target.value)} style={{ width: '100%', height: 40, borderRadius: 10, border: '1px solid rgba(201,114,130,.35)', padding: '0 8px 0 24px', fontSize: '1rem', fontWeight: 900, color: '#c97282', textAlign: 'right' }} /></div>
                     </div>
                   </div>
 
                   <div>
                     <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#a0909a', display: 'block', marginBottom: 8 }}>SESIONES DEL PAQUETE</label>
-                    <select value={totalSessions} onChange={e => setTotalSessions(Number(e.target.value))} style={{ width: '100%', height: 42, borderRadius: 12, border: '1px solid rgba(223,178,140,.4)', padding: '0 12px', marginBottom: 18 }}>
+                    <select value={totalSessions} onChange={e => { const sessions = Number(e.target.value); setTotalSessions(sessions); setCustomPrice(''); if (sessions !== 8 && paymentMode === 'financed') setPaymentMode('full_usd'); }} style={{ width: '100%', height: 42, borderRadius: 12, border: '1px solid rgba(223,178,140,.4)', padding: '0 12px', marginBottom: 18 }}>
                       <option value={1}>1 sesión</option><option value={4}>4 sesiones</option><option value={8}>8 sesiones</option>
                     </select>
                     <h4 style={{ margin: '0 0 16px 0', fontSize: '1.1rem', fontWeight: 800, color: '#2d1b22' }}>Plan de Financiamiento</h4>
@@ -286,9 +293,10 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
                           style={{ flex: '1 0 45%', padding: '12px', borderRadius: '12px', border: paymentMode === 'full_bs' ? '2px solid #c97282' : '1px solid rgba(223, 178, 140, 0.4)', background: paymentMode === 'full_bs' ? '#fff0f2' : '#fff', color: paymentMode === 'full_bs' ? '#c97282' : '#a0909a', fontWeight: '800', cursor: 'pointer', fontSize: '0.8rem', transition: 'all 0.2s' }}
                         >TODO EN BS</button>
                         <button 
-                          onClick={() => setPaymentMode('financed')}
-                          style={{ flex: '1 0 100%', padding: '12px', borderRadius: '12px', border: paymentMode === 'financed' ? '2px solid #c97282' : '1px solid rgba(223, 178, 140, 0.4)', background: paymentMode === 'financed' ? '#fff0f2' : '#fff', color: paymentMode === 'financed' ? '#c97282' : '#a0909a', fontWeight: '800', cursor: 'pointer', fontSize: '0.8rem', transition: 'all 0.2s' }}
-                        >{totalSessions === 8 ? 'PAGO FRACCIONADO (30/40/30)' : 'PAGO COMPLETO'}</button>
+                          onClick={() => totalSessions === 8 && setPaymentMode('financed')}
+                          disabled={totalSessions !== 8}
+                          style={{ flex: '1 0 100%', padding: '12px', borderRadius: '12px', border: paymentMode === 'financed' ? '2px solid #c97282' : '1px solid rgba(223, 178, 140, 0.4)', background: paymentMode === 'financed' ? '#fff0f2' : '#fff', color: paymentMode === 'financed' ? '#c97282' : '#a0909a', opacity: totalSessions === 8 ? 1 : .55, fontWeight: '800', cursor: totalSessions === 8 ? 'pointer' : 'not-allowed', fontSize: '0.8rem', transition: 'all 0.2s' }}
+                        >{totalSessions === 8 ? 'PAGO FRACCIONADO (30/40/30)' : 'FINANCIAMIENTO SOLO PARA 8 SESIONES'}</button>
                       </div>
 
                       {paymentMode === 'full_usd' && (
@@ -311,7 +319,7 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                             <label style={{ fontSize: '0.8rem', fontWeight: '800', color: '#a0909a' }}>MONTO REFERENCIAL A TASA BCV</label>
                             <div style={{ fontWeight: '900', color: '#c97282', fontSize: '1.2rem' }}>
-                              {(selectedService.price * exchangeRate).toLocaleString('es-VE', {minimumFractionDigits:2, maximumFractionDigits:2})} BS
+                              {(packagePrice * exchangeRate).toLocaleString('es-VE', {minimumFractionDigits:2, maximumFractionDigits:2})} BS
                             </div>
                           </div>
                           <label style={{ fontSize: '0.8rem', fontWeight: '800', color: '#a0909a', marginBottom: '8px', display: 'block' }}>MÉTODO DE PAGO (BS)</label>
@@ -336,7 +344,7 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
                               <input 
                                 type="text" 
                                 readOnly
-                                value={(selectedService.price * 0.3).toFixed(2)}
+                                value={(packagePrice * 0.3).toFixed(2)}
                                 style={{ width: '100%', padding: '16px 16px 16px 36px', borderRadius: '12px', border: '1.5px solid rgba(223, 178, 140, 0.3)', backgroundColor: '#fff', fontSize: '1rem', color: '#2d1b22', fontWeight: 800, outline: 'none' }} 
                               />
                             </div>
@@ -344,7 +352,7 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
                           
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: '#fff0f2', borderRadius: '10px', border: '1px solid rgba(201,114,130,0.2)' }}>
                             <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#c97282' }}>Restante (2 cuotas):</span>
-                            <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#c97282' }}>${(selectedService.price * 0.7).toFixed(2)} USD</span>
+                            <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#c97282' }}>${(packagePrice * 0.7).toFixed(2)} USD</span>
                           </div>
                           
                           <div>
