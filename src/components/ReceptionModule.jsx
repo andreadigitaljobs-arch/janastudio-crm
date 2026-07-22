@@ -14,12 +14,7 @@ import JanaDialog from './JanaDialog';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { supabase } from '../lib/supabase';
 
-const DEMO_WAITING = [
-  { name: 'Sofía M.', arrived: '10:20 AM', status: 'En espera', initial: 'S' },
-  { name: 'Jana V.', arrived: '10:35 AM', status: 'Lista', initial: 'J' },
-  { name: 'Laura G.', arrived: '10:40 AM', status: 'Pasando', initial: 'L' },
-  { name: 'Diana R.', arrived: '10:45 AM', status: 'En espera', initial: 'D' },
-];
+const DEMO_WAITING = [];
 
 const ReceptionModule = ({ isMobile }) => {
   const { showToast, triggerRocket } = useNotifs();
@@ -74,8 +69,7 @@ const ReceptionModule = ({ isMobile }) => {
       setInventory((inv || []).filter(i => i.is_for_sale !== false && i.category === 'Venta'));
       setUpcomingAppointments(allApps || []);
       if (ratesData) {
-        const activeType = localStorage.getItem('jana_active_rate') || 'usdt';
-        setExchangeRate(activeType === 'bcv' ? (ratesData.bcv || 36.5) : (ratesData.usdt || 43.2));
+        setExchangeRate(ratesData.bcv || 0);
       }
     } catch (err) { console.error(err); }
   };
@@ -171,7 +165,7 @@ const ReceptionModule = ({ isMobile }) => {
   const subtotal = selectedServices.reduce((a, s) => a + s.price, 0) +
     selectedExtras.reduce((a, e) => a + (e.customPrice ?? e.price), 0) +
     selectedProducts.reduce((a, p) => a + (p.price * p.quantity), 0);
-  const discount = subtotal * 0.05;
+  const discount = 0;
   const total = subtotal - discount;
 
   const card = {
@@ -587,10 +581,10 @@ const ReceptionModule = ({ isMobile }) => {
             </h4>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '14px' }}>
               {[
-                { label: 'Clientes en espera', value: 4, color: '#c48b9f' },
-                { label: 'En atención', value: 2, color: '#c48b9f' },
-                { label: 'Citas de hoy', value: 12, color: '#c48b9f' },
-                { label: 'Walk-ins', value: 3, color: '#c48b9f' },
+                { label: 'Clientes en espera', value: activeAppointments.filter(a => a.status === 'Agendado').length, color: '#c48b9f' },
+                { label: 'En atención', value: activeAppointments.filter(a => a.status === 'En Silla').length, color: '#c48b9f' },
+                { label: 'Citas de hoy', value: upcomingAppointments.length, color: '#c48b9f' },
+                { label: 'Walk-ins', value: upcomingAppointments.filter(a => String(a.notes || '').toLowerCase().includes('walk')).length, color: '#c48b9f' },
               ].map((s, i) => (
                 <div key={i} className="mi-stat" style={{ textAlign: 'center', padding: '8px 4px', borderRadius: '10px', background: '#faf5f5' }}>
                   <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#2d2d2d' }}>{s.value}</div>

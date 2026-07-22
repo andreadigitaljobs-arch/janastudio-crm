@@ -9,6 +9,7 @@ const ReportsModule = ({ isMobile, rates }) => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [management, setManagement] = useState({ categories: [], promotions: [], inventory_variance: [], laser_receivable: 0, laser_split: {} });
 
   useEffect(() => {
     let active = true;
@@ -19,8 +20,11 @@ const ReportsModule = ({ isMobile, rates }) => {
       const start = new Date(end);
       start.setDate(start.getDate() - days);
       try {
-        const data = await dataService.getProfitabilityReport(start.toISOString(), end.toISOString());
-        if (active) setRows(data);
+        const [data, managementData] = await Promise.all([
+          dataService.getProfitabilityReport(start.toISOString(), end.toISOString()),
+          dataService.getManagementReport(start.toISOString(), end.toISOString())
+        ]);
+        if (active) { setRows(data); setManagement(managementData || {}); }
       } catch (reportError) {
         console.error(reportError);
         if (active) setError('No se pudo cargar la rentabilidad. Verifica que la migración esté aplicada.');
@@ -64,6 +68,11 @@ const ReportsModule = ({ isMobile, rates }) => {
           <h2 style={{ fontSize: '15px', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: '7px' }}><TrendingUp size={17} color="var(--pink-primary)" /> Rentabilidad por servicio</h2>
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '820px' }}><thead><tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '10px', textTransform: 'uppercase' }}>{['Servicio', 'Precio', 'Insumos', 'Pago personal', 'Ganancia estimada', 'Margen', 'Realizados', 'Ganancia real'].map((heading) => <th key={heading} style={{ textAlign: heading === 'Servicio' ? 'left' : 'right', padding: '10px 8px' }}>{heading}</th>)}</tr></thead><tbody>{sorted.map((row) => <tr key={row.service_id} style={{ borderBottom: '1px solid #f3e9eb', fontSize: '12px' }}><td style={{ padding: '11px 8px', fontWeight: 750 }}>{row.service_name}<div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{row.category || 'Sin categoría'}</div></td><td style={{ textAlign: 'right' }}>{usd(row.price)}</td><td style={{ textAlign: 'right' }}>{usd(row.estimated_material_cost)}</td><td style={{ textAlign: 'right' }}>{usd(row.estimated_staff_cost)}</td><td style={{ textAlign: 'right', fontWeight: 850, color: Number(row.estimated_profit) >= 0 ? '#198754' : '#b42318' }}>{usd(row.estimated_profit)}</td><td style={{ textAlign: 'right' }}>{Number(row.estimated_margin || 0).toFixed(1)}%</td><td style={{ textAlign: 'right' }}>{row.services_completed}</td><td style={{ textAlign: 'right', fontWeight: 850 }}>{usd(row.actual_profit)}</td></tr>)}</tbody></table>
         </div>
+        <section style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)', gap:12, marginTop:16 }}>
+          <div style={card}><h3 style={{fontSize:14,marginTop:0}}>Categorías más vendidas</h3>{(management.categories||[]).length===0?<small>Sin ventas completadas.</small>:(management.categories||[]).map(c=><div key={c.category} style={{display:'flex',justifyContent:'space-between',padding:'7px 0',borderBottom:'1px solid #f3e9eb'}}><span>{c.category||'Sin categoría'}</span><strong>{c.completed} · {usd(c.profit)}</strong></div>)}</div>
+          <div style={card}><h3 style={{fontSize:14,marginTop:0}}>Promociones</h3>{(management.promotions||[]).length===0?<small>Sin promociones.</small>:(management.promotions||[]).map(p=><div key={p.name} style={{display:'flex',justifyContent:'space-between',padding:'7px 0',borderBottom:'1px solid #f3e9eb'}}><span>{p.name}</span><strong>{p.uses} usos · {usd(p.revenue)}</strong></div>)}</div>
+          <div style={card}><h3 style={{fontSize:14,marginTop:0}}>Control operativo</h3><div style={{fontSize:12}}>Por cobrar en Láser</div><strong style={{fontSize:22,color:'var(--pink-primary)'}}>{usd(management.laser_receivable)}</strong><div style={{fontSize:11,marginTop:6}}>Distribución cobrada: trabajadora {usd(management.laser_split?.worker)} · socia/insumos {usd(management.laser_split?.partner)} · estudio {usd(management.laser_split?.studio)}</div><h4 style={{marginBottom:6}}>Rendimiento de envases</h4>{(management.inventory_variance||[]).slice(0,5).map(v=><div key={`${v.name}-${v.status}`} style={{fontSize:11,padding:'4px 0'}}>{v.name}: {v.services_count}/{v.expected_services||'—'} servicios</div>)}</div>
+        </section>
       </>}
     </div>
   );

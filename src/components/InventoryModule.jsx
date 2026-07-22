@@ -70,12 +70,14 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
   const fetchInventory = async () => {
     try {
       setLoading(true);
-      const [invData, staffData] = await Promise.all([
+      const [invData, staffData, movementData] = await Promise.all([
         dataService.getInventory(),
-        dataService.getStaff()
+        dataService.getStaff(),
+        dataService.getInventoryMovements()
       ]);
       setInventory(invData);
       setStaff(staffData);
+      setHistory(movementData);
     } catch (error) {
       console.error('Error fetching inventory:', error);
     } finally {
@@ -190,8 +192,11 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
 
   const [categoryFilter, setCategoryFilter] = useState('Todas');
   const defaultCategories = ['Todas', 'Cabello', 'Uñas', 'Facial', 'Coloración'];
-  const activeProducts = filteredInventory.filter(i => i.active !== false);
+  const activeProducts = filteredInventory.filter(i => i.active !== false && (categoryFilter === 'Todas' || i.category === categoryFilter));
   const activeProductsCount = activeProducts.length;
+  const movementCategoryCounts = history.reduce((acc, row) => { const key = row.inventory?.category || 'Sin categoría'; acc[key] = (acc[key] || 0) + 1; return acc; }, {});
+  const movementCategoryTotal = Math.max(1, Object.values(movementCategoryCounts).reduce((a,b) => a + b, 0));
+  const movementCategories = Object.entries(movementCategoryCounts).map(([name,count]) => ({ name, pct: Math.round(count / movementCategoryTotal * 100), color: '#c48b9f' })).sort((a,b)=>b.pct-a.pct).slice(0,4);
   const lowStockCount2 = activeProducts.filter(i => i.stock > 0 && i.stock <= (i.min_stock || 5) && i.category !== 'Accesorios').length;
   const outOfStockCount = activeProducts.filter(i => i.stock === 0).length;
   const inventoryValue = activeProducts.reduce((sum, i) => sum + ((Number(i.price) || 0) * (Number(i.stock) || 0)), 0);
@@ -331,6 +336,8 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#f59e0b' }} /> Agotados
               </button>
             </div>
+
+            <InventoryContainersPanel inventory={inventory} onChanged={fetchInventory} />
 
             {/* Stat Cards */}
             <div className="mi-enter-up mi-delay-1" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px' }}>
@@ -490,20 +497,16 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                 <button className="mi-btn" style={{ fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer' }}>Ver todas →</button>
               </div>
               <div style={{ display: 'flex', gap: '12px', overflowX: 'auto' }}>
-                {[
-                  { day: '08', month: 'JUL', name: 'Alisado Japonés Kit', supplier: 'Kativa', qty: 5 },
-                  { day: '10', month: 'JUL', name: 'Oxidante 20 Vol', supplier: 'Igora Royal', qty: 6 },
-                  { day: '12', month: 'JUL', name: 'Acrílico Transparente', supplier: 'Mia Secret', qty: 10 },
-                ].map((r, idx) => (
-                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px', borderRadius: '12px', backgroundColor: '#faf5f5', border: '1px solid var(--border-color)', minWidth: '260px', flexShrink: 0 }}>
+                {activeProducts.filter(item => Number(item.stock) <= Number(item.min_stock || 5)).slice(0, 3).map((r) => (
+                  <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px', borderRadius: '12px', backgroundColor: '#faf5f5', border: '1px solid var(--border-color)', minWidth: '260px', flexShrink: 0 }}>
                     <div style={{ textAlign: 'center', minWidth: '40px' }}>
-                      <div style={{ fontSize: '20px', fontWeight: '800', color: 'var(--pink-primary)' }}>{r.day}</div>
-                      <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)' }}>{r.month}</div>
+                      <div style={{ fontSize: '20px', fontWeight: '800', color: 'var(--pink-primary)' }}>{r.stock}</div>
+                      <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)' }}>STOCK</div>
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '12px' }}>{r.name}</div>
                       <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Proveedor: {r.supplier}</div>
-                      <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Cantidad sugerida: {r.qty}</div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Cantidad sugerida: {Math.max(1, Number(r.min_stock || 5) * 2 - Number(r.stock || 0))}</div>
                     </div>
                     <span style={{ padding: '4px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: '700', background: 'rgba(245,158,11,0.1)', color: '#f59e0b', whiteSpace: 'nowrap' }}>Pendiente</span>
                   </div>
@@ -541,12 +544,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                 <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <BarChart3 size={14} color="#c48b9f" /> Categorías con más movimiento
                 </h4>
-                {[
-                  { name: 'Uñas', pct: 42, color: '#c48b9f' },
-                  { name: 'Cabello', pct: 34, color: '#6366f1' },
-                  { name: 'Coloración', pct: 14, color: '#ef4444' },
-                  { name: 'Facial', pct: 10, color: '#f59e0b' },
-                ].map(cat => (
+                {movementCategories.map(cat => (
                   <div key={cat.name} style={{ marginBottom: '12px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                       <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)' }}>{cat.name}</span>
@@ -564,16 +562,12 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                 <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <History size={14} color="#c48b9f" /> Movimientos recientes
                 </h4>
-                {[
-                  { date: '03/07', type: 'Ingreso', product: 'Acond. Post-Trat.', amount: '+10', color: '#22c55e' },
-                  { date: '02/07', type: 'Salida', product: 'Esmalte Francés', amount: '-2', color: '#ef4444' },
-                  { date: '01/07', type: 'Ajuste', product: 'Acrílico Transp.', amount: '-1', color: '#f59e0b' },
-                ].map((m, idx) => (
-                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0', borderBottom: idx < 2 ? '1px solid var(--border-color)' : 'none', fontSize: '12px' }}>
-                    <span style={{ color: 'var(--text-muted)', minWidth: '35px' }}>{m.date}</span>
+                {history.slice(0,3).map((m, idx) => (
+                  <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0', borderBottom: idx < 2 ? '1px solid var(--border-color)' : 'none', fontSize: '12px' }}>
+                    <span style={{ color: 'var(--text-muted)', minWidth: '35px' }}>{new Date(m.created_at).toLocaleDateString('es-VE',{day:'2-digit',month:'2-digit'})}</span>
                     <span style={{ color: 'var(--text-secondary)', minWidth: '45px' }}>{m.type}</span>
-                    <span style={{ flex: 1, color: 'var(--text-primary)', fontWeight: '600' }}>{m.product}</span>
-                    <span style={{ fontWeight: '800', color: m.color }}>{m.amount}</span>
+                    <span style={{ flex: 1, color: 'var(--text-primary)', fontWeight: '600' }}>{m.inventory?.name || 'Insumo'}</span>
+                    <span style={{ fontWeight: '800', color: m.type === 'entry' ? '#22c55e' : '#ef4444' }}>{m.type === 'entry' ? '+' : '-'}{m.amount}</span>
                   </div>
                 ))}
                 <button className="mi-btn" style={{ width: '100%', padding: '8px', marginTop: '8px', borderRadius: '8px', border: 'none', background: 'rgba(196,139,159,0.1)', color: 'var(--pink-primary)', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}>Ver historial completo →</button>
@@ -584,10 +578,10 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                 <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <ShoppingCart size={14} color="#c48b9f" /> Próxima compra sugerida
                 </h4>
-                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px' }}>3 productos recomendados</div>
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px' }}>{activeProducts.filter(i => Number(i.stock) <= Number(i.min_stock || 5)).length} productos recomendados</div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                   <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Total estimado</span>
-                  <span style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text-primary)' }}>{formatBs(1248 * (rates?.usd || 550))}</span>
+                  <span style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text-primary)' }}>{formatBs(activeProducts.filter(i => Number(i.stock) <= Number(i.min_stock || 5)).reduce((sum,i) => sum + Math.max(1, Number(i.min_stock || 5) * 2 - Number(i.stock || 0)) * Number(i.cost || 0), 0) * (rates?.usd || 0))}</span>
                 </div>
                 <button className="btn-pink mi-btn" style={{ width: '100%', padding: '10px', borderRadius: '12px', fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                   <ShoppingCart size={14} /> Generar pedido
@@ -823,6 +817,25 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
       </AnimatedModal>
     </div>
   );
+};
+
+const InventoryContainersPanel = ({ inventory, onChanged }) => {
+  const [rows, setRows] = useState([]);
+  const [show, setShow] = useState(false);
+  const [form, setForm] = useState({ inventory_item_id: '', opening_quantity: 1, expected_services: 0, location: 'studio', lot_code: '' });
+  const load = () => dataService.getInventoryContainers().then(setRows).catch(console.error);
+  useEffect(() => { load(); }, []);
+  const open = async () => {
+    const item = inventory.find(i => i.id === form.inventory_item_id);
+    if (!item) return;
+    await dataService.openInventoryContainer({ ...form, opening_quantity: Number(form.opening_quantity), remaining_quantity: Number(form.opening_quantity), expected_services: Number(form.expected_services) || Number(item.expected_services) || 0 });
+    setShow(false); setForm({ inventory_item_id: '', opening_quantity: 1, expected_services: 0, location: 'studio', lot_code: '' }); await load(); onChanged?.();
+  };
+  const close = async row => { await dataService.closeInventoryContainer(row.id, 'Envase finalizado', 'closed'); await load(); };
+  return <div className="agenda-glass-card" style={{ padding: 16 }}><div style={{ display:'flex',justifyContent:'space-between',alignItems:'center',gap:12 }}><div><strong>Trazabilidad de envases</strong><div style={{fontSize:11,color:'var(--text-muted)',marginTop:3}}>Rendimiento esperado frente a servicios realmente producidos.</div></div><button className="btn-pink" onClick={()=>setShow(!show)} style={{padding:'9px 14px',borderRadius:10}}><Plus size={14}/> Abrir envase</button></div>
+    {show&&<div style={{display:'grid',gridTemplateColumns:'2fr repeat(4,1fr) auto',gap:8,marginTop:14}}><select value={form.inventory_item_id} onChange={e=>setForm({...form,inventory_item_id:e.target.value})}><option value="">Insumo</option>{inventory.filter(i=>i.category!=='Venta').map(i=><option key={i.id} value={i.id}>{i.name}</option>)}</select><input type="number" min="0.001" step="0.001" placeholder="Contenido" value={form.opening_quantity} onChange={e=>setForm({...form,opening_quantity:e.target.value})}/><input type="number" min="0" placeholder="Servicios esperados" value={form.expected_services} onChange={e=>setForm({...form,expected_services:e.target.value})}/><select value={form.location} onChange={e=>setForm({...form,location:e.target.value})}><option value="studio">Estudio</option><option value="home">Casa</option></select><input placeholder="Lote" value={form.lot_code} onChange={e=>setForm({...form,lot_code:e.target.value})}/><button onClick={open}>Guardar</button></div>}
+    <div style={{display:'grid',gap:8,marginTop:12}}>{rows.filter(r=>r.status==='open').map(r=>{const expected=Number(r.expected_services)||0;const actual=Number(r.services_count)||0;const pct=expected?Math.round(actual/expected*100):0;return <div key={r.id} style={{display:'flex',alignItems:'center',gap:12,padding:'10px 12px',borderRadius:12,background:'#fff'}}><Package size={16} color="var(--pink-primary)"/><div style={{flex:1}}><strong style={{fontSize:12}}>{r.inventory?.name}</strong><div style={{fontSize:10,color:'var(--text-muted)'}}>Lote {r.lot_code||'sin código'} · {r.location==='home'?'Casa':'Estudio'} · {actual}/{expected||'—'} servicios ({pct}%)</div></div><button onClick={()=>close(r)} style={{border:'1px solid var(--border-color)',background:'#fff',borderRadius:8,padding:'6px 10px',cursor:'pointer'}}>Cerrar</button></div>})}{rows.filter(r=>r.status==='open').length===0&&<div style={{fontSize:12,color:'var(--text-muted)'}}>No hay envases abiertos.</div>}</div>
+  </div>;
 };
 
 const EditInventoryModal = ({ isOpen, item, onClose, onSave }) => {

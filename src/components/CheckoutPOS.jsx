@@ -140,6 +140,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
   const [allServices, setAllServices] = useState([]);
   const [allClients, setAllClients] = useState([]);
   const [allStaff, setAllStaff] = useState([]);
+  const [promotions, setPromotions] = useState([]);
   const [loading, setLoading] = useState(true);
   
   // Selection State
@@ -403,13 +404,14 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [apps, inv, ext, cls, staff, srv] = await Promise.all([
+      const [apps, inv, ext, cls, staff, srv, promo] = await Promise.all([
         dataService.getAppointmentsByState(['En Silla', 'Por Pagar', 'Agendado', 'En Tratamiento']),
         dataService.getSaleInventoryCatalog(),
         dataService.getExtras(),
         dataService.getClientsLite(),
         dataService.getStaff(),
-        dataService.getServices()
+        dataService.getServices(),
+        dataService.getPromotions({ includeInactive: false })
       ]);
       
       const today = new Date().toISOString().split('T')[0];
@@ -426,6 +428,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
       setInventory((inv || []).filter(i => i.category === 'Venta'));
       setAllExtras(ext?.filter(e => e.name !== 'SYSTEM_CONFIG_RATES') || []);
       setAllServices(srv || []);
+      setPromotions(promo || []);
       setAllClients(cls || []);
       setAllStaff(staff || []);
       return filtered;
@@ -499,7 +502,14 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
     const usdVal = isBs ? (amountVal / fixedRate) : amountVal;
     return acc + usdVal;
   }, 0);
-  const totalUsd = servicePrice + productsTotal + extrasTotal + totalTips;
+  const eligiblePromotions = promotions.filter(p => totalAppsInCheckout.some(app => {
+    const service = allServices.find(s => s.id === app.service_id) || app.services || {};
+    return p.scope === 'all' || (p.scope === 'service' && p.service_id === app.service_id) || (p.scope === 'category' && p.category === service.category);
+  }));
+  const appliedPromotion = eligiblePromotions.map(p => ({ ...p, calculated: p.discount_type === 'percent' ? servicePrice * Number(p.discount_value) / 100 : Number(p.discount_value) })).sort((a,b)=>b.calculated-a.calculated)[0] || null;
+  const promotionDiscount = Math.min(servicePrice, Number(appliedPromotion?.calculated || 0));
+  const totalBeforeDiscount = servicePrice + productsTotal + extrasTotal + totalTips;
+  const totalUsd = Math.max(0, totalBeforeDiscount - promotionDiscount);
   const totalBs = (totalUsd * fixedRate).toFixed(2);
   
   const remainingBs = Math.max(0, (totalUsd - Number(cashUsd)) * fixedRate).toFixed(2);
@@ -777,6 +787,10 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
         clientCedula: selectedApp?.clients?.id_card || selectedClient?.id_card,
         serviceName: totalAppsInCheckout.map(a => a.services?.name).filter(Boolean).join(' + ') || 'Venta de Productos',
         totalUsd: totalUsd,
+        originalAmount: totalBeforeDiscount,
+        promotionId: appliedPromotion?.id || null,
+        promotionName: appliedPromotion?.name || null,
+        discountAmount: promotionDiscount,
         fixedRate: fixedRate,
         isMixed: paymentMode === 'mixed' || paymentMode === 'financed',
         cashUsd: finalCashUsd,
@@ -2258,6 +2272,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
                   </div>
                 </div>
 
+                {appliedPromotion && <div style={{display:'flex',justifyContent:'space-between',marginTop:12,padding:'9px 12px',borderRadius:10,background:'rgba(201,114,130,.1)',color:'var(--pink-primary)',fontSize:12,fontWeight:800}}><span>Promoción: {appliedPromotion.name}</span><span>- ${formatCurrency(promotionDiscount)}</span></div>}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: '12px' }}>
                   <span style={{ fontSize: isMobile ? '13px' : '16px', fontWeight: '900' }}>TOTAL A PAGAR</span>
                   <div style={{ textAlign: 'right' }}>

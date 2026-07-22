@@ -25,8 +25,7 @@ import { useScrollLock } from '../hooks/useScrollLock';
 import AnimatedModal from './AnimatedModal';
 import { createPortal } from 'react-dom';
 import {
-  loadStoredSchedules, upsertStoredScheduleRows,
-  loadStoredTimeOff, addStoredTimeOff, removeStoredTimeOff, getDayLabel
+  getDayLabel, getMockStaffSchedules
 } from '../utils/mockStaffSchedules';
 
 const asArray = (value) => Array.isArray(value) ? value : [];
@@ -76,10 +75,14 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
     }
   }, [isOpen, staffMember]);
 
-  const loadScheduleData = () => {
-    const allSchedules = loadStoredSchedules([staffMember]);
-    setWeekSchedule(allSchedules.filter(r => r.staff_id === staffMember.id));
-    setTimeOffList(loadStoredTimeOff().filter(t => t.staff_id === staffMember.id));
+  const loadScheduleData = async () => {
+    const [allSchedules, allTimeOff] = await Promise.all([
+      dataService.getStaffSchedules([staffMember]),
+      dataService.getStaffTimeOff(staffMember.id)
+    ]);
+    const rows = allSchedules.filter(r => r.staff_id === staffMember.id);
+    setWeekSchedule(rows.length ? rows : getMockStaffSchedules([staffMember]));
+    setTimeOffList(allTimeOff.filter(t => t.staff_id === staffMember.id));
   };
 
   const updateDayRow = (dayOfWeek, changes) => {
@@ -89,28 +92,28 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
   const handleSaveSchedule = async () => {
     setSavingSchedule(true);
     try {
-      upsertStoredScheduleRows(staffMember.id, weekSchedule);
+      await dataService.saveStaffSchedules(staffMember.id, weekSchedule);
       showToast('Horario guardado');
     } finally {
       setSavingSchedule(false);
     }
   };
 
-  const handleAddTimeOff = () => {
+  const handleAddTimeOff = async () => {
     if (!newTimeOffDate) {
       showToast('Elige una fecha', 'warning');
       return;
     }
-    const next = addStoredTimeOff(staffMember.id, newTimeOffDate, newTimeOffReason);
-    setTimeOffList(next.filter(t => t.staff_id === staffMember.id));
+    const created = await dataService.addStaffTimeOff(staffMember.id, newTimeOffDate, newTimeOffReason);
+    setTimeOffList(prev => [...prev.filter(t => t.date !== created.date), created]);
     setNewTimeOffDate('');
     setNewTimeOffReason('');
     showToast('Día libre agregado');
   };
 
-  const handleRemoveTimeOff = (id) => {
-    const next = removeStoredTimeOff(id);
-    setTimeOffList(next.filter(t => t.staff_id === staffMember.id));
+  const handleRemoveTimeOff = async (id) => {
+    await dataService.removeStaffTimeOff(id);
+    setTimeOffList(prev => prev.filter(t => t.id !== id));
   };
 
   const loadProfileData = async () => {

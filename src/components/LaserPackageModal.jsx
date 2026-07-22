@@ -17,6 +17,7 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
 
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectedService, setSelectedService] = useState(null);
+  const [totalSessions, setTotalSessions] = useState(8);
 
   const [paymentMode, setPaymentMode] = useState('full_usd'); // 'full_usd', 'full_bs', 'financed'
   const [methodUsd, setMethodUsd] = useState('Efectivo');
@@ -92,73 +93,19 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
     try {
       setLoading(true);
 
-      const isFinanced = paymentMode === 'financed';
       const isFullBs = paymentMode === 'full_bs';
       const totalAmount = selectedService.price;
-      const initialPaymentAmount = isFinanced ? (totalAmount * 0.3) : totalAmount; // 30% if financed
-      
       let finalMethod = isFullBs ? methodBs : methodUsd;
-      if (isFinanced) finalMethod = `Cuota 1 (${methodUsd})`;
-
-      // 1. Transaction record
-      await dataService.addTransaction({
-        client_id: selectedClient.id,
-        amount: initialPaymentAmount,
-        type: 'Ingreso',
-        description: `Venta Paquete Láser: ${selectedService.name}`,
-        payment_method: finalMethod,
-        usd_rate: exchangeRate
+      if (paymentMode === 'financed') finalMethod = `Cuota 1 (${methodUsd})`;
+      await dataService.sellLaserPackage({
+        clientId: selectedClient.id,
+        serviceId: selectedService.id,
+        sessions: totalSessions,
+        total: totalAmount,
+        paymentMode,
+        paymentMethod: finalMethod,
+        exchangeRate
       });
-
-      // 2. Create the package
-      // Inferir si es de 8 sesiones basándonos en el nombre o si es por default
-      let totalSessions = 8;
-      if (selectedService.name.toLowerCase().includes('4 sesiones')) totalSessions = 4;
-      if (selectedService.name.toLowerCase().includes('1 sesión') || selectedService.name.toLowerCase().includes('sesion')) totalSessions = 1;
-
-      // 10 months from now
-      const expiresAt = new Date();
-      expiresAt.setMonth(expiresAt.getMonth() + 10);
-
-      const pkg = await dataService.addClientPackage({
-        client_id: selectedClient.id,
-        service_id: selectedService.id,
-        total_sessions: totalSessions,
-        used_sessions: 0,
-        status: 'active',
-        total_amount: totalAmount,
-        expires_at: expiresAt.toISOString()
-      });
-
-      // 3. Create installments
-      // Si es de 8 sesiones, la dueña pidió 3 cuotas: 30%, 40%, 30%. 
-      // Si no, podríamos hacer 1 sola cuota del 100%.
-      let installments = [];
-      if (totalSessions === 8) {
-        installments = [
-          { client_package_id: pkg.id, installment_number: 1, amount: totalAmount * 0.3, status: 'paid', paid_at: new Date().toISOString() },
-          { client_package_id: pkg.id, installment_number: 2, amount: totalAmount * 0.4, status: 'pending' },
-          { client_package_id: pkg.id, installment_number: 3, amount: totalAmount * 0.3, status: 'pending' }
-        ];
-      } else if (totalSessions === 4) {
-        // Asumiendo 2 cuotas de 50%
-        installments = [
-          { client_package_id: pkg.id, installment_number: 1, amount: totalAmount * 0.5, status: 'paid', paid_at: new Date().toISOString() },
-          { client_package_id: pkg.id, installment_number: 2, amount: totalAmount * 0.5, status: 'pending' }
-        ];
-      } else {
-        // 1 sesión
-        installments = [
-          { client_package_id: pkg.id, installment_number: 1, amount: totalAmount, status: 'paid', paid_at: new Date().toISOString() }
-        ];
-      }
-      
-      // If payment mode is full, mark all as paid
-      if (!isFinanced) {
-        installments = installments.map(i => ({ ...i, status: 'paid', paid_at: new Date().toISOString() }));
-      }
-
-      await dataService.addPackageInstallments(installments);
 
       notificationService.sendNotification('Éxito', 'Paquete vendido y primera cuota registrada.');
       onClose();
@@ -323,6 +270,10 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
                   </div>
 
                   <div>
+                    <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#a0909a', display: 'block', marginBottom: 8 }}>SESIONES DEL PAQUETE</label>
+                    <select value={totalSessions} onChange={e => setTotalSessions(Number(e.target.value))} style={{ width: '100%', height: 42, borderRadius: 12, border: '1px solid rgba(223,178,140,.4)', padding: '0 12px', marginBottom: 18 }}>
+                      <option value={1}>1 sesión</option><option value={4}>4 sesiones</option><option value={8}>8 sesiones</option>
+                    </select>
                     <h4 style={{ margin: '0 0 16px 0', fontSize: '1.1rem', fontWeight: 800, color: '#2d1b22' }}>Plan de Financiamiento</h4>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -337,7 +288,7 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
                         <button 
                           onClick={() => setPaymentMode('financed')}
                           style={{ flex: '1 0 100%', padding: '12px', borderRadius: '12px', border: paymentMode === 'financed' ? '2px solid #c97282' : '1px solid rgba(223, 178, 140, 0.4)', background: paymentMode === 'financed' ? '#fff0f2' : '#fff', color: paymentMode === 'financed' ? '#c97282' : '#a0909a', fontWeight: '800', cursor: 'pointer', fontSize: '0.8rem', transition: 'all 0.2s' }}
-                        >PAGO FRACCIONADO (3 CUOTAS)</button>
+                        >{totalSessions === 8 ? 'PAGO FRACCIONADO (30/40/30)' : 'PAGO COMPLETO'}</button>
                       </div>
 
                       {paymentMode === 'full_usd' && (

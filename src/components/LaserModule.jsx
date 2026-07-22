@@ -58,23 +58,31 @@ const LaserModule = ({ isMobile }) => {
     loadPackages();
   }, []);
   
-  // New states for calendar mockups
+  // Calendario real: comparte las mismas citas de la Agenda.
   const [isBlockTimeOpen, setIsBlockTimeOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  const [calendarSlots, setCalendarSlots] = useState([
-    { time: '08:00 AM', status: 'available' },
-    { time: '09:00 AM', status: 'booked', client: 'María Fernández', package: 'Piernas + Brasilera', session: '4/8', debt: 0, tag: 'Al día', tagColor: '#16a34a' },
-    { time: '10:00 AM', status: 'available' },
-    { time: '11:00 AM', status: 'booked', client: 'Ana López', package: 'Axilas', session: '2/5', debt: 40, tag: 'Debe $40', tagColor: '#dc2626' },
-    { time: '12:00 PM', status: 'blocked', reason: 'Mantenimiento' },
-    { time: '01:00 PM', status: 'available' },
-    { time: '02:00 PM', status: 'available' },
-    { time: '03:00 PM', status: 'booked', client: 'Sofía Rodríguez', package: 'Cuerpo Completo', session: '1/10', debt: 0, tag: 'Al día', tagColor: '#16a34a' },
-    { time: '04:00 PM', status: 'available' },
-    { time: '05:00 PM', status: 'available' },
-    { time: '06:00 PM', status: 'available' },
-  ]);
+  const [calendarSlots, setCalendarSlots] = useState([]);
+
+  useEffect(() => {
+    const start = new Date(currentDate); start.setHours(0,0,0,0);
+    const end = new Date(currentDate); end.setHours(23,59,59,999);
+    dataService.getAppointmentServicesFlat(start.toISOString(), end.toISOString()).then(rows => {
+      const laserRows = rows.filter(row => {
+        const text = `${row.services?.name || ''} ${row.services?.category || ''}`.toLowerCase();
+        return text.includes('laser') || text.includes('láser') || text.includes('depilación');
+      });
+      const slots = Array.from({length: 11}, (_,i) => {
+        const hour = i + 8;
+        const row = laserRows.find(a => new Date(a.scheduled_at).getHours() === hour);
+        const time = new Date(2000,0,1,hour).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+        if (!row) return { time, status:'available' };
+        const pkg = packages.find(p => p.raw.client_id === row.client_id && p.raw.service_id === row.service_id);
+        return { time, status:'booked', client:row.clients?.name || 'Cliente', package:row.services?.name || 'Láser', session:pkg ? `${pkg.currentSession + 1}/${pkg.totalSessions}` : 'Sesión', debt:pkg?.pending || 0, tag:pkg?.pending ? `Debe $${pkg.pending.toFixed(2)}` : 'Al día', tagColor:pkg?.pending ? '#dc2626':'#16a34a' };
+      });
+      setCalendarSlots(slots);
+    }).catch(err => { console.error(err); setCalendarSlots([]); });
+  }, [currentDate, packages]);
 
   const handleUnblock = (index) => {
     const newSlots = [...calendarSlots];

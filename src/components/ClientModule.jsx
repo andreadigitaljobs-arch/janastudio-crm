@@ -3722,31 +3722,20 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
         );
       case 'packages': {
         const clientFirstName = client?.name?.split(' ')[0] || 'la clienta';
-        const demoPkgs = packages.length === 0;
-        const activePkg = demoPkgs ? { id: 'dp1', name: 'Renacer Capilar Premium', desc: 'Tratamiento intensivo para restaurar la salud, fuerza y brillo natural del cabello.', includes: ['Diagnóstico avanzado', 'Tratamiento láser capilar', 'Hidratación profunda', 'Masaje capilar detox', 'Terapia de reconstrucción', 'Kit de mantenimiento'], used: 3, total: 6, expires: '10 jul 2025', price: 480, date: '10 abr 2025' } : packages.find(p => p.status === 'active') || packages[0];
+        const demoPkgs = false;
+        const activePkg = packages.find(p => p.status === 'active') || packages[0];
         const pkgPct = activePkg ? Math.round((activePkg.used_sessions !== undefined ? activePkg.used_sessions : activePkg.used) / (activePkg.total_sessions || activePkg.total) * 100) : 0;
         const remaining = activePkg ? (activePkg.total_sessions || activePkg.total) - (activePkg.used_sessions || activePkg.used) : 0;
 
-        const pkgHistory = demoPkgs ? [
-          { name: 'Renacer Capilar Premium', date: '10 abr 2025', price: '$480', status: 'Activo' },
-          { name: 'Glow & Repair', date: '05 feb 2025', price: '$380', status: 'Completado' },
-          { name: 'Detox Capilar', date: '12 nov 2024', price: '$250', status: 'Completado' },
-        ] : packages.map(p => ({ name: p.services?.name || 'Paquete', date: p.created_at ? new Date(p.created_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' }) : '', price: `$${p.total_price || 0}`, status: p.status === 'active' ? 'Activo' : 'Completado' }));
+        const pkgHistory = packages.map(p => ({ name: p.services?.name || 'Paquete', date: p.created_at ? new Date(p.created_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' }) : '', price: `$${p.total_amount || 0}`, status: p.status === 'active' ? 'Activo' : 'Completado' }));
 
-        const upcomingSessions = demoPkgs ? [
-          { day: '10', month: 'MAY', time: '10:00 AM', client: 'Mariana R.', service: 'Hidratación profunda', status: 'Confirmada' },
-          { day: '24', month: 'MAY', time: '10:00 AM', client: 'Mariana R.', service: 'Terapia de reconstrucción', status: 'Confirmada' },
-          { day: '07', month: 'JUN', time: '10:00 AM', client: 'Mariana R.', service: 'Tratamiento láser capilar', status: 'Confirmada' },
-        ] : [];
+        const upcomingSessions = [];
 
-        const recentSessions = demoPkgs ? [
-          { date: '03 may 2025 · 10:00 AM', service: 'Hidratación profunda', client: 'Mariana R.', status: 'Completada', notes: 'Cabello con excelente respuesta a la hidratación.', results: ['+ Brillo', '+ Suavidad', '− Frizz'] },
-          { date: '19 abr 2025 · 10:00 AM', service: 'Tratamiento detox capilar', client: 'Mariana R.', status: 'Completada', notes: 'Cuero cabelludo limpio y equilibrado.', results: ['+ Ligereza', '+ Vitalidad', '− Oleosidad'] },
-        ] : [];
+        const recentSessions = [];
 
-        const totalSpent = demoPkgs ? 480 : packages.reduce((s, p) => s + (Number(p.total_price) || 0), 0);
-        const pendingSessions = demoPkgs ? 3 : remaining;
-        const nextSession = demoPkgs ? '10 may 2025' : (upcomingAppointment ? new Date(upcomingAppointment.scheduled_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' }) : '');
+        const totalSpent = packages.reduce((s, p) => s + (Number(p.total_amount) || 0), 0);
+        const pendingSessions = remaining;
+        const nextSession = upcomingAppointment ? new Date(upcomingAppointment.scheduled_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
 
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>

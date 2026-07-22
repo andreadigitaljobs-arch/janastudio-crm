@@ -60,6 +60,8 @@ const ScheduleModal = lazy(() => import('./components/ScheduleModal'));
 
 const ModuleFallback = () => <MiniLoader text="Preparando vista..." />;
 const AccountingModule = lazy(() => import('./components/AccountingModule'));
+const PromotionsModule = lazy(() => import('./components/PromotionsModule'));
+const SettingsModule = lazy(() => import('./components/SettingsModule'));
 
 
 function App() {
@@ -171,13 +173,13 @@ function App() {
   const [currency, setCurrency] = useState('USD'); 
   const [rates, setRates] = useState({ bcv: 0, usdt: 0, updated_at: null });
   const [activeRateType, setActiveRateType] = useState(() => {
-    return localStorage.getItem('jana_active_rate') || 'usdt';
+    return 'bcv';
   });
 
   const exchangeGap = rates.bcv > 0 ? ((rates.usdt - rates.bcv) / rates.bcv) * 100 : 0;
 
   const effectiveRates = useMemo(() => ({ 
-    usd: activeRateType === 'bcv' ? rates.bcv : rates.usdt, 
+    usd: rates.bcv,
     bcv: rates.bcv,
     usdt: rates.usdt,
     gap: exchangeGap,
@@ -261,9 +263,9 @@ function App() {
     return () => { clearTimeout(refreshTimer); dataService.supabase.removeChannel(channel); };
   }, [user]);
 
-  const handleSetActiveRateType = useCallback((type) => {
-    setActiveRateType(type);
-    localStorage.setItem('jana_active_rate', type);
+  const handleSetActiveRateType = useCallback(() => {
+    setActiveRateType('bcv');
+    localStorage.setItem('jana_active_rate', 'bcv');
   }, []);
 
   const [isSaleModalOpen, setIsSaleModalOpen] = useState(false);
@@ -527,6 +529,8 @@ function App() {
       case 'inventory': return <div className="p-container"><InventoryModule isMobile={isMobile} currency={currency} rates={effectiveRates} /></div>;
       case 'finance': return <div className="p-container"><FinanceModule isMobile={isMobile} currency={currency} rates={effectiveRates} staff={dbData.staff} /></div>;
       case 'accounting': return <div className="p-container"><AccountingModule isMobile={isMobile} /></div>;
+      case 'promotions': return <div className="p-container"><PromotionsModule isMobile={isMobile} /></div>;
+      case 'settings': return <div className="p-container"><SettingsModule isMobile={isMobile} /></div>;
       case 'reports': return <div className="p-container"><ReportsModule isMobile={isMobile} rates={effectiveRates} staff={dbData.staff || []} services={dbData.services || []} clients={dbData.clients || []} /></div>;
       case 'clients': return <div className="p-container"><ClientModule isMobile={isMobile} isTablet={isTablet} clients={dbData.clients} onRefresh={fetchInitialData} initialClientId={tabParams.clientId} rates={effectiveRates} onNavigate={handleTabChange} /></div>;
       case 'diagnosis': return <div className="p-container"><CapillaryDiagnosisModule isMobile={isMobile} clients={dbData.clients} onNavigate={handleTabChange} prefillClientId={tabParams.clientId} /></div>;

@@ -28,7 +28,6 @@ import JanaSelect from './JanaSelect';
 import JanaDatePicker from './JanaDatePicker';
 import JanaTimePicker from './JanaTimePicker';
 import { isStaffFreeAt } from '../utils/availability';
-import { loadStoredSchedules, loadStoredTimeOff } from '../utils/mockStaffSchedules';
 import { getBusinessDateKey } from '../utils/dateTime';
 import { getRoleKind, getRoleName } from '../utils/roles';
 
@@ -181,8 +180,8 @@ const ScheduleModal = ({
 
       const [busyServices, schedules, timeOff] = await Promise.all([
         dataService.getStaffBusyServicesForDate(localStaff.id, dateKey),
-        Promise.resolve(loadStoredSchedules([localStaff])),
-        Promise.resolve(loadStoredTimeOff())
+        dataService.getStaffSchedules([localStaff]),
+        dataService.getStaffTimeOff(localStaff.id)
       ]);
       const appointmentsForDay = (busyServices || [])
         .filter(s => s.id !== appointmentToEdit?.id) // no chocar contra sí misma al editar
@@ -237,9 +236,11 @@ const ScheduleModal = ({
     if (!staffMember) return;
     const dateKey = dateToISO(selectedDate);
     try {
-      const busy = await dataService.getStaffBusyServicesForDate(staffMember.id, dateKey);
-      const schedules = loadStoredSchedules([staffMember]);
-      const timeOff = loadStoredTimeOff();
+      const [busy, schedules, timeOff] = await Promise.all([
+        dataService.getStaffBusyServicesForDate(staffMember.id, dateKey),
+        dataService.getStaffSchedules([staffMember]),
+        dataService.getStaffTimeOff(staffMember.id)
+      ]);
       const appointmentsForDay = (busy || []).map(b => ({ staff_id: staffMember.id, scheduled_at: b.scheduled_at, duration_minutes: b.duration_minutes, id: b.id }));
       setStaffAvailability(prev => ({ ...prev, [staffMember.id]: { schedules, timeOff, appointmentsForDay, dateKey } }));
     } catch (err) {
@@ -461,18 +462,10 @@ const ScheduleModal = ({
     try {
       setLoading(true);
       
-      // --- SIMULACIÓN PARA DISEÑO (Desactivando DB temporalmente) ---
-      // Tu novio olvidó darle permisos a la tabla 'appointment_services'
-      // por lo que esto fallaba. Mientras él arregla la base de datos, 
-      // simularemos que la red tarda 1.5 segundos en guardar para que veas la animación.
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      /* CÓDIGO REAL COMENTADO TEMPORALMENTE:
       await dataService.createAppointmentWithServices(
         { client_id: localClient.id, status: 'Agendado' },
         servicesPayload
       );
-      */
 
       if (onSchedule) {
         onSchedule(servicesPayload[0]?.scheduled_at);

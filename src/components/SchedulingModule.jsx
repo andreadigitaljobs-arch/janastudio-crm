@@ -17,7 +17,6 @@ import {
   getStaffWorkingWindow, getStaffBusyIntervals,
   getNextFreeMinutes, getAppointmentDuration, formatMinutes
 } from '../utils/availability';
-import { loadStoredSchedules, loadStoredTimeOff } from '../utils/mockStaffSchedules';
 import { getBusinessDateKey } from '../utils/dateTime';
 import ScheduleModal from './ScheduleModal';
 import NewClientModal from './NewClientModal';
@@ -275,14 +274,8 @@ const StaffDayColumn = ({
   const initial = (staffMember.name || '?').charAt(0).toUpperCase();
   const busy = getStaffBusyIntervals(staffMember.id, dayAppointments);
 
-  // Bloqueo manual simulado (Almuerzo de 1:00 PM a 2:00 PM si trabaja)
-  const mockManualBlocks = workingWindow.isWorking ? [
-    { id: `lunch-${staffMember.id}`, startMinutes: 13 * 60, endMinutes: 14 * 60, title: '🔒 Almuerzo (Bloqueo)' }
-  ] : [];
-
   const isTimeBusy = (time) => {
-    return busy.some(b => time >= b.startMinutes && time < b.endMinutes) ||
-           mockManualBlocks.some(b => time >= b.startMinutes && time < b.endMinutes);
+    return busy.some(b => time >= b.startMinutes && time < b.endMinutes);
   };
 
   const handleColumnClick = (e) => {
@@ -292,8 +285,7 @@ const StaffDayColumn = ({
     const clickedMinutes = Math.round((VIEW_START_MIN + y / PX_PER_MIN) / 30) * 30;
     
     // Ignora clicks encima de una cita existente o bloque manual
-    const onExisting = busy.some(b => clickedMinutes >= b.startMinutes && clickedMinutes < b.endMinutes) ||
-                       mockManualBlocks.some(b => clickedMinutes >= b.startMinutes && clickedMinutes < b.endMinutes);
+    const onExisting = busy.some(b => clickedMinutes >= b.startMinutes && clickedMinutes < b.endMinutes);
     if (onExisting) return;
 
     if (multipleBookingActive) {
@@ -460,7 +452,7 @@ const StaffDayColumn = ({
         )}
 
         {/* Bloqueos manuales (Almuerzo, etc.) */}
-        {mockManualBlocks.map(block => {
+        {[].map(block => {
           const top = minutesToY(block.startMinutes);
           const height = (block.endMinutes - block.startMinutes) * PX_PER_MIN;
           return (
@@ -1130,9 +1122,13 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
         loadFilteredAppointments();
       }
     };
-    const refreshOnScheduleChange = () => {
-      setSchedules(loadStoredSchedules(staff));
-      setTimeOff(loadStoredTimeOff());
+    const refreshOnScheduleChange = async () => {
+      const [scheduleRows, timeOffRows] = await Promise.all([
+        dataService.getStaffSchedules(staff),
+        dataService.getStaffTimeOff()
+      ]);
+      setSchedules(scheduleRows);
+      setTimeOff(timeOffRows);
     };
     const handleOpenNewAppointment = () => {
       setScheduleModalPreset(null);
@@ -1140,12 +1136,12 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
     };
 
     window.addEventListener('jana:data-changed', refreshOnAppointmentChange);
-    window.addEventListener('jana:mock-schedule-changed', refreshOnScheduleChange);
+    window.addEventListener('jana:schedule-changed', refreshOnScheduleChange);
     window.addEventListener('jana:open-new-appointment', handleOpenNewAppointment);
     
     return () => {
       window.removeEventListener('jana:data-changed', refreshOnAppointmentChange);
-      window.removeEventListener('jana:mock-schedule-changed', refreshOnScheduleChange);
+      window.removeEventListener('jana:schedule-changed', refreshOnScheduleChange);
       window.removeEventListener('jana:open-new-appointment', handleOpenNewAppointment);
     };
   }, [selectedDate, filterType, staff]);
@@ -1166,8 +1162,12 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
       setStaff(st);
       setClients(cl);
       setServices(sv);
-      setSchedules(loadStoredSchedules(st));
-      setTimeOff(loadStoredTimeOff());
+      const [scheduleRows, timeOffRows] = await Promise.all([
+        dataService.getStaffSchedules(st),
+        dataService.getStaffTimeOff()
+      ]);
+      setSchedules(scheduleRows);
+      setTimeOff(timeOffRows);
       // Load all appointments for ribbon dots
       try {
         const allApps = await dataService.getAppointmentServicesFlat(
@@ -1214,8 +1214,6 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
   const now = new Date();
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
-  const MOCK_PREVIEW = true; // 🔧 Quitar para producción
-
   const dayApps = useMemo(() => {
     const term = searchTerm ? normalizeForSearch(searchTerm) : '';
     const real = appointments.filter(app => {
@@ -1224,50 +1222,6 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
       if (!term) return true;
       return normalizeForSearch(app.clients?.name || '').includes(term) || normalizeForSearch(app.clients?.phone || '').includes(term);
     });
-
-    // ── Citas de prueba (solo cuando no hay citas reales y MOCK_PREVIEW está activo) ──
-    if (MOCK_PREVIEW && real.length === 0 && staff.length > 0) {
-      const dateStr = dateKey; // 'YYYY-MM-DD'
-      const makeTime = (h, m = 0) => `${dateStr}T${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:00`;
-      const mockServices = [
-        { name: 'Corte y Color', price: 850 },
-        { name: 'Manicure + Pedicure', price: 650 },
-        { name: 'Tratamiento Keratina', price: 1200 },
-        { name: 'Tinte Completo', price: 950 },
-        { name: 'Mechas Balayage', price: 1400 },
-        { name: 'Depilación Láser', price: 750 },
-        { name: 'Limpieza Facial', price: 600 },
-        { name: 'Masaje Relajante', price: 700 },
-      ];
-      const mockClients = [
-        { name: 'Valentina Ríos' }, { name: 'Camila Torres' }, { name: 'Sofía Mendez' },
-        { name: 'Isabella Rojas' }, { name: 'Mariana López' }, { name: 'Gabriela Pérez' },
-        { name: 'Natalia Gómez' }, { name: 'Daniela Herrera' }, { name: 'Andrea Castro' },
-        { name: 'Paola Jiménez' }, { name: 'Luciana Morales' }, { name: 'Fernanda Díaz' },
-      ];
-      const statuses = ['Agendado', 'En Silla', 'Completado', 'Por Pagar', 'En Tratamiento'];
-      const slots = [[9,0,60],[10,15,45],[11,0,90],[12,30,30],[14,0,75],[15,30,60],[16,45,45]];
-      const mocks = [];
-      staff.slice(0, 8).forEach((s, si) => {
-        const numApps = 2 + (si % 3); // 2, 3 o 4 citas por chica
-        for (let i = 0; i < numApps; i++) {
-          const slot = slots[(si * 3 + i) % slots.length];
-          const svc = mockServices[(si + i * 2) % mockServices.length];
-          const cli = mockClients[(si * 2 + i) % mockClients.length];
-          mocks.push({
-            id: `mock-${s.id}-${i}`,
-            staff_id: s.id,
-            scheduled_at: makeTime(slot[0], slot[1]),
-            duration_minutes: slot[2],
-            status: statuses[(si + i) % statuses.length],
-            clients: cli,
-            services: svc,
-            _isMock: true,
-          });
-        }
-      });
-      return mocks;
-    }
 
     return real;
   }, [appointments, dateKey, searchTerm, staff]);
@@ -3335,6 +3289,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       const staffApps = (() => {
                         const real = dayApps.filter(a => a.staff_id === selectedStaffDrawer.id);
                         if (real.length > 0) return real;
+                        return [];
                         
                         // Match the simulation we did for "Who is free now" sidebar
                         const mockList = [];

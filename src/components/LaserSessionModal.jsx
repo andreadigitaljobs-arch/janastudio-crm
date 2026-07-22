@@ -18,6 +18,8 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
   const [payingInstallmentId, setPayingInstallmentId] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('Efectivo');
   const [exchangeRate, setExchangeRate] = useState(1);
+  const [staff, setStaff] = useState([]);
+  const [selectedStaffId, setSelectedStaffId] = useState('');
 
   const dates = [
     { day: 'Hoy', date: new Date().toISOString().split('T')[0] },
@@ -25,6 +27,9 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
   ];
 
   const times = ['09:00 AM', '10:00 AM', '11:00 AM', '02:00 PM', '03:00 PM', '04:00 PM'];
+  const completedSessions = packageData?.raw?.package_sessions || [];
+  const lastSessionAt = completedSessions.map(s => s.consumed_at || s.scheduled_at).filter(Boolean).sort().at(-1);
+  const minimumNextDate = (() => { const d = lastSessionAt ? new Date(lastSessionAt) : new Date(); if (lastSessionAt) d.setDate(d.getDate() + Number(packageData?.raw?.session_interval_days || 21)); return d.toISOString().split('T')[0]; })();
 
   useEffect(() => {
     if (isOpen) {
@@ -34,6 +39,11 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
       setSuppliesCost(0);
       setPayingInstallmentId(null);
       loadExchangeRate();
+      dataService.getStaff().then(rows => {
+        const workers = rows.filter(s => !String(s.role || '').toLowerCase().includes('admin'));
+        setStaff(workers);
+        setSelectedStaffId(workers[0]?.id || '');
+      }).catch(console.error);
     }
   }, [isOpen]);
 
@@ -51,30 +61,7 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
   const handlePayInstallment = async (inst) => {
     try {
       setLoading(true);
-      // 1. Update installment status
-      await dataService.updatePackageInstallment(inst.id, {
-        status: 'paid',
-        paid_at: new Date().toISOString()
-      });
-
-      // 2. Add transaction
-      // Determinar descripción basada en el número de cuota
-      // Cuota 1: Pago Empleada (30%), Cuota 2: Pago Socia (40%), Cuota 3: Local (30%)
-      let description = `Pago Cuota ${inst.installment_number} Paquete Láser - ${packageData.client}`;
-      if (packageData.totalSessions === 8) {
-        if (inst.installment_number === 1) description += ' (Destinado a Empleada - 30%)';
-        if (inst.installment_number === 2) description += ' (Destinado a Socia/Insumos - 40%)';
-        if (inst.installment_number === 3) description += ' (Destinado a Local - 30%)';
-      }
-
-      await dataService.addTransaction({
-        client_id: packageData.raw?.client_id,
-        amount: inst.amount,
-        type: 'Ingreso',
-        description,
-        payment_method: paymentMethod,
-        usd_rate: exchangeRate
-      });
+      await dataService.payPackageInstallment(inst.id, paymentMethod, exchangeRate);
 
       notificationService.sendNotification('Éxito', `Cuota ${inst.installment_number} cobrada correctamente.`);
       setPayingInstallmentId(null);
@@ -91,29 +78,30 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
   };
 
   const handleConfirmSession = async () => {
-    if (!packageData) return;
+    if (!packageData || !selectedStaffId) return;
+    if (selectedDate < minimumNextDate) {
+      notificationService.sendNotification('Fecha no permitida', `La siguiente sesión debe ser desde el ${new Date(`${minimumNextDate}T12:00:00`).toLocaleDateString()}.`);
+      return;
+    }
     try {
       setLoading(true);
-
-      // Consumir la sesión y registrar el costo de insumos de la socia
-      await dataService.usePackageSession(
-        packageData.id,
-        null,
-        notes || `Sesión agendada para el ${selectedDate} a las ${selectedTime}`,
-        suppliesCost
-      );
-
-      // Crear movimiento de caja o notificación si los insumos superaron cierto límite
-      if (suppliesCost > 0) {
-        await dataService.addTransaction({
-          client_id: packageData.raw?.client_id,
-          amount: suppliesCost,
-          type: 'Egreso',
-          description: `Costo Insumos Sesión Láser - ${packageData.client}`,
-          payment_method: 'Caja Chica',
-          usd_rate: exchangeRate
-        });
-      }
+      const match = selectedTime.match(/(\d+):(\d+)\s*(AM|PM)/i);
+      let hour = Number(match?.[1] || 10);
+      const minute = Number(match?.[2] || 0);
+      if (match?.[3]?.toUpperCase() === 'PM' && hour < 12) hour += 12;
+      if (match?.[3]?.toUpperCase() === 'AM' && hour === 12) hour = 0;
+      const scheduledAt = new Date(`${selectedDate}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00`);
+      await dataService.createAppointmentWithServices({
+        client_id: packageData.raw.client_id,
+        status: 'Agendado',
+        notes: `${notes || 'Sesión láser'} | Paquete ${packageData.id} | Insumos previstos $${suppliesCost}`
+      }, [{
+        service_id: packageData.raw.service_id,
+        staff_id: selectedStaffId,
+        price_paid: 0,
+        scheduled_at: scheduledAt.toISOString(),
+        duration_minutes: packageData.raw.services?.duration_minutes || 60
+      }]);
 
       setIsSuccess(true);
     } catch (err) {
@@ -256,6 +244,7 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
                       <div style={{ display: 'flex', gap: '8px' }}>
                         <input 
                           type="date" 
+                          min={minimumNextDate}
                           value={selectedDate}
                           onChange={(e) => setSelectedDate(e.target.value)}
                           style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1px solid rgba(223,178,140,0.4)', outline: 'none', fontWeight: 600 }}
@@ -269,6 +258,7 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
                         </select>
                       </div>
                     </div>
+                    <div><label style={{ fontSize: '0.95rem', fontWeight: 800, color: '#2d1b22', marginBottom: 8, display: 'block' }}>Profesional</label><select value={selectedStaffId} onChange={e => setSelectedStaffId(e.target.value)} style={{ width: '100%', padding: 12, borderRadius: 12, border: '1px solid rgba(223,178,140,0.4)' }}><option value="">Selecciona profesional</option>{staff.map(s => <option key={s.id} value={s.id}>{s.display_name || s.name}</option>)}</select></div>
                   </div>
 
                   {/* Notes */}
@@ -311,7 +301,7 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
                       transition: 'all 0.2s' 
                     }}
                   >
-                    {loading ? <Loader className="spin" size={20} /> : 'Registrar Sesión y Consumir'}
+                    {loading ? <Loader className="spin" size={20} /> : 'Agendar sesión en Agenda'}
                   </button>
                 </div>
               </>

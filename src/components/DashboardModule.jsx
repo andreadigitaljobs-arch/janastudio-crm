@@ -18,14 +18,6 @@ ChartJS.register(
   Title, Tooltip, Legend, Filler, ArcElement
 );
 
-const FALLBACK_APPOINTMENTS = [
-  { time: '9:00 AM', client: 'Isabella Rodríguez', service: 'Pestañas Clásicas', status: 'Confirmada', initial: 'I' },
-  { time: '11:00 AM', client: 'Valentina García', service: 'Diseño de Cejas', status: 'Confirmada', initial: 'V' },
-  { time: '1:00 PM', client: 'Mariana Sánchez', service: 'Lifting de Pestañas', status: 'Pendiente', initial: 'M' },
-  { time: '3:30 PM', client: 'Andrea López', service: 'Efecto Híbrido', status: 'Confirmada', initial: 'A' },
-];
-
-
 const simplifyServiceName = (name) => {
   if (!name) return '';
   return name
@@ -143,7 +135,7 @@ const DashboardModule = ({
           };
         });
     } else {
-      list = FALLBACK_APPOINTMENTS;
+      list = [];
     }
     return list.slice(0, 4);
   }, [dbData]);

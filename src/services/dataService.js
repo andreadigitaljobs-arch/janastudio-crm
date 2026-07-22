@@ -477,53 +477,64 @@ export const dataService = {
 
   async createAppointmentWithServices(appointmentData, services = []) {
     _cacheInvalidateAppts();
+    const payload = services.map((svc, idx) => ({ ...svc, sequence_order: idx }));
+    const { data, error } = await supabase.rpc('create_appointment_order', {
+      p_appointment: appointmentData,
+      p_services: payload
+    });
+    if (error) throw error;
+    return { id: data, ...appointmentData };
+  },
 
-    // Use the earliest per-service scheduled_at as the parent appointment's scheduled_at
-    const earliestScheduledAt = services.length > 0
-      ? services.reduce((min, svc) => {
-          const t = svc.scheduled_at || appointmentData.scheduled_at;
-          return (!min || new Date(t) < new Date(min)) ? t : min;
-        }, null)
-      : appointmentData.scheduled_at;
-
-    // 1. Create the main appointment
-    const { data: apptData, error: apptError } = await supabase
-      .from('appointments')
-      .insert([{
-        client_id: appointmentData.client_id,
-        status: appointmentData.status || 'Agendado',
-        total_price: 0,
-        scheduled_at: earliestScheduledAt || appointmentData.scheduled_at,
-        notes: appointmentData.notes,
-        created_by_staff_id: (await supabase.auth.getUser()).data?.user?.id ?
-          (await supabase.from('staff').select('id').eq('auth_user_id', (await supabase.auth.getUser()).data.user.id).single()).data?.id : null
-      }])
-      .select()
-      .single();
-
-    if (apptError) throw apptError;
-
-    // 2. Add services to appointment
-    if (services.length > 0) {
-      const serviceInserts = services.map((svc, idx) => ({
-        appointment_id: apptData.id,
-        service_id: svc.service_id,
-        staff_id: svc.staff_id,
-        sequence_order: idx,
-        price_paid: svc.price_paid || 0,
-        scheduled_at: svc.scheduled_at || appointmentData.scheduled_at,
-        duration_minutes: svc.duration_minutes || 60,
-        status: 'Pendiente'
-      }));
-
-      const { error: svcError } = await supabase
-        .from('appointment_services')
-        .insert(serviceInserts);
-
-      if (svcError) throw svcError;
+  async getStaffSchedules(staffList = []) {
+    const { data, error } = await supabase.from('staff_schedules').select('*').order('day_of_week');
+    if (error) throw error;
+    const rows = _asArray(data);
+    const missing = _asArray(staffList).filter(s => !rows.some(r => r.staff_id === s.id));
+    if (missing.length) {
+      const seeds = missing.flatMap(s => Array.from({ length: 7 }, (_, day) => ({
+        staff_id: s.id, day_of_week: day, is_working: day !== 0,
+        start_time: day === 0 ? null : '09:00', end_time: day === 0 ? null : '18:00'
+      })));
+      const { data: inserted, error: seedError } = await supabase.from('staff_schedules').upsert(seeds, { onConflict: 'staff_id,day_of_week' }).select();
+      if (seedError) throw seedError;
+      return [...rows, ..._asArray(inserted)];
     }
+    return rows;
+  },
 
-    return apptData;
+  async saveStaffSchedules(staffId, rows) {
+    const payload = _asArray(rows).map(row => ({
+      staff_id: staffId, day_of_week: row.day_of_week, is_working: !!row.is_working,
+      start_time: row.is_working ? row.start_time : null,
+      end_time: row.is_working ? row.end_time : null,
+      updated_at: new Date().toISOString()
+    }));
+    const { data, error } = await supabase.from('staff_schedules').upsert(payload, { onConflict: 'staff_id,day_of_week' }).select();
+    if (error) throw error;
+    window.dispatchEvent(new CustomEvent('jana:schedule-changed'));
+    return _asArray(data);
+  },
+
+  async getStaffTimeOff(staffId) {
+    let query = supabase.from('staff_time_off').select('*').order('date');
+    if (staffId) query = query.eq('staff_id', staffId);
+    const { data, error } = await query;
+    if (error) throw error;
+    return _asArray(data);
+  },
+
+  async addStaffTimeOff(staffId, date, reason = '') {
+    const { data, error } = await supabase.from('staff_time_off').upsert({ staff_id: staffId, date, reason }, { onConflict: 'staff_id,date' }).select().single();
+    if (error) throw error;
+    window.dispatchEvent(new CustomEvent('jana:schedule-changed'));
+    return data;
+  },
+
+  async removeStaffTimeOff(id) {
+    const { error } = await supabase.from('staff_time_off').delete().eq('id', id);
+    if (error) throw error;
+    window.dispatchEvent(new CustomEvent('jana:schedule-changed'));
   },
 
   async addServiceToAppointment(appointmentId, serviceData) {
@@ -921,7 +932,7 @@ export const dataService = {
   async getInventoryMovements() {
     const { data, error } = await supabase
       .from('inventory_movements')
-      .select('*, inventory(name)')
+      .select('*, inventory(name, category)')
       .order('created_at', { ascending: false })
       .limit(500);
     if (error) throw error;
@@ -935,6 +946,88 @@ export const dataService = {
     });
     if (error) throw error;
     return _asArray(data);
+  },
+
+  async getManagementReport(startDate, endDate) {
+    const { data, error } = await supabase.rpc('get_management_report', { p_start: startDate, p_end: endDate });
+    if (error) throw error;
+    return data || {};
+  },
+
+  async getPromotions({ includeInactive = true } = {}) {
+    let query = supabase.from('promotions').select('*, services(name), clients(name)').order('starts_at', { ascending: false });
+    if (!includeInactive) query = query.eq('active', true).lte('starts_at', new Date().toISOString()).gte('ends_at', new Date().toISOString());
+    const { data, error } = await query;
+    if (error) throw error;
+    return _asArray(data);
+  },
+
+  async savePromotion(promotion) {
+    const payload = { ...promotion };
+    const id = payload.id;
+    delete payload.id;
+    const query = id ? supabase.from('promotions').update(payload).eq('id', id) : supabase.from('promotions').insert(payload);
+    const { data, error } = await query.select().single();
+    if (error) throw error;
+    return data;
+  },
+
+  async deletePromotion(id) {
+    const { error } = await supabase.from('promotions').update({ active: false }).eq('id', id);
+    if (error) throw error;
+  },
+
+  async getInventoryContainers() {
+    const { data, error } = await supabase.from('inventory_containers').select('*, inventory(name, unit)').order('opened_at', { ascending: false });
+    if (error) throw error;
+    return _asArray(data);
+  },
+
+  async openInventoryContainer(container) {
+    const { data, error } = await supabase.from('inventory_containers').insert(container).select().single();
+    if (error) throw error;
+    return data;
+  },
+
+  async closeInventoryContainer(id, closeReason, status = 'closed') {
+    const { data, error } = await supabase.from('inventory_containers').update({ status, close_reason: closeReason, closed_at: new Date().toISOString() }).eq('id', id).select().single();
+    if (error) throw error;
+    return data;
+  },
+
+  async getAccountingOverview() {
+    const [{ data: accounts, error: e1 }, { data: entries, error: e2 }, { data: items, error: e3 }, { data: bank, error: e4 }] = await Promise.all([
+      supabase.from('chart_of_accounts').select('*').eq('active', true).order('code'),
+      supabase.from('journal_entries').select('*, journal_lines(*, chart_of_accounts(code,name))').order('entry_date', { ascending: false }).limit(100),
+      supabase.from('payables_receivables').select('*').order('due_date'),
+      supabase.from('bank_statement_lines').select('*').order('transaction_date', { ascending: false }).limit(200)
+    ]);
+    if (e1 || e2 || e3 || e4) throw (e1 || e2 || e3 || e4);
+    return { accounts: _asArray(accounts), entries: _asArray(entries), items: _asArray(items), bank: _asArray(bank) };
+  },
+
+  async addPayableReceivable(item) {
+    const { data, error } = await supabase.from('payables_receivables').insert(item).select().single();
+    if (error) throw error;
+    return data;
+  },
+
+  async postJournalEntry(entry, lines) {
+    const { data, error } = await supabase.rpc('post_journal_entry', { p_entry: entry, p_lines: lines });
+    if (error) throw error;
+    return data;
+  },
+
+  async addBankStatementLines(lines) {
+    const { data, error } = await supabase.from('bank_statement_lines').insert(lines).select();
+    if (error) throw error;
+    return _asArray(data);
+  },
+
+  async reconcileBankLine(id, transactionId) {
+    const { data, error } = await supabase.from('bank_statement_lines').update({ reconciled: true, transaction_id: transactionId }).eq('id', id).select().single();
+    if (error) throw error;
+    return data;
   },
 
   // ─── Worker Stats ───────────────────────────────────────────────────────────
@@ -1039,7 +1132,7 @@ export const dataService = {
   async getAllActiveLaserPackages() {
     const { data, error } = await supabase
       .from('client_packages')
-      .select('*, clients(name, phone), services(name, category), package_installments(*)')
+      .select('*, clients(name, phone), services(name, category, price, duration_minutes), package_installments(*), package_sessions(*)')
       .eq('status', 'active')
       .order('created_at', { ascending: false });
     if (error) throw error;
@@ -1210,6 +1303,26 @@ export const dataService = {
       transactionId: data?.transaction_id || data,
       replayed: Boolean(data?.replayed),
     };
+  },
+
+  async sellLaserPackage({ clientId, serviceId, sessions, total, paymentMode, paymentMethod, exchangeRate }) {
+    const { data, error } = await supabase.rpc('sell_laser_package', {
+      p_client_id: clientId, p_service_id: serviceId, p_sessions: sessions,
+      p_total: total, p_payment_mode: paymentMode, p_payment_method: paymentMethod,
+      p_exchange_rate: exchangeRate
+    });
+    if (error) throw error;
+    _cacheInvalidate('transactions');
+    return data;
+  },
+
+  async payPackageInstallment(installmentId, method, exchangeRate) {
+    const { data, error } = await supabase.rpc('pay_package_installment', {
+      p_installment_id: installmentId, p_method: method, p_exchange_rate: exchangeRate
+    });
+    if (error) throw error;
+    _cacheInvalidate('transactions');
+    return data;
   },
 
   async checkLaserPackageExpirations() {
