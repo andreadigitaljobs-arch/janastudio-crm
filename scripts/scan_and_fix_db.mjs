@@ -1,7 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
+import 'dotenv/config';
 
-const supabaseUrl = 'https://supabase.somosdostudio.com';
-const serviceRoleKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhoa2VhZ3VhbXl6aWFtcGp2d2NlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4Mjg1MTU2OSwiZXhwIjoyMDk4NDI3NTY5fQ.XChOHQLCoHpH3f8YF5JhSIKcIN6GYVjdKBnyf8qklBY';
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !serviceRoleKey) {
+  throw new Error('Define SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY en el entorno antes de ejecutar este script.');
+}
 
 const supabase = createClient(supabaseUrl, serviceRoleKey, {
   db: { schema: 'janastudio' }

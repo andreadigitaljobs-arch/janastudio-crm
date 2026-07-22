@@ -19,7 +19,6 @@ export default function Login() {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const formRef = useRef(null);
-  const lastTap = useRef(0);
 
   const images = [
     '/login_bg2.webp',
@@ -101,51 +100,11 @@ export default function Login() {
       if (result && !result.success) {
         setError(result.message || 'Credenciales incorrectas');
         setLoading(false);
-      } else {
-        // Al iniciar sesión con éxito, guardamos las credenciales temporalmente para el bypass rápido
-        localStorage.setItem('jana_bypass_email', email);
-        localStorage.setItem('jana_bypass_password', password);
       }
     } catch (err) {
       setError(err.message || 'Credenciales incorrectas');
       setLoading(false);
     }
-  };
-
-  const handleBypassClick = async () => {
-    const savedEmail = localStorage.getItem('jana_bypass_email') || 'admin@janastudio.com';
-    const savedPassword = localStorage.getItem('jana_bypass_password');
-
-    if (!savedPassword) {
-      setEmail('admin@janastudio.com');
-      setPassword('');
-      setError('No hay contraseña guardada. Inicia sesión manualmente una vez para que el sistema recuerde la contraseña de prueba.');
-      return;
-    }
-
-    setEmail(savedEmail);
-    setPassword(savedPassword);
-    setLoading(true);
-    setError('');
-
-    try {
-      const result = await login(savedEmail, savedPassword);
-      if (result && !result.success) {
-        setError(result.message || 'Error en las credenciales de bypass.');
-        setLoading(false);
-      }
-    } catch (err) {
-      setError(err.message || 'Error de conexión en bypass');
-      setLoading(false);
-    }
-  };
-
-  const handleStaffBypassTouch = () => {
-    const now = Date.now();
-    if (now - lastTap.current < 300) {
-      handleBypassClick();
-    }
-    lastTap.current = now;
   };
 
   const handleRipple = (e) => {
@@ -333,15 +292,10 @@ export default function Login() {
             {/* Iconos decorativos */}
             <div className="salon-decorative-section salon-stagger-4">
               {decorativeIcons.map((item, i) => {
-                const isControlTotal = item.label === 'Control total';
                 return (
                   <div 
                     key={i} 
                     className="salon-decorative-item"
-                    onDoubleClick={isControlTotal ? handleBypassClick : undefined}
-                    onTouchStart={isControlTotal ? handleStaffBypassTouch : undefined}
-                    style={isControlTotal ? { cursor: 'pointer', userSelect: 'none' } : {}}
-                    title={isControlTotal ? 'Doble clic para iniciar sesión automáticamente' : undefined}
                   >
                     <div className="salon-decorative-icon-wrapper">
                       {item.icon}

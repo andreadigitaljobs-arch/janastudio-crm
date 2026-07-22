@@ -14,7 +14,6 @@ const MODULE_ROLES = {
   'my-profile': ['admin', 'reception', 'cashier', 'worker'],
   scheduling: ['admin', 'reception', 'worker'],
   reception: ['admin', 'reception'],
-  laser: ['admin', 'reception'],
   checkout: ['admin', 'reception', 'cashier'],
   clients: ['admin', 'reception', 'cashier', 'worker'],
   diagnosis: ['admin', 'reception', 'worker'],

@@ -22,7 +22,6 @@ import {
   Crown,
   ChevronRight,
   Activity,
-  Zap,
   Calculator
 } from 'lucide-react';
 import LaserGunIcon from './components/LaserGunIcon';
@@ -43,11 +42,10 @@ import { useScrollLock } from './hooks/useScrollLock';
 import { useModal } from './context/ModalContext';
 import { canAccessModule } from './utils/roles';
 
-import DashboardModule from './components/DashboardModule';
-import ClientModule from './components/ClientModule';
-import SchedulingModule from './components/SchedulingModule';
-import CheckoutPOS from './components/CheckoutPOS';
-
+const DashboardModule = lazy(() => import('./components/DashboardModule'));
+const ClientModule = lazy(() => import('./components/ClientModule'));
+const SchedulingModule = lazy(() => import('./components/SchedulingModule'));
+const CheckoutPOS = lazy(() => import('./components/CheckoutPOS'));
 const CapillaryDiagnosisModule = lazy(() => import('./components/CapillaryDiagnosisModule'));
 
 const PersonnelModule = lazy(() => import('./components/PersonnelModule'));
@@ -147,7 +145,6 @@ function App() {
     { id: 'costing', label: 'Estruct. de Costos', icon: Calculator },
     { id: 'finance', label: 'Finanzas', icon: Wallet },
     { id: 'accounting', label: 'Contabilidad', icon: Receipt },
-    { id: 'laser', label: 'Láser', icon: Zap },
     { id: 'reports', label: 'Reportes', icon: FileText },
     { id: 'promotions', label: 'Promociones', icon: Percent },
     { id: 'settings', label: 'Configuración', icon: Sliders },

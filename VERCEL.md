@@ -15,7 +15,7 @@ En la configuración del proyecto, agrega estas variables de entorno:
 
 ```
 VITE_SUPABASE_URL=https://supabase.somosdostudio.com
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhoa2VhZ3VhbXl6aWFtcGp2d2NlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NTE1NjksImV4cCI6MjA5ODQyNzU2OX0.lQZaObcqLD7ArEorV5klcxB4Zyjcv8YY6HjHu2YKrjs
+VITE_SUPABASE_ANON_KEY=tu-clave-anonima
 VITE_APP_NAME=JanaStudio
 ```
 
@@ -32,4 +32,4 @@ Después del deploy, tu proyecto estará disponible en:
 `https://janastudio-crm.vercel.app`
 
 ## Actualizaciones Futuras
-Cada vez que hagas push a la rama `main`, Vercel desplegará automáticamente los cambios.
+Cada vez que hagas push a la rama `master`, Vercel desplegará automáticamente los cambios.

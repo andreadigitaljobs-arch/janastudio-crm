@@ -658,7 +658,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
     }
     try {
       setLoading(true);
-      await dataService.addExtraToAppointment(selectedApp.id, extra.id, extra.price);
+      await dataService.addExtraToAppointment(selectedApp.id, null, extra.id, extra.price);
       showToast(`${extra.name} añadido a la cuenta.`);
       const filtered = await loadData();
       const updatedSelected = selectedApp ? filtered.find(a => a.id === selectedApp.id) : null;
@@ -789,7 +789,8 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
           .filter(app => packageSales[app.id] && app.service_id)
           .map(app => ({
             serviceId: app.service_id,
-            totalSessions: 8
+            totalSessions: 8,
+            totalAmount: Number(app.total_price || app.services?.price || 0)
           })),
         packageConsumptions: Object.entries(packageConsumptions)
           .filter(([appId, pkgId]) => pkgId && checkoutAppointments.some(a => a.id === appId))
@@ -1062,7 +1063,7 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
         for (const item of cart) {
           if (item.type === 'extra') {
             const realExtraId = item.id.replace('extra_', '');
-            await dataService.addExtraToAppointment(newApp.id, realExtraId, item.price);
+            await dataService.addExtraToAppointment(newApp.id, null, realExtraId, item.price);
           } else {
             await dataService.addProductToAppointment(newApp.id, item.id, item.quantity, item.price);
           }

@@ -1137,95 +1137,24 @@ export const dataService = {
   },
 
   async processFinalPayment(paymentData) {
-    // 1. Update appointment statuses to 'Finalizado'
-    if (paymentData.appointmentIds && paymentData.appointmentIds.length > 0) {
-      for (const appId of paymentData.appointmentIds) {
-        await this.updateAppointmentStatus(appId, 'Finalizado');
-      }
+    if (!paymentData?.idempotencyKey) {
+      throw new Error('El cobro no tiene clave de idempotencia y no puede procesarse de forma segura.');
     }
 
-    // 2. Process products in cart and deduct inventory quantities
-    if (paymentData.products && paymentData.products.length > 0) {
-      for (const p of paymentData.products) {
-        // Log inventory movement (Egreso for sale)
-        await supabase.from('inventory_movements').insert([{
-          product_id: p.id,
-          quantity: p.quantity,
-          type: 'Egreso',
-          description: `Venta POS - Cliente: ${paymentData.clientName || 'S/N'}`
-        }]);
+    const { data, error } = await supabase.rpc('process_checkout_atomic', {
+      p_payment: paymentData,
+      p_idempotency_key: paymentData.idempotencyKey,
+    });
+    if (error) throw error;
 
-        // Deduct from inventory
-        const { data: invItem } = await supabase.from('inventory').select('quantity').eq('id', p.id).single();
-        if (invItem) {
-          const newQty = Math.max(0, (invItem.quantity || 0) - p.quantity);
-          await supabase.from('inventory').update({ quantity: newQty }).eq('id', p.id);
-        }
-      }
-    }
+    _cacheInvalidate('transactions', 'inventory', 'sale_inventory', 'clients', 'clients_lite');
+    _cacheInvalidateAppts();
 
-    // 3. Create a transaction row for the sale income
-    const description = `Pago de ${paymentData.serviceName || 'Servicio/Productos'} - Cliente: ${paymentData.clientName || 'S/N'}`;
-    let finalPaymentMethod = paymentData.isMixed ? 'Mixto' : (paymentData.methodUsd ? 'USD' : 'Bs.');
-    if (paymentData.isFinanced) {
-      finalPaymentMethod = `Financiado (${paymentData.initialPaymentMethod})`;
-    }
-    
-    const transaction = {
-      client_id: paymentData.clientId || null,
-      amount: paymentData.isFinanced ? paymentData.initialPaymentAmount : paymentData.totalUsd,
-      type: 'Ingreso',
-      description: paymentData.isFinanced ? `${description} (Cuota Inicial)` : description,
-      payment_method: finalPaymentMethod,
-      usd_rate: paymentData.fixedRate,
-      metadata: {
-        paymentData
-      }
+    return {
+      success: true,
+      transactionId: data?.transaction_id || data,
+      replayed: Boolean(data?.replayed),
     };
-    await this.addTransaction(transaction);
-
-    // 4. Update or create client packages if packages were sold
-    if (paymentData.soldPackages && paymentData.soldPackages.length > 0) {
-      for (const soldPkg of paymentData.soldPackages) {
-        await this.addClientPackage({
-          client_id: paymentData.clientId,
-          service_id: soldPkg.serviceId,
-          total_sessions: soldPkg.totalSessions || 8,
-          used_sessions: 0,
-          status: 'active'
-        });
-      }
-    }
-
-    // 5. If it was financed in installments, create a payment plan and record initial payment
-    if (paymentData.isFinanced && paymentData.clientId) {
-      const plan = await this.addPaymentPlan({
-        client_id: paymentData.clientId,
-        appointment_id: paymentData.appointmentId,
-        total_amount: paymentData.totalUsd,
-        total_installments: paymentData.totalInstallments || 3,
-        paid_installments: 1, // First installment counts as paid
-        remaining_balance: paymentData.remainingBalance,
-        status: 'pending'
-      });
-
-      if (plan && plan.id) {
-        await supabase.from('installment_payments').insert([{
-          payment_plan_id: plan.id,
-          amount_paid: paymentData.initialPaymentAmount,
-          payment_method: paymentData.initialPaymentMethod
-        }]);
-      }
-    }
-
-    // 6. Record package consumption sessions
-    if (paymentData.packageConsumptions && paymentData.packageConsumptions.length > 0) {
-      for (const consumption of paymentData.packageConsumptions) {
-        await this.usePackageSession(consumption.clientPackageId, consumption.appointmentId, 'Consumo en checkout POS');
-      }
-    }
-
-    return { success: true };
   },
 
   async checkLaserPackageExpirations() {

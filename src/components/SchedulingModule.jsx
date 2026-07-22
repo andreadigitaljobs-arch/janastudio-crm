@@ -1041,6 +1041,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
   }, [selectedDetailedApp, staff]);
 
   const [viewMode, setViewMode] = useState('operation');
+  const [showMobileStats, setShowMobileStats] = useState(false);
   const [quickContextMenu, setQuickContextMenu] = useState(null); // { x, y, app }
   const [showQuickAvailModal, setShowQuickAvailModal] = useState(false);
   const [expandedStaff, setExpandedStaff] = useState({});
@@ -2123,10 +2124,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
         <div className="staff-control-container">
 
           {/* STATS ROW: Total de citas / Horas ocupadas / % Ocupación / ¿Quién está libre ahora? */}
-          {(() => {
-            const [showMobileStats, setShowMobileStats] = useState(false);
-            return (
-              <div className="agenda-glass-card" style={{ padding: isMobile ? '12px' : '16px 20px', marginBottom: isMobile ? '12px' : '20px' }}>
+          <div className="agenda-glass-card" style={{ padding: isMobile ? '12px' : '16px 20px', marginBottom: isMobile ? '12px' : '20px' }}>
                 {isMobile ? (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }} onClick={() => setShowMobileStats(!showMobileStats)}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -2261,9 +2259,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     </div>
                   </div>
                 )}
-              </div>
-            );
-          })()}
+          </div>
 
           {/* Filtro de categoría (mobile/tablet) */}
           {(isMobile || isTablet) && (

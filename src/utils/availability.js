@@ -1,4 +1,4 @@
-import { businessDateStart } from './dateTime';
+import { businessDateStart } from './dateTime.js';
 
 export const DEFAULT_WORKING_WINDOW = { startMinutes: 8 * 60, endMinutes: 18 * 60 };
 

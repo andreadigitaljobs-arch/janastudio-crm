@@ -159,7 +159,7 @@ const SaleServiceModal = ({ isOpen, onClose, clients, services, staff, extras, i
 
       // Add Extras
       const extraPromises = selectedExtras.map(extra => 
-        dataService.addExtraToAppointment(newApp.id, extra.id, extra.price)
+        dataService.addExtraToAppointment(newApp.id, null, extra.id, extra.price)
       );
       
       // Add Products

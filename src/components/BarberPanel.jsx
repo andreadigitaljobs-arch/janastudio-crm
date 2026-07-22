@@ -563,7 +563,7 @@ const BarberPanel = ({ isMobile, rates }) => {
   const handleAddExtra = async (extra) => {
     try {
       setLoading(true);
-      await dataService.addExtraToAppointment(activeAppId, extra.id, extra.price);
+      await dataService.addExtraToAppointment(activeAppId, null, extra.id, extra.price);
       showToast(`+ ${extra.name} añadido`);
       setShowAddModal(false);
       loadMyWork();

@@ -1,6 +1,7 @@
 import Dexie from 'dexie';
 import { dataService } from './dataService';
 import { supabase } from '../lib/supabase';
+import { normalizeCheckoutPayment, prepareQueuedCheckout } from '../domain/checkoutRules.js';
 
 // Inicialización de la base de datos local en IndexedDB
 export const db = new Dexie('JanaStudioOfflineDB');
@@ -52,10 +53,8 @@ export const enqueuePayment = async (paymentData) => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Debes iniciar sesión antes de registrar un cobro.');
-    const durablePaymentData = {
-      ...paymentData,
-      idempotencyKey: paymentData.idempotencyKey || crypto.randomUUID()
-    };
+    const idempotencyKey = paymentData.idempotencyKey || crypto.randomUUID();
+    const durablePaymentData = normalizeCheckoutPayment(paymentData, idempotencyKey);
     await db.checkout_queue.add({
       paymentData: durablePaymentData,
       status: 'pending',
@@ -104,11 +103,17 @@ export const processQueue = async () => {
     for (const item of pendingItems) {
       if (item.ownerAuthUserId !== user.id) continue;
       try {
-        // Actualizar estado a procesando
-        await db.checkout_queue.update(item.id, { status: 'syncing' });
+        // Las versiones anteriores de la cola no guardaban idempotencyKey. Se
+        // persiste antes de llamar al backend para que todos los reintentos usen
+        // exactamente la misma clave, incluso si la aplicación se cierra.
+        const preparedCheckout = prepareQueuedCheckout(item.paymentData);
+        await db.checkout_queue.update(item.id, {
+          status: 'syncing',
+          paymentData: preparedCheckout.paymentData,
+        });
         
         // Ejecutar el cobro en el backend (Supabase + Sheets)
-        await dataService.processFinalPayment(item.paymentData);
+        await dataService.processFinalPayment(preparedCheckout.paymentData);
         
         // Si tiene éxito, eliminar de la cola
         await db.checkout_queue.delete(item.id);
