@@ -1694,7 +1694,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
               <div className="checkout-quick-total">
                 <div>
                   <span>Total preparado</span>
-                  <strong>${formatCurrency(totalUsd)}</strong>
+                  <strong className="checkout-total-amount">${formatCurrency(totalUsd)}</strong>
                   <small>Ref. {formatCurrency(totalBs)} Bs.</small>
                 </div>
                 <button
@@ -2332,7 +2332,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                 <div className="checkout-total-hero" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: '12px' }}>
                   <span style={{ fontSize: isMobile ? '13px' : '16px', fontWeight: '900' }}>TOTAL A PAGAR</span>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: '950', color: 'var(--pink-primary)' }}>${formatCurrency(totalUsd)}</div>
+                    <div className="checkout-total-amount" style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: '800', color: 'var(--pink-primary)' }}>${formatCurrency(totalUsd)}</div>
                     <div style={{ fontSize: isMobile ? '11px' : '13px', color: 'var(--text-muted)' }}>Ref: {formatCurrency(totalBs)} Bs.</div>
                   </div>
                 </div>
@@ -2597,7 +2597,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
       {/* Product Selection Modal */}
       <AnimatedModal isOpen={showProductModal}>
         {(overlayClass, cardClass) => (
-          <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+          <div className={`${overlayClass} checkout-subdialog-overlay`} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', zIndex: 6200, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
             <div className={`${cardClass}`} style={{ maxWidth: '680px', width: '100%', borderRadius: '32px', border: '1.5px solid rgba(212,160,154,0.25)', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: 'linear-gradient(160deg, var(--bg-secondary, #ffffff) 0%, var(--bg-tertiary, #f6eee9) 100%)', boxShadow: '0 40px 80px rgba(74, 48, 54, 0.15)', color: 'var(--text-primary, #4a3036)' }}>
               
               {/* Header */}
@@ -2697,7 +2697,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
       {/* Extras Selection Modal */}
       <AnimatedModal isOpen={showExtraModal}>
         {(overlayClass, cardClass) => (
-          <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+          <div className={`${overlayClass} checkout-subdialog-overlay`} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', zIndex: 6200, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
             <div className={`${cardClass}`} style={{ maxWidth: '520px', width: '100%', borderRadius: '32px', border: '1.5px solid rgba(212,160,154,0.25)', overflow: 'hidden', background: 'linear-gradient(160deg, var(--bg-secondary, #ffffff) 0%, var(--bg-tertiary, #f6eee9) 100%)', boxShadow: '0 40px 80px rgba(74, 48, 54, 0.15)', color: 'var(--text-primary, #4a3036)' }}>
               {/* Header */}
               <div style={{ padding: '28px 28px 20px', borderBottom: '1px solid rgba(212,160,154,0.15)' }}>
@@ -2814,7 +2814,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
       {/* Service Modal */}
       <AnimatedModal isOpen={showServiceModal}>
         {(overlayClass, cardClass) => (
-          <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(74, 48, 54, 0.4)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+          <div className={`${overlayClass} checkout-subdialog-overlay`} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(74, 48, 54, 0.4)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', zIndex: 6200, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
             <div className={`${cardClass}`} style={{ maxWidth: '600px', width: '100%', borderRadius: '32px', border: '1.5px solid rgba(212,160,154,0.25)', overflow: 'hidden', background: 'linear-gradient(160deg, var(--bg-secondary, #ffffff) 0%, var(--bg-tertiary, #f6eee9) 100%)', boxShadow: '0 40px 80px rgba(74, 48, 54, 0.15)', color: 'var(--text-primary, #4a3036)' }}>
               {/* Header */}
               <div style={{ padding: '28px 28px 20px', borderBottom: '1px solid rgba(212,160,154,0.15)' }}>
@@ -2862,7 +2862,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
       {/* Stylist Select Modal */}
       <AnimatedModal isOpen={showStylistModal}>
         {(overlayClass, cardClass) => (
-          <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+          <div className={`${overlayClass} checkout-subdialog-overlay`} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', zIndex: 6200, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
             <div className={`${cardClass} glass-card`} style={{ width: '100%', maxWidth: '400px', borderRadius: '32px', padding: '32px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                 <h2 style={{ fontWeight: '900', fontSize: '20px' }}>Seleccionar Estilista</h2>
@@ -2927,7 +2927,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
       {/* Link Citas Modal (Pago Grupal) */}
       <AnimatedModal isOpen={showLinkModal}>
         {(overlayClass, cardClass) => (
-          <div className={overlayClass} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+          <div className={`${overlayClass} checkout-subdialog-overlay`} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', zIndex: 6200, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
             <div className={`${cardClass} glass-card`} style={{ maxWidth: '500px', width: '100%', borderRadius: '32px', border: '1.5px solid rgba(212,160,154,0.3)', padding: '28px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                 <h2 style={{ fontWeight: '900', fontSize: '20px' }}>Enlazar Citas en Espera</h2>
