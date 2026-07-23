@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import {
-  Users, Search, UserPlus, Sparkles, Calendar, Zap, CheckCircle2,
+  Users, Search, UserPlus, Sparkles, Calendar, CheckCircle2,
   ArrowRight, ShoppingBag, X, Edit3, Receipt,
   Rocket, MoreVertical, StickyNote, BarChart3, Play
 } from 'lucide-react';
@@ -348,13 +348,13 @@ const ReceptionModule = ({ isMobile, onNavigate }) => {
             background: '#fff', color: '#6b6b6b', fontSize: '0.78rem', fontWeight: 600,
             cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px'
           }}><UserPlus size={15} /> Nuevo Cliente</button>
-          <button className="mi-btn" style={{
+          <button className="mi-btn" type="button" onClick={() => onNavigate?.('checkout')} style={{
             padding: '8px 16px', borderRadius: '10px', border: 'none',
             background: 'linear-gradient(135deg, #d4a09a, #c48b9f, #a0506a)',
             color: '#fff', fontSize: '0.78rem', fontWeight: 600,
             cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px',
             boxShadow: '0 3px 10px rgba(196,139,159,0.25)'
-          }}><Zap size={15} /> Check-in Rápido</button>
+          }}><Receipt size={15} /> Caja</button>
         </div>
       </div>
 
