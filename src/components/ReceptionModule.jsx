@@ -31,6 +31,7 @@ const ReceptionModule = ({ isMobile }) => {
   const [idSearch, setIdSearch] = useState('');
   const [clientsLoading, setClientsLoading] = useState(true);
   const [clientsError, setClientsError] = useState('');
+  const [showAllStaff, setShowAllStaff] = useState(false);
   const [isNewClientModalOpen, setIsNewClientModalOpen] = useState(false);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
@@ -125,7 +126,15 @@ const ReceptionModule = ({ isMobile }) => {
   };
 
   const setServiceStaff = (serviceId, staffId) => {
-    setSelectedServices(selectedServices.map(s => s.id === serviceId ? { ...s, staffId } : s));
+    const next = selectedServices.map(s => s.id === serviceId ? { ...s, staffId } : s);
+    const assignedIds = [...new Set(next.map(service => service.staffId).filter(Boolean))];
+    setSelectedServices(next);
+    setFormData((form) => ({ ...form, staffId: assignedIds.length === 1 ? assignedIds[0] : '' }));
+  };
+
+  const assignStaffToOrder = (staffId) => {
+    setFormData((form) => ({ ...form, staffId }));
+    setSelectedServices((current) => current.map(service => ({ ...service, staffId })));
   };
 
   const toggleExtra = (extra) => {
@@ -185,6 +194,58 @@ const ReceptionModule = ({ isMobile }) => {
     selectedProducts.reduce((a, p) => a + (p.price * p.quantity), 0);
   const discount = 0;
   const total = subtotal - discount;
+  const staffAvailability = useMemo(() => {
+    const now = Date.now();
+    const activeSlots = upcomingAppointments.flatMap((appointment) => {
+      const appointmentStatus = String(appointment.status || '').toLowerCase();
+      if (appointmentStatus.includes('cancel') || appointmentStatus.includes('complet') || appointmentStatus.includes('pagad')) return [];
+      const serviceSlots = appointment.appointment_services?.length
+        ? appointment.appointment_services
+        : [{
+            staff_id: appointment.staff_id,
+            scheduled_at: appointment.scheduled_at,
+            duration_minutes: appointment.services?.duration_minutes || appointment.duration_minutes,
+            status: appointment.status,
+          }];
+
+      return serviceSlots.map((slot) => {
+        const status = String(slot.status || appointment.status || '').toLowerCase();
+        const start = new Date(slot.scheduled_at || appointment.scheduled_at || appointment.created_at).getTime();
+        const end = start + (Number(slot.duration_minutes) || 60) * 60000;
+        const activelyServing = status.includes('silla') || status.includes('tratamiento') || status.includes('atención') || status.includes('atencion');
+        return {
+          staffId: slot.staff_id || appointment.staff_id,
+          busy: activelyServing || (Number.isFinite(start) && start <= now && now < end),
+        };
+      });
+    });
+
+    return staff.map((member) => {
+      const specialtyLabels = (Array.isArray(member.specialties) ? member.specialties : [])
+        .flatMap((specialty) => typeof specialty === 'string'
+          ? [specialty]
+          : [specialty?.name, specialty?.category, specialty?.service_name])
+        .filter(Boolean)
+        .map(normalizeForSearch);
+      const qualified = selectedServices.length === 0
+        || specialtyLabels.length === 0
+        || selectedServices.every((service) => {
+          const serviceName = normalizeForSearch(service.name || '');
+          const category = normalizeForSearch(service.category || '');
+          return specialtyLabels.some((specialty) => (
+            specialty.includes(serviceName)
+            || serviceName.includes(specialty)
+            || (category && (specialty.includes(category) || category.includes(specialty)))
+          ));
+        });
+      const busy = activeSlots.some((slot) => slot.staffId === member.id && slot.busy);
+      return { ...member, qualified, busy, available: qualified && !busy };
+    }).sort((a, b) => Number(b.available) - Number(a.available));
+  }, [staff, upcomingAppointments, selectedServices]);
+
+  const assignedStaffIds = [...new Set(selectedServices.map(service => service.staffId).filter(Boolean))];
+  const synchronizedStaffId = assignedStaffIds.length === 1 ? assignedStaffIds[0] : formData.staffId;
+  const visibleStaff = showAllStaff ? staffAvailability : staffAvailability.slice(0, 4);
 
   const card = {
     padding: '14px', borderRadius: '14px', background: '#fff',
@@ -387,8 +448,10 @@ const ReceptionModule = ({ isMobile }) => {
                       }}
                     >
                       <option value="">Elegir...</option>
-                      {staff.map(st => (
-                        <option key={st.id} value={st.id}>{getStaffDisplayName(st)}</option>
+                      {staffAvailability.map(st => (
+                        <option key={st.id} value={st.id} disabled={!st.available && st.id !== s.staffId}>
+                          {getStaffDisplayName(st)}{st.busy ? ' · Ocupada ahora' : !st.qualified ? ' · No asignada a este servicio' : ''}
+                        </option>
                       ))}
                     </select>
                     <span style={{ color: '#6b6b6b' }}>{s.duration_minutes || 60} min</span>
@@ -443,28 +506,34 @@ const ReceptionModule = ({ isMobile }) => {
             <div style={{ marginTop: '14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
                 <Users size={14} color="#c48b9f" />
-                <span style={{ fontWeight: 600, fontSize: '0.75rem', color: '#2d2d2d' }}>Estilistas Disponibles</span>
+                <span style={{ fontWeight: 600, fontSize: '0.75rem', color: '#2d2d2d' }}>Estilistas disponibles ahora</span>
               </div>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                {staff.slice(0, 4).map((s) => (
-                    <button key={s.id} className="mi-btn" onClick={() => setFormData({ ...formData, staffId: s.id })} style={{
+                {visibleStaff.map((s) => (
+                    <button type="button" key={s.id} className="mi-btn" disabled={!s.available} onClick={() => assignStaffToOrder(s.id)} style={{
                     display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 10px',
-                    borderRadius: '10px', border: formData.staffId === s.id ? '1.5px solid #c48b9f' : '1px solid rgba(0,0,0,0.06)',
-                    background: formData.staffId === s.id ? 'rgba(196,139,159,0.06)' : '#faf5f5',
-                    cursor: 'pointer', fontSize: '0.7rem'
+                    borderRadius: '10px', border: synchronizedStaffId === s.id ? '1.5px solid #c48b9f' : '1px solid rgba(0,0,0,0.06)',
+                    background: synchronizedStaffId === s.id ? 'rgba(196,139,159,0.1)' : s.available ? '#faf5f5' : '#f5f5f5',
+                    cursor: s.available ? 'pointer' : 'not-allowed', opacity: s.available ? 1 : 0.55, fontSize: '0.7rem'
                   }}>
                     <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, fontSize: '0.65rem' }}>{s.name?.charAt(0)?.toUpperCase() || '?'}</div>
                     <div style={{ textAlign: 'left' }}>
                       <div style={{ fontWeight: 600, color: '#2d2d2d' }}>{getStaffDisplayName(s)}</div>
+                      <div style={{ marginTop: '1px', fontSize: '0.56rem', color: s.available ? '#16a34a' : '#9e9e9e' }}>
+                        {s.busy ? 'Ocupada ahora' : !s.qualified ? 'No realiza este servicio' : 'Disponible'}
+                      </div>
                     </div>
                   </button>
                 ))}
-                  <button className="mi-btn" style={{
+                  {staffAvailability.length > 4 && <button type="button" className="mi-btn" onClick={() => setShowAllStaff((current) => !current)} style={{
                     padding: '6px 10px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.06)',
                     background: 'transparent', color: '#c48b9f', fontSize: '0.68rem', fontWeight: 600,
                     cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px'
-                  }}><Users size={12} /> Ver todos</button>
+                  }}><Users size={12} /> {showAllStaff ? 'Ver menos' : 'Ver todos'}</button>}
               </div>
+              {selectedServices.length > 1 && assignedStaffIds.length > 1 && (
+                <div style={{ marginTop: '7px', fontSize: '0.64rem', color: '#9e9e9e' }}>La orden usa profesionales distintas por servicio.</div>
+              )}
             </div>
 
             {/* Próximas Citas */}
