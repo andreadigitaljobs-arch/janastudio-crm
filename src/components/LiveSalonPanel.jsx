@@ -84,6 +84,7 @@ export default function LiveSalonPanel({
   appointments = [],
   loading = false,
   isMobile = false,
+  error = '',
   onRefresh,
   onStart,
   onFinish,
@@ -171,6 +172,12 @@ export default function LiveSalonPanel({
           </div>
         ))}
       </div>
+
+      {error && (
+        <div role="alert" style={{ marginBottom: '12px', padding: '10px 12px', borderRadius: '12px', color: '#9b5f13', background: SALON_TOKENS.warningSoft, border: '1px solid rgba(184,121,31,0.2)', fontSize: '0.61rem', lineHeight: 1.45 }}>
+          {error}
+        </div>
+      )}
 
       {liveAppointments.length === 0 ? (
         <div style={{ position: 'relative', padding: '24px 14px', borderRadius: '16px', textAlign: 'center', background: SALON_TOKENS.blush, border: `1px dashed ${SALON_TOKENS.border}` }}>

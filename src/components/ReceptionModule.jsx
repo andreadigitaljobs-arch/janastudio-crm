@@ -38,6 +38,7 @@ const ReceptionModule = ({ isMobile, onNavigate }) => {
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [activeAppointments, setActiveAppointments] = useState([]);
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+  const [appointmentsError, setAppointmentsError] = useState('');
   const [exchangeRate, setExchangeRate] = useState(58);
   const [dialog, setDialog] = useState({ isOpen: false, type: 'confirm', title: '', message: '', onConfirm: null });
   const [formData, setFormData] = useState({ serviceId: '', staffId: '', status: 'En Silla' });
@@ -74,6 +75,11 @@ const ReceptionModule = ({ isMobile, onNavigate }) => {
     setClients(Array.isArray(loadedClients) ? loadedClients : []);
     setClientsError(results[0].status === 'rejected' ? 'No se pudo cargar la lista de clientes. Intenta nuevamente.' : '');
     setClientsLoading(false);
+    setAppointmentsError(
+      results[3].status === 'rejected' || results[6].status === 'rejected'
+        ? 'No se pudieron sincronizar las atenciones. Usa Actualizar o vuelve a intentarlo.'
+        : ''
+    );
 
     setServices(valueOr(1, []) || []);
     setStaff((valueOr(2, []) || []).filter(m => {
@@ -739,6 +745,7 @@ const ReceptionModule = ({ isMobile, onNavigate }) => {
             appointments={activeAppointments}
             loading={loading}
             isMobile={isMobile}
+            error={appointmentsError}
             onRefresh={loadData}
             onStart={(appointmentId) => updateLiveAppointment(appointmentId, 'En Tratamiento')}
             onFinish={(appointmentId) => updateLiveAppointment(appointmentId, 'Por Pagar')}
