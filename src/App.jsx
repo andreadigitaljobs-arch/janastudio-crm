@@ -521,9 +521,9 @@ function App() {
           onOpenNotifications={handleOpenNotifications}
         /></div>;
       case 'scheduling': return <div className="p-container p-container-agenda"><SchedulingModule isMobile={isMobile} isTablet={isTablet} isCollapsed={isCollapsed} rates={effectiveRates} openScheduleModal={tabParams.openScheduleModal} modalKey={tabParams.modalKey} onOpenNotifications={handleOpenNotifications} onNavigate={handleTabChange} /></div>;
-      case 'reception': return <div className="p-container"><ReceptionModule isMobile={isMobile} /></div>;
+      case 'reception': return <div className="p-container"><ReceptionModule isMobile={isMobile} onNavigate={handleTabChange} /></div>;
       case 'laser': return <div className="p-container"><LaserModule isMobile={isMobile} /></div>;
-      case 'checkout': return <div className="p-container"><CheckoutPOS isMobile={isMobile} rates={effectiveRates} onOpenSale={() => setIsSaleModalOpen(true)} onNavigate={handleTabChange} /></div>;
+      case 'checkout': return <div className="p-container"><CheckoutPOS isMobile={isMobile} rates={effectiveRates} initialAppointmentId={tabParams.appointmentId} onOpenSale={() => setIsSaleModalOpen(true)} onNavigate={handleTabChange} /></div>;
       case 'services': return <div className="p-container"><ServicesModule isMobile={isMobile} currency={currency} rates={effectiveRates} /></div>;
       case 'costing': return <div className="p-container"><CostingModule isMobile={isMobile} services={dbData.services} inventory={dbData.inventory} /></div>;
       case 'inventory': return <div className="p-container"><InventoryModule isMobile={isMobile} currency={currency} rates={effectiveRates} /></div>;
@@ -663,7 +663,7 @@ function App() {
           {isReceptionModalOpen && (
             <div style={{ padding: isMobile ? '20px' : '40px' }}>
               <Suspense fallback={<ModuleFallback />}>
-                <ReceptionModule isMobile={isMobile} rates={effectiveRates} />
+                <ReceptionModule isMobile={isMobile} rates={effectiveRates} onNavigate={handleTabChange} />
               </Suspense>
             </div>
           )}

@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Users, Search, UserPlus, Sparkles, Calendar, Zap, CheckCircle2,
-  Clock, ArrowRight, ShoppingBag, X, Package, Edit3, Receipt,
-  Trash2, Rocket, MoreVertical, StickyNote, BarChart3, Play, Pause, Eye
+  ArrowRight, ShoppingBag, X, Edit3, Receipt,
+  Rocket, MoreVertical, StickyNote, BarChart3, Play
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
@@ -11,12 +11,11 @@ import { normalizeForSearch, getStaffDisplayName } from '../utils/stringUtils';
 import NewClientModal from './NewClientModal';
 import ScheduleModal from './ScheduleModal';
 import JanaDialog from './JanaDialog';
+import LiveSalonPanel from './LiveSalonPanel';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { supabase } from '../lib/supabase';
 
-const DEMO_WAITING = [];
-
-const ReceptionModule = ({ isMobile }) => {
+const ReceptionModule = ({ isMobile, onNavigate }) => {
   const { showToast, triggerRocket } = useNotifs();
   const [clients, setClients] = useState([]);
   const [services, setServices] = useState([]);
@@ -55,7 +54,7 @@ const ReceptionModule = ({ isMobile }) => {
       dataService.getClientsLite(),
       dataService.getServices(),
       dataService.getStaff(),
-      dataService.getAppointmentsByState(['En Silla', 'Agendado']),
+      dataService.getAppointmentsByState(['En Silla', 'Agendado', 'En Tratamiento', 'Por Pagar']),
       dataService.getExtras(),
       dataService.getSaleInventoryCatalog(),
       dataService.getAppointments(todayStart.toISOString(), todayEnd.toISOString()),
@@ -81,7 +80,7 @@ const ReceptionModule = ({ isMobile }) => {
         const r = (m.role?.split('|')[0] || '').toLowerCase();
         return !r.includes('admin') && !r.includes('recepcionista') && !r.includes('caja');
     }));
-    setActiveAppointments((valueOr(3, []) || []).filter(a => a.status === 'En Silla'));
+    setActiveAppointments(valueOr(3, []) || []);
     setAllExtras(valueOr(4, []) || []);
     setInventory((valueOr(5, []) || []).filter(i => i.is_for_sale !== false && i.category === 'Venta'));
     setUpcomingAppointments(valueOr(6, []) || []);
@@ -149,28 +148,44 @@ const ReceptionModule = ({ isMobile }) => {
     else { setSelectedProducts([...selectedProducts, { ...product, quantity: 1 }]); }
   };
 
-  const handleSubmit = async (statusOverride, scheduledAt = null) => {
+  const handleSubmit = async (statusOverride, scheduledAt = null, scheduledServices = null) => {
     if (!selectedClient) { showToast("Selecciona un cliente primero", "error"); return; }
-    if (selectedServices.length === 0 && selectedExtras.length === 0 && selectedProducts.length === 0) {
-      showToast("Agrega al menos un servicio, extra o producto", "error"); return;
+    if (selectedServices.length === 0) {
+      showToast("Agrega al menos un servicio para iniciar o agendar la atención", "error"); return;
     }
     if (selectedServices.some(s => !s.staffId)) {
       showToast("Asigna una profesional a cada servicio de la orden", "error"); return;
     }
     try {
       setLoading(true);
+      const baseStart = new Date(scheduledAt || Date.now());
+      let serviceCursor = new Date(baseStart);
+      const sequentialServicePayload = selectedServices.map((service) => {
+        const durationMinutes = Number(service.duration_minutes) || 60;
+        const payload = {
+          service_id: service.id,
+          staff_id: service.staffId,
+          price_paid: service.price,
+          scheduled_at: serviceCursor.toISOString(),
+          duration_minutes: durationMinutes,
+        };
+        serviceCursor = new Date(serviceCursor.getTime() + durationMinutes * 60000);
+        return payload;
+      });
+      const servicePayload = Array.isArray(scheduledServices) && scheduledServices.length
+        ? scheduledServices
+        : sequentialServicePayload;
 
       const appointment = await dataService.createAppointmentWithServices(
         {
           client_id: selectedClient.id,
           status: statusOverride || formData.status,
-          scheduled_at: scheduledAt
+          scheduled_at: baseStart.toISOString(),
+          notes: statusOverride === 'Agendado'
+            ? 'Agendado desde Recepción'
+            : 'Walk-in · Iniciado desde Recepción',
         },
-        selectedServices.map(s => ({
-          service_id: s.id,
-          staff_id: s.staffId,
-          price_paid: s.price
-        }))
+        servicePayload
       );
 
       const extraPromises = selectedExtras.map(extra =>
@@ -181,12 +196,36 @@ const ReceptionModule = ({ isMobile }) => {
       );
       await Promise.all([...extraPromises, ...productPromises]);
 
-      showToast("¡Orden procesada!");
+      showToast(statusOverride === 'Agendado'
+        ? "Cita agregada a Próximas Citas"
+        : "Clienta enviada al Salón en vivo");
       setSelectedClient(null); setSelectedServices([]); setSelectedExtras([]); setSelectedProducts([]);
       setFormData({ serviceId: '', staffId: '', status: 'En Silla' });
-      loadData();
+      setIsScheduleModalOpen(false);
+      await loadData();
     } catch (error) { console.error(error); showToast("Error al procesar orden", "error"); }
     finally { setLoading(false); }
+  };
+
+  const updateLiveAppointment = async (appointmentId, status) => {
+    try {
+      setLoading(true);
+      const timestamps = status === 'En Tratamiento'
+        ? { started_at: new Date().toISOString() }
+        : status === 'Por Pagar'
+          ? { completed_at: new Date().toISOString() }
+          : {};
+      await dataService.updateAppointment(appointmentId, { status, ...timestamps });
+      showToast(status === 'En Tratamiento'
+        ? 'Servicio iniciado con la estilista'
+        : 'Servicio finalizado y enviado a Caja');
+      await loadData();
+    } catch (error) {
+      console.error(error);
+      showToast('No se pudo actualizar el servicio', 'error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const subtotal = selectedServices.reduce((a, s) => a + s.price, 0) +
@@ -246,6 +285,21 @@ const ReceptionModule = ({ isMobile }) => {
   const assignedStaffIds = [...new Set(selectedServices.map(service => service.staffId).filter(Boolean))];
   const synchronizedStaffId = assignedStaffIds.length === 1 ? assignedStaffIds[0] : formData.staffId;
   const visibleStaff = showAllStaff ? staffAvailability : staffAvailability.slice(0, 4);
+  const dailyCapacityMinutes = Math.max(1, staff.length) * 9 * 60;
+  const dailyBookedMinutes = upcomingAppointments
+    .filter((appointment) => !String(appointment.status || '').toLowerCase().includes('cancel'))
+    .reduce((totalMinutes, appointment) => {
+      const nestedDuration = (appointment.appointment_services || [])
+        .reduce((sum, service) => sum + (Number(service.duration_minutes) || 0), 0);
+      return totalMinutes + (nestedDuration || Number(appointment.services?.duration_minutes) || 60);
+    }, 0);
+  const occupancyPercent = Math.min(100, Math.round((dailyBookedMinutes / dailyCapacityMinutes) * 100));
+  const availableMinutes = Math.max(0, dailyCapacityMinutes - dailyBookedMinutes);
+  const formatHoursMinutes = (minutes) => {
+    const hours = Math.floor(minutes / 60);
+    const remainder = minutes % 60;
+    return `${hours}h${remainder ? ` ${remainder}m` : ''}`;
+  };
 
   const card = {
     padding: '14px', borderRadius: '14px', background: '#fff',
@@ -489,15 +543,44 @@ const ReceptionModule = ({ isMobile }) => {
                     <span style={{ fontWeight: 700, color: '#2d2d2d', fontSize: '0.85rem' }}>Total</span>
                     <span style={{ fontWeight: 700, color: '#c48b9f', fontSize: '1rem' }}>${Number(total).toFixed(2)} (Ref: Bs. {(total * exchangeRate).toFixed(2)})</span>
                   </div>
-                    <button className="mi-btn" onClick={() => handleSubmit('En Silla')} disabled={loading || !selectedClient || selectedServices.some(s => !s.staffId)} style={{
-                    width: '100%', marginTop: '10px', padding: '10px', borderRadius: '10px', border: 'none',
-                    background: 'linear-gradient(135deg, #d4a09a, #c48b9f, #a0506a)',
-                    color: '#fff', fontSize: '0.78rem', fontWeight: 600,
-                    cursor: (loading || !selectedClient || selectedServices.some(s => !s.staffId)) ? 'not-allowed' : 'pointer',
-                    opacity: (loading || !selectedClient || selectedServices.some(s => !s.staffId)) ? 0.6 : 1,
-                    boxShadow: '0 3px 10px rgba(196,139,159,0.25)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px'
-                  }}>Continuar a Pago →</button>
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.08fr 0.92fr', gap: '8px', marginTop: '12px' }}>
+                    <button
+                      type="button"
+                      className="mi-btn"
+                      onClick={() => handleSubmit('En Silla', new Date().toISOString())}
+                      disabled={loading || !selectedClient || selectedServices.length === 0 || selectedServices.some(s => !s.staffId)}
+                      style={{
+                        minHeight: '44px', padding: '10px 14px', borderRadius: '12px', border: 'none',
+                        background: 'linear-gradient(135deg, #d4a09a, #c48b9f 55%, #a0506a)',
+                        color: '#fff', fontSize: '0.76rem', fontWeight: 750,
+                        cursor: (loading || !selectedClient || selectedServices.length === 0 || selectedServices.some(s => !s.staffId)) ? 'not-allowed' : 'pointer',
+                        opacity: (loading || !selectedClient || selectedServices.length === 0 || selectedServices.some(s => !s.staffId)) ? 0.55 : 1,
+                        boxShadow: '0 8px 22px rgba(160,80,106,0.2)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px'
+                      }}
+                    >
+                      <Play size={15} fill="currentColor" /> Iniciar ahora
+                    </button>
+                    <button
+                      type="button"
+                      className="mi-btn"
+                      onClick={() => setIsScheduleModalOpen(true)}
+                      disabled={loading || !selectedClient || selectedServices.length === 0 || selectedServices.some(s => !s.staffId)}
+                      style={{
+                        minHeight: '44px', padding: '10px 14px', borderRadius: '12px',
+                        border: '1px solid rgba(160,80,106,0.2)', background: '#fffafa',
+                        color: '#a0506a', fontSize: '0.74rem', fontWeight: 750,
+                        cursor: (loading || !selectedClient || selectedServices.length === 0 || selectedServices.some(s => !s.staffId)) ? 'not-allowed' : 'pointer',
+                        opacity: (loading || !selectedClient || selectedServices.length === 0 || selectedServices.some(s => !s.staffId)) ? 0.55 : 1,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px'
+                      }}
+                    >
+                      <Calendar size={15} /> Agendar para después
+                    </button>
+                  </div>
+                  <div style={{ marginTop: '7px', textAlign: 'center', color: '#9e8290', fontSize: '0.62rem' }}>
+                    El cobro se habilita cuando el servicio se marca como finalizado.
+                  </div>
                 </div>
               </div>
             )}
@@ -652,38 +735,15 @@ const ReceptionModule = ({ isMobile }) => {
 
         {/* Right Column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          {/* Módulo de Espera */}
-          <div style={{ ...card, position: 'relative', overflow: 'hidden' }}>
-            <div style={{
-              position: 'absolute', top: '-20px', right: '-20px',
-              width: '80px', height: '80px', borderRadius: '50%',
-              background: 'rgba(196,139,159,0.06)'
-            }} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <h4 style={{ fontSize: '0.78rem', fontWeight: 600, color: '#2d2d2d', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Clock size={14} color="#c48b9f" /> Módulo de Espera
-              </h4>
-              <button className="mi-btn" style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.06)', background: 'transparent', color: '#c48b9f', fontSize: '0.62rem', fontWeight: 600, cursor: 'pointer' }}>Ver todo →</button>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {DEMO_WAITING.map((w, i) => {
-                const wsc = w.status === 'Lista' ? { bg: '#f0fdf4', text: '#16a34a', border: '#bbf7d0' } :
-                  w.status === 'Pasando' ? { bg: '#fffbeb', text: '#d97706', border: '#fde68a' } :
-                  { bg: '#faf5f5', text: '#6b6b6b', border: 'rgba(0,0,0,0.06)' };
-                return (
-                  <div key={i} className="mi-row" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 10px', borderRadius: '10px', background: '#faf5f5' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg, #c48b9f, #a0506a)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 600, fontSize: '0.68rem', flexShrink: 0 }}>{w.initial}</div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, color: '#2d2d2d', fontSize: '0.75rem' }}>{w.name}</div>
-                      <div style={{ fontSize: '0.6rem', color: '#9e9e9e' }}>Llegó: {w.arrived}</div>
-                    </div>
-                    <span className="mi-tag" style={{ padding: '3px 8px', borderRadius: '20px', fontSize: '0.58rem', fontWeight: 600, background: wsc.bg, color: wsc.text, border: `1px solid ${wsc.border}` }}>{w.status}</span>
-                    <button className="mi-btn" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9e9e9e' }}><MoreVertical size={12} /></button>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <LiveSalonPanel
+            appointments={activeAppointments}
+            loading={loading}
+            isMobile={isMobile}
+            onRefresh={loadData}
+            onStart={(appointmentId) => updateLiveAppointment(appointmentId, 'En Tratamiento')}
+            onFinish={(appointmentId) => updateLiveAppointment(appointmentId, 'Por Pagar')}
+            onCheckout={(appointmentId) => onNavigate?.('checkout', { appointmentId })}
+          />
 
           {/* Resumen Rápido */}
           <div style={card}>
@@ -692,10 +752,10 @@ const ReceptionModule = ({ isMobile }) => {
             </h4>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '14px' }}>
               {[
-                { label: 'Clientes en espera', value: activeAppointments.filter(a => a.status === 'Agendado').length, color: '#c48b9f' },
-                { label: 'En atención', value: activeAppointments.filter(a => a.status === 'En Silla').length, color: '#c48b9f' },
+                { label: 'Preparándose', value: activeAppointments.filter(a => a.status === 'En Silla').length, color: '#c48b9f' },
+                { label: 'En servicio', value: activeAppointments.filter(a => a.status === 'En Tratamiento').length, color: '#c48b9f' },
+                { label: 'Por cobrar', value: activeAppointments.filter(a => a.status === 'Por Pagar').length, color: '#c48b9f' },
                 { label: 'Citas de hoy', value: upcomingAppointments.length, color: '#c48b9f' },
-                { label: 'Walk-ins', value: upcomingAppointments.filter(a => String(a.notes || '').toLowerCase().includes('walk')).length, color: '#c48b9f' },
               ].map((s, i) => (
                 <div key={i} className="mi-stat" style={{ textAlign: 'center', padding: '8px 4px', borderRadius: '10px', background: '#faf5f5' }}>
                   <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#2d2d2d' }}>{s.value}</div>
@@ -706,9 +766,9 @@ const ReceptionModule = ({ isMobile }) => {
 
             {/* Occupancy Donut */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '14px' }}>
-              <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'conic-gradient(#c48b9f 0% 68%, rgba(196,139,159,0.12) 68% 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', flexShrink: 0 }}>
+              <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: `conic-gradient(#c48b9f 0% ${occupancyPercent}%, rgba(196,139,159,0.12) ${occupancyPercent}% 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', flexShrink: 0 }}>
                 <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontSize: '1rem', fontWeight: 700, color: '#2d2d2d' }}>68%</span>
+                  <span style={{ fontSize: '1rem', fontWeight: 700, color: '#2d2d2d' }}>{occupancyPercent}%</span>
                 </div>
               </div>
               <div>
@@ -717,12 +777,12 @@ const ReceptionModule = ({ isMobile }) => {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.65rem' }}>
                     <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: '#c48b9f' }} />
                     <span style={{ color: '#6b6b6b' }}>Horas ocupadas</span>
-                    <span style={{ fontWeight: 600, color: '#2d2d2d', marginLeft: 'auto' }}>7h 30m</span>
+                    <span style={{ fontWeight: 600, color: '#2d2d2d', marginLeft: 'auto' }}>{formatHoursMinutes(dailyBookedMinutes)}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.65rem' }}>
                     <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: 'rgba(196,139,159,0.12)' }} />
                     <span style={{ color: '#6b6b6b' }}>Horas disponibles</span>
-                    <span style={{ fontWeight: 600, color: '#2d2d2d', marginLeft: 'auto' }}>3h 30m</span>
+                    <span style={{ fontWeight: 600, color: '#2d2d2d', marginLeft: 'auto' }}>{formatHoursMinutes(availableMinutes)}</span>
                   </div>
                 </div>
               </div>
@@ -730,9 +790,9 @@ const ReceptionModule = ({ isMobile }) => {
 
             <div style={{ fontSize: '0.65rem', color: '#6b6b6b', marginBottom: '6px' }}>Meta diaria: 75%</div>
             <div style={{ height: '5px', borderRadius: '3px', background: 'rgba(196,139,159,0.12)', overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: '68%', borderRadius: '3px', background: 'linear-gradient(90deg, #c48b9f, #a0506a)' }} />
+              <div style={{ height: '100%', width: `${occupancyPercent}%`, borderRadius: '3px', background: 'linear-gradient(90deg, #c48b9f, #a0506a)' }} />
             </div>
-            <div style={{ textAlign: 'right', fontSize: '0.6rem', color: '#9e9e9e', marginTop: '4px' }}>68%</div>
+            <div style={{ textAlign: 'right', fontSize: '0.6rem', color: '#9e9e9e', marginTop: '4px' }}>{occupancyPercent}%</div>
           </div>
 
           {/* Notas de Recepción */}
@@ -753,7 +813,18 @@ const ReceptionModule = ({ isMobile }) => {
 
       {/* Modals */}
       <NewClientModal isOpen={isNewClientModalOpen} onClose={() => setIsNewClientModalOpen(false)} onSuccess={(c) => { setClients([...clients, c]); setSelectedClient(c); setIsNewClientModalOpen(false); }} />
-      <ScheduleModal isOpen={isScheduleModalOpen} onClose={() => setIsScheduleModalOpen(false)} client={selectedClient} staff={staff} initialStaff={staff.find(s => s.id === formData.staffId)} service={selectedServices[0]} onSchedule={(date) => handleSubmit('Agendado', date)} />
+      <ScheduleModal
+        isOpen={isScheduleModalOpen}
+        onClose={() => setIsScheduleModalOpen(false)}
+        client={selectedClient}
+        staff={staff}
+        services={services}
+        initialStaff={staff.find(s => s.id === formData.staffId)}
+        service={selectedServices[0]}
+        initialServices={selectedServices}
+        deferCreationToParent
+        onSchedule={(date, scheduledServicePayload) => handleSubmit('Agendado', date, scheduledServicePayload)}
+      />
       <JanaDialog isOpen={dialog.isOpen} title={dialog.title} message={dialog.message} type={dialog.type} onConfirm={dialog.onConfirm} onCancel={() => setDialog({ ...dialog, isOpen: false })} confirmText="Confirmar" cancelText="Cancelar" />
       {isServiceModalOpen && <SelectionModal isOpen={isServiceModalOpen} onClose={() => setIsServiceModalOpen(false)} title="Seleccionar Servicios" items={services} selectedItems={selectedServices} onToggle={(s) => toggleService(s.id)} exchangeRate={exchangeRate} type="service" />}
       {isExtraModalOpen && <SelectionModal isOpen={isExtraModalOpen} onClose={() => setIsExtraModalOpen(false)} title="Añadir Extras" items={allExtras} selectedItems={selectedExtras} onToggle={toggleExtra} exchangeRate={exchangeRate} type="extra" />}

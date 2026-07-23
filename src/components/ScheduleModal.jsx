@@ -88,6 +88,8 @@ const ScheduleModal = ({
   onSchedule,
   defaultDate,
   initialTime,
+  initialServices = [],
+  deferCreationToParent = false,
   clients = [],
   services = [],
   onSave,
@@ -311,8 +313,18 @@ const ScheduleModal = ({
         setLocalClient(client || null);
         setServiceSearchQuery('');
         setServiceCategoryFilter('Todas');
-        setSelectedServices(
-          service ? [{
+        const seededServices = initialServices.length
+          ? initialServices.map((selectedService, index) => ({
+            _uid: `${selectedService.id || selectedService.service_id}-${index}-${Date.now()}`,
+            service_id: selectedService.id || selectedService.service_id,
+            name: selectedService.name,
+            price: selectedService.price,
+            duration_minutes: selectedService.duration_minutes || 60,
+            staffId: selectedService.staffId || null,
+            time: initialTime || generalTime,
+            customized: false
+          }))
+          : service ? [{
             _uid: `${service.id}-${Date.now()}`,
             service_id: service.id,
             name: service.name,
@@ -321,10 +333,10 @@ const ScheduleModal = ({
             staffId: initialStaff?.id || null,
             time: initialTime || generalTime,
             customized: false
-          }] : []
-        );
+          }] : [];
+        setSelectedServices(seededServices);
 
-        if (client && service) {
+        if (client && seededServices.length > 0) {
           setCurrentStep(3);
         } else if (client) {
           setCurrentStep(2);
@@ -462,13 +474,15 @@ const ScheduleModal = ({
     try {
       setLoading(true);
       
-      await dataService.createAppointmentWithServices(
-        { client_id: localClient.id, status: 'Agendado' },
-        servicesPayload
-      );
-
-      if (onSchedule) {
-        onSchedule(servicesPayload[0]?.scheduled_at);
+      if (deferCreationToParent) {
+        await onSchedule?.(servicesPayload[0]?.scheduled_at, servicesPayload);
+        return;
+      } else {
+        await dataService.createAppointmentWithServices(
+          { client_id: localClient.id, status: 'Agendado' },
+          servicesPayload
+        );
+        onSchedule?.(servicesPayload[0]?.scheduled_at, servicesPayload);
       }
 
       setShowSuccess(true);

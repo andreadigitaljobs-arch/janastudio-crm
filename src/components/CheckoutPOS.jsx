@@ -117,7 +117,7 @@ const CartSellerSelect = ({ value, onChange, options }) => {
     </div>
   );
 };
-const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
+const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, onNavigate }) => {
   const { showToast, triggerConfetti, triggerRocket } = useNotifs();
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
@@ -465,6 +465,14 @@ const CheckoutPOS = ({ isMobile, rates, onNavigate }) => {
       document.removeEventListener('visibilitychange', refreshWhenVisible);
     };
   }, []);
+
+  useEffect(() => {
+    if (!initialAppointmentId || selectedApp) return;
+    const requestedAppointment = pendingServices.find(
+      (appointment) => String(appointment.id) === String(initialAppointmentId)
+    );
+    if (requestedAppointment) setSelectedApp(requestedAppointment);
+  }, [initialAppointmentId, pendingServices, selectedApp]);
 
   const handleStartAppointment = async (id) => {
     try {
