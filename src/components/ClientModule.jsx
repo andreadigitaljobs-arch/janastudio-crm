@@ -57,6 +57,7 @@ import BirthdayTextInput from './BirthdayTextInput';
 import JanaDialog from './JanaDialog';
 import AnimatedModal from './AnimatedModal';
 import NewClientModal from './NewClientModal';
+import ClientRecordsModal from './ClientRecordsModal';
 import { formatName, normalizeForSearch } from '../utils/stringUtils';
 import {
   getBirthdayMessageTemplate,
@@ -1964,6 +1965,8 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
   const [downloadOrientation, setDownloadOrientation] = useState('horizontal'); // 'horizontal' or 'vertical'
   const [includeBranding, setIncludeBranding] = useState(true);
   const [history, setHistory] = useState([]);
+  const [appointments, setAppointments] = useState([]);
+  const [clientPanel, setClientPanel] = useState(null);
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
@@ -2101,41 +2104,44 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
   }, [client.notes]);
 
   useEffect(() => {
-    const loadHistory = async () => {
+    let cancelled = false;
+
+    const loadClientActivity = async () => {
       try {
         setLoadingHistory(true);
-        const data = await dataService.getClientTransactions(client.id);
-        setHistory(data);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoadingHistory(false);
-      }
-    };
+        const [transactions, clientAppointments] = await Promise.all([
+          dataService.getClientTransactions(client.id),
+          dataService.getClientAppointments(client.id),
+        ]);
+        if (cancelled) return;
 
-    const loadUpcoming = async () => {
-      try {
-        const todayStr = new Date().toISOString();
-        const { data, error } = await supabase
-          .from('appointments')
-          .select('*, services(name)')
-          .eq('client_id', client.id)
-          .gte('scheduled_at', todayStr)
-          .neq('status', 'Cancelado')
-          .order('scheduled_at', { ascending: true })
-          .limit(1);
-        if (!error && data && data.length > 0) {
-          setUpcomingAppointment(data[0]);
-        } else {
+        setHistory(transactions);
+        setAppointments(clientAppointments);
+        const now = Date.now();
+        const next = clientAppointments
+          .filter((appointment) => {
+            const scheduledTime = new Date(appointment.scheduled_at).getTime();
+            const status = String(appointment.status || '').toLowerCase();
+            return Number.isFinite(scheduledTime)
+              && scheduledTime >= now
+              && !status.includes('cancel');
+          })
+          .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at))[0] || null;
+        setUpcomingAppointment(next);
+      } catch (error) {
+        console.error('Error loading client activity:', error);
+        if (!cancelled) {
+          setHistory([]);
+          setAppointments([]);
           setUpcomingAppointment(null);
         }
-      } catch (err) {
-        console.error('Error loading upcoming appointment:', err);
+      } finally {
+        if (!cancelled) setLoadingHistory(false);
       }
     };
 
-    loadHistory();
-    loadUpcoming();
+    loadClientActivity();
+    return () => { cancelled = true; };
   }, [client.id]);
 
   const findPhotoDate = (url) => {
@@ -2704,6 +2710,8 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
       showToast('Error al sincronizar con la nube', 'error');
     }
   };
+
+  const openClientPanel = (title, subtitle, items, emptyMessage) => setClientPanel({ title, subtitle, items, emptyMessage });
 
   const renderSubTabContent = () => {
     const getBadgeStyle = (val) => {
@@ -3722,20 +3730,81 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
         );
       case 'packages': {
         const clientFirstName = client?.name?.split(' ')[0] || 'la clienta';
-        const demoPkgs = false;
-        const activePkg = packages.find(p => p.status === 'active') || packages[0];
-        const pkgPct = activePkg ? Math.round((activePkg.used_sessions !== undefined ? activePkg.used_sessions : activePkg.used) / (activePkg.total_sessions || activePkg.total) * 100) : 0;
-        const remaining = activePkg ? (activePkg.total_sessions || activePkg.total) - (activePkg.used_sessions || activePkg.used) : 0;
-
-        const pkgHistory = packages.map(p => ({ name: p.services?.name || 'Paquete', date: p.created_at ? new Date(p.created_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' }) : '', price: `$${p.total_amount || 0}`, status: p.status === 'active' ? 'Activo' : 'Completado' }));
-
-        const upcomingSessions = [];
-
-        const recentSessions = [];
-
-        const totalSpent = packages.reduce((s, p) => s + (Number(p.total_amount) || 0), 0);
-        const pendingSessions = remaining;
+        const safeNumber = (value) => {
+          const parsed = Number(value);
+          return Number.isFinite(parsed) ? parsed : 0;
+        };
+        const packageTotal = (pkg) => Math.max(0, safeNumber(pkg?.total_sessions ?? pkg?.total));
+        const packageUsed = (pkg) => Math.min(packageTotal(pkg), Math.max(0, safeNumber(pkg?.used_sessions ?? pkg?.used)));
+        const activePackages = packages.filter((pkg) => pkg.status === 'active');
+        const activePkg = activePackages[0] || null;
+        const activeTotal = packageTotal(activePkg);
+        const activeUsed = packageUsed(activePkg);
+        const pkgPct = activeTotal > 0 ? Math.round((activeUsed / activeTotal) * 100) : 0;
+        const remaining = Math.max(0, activeTotal - activeUsed);
+        const pendingSessions = activePackages.reduce((sum, pkg) => sum + Math.max(0, packageTotal(pkg) - packageUsed(pkg)), 0);
+        const allPackageSessions = packages
+          .flatMap((pkg) => (pkg.package_sessions || []).map((session) => ({ ...session, package: pkg })))
+          .sort((a, b) => new Date(b.consumed_at || b.created_at || 0) - new Date(a.consumed_at || a.created_at || 0));
+        const now = Date.now();
+        const upcomingAppointments = appointments
+          .filter((appointment) => {
+            const scheduledTime = new Date(appointment.scheduled_at).getTime();
+            const status = String(appointment.status || '').toLowerCase();
+            return Number.isFinite(scheduledTime) && scheduledTime >= now && !status.includes('cancel');
+          })
+          .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at));
+        const getAppointmentServiceName = (appointment) => (
+          appointment.appointment_services?.map((item) => item.services?.name).filter(Boolean).join(' + ')
+          || appointment.services?.name
+          || 'Servicio'
+        );
+        const getAppointmentStaffName = (appointment) => (
+          appointment.appointment_services?.map((item) => item.staff?.display_name || item.staff?.name).filter(Boolean).join(', ')
+          || appointment.staff?.display_name
+          || appointment.staff?.name
+          || 'Sin especialista'
+        );
+        const pkgHistory = packages.map((pkg) => ({
+          id: pkg.id,
+          name: pkg.services?.name || 'Paquete',
+          date: pkg.created_at ? new Date(pkg.created_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Sin fecha',
+          price: `${safeNumber(pkg.total_amount).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+          status: pkg.status === 'active' ? 'Activo' : pkg.status === 'expired' ? 'Vencido' : 'Completado',
+          raw: pkg,
+        }));
+        const upcomingSessions = upcomingAppointments.map((appointment) => {
+          const date = new Date(appointment.scheduled_at);
+          return {
+            id: appointment.id,
+            day: date.getDate(),
+            month: date.toLocaleDateString('es-VE', { month: 'short' }).replace('.', ''),
+            time: date.toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true }),
+            client: getAppointmentStaffName(appointment),
+            service: getAppointmentServiceName(appointment),
+            status: appointment.status || 'Agendado',
+            raw: appointment,
+          };
+        });
+        const recentSessions = allPackageSessions.map((session, index) => ({
+          id: session.id || `session-${index}`,
+          date: new Date(session.consumed_at || session.created_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' }),
+          service: session.package?.services?.name || 'Sesión de paquete',
+          client: session.staff?.display_name || session.staff?.name || 'Sin especialista',
+          notes: session.notes || 'Sin notas registradas',
+          status: session.consumed_at ? 'Completada' : 'Registrada',
+          results: [session.before_photo_url && 'Foto antes', session.after_photo_url && 'Foto después'].filter(Boolean),
+          raw: session,
+        }));
+        const totalSpent = packages.reduce((sum, pkg) => sum + safeNumber(pkg.total_amount), 0);
         const nextSession = upcomingAppointment ? new Date(upcomingAppointment.scheduled_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+        const packagePanelItems = pkgHistory.map((pkg) => ({ id: pkg.id, title: pkg.name, subtitle: `Adquirido: ${pkg.date}`, amount: pkg.price, status: pkg.raw.status, statusLabel: pkg.status, details: [`${packageUsed(pkg.raw)} de ${packageTotal(pkg.raw)} sesiones usadas`, pkg.raw.expires_at ? `Vence: ${new Date(pkg.raw.expires_at).toLocaleDateString('es-VE')}` : null] }));
+        const sessionPanelItems = [
+          ...upcomingSessions.map((session) => ({ id: `upcoming-${session.id}`, title: session.service, subtitle: `${session.day} ${session.month} · ${session.time}`, status: 'scheduled', statusLabel: session.status, details: [session.client] })),
+          ...recentSessions.map((session) => ({ id: session.id, title: session.service, subtitle: session.date, status: 'completed', statusLabel: session.status, details: [session.client, session.notes, ...session.results] })),
+        ];
+        const financialPanelItems = history.map((transaction) => ({ id: transaction.id, title: transaction.description || 'Movimiento', subtitle: transaction.created_at ? new Date(transaction.created_at).toLocaleString('es-VE') : 'Sin fecha', amount: `USD ${safeNumber(transaction.amount).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, status: transaction.status || 'completed', statusLabel: transaction.status || 'Completado', details: [transaction.payment_method, transaction.currency] }));
+
 
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -3750,22 +3819,27 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
             {/* Stats Row */}
             <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: isMobile ? '10px' : '12px' }}>
               {[
-                { label: 'Paquetes activos', value: demoPkgs ? 1 : packages.filter(p => p.status === 'active').length, sub: 'Ver detalles →', iconBg: 'rgba(160,80,106,0.08)', icon: <Package size={18} color="var(--pink-primary)" /> },
-                { label: 'Sesiones pendientes', value: pendingSessions, sub: 'Ver calendario →', iconBg: 'rgba(160,80,106,0.06)', icon: <Calendar size={18} color="var(--magenta-primary)" /> },
-                { label: 'Próxima sesión', value: nextSession || 'N/A', sub: nextSession ? (demoPkgs ? '10:00 AM · Mariana R.' : '') : 'Sin citas programadas', iconBg: 'rgba(160,80,106,0.05)', icon: <Clock size={18} color="var(--pink-primary)" /> },
-                { label: 'Valor invertido', value: `$${totalSpent.toLocaleString()}`, sub: 'Ver resumen financiero →', iconBg: 'rgba(160,80,106,0.04)', icon: <Receipt size={18} color="var(--magenta-primary)" /> },
-              ].map((s, i) => (
-                <div key={i} className={`ficha-card stagger-${i + 1} mi-stat`} style={{ padding: (isMobile || isTablet) ? '12px 14px' : '16px 18px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: (isMobile || isTablet) ? '10px' : '14px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)', cursor: 'pointer', minWidth: 0, overflow: 'hidden' }}>
-                  <div style={{ width: (isMobile || isTablet) ? '36px' : '42px', height: (isMobile || isTablet) ? '36px' : '42px', borderRadius: '14px', backgroundColor: s.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{s.icon}</div>
+                { label: 'Paquetes activos', value: activePackages.length, sub: 'Ver detalles →', iconBg: 'rgba(160,80,106,0.08)', icon: <Package size={18} color="var(--pink-primary)" />, onClick: () => openClientPanel('Paquetes de la clienta', 'Contratos, progreso y vencimiento.', packagePanelItems, 'La clienta no tiene paquetes registrados.') },
+                { label: 'Sesiones pendientes', value: pendingSessions, sub: 'Ver todas →', iconBg: 'rgba(160,80,106,0.06)', icon: <Calendar size={18} color="var(--magenta-primary)" />, onClick: () => openClientPanel('Sesiones de paquetes', 'Sesiones próximas y sesiones ya consumidas.', sessionPanelItems, 'Todavía no hay sesiones registradas.') },
+                { label: 'Próxima sesión', value: nextSession || 'Sin cita', sub: upcomingSessions[0]?.time || 'Agendar visita →', iconBg: 'rgba(160,80,106,0.05)', icon: <Clock size={18} color="var(--pink-primary)" />, onClick: () => upcomingSessions.length ? openClientPanel('Próxima sesión', 'Detalle de la cita más cercana.', [sessionPanelItems[0]], 'No hay una próxima sesión.') : onNavigate?.('scheduling', { openScheduleModal: true, modalKey: Date.now() }) },
+                { label: 'Valor invertido', value: `$${totalSpent.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, sub: 'Ver pagos →', iconBg: 'rgba(160,80,106,0.04)', icon: <Receipt size={18} color="var(--magenta-primary)" />, onClick: () => openClientPanel('Pagos de la clienta', 'Movimientos sincronizados desde Caja y Centro Láser.', financialPanelItems, 'No hay movimientos financieros registrados.') },
+              ].map((stat, index) => (
+                <button
+                  type="button"
+                  key={stat.label}
+                  onClick={stat.onClick}
+                  className={`ficha-card stagger-${index + 1} mi-stat btn-interactive`}
+                  style={{ padding: (isMobile || isTablet) ? '12px 14px' : '16px 18px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: (isMobile || isTablet) ? '10px' : '14px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)', cursor: 'pointer', minWidth: 0, overflow: 'hidden', border: 'none', textAlign: 'left', color: 'inherit' }}
+                >
+                  <div style={{ width: (isMobile || isTablet) ? '36px' : '42px', height: (isMobile || isTablet) ? '36px' : '42px', borderRadius: '14px', backgroundColor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{stat.icon}</div>
                   <div style={{ minWidth: 0, overflow: 'hidden' }}>
-                    <div style={{ fontSize: (isMobile || isTablet) ? '10px' : '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
-                    <div style={{ fontSize: (isMobile || isTablet) ? '15px' : '17px', fontWeight: '850', color: 'var(--text-primary)', marginTop: '2px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{s.value}</div>
-                    <div style={{ fontSize: (isMobile || isTablet) ? '9.5px' : '10.5px', color: 'var(--pink-primary)', fontWeight: '600', marginTop: '1px', cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.sub}</div>
+                    <div style={{ fontSize: (isMobile || isTablet) ? '10px' : '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{stat.label}</div>
+                    <div style={{ fontSize: (isMobile || isTablet) ? '15px' : '17px', fontWeight: '850', color: 'var(--text-primary)', marginTop: '2px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{stat.value}</div>
+                    <div style={{ fontSize: (isMobile || isTablet) ? '9.5px' : '10.5px', color: 'var(--pink-primary)', fontWeight: '600', marginTop: '1px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{stat.sub}</div>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
-
             {/* Main: Active Package + Upcoming Sessions */}
             <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : '1.2fr 0.8fr', gap: (isMobile || isTablet) ? '16px' : '20px', alignItems: 'start' }}>
               {/* Active Package */}
@@ -3774,7 +3848,7 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                   <h4 style={{ margin: 0, fontSize: '16px', fontWeight: '850', color: 'var(--text-primary)' }}>Paquete activo</h4>
                   <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: '800', background: 'rgba(34,197,94,0.08)', color: '#22c55e', textTransform: 'uppercase' }}>Activo</span>
                 </div>
-                {activePkg && (
+                {activePkg ? (
                   <div style={{ display: 'flex', gap: (isMobile || isTablet) ? '16px' : '20px', flexWrap: 'wrap', flexDirection: (isMobile || isTablet) ? 'column' : 'row' }}>
                     {/* Left: Package Info */}
                     <div style={{ flex: '1 1 280px', minWidth: 0 }}>
@@ -3808,17 +3882,17 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                       <div>
                         <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '6px' }}>Sesiones utilizadas</div>
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: '8px' }}>
-                          <span style={{ fontSize: '28px', fontWeight: '900', color: 'var(--magenta-primary)' }}>{activePkg.used_sessions ?? activePkg.used}</span>
-                          <span style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-muted)' }}>/ {activePkg.total_sessions ?? activePkg.total}</span>
+                          <span style={{ fontSize: '28px', fontWeight: '900', color: 'var(--magenta-primary)' }}>{activeUsed}</span>
+                          <span style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-muted)' }}>/ {activeTotal}</span>
                           <span style={{ marginLeft: 'auto', fontSize: '13px', fontWeight: '800', color: 'var(--text-primary)' }}>{pkgPct}%</span>
                         </div>
                         <div style={{ width: '100%', height: '8px', backgroundColor: 'rgba(160,80,106,0.08)', borderRadius: '4px', overflow: 'hidden' }}>
                           <div style={{ width: `${pkgPct}%`, height: '100%', background: 'var(--magenta-gradient)', borderRadius: '4px', transition: 'width 0.5s ease' }} />
                         </div>
                       </div>
-                      {activePkg.expires && (
+                      {activePkg.expires_at && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11.5px', color: 'var(--text-muted)' }}>
-                          <Calendar size={12} /> Vence el: <strong style={{ color: 'var(--text-primary)' }}>{activePkg.expires}</strong>
+                          <Calendar size={12} /> Vence el: <strong style={{ color: 'var(--text-primary)' }}>{new Date(activePkg.expires_at).toLocaleDateString('es-VE')}</strong>
                         </div>
                       )}
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: '12px', background: 'rgba(160,80,106,0.04)' }}>
@@ -3827,6 +3901,10 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                       </div>
                     </div>
                   </div>
+                ) : (
+                  <div style={{ padding: '28px 12px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '13px' }}>
+                    No hay un paquete activo para esta clienta.
+                  </div>
                 )}
               </div>
 
@@ -3834,13 +3912,13 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
               <div className="ficha-card mi-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                   <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '850', color: 'var(--text-primary)' }}>Próximas sesiones</h4>
-                  <button className="btn-interactive" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: '700', color: 'var(--pink-primary)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', borderRadius: '8px' }}>
+                  <button type="button" onClick={() => onNavigate?.('scheduling', {})} className="btn-interactive" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: '700', color: 'var(--pink-primary)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px', borderRadius: '8px' }}>
                     <Calendar size={12} /> Ver calendario
                   </button>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {upcomingSessions.map((s, i) => (
-                    <div key={i} className="ficha-row btn-interactive mi-row" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px', borderRadius: '12px', background: 'rgba(160,80,106,0.02)', cursor: 'pointer' }}>
+                    <button type="button" key={s.id} onClick={() => openClientPanel('Detalle de la sesión', 'Información sincronizada con Agenda.', [sessionPanelItems.find(item => item.id === `upcoming-${s.id}`)].filter(Boolean), 'No se encontró la sesión.')} className="ficha-row btn-interactive mi-row" style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '12px', padding: '10px', borderRadius: '12px', background: 'rgba(160,80,106,0.02)', cursor: 'pointer', border: 'none', textAlign: 'left', color: 'inherit' }}>
                       <div style={{ textAlign: 'center', minWidth: '40px' }}>
                         <div style={{ fontSize: '18px', fontWeight: '900', color: 'var(--magenta-primary)', lineHeight: '1' }}>{s.day}</div>
                         <div style={{ fontSize: '8px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.month}</div>
@@ -3853,12 +3931,12 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                       </div>
                       <span className="ficha-tag mi-tag" style={{ padding: '3px 8px', borderRadius: '20px', fontSize: '9px', fontWeight: '800', background: 'rgba(46,158,91,0.08)', color: '#2e9e5b', textTransform: 'uppercase', flexShrink: 0 }}>{s.status}</span>
                       <ChevronRight size={14} color="var(--text-muted)" />
-                    </div>
+                    </button>
                   ))}
                 </div>
                 {upcomingSessions.length > 3 && (
-                  <button className="btn-interactive" style={{ width: '100%', marginTop: '10px', padding: '10px', fontSize: '12px', fontWeight: '700', color: 'var(--pink-primary)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center' }}>
-                    Ver todas las sesiones →
+                  <button type="button" onClick={() => openClientPanel('Todas las sesiones', 'Sesiones programadas y consumidas.', sessionPanelItems, 'No hay sesiones registradas.')} className="btn-interactive" style={{ width: '100%', marginTop: '10px', padding: '10px', fontSize: '12px', fontWeight: '700', color: 'var(--pink-primary)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center' }}>
+                  Ver todas las sesiones →
                   </button>
                 )}
               </div>
@@ -3873,7 +3951,7 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                   <span>Paquete</span><span>Fecha</span><span>Monto</span><span>Estado</span>
                 </div>
                 {pkgHistory.map((p, i) => (
-                  <div key={i} className="ficha-row mi-row" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 0.6fr 0.7fr', gap: '4px', padding: '10px 0', alignItems: 'center', cursor: 'pointer' }}>
+                  <button type="button" key={p.id} onClick={() => openClientPanel('Detalle del paquete', 'Progreso, valor y vigencia.', packagePanelItems.filter(item => item.id === p.id), 'No se encontró el paquete.')} className="ficha-row mi-row btn-interactive" style={{ width: '100%', display: 'grid', gridTemplateColumns: '1.5fr 1fr 0.6fr 0.7fr', gap: '4px', padding: '10px 0', alignItems: 'center', cursor: 'pointer', border: 'none', background: 'transparent', textAlign: 'left', color: 'inherit' }}>
                     <div style={{ fontSize: '12px', fontWeight: '750', color: 'var(--text-primary)' }}>{p.name}</div>
                     <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{p.date}</div>
                     <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>{p.price}</div>
@@ -3881,9 +3959,9 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                       <span className="ficha-tag mi-tag" style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '9px', fontWeight: '800', background: p.status === 'Activo' ? 'rgba(34,197,94,0.08)' : 'rgba(160,80,106,0.06)', color: p.status === 'Activo' ? '#22c55e' : 'var(--text-muted)', textTransform: 'uppercase' }}>{p.status}</span>
                       <ChevronRight size={10} color="var(--text-muted)" />
                     </div>
-                  </div>
+                  </button>
                 ))}
-                <button className="btn-interactive" style={{ width: '100%', marginTop: '10px', padding: '10px', fontSize: '12px', fontWeight: '700', color: 'var(--pink-primary)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center' }}>
+                <button type="button" onClick={() => openClientPanel('Historial completo de paquetes', 'Todos los paquetes contratados por la clienta.', packagePanelItems, 'No hay paquetes registrados.')} className="btn-interactive" style={{ width: '100%', marginTop: '10px', padding: '10px', fontSize: '12px', fontWeight: '700', color: 'var(--pink-primary)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center' }}>
                   Ver historial completo →
                 </button>
               </div>
@@ -3893,7 +3971,7 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                 <h4 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: '850', color: 'var(--text-primary)' }}>Sesiones recientes</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   {recentSessions.map((s, i) => (
-                    <div key={i} className="ficha-row mi-row" style={{ padding: '12px', borderRadius: '12px', background: 'rgba(160,80,106,0.02)' }}>
+                    <button type="button" key={s.id} onClick={() => openClientPanel('Detalle de la sesión', 'Registro consumido por el paquete.', sessionPanelItems.filter(item => item.id === s.id), 'No se encontró la sesión.')} className="ficha-row mi-row btn-interactive" style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'rgba(160,80,106,0.02)', border: 'none', textAlign: 'left', color: 'inherit', cursor: 'pointer' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                         <div style={{ fontSize: '10.5px', color: 'var(--text-muted)', fontWeight: '600' }}>{s.date}</div>
                         <span className="ficha-tag mi-tag" style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '9px', fontWeight: '800', background: 'rgba(46,158,91,0.08)', color: '#2e9e5b', textTransform: 'uppercase' }}>{s.status}</span>
@@ -3906,10 +3984,11 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                           <span key={ri} className="ficha-tag mi-tag" style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '9.5px', fontWeight: '700', background: 'rgba(160,80,106,0.04)', color: 'var(--magenta-primary)' }}>{r}</span>
                         ))}
                       </div>
-                    </div>
+                    </button>
                   ))}
+                  {recentSessions.length === 0 && <div style={{ padding: '18px 8px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '12px' }}>No hay sesiones consumidas todavía.</div>}
                 </div>
-                <button className="btn-interactive" style={{ width: '100%', marginTop: '10px', padding: '10px', fontSize: '12px', fontWeight: '700', color: 'var(--pink-primary)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center' }}>
+                <button type="button" onClick={() => openClientPanel('Todas las sesiones', 'Sesiones programadas y consumidas.', sessionPanelItems, 'No hay sesiones registradas.')} className="btn-interactive" style={{ width: '100%', marginTop: '10px', padding: '10px', fontSize: '12px', fontWeight: '700', color: 'var(--pink-primary)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center' }}>
                   Ver todas las sesiones →
                 </button>
               </div>
@@ -3921,19 +4000,19 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                     <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Siguiente paso recomendado</span>
                   </div>
-                  <div style={{ fontSize: '15px', fontWeight: '850', color: 'var(--text-primary)', marginBottom: '6px' }}>Paquete Fortalece & Crece</div>
-                  <p style={{ margin: '0 0 10px', fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5 }}>Estimula el crecimiento, fortalece la fibra capilar y previene la caída.</p>
-                  <button className="btn-pink btn-interactive mi-btn" style={{ width: '100%', padding: '10px', fontSize: '12px', fontWeight: '750', borderRadius: '12px' }}>Ver detalles del paquete</button>
+                  <div style={{ fontSize: '15px', fontWeight: '850', color: 'var(--text-primary)', marginBottom: '6px' }}>{activePkg ? activePkg.services?.name || 'Paquete activo' : 'Sin paquete activo'}</div>
+                  <p style={{ margin: '0 0 10px', fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5 }}>{activePkg ? 'Quedan ' + remaining + ' de ' + activeTotal + ' sesiones. Revisa las citas y el vencimiento antes de continuar.' : 'Cuando se venda un paquete aparecerá aquí con sus sesiones reales.'}</p>
+                  <button type="button" onClick={() => openClientPanel('Detalle del paquete', 'Progreso, sesiones y vencimiento.', activePkg ? packagePanelItems.filter(item => item.id === activePkg.id) : [], 'No hay un paquete activo.')} className="btn-pink btn-interactive mi-btn" style={{ width: '100%', padding: '10px', fontSize: '12px', fontWeight: '750', borderRadius: '12px' }}>Ver detalles del paquete</button>
                 </div>
                 <div className="ficha-row mi-row" style={{ padding: '12px', borderRadius: '12px', background: 'white', boxShadow: '0 1px 6px rgba(160,80,106,0.04)' }}>
                   <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '6px' }}>Producto sugerido</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(160,80,106,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Droplet size={16} color="var(--pink-primary)" /></div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>Sérum Fortalecedor Jana Studio</div>
-                      <div style={{ fontSize: '10.5px', color: 'var(--text-muted)' }}>Uso diario para nutrir y proteger el cabello.</div>
+                      <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>Seguimiento sincronizado</div>
+                      <div style={{ fontSize: '10.5px', color: 'var(--text-muted)' }}>La información se actualiza desde Centro Láser, Agenda y Caja.</div>
                     </div>
-                    <span style={{ fontSize: '10px', fontWeight: '700', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>Ver producto →</span>
+                    <span style={{ fontSize: '10px', fontWeight: '700', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>Datos reales</span>
                   </div>
                 </div>
               </div>
@@ -3942,40 +4021,131 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
         );
       }
       case 'history': {
-        const demoHistory = [
-          { id: 'dh1', day: '10', month: 'MAY', year: '2025', time: '10:00 AM', client: 'Mariana R.', service: 'Hidratación profunda', status: 'Completada', duration: '90 min', price: 480, description: 'Cabello con excelente respuesta a la hidratación. Se recomienda mantener rutina.', tags: ['Hidratación', 'Nutrición', 'Brillo'], detail: { diagnostic: 'Cuero cabelludo en buenas condiciones. Hidratación adecuada y cutícula sellada. Ligera acumulación de residuos en puntas.', products: [{ name: 'Shampoo Hidratante Jana Studio', desc: 'Limpieza suave e hidratación profunda.' }, { name: 'Mascarilla Repair Intense', desc: 'Nutrición intensiva y reparación.' }, { name: 'Sérum de Brillo Jana Studio', desc: 'Protección térmica y brillo duradero.' }], recommendations: ['Mantener hidratación semanal.', 'Usar protector térmico siempre.', 'Aplicar sérum en puntas cada 2 días.'], notes: 'Excelente progreso en la hidratación. Seguir con la rutina recomendada para mantener el brillo y la suavidad.', specialist: 'Mariana R.' } },
-          { id: 'dh2', day: '24', month: 'MAY', year: '2024', time: '10:00 AM', client: 'Mariana R.', service: 'Terapia de reconstrucción', status: 'Completada', duration: '120 min', price: 560, description: 'Tratamiento de reconstrucción capilar completo.', tags: ['Reconstrucción', 'Proteínas'], detail: { diagnostic: 'Cabello con daño químico moderado. Cutícula abierta en zonas medias y puntas.', products: [{ name: 'Keratina Líquida Jana Studio', desc: 'Reconstrucción profunda de la fibra capilar.' }, { name: 'Mascarilla Protein Force', desc: 'Reconstituye la masa capilar.' }], recommendations: ['Evitar calor excesivo por 2 semanas.', 'Aplicar máscara de proteínas quincenal.', 'Cortar puntas cada 6 semanas.'], notes: 'Buena evolución. El cabello recuperó fuerza y elasticidad.', specialist: 'Mariana R.' } },
-          { id: 'dh3', day: '07', month: 'JUN', year: '2024', time: '10:00 AM', client: 'Mariana R.', service: 'Tratamiento láser capilar', status: 'Completada', duration: '60 min', price: 420, description: 'Sesión de láser capilar para estimulación de folículos.', tags: ['Láser', 'Crecimiento'], detail: { diagnostic: 'Zona temporal con ligera reducción de densidad. Folículos en fase catágena.', products: [], recommendations: ['Completar ciclo de 8 sesiones.', 'Evitar exposición solar directo.', 'Usar sérum estimulante diario.'], notes: 'Primeros signos de mejora visible. Mantener las sesiones quincenales.', specialist: 'Mariana R.' } },
-          { id: 'dh4', day: '18', month: 'ABR', year: '2024', time: '10:30 AM', client: 'Mariana R.', service: 'Masaje capilar detox', status: 'Completada', duration: '60 min', price: 350, description: 'Limpieza profunda del cuero cabelludo con productos naturales.', tags: ['Detox', 'Limpieza'], detail: { diagnostic: 'Acumulación de productos en el cuero cabelludo. Poros obstruidos levemente.', products: [{ name: 'Shampoo Detox Jana Studio', desc: 'Limpieza profunda con arcilla verde.' }, { name: 'Tónico Scalp Purifier', desc: 'Purificación y equilibrio del cuero cabelludo.' }], recommendations: ['Realizar detox cada 2 meses.', 'Reducir uso de productos con siliconas.', 'Masajear cuero cabelludo durante el lavado.'], notes: 'Excelente resultado. El cuero cabelludo recuperó su equilibrio natural.', specialist: 'Mariana R.' } },
-        ];
-
-        const hTotalVisits = history.length || demoHistory.length;
-        const hTotalSpent = history.length > 0 ? history.reduce((s, h) => s + (Number(h.amount) || 0), 0) : demoHistory.reduce((s, h) => s + h.price, 0);
-        const hFavService = history.length > 0 ? (() => { const counts = {}; history.forEach(h => { const n = h.service_name || 'Servicio'; counts[n] = (counts[n] || 0) + 1; }); return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]; })() : ['Hidratación profunda', 4];
-        const hLastVisit = history.length > 0 ? history[0]?.created_at : '2025-05-10T10:00:00';
-        const hSinceMonth = history.length > 0 && history[history.length - 1]?.created_at
-          ? new Date(history[history.length - 1].created_at).toLocaleDateString('es-VE', { month: 'short', year: 'numeric' })
-          : 'Feb 2024';
+        const completedAppointments = appointments
+          .filter((appointment) => {
+            const status = String(appointment.status || '').toLowerCase();
+            return status.includes('complet');
+          })
+          .sort((a, b) => new Date(b.completed_at || b.scheduled_at) - new Date(a.completed_at || a.scheduled_at));
+        const appointmentHistory = appointments.map((appointment) => {
+          const services = appointment.appointment_services?.length
+            ? appointment.appointment_services
+            : [{ services: appointment.services, staff: appointment.staff, price_paid: appointment.total_price, duration_minutes: appointment.services?.duration_minutes }];
+          const serviceName = services.map((item) => item.services?.name).filter(Boolean).join(' + ') || 'Visita sin servicio registrado';
+          const specialist = services.map((item) => item.staff?.display_name || item.staff?.name).filter(Boolean).join(', ') || appointment.staff?.display_name || appointment.staff?.name || 'Sin especialista';
+          const duration = services.reduce((sum, item) => sum + (Number(item.duration_minutes) || 0), 0);
+          return {
+            id: `appointment-${appointment.id}`,
+            sourceId: appointment.id,
+            created_at: appointment.completed_at || appointment.scheduled_at || appointment.created_at,
+            service: serviceName,
+            service_name: serviceName,
+            status: appointment.status || 'Registrada',
+            duration: duration ? `${duration} min` : '',
+            price: Number(appointment.total_price) || services.reduce((sum, item) => sum + (Number(item.price_paid) || 0), 0),
+            description: appointment.notes || 'Cita registrada en Agenda.',
+            tags: services.map((item) => item.services?.category).filter(Boolean),
+            detail: {
+              diagnostic: appointment.notes || 'Sin observaciones clínicas registradas.',
+              products: [],
+              recommendations: [],
+              notes: appointment.notes || '',
+              specialist,
+            },
+          };
+        });
+        const transactionHistory = history.map((transaction) => ({
+          id: `transaction-${transaction.id}`,
+          sourceId: transaction.id,
+          created_at: transaction.created_at,
+          service: transaction.description || 'Movimiento financiero',
+          service_name: transaction.description || 'Movimiento financiero',
+          status: transaction.status || 'Completado',
+          duration: '',
+          price: Number(transaction.amount) || 0,
+          description: [transaction.payment_method, transaction.category].filter(Boolean).join(' · '),
+          tags: [transaction.category].filter(Boolean),
+          detail: {
+            diagnostic: 'Movimiento sincronizado desde Caja o Centro Láser.',
+            products: [],
+            recommendations: [],
+            notes: transaction.reference || '',
+            specialist: 'Jana Studio',
+          },
+          transaction,
+        }));
+        const activeHistory = [...appointmentHistory, ...transactionHistory]
+          .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+        const hTotalVisits = completedAppointments.length;
+        const hTotalSpent = history.reduce((sum, transaction) => sum + (Number(transaction.amount) || 0), 0);
+        const serviceCounts = completedAppointments.reduce((counts, appointment) => {
+          const names = appointment.appointment_services?.map((item) => item.services?.name).filter(Boolean)
+            || [appointment.services?.name].filter(Boolean);
+          names.forEach((name) => { counts[name] = (counts[name] || 0) + 1; });
+          return counts;
+        }, {});
+        const hFavService = Object.entries(serviceCounts).sort((a, b) => b[1] - a[1])[0] || ['Sin datos', 0];
+        const hLastVisit = completedAppointments[0]?.completed_at || completedAppointments[0]?.scheduled_at || null;
+        const oldestActivity = activeHistory[activeHistory.length - 1]?.created_at;
+        const hSinceMonth = oldestActivity ? new Date(oldestActivity).toLocaleDateString('es-VE', { month: 'short', year: 'numeric' }) : 'Sin actividad';
         const hLastAgo = (() => {
-          if (!hLastVisit) return '';
-          const diff = Date.now() - new Date(hLastVisit).getTime();
-          const days = Math.floor(diff / 86400000);
+          if (!hLastVisit) return 'Sin visitas completadas';
+          const days = Math.max(0, Math.floor((Date.now() - new Date(hLastVisit).getTime()) / 86400000));
           if (days < 1) return 'Hoy';
           if (days < 7) return `Hace ${days} días`;
           if (days < 30) return `Hace ${Math.floor(days / 7)} semanas`;
           return `Hace ${Math.floor(days / 30)} meses`;
         })();
-
-        const serviceDistribution = [
-          { name: 'Hidratación', pct: 50, color: '#c97282' },
-          { name: 'Reparación', pct: 25, color: '#a0506a' },
-          { name: 'Detox', pct: 12.5, color: '#dfb4a8' },
-          { name: 'Otros', pct: 12.5, color: '#e8cfc9' },
-        ];
+        const categoryCounts = completedAppointments.reduce((counts, appointment) => {
+          const categories = appointment.appointment_services?.map((item) => item.services?.category).filter(Boolean)
+            || [appointment.services?.category].filter(Boolean);
+          categories.forEach((category) => { counts[category] = (counts[category] || 0) + 1; });
+          return counts;
+        }, {});
+        const categoryTotal = Object.values(categoryCounts).reduce((sum, count) => sum + count, 0);
+        const distributionColors = ['#c97282', '#a0506a', '#dfb4a8', '#e8cfc9', '#b57a8a'];
+        const serviceDistribution = Object.entries(categoryCounts)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5)
+          .map(([name, count], index) => ({ name, pct: categoryTotal ? Math.round((count / categoryTotal) * 1000) / 10 : 0, color: distributionColors[index] }));
         let cumulativeDeg = 0;
-        const conicStops = serviceDistribution.map(s => { const start = cumulativeDeg; cumulativeDeg += s.pct * 3.6; return `${s.color} ${start}deg ${cumulativeDeg}deg`; }).join(', ');
-
-        const activeHistory = history.length > 0 ? history : demoHistory;
+        const conicStops = serviceDistribution.length
+          ? serviceDistribution.map((item) => { const start = cumulativeDeg; cumulativeDeg += item.pct * 3.6; return `${item.color} ${start}deg ${cumulativeDeg}deg`; }).join(', ')
+          : '#f1e4e7 0deg 360deg';
+        const chronologicalCompleted = [...completedAppointments].sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at));
+        const visitIntervals = chronologicalCompleted.slice(1).map((appointment, index) => Math.round((new Date(appointment.scheduled_at) - new Date(chronologicalCompleted[index].scheduled_at)) / 86400000)).filter((days) => days >= 0);
+        const averageFrequency = visitIntervals.length ? Math.round(visitIntervals.reduce((sum, days) => sum + days, 0) / visitIntervals.length) : null;
+        const mostFrequentValue = (values) => Object.entries(values.reduce((counts, value) => ({ ...counts, [value]: (counts[value] || 0) + 1 }), {})).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
+        const bestDay = mostFrequentValue(completedAppointments.map((appointment) => new Date(appointment.scheduled_at).toLocaleDateString('es-VE', { weekday: 'long' })));
+        const bestHour = mostFrequentValue(completedAppointments.map((appointment) => new Date(appointment.scheduled_at).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true })));
+        const anticipationValues = completedAppointments.map((appointment) => Math.max(0, Math.round((new Date(appointment.scheduled_at) - new Date(appointment.created_at)) / 86400000))).filter(Number.isFinite);
+        const averageAnticipation = anticipationValues.length ? Math.round(anticipationValues.reduce((sum, days) => sum + days, 0) / anticipationValues.length) : null;
+        const packageForRecommendation = packages.find((pkg) => pkg.status === 'active' && Math.max(0, Number(pkg.total_sessions || 0) - Number(pkg.used_sessions || 0)) > 0);
+        const lastPackageSession = packages.flatMap((pkg) => pkg.package_sessions || []).sort((a, b) => new Date(b.consumed_at || b.created_at || 0) - new Date(a.consumed_at || a.created_at || 0))[0];
+        const recommendationDate = (() => {
+          if (upcomingAppointment?.scheduled_at) return new Date(upcomingAppointment.scheduled_at);
+          if (!packageForRecommendation) return null;
+          const intervalDays = Math.max(1, Number(packageForRecommendation.session_interval_days) || 21);
+          const baseDate = new Date(lastPackageSession?.consumed_at || packageForRecommendation.created_at || Date.now());
+          const candidate = new Date(baseDate);
+          candidate.setDate(candidate.getDate() + intervalDays);
+          const tomorrow = new Date();
+          tomorrow.setHours(0, 0, 0, 0);
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          return candidate < tomorrow ? tomorrow : candidate;
+        })();
+        const recommendationDays = recommendationDate ? Math.max(0, Math.ceil((recommendationDate.getTime() - Date.now()) / 86400000)) : null;
+        const historyPanelItems = activeHistory.map((entry) => ({
+          id: entry.id,
+          title: entry.service_name || entry.service,
+          subtitle: entry.created_at ? new Date(entry.created_at).toLocaleString('es-VE') : 'Sin fecha',
+          amount: `USD ${(Number(entry.price) || 0).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+          status: String(entry.status || '').toLowerCase().includes('complet') ? 'completed' : 'scheduled',
+          statusLabel: entry.status,
+          details: [entry.duration, entry.description],
+        }));
+        const visitPanelItems = appointmentHistory.map((entry) => historyPanelItems.find((item) => item.id === entry.id)).filter(Boolean);
+        const paymentHistoryItems = transactionHistory.map((entry) => historyPanelItems.find((item) => item.id === entry.id)).filter(Boolean);
 
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -3987,7 +4157,7 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                 </h3>
                 <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--text-muted)', fontWeight: '500' }}>Registro completo de todas las visitas y tratamientos realizados.</p>
               </div>
-              <button className="btn-pink btn-interactive mi-btn" style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 18px', fontSize: '13px', fontWeight: '750', borderRadius: '14px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+              <button type="button" onClick={() => onNavigate?.('scheduling', { openScheduleModal: true, modalKey: Date.now() })} className="btn-pink btn-interactive mi-btn" style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 18px', fontSize: '13px', fontWeight: '750', borderRadius: '14px', whiteSpace: 'nowrap', flexShrink: 0 }}>
                 <Plus size={16} /> Nueva Sesión
               </button>
             </div>
@@ -3995,22 +4165,21 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
             {/* Stats Row */}
             <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: (isMobile || isTablet) ? '10px' : '12px' }}>
               {[
-                { label: 'Total de visitas', value: hTotalVisits, sub: `desde ${hSinceMonth}`, iconBg: 'rgba(160,80,106,0.08)', icon: <Calendar size={18} color="var(--pink-primary)" /> },
-                { label: 'Total invertido', value: `$${hTotalSpent.toLocaleString()}`, sub: 'en tratamientos', iconBg: 'rgba(160,80,106,0.06)', icon: <Receipt size={18} color="var(--magenta-primary)" /> },
-                { label: 'Servicio favorito', value: hFavService[0], sub: `${hFavService[1]} sesiones realizadas`, iconBg: 'rgba(217,70,168,0.06)', icon: <Star size={18} color="var(--pink-primary)" /> },
-                { label: 'Última visita', value: hLastVisit ? new Date(hLastVisit).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A', sub: hLastAgo, iconBg: 'rgba(160,80,106,0.05)', icon: <Clock size={18} color="var(--magenta-primary)" /> },
-              ].map((s, i) => (
-                <div key={i} className={`ficha-card stagger-${i + 1} mi-stat`} style={{ padding: (isMobile || isTablet) ? '12px 14px' : '16px 18px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: (isMobile || isTablet) ? '10px' : '14px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)', cursor: 'pointer', minWidth: 0 }}>
-                  <div style={{ width: (isMobile || isTablet) ? '36px' : '42px', height: (isMobile || isTablet) ? '36px' : '42px', borderRadius: '14px', backgroundColor: s.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{s.icon}</div>
-                  <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ fontSize: (isMobile || isTablet) ? '10px' : '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{s.label}</div>
-                    <div style={{ fontSize: (isMobile || isTablet) ? '15px' : '17px', fontWeight: '850', color: 'var(--text-primary)', marginTop: '2px', lineHeight: 1.3 }}>{s.value}</div>
-                    <div style={{ fontSize: (isMobile || isTablet) ? '9.5px' : '10.5px', color: 'var(--text-muted)', fontWeight: '500', marginTop: '1px', lineHeight: 1.3 }}>{s.sub}</div>
+                { label: 'Total de visitas', value: hTotalVisits, sub: `desde ${hSinceMonth}`, iconBg: 'rgba(160,80,106,0.08)', icon: <Calendar size={18} color="var(--pink-primary)" />, onClick: () => openClientPanel('Todas las visitas', 'Citas sincronizadas con Agenda.', visitPanelItems, 'No hay visitas registradas.') },
+                { label: 'Total invertido', value: `USD ${hTotalSpent.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, sub: 'en tratamientos', iconBg: 'rgba(160,80,106,0.06)', icon: <Receipt size={18} color="var(--magenta-primary)" />, onClick: () => openClientPanel('Historial financiero', 'Pagos sincronizados con Caja.', paymentHistoryItems, 'No hay pagos registrados.') },
+                { label: 'Servicio favorito', value: hFavService[0], sub: `${hFavService[1]} sesiones realizadas`, iconBg: 'rgba(217,70,168,0.06)', icon: <Star size={18} color="var(--pink-primary)" />, onClick: () => openClientPanel(`Visitas de ${hFavService[0]}`, 'Servicios registrados en el historial.', visitPanelItems.filter((item) => item.title.includes(hFavService[0])), 'No hay visitas para este servicio.') },
+                { label: 'Última visita', value: hLastVisit ? new Date(hLastVisit).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Sin visitas', sub: hLastAgo, iconBg: 'rgba(160,80,106,0.05)', icon: <Clock size={18} color="var(--magenta-primary)" />, onClick: () => openClientPanel('Actividad reciente', 'Últimos movimientos de la clienta.', historyPanelItems.slice(0, 5), 'No hay actividad reciente.') },
+              ].map((stat, index) => (
+                <button type="button" key={stat.label} onClick={stat.onClick} className={`ficha-card stagger-${index + 1} mi-stat btn-interactive`} style={{ padding: (isMobile || isTablet) ? '12px 14px' : '16px 18px', borderRadius: '18px', display: 'flex', alignItems: 'center', gap: (isMobile || isTablet) ? '10px' : '14px', background: 'white', boxShadow: '0 2px 12px rgba(160,80,106,0.04)', cursor: 'pointer', minWidth: 0, border: 'none', textAlign: 'left', color: 'inherit' }}>
+                  <div style={{ width: (isMobile || isTablet) ? '36px' : '42px', height: (isMobile || isTablet) ? '36px' : '42px', borderRadius: '14px', backgroundColor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{stat.icon}</div>
+                  <div style={{ minWidth: 0, overflow: 'hidden' }}>
+                    <div style={{ fontSize: (isMobile || isTablet) ? '10px' : '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{stat.label}</div>
+                    <div style={{ fontSize: (isMobile || isTablet) ? '15px' : '17px', fontWeight: '850', color: 'var(--text-primary)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{stat.value}</div>
+                    <div style={{ fontSize: (isMobile || isTablet) ? '9.5px' : '10.5px', color: 'var(--pink-primary)', fontWeight: '600', marginTop: '1px' }}>{stat.sub}</div>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
-
             {/* Main Content: Timeline + Sidebar */}
             <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : '1fr 300px', gap: (isMobile || isTablet) ? '16px' : '20px', alignItems: 'start' }}>
               {/* Timeline */}
@@ -4165,10 +4334,10 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                      <h5 style={{ margin: '0 0 14px', fontSize: '13px', fontWeight: '850', color: 'var(--text-primary)' }}>Patrones de visitas</h5>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                       {[
-                        { icon: <Calendar size={14} />, label: 'Frecuencia promedio', value: 'Cada 45 días' },
-                        { icon: <Star size={14} />, label: 'Mejor día', value: 'Viernes' },
-                        { icon: <Clock size={14} />, label: 'Mejor hora', value: '10:00 AM' },
-                        { icon: <Activity size={14} />, label: 'Anticipación promedio', value: '3 días' },
+                        { icon: <Calendar size={14} />, label: 'Frecuencia promedio', value: averageFrequency !== null ? `Cada ${averageFrequency} días` : 'Sin datos suficientes' },
+                        { icon: <Star size={14} />, label: 'Día más frecuente', value: bestDay || 'Sin datos' },
+                        { icon: <Clock size={14} />, label: 'Hora más frecuente', value: bestHour || 'Sin datos' },
+                        { icon: <Activity size={14} />, label: 'Anticipación promedio', value: averageAnticipation !== null ? `${averageAnticipation} días` : 'Sin datos' },
                       ].map((p, i) => (
                         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                           <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(160,80,106,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--pink-primary)', flexShrink: 0 }}>{p.icon}</div>
@@ -4184,11 +4353,11 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                   {/* Próxima recomendación */}
                    <div className="ficha-card mi-card" style={{ padding: '18px', borderRadius: '18px', background: 'linear-gradient(135deg, rgba(160,80,106,0.04) 0%, rgba(160,80,106,0.01) 100%)', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
                      <h5 style={{ margin: '0 0 6px', fontSize: '13px', fontWeight: '850', color: 'var(--text-primary)' }}>Próxima recomendación</h5>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px' }}>Tu próxima sesión sugerida</div>
-                    <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--magenta-primary)', marginBottom: '4px' }}>21 jun 2025</div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '12px' }}>En 36 días</div>
-                    <button className="btn-pink btn-interactive mi-btn" style={{ width: '100%', padding: '10px', fontSize: '12px', fontWeight: '750', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                      <Calendar size={14} /> Agendar visita
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px' }}>{upcomingAppointment ? 'Próxima cita confirmada' : packageForRecommendation ? 'Próxima sesión sugerida según el paquete' : 'No hay una recomendación automática pendiente'}</div>
+                    <div style={{ fontSize: '20px', fontWeight: '900', color: 'var(--magenta-primary)', marginBottom: '4px' }}>{recommendationDate ? recommendationDate.toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Sin fecha'}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '12px' }}>{recommendationDays !== null ? (recommendationDays === 0 ? 'Hoy' : `En ${recommendationDays} días`) : 'Agenda una visita cuando la clienta lo solicite'}</div>
+                    <button type="button" onClick={() => onNavigate?.('scheduling', { openScheduleModal: true, modalKey: Date.now() })} className="btn-pink btn-interactive mi-btn" style={{ width: '100%', padding: '10px', fontSize: '12px', fontWeight: '750', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                      <Calendar size={14} /> {upcomingAppointment ? 'Ver agenda' : 'Agendar visita'}
                     </button>
                   </div>
 
@@ -4228,8 +4397,12 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
     }
   };
 
-  const lastVisitLabel = history.length > 0 && history[0]?.created_at
-    ? new Date(history[0].created_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' })
+  const completedVisitAppointments = appointments
+    .filter((appointment) => String(appointment.status || '').toLowerCase().includes('complet'))
+    .sort((a, b) => new Date(b.completed_at || b.scheduled_at) - new Date(a.completed_at || a.scheduled_at));
+  const lastCompletedVisitDate = completedVisitAppointments[0]?.completed_at || completedVisitAppointments[0]?.scheduled_at;
+  const lastVisitLabel = lastCompletedVisitDate
+    ? new Date(lastCompletedVisitDate).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' })
     : 'Sin visitas';
 
   return (
@@ -4333,7 +4506,7 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                   background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)',
                   borderRadius: '14px', padding: '6px 10px', flexShrink: 0
                 }}>
-                  <span style={{ fontSize: '20px', fontWeight: '900', color: 'white', lineHeight: '1' }}>{history.length}</span>
+                  <span style={{ fontSize: '20px', fontWeight: '900', color: 'white', lineHeight: '1' }}>{completedVisitAppointments.length}</span>
                   <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.8)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>visitas</span>
                 </div>
               </div>
@@ -4554,12 +4727,12 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                 let statusBg = 'rgba(0,122,255,0.06)';
                 let statusBorder = 'rgba(0,122,255,0.12)';
 
-                if (history.length >= 6) {
+                if (completedVisitAppointments.length >= 6) {
                   statusText = 'VIP';
                   statusColor = '#d4af37';
                   statusBg = 'rgba(212,175,55,0.06)';
                   statusBorder = 'rgba(212,175,55,0.15)';
-                } else if (history.length >= 2) {
+                } else if (completedVisitAppointments.length >= 2) {
                   statusText = 'Frecuente';
                   statusColor = 'var(--magenta-primary)';
                   statusBg = 'rgba(160,80,106,0.06)';
@@ -4626,7 +4799,7 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
                       <Users size={14} color="var(--magenta-primary)" />
                       Total de visitas
-                      <span style={{ marginLeft: 'auto', fontWeight: '800', color: 'var(--text-primary)' }}>{history.length}</span>
+                      <span style={{ marginLeft: 'auto', fontWeight: '800', color: 'var(--text-primary)' }}>{completedVisitAppointments.length}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-secondary)' }}>
                       <Calendar size={14} color="var(--magenta-primary)" />
@@ -4716,7 +4889,7 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                  <DetailItem label="Cumpleaños" value={client.birth_date ? new Date(client.birth_date + 'T00:00:00').toLocaleDateString([], {day: '2-digit', month: 'long', year: 'numeric'}) : 'No registrado'} />
+                  <DetailItem label="Cumpleaños" value={client.birth_date ? new Date(client.birth_date + 'T00:00:00').toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' }) : 'No registrado'} />
                   <DetailItem label="Fecha de registro" value={client.created_at ? new Date(client.created_at).toLocaleDateString() : 'N/A'} />
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
@@ -4841,6 +5014,14 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
         )}
       </AnimatedModal>
 
+      <ClientRecordsModal
+        isOpen={!!clientPanel}
+        title={clientPanel?.title || ''}
+        subtitle={clientPanel?.subtitle || ''}
+        items={clientPanel?.items || []}
+        emptyMessage={clientPanel?.emptyMessage}
+        onClose={() => setClientPanel(null)}
+      />
       <VisitDetailModal
         isOpen={!!selectedVisit}
         visit={selectedVisit || {}}
@@ -5285,9 +5466,9 @@ const ComparisonCard = ({ comparison, onDelete, onShare, onCardClick }) => {
 };
 
 const DetailItem = ({ label, value }) => (
-  <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
-    <span style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>{label}</span>
-    <span style={{ fontWeight: '700', fontSize: '16px' }}>{value}</span>
+  <div style={{ display: 'grid', gridTemplateColumns: 'minmax(90px, 0.8fr) minmax(0, 1.2fr)', alignItems: 'start', gap: '12px', borderBottom: '1px solid var(--border-color)', paddingBottom: '9px' }}>
+    <span style={{ color: 'var(--text-secondary)', fontSize: '12px', lineHeight: 1.35 }}>{label}</span>
+    <span style={{ fontWeight: '750', fontSize: '13px', lineHeight: 1.35, color: 'var(--text-primary)', textAlign: 'right', overflowWrap: 'anywhere' }}>{value}</span>
   </div>
 );
 

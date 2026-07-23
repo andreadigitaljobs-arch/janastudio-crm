@@ -834,6 +834,27 @@ export const dataService = {
     if (error) throw error;
     return _asArray(data);
   },
+  async getClientAppointments(clientId) {
+    const { data, error } = await supabase
+      .from('appointments')
+      .select(`
+        *,
+        services (id, name, price, duration_minutes, category),
+        staff!appointments_staff_id_fkey (id, name, display_name, role),
+        appointment_services (
+          id, service_id, staff_id, price_paid, status, scheduled_at,
+          completed_at, duration_minutes, client_package_id,
+          package_supplies_cost, before_photo_url, after_photo_url,
+          services (id, name, price, duration_minutes, category),
+          staff (id, name, display_name, role)
+        )
+      `)
+      .eq('client_id', clientId)
+      .order('scheduled_at', { ascending: false });
+
+    if (error) throw error;
+    return _asArray(data).map(_normalizeAppointment);
+  },
 
   async addTransaction(transaction) {
     _cacheInvalidate('transactions');
@@ -1150,7 +1171,12 @@ export const dataService = {
   async getClientPackages(clientId) {
     const { data, error } = await supabase
       .from('client_packages')
-      .select('*, services(name), package_installments(*)')
+      .select(`
+        *,
+        services(id, name, category, duration_minutes),
+        package_installments(*),
+        package_sessions(*, staff(id, name, display_name))
+      `)
       .eq('client_id', clientId)
       .order('created_at', { ascending: false });
     if (error) throw error;
