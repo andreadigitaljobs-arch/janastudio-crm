@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Users, Search, UserPlus, Sparkles, Calendar, Zap, CheckCircle2,
@@ -29,7 +29,8 @@ const ReceptionModule = ({ isMobile }) => {
   const [inventory, setInventory] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [idSearch, setIdSearch] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
+  const [clientsLoading, setClientsLoading] = useState(true);
+  const [clientsError, setClientsError] = useState('');
   const [isNewClientModalOpen, setIsNewClientModalOpen] = useState(false);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
@@ -42,36 +43,49 @@ const ReceptionModule = ({ isMobile }) => {
   const [formData, setFormData] = useState({ serviceId: '', staffId: '', status: 'En Silla' });
 
   const loadData = async () => {
-    try {
-      const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0);
-      const todayEnd = new Date();
-      todayEnd.setHours(23, 59, 59, 999);
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+    setClientsLoading(true);
+    dataService.invalidateClientsCache();
 
-      const [c, s, st, active, ext, inv, allApps, ratesData] = await Promise.all([
-        dataService.getClients(),
-        dataService.getServices(),
-        dataService.getStaff(),
-        dataService.getAppointmentsByState(['En Silla', 'Agendado']),
-        dataService.getExtras(),
-        dataService.getSaleInventoryCatalog(),
-        dataService.getAppointments(todayStart.toISOString(), todayEnd.toISOString()),
-        dataService.getExchangeRates()
-      ]);
-      setClients(c || []);
-      setServices(s || []);
-      setStaff((st || []).filter(m => {
+    const results = await Promise.allSettled([
+      dataService.getClientsLite(),
+      dataService.getServices(),
+      dataService.getStaff(),
+      dataService.getAppointmentsByState(['En Silla', 'Agendado']),
+      dataService.getExtras(),
+      dataService.getSaleInventoryCatalog(),
+      dataService.getAppointments(todayStart.toISOString(), todayEnd.toISOString()),
+      dataService.getExchangeRates()
+    ]);
+
+    const valueOr = (index, fallback) => (
+      results[index].status === 'fulfilled' ? results[index].value : fallback
+    );
+    results.forEach((result, index) => {
+      if (result.status === 'rejected') {
+        console.error(`Error loading reception resource ${index}:`, result.reason);
+      }
+    });
+
+    const loadedClients = valueOr(0, []);
+    setClients(Array.isArray(loadedClients) ? loadedClients : []);
+    setClientsError(results[0].status === 'rejected' ? 'No se pudo cargar la lista de clientes. Intenta nuevamente.' : '');
+    setClientsLoading(false);
+
+    setServices(valueOr(1, []) || []);
+    setStaff((valueOr(2, []) || []).filter(m => {
         const r = (m.role?.split('|')[0] || '').toLowerCase();
         return !r.includes('admin') && !r.includes('recepcionista') && !r.includes('caja');
-      }));
-      setActiveAppointments((active || []).filter(a => a.status === 'En Silla'));
-      setAllExtras(ext || []);
-      setInventory((inv || []).filter(i => i.is_for_sale !== false && i.category === 'Venta'));
-      setUpcomingAppointments(allApps || []);
-      if (ratesData) {
-        setExchangeRate(ratesData.bcv || 0);
-      }
-    } catch (err) { console.error(err); }
+    }));
+    setActiveAppointments((valueOr(3, []) || []).filter(a => a.status === 'En Silla'));
+    setAllExtras(valueOr(4, []) || []);
+    setInventory((valueOr(5, []) || []).filter(i => i.is_for_sale !== false && i.category === 'Venta'));
+    setUpcomingAppointments(valueOr(6, []) || []);
+    const ratesData = valueOr(7, null);
+    if (ratesData) setExchangeRate(ratesData.bcv || 0);
   };
 
   useEffect(() => {
@@ -81,22 +95,26 @@ const ReceptionModule = ({ isMobile }) => {
     return () => document.removeEventListener('visibilitychange', refreshOnFocus);
   }, []);
 
-  const handleSearchInput = (val) => {
-    setIdSearch(val);
-    if (val.length >= 1) {
-      const term = normalizeForSearch(val);
-      const results = (Array.isArray(clients) ? clients : []).filter(c => {
-        const n = normalizeForSearch(c.name || '');
-        return n.split(' ').some(w => w.startsWith(term)) || (c.id_card || '').toLowerCase().includes(term);
-      });
-      setSearchResults(results.slice(0, 5));
-    } else { setSearchResults([]); }
-  };
+  const searchResults = useMemo(() => {
+    const term = normalizeForSearch(idSearch.trim());
+    if (!term) return [];
+
+    const digits = idSearch.replace(/\D/g, '');
+    return (Array.isArray(clients) ? clients : [])
+      .filter((client) => {
+        const name = normalizeForSearch(client.name || '');
+        const idCard = normalizeForSearch(client.id_card || '');
+        const phone = String(client.phone || '').replace(/\D/g, '');
+        return name.includes(term)
+          || idCard.includes(term)
+          || (digits.length > 0 && phone.includes(digits));
+      })
+      .slice(0, 8);
+  }, [clients, idSearch]);
 
   const handleSelectClient = (client) => {
     setSelectedClient(client);
     setIdSearch('');
-    setSearchResults([]);
   };
 
   const toggleService = (serviceId) => {
@@ -268,13 +286,15 @@ const ReceptionModule = ({ isMobile }) => {
                   <input
                     className="mi-input"
                     type="text" placeholder="Buscar por nombre, cédula o teléfono..."
-                    value={idSearch} onChange={(e) => handleSearchInput(e.target.value)}
+                    value={idSearch}
+                    onChange={(e) => setIdSearch(e.target.value)}
+                    aria-label="Buscar cliente"
                     style={{ flex: 1, border: 'none', background: 'none', outline: 'none', fontSize: '0.75rem', color: '#2d2d2d' }}
                   />
-                  <button className="mi-btn" onClick={() => { if (searchResults.length > 0) handleSelectClient(searchResults[0]); }} style={{
+                  <button type="button" aria-label="Seleccionar primer resultado" className="mi-btn" disabled={searchResults.length === 0} onClick={() => { if (searchResults.length > 0) handleSelectClient(searchResults[0]); }} style={{
                     width: '30px', height: '30px', borderRadius: '8px', border: 'none',
                     background: 'linear-gradient(135deg, #c48b9f, #a0506a)',
-                    color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    color: '#fff', cursor: searchResults.length > 0 ? 'pointer' : 'not-allowed', opacity: searchResults.length > 0 ? 1 : 0.45, display: 'flex', alignItems: 'center', justifyContent: 'center'
                   }}><ArrowRight size={14} /></button>
                 </div>
                 {searchResults.length > 0 && (
@@ -284,14 +304,36 @@ const ReceptionModule = ({ isMobile }) => {
                     overflow: 'hidden', zIndex: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.08)'
                   }}>
                     {searchResults.map(c => (
-                      <div key={c.id} onClick={() => handleSelectClient(c)} style={{
-                        padding: '10px 14px', cursor: 'pointer', borderBottom: '1px solid rgba(0,0,0,0.03)',
-                        display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem'
-                      }}>
-                        <span style={{ fontWeight: 600, color: '#2d2d2d' }}>{c.name}</span>
-                        <span style={{ fontSize: '0.68rem', color: '#c48b9f', fontWeight: 600 }}>V-{c.id_card}</span>
-                      </div>
+                      <button
+                        type="button"
+                        key={c.id}
+                        onClick={() => handleSelectClient(c)}
+                        style={{
+                          width: '100%', padding: '10px 14px', cursor: 'pointer', border: 'none',
+                          borderBottom: '1px solid rgba(0,0,0,0.03)', background: '#fff',
+                          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                          gap: '12px', fontSize: '0.78rem', textAlign: 'left'
+                        }}
+                      >
+                        <span>
+                          <strong style={{ display: 'block', color: '#2d2d2d' }}>{c.name}</strong>
+                          <span style={{ display: 'block', marginTop: '2px', fontSize: '0.66rem', color: '#9e9e9e' }}>{c.phone || 'Sin teléfono'}</span>
+                        </span>
+                        <span style={{ fontSize: '0.68rem', color: '#c48b9f', fontWeight: 600, whiteSpace: 'nowrap' }}>{c.id_card ? `V-${c.id_card}` : 'Sin cédula'}</span>
+                      </button>
                     ))}
+                  </div>
+                )}
+                {clientsLoading && (
+                  <div style={{ marginTop: '8px', fontSize: '0.7rem', color: '#9e9e9e' }}>Cargando clientes…</div>
+                )}
+                {!clientsLoading && idSearch.trim() && searchResults.length === 0 && !clientsError && (
+                  <div style={{ marginTop: '8px', fontSize: '0.7rem', color: '#9e9e9e' }}>No se encontraron clientes con “{idSearch.trim()}”.</div>
+                )}
+                {clientsError && (
+                  <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', fontSize: '0.7rem', color: '#b45309' }}>
+                    <span>{clientsError}</span>
+                    <button type="button" onClick={loadData} style={{ border: 'none', background: 'transparent', color: '#a0506a', fontWeight: 700, cursor: 'pointer' }}>Reintentar</button>
                   </div>
                 )}
               </div>

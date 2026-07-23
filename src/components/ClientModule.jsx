@@ -4021,6 +4021,13 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
         );
       }
       case 'history': {
+        const uuidPattern = /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/gi;
+        const cleanInternalIds = (value, replacement = '') => String(value || '')
+          .replace(uuidPattern, replacement)
+          .replace(/\|\s*\|/g, '|')
+          .replace(/\s{2,}/g, ' ')
+          .replace(/^[\s|·-]+|[\s|·-]+$/g, '')
+          .trim();
         const completedAppointments = appointments
           .filter((appointment) => {
             const status = String(appointment.status || '').toLowerCase();
@@ -4034,6 +4041,14 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
           const serviceName = services.map((item) => item.services?.name).filter(Boolean).join(' + ') || 'Visita sin servicio registrado';
           const specialist = services.map((item) => item.staff?.display_name || item.staff?.name).filter(Boolean).join(', ') || appointment.staff?.display_name || appointment.staff?.name || 'Sin especialista';
           const duration = services.reduce((sum, item) => sum + (Number(item.duration_minutes) || 0), 0);
+          const packageId = services.map((item) => item.client_package_id).find(Boolean)
+            || String(appointment.notes || '').match(uuidPattern)?.[0];
+          const linkedPackage = packages.find((pkg) => String(pkg.id) === String(packageId));
+          const packageName = linkedPackage?.services?.name || serviceName;
+          const description = cleanInternalIds(
+            appointment.notes || 'Cita registrada en Agenda.',
+            packageName
+          );
           return {
             id: `appointment-${appointment.id}`,
             sourceId: appointment.id,
@@ -4043,13 +4058,13 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
             status: appointment.status || 'Registrada',
             duration: duration ? `${duration} min` : '',
             price: Number(appointment.total_price) || services.reduce((sum, item) => sum + (Number(item.price_paid) || 0), 0),
-            description: appointment.notes || 'Cita registrada en Agenda.',
+            description,
             tags: services.map((item) => item.services?.category).filter(Boolean),
             detail: {
-              diagnostic: appointment.notes || 'Sin observaciones clínicas registradas.',
+              diagnostic: description || 'Sin observaciones clínicas registradas.',
               products: [],
               recommendations: [],
-              notes: appointment.notes || '',
+              notes: description,
               specialist,
             },
           };
@@ -4069,7 +4084,7 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
             diagnostic: 'Movimiento sincronizado desde Caja o Centro Láser.',
             products: [],
             recommendations: [],
-            notes: transaction.reference || '',
+            notes: cleanInternalIds(transaction.reference, 'Referencia interna'),
             specialist: 'Jana Studio',
           },
           transaction,
