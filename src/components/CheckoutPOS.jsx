@@ -37,6 +37,7 @@ import AnimatedModal from './AnimatedModal';
 import { normalizeForSearch } from '../utils/stringUtils';
 import { useScrollLock } from '../hooks/useScrollLock';
 import offlineService from '../services/offlineService';
+import { selectPayableAppointments } from '../domain/checkoutRules';
 
 const CartSellerSelect = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -127,6 +128,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
   };
   const [pendingServices, setPendingServices] = useState([]);
   const [pendingSyncCount, setPendingSyncCount] = useState(0);
+  const checkoutSubmissionRef = React.useRef(false);
 
   useEffect(() => {
     offlineService.initOfflineService();
@@ -255,15 +257,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
 
   useEffect(() => {
     if (selectedApp) {
-      const clientPendingApps = pendingServices.filter(
-        app => app.client_id === selectedApp.client_id
-      );
-      
-      const uniqueApps = [
-        selectedApp, 
-        ...clientPendingApps.filter(app => app.id !== selectedApp.id)
-      ];
-      setBundledApps(uniqueApps);
+      setBundledApps(selectPayableAppointments(selectedApp, pendingServices));
     } else {
       setBundledApps([]);
     }
@@ -274,7 +268,13 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
   }, [selectedApp]);
 
   useEffect(() => {
-    setTotalAppsInCheckout([...bundledApps, ...linkedApps]);
+    const uniquePayableApps = new Map();
+    [...bundledApps, ...linkedApps].forEach((appointment) => {
+      if (appointment?.id && appointment.status === 'Por Pagar') {
+        uniquePayableApps.set(appointment.id, appointment);
+      }
+    });
+    setTotalAppsInCheckout([...uniquePayableApps.values()]);
   }, [bundledApps, linkedApps]);
 
   useEffect(() => {
@@ -759,7 +759,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
   };
 
   const handleProcessCheckout = async () => {
-    if (loading) return;
+    if (loading || checkoutSubmissionRef.current) return;
     if (!selectedApp && !selectedClient) {
       showToast("Selecciona un cliente para la venta directa", "warning");
       return;
@@ -774,6 +774,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
     }
 
     try {
+      checkoutSubmissionRef.current = true;
       setLoading(true);
       
       const checkoutAppointments = totalAppsInCheckout.filter(app =>
@@ -1014,9 +1015,8 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
 
       // Encolar el pago en la cola offline local de Dexie
       await offlineService.enqueuePayment(paymentData);
-      
-      triggerRocket();
-      showToast("¡Venta enviada a procesar!", "success");
+
+      showToast("Cobro recibido. Se está sincronizando de forma segura.", "success");
       
       // Limpiar estados de forma inmediata para agilizar la interfaz
       setSelectedApp(null);
@@ -1031,6 +1031,12 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
       if (paymentData.appointmentIds && paymentData.appointmentIds.length > 0) {
         setPendingServices(prev => prev.filter(app => !paymentData.appointmentIds.includes(app.id)));
       }
+
+      try {
+        triggerRocket?.();
+      } catch (visualError) {
+        console.warn("El cobro se registró, pero la animación no pudo mostrarse:", visualError);
+      }
       
       // Recargar datos en segundo plano después de 3 segundos para confirmar la sincronización
       setTimeout(() => {
@@ -1038,8 +1044,10 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
       }, 3000);
     } catch (err) {
       console.error("Error en checkout:", err);
-      showToast("Error al procesar pago", "error");
+      const detail = err?.message ? `: ${err.message}` : '';
+      showToast(`No se pudo registrar el cobro${detail}`, "error");
     } finally {
+      checkoutSubmissionRef.current = false;
       setLoading(false);
     }
   };
@@ -1590,16 +1598,17 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
           )}
         </section>
 
-        <section>
+        <section className="checkout-summary-column">
           {(!selectedApp && !isDirectSale) ? (
             <div className="glass-card" style={{ height: '400px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', borderRadius: '24px', color: 'var(--text-muted)' }}>
               <CreditCard size={48} style={{ marginBottom: '20px', opacity: 0.2 }} />
               <h3>Selecciona un cliente de la lista para cobrar</h3>
             </div>
           ) : (
-            <div className="glass-card animate-scale-in" style={{ borderRadius: isMobile ? '20px' : '32px', padding: isMobile ? '16px' : '32px', border: '1.5px solid rgba(212,160,154,0.3)', background: 'linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%)' }}>
-              <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', gap: isMobile ? '12px' : '0', marginBottom: isMobile ? '16px' : '32px' }}>
+            <div className="glass-card animate-scale-in checkout-summary-card" style={{ borderRadius: isMobile ? '20px' : '32px', padding: isMobile ? '16px' : '32px', border: '1.5px solid rgba(212,160,154,0.3)', background: 'linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%)' }}>
+              <div className="checkout-summary-identity" style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', gap: isMobile ? '12px' : '0', marginBottom: isMobile ? '16px' : '32px' }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
+                  <div className="checkout-summary-kicker">Cobro activo</div>
                   <h3 style={{ fontSize: isMobile ? '18px' : '24px', fontWeight: '900' }}>{selectedApp ? 'Resumen de Cobro' : 'Venta Directa'}</h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '12px' }}>
                     {selectedApp ? (
@@ -1682,7 +1691,24 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                 </div>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '8px' : '12px', marginBottom: '24px', padding: isMobile ? '12px 10px' : '20px', backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '16px' }}>
+              <div className="checkout-quick-total">
+                <div>
+                  <span>Total preparado</span>
+                  <strong>${formatCurrency(totalUsd)}</strong>
+                  <small>Ref. {formatCurrency(totalBs)} Bs.</small>
+                </div>
+                <button
+                  type="button"
+                  className="btn-pink checkout-quick-pay"
+                  onClick={handleProcessCheckout}
+                  disabled={loading}
+                >
+                  {loading ? <RefreshCcw className="animate-spin" size={18} /> : <CreditCard size={18} />}
+                  {loading ? 'Procesando…' : 'Cobrar ahora'}
+                </button>
+              </div>
+
+              <div className="checkout-service-ledger" style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '8px' : '12px', marginBottom: '24px', padding: isMobile ? '12px 10px' : '20px', backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '16px' }}>
                 {totalAppsInCheckout.map(app => {
                   const sPrice = app.total_price !== undefined && app.total_price !== null && Number(app.total_price) > 0 ? Number(app.total_price) : (app.services?.price || 0);
                   const isLinked = app.client_id !== selectedApp?.client_id;
@@ -2303,7 +2329,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                 </div>
 
                 {appliedPromotion && <div style={{display:'flex',justifyContent:'space-between',marginTop:12,padding:'9px 12px',borderRadius:10,background:'rgba(201,114,130,.1)',color:'var(--pink-primary)',fontSize:12,fontWeight:800}}><span>Promoción: {appliedPromotion.name}</span><span>- ${formatCurrency(promotionDiscount)}</span></div>}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: '12px' }}>
+                <div className="checkout-total-hero" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: '12px' }}>
                   <span style={{ fontSize: isMobile ? '13px' : '16px', fontWeight: '900' }}>TOTAL A PAGAR</span>
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontSize: isMobile ? '24px' : '28px', fontWeight: '950', color: 'var(--pink-primary)' }}>${formatCurrency(totalUsd)}</div>
@@ -2312,26 +2338,30 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                 </div>
               </div>
 
-              <div style={{ marginBottom: '24px' }}>
-                <div style={{ display: 'flex', gap: '6px', marginBottom: '16px', flexWrap: 'wrap' }}>
+              <div className="checkout-payment-panel" style={{ marginBottom: '24px' }}>
+                <div className="checkout-payment-modes" style={{ display: 'flex', gap: '6px', marginBottom: '16px', flexWrap: 'wrap' }}>
                   <button 
                     type="button"
                     onClick={() => { setPaymentMode('full_usd'); setCashUsd(totalUsd); }}
+                    className={`checkout-payment-mode${paymentMode === 'full_usd' ? ' is-active' : ''}`}
                     style={{ flex: '1 0 45%', height: '38px', borderRadius: '10px', border: paymentMode === 'full_usd' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.1)', background: paymentMode === 'full_usd' ? 'rgba(212,160,154,0.1)' : 'none', color: paymentMode === 'full_usd' ? 'var(--pink-primary)' : 'white', fontWeight: '800', cursor: 'pointer', fontSize: '9px' }}
                   >TODO EN $</button>
                   <button 
                     type="button"
                     onClick={() => { setPaymentMode('full_bs'); setCashUsd(0); }}
+                    className={`checkout-payment-mode${paymentMode === 'full_bs' ? ' is-active' : ''}`}
                     style={{ flex: '1 0 45%', height: '38px', borderRadius: '10px', border: paymentMode === 'full_bs' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.1)', background: paymentMode === 'full_bs' ? 'rgba(212,160,154,0.1)' : 'none', color: paymentMode === 'full_bs' ? 'var(--pink-primary)' : 'white', fontWeight: '800', cursor: 'pointer', fontSize: '9px' }}
                   >TODO EN BS</button>
                   <button 
                     type="button"
                     onClick={() => setPaymentMode('mixed')}
+                    className={`checkout-payment-mode${paymentMode === 'mixed' ? ' is-active' : ''}`}
                     style={{ flex: '1 0 45%', height: '38px', borderRadius: '10px', border: paymentMode === 'mixed' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.1)', background: paymentMode === 'mixed' ? 'rgba(212,160,154,0.1)' : 'none', color: paymentMode === 'mixed' ? 'var(--pink-primary)' : 'white', fontWeight: '800', cursor: 'pointer', fontSize: '9px' }}
                   >PAGO MIXTO</button>
                   <button 
                     type="button"
                     onClick={() => { setPaymentMode('financed'); setInitialPaymentUsd(Math.round(totalUsd / 3)); }}
+                    className={`checkout-payment-mode${paymentMode === 'financed' ? ' is-active' : ''}`}
                     style={{ flex: '1 0 45%', height: '38px', borderRadius: '10px', border: paymentMode === 'financed' ? '2px solid var(--pink-primary)' : '1px solid rgba(255,255,255,0.1)', background: paymentMode === 'financed' ? 'rgba(212,160,154,0.1)' : 'none', color: paymentMode === 'financed' ? 'var(--pink-primary)' : 'white', fontWeight: '800', cursor: 'pointer', fontSize: '9px' }}
                   >FINANCIADO</button>
                 </div>
@@ -2502,7 +2532,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                 </div>
               )}
 
-              <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
+              <div className="checkout-action-dock" style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
                 <button 
                   onClick={handleCancelOrder}
                   disabled={loading}

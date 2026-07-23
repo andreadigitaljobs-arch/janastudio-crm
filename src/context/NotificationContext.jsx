@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
-import { CheckCircle, AlertCircle, Info, Loader2 } from 'lucide-react';
+import React, { createContext, useContext } from 'react';
+import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { useNotifications } from '../hooks/useNotifications';
 
 const TOAST_ICONS = {
   success: <CheckCircle size={20} color="var(--pink-primary)" />,
@@ -11,17 +12,7 @@ const TOAST_ICONS = {
 const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
-  const [toasts, setToasts] = useState([]);
-
-  const showToast = useCallback((message, type = 'success') => {
-    const id = Date.now();
-    setToasts((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 4000);
-  }, []);
-
-  const notifs = { toasts, showToast };
+  const notifs = useNotifications();
 
   return (
     <NotificationContext.Provider value={notifs}>

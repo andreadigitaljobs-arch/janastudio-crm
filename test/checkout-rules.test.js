@@ -5,6 +5,7 @@ import {
   isCheckoutUuid,
   normalizeCheckoutPayment,
   prepareQueuedCheckout,
+  selectPayableAppointments,
 } from '../src/domain/checkoutRules.js';
 
 const KEY = '018f8d7e-6c43-7c1a-8f44-5e67f3196210';
@@ -68,4 +69,29 @@ test('migra un cobro de la cola antigua y conserva la clave en reintentos', () =
   assert.equal(firstAttempt.paymentData.idempotencyKey, KEY);
   assert.equal(retry.migrated, false);
   assert.equal(retry.paymentData.idempotencyKey, KEY);
+});
+
+test('la caja agrupa solamente las citas finalizadas del mismo cliente', () => {
+  const clientId = '328f8d7e-6c43-7c1a-8f44-5e67f3196210';
+  const selected = { id: APP, client_id: clientId, status: 'Por Pagar' };
+  const anotherPayable = {
+    id: '428f8d7e-6c43-7c1a-8f44-5e67f3196210',
+    client_id: clientId,
+    status: 'Por Pagar',
+  };
+  const futureAppointment = {
+    id: '528f8d7e-6c43-7c1a-8f44-5e67f3196210',
+    client_id: clientId,
+    status: 'Agendado',
+  };
+  const inService = {
+    id: '628f8d7e-6c43-7c1a-8f44-5e67f3196210',
+    client_id: clientId,
+    status: 'En Silla',
+  };
+
+  assert.deepEqual(
+    selectPayableAppointments(selected, [anotherPayable, futureAppointment, inService, selected]),
+    [selected, anotherPayable]
+  );
 });

@@ -12,6 +12,23 @@ const uniqueUuidList = (values = []) => [...new Set(
   values.filter(value => typeof value === 'string' && UUID_PATTERN.test(value))
 )];
 
+export const selectPayableAppointments = (selectedAppointment, appointments = []) => {
+  if (!selectedAppointment?.id || !selectedAppointment?.client_id) return [];
+
+  const uniqueAppointments = new Map();
+  [selectedAppointment, ...appointments].forEach((appointment) => {
+    if (
+      appointment?.id
+      && appointment.client_id === selectedAppointment.client_id
+      && appointment.status === 'Por Pagar'
+    ) {
+      uniqueAppointments.set(appointment.id, appointment);
+    }
+  });
+
+  return [...uniqueAppointments.values()];
+};
+
 const normalizeProducts = (products = []) => {
   const byId = new Map();
 
