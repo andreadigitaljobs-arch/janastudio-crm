@@ -117,7 +117,7 @@ const CartSellerSelect = ({ value, onChange, options }) => {
     </div>
   );
 };
-const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, onNavigate }) => {
+const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, onNavigate }) => {
   const { showToast, triggerConfetti, triggerRocket } = useNotifs();
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
@@ -1265,8 +1265,8 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, onNavigate }) => {
     showToast(`¡Cliente ${newClient.name} registrado y enlazado!`);
   };
 
-  // Group active services (status !== 'Agendado') by client
-  const activeServices = pendingServices.filter(a => a.status !== 'Agendado');
+  // Caja solo debe mostrar servicios que ya fueron finalizados.
+  const activeServices = pendingServices.filter(a => a.status === 'Por Pagar');
   const groupedActiveServices = [];
   activeServices.forEach(app => {
     const existing = groupedActiveServices.find(g => g.client_id === app.client_id);
@@ -1308,8 +1308,9 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, onNavigate }) => {
   }
 
   return (
-    <div className="animate-fade-in" style={{ paddingBottom: '100px', maxWidth: '100%' }}>
-      <header style={{ 
+    <div className={`checkout-pos-shell animate-fade-in${embedded ? ' checkout-pos-shell--embedded' : ''}`} style={{ paddingBottom: embedded ? '24px' : '100px', maxWidth: '100%' }}>
+      {!embedded && (
+        <header style={{
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center', 
@@ -1370,7 +1371,8 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, onNavigate }) => {
             <span>TODO AL DÍA</span>
           </div>
         )}
-      </header>
+        </header>
+      )}
 
       <div className="checkout-pos-container">
         <div className="checkout-pos-grid">
@@ -1408,13 +1410,15 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, onNavigate }) => {
                   const val = e.target.value;
                   setIdSearch(val);
                   
-                  const activeMatch = pendingServices.find(app => app.status !== 'Agendado' && app.clients?.id_card === val);
+                  const activeMatch = pendingServices.find(app => app.status === 'Por Pagar' && app.clients?.id_card === val);
                   if (activeMatch) {
                     setSelectedApp(activeMatch);
                     return;
                   }
 
-                  const scheduledMatch = pendingServices.find(app => app.status === 'Agendado' && app.clients?.id_card === val);
+                  const scheduledMatch = !embedded
+                    ? pendingServices.find(app => app.status === 'Agendado' && app.clients?.id_card === val)
+                    : null;
                   if (scheduledMatch) {
                     setDialog({
                       isOpen: true,
@@ -1454,6 +1458,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, onNavigate }) => {
                     <div 
                       key={group.client_id} 
                       onClick={() => setSelectedApp(group.apps[0])}
+                      className="checkout-queue-card"
                       style={{ 
                         padding: '16px', 
                         borderRadius: '16px', 
@@ -1463,7 +1468,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, onNavigate }) => {
                         transition: 'all 0.2s'
                       }}
                     >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                      <div className="checkout-queue-card-title-row" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                         <span style={{ fontWeight: '800' }}>{group.client_name}</span>
                         <span style={{ 
                           fontSize: '10px', 
@@ -1475,11 +1480,11 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, onNavigate }) => {
                           fontWeight: '900' 
                         }}>{badgeStatus === 'En Silla' ? <><img src={goldChairImg} alt="silla" style={{ width: '12px', height: '12px', objectFit: 'contain', marginRight: '3px', verticalAlign: 'middle' }} />En Silla</> : badgeStatus}</span>
                       </div>
-                      <div style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', maxWidth: '70%', lineHeight: '1.3' }}>
+                      <div className="checkout-queue-card-detail-row" style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div className="checkout-queue-card-service" style={{ display: 'flex', alignItems: 'center', gap: '6px', maxWidth: '70%', lineHeight: '1.3' }}>
                           <Sparkles size={12} /> {serviceNames} • <span style={{ fontWeight: '600' }}>{staffNames}</span>
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
+                        <div className="checkout-queue-card-total" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
                           <span style={{ fontWeight: '700', color: 'var(--pink-primary)' }}>${Number(totalUsd).toFixed(2)}</span>
                           <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Ref: {(totalUsd * fixedRate).toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} Bs.</span>
                         </div>
@@ -1490,7 +1495,8 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, onNavigate }) => {
               )}
             </div>
 
-            <div style={{ marginTop: '24px' }}>
+            {!embedded && (
+              <div style={{ marginTop: '24px' }}>
               <label style={{ display: 'block', fontSize: '11px', fontWeight: '900', color: 'var(--pink-primary)', marginBottom: '16px', letterSpacing: '1px' }}>PRÓXIMAS CITAS (AGENDA HOY)</label>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {groupedScheduledServices.length === 0 ? (
@@ -1536,48 +1542,49 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, onNavigate }) => {
                   })
                 )}
               </div>
-            </div>
+              </div>
+            )}
           </div>
 
           {(selectedApp || isDirectSale) && (
-            <div className="glass-card animate-slide-up" style={{ borderRadius: isMobile ? '18px' : '24px', padding: isMobile ? '10px' : '16px', display: 'flex', gap: isMobile ? '8px' : '12px', width: '100%', boxSizing: 'border-box' }}>
+            <div className="glass-card animate-slide-up checkout-action-tiles" style={{ borderRadius: isMobile ? '18px' : '24px', padding: isMobile ? '10px' : '16px', display: 'flex', gap: isMobile ? '8px' : '12px', width: '100%', boxSizing: 'border-box' }}>
               <button 
                 onClick={() => setShowProductModal(true)}
-                style={{ flex: 1, padding: isMobile ? '14px 8px' : '24px', borderRadius: isMobile ? '14px' : '20px', border: '1px solid rgba(212,160,154,0.3)', background: 'linear-gradient(145deg, rgba(212,160,154,0.08), rgba(212,160,154,0.02))', color: 'white', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: isMobile ? '6px' : '12px', transition: 'all 0.3s ease', boxShadow: '0 4px 15px rgba(0,0,0,0.2)', minWidth: 0 }}
+                style={{ flex: 1, padding: isMobile ? '12px 8px' : '16px', borderRadius: isMobile ? '14px' : '16px', border: '1px solid rgba(160,80,106,0.16)', background: '#fffafa', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: isMobile ? '6px' : '8px', transition: 'all 0.25s ease', boxShadow: '0 6px 18px rgba(100,54,68,0.05)', minWidth: 0 }}
                 className="hover-item"
                 onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(212,160,154,0.15)'; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(100,54,68,0.05)'; }}
               >
-                <div style={{ background: 'var(--pink-primary)', width: isMobile ? '36px' : '48px', height: isMobile ? '36px' : '48px', borderRadius: isMobile ? '10px' : '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black', boxShadow: '0 4px 10px rgba(212,160,154,0.3)', flexShrink: 0 }}>
+                <div style={{ background: 'var(--pink-primary)', width: isMobile ? '36px' : '42px', height: isMobile ? '36px' : '42px', borderRadius: isMobile ? '10px' : '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', boxShadow: '0 4px 10px rgba(160,80,106,0.2)', flexShrink: 0 }}>
                   <ShoppingBag size={isMobile ? 18 : 24} strokeWidth={2.5} />
                 </div>
-                <div style={{ fontWeight: '900', fontSize: isMobile ? '9px' : '12px', letterSpacing: '0.5px', textShadow: '0 2px 4px rgba(0,0,0,0.5)', textAlign: 'center' }}>PRODUCTOS</div>
+                <div style={{ fontWeight: '800', fontSize: isMobile ? '9px' : '11px', letterSpacing: '0.5px', textAlign: 'center' }}>PRODUCTOS</div>
               </button>
 
               <button 
                 onClick={() => setShowExtraModal(true)}
-                style={{ flex: 1, padding: isMobile ? '14px 8px' : '24px', borderRadius: isMobile ? '14px' : '20px', border: '1px solid rgba(212,160,154,0.3)', background: 'linear-gradient(145deg, rgba(212,160,154,0.08), rgba(212,160,154,0.02))', color: 'white', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: isMobile ? '6px' : '12px', transition: 'all 0.3s ease', boxShadow: '0 4px 15px rgba(0,0,0,0.2)', minWidth: 0 }}
+                style={{ flex: 1, padding: isMobile ? '12px 8px' : '16px', borderRadius: isMobile ? '14px' : '16px', border: '1px solid rgba(160,80,106,0.16)', background: '#fffafa', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: isMobile ? '6px' : '8px', transition: 'all 0.25s ease', boxShadow: '0 6px 18px rgba(100,54,68,0.05)', minWidth: 0 }}
                 className="hover-item"
                 onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(212,160,154,0.15)'; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(100,54,68,0.05)'; }}
               >
-                <div style={{ background: 'var(--pink-primary)', width: isMobile ? '36px' : '48px', height: isMobile ? '36px' : '48px', borderRadius: isMobile ? '10px' : '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black', boxShadow: '0 4px 10px rgba(212,160,154,0.3)', flexShrink: 0 }}>
+                <div style={{ background: 'var(--pink-primary)', width: isMobile ? '36px' : '42px', height: isMobile ? '36px' : '42px', borderRadius: isMobile ? '10px' : '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', boxShadow: '0 4px 10px rgba(160,80,106,0.2)', flexShrink: 0 }}>
                   <Zap size={isMobile ? 18 : 24} strokeWidth={2.5} />
                 </div>
-                <div style={{ fontWeight: '900', fontSize: isMobile ? '9px' : '12px', letterSpacing: '0.5px', textShadow: '0 2px 4px rgba(0,0,0,0.5)', textAlign: 'center' }}>EXTRAS</div>
+                <div style={{ fontWeight: '800', fontSize: isMobile ? '9px' : '11px', letterSpacing: '0.5px', textAlign: 'center' }}>EXTRAS</div>
               </button>
 
               <button 
                 onClick={() => setShowServiceModal(true)}
-                style={{ flex: 1, padding: isMobile ? '14px 8px' : '24px', borderRadius: isMobile ? '14px' : '20px', border: '1px solid rgba(212,160,154,0.3)', background: 'linear-gradient(145deg, rgba(212,160,154,0.08), rgba(212,160,154,0.02))', color: 'white', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: isMobile ? '6px' : '12px', transition: 'all 0.3s ease', boxShadow: '0 4px 15px rgba(0,0,0,0.2)', minWidth: 0 }}
+                style={{ flex: 1, padding: isMobile ? '12px 8px' : '16px', borderRadius: isMobile ? '14px' : '16px', border: '1px solid rgba(160,80,106,0.16)', background: '#fffafa', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: isMobile ? '6px' : '8px', transition: 'all 0.25s ease', boxShadow: '0 6px 18px rgba(100,54,68,0.05)', minWidth: 0 }}
                 className="hover-item"
                 onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(212,160,154,0.15)'; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)'; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(100,54,68,0.05)'; }}
               >
-                <div style={{ background: 'var(--pink-primary)', width: isMobile ? '36px' : '48px', height: isMobile ? '36px' : '48px', borderRadius: isMobile ? '10px' : '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black', boxShadow: '0 4px 10px rgba(212,160,154,0.3)', flexShrink: 0 }}>
+                <div style={{ background: 'var(--pink-primary)', width: isMobile ? '36px' : '42px', height: isMobile ? '36px' : '42px', borderRadius: isMobile ? '10px' : '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', boxShadow: '0 4px 10px rgba(160,80,106,0.2)', flexShrink: 0 }}>
                   <Sparkles size={isMobile ? 18 : 24} strokeWidth={2.5} />
                 </div>
-                <div style={{ fontWeight: '900', fontSize: isMobile ? '9px' : '12px', letterSpacing: '0.5px', textShadow: '0 2px 4px rgba(0,0,0,0.5)', textAlign: 'center' }}>SERVICIOS</div>
+                <div style={{ fontWeight: '800', fontSize: isMobile ? '9px' : '11px', letterSpacing: '0.5px', textAlign: 'center' }}>SERVICIOS</div>
               </button>
             </div>
           )}

@@ -45,7 +45,7 @@ import { canAccessModule } from './utils/roles';
 const DashboardModule = lazy(() => import('./components/DashboardModule'));
 const ClientModule = lazy(() => import('./components/ClientModule'));
 const SchedulingModule = lazy(() => import('./components/SchedulingModule'));
-const CheckoutPOS = lazy(() => import('./components/CheckoutPOS'));
+const CheckoutDialog = lazy(() => import('./components/CheckoutDialog'));
 const CapillaryDiagnosisModule = lazy(() => import('./components/CapillaryDiagnosisModule'));
 
 const PersonnelModule = lazy(() => import('./components/PersonnelModule'));
@@ -73,6 +73,7 @@ function App() {
   const [activeTab, setActiveTab] = useState(() => {
     const saved = localStorage.getItem('jana_active_tab') || 'dashboard';
     const isMobileDevice = typeof window !== 'undefined' ? (window.innerWidth < 600 || window.screen.width < 600) : false;
+    if (saved === 'checkout') return 'reception';
     if (saved === 'notifications' && !isMobileDevice) {
       return 'dashboard';
     }
@@ -106,6 +107,8 @@ function App() {
     } catch { return {}; }
   });
   const [isReceptionModalOpen, setIsReceptionModalOpen] = useState(false);
+  const [isSaleModalOpen, setIsSaleModalOpen] = useState(false);
+  const [checkoutInitialAppointmentId, setCheckoutInitialAppointmentId] = useState(null);
   const [hideSidebar, setHideSidebar] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
@@ -138,6 +141,7 @@ function App() {
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { id: 'scheduling', label: 'Agenda', icon: Calendar },
     { id: 'reception', label: 'Recepción', icon: UserCircle },
+    { id: 'checkout', label: 'Caja', icon: Receipt },
     { id: 'laser', label: 'Centro Láser', icon: LaserGunIcon },
     { id: 'clients', label: 'Clientes', icon: Users },
     { id: 'diagnosis', label: 'Diagnóstico Capilar', icon: Activity },
@@ -268,7 +272,6 @@ function App() {
     localStorage.setItem('jana_active_rate', 'bcv');
   }, []);
 
-  const [isSaleModalOpen, setIsSaleModalOpen] = useState(false);
   const [stats, setStats] = useState({ income: 0, clients: 0, expenses: 0, appointments: 0 });
   const [dbData, setDbData] = useState({ clients: [], services: [], staff: [], inventory: [] });
 
@@ -470,8 +473,19 @@ function App() {
     mainContentRef.current?.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [activeTab, tabParams]);
 
+  const handleOpenCheckout = useCallback((params = {}) => {
+    setCheckoutInitialAppointmentId(params.appointmentId || null);
+    setIsSaleModalOpen(true);
+    if (isMobile) setIsSidebarOpen(false);
+  }, [isMobile]);
+
   const handleTabChange = useCallback((tabId, params = {}) => {
     if (!canAccessModule(user?.role, tabId)) return;
+
+    if (tabId === 'checkout') {
+      handleOpenCheckout(params);
+      return;
+    }
     
     // Safeguard: on desktop, never navigate to the full page notifications module.
     // Instead, trigger the slide-out side drawer and stay on the current view!
@@ -486,7 +500,7 @@ function App() {
     setActiveTab(tabId);
     localStorage.setItem('jana_active_tab', tabId);
     if (isMobile) setIsSidebarOpen(false);
-  }, [user?.role, activeTab, isMobile]);
+  }, [user?.role, activeTab, isMobile, handleOpenCheckout]);
 
   const handleSeedData = async () => {
     if (!await confirm('¿Quieres cargar datos de prueba para ver el CRM funcionando?')) return;
@@ -523,7 +537,6 @@ function App() {
       case 'scheduling': return <div className="p-container p-container-agenda"><SchedulingModule isMobile={isMobile} isTablet={isTablet} isCollapsed={isCollapsed} rates={effectiveRates} openScheduleModal={tabParams.openScheduleModal} modalKey={tabParams.modalKey} onOpenNotifications={handleOpenNotifications} onNavigate={handleTabChange} /></div>;
       case 'reception': return <div className="p-container"><ReceptionModule isMobile={isMobile} onNavigate={handleTabChange} /></div>;
       case 'laser': return <div className="p-container"><LaserModule isMobile={isMobile} /></div>;
-      case 'checkout': return <div className="p-container"><CheckoutPOS isMobile={isMobile} rates={effectiveRates} initialAppointmentId={tabParams.appointmentId} onOpenSale={() => setIsSaleModalOpen(true)} onNavigate={handleTabChange} /></div>;
       case 'services': return <div className="p-container"><ServicesModule isMobile={isMobile} currency={currency} rates={effectiveRates} /></div>;
       case 'costing': return <div className="p-container"><CostingModule isMobile={isMobile} services={dbData.services} inventory={dbData.inventory} /></div>;
       case 'inventory': return <div className="p-container"><InventoryModule isMobile={isMobile} currency={currency} rates={effectiveRates} /></div>;
@@ -670,66 +683,37 @@ function App() {
         </div>
       </div>
 
-      {/* Checkout POS Modal */}
-      <div style={{ 
-        position: 'fixed', 
-        inset: 0, 
-        zIndex: 3000, 
-        backgroundColor: 'rgba(253, 248, 247, 0.99)', 
-        display: 'flex', 
-        alignItems: 'stretch', 
-        justifyContent: 'center', 
-        opacity: isSaleModalOpen ? 1 : 0,
-        visibility: isSaleModalOpen ? 'visible' : 'hidden',
-        pointerEvents: isSaleModalOpen ? 'auto' : 'none',
-        transition: 'opacity 0.25s ease, visibility 0.25s'
-      }}>
-        <div style={{ 
-          width: '100%', 
-          height: '100%', 
-          overflowY: 'auto', 
-          position: 'relative', 
-          background: '#fdf8f7',
-          padding: isMobile ? '20px' : '40px',
-        }}>
-          {/* Close Button */}
-          <button 
-            onClick={() => setIsSaleModalOpen(false)}
-            style={{ 
-              position: 'fixed', 
-              right: '20px', 
-              top: '20px', 
-              zIndex: 3001, 
-              background: 'rgba(74, 48, 54, 0.08)', 
-              border: 'none', 
-              borderRadius: '50%', 
-              width: '40px', 
-              height: '40px', 
-              color: 'var(--text-primary)', 
-              cursor: 'pointer', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              boxShadow: '0 4px 12px rgba(74, 48, 54, 0.05)'
+      {isSaleModalOpen && (
+        <Suspense fallback={null}>
+          <CheckoutDialog
+            isOpen={isSaleModalOpen}
+            isMobile={isMobile}
+            rates={effectiveRates}
+            initialAppointmentId={checkoutInitialAppointmentId}
+            onClose={() => {
+              setIsSaleModalOpen(false);
+              setCheckoutInitialAppointmentId(null);
             }}
-          >
-            <X size={20} />
-          </button>
-          
-          {isSaleModalOpen && (
-            <Suspense fallback={<ModuleFallback />}>
-              <CheckoutPOS 
-                isMobile={isMobile} 
-                rates={effectiveRates} 
-                onNavigate={(tab, params) => {
-                  handleTabChange(tab, params);
-                  setIsSaleModalOpen(false);
-                }} 
-              />
-            </Suspense>
-          )}
-        </div>
-      </div>
+            onNavigate={(tab, params) => {
+              setIsSaleModalOpen(false);
+              setCheckoutInitialAppointmentId(null);
+              handleTabChange(tab, params);
+            }}
+          />
+        </Suspense>
+      )}
+
+      {isMobile && canAccessModule(user?.role, 'checkout') && !isSaleModalOpen && (
+        <button
+          type="button"
+          className="checkout-mobile-launcher"
+          onClick={() => handleOpenCheckout()}
+          aria-label="Abrir Caja"
+        >
+          <Receipt size={19} />
+          <span>Caja</span>
+        </button>
+      )}
 
       {!isMobile && (
         <NotificationsDrawer
