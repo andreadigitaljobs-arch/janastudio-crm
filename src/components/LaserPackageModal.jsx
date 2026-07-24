@@ -5,6 +5,7 @@ import AnimatedModal from './AnimatedModal';
 import LaserGunIcon from './LaserGunIcon';
 import { dataService } from '../services/dataService';
 import { notificationService } from '../services/notificationService';
+import { buildLaserInstallmentPlan, buildLaserTenderBreakdown } from '../domain/laserRules';
 
 const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
   const [step, setStep] = useState(1);
@@ -26,7 +27,9 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
       : selectedService?.laser_price_single ?? selectedService?.price) || Number(selectedService?.price || 0);
   const packagePrice = customPrice === '' ? catalogPrice : Math.max(0, Number(customPrice) || 0);
 
-  const [paymentMode, setPaymentMode] = useState('full_usd'); // 'full_usd', 'full_bs', 'financed'
+  const [isFinanced, setIsFinanced] = useState(false);
+  const [tenderMode, setTenderMode] = useState('full_usd');
+  const [mixedUsdAmount, setMixedUsdAmount] = useState('');
   const [methodUsd, setMethodUsd] = useState('Efectivo');
   const [methodBs, setMethodBs] = useState('Pago Móvil');
   
@@ -36,6 +39,21 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
 
   // Exchange rate
   const [exchangeRate, setExchangeRate] = useState(1);
+  const installmentPlan = buildLaserInstallmentPlan({
+    total: packagePrice,
+    sessions: totalSessions,
+    financed: isFinanced,
+  });
+  const amountDueUsd = installmentPlan[0]?.amount || 0;
+  const remainingUsd = installmentPlan.slice(1).reduce((sum, installment) => sum + installment.amount, 0);
+  const mixedUsdValue = Math.max(0, Number(mixedUsdAmount) || 0);
+  const mixedAmountInvalid = tenderMode === 'mixed' && mixedUsdValue > amountDueUsd;
+  const tenderBreakdown = buildLaserTenderBreakdown({
+    amountUsd: amountDueUsd,
+    exchangeRate,
+    tenderMode,
+    usdPortion: Math.min(amountDueUsd, mixedUsdValue),
+  });
 
   useEffect(() => {
     if (isOpen) {
@@ -44,6 +62,9 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
       setSelectedClient(null);
       setSelectedService(null);
       setSearchQuery('');
+      setIsFinanced(false);
+      setTenderMode('full_usd');
+      setMixedUsdAmount('');
     }
   }, [isOpen]);
 
@@ -96,20 +117,29 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
 
   const handleConfirmSale = async () => {
     if (!selectedClient || !selectedService) return;
+    if (mixedAmountInvalid) {
+      notificationService.sendNotification('Revisa el pago', 'La parte en dólares no puede superar la cuota de hoy.');
+      return;
+    }
     
     try {
       setLoading(true);
 
-      const isFullBs = paymentMode === 'full_bs';
       const totalAmount = packagePrice;
-      let finalMethod = isFullBs ? methodBs : methodUsd;
-      if (paymentMode === 'financed') finalMethod = `Cuota 1 (${methodUsd})`;
+      const formattedUsd = tenderBreakdown.usdAmount.toFixed(2);
+      const formattedBs = tenderBreakdown.bsAmount.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      let finalMethod = `USD · ${methodUsd}`;
+      if (tenderMode === 'full_bs') finalMethod = `Bs · ${methodBs}`;
+      if (tenderMode === 'mixed') {
+        finalMethod = `Mixto · $${formattedUsd} ${methodUsd} + Bs ${formattedBs} ${methodBs}`;
+      }
+      if (isFinanced) finalMethod = `Cuota 1 (30%) · ${finalMethod}`;
       await dataService.sellLaserPackage({
         clientId: selectedClient.id,
         serviceId: selectedService.id,
         sessions: totalSessions,
         total: totalAmount,
-        paymentMode,
+        paymentMode: isFinanced ? 'financed' : tenderMode,
         paymentMethod: finalMethod,
         exchangeRate
       });
@@ -278,102 +308,108 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
 
                   <div>
                     <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#a0909a', display: 'block', marginBottom: 8 }}>SESIONES DEL PAQUETE</label>
-                    <select value={totalSessions} onChange={e => { const sessions = Number(e.target.value); setTotalSessions(sessions); setCustomPrice(''); if (sessions !== 8 && paymentMode === 'financed') setPaymentMode('full_usd'); }} style={{ width: '100%', height: 42, borderRadius: 12, border: '1px solid rgba(223,178,140,.4)', padding: '0 12px', marginBottom: 18 }}>
+                    <select value={totalSessions} onChange={e => { const sessions = Number(e.target.value); setTotalSessions(sessions); setCustomPrice(''); if (sessions !== 8) setIsFinanced(false); }} style={{ width: '100%', height: 42, borderRadius: 12, border: '1px solid rgba(223,178,140,.4)', padding: '0 12px', marginBottom: 18 }}>
                       <option value={1}>1 sesión</option><option value={4}>4 sesiones</option><option value={8}>8 sesiones</option>
                     </select>
-                    <h4 style={{ margin: '0 0 16px 0', fontSize: '1.1rem', fontWeight: 800, color: '#2d1b22' }}>Plan de Financiamiento</h4>
+                    <h4 style={{ margin: '0 0 8px 0', fontSize: '1.1rem', fontWeight: 800, color: '#2d1b22' }}>Plan de pago del paquete</h4>
+                    <p style={{ margin: '0 0 14px', fontSize: '0.8rem', color: '#a0909a', lineHeight: 1.45 }}>Elige si se cancela completo o en cuotas. La moneda se selecciona aparte.</p>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      <div style={{ display: 'flex', gap: '8px' }}>
                         <button 
-                          onClick={() => setPaymentMode('full_usd')}
-                          style={{ flex: '1 0 45%', padding: '12px', borderRadius: '12px', border: paymentMode === 'full_usd' ? '2px solid #c97282' : '1px solid rgba(223, 178, 140, 0.4)', background: paymentMode === 'full_usd' ? '#fff0f2' : '#fff', color: paymentMode === 'full_usd' ? '#c97282' : '#a0909a', fontWeight: '800', cursor: 'pointer', fontSize: '0.8rem', transition: 'all 0.2s' }}
-                        >TODO EN $</button>
+                          onClick={() => setIsFinanced(false)}
+                          style={{ flex: 1, padding: '12px', borderRadius: '12px', border: !isFinanced ? '2px solid #c97282' : '1px solid rgba(223, 178, 140, 0.4)', background: !isFinanced ? '#fff0f2' : '#fff', color: !isFinanced ? '#c97282' : '#a0909a', fontWeight: '800', cursor: 'pointer', fontSize: '0.8rem', transition: 'all 0.2s' }}
+                        >PAGO COMPLETO</button>
                         <button 
-                          onClick={() => setPaymentMode('full_bs')}
-                          style={{ flex: '1 0 45%', padding: '12px', borderRadius: '12px', border: paymentMode === 'full_bs' ? '2px solid #c97282' : '1px solid rgba(223, 178, 140, 0.4)', background: paymentMode === 'full_bs' ? '#fff0f2' : '#fff', color: paymentMode === 'full_bs' ? '#c97282' : '#a0909a', fontWeight: '800', cursor: 'pointer', fontSize: '0.8rem', transition: 'all 0.2s' }}
-                        >TODO EN BS</button>
-                        <button 
-                          onClick={() => totalSessions === 8 && setPaymentMode('financed')}
+                          onClick={() => totalSessions === 8 && setIsFinanced(true)}
                           disabled={totalSessions !== 8}
-                          style={{ flex: '1 0 100%', padding: '12px', borderRadius: '12px', border: paymentMode === 'financed' ? '2px solid #c97282' : '1px solid rgba(223, 178, 140, 0.4)', background: paymentMode === 'financed' ? '#fff0f2' : '#fff', color: paymentMode === 'financed' ? '#c97282' : '#a0909a', opacity: totalSessions === 8 ? 1 : .55, fontWeight: '800', cursor: totalSessions === 8 ? 'pointer' : 'not-allowed', fontSize: '0.8rem', transition: 'all 0.2s' }}
-                        >{totalSessions === 8 ? 'PAGO FRACCIONADO (30/40/30)' : 'FINANCIAMIENTO SOLO PARA 8 SESIONES'}</button>
+                          style={{ flex: 1, padding: '12px', borderRadius: '12px', border: isFinanced ? '2px solid #c97282' : '1px solid rgba(223, 178, 140, 0.4)', background: isFinanced ? '#fff0f2' : '#fff', color: isFinanced ? '#c97282' : '#a0909a', opacity: totalSessions === 8 ? 1 : .55, fontWeight: '800', cursor: totalSessions === 8 ? 'pointer' : 'not-allowed', fontSize: '0.8rem', transition: 'all 0.2s' }}
+                        >{totalSessions === 8 ? 'PAGO FRACCIONADO (30/40/30)' : 'SOLO PARA 8 SESIONES'}</button>
                       </div>
 
-                      {paymentMode === 'full_usd' && (
-                        <div style={{ padding: '16px', backgroundColor: '#fcf9f8', borderRadius: '16px', border: '1px solid rgba(223, 178, 140, 0.2)' }}>
-                          <label style={{ fontSize: '0.8rem', fontWeight: '800', color: '#a0909a', marginBottom: '8px', display: 'block' }}>MÉTODO DE PAGO ($)</label>
-                          <div style={{ display: 'flex', gap: '8px' }}>
-                            {['Efectivo', 'Zelle', 'Binance'].map(m => (
-                              <button 
-                                key={m}
-                                onClick={() => setMethodUsd(m)}
-                                style={{ flex: 1, padding: '10px', borderRadius: '10px', border: methodUsd === m ? '1.5px solid #c97282' : '1px solid rgba(223,178,140,0.3)', background: methodUsd === m ? '#fff' : 'transparent', color: methodUsd === m ? '#c97282' : '#a0909a', fontSize: '0.85rem', fontWeight: '700', cursor: 'pointer', transition: 'all 0.2s' }}
-                              >{m}</button>
-                            ))}
+                      {isFinanced && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, padding: '12px 14px', background: '#fff0f2', borderRadius: '12px', border: '1px solid rgba(201,114,130,0.2)' }}>
+                          <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#c97282' }}>Quedarán 2 cuotas pendientes</span>
+                          <div style={{ textAlign: 'right' }}>
+                            <div style={{ fontSize: '1rem', fontWeight: 900, color: '#c97282' }}>${remainingUsd.toFixed(2)} USD</div>
+                            <div style={{ fontSize: '0.7rem', color: '#a0909a' }}>Ref. {(remainingUsd * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs.</div>
                           </div>
                         </div>
                       )}
 
-                      {paymentMode === 'full_bs' && (
-                        <div style={{ padding: '16px', backgroundColor: '#fcf9f8', borderRadius: '16px', border: '1px solid rgba(223, 178, 140, 0.2)' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                            <label style={{ fontSize: '0.8rem', fontWeight: '800', color: '#a0909a' }}>MONTO REFERENCIAL A TASA BCV</label>
-                            <div style={{ fontWeight: '900', color: '#c97282', fontSize: '1.2rem' }}>
-                              {(packagePrice * exchangeRate).toLocaleString('es-VE', {minimumFractionDigits:2, maximumFractionDigits:2})} BS
-                            </div>
-                          </div>
-                          <label style={{ fontSize: '0.8rem', fontWeight: '800', color: '#a0909a', marginBottom: '8px', display: 'block' }}>MÉTODO DE PAGO (BS)</label>
-                          <div style={{ display: 'flex', gap: '8px' }}>
-                            {['Pago Móvil', 'Efectivo', 'Punto'].map(m => (
-                              <button 
-                                key={m}
-                                onClick={() => setMethodBs(m)}
-                                style={{ flex: 1, padding: '10px', borderRadius: '10px', border: methodBs === m ? '1.5px solid #c97282' : '1px solid rgba(223,178,140,0.3)', background: methodBs === m ? '#fff' : 'transparent', color: methodBs === m ? '#c97282' : '#a0909a', fontSize: '0.85rem', fontWeight: '700', cursor: 'pointer', transition: 'all 0.2s' }}
-                              >{m}</button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {paymentMode === 'financed' && (
-                        <div style={{ padding: '16px', backgroundColor: '#fcf9f8', borderRadius: '16px', border: '1px solid rgba(223, 178, 140, 0.2)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            <label style={{ fontSize: '0.9rem', fontWeight: 700, color: '#2d1b22' }}>Primera Cuota (30%)</label>
-                            <div style={{ position: 'relative' }}>
-                              <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#a0909a', fontWeight: 800 }}>$</span>
-                              <input 
-                                type="text" 
-                                readOnly
-                                value={(packagePrice * 0.3).toFixed(2)}
-                                style={{ width: '100%', padding: '16px 16px 16px 36px', borderRadius: '12px', border: '1.5px solid rgba(223, 178, 140, 0.3)', backgroundColor: '#fff', fontSize: '1rem', color: '#2d1b22', fontWeight: 800, outline: 'none' }} 
-                              />
-                            </div>
-                          </div>
-                          
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: '#fff0f2', borderRadius: '10px', border: '1px solid rgba(201,114,130,0.2)' }}>
-                            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#c97282' }}>Restante (2 cuotas):</span>
-                            <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#c97282' }}>${(packagePrice * 0.7).toFixed(2)} USD</span>
-                          </div>
-                          
+                      <div style={{ padding: '16px', backgroundColor: '#fcf9f8', borderRadius: '16px', border: '1px solid rgba(223, 178, 140, 0.2)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 12 }}>
                           <div>
-                            <label style={{ fontSize: '0.8rem', fontWeight: '800', color: '#a0909a', marginBottom: '8px', display: 'block' }}>MÉTODO DE ABONO ($)</label>
+                            <div style={{ fontSize: '0.76rem', color: '#a0909a', fontWeight: 800, textTransform: 'uppercase' }}>{isFinanced ? 'Primera cuota (30%)' : 'Monto a pagar hoy'}</div>
+                            <div style={{ fontSize: '1.45rem', lineHeight: 1.2, color: '#2d1b22', fontWeight: 900 }}>${amountDueUsd.toFixed(2)} USD</div>
+                          </div>
+                          <div style={{ textAlign: 'right', color: '#a0909a', fontSize: '0.76rem', fontWeight: 700 }}>
+                            Ref. {(amountDueUsd * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs.
+                          </div>
+                        </div>
+
+                        <div>
+                          <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#2d1b22', marginBottom: '8px', display: 'block' }}>¿Cómo paga hoy?</label>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            {[
+                              ['full_usd', 'TODO EN $'],
+                              ['full_bs', 'TODO EN BS'],
+                              ['mixed', 'PAGO MIXTO'],
+                            ].map(([mode, label]) => (
+                              <button
+                                key={mode}
+                                onClick={() => {
+                                  setTenderMode(mode);
+                                  if (mode === 'mixed' && mixedUsdAmount === '') setMixedUsdAmount((amountDueUsd / 2).toFixed(2));
+                                }}
+                                style={{ flex: 1, padding: '10px 6px', borderRadius: '10px', border: tenderMode === mode ? '1.5px solid #c97282' : '1px solid rgba(223,178,140,0.3)', background: tenderMode === mode ? '#fff0f2' : '#fff', color: tenderMode === mode ? '#c97282' : '#a0909a', fontSize: '0.73rem', fontWeight: 800, cursor: 'pointer' }}
+                              >{label}</button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {tenderMode === 'mixed' && (
+                          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '10px' }}>
+                            <label style={{ fontSize: '0.75rem', color: '#a0909a', fontWeight: 800 }}>
+                              PARTE EN DÓLARES
+                              <div style={{ position: 'relative', marginTop: 6 }}>
+                                <span style={{ position: 'absolute', left: 12, top: 11, color: '#c97282', fontWeight: 800 }}>$</span>
+                                <input type="number" min="0" max={amountDueUsd} step="0.01" value={mixedUsdAmount} onChange={e => setMixedUsdAmount(e.target.value)} style={{ width: '100%', height: 42, boxSizing: 'border-box', borderRadius: 10, border: mixedAmountInvalid ? '1.5px solid #ef4444' : '1px solid rgba(223,178,140,.4)', padding: '0 10px 0 28px', color: '#2d1b22', fontWeight: 800 }} />
+                              </div>
+                            </label>
+                            <div style={{ padding: '9px 12px', borderRadius: 10, background: '#fff', border: '1px solid rgba(223,178,140,.3)' }}>
+                              <div style={{ fontSize: '0.7rem', color: '#a0909a', fontWeight: 800 }}>RESTANTE EN BOLÍVARES</div>
+                              <div style={{ color: '#c97282', fontWeight: 900, marginTop: 3 }}>{tenderBreakdown.bsAmount.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs.</div>
+                            </div>
+                          </div>
+                        )}
+
+                        {(tenderMode === 'full_usd' || tenderMode === 'mixed') && (
+                          <div>
+                            <label style={{ fontSize: '0.76rem', fontWeight: 800, color: '#a0909a', marginBottom: '7px', display: 'block' }}>MÉTODO EN DÓLARES</label>
                             <div style={{ display: 'flex', gap: '8px' }}>
                               {['Efectivo', 'Zelle', 'Binance'].map(m => (
-                                <button 
-                                  key={m}
-                                  onClick={() => setMethodUsd(m)}
-                                  style={{ flex: 1, padding: '10px', borderRadius: '10px', border: methodUsd === m ? '1.5px solid #c97282' : '1px solid rgba(223,178,140,0.3)', background: methodUsd === m ? '#fff' : 'transparent', color: methodUsd === m ? '#c97282' : '#a0909a', fontSize: '0.85rem', fontWeight: '700', cursor: 'pointer', transition: 'all 0.2s' }}
-                                >{m}</button>
+                                <button key={m} onClick={() => setMethodUsd(m)} style={{ flex: 1, padding: '9px', borderRadius: '10px', border: methodUsd === m ? '1.5px solid #c97282' : '1px solid rgba(223,178,140,0.3)', background: methodUsd === m ? '#fff' : 'transparent', color: methodUsd === m ? '#c97282' : '#a0909a', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}>{m}</button>
                               ))}
                             </div>
                           </div>
-                        </div>
-                      )}
+                        )}
+
+                        {(tenderMode === 'full_bs' || tenderMode === 'mixed') && (
+                          <div>
+                            <label style={{ fontSize: '0.76rem', fontWeight: 800, color: '#a0909a', marginBottom: '7px', display: 'block' }}>MÉTODO EN BOLÍVARES</label>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                              {['Pago Móvil', 'Efectivo', 'Punto'].map(m => (
+                                <button key={m} onClick={() => setMethodBs(m)} style={{ flex: 1, padding: '9px', borderRadius: '10px', border: methodBs === m ? '1.5px solid #c97282' : '1px solid rgba(223,178,140,0.3)', background: methodBs === m ? '#fff' : 'transparent', color: methodBs === m ? '#c97282' : '#a0909a', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}>{m}</button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
 
                   <button disabled={loading} onClick={handleConfirmSale} style={{ padding: '18px', borderRadius: '16px', background: 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)', color: '#fff', fontWeight: 800, fontSize: '1.05rem', border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(201, 114, 130, 0.25)', transition: 'transform 0.2s, box-shadow 0.2s', marginTop: '10px' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 32px rgba(201, 114, 130, 0.35)'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(201, 114, 130, 0.25)'; }}>
-                    {loading ? <Loader className="spin" size={20} /> : 'Confirmar Venta y Generar Cuotas'}
+                    {loading ? <Loader className="spin" size={20} /> : isFinanced ? 'Confirmar venta y generar cuotas' : 'Confirmar venta'}
                   </button>
                 </div>
               )}

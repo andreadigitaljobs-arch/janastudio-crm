@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import {
   allocateLaserPayment,
   buildLaserInstallmentPlan,
+  buildLaserTenderBreakdown,
   getLaserCatalogPrice,
   getLaserExpirationState,
   getMinimumLaserSessionDate,
@@ -23,6 +24,19 @@ test('genera las cuotas 30/40/30 en los días 0, 21 y 42', () => {
   assert.deepEqual(plan.map(item => item.amount), [30, 40, 30]);
   assert.deepEqual(plan.map(item => item.allocation), ['worker', 'partner', 'studio']);
   assert.deepEqual(plan.map(item => item.dueAt.toISOString().slice(0, 10)), ['2026-07-22', '2026-08-12', '2026-09-02']);
+});
+
+test('separa el plan fraccionado de la moneda usada para pagar la cuota', () => {
+  const plan = buildLaserInstallmentPlan({ total: 96, sessions: 8, financed: true, purchasedAt: '2026-07-23T12:00:00Z' });
+  assert.equal(plan[0].amount, 28.8);
+  assert.deepEqual(
+    buildLaserTenderBreakdown({ amountUsd: plan[0].amount, exchangeRate: 737.8816, tenderMode: 'full_bs' }),
+    { usdAmount: 0, bsAmount: 21250.99 },
+  );
+  assert.deepEqual(
+    buildLaserTenderBreakdown({ amountUsd: plan[0].amount, exchangeRate: 737.8816, tenderMode: 'mixed', usdPortion: 10 }),
+    { usdAmount: 10, bsAmount: 13872.17 },
+  );
 });
 
 test('asigna cada cuota completa a su beneficiario y divide pagos completos', () => {

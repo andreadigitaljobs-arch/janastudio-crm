@@ -56,6 +56,28 @@ export const buildLaserInstallmentPlan = ({ total, sessions, financed, purchased
   ];
 };
 
+export const buildLaserTenderBreakdown = ({ amountUsd, exchangeRate, tenderMode, usdPortion = 0 }) => {
+  const amount = asMoney(amountUsd);
+  const rate = Number(exchangeRate);
+  if (!Number.isFinite(rate) || rate <= 0) throw new Error('La tasa de cambio debe ser mayor a cero.');
+
+  if (tenderMode === 'full_usd') {
+    return { usdAmount: amount, bsAmount: 0 };
+  }
+
+  if (tenderMode === 'full_bs') {
+    return { usdAmount: 0, bsAmount: asMoney(amount * rate) };
+  }
+
+  if (tenderMode !== 'mixed') throw new Error('La forma de pago no es válida.');
+  const usdAmount = asMoney(usdPortion);
+  if (usdAmount > amount) throw new Error('La parte en dólares no puede superar el monto a pagar.');
+  return {
+    usdAmount,
+    bsAmount: asMoney((amount - usdAmount) * rate),
+  };
+};
+
 export const allocateLaserPayment = ({ amount, allocation = 'full', workerPct = 30, partnerPct = 40, studioPct = 30 }) => {
   const paid = asMoney(amount);
   if (allocation === 'worker') return { worker: paid, partner: 0, studio: 0 };
