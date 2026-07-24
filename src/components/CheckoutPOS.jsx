@@ -2507,11 +2507,11 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: hasConfiguredRecurrence ? 0 : '10px' }}>
                     <Clock size={16} color="var(--pink-primary)" />
                     <div>
-                      <div style={{ color: 'white', fontWeight: '900', fontSize: '12px' }}>Recordatorio de proximo corte</div>
+                      <div style={{ color: 'white', fontWeight: '900', fontSize: '12px' }}>Próxima visita estimada</div>
                       <div style={{ color: 'var(--text-muted)', fontSize: '10px', marginTop: '2px' }}>
                         {hasConfiguredRecurrence
-                          ? `Configurado cada ${checkoutClient.recurrence_days} dias`
-                          : 'Este cliente todavia no tiene una recurrencia definida'}
+                          ? `Sugerida cada ${checkoutClient.recurrence_days} días`
+                          : 'Selecciona cuándo sugerir una nueva visita'}
                       </div>
                     </div>
                   </div>
@@ -2521,7 +2521,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                         {[10, 14].map(days => (
                           <button key={days} type="button" onClick={() => setRecurrenceChoice(String(days))}
                             style={{ padding: '9px 4px', borderRadius: '9px', cursor: 'pointer', fontSize: '10px', fontWeight: '900', color: recurrenceChoice === String(days) ? '#111' : 'white', background: recurrenceChoice === String(days) ? 'var(--pink-primary)' : 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                            {days} dias
+                            {days} días
                           </button>
                         ))}
                         <button type="button" onClick={() => setRecurrenceChoice('custom')}
@@ -2531,12 +2531,12 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                       </div>
                       {recurrenceChoice === 'custom' && (
                         <input type="number" min="1" max="365" inputMode="numeric" value={customRecurrenceDays}
-                          onChange={event => setCustomRecurrenceDays(event.target.value)} placeholder="Cantidad de dias"
+                          onChange={event => setCustomRecurrenceDays(event.target.value)} placeholder="Cantidad de días"
                           style={{ width: '100%', marginTop: '8px', height: '38px', borderRadius: '9px', padding: '0 12px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(212,160,154,0.25)', color: 'white', fontWeight: '800' }} />
                       )}
                       {recurrenceDaysToSave > 0 && (
                         <div style={{ marginTop: '8px', color: '#30d158', fontSize: '10px', fontWeight: '800' }}>
-                          Se enviara un mensaje {recurrenceDaysToSave} dias despues de completar esta visita.
+                          La próxima visita se estimará {recurrenceDaysToSave} días después de completar esta atención.
                         </div>
                       )}
                     </>
