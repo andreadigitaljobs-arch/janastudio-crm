@@ -2011,6 +2011,10 @@ input:focus { outline: none; }
   -webkit-backdrop-filter: none;
 }
 
+.checkout-pos-shell--embedded .checkout-recurrence-custom.is-active {
+  color: #fff !important;
+}
+
 .checkout-pos-shell--embedded .checkout-pos-grid > section:nth-child(2) [style*="background-color: rgba(0, 0, 0"],
 .checkout-pos-shell--embedded .checkout-pos-grid > section:nth-child(2) [style*="background: rgba(0, 0, 0"] {
   background: #fff8f8 !important;

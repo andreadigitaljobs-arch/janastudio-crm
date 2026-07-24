@@ -2532,7 +2532,10 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                             {days} días
                           </button>
                         ))}
-                        <button type="button" onClick={() => setRecurrenceChoice('custom')}
+                        <button
+                          type="button"
+                          className={`checkout-recurrence-custom${recurrenceChoice === 'custom' ? ' is-active' : ''}`}
+                          onClick={() => setRecurrenceChoice('custom')}
                           style={{ padding: '9px 4px', borderRadius: '9px', cursor: 'pointer', fontSize: '10px', fontWeight: '900', color: 'white', background: recurrenceChoice === 'custom' ? 'var(--pink-primary)' : 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
                           Personalizado
                         </button>
