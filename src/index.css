@@ -1568,6 +1568,19 @@ input:focus { outline: none; }
   background: linear-gradient(90deg, var(--checkout-rose-dark), #d99aad 58%, #efd3d9);
 }
 
+.checkout-pos-shell--embedded .checkout-summary-card {
+  padding: 0 !important;
+  overflow: visible;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.checkout-pos-shell--embedded .checkout-summary-card::before {
+  display: none;
+}
+
 .checkout-summary-identity {
   margin-bottom: 16px !important;
   padding-top: 4px;
@@ -1987,6 +2000,15 @@ input:focus { outline: none; }
   box-shadow: 0 -14px 28px rgba(79, 44, 56, 0.07);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+}
+
+.checkout-pos-shell--embedded .checkout-action-dock {
+  margin: 16px 0 0 !important;
+  padding: 16px 0 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .checkout-pos-shell--embedded .checkout-pos-grid > section:nth-child(2) [style*="background-color: rgba(0, 0, 0"],
