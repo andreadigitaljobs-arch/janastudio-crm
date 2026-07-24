@@ -1634,6 +1634,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                               <div style={{ position: 'relative', flex: 1, minWidth: 0 }}>
                                 <Search style={{ position: 'absolute', left: '10px', top: '12px' }} size={14} color="var(--text-muted)" />
                                 <input 
+                                  className="checkout-client-search-input"
                                   type="text" 
                                   placeholder={isMobile ? 'Cédula o nombre...' : 'Cédula o nombre del cliente...'} 
                                   value={directSaleIdSearch}
@@ -1644,8 +1645,10 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                               </div>
                               <button onClick={handleDirectSaleIdSearch} className="btn-pink" style={{ padding: '0 10px', height: '40px', flexShrink: 0, fontSize: isMobile ? '10px' : '12px' }}>{isMobile ? 'OK' : 'ENLAZAR'}</button>
                               <button 
+                                className="checkout-client-add"
                                 onClick={() => setShowNewClientModal(true)} 
-                                style={{ padding: '0 10px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}
+                                style={{ padding: '0 10px', height: '40px', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}
+                                aria-label="Registrar cliente nuevo"
                               >
                                 <UserPlus size={16} />
                               </button>
@@ -1653,24 +1656,21 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                             
                             {/* Autocomplete Dropdown */}
                             {directSaleSearchResults.length > 0 && (
-                              <div className="animate-scale-in" style={{ 
+                              <div className="animate-scale-in checkout-client-search-results" style={{ 
                                 position: 'absolute', top: '100%', left: 0, right: 0, 
-                                marginTop: '8px', background: 'rgba(28,28,30,0.95)', 
-                                border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', 
-                                overflow: 'hidden', zIndex: 10, backdropFilter: 'blur(10px)',
-                                boxShadow: '0 10px 40px rgba(0,0,0,0.5)'
+                                marginTop: '8px', borderRadius: '14px', 
+                                overflow: 'hidden', zIndex: 10
                               }}>
                                 {directSaleSearchResults.map(c => (
-                                  <div 
+                                  <button
+                                    type="button"
                                     key={c.id} 
                                     onClick={() => handleSelectDirectSaleClient(c)}
-                                    style={{ padding: '10px 16px', cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-                                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(212,160,154,0.1)'}
-                                    onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                                    className="checkout-client-search-option"
                                   >
-                                    <span style={{ fontWeight: '700', fontSize: '13px', color: 'white' }}>{c.name}</span>
-                                    <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>V-{c.id_card}</span>
-                                  </div>
+                                    <span>{c.name}</span>
+                                    <small>V-{c.id_card}</small>
+                                  </button>
                                 ))}
                               </div>
                             )}
@@ -2862,22 +2862,34 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
       {/* Stylist Select Modal */}
       <AnimatedModal isOpen={showStylistModal}>
         {(overlayClass, cardClass) => (
-          <div className={`${overlayClass} checkout-subdialog-overlay`} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', zIndex: 6200, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-            <div className={`${cardClass} glass-card`} style={{ width: '100%', maxWidth: '400px', borderRadius: '32px', padding: '32px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <h2 style={{ fontWeight: '900', fontSize: '20px' }}>Seleccionar Estilista</h2>
-                <button onClick={() => { setShowStylistModal(false); setIsChangingStylist(false); }} style={{ background: 'none', border: 'none', color: 'white', fontSize: '24px', cursor: 'pointer' }}>&times;</button>
-              </div>
-              <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', fontSize: '13px' }}>
-                {isChangingStylist ? (
-                  "Selecciona el nuevo estilista para esta cita."
-                ) : (
-                  <>Selecciona el estilista al que se le asignará la comisión por el servicio <strong>{selectedServiceForStylist?.name}</strong>.</>
-                )}
-              </p>
+          <div className={`${overlayClass} checkout-subdialog-overlay checkout-catalog-overlay`} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 6200, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+            <section className={`${cardClass} checkout-stylist-dialog`} role="dialog" aria-modal="true" aria-labelledby="checkout-stylist-title">
+              <header className="checkout-stylist-header">
+                <div className="checkout-stylist-heading">
+                  <span className="checkout-stylist-icon" aria-hidden="true">
+                    <Sparkles size={18} />
+                  </span>
+                  <div>
+                    <h2 id="checkout-stylist-title">Seleccionar Estilista</h2>
+                    <p>
+                      {isChangingStylist
+                        ? 'Elige la profesional que continuará con esta cita.'
+                        : <>Asigna la comisión de <strong>{selectedServiceForStylist?.name || 'este servicio'}</strong>.</>}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="checkout-catalog-close"
+                  onClick={() => { setShowStylistModal(false); setIsChangingStylist(false); }}
+                  aria-label="Cerrar selección de estilista"
+                >
+                  &times;
+                </button>
+              </header>
 
               {selectedApp && !isChangingStylist && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', padding: '14px', borderRadius: '16px' }}>
+                <div className="checkout-express-option">
                   <input 
                     type="checkbox" 
                     id="isExpressCheckbox"
@@ -2885,13 +2897,13 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                     onChange={(e) => setIsExpressService(e.target.checked)}
                     style={{ cursor: 'pointer', width: '16px', height: '16px', accentColor: 'var(--pink-primary)' }}
                   />
-                  <label htmlFor="isExpressCheckbox" style={{ fontSize: '12px', color: 'white', fontWeight: '800', cursor: 'pointer', userSelect: 'none' }}>
+                  <label htmlFor="isExpressCheckbox">
                     Servicio Express / Add-on (No agendar visualmente)
                   </label>
                 </div>
               )}
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '10px', maxHeight: '400px', overflowY: 'auto', paddingRight: '8px' }}>
+              <div className="checkout-stylist-grid">
                 {allStaff.filter(s => {
                   const roleName = (s.role?.split('|')[0] || '').toLowerCase();
                   return !roleName.includes('admin') && 
@@ -2901,19 +2913,17 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                   <button 
                     key={stylist.id} 
                     onClick={() => isChangingStylist ? handleChangeStylist(stylist.id) : handleConfirmServiceStylist(stylist.id)} 
-                    style={{ padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)', textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }} 
-                    className="hover-item"
+                    className="checkout-stylist-card"
                   >
-                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--pink-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black' }}>
-                      <Sparkles size={20} />
-                    </div>
-                    <div>
-                      <div style={{ fontWeight: '800', color: 'white', fontSize: '15px' }}>{stylist.name}</div>
-                    </div>
+                    <span className="checkout-stylist-avatar" aria-hidden="true">
+                      <Sparkles size={18} />
+                    </span>
+                    <span className="checkout-stylist-name">{stylist.name}</span>
+                    <span className="checkout-stylist-select">Seleccionar</span>
                   </button>
                 ))}
               </div>
-            </div>
+            </section>
           </div>
         )}
       </AnimatedModal>
