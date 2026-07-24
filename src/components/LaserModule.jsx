@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar as CalendarIcon, Clock, TrendingUp, Plus, Search, Filter, AlertCircle, X, ChevronRight, CheckCircle2, User, Trash2, CalendarClock, Package, PlayCircle } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, TrendingUp, Plus, Search, Filter, AlertCircle, X, ChevronRight, CheckCircle2, User, Trash2, CalendarClock, Package, PlayCircle, LayoutGrid, List } from 'lucide-react';
 import LaserPackageModal from './LaserPackageModal';
 import LaserSessionModal from './LaserSessionModal';
 import LaserProgressGallery from './LaserProgressGallery';
@@ -8,12 +8,100 @@ import AnimatedModal from './AnimatedModal';
 import { dataService } from '../services/dataService';
 import { useDialog } from '../context/DialogContext';
 
+const getLaserStatusPalette = (status) => {
+  if (status === 'Vencido') return { background: '#fef2f2', color: '#b42318', border: '#fecaca' };
+  if (status === 'Al día') return { background: '#fff0f2', color: '#c97282', border: 'rgba(201,114,130,0.2)' };
+  if (status === 'Cuota Pendiente') return { background: '#ffe1e6', color: '#a0506a', border: 'rgba(160,80,106,0.2)' };
+  if (['Pagado', 'Completado'].includes(status)) return { background: '#ecfdf5', color: '#059669', border: 'rgba(5,150,105,0.2)' };
+  return { background: '#fcf9f8', color: '#a0909a', border: 'rgba(160,144,154,0.2)' };
+};
+
+const LaserPackageListRow = ({ pkg, isMobile, onSchedule }) => {
+  const statusPalette = getLaserStatusPalette(pkg.status);
+  const progress = Math.min(100, (pkg.currentSession / pkg.totalSessions) * 100);
+
+  return (
+    <div
+      className="agenda-glass-card"
+      style={{
+        padding: isMobile ? '16px' : '14px 18px',
+        display: 'grid',
+        gridTemplateColumns: isMobile ? '1fr' : 'minmax(220px, 1.5fr) minmax(170px, 1fr) minmax(180px, 1.15fr) minmax(105px, 0.65fr) auto',
+        alignItems: 'center',
+        gap: isMobile ? '14px' : '20px',
+        border: '1px solid rgba(255,255,255,0.78)',
+        borderRadius: '18px',
+        transition: 'box-shadow 0.2s ease, border-color 0.2s ease',
+      }}
+      onMouseEnter={event => {
+        event.currentTarget.style.boxShadow = '0 12px 28px rgba(74,48,54,0.07)';
+        event.currentTarget.style.borderColor = 'rgba(201,114,130,0.2)';
+      }}
+      onMouseLeave={event => {
+        event.currentTarget.style.boxShadow = '0 8px 32px rgba(74,48,54,0.04)';
+        event.currentTarget.style.borderColor = 'rgba(255,255,255,0.78)';
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
+        <div style={{ width: '42px', height: '42px', flexShrink: 0, borderRadius: '50%', background: 'linear-gradient(135deg, #fff0f2 0%, #ffe1e6 100%)', display: 'grid', placeItems: 'center', color: '#c97282', fontWeight: 900, border: '2px solid #fff' }}>
+          {pkg.client.charAt(0)}
+        </div>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ color: '#2d1b22', fontSize: '0.95rem', fontWeight: 900, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{pkg.client}</div>
+          <div style={{ color: '#a0909a', fontSize: '0.76rem', fontWeight: 600 }}>{pkg.phone || 'Sin teléfono'}</div>
+        </div>
+      </div>
+
+      <div>
+        <div style={{ color: '#2d1b22', fontSize: '0.86rem', fontWeight: 800 }}>{pkg.package}</div>
+        {pkg.status === 'Vencido' && (
+          <div style={{ marginTop: '3px', color: '#b42318', fontSize: '0.7rem', fontWeight: 700 }}>{pkg.expiredSessions} sesión(es) vencida(s)</div>
+        )}
+      </div>
+
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', marginBottom: '7px', fontSize: '0.74rem', fontWeight: 800 }}>
+          <span style={{ color: '#8c767b' }}>Sesiones</span>
+          <span style={{ color: '#c97282' }}>{pkg.currentSession} / {pkg.totalSessions}</span>
+        </div>
+        <div style={{ width: '100%', height: '7px', overflow: 'hidden', borderRadius: '999px', background: 'rgba(201,114,130,0.1)' }}>
+          <div style={{ width: `${progress}%`, height: '100%', borderRadius: '999px', background: 'linear-gradient(90deg, #c48b9f 0%, #c97282 100%)' }} />
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'row' : 'column', justifyContent: isMobile ? 'space-between' : 'center', gap: '4px' }}>
+        <span style={{ color: '#a0909a', fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase' }}>Deuda</span>
+        <span style={{ color: pkg.pending > 0 ? '#a0506a' : '#059669', fontSize: '0.95rem', fontWeight: 900 }}>${pkg.pending.toFixed(2)}</span>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: isMobile ? 'space-between' : 'flex-end', gap: '10px', flexWrap: 'wrap' }}>
+        <span style={{ padding: '6px 10px', borderRadius: '10px', fontSize: '0.7rem', fontWeight: 800, background: statusPalette.background, color: statusPalette.color, border: `1px solid ${statusPalette.border}`, whiteSpace: 'nowrap' }}>
+          {pkg.status}
+        </span>
+        <button
+          type="button"
+          onClick={() => onSchedule(pkg)}
+          disabled={pkg.raw.status !== 'active'}
+          className="btn-press"
+          style={{ minHeight: '38px', padding: '0 14px', borderRadius: '11px', background: '#fff', color: '#c97282', border: '1px solid rgba(201,114,130,0.25)', fontWeight: 800, fontSize: '0.76rem', cursor: pkg.raw.status === 'active' ? 'pointer' : 'not-allowed', opacity: pkg.raw.status === 'active' ? 1 : 0.5, whiteSpace: 'nowrap' }}
+        >
+          {pkg.raw.status === 'active' ? 'Agendar sesión' : pkg.status}
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const LaserModule = ({ isMobile }) => {
   const { alert } = useDialog();
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('packages'); // 'packages' | 'calendar'
   const [searchQuery, setSearchQuery] = useState('');
+  const [packageView, setPackageView] = useState(() => {
+    if (typeof window === 'undefined') return 'cards';
+    return window.localStorage.getItem('jana-laser-package-view') || 'cards';
+  });
   
   const [isSellPackageOpen, setIsSellPackageOpen] = useState(false);
   const [selectedPackageForSession, setSelectedPackageForSession] = useState(null);
@@ -66,6 +154,10 @@ const LaserModule = ({ isMobile }) => {
   useEffect(() => {
     loadPackages();
   }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem('jana-laser-package-view', packageView);
+  }, [packageView]);
   
   // Calendario real: comparte las mismas citas de la Agenda.
   const [isBlockTimeOpen, setIsBlockTimeOpen] = useState(false);
@@ -117,6 +209,10 @@ const LaserModule = ({ isMobile }) => {
 
   const formattedDate = currentDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
   const capitalizedDate = formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+  const filteredPackages = packages.filter(pkg => (
+    pkg.client.toLowerCase().includes(searchQuery.toLowerCase())
+    || pkg.phone.includes(searchQuery)
+  ));
 
 
   return (
@@ -210,7 +306,7 @@ const LaserModule = ({ isMobile }) => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeInUpWow 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards' }}>
             
             {/* Filters / Search */}
-            <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: isMobile ? 'wrap' : 'nowrap' }}>
               <div style={{ flex: 1, position: 'relative' }}>
                 <Search size={18} color="#a0909a" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
                 <input 
@@ -229,13 +325,63 @@ const LaserModule = ({ isMobile }) => {
                   }}
                 />
               </div>
+              <div
+                aria-label="Cambiar vista de paquetes"
+                style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px', padding: '4px', borderRadius: '14px', background: 'rgba(255,255,255,0.65)', border: '1px solid rgba(223,178,140,0.25)', flex: isMobile ? '1 1 100%' : '0 0 auto' }}
+              >
+                {[
+                  { value: 'cards', label: 'Tarjetas', icon: LayoutGrid },
+                  { value: 'list', label: 'Lista', icon: List },
+                ].map(option => {
+                  const Icon = option.icon;
+                  const isActive = packageView === option.value;
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      aria-pressed={isActive}
+                      onClick={() => setPackageView(option.value)}
+                      style={{
+                        minHeight: '42px',
+                        padding: '0 14px',
+                        border: 'none',
+                        borderRadius: '10px',
+                        background: isActive ? '#a84f70' : 'transparent',
+                        color: isActive ? '#fff' : '#7f6970',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '7px',
+                        fontSize: '0.78rem',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      <Icon size={15} />
+                      {option.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Packages List */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '24px' }}>
+            <div style={{ display: packageView === 'cards' ? 'grid' : 'flex', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', flexDirection: 'column', gap: packageView === 'cards' ? '24px' : '10px' }}>
               {loading ? (
                 <div style={{ padding: '24px', textAlign: 'center', color: '#a0909a' }}>Cargando paquetes...</div>
-              ) : packages.filter(p => p.client.toLowerCase().includes(searchQuery.toLowerCase()) || p.phone.includes(searchQuery)).map(pkg => (
+              ) : filteredPackages.length === 0 ? (
+                <div style={{ padding: '34px', textAlign: 'center', color: '#a0909a', background: 'rgba(255,255,255,0.55)', border: '1px dashed rgba(201,114,130,0.2)', borderRadius: '18px' }}>
+                  No se encontraron paquetes para esta búsqueda.
+                </div>
+              ) : filteredPackages.map(pkg => packageView === 'list' ? (
+                <LaserPackageListRow
+                  key={pkg.id}
+                  pkg={pkg}
+                  isMobile={isMobile}
+                  onSchedule={setSelectedPackageForSession}
+                />
+              ) : (
                 <div key={pkg.id} className="agenda-glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.7)', transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 16px 40px rgba(74, 48, 54, 0.08)'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(74, 48, 54, 0.04)'; }}>
                   
                   {/* Header */}
