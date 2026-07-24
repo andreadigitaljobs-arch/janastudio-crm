@@ -56,7 +56,17 @@ function getFirstDayOfMonth(month, year) {
   return new Date(year, month, 1).getDay();
 }
 
-export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", variant = "dark", inputClassName = "", inputStyle = {} }) => {
+export const JanaDatePicker = ({
+  value,
+  onChange,
+  placeholder = "DD/MM/AAAA",
+  variant = "dark",
+  inputClassName = "",
+  inputStyle = {},
+  minDate = "",
+  maxDate = "",
+  initialViewDate = "",
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [textInput, setTextInput] = useState(isoToDisplay(value));
   const [calendarPos, setCalendarPos] = useState({ top: 0, left: 0, width: 300 });
@@ -68,7 +78,7 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
 
   // Calendar nav state
   const getInitialNav = () => {
-    const parsed = parseISO(value);
+    const parsed = parseISO(value) || parseISO(initialViewDate);
     return parsed
       ? { year: parsed.year, month: parsed.month }
       : { year: currentSystemYear - 25, month: new Date().getMonth() };
@@ -196,7 +206,9 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
   }
 
   const years = [];
-  for (let y = currentSystemYear; y >= 1920; y--) years.push(y);
+  const maximumYear = parseISO(maxDate)?.year || currentSystemYear;
+  const minimumYear = parseISO(minDate)?.year || 1920;
+  for (let y = maximumYear; y >= minimumYear; y--) years.push(y);
 
   const calendarJSX = isOpen ? createPortal(
     <div
@@ -346,33 +358,42 @@ export const JanaDatePicker = ({ value, onChange, placeholder = "DD/MM/AAAA", va
       {/* Days grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
         {cells.map((cell, idx) => {
+          const cellIso = cell.isCurrentMonth
+            ? `${navYear}-${String(navMonth + 1).padStart(2, '0')}-${String(cell.day).padStart(2, '0')}`
+            : '';
+          const isOutsideRange = Boolean(
+            cell.isCurrentMonth
+            && ((minDate && cellIso < minDate) || (maxDate && cellIso > maxDate))
+          );
+          const isSelectable = cell.isCurrentMonth && !isOutsideRange;
           const isSelected = cell.isCurrentMonth && selectedDay === cell.day &&
             navYear === (parseISO(value)?.year) && navMonth === (parseISO(value)?.month);
           return (
             <button
               key={idx}
               type="button"
-              onClick={() => cell.isCurrentMonth && handleSelectDay(cell.day)}
+              onClick={() => isSelectable && handleSelectDay(cell.day)}
+              disabled={!isSelectable}
               style={{
                 height: '34px',
                 width: '100%',
                 background: isSelected ? 'var(--pink-primary)' : 'none',
                 border: 'none',
                 borderRadius: '8px',
-                color: isSelected ? 'white' : (cell.isCurrentMonth ? (isLight ? 'var(--text-primary)' : 'white') : (isLight ? 'rgba(93,57,67,0.22)' : 'rgba(255,255,255,0.2)')),
+                color: isSelected ? 'white' : (isSelectable ? (isLight ? 'var(--text-primary)' : 'white') : (isLight ? 'rgba(93,57,67,0.22)' : 'rgba(255,255,255,0.2)')),
                 fontSize: '13px',
                 fontWeight: isSelected ? '900' : (cell.isCurrentMonth ? '600' : '400'),
-                cursor: cell.isCurrentMonth ? 'pointer' : 'default',
+                cursor: isSelectable ? 'pointer' : 'not-allowed',
                 transition: 'all 0.15s ease'
               }}
               onMouseEnter={e => {
-                if (cell.isCurrentMonth && !isSelected) {
+                if (isSelectable && !isSelected) {
                   e.currentTarget.style.backgroundColor = 'rgba(196,139,159,0.15)';
                   e.currentTarget.style.color = 'var(--pink-primary)';
                 }
               }}
               onMouseLeave={e => {
-                if (cell.isCurrentMonth && !isSelected) {
+                if (isSelectable && !isSelected) {
                   e.currentTarget.style.backgroundColor = 'transparent';
                   e.currentTarget.style.color = isLight ? 'var(--text-primary)' : 'white';
                 }

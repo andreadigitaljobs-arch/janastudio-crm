@@ -28,6 +28,7 @@ import {
 import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
 import JanaSelect from './JanaSelect';
+import JanaDatePicker from './JanaDatePicker';
 import { notificationService } from '../services/notificationService';
 import JanaDialog from './JanaDialog';
 import NewClientModal from './NewClientModal';
@@ -41,6 +42,10 @@ import {
   buildDirectSaleServiceAppointment,
   selectPayableAppointments,
 } from '../domain/checkoutRules';
+import {
+  getDaysUntilEstimatedVisit,
+  getEstimatedVisitDate,
+} from '../domain/recurrenceRules';
 
 const CartSellerSelect = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -536,6 +541,9 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
   const recurrenceDaysToSave = recurrenceChoice === 'custom'
     ? Number(customRecurrenceDays)
     : Number(recurrenceChoice || 0);
+  const minimumEstimatedVisitDate = getEstimatedVisitDate(1);
+  const maximumEstimatedVisitDate = getEstimatedVisitDate(365);
+  const customEstimatedVisitDate = getEstimatedVisitDate(Number(customRecurrenceDays));
 
   useEffect(() => {
     setRecurrenceChoice('');
@@ -2525,14 +2533,29 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                           </button>
                         ))}
                         <button type="button" onClick={() => setRecurrenceChoice('custom')}
-                          style={{ padding: '9px 4px', borderRadius: '9px', cursor: 'pointer', fontSize: '10px', fontWeight: '900', color: recurrenceChoice === 'custom' ? '#111' : 'white', background: recurrenceChoice === 'custom' ? 'var(--pink-primary)' : 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                          style={{ padding: '9px 4px', borderRadius: '9px', cursor: 'pointer', fontSize: '10px', fontWeight: '900', color: 'white', background: recurrenceChoice === 'custom' ? 'var(--pink-primary)' : 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
                           Personalizado
                         </button>
                       </div>
                       {recurrenceChoice === 'custom' && (
-                        <input type="number" min="1" max="365" inputMode="numeric" value={customRecurrenceDays}
-                          onChange={event => setCustomRecurrenceDays(event.target.value)} placeholder="Cantidad de días"
-                          style={{ width: '100%', marginTop: '8px', height: '38px', borderRadius: '9px', padding: '0 12px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(212,160,154,0.25)', color: 'white', fontWeight: '800' }} />
+                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'minmax(0, 0.8fr) minmax(0, 1.2fr)', gap: '8px', marginTop: '8px' }}>
+                          <input type="number" min="1" max="365" inputMode="numeric" value={customRecurrenceDays}
+                            onChange={event => setCustomRecurrenceDays(event.target.value)} placeholder="Cantidad de días"
+                            style={{ width: '100%', height: '38px', borderRadius: '9px', padding: '0 12px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(212,160,154,0.25)', color: 'white', fontWeight: '800' }} />
+                          <JanaDatePicker
+                            value={customEstimatedVisitDate}
+                            minDate={minimumEstimatedVisitDate}
+                            maxDate={maximumEstimatedVisitDate}
+                            initialViewDate={minimumEstimatedVisitDate}
+                            variant={embedded ? 'light' : 'dark'}
+                            placeholder="Elegir fecha"
+                            onChange={(event) => {
+                              const days = getDaysUntilEstimatedVisit(event.target.value);
+                              setCustomRecurrenceDays(days > 0 ? String(days) : '');
+                            }}
+                            inputStyle={{ height: '38px', borderRadius: '9px', fontWeight: '800' }}
+                          />
+                        </div>
                       )}
                       {recurrenceDaysToSave > 0 && (
                         <div style={{ marginTop: '8px', color: '#30d158', fontSize: '10px', fontWeight: '800' }}>
