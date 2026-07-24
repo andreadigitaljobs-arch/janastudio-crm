@@ -2527,7 +2527,11 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                     <>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
                         {[10, 14].map(days => (
-                          <button key={days} type="button" onClick={() => setRecurrenceChoice(String(days))}
+                          <button
+                            key={days}
+                            type="button"
+                            className={`checkout-recurrence-option${recurrenceChoice === String(days) ? ' is-active' : ''}`}
+                            onClick={() => setRecurrenceChoice(String(days))}
                             style={{ padding: '9px 4px', borderRadius: '9px', cursor: 'pointer', fontSize: '10px', fontWeight: '900', color: recurrenceChoice === String(days) ? '#111' : 'white', background: recurrenceChoice === String(days) ? 'var(--pink-primary)' : 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
                             {days} días
                           </button>

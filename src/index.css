@@ -2011,6 +2011,7 @@ input:focus { outline: none; }
   -webkit-backdrop-filter: none;
 }
 
+.checkout-pos-shell--embedded .checkout-pos-grid > section:nth-child(2) .checkout-recurrence-option.is-active,
 .checkout-pos-shell--embedded .checkout-pos-grid > section:nth-child(2) .checkout-recurrence-custom.is-active {
   color: #fff !important;
 }
