@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import {
   Users, Search, UserPlus, Sparkles, Calendar, CheckCircle2,
   ArrowRight, ShoppingBag, X, Edit3, Receipt,
-  Rocket, MoreVertical, StickyNote, BarChart3, Play
+  Rocket, MoreVertical, StickyNote, BarChart3, Play, Trash2, TimerReset
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
@@ -41,7 +41,60 @@ const ReceptionModule = ({ isMobile, onNavigate }) => {
   const [appointmentsError, setAppointmentsError] = useState('');
   const [exchangeRate, setExchangeRate] = useState(58);
   const [dialog, setDialog] = useState({ isOpen: false, type: 'confirm', title: '', message: '', onConfirm: null });
+  const [appointmentAction, setAppointmentAction] = useState(null);
   const [formData, setFormData] = useState({ serviceId: '', staffId: '', status: 'En Silla' });
+
+  const updateUpcomingAppointmentStatus = async (appointment, status) => {
+    try {
+      setLoading(true);
+      await dataService.updateAppointment(appointment.id, { status });
+      showToast('Estado actualizado', 'success');
+      setAppointmentAction(null);
+      await loadData();
+    } catch (err) {
+      console.error(err);
+      showToast('Error al actualizar estado', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const postponeUpcomingAppointment = async (appointment, minutes) => {
+    const parsedMinutes = Number.parseInt(minutes, 10);
+    if (!Number.isFinite(parsedMinutes) || parsedMinutes <= 0) {
+      showToast('Indica una cantidad válida de minutos', 'warning');
+      return;
+    }
+    try {
+      setLoading(true);
+      const start = new Date(appointment.scheduled_at || appointment.created_at);
+      const updatedTime = new Date(start.getTime() + parsedMinutes * 60000);
+      await dataService.updateAppointment(appointment.id, { scheduled_at: updatedTime.toISOString() });
+      showToast(`Cita pospuesta por ${parsedMinutes} minutos`, 'success');
+      setAppointmentAction(null);
+      await loadData();
+    } catch (err) {
+      console.error(err);
+      showToast('Error al posponer cita', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteUpcomingAppointment = async (appointment) => {
+    try {
+      setLoading(true);
+      await dataService.deleteAppointment(appointment.id);
+      showToast('Cita eliminada permanentemente', 'success');
+      setAppointmentAction(null);
+      await loadData();
+    } catch (err) {
+      console.error(err);
+      showToast('Error al eliminar cita', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const loadData = async () => {
     const todayStart = new Date();
@@ -649,63 +702,12 @@ const ReceptionModule = ({ isMobile, onNavigate }) => {
                   return (
                     <div
                       key={apt.id || idx}
-                      onClick={async () => {
+                      onClick={() => {
                         if (String(apt.id).startsWith('mock-')) {
                           showToast('Esta es una cita de demostración. Crea una cita real desde Agenda o Recepción para interactuar.', 'warning');
                           return;
                         }
-                        const opt = window.prompt(
-                          `¿Qué deseas hacer con la cita de ${clientName}?\n` +
-                          `1. Cambiar estado\n` +
-                          `2. Posponer / Retrasar\n` +
-                          `3. Eliminar / Cancelar\n` +
-                          `Escribe el número de la opción:`
-                        );
-                        if (opt === '1') {
-                          const newStatus = window.prompt('Introduce el nuevo estado (Agendado, En Silla, En Tratamiento, Por Pagar, Completado):');
-                          if (newStatus) {
-                            try {
-                              setLoading(true);
-                              await dataService.updateAppointment(apt.id, { status: newStatus });
-                              showToast('Estado actualizado', 'success');
-                              loadData();
-                            } catch (err) {
-                              showToast('Error al actualizar estado', 'error');
-                            } finally {
-                              setLoading(false);
-                            }
-                          }
-                        } else if (opt === '2') {
-                          const minutesInput = window.prompt('¿Cuántos minutos deseas posponer esta cita? (Ej: 30):');
-                          if (minutesInput) {
-                            try {
-                              setLoading(true);
-                              const parsedMins = parseInt(minutesInput) || 0;
-                              const updatedTime = new Date(start.getTime() + parsedMins * 60000);
-                              await dataService.updateAppointment(apt.id, { scheduled_at: updatedTime.toISOString() });
-                              showToast(`Cita pospuesta por ${parsedMins} minutos`, 'success');
-                              loadData();
-                            } catch (err) {
-                              showToast('Error al posponer cita', 'error');
-                            } finally {
-                              setLoading(false);
-                            }
-                          }
-                        } else if (opt === '3') {
-                          const confirmDel = window.confirm(`¿Segura de que quieres eliminar la cita de ${clientName}?`);
-                          if (confirmDel) {
-                            try {
-                              setLoading(true);
-                              await dataService.deleteAppointment(apt.id);
-                              showToast('Cita eliminada permanentemente', 'success');
-                              loadData();
-                            } catch (err) {
-                              showToast('Error al eliminar cita', 'error');
-                            } finally {
-                              setLoading(false);
-                            }
-                          }
-                        }
+                        setAppointmentAction({ appointment: apt, mode: 'menu', minutes: '30' });
                       }}
                       style={{ 
                         display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 10px', 
@@ -832,12 +834,117 @@ const ReceptionModule = ({ isMobile, onNavigate }) => {
         deferCreationToParent
         onSchedule={(date, scheduledServicePayload) => handleSubmit('Agendado', date, scheduledServicePayload)}
       />
+      <AppointmentActionModal
+        action={appointmentAction}
+        loading={loading}
+        onClose={() => setAppointmentAction(null)}
+        onChange={(updates) => setAppointmentAction((current) => current ? { ...current, ...updates } : current)}
+        onStatus={(status) => updateUpcomingAppointmentStatus(appointmentAction.appointment, status)}
+        onPostpone={() => postponeUpcomingAppointment(appointmentAction.appointment, appointmentAction.minutes)}
+        onDelete={() => deleteUpcomingAppointment(appointmentAction.appointment)}
+      />
       <JanaDialog isOpen={dialog.isOpen} title={dialog.title} message={dialog.message} type={dialog.type} onConfirm={dialog.onConfirm} onCancel={() => setDialog({ ...dialog, isOpen: false })} confirmText="Confirmar" cancelText="Cancelar" />
       {isServiceModalOpen && <SelectionModal isOpen={isServiceModalOpen} onClose={() => setIsServiceModalOpen(false)} title="Seleccionar Servicios" items={services} selectedItems={selectedServices} onToggle={(s) => toggleService(s.id)} exchangeRate={exchangeRate} type="service" />}
       {isExtraModalOpen && <SelectionModal isOpen={isExtraModalOpen} onClose={() => setIsExtraModalOpen(false)} title="Añadir Extras" items={allExtras} selectedItems={selectedExtras} onToggle={toggleExtra} exchangeRate={exchangeRate} type="extra" />}
       {isProductModalOpen && <SelectionModal isOpen={isProductModalOpen} onClose={() => setIsProductModalOpen(false)} title="Venta de Productos" items={inventory} selectedItems={selectedProducts} onToggle={toggleProduct} exchangeRate={exchangeRate} type="product" />}
     </div>
   );
+};
+
+const AppointmentActionModal = ({ action, loading, onClose, onChange, onStatus, onPostpone, onDelete }) => {
+  if (!action?.appointment) return null;
+  const appointment = action.appointment;
+  const clientName = appointment.clients?.name || 'la clienta';
+  const scheduledDate = appointment.scheduled_at ? new Date(appointment.scheduled_at) : null;
+  const scheduledLabel = scheduledDate && Number.isFinite(scheduledDate.getTime())
+    ? scheduledDate.toLocaleString('es-VE', { weekday: 'long', hour: 'numeric', minute: '2-digit', hour12: true })
+    : 'Sin fecha registrada';
+  const statuses = ['Agendado', 'En Silla', 'En Tratamiento', 'Por Pagar', 'Completado'];
+
+  return createPortal(
+    <div onClick={(event) => event.target === event.currentTarget && onClose()} style={{ position: 'fixed', inset: 0, zIndex: 10000000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, background: 'rgba(45,27,34,.42)', backdropFilter: 'blur(10px)' }}>
+      <div style={{ width: '100%', maxWidth: 470, borderRadius: 26, background: '#fff', boxShadow: '0 28px 80px rgba(45,27,34,.22)', overflow: 'hidden', border: '1px solid rgba(223,178,140,.2)', animation: 'fadeInUpWow .25s ease' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, padding: '24px 24px 18px', background: 'linear-gradient(135deg,#fff 55%,#fff0f2)' }}>
+          <div>
+            <div style={{ color: '#c97282', fontSize: '.7rem', fontWeight: 900, letterSpacing: 1, textTransform: 'uppercase' }}>Gestionar cita</div>
+            <h3 style={{ margin: '5px 0 3px', color: '#2d1b22', fontSize: '1.25rem' }}>{clientName}</h3>
+            <div style={{ color: '#8c767b', fontSize: '.82rem', textTransform: 'capitalize' }}>{scheduledLabel}</div>
+          </div>
+          <button onClick={onClose} aria-label="Cerrar" style={{ width: 36, height: 36, borderRadius: 12, border: 0, background: '#f7f1f3', color: '#8c767b', display: 'grid', placeItems: 'center', cursor: 'pointer' }}><X size={18} /></button>
+        </div>
+
+        <div style={{ padding: 24 }}>
+          {action.mode === 'menu' && (
+            <div style={{ display: 'grid', gap: 10 }}>
+              <button onClick={() => onChange({ mode: 'status' })} style={appointmentActionButtonStyle('#fff0f2', '#c97282')}><CheckCircle2 size={19} /> Cambiar estado</button>
+              <button onClick={() => onChange({ mode: 'postpone' })} style={appointmentActionButtonStyle('#fff8eb', '#d68a19')}><TimerReset size={19} /> Posponer o retrasar</button>
+              <button onClick={() => onChange({ mode: 'delete' })} style={appointmentActionButtonStyle('#fff1f2', '#dc2626')}><Trash2 size={19} /> Eliminar cita</button>
+            </div>
+          )}
+
+          {action.mode === 'status' && (
+            <div>
+              <button onClick={() => onChange({ mode: 'menu' })} style={appointmentBackButtonStyle}>← Volver</button>
+              <div style={{ margin: '10px 0 12px', color: '#2d1b22', fontWeight: 800 }}>Selecciona el nuevo estado</div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,minmax(0,1fr))', gap: 9 }}>
+                {statuses.map((status) => (
+                  <button key={status} disabled={loading} onClick={() => onStatus(status)} style={{ padding: '12px 8px', borderRadius: 12, border: appointment.status === status ? '1.5px solid #c97282' : '1px solid rgba(223,178,140,.3)', background: appointment.status === status ? '#fff0f2' : '#fff', color: appointment.status === status ? '#c97282' : '#6b5a60', fontWeight: 750, cursor: 'pointer' }}>{status}</button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {action.mode === 'postpone' && (
+            <div>
+              <button onClick={() => onChange({ mode: 'menu' })} style={appointmentBackButtonStyle}>← Volver</button>
+              <div style={{ margin: '10px 0 6px', color: '#2d1b22', fontWeight: 800 }}>¿Cuántos minutos deseas posponerla?</div>
+              <div style={{ color: '#8c767b', fontSize: '.8rem', marginBottom: 12 }}>La nueva hora se actualizará en Agenda y Recepción.</div>
+              <input autoFocus type="number" min="1" step="5" value={action.minutes} onChange={(event) => onChange({ minutes: event.target.value })} style={{ width: '100%', boxSizing: 'border-box', height: 48, borderRadius: 13, border: '1.5px solid rgba(201,114,130,.28)', padding: '0 14px', color: '#2d1b22', fontSize: '1rem', fontWeight: 800, outline: 'none' }} />
+              <button disabled={loading} onClick={onPostpone} style={{ width: '100%', marginTop: 14, height: 46, border: 0, borderRadius: 13, background: 'linear-gradient(135deg,#c97282,#a0506a)', color: '#fff', fontWeight: 850, cursor: 'pointer' }}>{loading ? 'Guardando…' : 'Confirmar nueva hora'}</button>
+            </div>
+          )}
+
+          {action.mode === 'delete' && (
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ width: 58, height: 58, borderRadius: 18, margin: '0 auto 14px', background: '#fff1f2', color: '#dc2626', display: 'grid', placeItems: 'center' }}><Trash2 size={25} /></div>
+              <div style={{ color: '#2d1b22', fontWeight: 900, fontSize: '1.05rem' }}>¿Eliminar esta cita?</div>
+              <p style={{ color: '#8c767b', fontSize: '.84rem', lineHeight: 1.55 }}>Esta acción es permanente. Si solo no asistirá, conviene cambiar el estado en lugar de eliminarla.</p>
+              <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+                <button onClick={() => onChange({ mode: 'menu' })} style={{ flex: 1, height: 44, borderRadius: 12, border: '1px solid rgba(223,178,140,.35)', background: '#fff', color: '#6b5a60', fontWeight: 750, cursor: 'pointer' }}>No eliminar</button>
+                <button disabled={loading} onClick={onDelete} style={{ flex: 1, height: 44, borderRadius: 12, border: 0, background: '#dc2626', color: '#fff', fontWeight: 850, cursor: 'pointer' }}>{loading ? 'Eliminando…' : 'Sí, eliminar'}</button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+};
+
+const appointmentActionButtonStyle = (background, color) => ({
+  width: '100%',
+  minHeight: 54,
+  padding: '0 16px',
+  borderRadius: 14,
+  border: `1px solid ${color}24`,
+  background,
+  color,
+  display: 'flex',
+  alignItems: 'center',
+  gap: 11,
+  fontWeight: 850,
+  fontSize: '.9rem',
+  cursor: 'pointer',
+});
+
+const appointmentBackButtonStyle = {
+  border: 0,
+  padding: 0,
+  background: 'transparent',
+  color: '#c97282',
+  fontWeight: 800,
+  cursor: 'pointer',
 };
 
 const SelectionModal = ({ isOpen, onClose, title, items, selectedItems, onToggle, exchangeRate = 58, type }) => {

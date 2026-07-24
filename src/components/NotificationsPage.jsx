@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, Trash2, CheckCheck, Inbox, Heart, Calendar, DollarSign, User, ArrowLeft, Shield } from 'lucide-react';
 import { notificationService } from '../services/notificationService';
+import { useDialog } from '../context/DialogContext';
 
 const NotificationsPage = ({ isMobile, onNavigate }) => {
+  const { alert } = useDialog();
   const [notifications, setNotifications] = useState([]);
   const [permission, setPermission] = useState('default');
 
@@ -24,11 +26,11 @@ const NotificationsPage = ({ isMobile, onNavigate }) => {
 
   const handleRequestPermission = async () => {
     if (!isSecure) {
-      alert("⚠️ Conexión no segura (HTTP)");
+      await alert('Las notificaciones requieren una conexión segura (HTTPS).', 'Conexión no segura');
       return;
     }
     if (isIOS && !isStandalone) {
-      alert("📱 iPhone: Pulsa Compartir → Agregar a pantalla de inicio.");
+      await alert('En iPhone, pulsa Compartir y luego “Agregar a pantalla de inicio”.', 'Activar en iPhone');
       return;
     }
     const res = await notificationService.requestPermission();

@@ -23,9 +23,11 @@ import NewClientModal from './NewClientModal';
 import { normalizeForSearch, getStaffDisplayName } from '../utils/stringUtils';
 import JanaDatePicker from './JanaDatePicker';
 import { ModalShield } from '../context/ModalContext';
+import { useDialog } from '../context/DialogContext';
 import AnimatedModal from './AnimatedModal';
 import JanaSelect from './JanaSelect';
 import StaffProfileModal from './StaffProfileModal';
+import { formatNullableDate, isUsableDateValue } from '../domain/dateRules';
 
 const getStaffPhoto = (member) => {
   if (!member) return null;
@@ -881,6 +883,7 @@ const WeeklyRibbon = ({ selectedDate, onSelectDate, allAppointments }) => {
 const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rates, openScheduleModal = false, modalKey = null, onOpenNotifications, onNavigate }) => {
   const { user } = useAuth();
   const { showToast } = useNotifs();
+  const { confirm, prompt } = useDialog();
   const isLargePhone = isMobile && typeof window !== 'undefined' && window.innerWidth >= 410;
 
   // La columna de "Citas de hoy" queda angosta en pantallas medianas (ej. iPad Pro 1024px)
@@ -1000,6 +1003,11 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
     entries.sort((a, b) => b[1] - a[1]);
     const [topName, topCount] = entries[0];
     return `${topName} (Atendió ${topCount} de sus ${clientPastAppointments.length} citas)`;
+  }, [clientPastAppointments]);
+
+  const lastRecordedServiceDate = useMemo(() => {
+    const lastDatedAppointment = clientPastAppointments.find((appointment) => isUsableDateValue(appointment.scheduled_at));
+    return formatNullableDate(lastDatedAppointment?.scheduled_at);
   }, [clientPastAppointments]);
 
   const triggerCloseDetailedApp = () => {
@@ -4103,7 +4111,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       </div>
                       {clientPastAppointments.length > 0 && (
                         <div style={{ fontSize: '0.82rem', color: '#6b5a60', fontWeight: 650, marginTop: '4px' }}>
-                          <span style={{ fontWeight: 800, color: '#a0506a' }}>{clientPastAppointments.length} visitas</span> registradas · Último servicio: {new Date(clientPastAppointments[0].scheduled_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'long', year: 'numeric' })}
+                          <span style={{ fontWeight: 800, color: '#a0506a' }}>{clientPastAppointments.length} visitas</span> registradas · Último servicio: {lastRecordedServiceDate}
                         </div>
                       )}
                       {clientPastAppointments.length > 0 && (
@@ -4242,15 +4250,19 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   {!isWorkerView && (
                     <button
                       onClick={async () => {
-                        const ans = window.confirm(
-                          "⚠️ ACCIÓN CRÍTICA\n\n" +
-                          "Aceptar: CANCELAR la cita (se mantiene el historial, te preguntará el motivo).\n" +
-                          "Cancelar: ELIMINAR permanentemente (borrado total de la grilla).\n\n" +
-                          "Presiona 'Aceptar' para Cancelar, o 'Cancelar' para ver la opción de Eliminar."
+                        const action = await prompt(
+                          'Escribe CANCELAR para conservar la cita en el historial o ELIMINAR para borrarla permanentemente.',
+                          'Gestionar esta cita',
+                          { placeholder: 'CANCELAR o ELIMINAR', confirmText: 'Continuar' },
                         );
-                        
-                        if (ans) {
-                          const motivo = prompt('Por favor, indica el motivo de la cancelación:');
+
+                        const normalizedAction = String(action || '').trim().toUpperCase();
+                        if (normalizedAction === 'CANCELAR') {
+                          const motivo = await prompt(
+                            'Indica brevemente por qué se cancela la cita.',
+                            'Motivo de cancelación',
+                            { placeholder: 'Ej. La clienta no puede asistir', confirmText: 'Cancelar cita' },
+                          );
                           if (motivo !== null) {
                             try {
                               setLoading(true);
@@ -4264,8 +4276,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                               setLoading(false);
                             }
                           }
-                        } else {
-                          const confirmDel = window.confirm("¿Segura que deseas ELIMINAR permanentemente esta cita de la base de datos? Esta acción es irreversible.");
+                        } else if (normalizedAction === 'ELIMINAR') {
+                          const confirmDel = await confirm('Esta acción borrará la cita permanentemente y no se puede deshacer.', 'Eliminar cita');
                           if (confirmDel) {
                             try {
                               setLoading(true);
@@ -4279,7 +4291,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                               setLoading(false);
                             }
                           }
-                        }
+                        } else if (action !== null) showToast?.('Escribe CANCELAR o ELIMINAR para continuar', 'warning');
                       }}
                       style={{ height: '36px', width: '100%', fontSize: '0.76rem', background: 'transparent', color: '#dc2626', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: 750, cursor: 'pointer', marginTop: '12px', textDecoration: 'underline' }}
                     >
@@ -4365,7 +4377,11 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             {/* Postpone Appointment (Reagendar / Posponer por horas) */}
             <button
               onClick={async () => {
-                const hoursInput = prompt('¿Cuántas horas o minutos deseas posponer esta cita? (Ej: "30" para 30 minutos, o "2h" para 2 horas):');
+                const hoursInput = await prompt(
+                  'Indica minutos u horas. Ejemplos: 30 o 2h.',
+                  'Posponer cita',
+                  { placeholder: '30', confirmText: 'Posponer' },
+                );
                 if (hoursInput) {
                   try {
                     let minutesToAdd = parseInt(hoursInput) || 0;
@@ -4406,7 +4422,10 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
             {/* Delete Appointment */}
             <button
               onClick={async () => {
-                const confirmDel = window.confirm(`¿Segura de que quieres eliminar la cita de ${quickContextMenu.app.clients?.name || 'esta clienta'}?`);
+                const confirmDel = await confirm(
+                  `Se eliminará permanentemente la cita de ${quickContextMenu.app.clients?.name || 'esta clienta'}.`,
+                  'Eliminar cita',
+                );
                 if (confirmDel) {
                   try {
                     setLoading(true);

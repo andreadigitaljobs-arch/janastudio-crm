@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, X, Trash2, CheckCheck, Sparkles, Smartphone, BellRing, Inbox, Heart, Calendar, DollarSign, User, ArrowLeft } from 'lucide-react';
 import { notificationService } from '../services/notificationService';
+import { useDialog } from '../context/DialogContext';
 
 const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
+  const { alert } = useDialog();
   const [notifications, setNotifications] = useState([]);
   const [permission, setPermission] = useState('default');
   const [closing, setClosing] = useState(false);
@@ -26,8 +28,8 @@ const NotificationsDrawer = ({ isOpen, onClose, isMobile }) => {
   const isSecure = window.isSecureContext;
 
   const handleRequestPermission = async () => {
-    if (!isSecure) { await alert("⚠️ Conexión no segura (HTTP)"); return; }
-    if (isIOS && !isStandalone) { await alert("📱 iPhone: Pulsa Compartir → Agregar a pantalla de inicio."); return; }
+    if (!isSecure) { await alert('Las notificaciones requieren una conexión segura (HTTPS).', 'Conexión no segura'); return; }
+    if (isIOS && !isStandalone) { await alert('En iPhone, pulsa Compartir y luego “Agregar a pantalla de inicio”.', 'Activar en iPhone'); return; }
     const res = await notificationService.requestPermission();
     setPermission(res);
     if (res === 'granted') notificationService.sendNotification('¡Permiso Activado! 🎉', 'Las notificaciones push ya están activadas.');

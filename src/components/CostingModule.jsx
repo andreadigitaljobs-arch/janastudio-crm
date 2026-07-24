@@ -13,9 +13,11 @@ import {
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import MiniLoader from './MiniLoader';
+import { useDialog } from '../context/DialogContext';
 
 
 const CostingModule = ({ isMobile, services = [], inventory = [] }) => {
+  const { confirm } = useDialog();
   const [selectedService, setSelectedService] = useState(null);
   const [serviceCosts, setServiceCosts] = useState([]);
   const [profitData, setProfitData] = useState(null);
@@ -82,7 +84,7 @@ const CostingModule = ({ isMobile, services = [], inventory = [] }) => {
   };
 
   const handleDeleteItem = async (itemId) => {
-    if (!confirm('¿Eliminar este insumo del servicio?')) return;
+    if (!await confirm('¿Eliminar este insumo del servicio?')) return;
     
     setSaving(true);
     try {

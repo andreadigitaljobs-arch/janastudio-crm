@@ -11,6 +11,7 @@ import {
 } from 'chart.js';
 import { Line, Doughnut } from 'react-chartjs-2';
 import { useAuth } from '../context/AuthContext';
+import { useDialog } from '../context/DialogContext';
 import { getStaffDisplayName } from '../utils/stringUtils';
 
 ChartJS.register(
@@ -31,6 +32,7 @@ const DashboardModule = ({
   dbData, rates, onNavigate, onOpenNotifications
 }) => {
   const { user } = useAuth();
+  const { alert } = useDialog();
   const carouselRef = useRef(null);
   const [ntfPerm, setNtfPerm] = useState(() => {
     try { return Notification?.permission || 'default'; } catch { return 'default'; }
@@ -59,7 +61,7 @@ const DashboardModule = ({
   const requestNtfPermission = async () => {
     try {
       if (!('Notification' in window)) {
-        alert('Tu navegador no soporta notificaciones.');
+        await alert('Este navegador no soporta notificaciones.', 'Notificaciones no disponibles');
         return;
       }
       const res = await Notification.requestPermission();
@@ -413,9 +415,9 @@ const DashboardModule = ({
         {/* Notification Activation Banner - Light Pink (matches desktop) */}
         {ntfPerm !== 'granted' && showNtfBanner && (
           <div
-            onClick={() => {
+            onClick={async () => {
               if (!('Notification' in window)) {
-                alert('Tu navegador no soporta notificaciones.');
+                await alert('Este navegador no soporta notificaciones.', 'Notificaciones no disponibles');
                 return;
               }
               Notification.requestPermission().then(res => {
@@ -1201,10 +1203,10 @@ const DashboardModule = ({
           </div>
           <button
             className="mi-btn"
-            onClick={(e) => {
+            onClick={async (e) => {
               e.stopPropagation();
               if (!('Notification' in window)) {
-                alert('Tu navegador no soporta notificaciones.');
+                await alert('Este navegador no soporta notificaciones.', 'Notificaciones no disponibles');
                 return;
               }
               Notification.requestPermission().then(res => {

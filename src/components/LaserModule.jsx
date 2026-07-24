@@ -6,8 +6,10 @@ import LaserProgressGallery from './LaserProgressGallery';
 import LaserSettingsPanel from './LaserSettingsPanel';
 import AnimatedModal from './AnimatedModal';
 import { dataService } from '../services/dataService';
+import { useDialog } from '../context/DialogContext';
 
 const LaserModule = ({ isMobile }) => {
+  const { alert } = useDialog();
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('packages'); // 'packages' | 'calendar'
@@ -372,9 +374,9 @@ const LaserModule = ({ isMobile }) => {
                           style={{ position: 'absolute', inset: 0, background: 'rgba(255, 255, 255, 0.95)', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: isMobile ? '8px' : '16px', padding: '8px', transition: 'all 0.2s ease', backdropFilter: 'blur(2px)' }}
                         >
                           <button
-                            onClick={(e) => {
+                            onClick={async (e) => {
                               e.stopPropagation();
-                              alert('La funcionalidad de posponer cita abrirá el calendario principal.');
+                              await alert('Puedes cambiar la fecha y hora desde Agenda. La cita láser seguirá sincronizada aquí automáticamente.', 'Posponer cita láser');
                             }}
                             className="btn-press"
                             style={{ background: '#fff', border: '1px solid rgba(223, 178, 140, 0.5)', color: '#dfb28c', padding: isMobile ? '8px 12px' : '8px 16px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, fontSize: isMobile ? '0.75rem' : '0.8rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(223, 178, 140, 0.1)', whiteSpace: 'nowrap' }}
