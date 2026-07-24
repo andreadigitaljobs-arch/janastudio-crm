@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
+  buildDirectSaleServiceAppointment,
   isCheckoutUuid,
   normalizeCheckoutPayment,
   prepareQueuedCheckout,
@@ -94,4 +95,20 @@ test('la caja agrupa solamente las citas finalizadas del mismo cliente', () => {
     selectPayableAppointments(selected, [anotherPayable, futureAppointment, inService, selected]),
     [selected, anotherPayable]
   );
+});
+
+test('una venta directa de servicio entra inmediatamente a la cola de cobro', () => {
+  const timestamp = '2026-07-23T20:30:00.000Z';
+  const result = buildDirectSaleServiceAppointment({
+    clientId: '328f8d7e-6c43-7c1a-8f44-5e67f3196210',
+    service: { id: '728f8d7e-6c43-7c1a-8f44-5e67f3196210', price: '15' },
+    stylistId: '828f8d7e-6c43-7c1a-8f44-5e67f3196210',
+    timestamp,
+  });
+
+  assert.equal(result.status, 'Por Pagar');
+  assert.equal(result.total_price, 15);
+  assert.equal(result.scheduled_at, timestamp);
+  assert.equal(result.completed_at, timestamp);
+  assert.equal(result.notes, 'Venta directa desde Caja');
 });

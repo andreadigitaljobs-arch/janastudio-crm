@@ -37,7 +37,10 @@ import AnimatedModal from './AnimatedModal';
 import { normalizeForSearch } from '../utils/stringUtils';
 import { useScrollLock } from '../hooks/useScrollLock';
 import offlineService from '../services/offlineService';
-import { selectPayableAppointments } from '../domain/checkoutRules';
+import {
+  buildDirectSaleServiceAppointment,
+  selectPayableAppointments,
+} from '../domain/checkoutRules';
 
 const CartSellerSelect = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -1084,6 +1087,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
       }
 
       let newApp = null;
+      const checkoutTimestamp = new Date().toISOString();
       if (selectedApp) {
         // Add service to existing appointment
         await dataService.addServiceToAppointment(selectedApp.id, {
@@ -1093,14 +1097,19 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
           scheduled_at: isExpressService ? null : selectedApp.scheduled_at,
           duration_minutes: selectedServiceForStylist.duration_minutes
         });
+        if (selectedApp.status !== 'Por Pagar') {
+          await dataService.updateAppointment(selectedApp.id, {
+            status: 'Por Pagar',
+            completed_at: checkoutTimestamp
+          });
+        }
       } else {
-        newApp = await dataService.createAppointment({
-          client_id: clientId,
-          service_id: selectedServiceForStylist.id,
-          staff_id: stylistId,
-          status: 'En Silla',
-          total_price: selectedServiceForStylist.price
-        });
+        newApp = await dataService.createAppointment(buildDirectSaleServiceAppointment({
+          clientId,
+          service: selectedServiceForStylist,
+          stylistId,
+          timestamp: checkoutTimestamp,
+        }));
       }
       
       // MIGRAR ITEMS EN CART (Extras o Productos) A LA NUEVA CITA
@@ -1119,7 +1128,10 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
       
       if (selectedApp) {
         const currentAppResel = filtered.find(a => a.id === selectedApp.id);
-        if (currentAppResel) setSelectedApp(currentAppResel);
+        if (!currentAppResel) {
+          throw new Error('La cita actualizada no apareció en la cola de cobro');
+        }
+        setSelectedApp(currentAppResel);
         showToast(isExpressService ? "Servicio Express añadido a la cita sin agendar." : "Servicio añadido y estilista asignado.");
       } else {
         if (newApp) {
@@ -1129,7 +1141,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
             setSelectedApp(fullyLoadedApp);
             showToast("Servicio añadido y estilista asignado.");
           } else {
-            showToast("Cita creada. Selecciona el servicio en la lista.");
+            throw new Error('La venta creada no apareció en la cola de cobro');
           }
         }
       }

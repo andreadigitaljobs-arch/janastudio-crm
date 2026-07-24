@@ -29,6 +29,22 @@ export const selectPayableAppointments = (selectedAppointment, appointments = []
   return [...uniqueAppointments.values()];
 };
 
+export const buildDirectSaleServiceAppointment = ({
+  clientId,
+  service,
+  stylistId,
+  timestamp = new Date().toISOString(),
+}) => ({
+  client_id: clientId,
+  service_id: service?.id,
+  staff_id: stylistId,
+  status: 'Por Pagar',
+  total_price: Number(service?.price || 0),
+  scheduled_at: timestamp,
+  completed_at: timestamp,
+  notes: 'Venta directa desde Caja',
+});
+
 const normalizeProducts = (products = []) => {
   const byId = new Map();
 
