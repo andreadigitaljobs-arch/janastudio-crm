@@ -1656,9 +1656,9 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                             
                             {/* Autocomplete Dropdown */}
                             {directSaleSearchResults.length > 0 && (
-                              <div className="animate-scale-in checkout-client-search-results" style={{ 
-                                position: 'absolute', top: '100%', left: 0, right: 0, 
-                                marginTop: '8px', borderRadius: '14px', 
+                              <div className="animate-scale-in checkout-client-search-results" style={{
+                                position: 'absolute', top: '100%', left: 0, right: 0,
+                                marginTop: '8px', borderRadius: '14px',
                                 overflow: 'hidden', zIndex: 10
                               }}>
                                 {directSaleSearchResults.map(c => (
