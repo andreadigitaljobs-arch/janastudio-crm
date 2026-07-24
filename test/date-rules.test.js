@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { formatNullableDate, isUsableDateValue } from '../src/domain/dateRules.js';
+import { formatNullableDate, getAverageIntervalDays, isUsableDateValue } from '../src/domain/dateRules.js';
 
 test('no convierte fechas nulas en diciembre de 1969', () => {
   assert.equal(isUsableDateValue(null), false);
@@ -12,4 +12,12 @@ test('no convierte fechas nulas en diciembre de 1969', () => {
 test('formatea una fecha real del historial', () => {
   assert.equal(isUsableDateValue('2026-07-23T14:37:00Z'), true);
   assert.match(formatNullableDate('2026-07-23T14:37:00Z'), /2026/);
+});
+
+test('ignora fechas vacías al calcular la frecuencia de visitas', () => {
+  assert.equal(getAverageIntervalDays([null, '', '2026-07-02T10:00:00Z']), null);
+  assert.equal(
+    getAverageIntervalDays([null, '2026-07-02T10:00:00Z', '2026-07-23T10:00:00Z']),
+    21,
+  );
 });

@@ -69,6 +69,7 @@ import { useAuth } from '../context/AuthContext';
 import { getRoleKind } from '../utils/roles';
 import BirthdayModule from './BirthdayModule';
 import { getWidgetSections, getDemoBirthdayClients } from '../utils/birthdays';
+import { getAverageIntervalDays, isUsableDateValue } from '../domain/dateRules';
 
 const CustomSelect = ({ value, onChange, options, isMobile }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -4127,13 +4128,14 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
         const conicStops = serviceDistribution.length
           ? serviceDistribution.map((item) => { const start = cumulativeDeg; cumulativeDeg += item.pct * 3.6; return `${item.color} ${start}deg ${cumulativeDeg}deg`; }).join(', ')
           : '#f1e4e7 0deg 360deg';
-        const chronologicalCompleted = [...completedAppointments].sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at));
-        const visitIntervals = chronologicalCompleted.slice(1).map((appointment, index) => Math.round((new Date(appointment.scheduled_at) - new Date(chronologicalCompleted[index].scheduled_at)) / 86400000)).filter((days) => days >= 0);
-        const averageFrequency = visitIntervals.length ? Math.round(visitIntervals.reduce((sum, days) => sum + days, 0) / visitIntervals.length) : null;
+        const datedCompletedAppointments = completedAppointments.filter((appointment) => isUsableDateValue(appointment.scheduled_at));
+        const averageFrequency = getAverageIntervalDays(datedCompletedAppointments.map((appointment) => appointment.scheduled_at));
         const mostFrequentValue = (values) => Object.entries(values.reduce((counts, value) => ({ ...counts, [value]: (counts[value] || 0) + 1 }), {})).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
-        const bestDay = mostFrequentValue(completedAppointments.map((appointment) => new Date(appointment.scheduled_at).toLocaleDateString('es-VE', { weekday: 'long' })));
-        const bestHour = mostFrequentValue(completedAppointments.map((appointment) => new Date(appointment.scheduled_at).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true })));
-        const anticipationValues = completedAppointments.map((appointment) => Math.max(0, Math.round((new Date(appointment.scheduled_at) - new Date(appointment.created_at)) / 86400000))).filter(Number.isFinite);
+        const bestDay = mostFrequentValue(datedCompletedAppointments.map((appointment) => new Date(appointment.scheduled_at).toLocaleDateString('es-VE', { weekday: 'long' })));
+        const bestHour = mostFrequentValue(datedCompletedAppointments.map((appointment) => new Date(appointment.scheduled_at).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true })));
+        const anticipationValues = datedCompletedAppointments
+          .filter((appointment) => isUsableDateValue(appointment.created_at))
+          .map((appointment) => Math.max(0, Math.round((new Date(appointment.scheduled_at) - new Date(appointment.created_at)) / 86400000)));
         const averageAnticipation = anticipationValues.length ? Math.round(anticipationValues.reduce((sum, days) => sum + days, 0) / anticipationValues.length) : null;
         const packageForRecommendation = packages.find((pkg) => pkg.status === 'active' && Math.max(0, Number(pkg.total_sessions || 0) - Number(pkg.used_sessions || 0)) > 0);
         const lastPackageSession = packages.flatMap((pkg) => pkg.package_sessions || []).sort((a, b) => new Date(b.consumed_at || b.created_at || 0) - new Date(a.consumed_at || a.created_at || 0))[0];
@@ -4349,7 +4351,7 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                      <h5 style={{ margin: '0 0 14px', fontSize: '13px', fontWeight: '850', color: 'var(--text-primary)' }}>Patrones de visitas</h5>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                       {[
-                        { icon: <Calendar size={14} />, label: 'Frecuencia promedio', value: averageFrequency !== null ? `Cada ${averageFrequency} días` : 'Sin datos suficientes' },
+                        { icon: <Calendar size={14} />, label: 'Frecuencia promedio', value: averageFrequency === 0 ? 'Mismo día' : averageFrequency !== null ? `Cada ${averageFrequency} días` : 'Sin datos suficientes' },
                         { icon: <Star size={14} />, label: 'Día más frecuente', value: bestDay || 'Sin datos' },
                         { icon: <Clock size={14} />, label: 'Hora más frecuente', value: bestHour || 'Sin datos' },
                         { icon: <Activity size={14} />, label: 'Anticipación promedio', value: averageAnticipation !== null ? `${averageAnticipation} días` : 'Sin datos' },

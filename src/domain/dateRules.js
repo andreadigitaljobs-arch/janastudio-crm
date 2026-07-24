@@ -15,3 +15,15 @@ export const formatNullableDate = (
   if (!isUsableDateValue(value)) return fallback;
   return new Date(value).toLocaleDateString(locale, options);
 };
+
+export const getAverageIntervalDays = (values) => {
+  const dates = values
+    .filter(isUsableDateValue)
+    .map((value) => new Date(value))
+    .sort((a, b) => a - b);
+  if (dates.length < 2) return null;
+  const intervals = dates.slice(1).map((date, index) => (
+    Math.max(0, Math.round((date.getTime() - dates[index].getTime()) / 86_400_000))
+  ));
+  return Math.round(intervals.reduce((sum, days) => sum + days, 0) / intervals.length);
+};
