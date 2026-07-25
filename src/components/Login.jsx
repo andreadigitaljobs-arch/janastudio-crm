@@ -37,6 +37,20 @@ export default function Login() {
   const { login } = useAuth();
 
   useEffect(() => {
+    const origHtmlBg = document.documentElement.style.backgroundColor;
+    const origBodyBg = document.body.style.backgroundColor;
+    
+    // Forzar el color de fondo de la app al tono del login para evitar la franja blanca superior en iOS
+    document.documentElement.style.backgroundColor = '#f5eff1';
+    document.body.style.backgroundColor = '#f5eff1';
+    
+    return () => {
+      document.documentElement.style.backgroundColor = origHtmlBg;
+      document.body.style.backgroundColor = origBodyBg;
+    };
+  }, []);
+
+  useEffect(() => {
     const checkMobile = () => {
       const isNarrow = window.innerWidth <= 768;
       const isTallEnough = window.innerHeight / window.innerWidth >= 4 / 3;
