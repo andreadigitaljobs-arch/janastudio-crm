@@ -22,6 +22,9 @@ import {
   List,
   RefreshCw,
   User,
+  Users,
+  History,
+  X,
   Sparkles,
   TrendingUp
 } from 'lucide-react';
