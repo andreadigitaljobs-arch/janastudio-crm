@@ -985,7 +985,79 @@ export const dataService = {
       .order('created_at', { ascending: false })
       .limit(500);
     if (error) throw error;
-    return _asArray(data);
+
+    const movements = _asArray(data);
+    const checkoutIds = [...new Set(movements
+      .map((movement) => movement.reason?.match(/Checkout\s+([0-9a-f-]{36})/i)?.[1])
+      .filter(Boolean))];
+
+    if (checkoutIds.length === 0) return movements;
+
+    const { data: transactions, error: transactionsError } = await supabase
+      .from('transactions')
+      .select('id, description, metadata, client_id, created_at')
+      .in('id', checkoutIds);
+
+    if (transactionsError) {
+      console.warn('No se pudieron relacionar los movimientos con sus cobros:', transactionsError);
+      return movements;
+    }
+
+    const transactionsById = new Map(_asArray(transactions).map((transaction) => [transaction.id, transaction]));
+    const appointmentIds = [...new Set(_asArray(transactions).flatMap((transaction) => {
+      const metadata = transaction.metadata || {};
+      const ids = Array.isArray(metadata.appointmentIds) ? metadata.appointmentIds : [];
+      const primaryId = metadata.appointment_id || metadata.appointmentId;
+      return [...ids, primaryId].filter(Boolean);
+    }))];
+
+    let appointmentsById = new Map();
+    if (appointmentIds.length > 0) {
+      const { data: appointments, error: appointmentsError } = await supabase
+        .from('appointments')
+        .select(`
+          id, client_id, scheduled_at, completed_at, status, total_price,
+          clients (id, name, phone),
+          services (id, name, duration_minutes),
+          staff!appointments_staff_id_fkey (id, name, display_name),
+          appointment_services (
+            id, service_id, staff_id, price_paid, status, scheduled_at, duration_minutes,
+            services (id, name, duration_minutes),
+            staff (id, name, display_name)
+          )
+        `)
+        .in('id', appointmentIds);
+
+      if (!appointmentsError) {
+        appointmentsById = new Map(_asArray(appointments).map((appointment) => [
+          appointment.id,
+          _normalizeAppointment(appointment),
+        ]));
+      } else {
+        console.warn('No se pudieron cargar las citas asociadas al inventario:', appointmentsError);
+      }
+    }
+
+    return movements.map((movement) => {
+      const checkoutId = movement.reason?.match(/Checkout\s+([0-9a-f-]{36})/i)?.[1];
+      const transaction = checkoutId ? transactionsById.get(checkoutId) : null;
+      if (!transaction) return movement;
+
+      const metadata = transaction.metadata || {};
+      const ids = [
+        ...(Array.isArray(metadata.appointmentIds) ? metadata.appointmentIds : []),
+        metadata.appointment_id || metadata.appointmentId,
+      ].filter(Boolean);
+
+      return {
+        ...movement,
+        service_reference: {
+          checkout_id: checkoutId,
+          transaction,
+          appointments: [...new Set(ids)].map((id) => appointmentsById.get(id)).filter(Boolean),
+        },
+      };
+    });
   },
 
   async getProfitabilityReport(startDate, endDate) {

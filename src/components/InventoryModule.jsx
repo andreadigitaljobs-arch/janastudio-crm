@@ -21,7 +21,11 @@ import {
   Eye,
   Calendar,
   ShoppingCart,
-  BarChart3
+  BarChart3,
+  ExternalLink,
+  Scissors,
+  User,
+  Clock
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
@@ -111,13 +115,68 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [historyFilter, setHistoryFilter] = useState('all'); // 'all', 'today', 'week', 'month'
+  const [selectedMovement, setSelectedMovement] = useState(null);
 
   useEffect(() => {
-    if (showCamera || showHistoryModal || editingItem) {
+    if (showCamera || showHistoryModal || editingItem || selectedMovement) {
       pushModal();
       return () => popModal();
     }
-  }, [showCamera, showHistoryModal, editingItem, pushModal, popModal]);
+  }, [showCamera, showHistoryModal, editingItem, selectedMovement, pushModal, popModal]);
+
+  const getMovementServiceSummary = (move) => {
+    const appointments = move.service_reference?.appointments || [];
+    const serviceNames = [...new Set(appointments.flatMap((appointment) => {
+      const nestedNames = (appointment.appointment_services || [])
+        .map((item) => item.services?.name)
+        .filter(Boolean);
+      return nestedNames.length ? nestedNames : [appointment.services?.name].filter(Boolean);
+    }))];
+    const clientName = appointments.find((appointment) => appointment.clients?.name)?.clients?.name;
+
+    return {
+      serviceNames,
+      clientName,
+      label: serviceNames.length
+        ? `Consumo del servicio: ${serviceNames.join(' + ')}`
+        : 'Consumo automático de insumos del servicio',
+    };
+  };
+
+  const renderMovementReason = (move, compact = false) => {
+    if (!move.service_reference) {
+      return <span>{move.reason?.replace(/autom\?\?tico/gi, 'automático') || 'Sin motivo registrado'}</span>;
+    }
+
+    const summary = getMovementServiceSummary(move);
+    return (
+      <button
+        type="button"
+        onClick={() => setSelectedMovement(move)}
+        style={{
+          width: '100%',
+          padding: 0,
+          border: 0,
+          background: 'transparent',
+          color: 'var(--pink-primary)',
+          cursor: 'pointer',
+          textAlign: 'left',
+          display: 'flex',
+          alignItems: compact ? 'flex-start' : 'center',
+          gap: '7px',
+          font: 'inherit',
+        }}
+      >
+        <ExternalLink size={13} style={{ marginTop: compact ? '2px' : 0, flexShrink: 0 }} />
+        <span>
+          <strong style={{ display: 'block', color: 'var(--text-primary)', lineHeight: 1.35 }}>{summary.label}</strong>
+          <span style={{ display: 'block', marginTop: '2px', fontSize: '10px', fontWeight: 700 }}>
+            {summary.clientName ? `${summary.clientName} · ` : ''}Ver detalle
+          </span>
+        </span>
+      </button>
+    );
+  };
 
   const handleAddItem = async () => {
     if (!newItem.name || saving) return;
@@ -763,7 +822,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                                 </div>
                                 {move.reason && (
                                   <div style={{ fontSize: '11px', color: 'var(--text-muted)', borderTop: '1px dashed rgba(255,255,255,0.05)', paddingTop: '6px', marginTop: '2px' }}>
-                                    <span style={{ fontWeight: '700' }}>Motivo:</span> {move.reason}
+                                    {renderMovementReason(move, true)}
                                   </div>
                                 )}
                               </div>
@@ -799,7 +858,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                                       </span>
                                     </td>
                                     <td style={{ padding: '16px', fontSize: '14px', fontWeight: '900', color: move.type === 'entry' ? '#32d74b' : '#ff453a' }}>{move.type === 'entry' ? '+' : '-'}{move.amount}</td>
-                                    <td style={{ padding: '16px', fontSize: '12px', color: 'var(--text-secondary)' }}>{move.reason}</td>
+                                    <td style={{ padding: '16px', fontSize: '12px', color: 'var(--text-secondary)', minWidth: '220px' }}>{renderMovementReason(move)}</td>
                                   </tr>
                                 ))}
                               </tbody>
@@ -814,6 +873,85 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
             </div>
           </div>
         )}
+      </AnimatedModal>
+
+      <AnimatedModal isOpen={Boolean(selectedMovement)}>
+        {(overlayClass, cardClass) => {
+          const appointments = selectedMovement?.service_reference?.appointments || [];
+          const summary = selectedMovement ? getMovementServiceSummary(selectedMovement) : { serviceNames: [] };
+          const client = appointments.find((appointment) => appointment.clients)?.clients;
+          const completedAt = appointments.find((appointment) => appointment.completed_at)?.completed_at
+            || selectedMovement?.created_at;
+
+          return (
+            <div className={overlayClass} style={{ position: 'fixed', inset: 0, zIndex: 100001, background: 'rgba(74, 46, 55, 0.48)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+              <div className={cardClass} style={{ width: '100%', maxWidth: '560px', maxHeight: '88vh', overflowY: 'auto', background: '#fff', borderRadius: '28px', border: '1px solid var(--border-color)', boxShadow: '0 28px 80px rgba(74, 46, 55, 0.24)' }}>
+                <div style={{ padding: '26px 28px 20px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '20px', borderBottom: '1px solid var(--border-color)' }}>
+                  <div style={{ display: 'flex', gap: '14px', minWidth: 0 }}>
+                    <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'var(--pink-soft)', color: 'var(--pink-primary)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+                      <Scissors size={21} />
+                    </div>
+                    <div>
+                      <div style={{ color: 'var(--pink-primary)', fontSize: '10px', fontWeight: 900, letterSpacing: '1.2px', textTransform: 'uppercase' }}>Servicio relacionado</div>
+                      <h3 style={{ margin: '4px 0 0', fontSize: '22px', lineHeight: 1.2, color: 'var(--text-primary)' }}>
+                        {summary.serviceNames.join(' + ') || 'Detalle del servicio'}
+                      </h3>
+                    </div>
+                  </div>
+                  <button type="button" onClick={() => setSelectedMovement(null)} aria-label="Cerrar detalle" style={{ width: '40px', height: '40px', borderRadius: '12px', border: '1px solid var(--border-color)', background: '#fff', color: 'var(--text-primary)', cursor: 'pointer', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+                    <X size={19} />
+                  </button>
+                </div>
+
+                <div style={{ padding: '24px 28px 28px', display: 'grid', gap: '18px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '12px' }}>
+                    <div style={{ padding: '14px 16px', borderRadius: '16px', background: '#fff8fa', border: '1px solid var(--border-color)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '7px', color: 'var(--text-muted)', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase' }}><User size={13} /> Cliente</div>
+                      <div style={{ marginTop: '7px', color: 'var(--text-primary)', fontWeight: 800 }}>{client?.name || 'Cliente no disponible'}</div>
+                      {client?.phone && <div style={{ marginTop: '2px', color: 'var(--text-secondary)', fontSize: '12px' }}>{client.phone}</div>}
+                    </div>
+                    <div style={{ padding: '14px 16px', borderRadius: '16px', background: '#fff8fa', border: '1px solid var(--border-color)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '7px', color: 'var(--text-muted)', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase' }}><Clock size={13} /> Realizado</div>
+                      <div style={{ marginTop: '7px', color: 'var(--text-primary)', fontWeight: 800 }}>
+                        {completedAt ? new Date(completedAt).toLocaleString('es-VE', { dateStyle: 'medium', timeStyle: 'short' }) : 'Fecha no disponible'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style={{ marginBottom: '9px', color: 'var(--text-muted)', fontSize: '10px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase' }}>Atención</div>
+                    <div style={{ display: 'grid', gap: '9px' }}>
+                      {appointments.map((appointment) => {
+                        const serviceRows = appointment.appointment_services?.length
+                          ? appointment.appointment_services
+                          : [{ id: appointment.id, services: appointment.services, staff: appointment.staff, status: appointment.status }];
+                        return serviceRows.map((serviceRow) => (
+                          <div key={serviceRow.id} style={{ padding: '14px 16px', borderRadius: '16px', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'center' }}>
+                            <div>
+                              <div style={{ fontWeight: 850, color: 'var(--text-primary)' }}>{serviceRow.services?.name || 'Servicio'}</div>
+                              <div style={{ marginTop: '3px', color: 'var(--text-secondary)', fontSize: '12px' }}>{serviceRow.staff?.display_name || serviceRow.staff?.name || appointment.staff?.display_name || appointment.staff?.name || 'Especialista no asignada'}</div>
+                            </div>
+                            <span style={{ padding: '5px 9px', borderRadius: '999px', background: '#eaf8ef', color: '#23864b', fontSize: '9px', fontWeight: 900, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{serviceRow.status || appointment.status || 'Completado'}</span>
+                          </div>
+                        ));
+                      })}
+                      {appointments.length === 0 && (
+                        <div style={{ padding: '18px', borderRadius: '16px', background: '#fff8fa', color: 'var(--text-secondary)', fontSize: '13px' }}>
+                          El cobro está identificado, pero la cita asociada ya no está disponible.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div style={{ padding: '15px 16px', borderRadius: '16px', background: '#f8f5f6', color: 'var(--text-secondary)', fontSize: '12px', lineHeight: 1.5 }}>
+                    <strong style={{ color: 'var(--text-primary)' }}>Insumo descontado:</strong>{' '}
+                    {selectedMovement?.inventory?.name || 'Producto eliminado'} · {selectedMovement?.amount || 0} unidad(es)
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }}
       </AnimatedModal>
     </div>
   );
