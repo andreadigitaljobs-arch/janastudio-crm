@@ -186,6 +186,10 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
   const [isEditingCosts, setIsEditingCosts] = useState(false);
   const [isCostsLocked, setIsCostsLocked] = useState(true);
   const [selectedTxId, setSelectedTxId] = useState(null);
+  const selectedTransaction = useMemo(
+    () => transactions.find(transaction => transaction.id === selectedTxId) || null,
+    [transactions, selectedTxId]
+  );
 
   // Payroll / Nómina States
   const [assistantConfig, setAssistantConfig] = useState(() => {
@@ -243,6 +247,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
     payrollModal.isOpen || 
     payrollDetail.isOpen || 
     valeModal.isOpen ||
+    Boolean(selectedTransaction) ||
     dialog.isOpen
   );
 
@@ -816,6 +821,14 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
       dateFilterStart.setDate(startOfThisWeek.getDate() - 7);
       dateFilterEnd = new Date(startOfThisWeek);
       dateFilterEnd.setMilliseconds(-1);
+    } else if (payrollFilterDate === 'this_month') {
+      const now = new Date();
+      dateFilterStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      dateFilterEnd = now;
+    } else if (payrollFilterDate === 'last_month') {
+      const now = new Date();
+      dateFilterStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      dateFilterEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
     } else if (payrollFilterDate === 'custom') {
       dateFilterStart = payrollStartDate ? new Date(payrollStartDate + 'T00:00:00') : getStartOfWeek();
       dateFilterEnd = payrollEndDate ? new Date(payrollEndDate + 'T23:59:59') : new Date();
@@ -1459,7 +1472,17 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
               {/* Desktop Table */}
               {!isMobile && (
                 <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                  <table style={{ width: '100%', minWidth: '940px', tableLayout: 'fixed', borderCollapse: 'collapse', textAlign: 'left' }}>
+                    <colgroup>
+                      <col style={{ width: '12%' }} />
+                      <col style={{ width: '16%' }} />
+                      <col style={{ width: '17%' }} />
+                      <col style={{ width: '15%' }} />
+                      <col style={{ width: '17%' }} />
+                      <col style={{ width: '9%' }} />
+                      <col style={{ width: '9%' }} />
+                      <col style={{ width: '5%' }} />
+                    </colgroup>
                     <thead>
                       <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
                         <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>FECHA</th>
@@ -1482,7 +1505,19 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                         const rate = Number(t.exchange_rate || rates?.usd || 550);
                         const finalBs = t.metadata?.transfer_bs || t.metadata?.transferBs || (t.amount * rate);
                         return (
-                          <tr key={t.id} onClick={() => setSelectedTxId(selectedTxId === t.id ? null : t.id)} style={{ borderBottom: '1px solid rgba(0,0,0,0.03)', cursor: 'pointer', transition: 'background 0.2s' }}>
+                          <tr
+                            key={t.id}
+                            onClick={() => setSelectedTxId(t.id)}
+                            tabIndex={0}
+                            onKeyDown={(event) => {
+                              if (event.key === 'Enter' || event.key === ' ') {
+                                event.preventDefault();
+                                setSelectedTxId(t.id);
+                              }
+                            }}
+                            aria-label={`Ver detalle de la transacción de ${clientName}`}
+                            style={{ borderBottom: '1px solid rgba(0,0,0,0.03)', cursor: 'pointer', transition: 'background 0.2s', outline: 'none' }}
+                          >
                             <td style={{ padding: '14px 16px', fontSize: '13px', color: 'var(--text-secondary)' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: t.type === 'income' ? '#32d74b' : '#ff453a' }}></div>
@@ -1550,7 +1585,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                     const rate = Number(t.exchange_rate || rates?.usd || 550);
                     const finalBs = t.metadata?.transfer_bs || t.metadata?.transferBs || (t.amount * rate);
                     return (
-                      <div key={t.id} style={{ padding: '16px', borderRadius: '14px', border: '1px solid var(--border-color)', background: 'white' }}>
+                      <button type="button" key={t.id} onClick={() => setSelectedTxId(t.id)} style={{ width: '100%', padding: '16px', borderRadius: '14px', border: '1px solid var(--border-color)', background: 'white', textAlign: 'left', color: 'inherit', cursor: 'pointer' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: t.type === 'income' ? '#32d74b' : '#ff453a' }}></div>
@@ -1565,7 +1600,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                           <span>{new Date(t.created_at).toLocaleDateString('es-VE', { day: '2-digit', month: 'short' })} {new Date(t.created_at).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit', hour12: true })}</span>
                           <span>{paymentMethod}</span>
                         </div>
-                      </div>
+                      </button>
                     );
                   })}
                 </div>
@@ -1709,12 +1744,14 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
               {/* Header */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', marginBottom: '24px', flexDirection: isMobile ? 'column' : 'row', gap: '16px' }}>
                 <div>
-                  <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-muted)', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>NÓMINA Y CORTE SEMANAL</div>
+                  <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-muted)', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>NÓMINA Y PERÍODO DE PAGO</div>
                   <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                     <div style={{ width: isMobile ? '100%' : '220px' }}>
-                      <JanaSelect value={payrollFilterDate} onChange={setPayrollFilterDate} options={[
+                      <JanaSelect variant="light" value={payrollFilterDate} onChange={setPayrollFilterDate} options={[
                         { value: 'this_week', label: 'Esta Semana (Actual)' },
                         { value: 'last_week', label: 'Semana Pasada' },
+                        { value: 'this_month', label: 'Este Mes' },
+                        { value: 'last_month', label: 'Mes Pasado' },
                         { value: 'custom', label: 'Rango Personalizado' }
                       ]} />
                     </div>
@@ -1759,7 +1796,7 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                     <div style={{ width: '26px', height: '26px', borderRadius: '8px', backgroundColor: 'rgba(196,139,159,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <ArrowUpCircle size={13} color="var(--pink-primary)" />
                     </div>
-                    PAGADO ESTA SEMANA
+                    PAGADO EN EL PERÍODO
                   </div>
                   <div style={{ fontSize: '22px', fontWeight: '900', color: 'var(--text-primary)' }}>Bs. {formatBs(paidThisWeek)}</div>
                   <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '650', marginTop: '4px' }}>Pagos registrados en el período</div>
@@ -1774,7 +1811,18 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
                 </div>
                 {!isMobile && (
                   <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <table style={{ width: '100%', minWidth: '920px', tableLayout: 'fixed', borderCollapse: 'collapse' }}>
+                      <colgroup>
+                        <col style={{ width: '18%' }} />
+                        <col style={{ width: '11%' }} />
+                        <col style={{ width: '9%' }} />
+                        <col style={{ width: '8%' }} />
+                        <col style={{ width: '13%' }} />
+                        <col style={{ width: '10%' }} />
+                        <col style={{ width: '13%' }} />
+                        <col style={{ width: '10%' }} />
+                        <col style={{ width: '8%' }} />
+                      </colgroup>
                       <thead>
                         <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
                           <th style={{ padding: '12px 16px', fontSize: '10px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'left' }}>MIEMBRO</th>
@@ -2697,6 +2745,108 @@ const FinanceModule = ({ isMobile, currency, rates, staff = [] }) => {
               </div>
             </div>
             )}
+          </AnimatedModal>
+
+          {/* Transaction Detail Modal */}
+          <AnimatedModal isOpen={Boolean(selectedTransaction)}>
+            {(overlayClass, cardClass) => {
+              if (!selectedTransaction) return null;
+
+              const parsed = parseTxExcel(selectedTransaction);
+              const metadata = selectedTransaction.metadata || {};
+              const transactionRate = Number(selectedTransaction.exchange_rate || rates?.usd || 550);
+              const totalUsd = Number(selectedTransaction.amount || 0);
+              const totalBs = Number(metadata.transfer_bs || metadata.transferBs || (totalUsd * transactionRate));
+              const staffBreakdown = Array.isArray(metadata.staffInvolved) ? metadata.staffInvolved : [];
+              const extras = Array.isArray(metadata.extras) ? metadata.extras : [];
+              const products = Array.isArray(metadata.products_sold) ? metadata.products_sold : [];
+              const cashUsd = Number(metadata.cash_usd || metadata.cashUsd || 0);
+              const transferBs = Number(metadata.transfer_bs || metadata.transferBs || 0);
+
+              return (
+                <div className={overlayClass} role="dialog" aria-modal="true" aria-labelledby="transaction-detail-title" onClick={() => setSelectedTxId(null)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(73, 48, 58, 0.48)', backdropFilter: 'blur(12px)', zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px' : '24px' }}>
+                  <article className={cardClass} onClick={(event) => event.stopPropagation()} style={{ width: '100%', maxWidth: '760px', maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#fff', border: '1px solid rgba(165, 91, 119, 0.16)', borderRadius: isMobile ? '22px' : '28px', boxShadow: '0 28px 80px rgba(73, 48, 58, 0.22)' }}>
+                    <header style={{ padding: isMobile ? '20px' : '24px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '20px', borderBottom: '1px solid var(--border-color)', background: 'linear-gradient(135deg, #fff 0%, #fff8fa 100%)' }}>
+                      <div>
+                        <div style={{ color: 'var(--pink-primary)', fontSize: '10px', fontWeight: '900', letterSpacing: '1.2px', textTransform: 'uppercase', marginBottom: '6px' }}>{selectedTransaction.type === 'expense' ? 'Egreso registrado' : 'Ingreso registrado'}</div>
+                        <h3 id="transaction-detail-title" style={{ margin: 0, color: 'var(--text-primary)', fontSize: isMobile ? '21px' : '25px', fontWeight: '900', lineHeight: 1.18 }}>{parsed.serviceName || selectedTransaction.description || 'Detalle de transacción'}</h3>
+                        <p style={{ margin: '7px 0 0', color: 'var(--text-muted)', fontSize: '12px' }}>{new Date(selectedTransaction.created_at).toLocaleString('es-VE', { dateStyle: 'long', timeStyle: 'short' })}</p>
+                      </div>
+                      <button type="button" aria-label="Cerrar detalle de transacción" onClick={() => setSelectedTxId(null)} style={{ width: '44px', height: '44px', flexShrink: 0, display: 'grid', placeItems: 'center', background: '#fff', color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: '13px', cursor: 'pointer' }}><X size={19} /></button>
+                    </header>
+
+                    <div className="jana-scrollbar" style={{ overflowY: 'auto', padding: isMobile ? '16px' : '24px 28px 28px' }}>
+                      <section style={{ padding: isMobile ? '18px' : '22px', borderRadius: '18px', color: '#fff', background: selectedTransaction.type === 'expense' ? '#8f4c54' : 'linear-gradient(135deg, #5f3545 0%, #a85a79 100%)', marginBottom: '16px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '20px', flexWrap: 'wrap' }}>
+                          <div>
+                            <div style={{ fontSize: '10px', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.75 }}>Total de la transacción</div>
+                            <div style={{ marginTop: '5px', fontSize: isMobile ? '28px' : '34px', fontWeight: '900', letterSpacing: '-1px' }}>{selectedTransaction.type === 'expense' ? '-' : ''}${formatBs(totalUsd)} USD</div>
+                          </div>
+                          <div style={{ textAlign: 'right' }}>
+                            <div style={{ fontSize: '14px', fontWeight: '800' }}>{selectedTransaction.type === 'expense' ? '-' : ''}Bs. {formatBs(totalBs)}</div>
+                            <div style={{ marginTop: '3px', fontSize: '10px', opacity: 0.72 }}>Tasa aplicada: Bs. {formatBs(transactionRate)}</div>
+                          </div>
+                        </div>
+                      </section>
+
+                      <section style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, minmax(0, 1fr))', gap: '12px', marginBottom: '16px' }}>
+                        {[
+                          ['Cliente', parsed.clientName || metadata.clientName || 'Sin cliente asociado'],
+                          ['Profesional', parsed.estilista || 'Sin profesional asociado'],
+                          ['Método de pago', parsed.paymentMethod || 'No especificado'],
+                          ['Tratamiento', isTreatment(parsed.didTreatment) ? 'Sí, registrado' : 'No']
+                        ].map(([label, value]) => (
+                          <div key={label} style={{ padding: '14px 16px', borderRadius: '14px', background: '#faf6f7', border: '1px solid var(--border-color)' }}>
+                            <div style={{ color: 'var(--text-muted)', fontSize: '9px', fontWeight: '850', letterSpacing: '0.8px', textTransform: 'uppercase' }}>{label}</div>
+                            <div style={{ color: 'var(--text-primary)', fontSize: '13px', fontWeight: '750', marginTop: '5px', lineHeight: 1.35 }}>{value}</div>
+                          </div>
+                        ))}
+                      </section>
+
+                      {(cashUsd > 0 || transferBs > 0) && (
+                        <section style={{ padding: '16px', borderRadius: '15px', border: '1px solid var(--border-color)', marginBottom: '16px' }}>
+                          <h4 style={{ margin: '0 0 12px', color: 'var(--text-primary)', fontSize: '13px', fontWeight: '850' }}>Distribución del pago</h4>
+                          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '10px' }}>
+                            {cashUsd > 0 && <div style={{ padding: '11px 13px', borderRadius: '11px', background: '#f7fbf8', color: '#23864b', fontSize: '12px', fontWeight: '800' }}>${formatBs(cashUsd)} USD · {metadata.method_usd || 'Efectivo'}</div>}
+                            {transferBs > 0 && <div style={{ padding: '11px 13px', borderRadius: '11px', background: '#fff7fa', color: 'var(--pink-primary)', fontSize: '12px', fontWeight: '800' }}>Bs. {formatBs(transferBs)} · {metadata.method_bs || 'Pago en bolívares'}</div>}
+                          </div>
+                        </section>
+                      )}
+
+                      {staffBreakdown.length > 0 && (
+                        <section style={{ padding: '16px', borderRadius: '15px', border: '1px solid var(--border-color)', marginBottom: '16px' }}>
+                          <h4 style={{ margin: '0 0 12px', color: 'var(--text-primary)', fontSize: '13px', fontWeight: '850' }}>Equipo y comisiones</h4>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            {staffBreakdown.map((member, index) => (
+                              <div key={member.staffId || index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '11px', background: '#faf6f7' }}>
+                                <span style={{ color: 'var(--text-secondary)', fontSize: '12px', fontWeight: '700' }}>{member.staffName || member.name || parsed.estilista || 'Profesional'}</span>
+                                <span style={{ color: 'var(--text-primary)', fontSize: '12px', fontWeight: '850', textAlign: 'right' }}>${formatBs(Number(member.commissionEarned || 0) + Number(member.productCommissionEarned || 0) + Number(member.tip || 0))} USD</span>
+                              </div>
+                            ))}
+                          </div>
+                        </section>
+                      )}
+
+                      {(extras.length > 0 || products.length > 0) && (
+                        <section style={{ padding: '16px', borderRadius: '15px', border: '1px solid rgba(194, 139, 78, 0.22)', background: '#fffaf5', marginBottom: '16px' }}>
+                          <h4 style={{ margin: '0 0 12px', color: 'var(--text-primary)', fontSize: '13px', fontWeight: '850' }}>Extras y productos</h4>
+                          {[...extras.map(item => ({ label: item.service_extras?.name || item.name || 'Extra', amount: Number(item.price || 0) })), ...products.map(item => ({ label: `${item.name || 'Producto'} × ${item.quantity || 1}`, amount: Number(item.price || 0) * Number(item.quantity || 1) }))].map((item, index) => (
+                            <div key={`${item.label}-${index}`} style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', padding: '7px 0', borderBottom: '1px solid rgba(194, 139, 78, 0.12)', color: 'var(--text-secondary)', fontSize: '12px' }}>
+                              <span>{item.label}</span><strong style={{ color: 'var(--pink-primary)' }}>${formatBs(item.amount)}</strong>
+                            </div>
+                          ))}
+                        </section>
+                      )}
+
+                      <footer style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap', padding: '13px 15px', borderRadius: '12px', background: '#f8f5f6', color: 'var(--text-muted)', fontSize: '10px', fontWeight: '700' }}>
+                        <span>Categoría: {selectedTransaction.category || 'Sin categoría'}</span>
+                        <span>ID: {selectedTransaction.id}</span>
+                      </footer>
+                    </div>
+                  </article>
+                </div>
+              );
+            }}
           </AnimatedModal>
 
           {/* Payroll Detail Modal */}
