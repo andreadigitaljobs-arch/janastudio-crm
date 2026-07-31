@@ -643,6 +643,7 @@ export const dataService = {
         price_paid: serviceData.price_paid || 0,
         scheduled_at: serviceData.scheduled_at || null,
         duration_minutes: serviceData.duration_minutes || 60,
+        allow_overlap: !!serviceData.allow_overlap,
         status: 'Pendiente'
       }])
       .select()
@@ -1676,11 +1677,13 @@ export const dataService = {
     };
   },
 
-  async sellLaserPackage({ clientId, serviceId, sessions, total, paymentMode, paymentMethod, exchangeRate }) {
-    const { data, error } = await supabase.rpc('sell_laser_package', {
+  async sellLaserPackage({ clientId, serviceId, sessions, total, paymentMode, paymentMethod, exchangeRate, installments = null }) {
+    const customInstallments = Array.isArray(installments) && installments.length > 0;
+    const { data, error } = await supabase.rpc(customInstallments ? 'sell_laser_package_custom' : 'sell_laser_package', {
       p_client_id: clientId, p_service_id: serviceId, p_sessions: sessions,
       p_total: total, p_payment_mode: paymentMode, p_payment_method: paymentMethod,
-      p_exchange_rate: exchangeRate
+      p_exchange_rate: exchangeRate,
+      ...(customInstallments ? { p_installments: installments } : {})
     });
     if (error) throw error;
     _cacheInvalidate('transactions');

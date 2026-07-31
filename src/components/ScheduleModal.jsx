@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import {
   X,
   User,
+  UserPlus,
   Check,
   AlertTriangle,
   Calendar,
@@ -27,6 +28,7 @@ import AnimatedModal from './AnimatedModal';
 import JanaSelect from './JanaSelect';
 import JanaDatePicker from './JanaDatePicker';
 import JanaTimePicker from './JanaTimePicker';
+import NewClientModal from './NewClientModal';
 import { isStaffFreeAt } from '../utils/availability';
 import { getBusinessDateKey } from '../utils/dateTime';
 import { getRoleKind, getRoleName } from '../utils/roles';
@@ -109,6 +111,7 @@ const ScheduleModal = ({
   const [selectedDate, setSelectedDate] = useState(defaultDate || new Date());
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showNewClientModal, setShowNewClientModal] = useState(false);
 
   const [localClient, setLocalClient] = useState(client || null);
   const [clientActivePackages, setClientActivePackages] = useState([]);
@@ -261,6 +264,7 @@ const ScheduleModal = ({
   }, [selectedDate]);
 
   const getServiceConflict = (svc) => {
+    if (svc.allowOverlap) return null;
     if (!svc.staffId || !svc.time) return null;
     const [h, m] = svc.time.split(':').map(Number);
     const startMin = h * 60 + m;
@@ -330,7 +334,8 @@ const ScheduleModal = ({
             duration_minutes: selectedService.duration_minutes || 60,
             staffId: selectedService.staffId || null,
             time: initialTime || generalTime,
-            customized: false
+            customized: false,
+            allowOverlap: false
           }))
           : service ? [{
             _uid: `${service.id}-${Date.now()}`,
@@ -340,7 +345,8 @@ const ScheduleModal = ({
             duration_minutes: service.duration_minutes || 60,
             staffId: initialStaff?.id || null,
             time: initialTime || generalTime,
-            customized: false
+            customized: false,
+            allowOverlap: false
           }] : [];
         setSelectedServices(seededServices);
 
@@ -382,7 +388,8 @@ const ScheduleModal = ({
       duration_minutes: svc.duration_minutes || 60,
       staffId: null,
       time: generalTime,
-      customized: false
+      customized: false,
+      allowOverlap: false
     }]);
   };
 
@@ -398,6 +405,10 @@ const ScheduleModal = ({
 
   const setRowTime = (uid, time) => {
     setSelectedServices(selectedServices.map(s => s._uid === uid ? { ...s, time, customized: true } : s));
+  };
+
+  const setRowAllowOverlap = (uid, allowOverlap) => {
+    setSelectedServices(selectedServices.map(s => s._uid === uid ? { ...s, allowOverlap } : s));
   };
 
   const resetRowToGeneralTime = (uid) => {
@@ -475,7 +486,8 @@ const ScheduleModal = ({
         staff_id: s.staffId,
         price_paid: s.price,
         scheduled_at: dt.toISOString(),
-        duration_minutes: s.duration_minutes
+        duration_minutes: s.duration_minutes,
+        allow_overlap: !!s.allowOverlap
       };
     });
 
@@ -549,7 +561,8 @@ const ScheduleModal = ({
 
   const modalSize = getModalDimensions();
 
-  return createPortal(
+  return (
+    <>
     <AnimatedModal isOpen={isOpen}>
       {(overlayClass, cardClass) => (
         <div className={`${overlayClass} jana-schedule-modal-overlay`} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(30, 30, 30, 0.45)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', zIndex: 20000, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: showSummaryPanel ? '24px' : '0', padding: '24px', animation: overlayClass === 'modal-overlay-exit' ? 'fadeOutDown 0.32s cubic-bezier(0.4, 0, 1, 1) forwards' : 'fadeIn 0.25s ease-out' }}>
@@ -734,6 +747,14 @@ const ScheduleModal = ({
                         }))}
                         showSearch={true}
                       />
+                      <button
+                        onClick={() => setShowNewClientModal(true)}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', borderRadius: '14px', border: '2px dashed rgba(201,114,130,0.3)', background: 'rgba(201,114,130,0.04)', color: '#c97282', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.2s' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(201,114,130,0.08)'; e.currentTarget.style.borderColor = 'rgba(201,114,130,0.5)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(201,114,130,0.04)'; e.currentTarget.style.borderColor = 'rgba(201,114,130,0.3)'; }}
+                      >
+                        <UserPlus size={18} /> Nueva Clienta
+                      </button>
                     </div>
                   )}
 
@@ -1355,6 +1376,10 @@ const ScheduleModal = ({
                                     <span>{getServiceConflictMessage(conflict)}</span>
                                   </div>
                                 )}
+                                <label style={{ display:'flex', alignItems:'center', gap:7, fontSize:'.66rem', fontWeight:700, color:svc.allowOverlap ? '#a0506a' : '#8c767b', cursor:'pointer', padding:'6px 8px', borderRadius:9, background:svc.allowOverlap ? 'rgba(201,114,130,.09)' : '#faf7f5' }}>
+                                  <input type="checkbox" checked={!!svc.allowOverlap} onChange={event => setRowAllowOverlap(svc._uid, event.target.checked)} style={{ accentColor:'#c97282' }} />
+                                  Permitir atención simultánea con esta profesional
+                                </label>
                              </div>
                            );
                          })}
@@ -1732,7 +1757,17 @@ const ScheduleModal = ({
         </div>
       )}
     </AnimatedModal>,
-    document.body
+    {showNewClientModal && (
+      <NewClientModal
+        isOpen={showNewClientModal}
+        onClose={() => setShowNewClientModal(false)}
+        onClientCreated={(newClient) => {
+          setLocalClient(newClient);
+          setShowNewClientModal(false);
+        }}
+      />
+    )}
+    </>
   );
 };
 

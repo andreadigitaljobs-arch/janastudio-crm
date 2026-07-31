@@ -28,10 +28,14 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
   const packagePrice = customPrice === '' ? catalogPrice : Math.max(0, Number(customPrice) || 0);
 
   const [isFinanced, setIsFinanced] = useState(false);
+  const [installmentPercentages, setInstallmentPercentages] = useState([30, 40, 30]);
   const [tenderMode, setTenderMode] = useState('full_usd');
   const [mixedUsdAmount, setMixedUsdAmount] = useState('');
   const [methodUsd, setMethodUsd] = useState('Efectivo');
   const [methodBs, setMethodBs] = useState('Pago Móvil');
+  const installmentPercentageTotal = installmentPercentages.reduce((sum, value) => sum + Number(value || 0), 0);
+  const validInstallmentPercentages = installmentPercentages.filter(value => Number(value) > 0).length >= 2
+    && installmentPercentageTotal === 100;
   
   // Custom client form
   const [newClientName, setNewClientName] = useState('');
@@ -43,6 +47,7 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
     total: packagePrice,
     sessions: totalSessions,
     financed: isFinanced,
+    percentages: validInstallmentPercentages ? installmentPercentages : [30, 40, 30],
   });
   const amountDueUsd = installmentPlan[0]?.amount || 0;
   const remainingUsd = installmentPlan.slice(1).reduce((sum, installment) => sum + installment.amount, 0);
@@ -63,6 +68,7 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
       setSelectedService(null);
       setSearchQuery('');
       setIsFinanced(false);
+      setInstallmentPercentages([30, 40, 30]);
       setTenderMode('full_usd');
       setMixedUsdAmount('');
     }
@@ -121,6 +127,10 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
       notificationService.sendNotification('Revisa el pago', 'La parte en dólares no puede superar la cuota de hoy.');
       return;
     }
+    if (isFinanced && !validInstallmentPercentages) {
+      notificationService.sendNotification('Revisa las cuotas', 'La distribución debe tener al menos dos cuotas y sumar 100%.');
+      return;
+    }
     
     try {
       setLoading(true);
@@ -133,7 +143,7 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
       if (tenderMode === 'mixed') {
         finalMethod = `Mixto · $${formattedUsd} ${methodUsd} + Bs ${formattedBs} ${methodBs}`;
       }
-      if (isFinanced) finalMethod = `Cuota 1 (30%) · ${finalMethod}`;
+      if (isFinanced) finalMethod = `Cuota 1 (${installmentPlan[0]?.percentage || 0}%) · ${finalMethod}`;
       await dataService.sellLaserPackage({
         clientId: selectedClient.id,
         serviceId: selectedService.id,
@@ -141,7 +151,13 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
         total: totalAmount,
         paymentMode: isFinanced ? 'financed' : tenderMode,
         paymentMethod: finalMethod,
-        exchangeRate
+        exchangeRate,
+        installments: isFinanced ? installmentPlan.map(item => ({
+          percentage: item.percentage,
+          amount: item.amount,
+          allocation: item.allocation,
+          due_at: item.dueAt.toISOString(),
+        })) : null
       });
 
       notificationService.sendNotification('Éxito', 'Paquete vendido y primera cuota registrada.');
@@ -323,15 +339,34 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
                           onClick={() => totalSessions === 8 && setIsFinanced(true)}
                           disabled={totalSessions !== 8}
                           style={{ flex: 1, padding: '12px', borderRadius: '12px', border: isFinanced ? '2px solid #c97282' : '1px solid rgba(223, 178, 140, 0.4)', background: isFinanced ? '#fff0f2' : '#fff', color: isFinanced ? '#c97282' : '#a0909a', opacity: totalSessions === 8 ? 1 : .55, fontWeight: '800', cursor: totalSessions === 8 ? 'pointer' : 'not-allowed', fontSize: '0.8rem', transition: 'all 0.2s' }}
-                        >{totalSessions === 8 ? 'PAGO FRACCIONADO (30/40/30)' : 'SOLO PARA 8 SESIONES'}</button>
+                        >{totalSessions === 8 ? 'PAGO FRACCIONADO' : 'SOLO PARA 8 SESIONES'}</button>
                       </div>
 
                       {isFinanced && (
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, padding: '12px 14px', background: '#fff0f2', borderRadius: '12px', border: '1px solid rgba(201,114,130,0.2)' }}>
-                          <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#c97282' }}>Quedarán 2 cuotas pendientes</span>
-                          <div style={{ textAlign: 'right' }}>
-                            <div style={{ fontSize: '1rem', fontWeight: 900, color: '#c97282' }}>${remainingUsd.toFixed(2)} USD</div>
-                            <div style={{ fontSize: '0.7rem', color: '#a0909a' }}>Ref. {(remainingUsd * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs.</div>
+                        <div style={{ padding: '14px', background: '#fff0f2', borderRadius: '12px', border: '1px solid rgba(201,114,130,0.2)' }}>
+                          <div style={{ display:'flex', justifyContent:'space-between', gap:10, alignItems:'center', marginBottom:10 }}>
+                            <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#2d1b22' }}>Distribución de las cuotas</span>
+                            <span style={{ fontSize: '0.74rem', fontWeight: 800, color: validInstallmentPercentages ? '#16a34a' : '#dc2626' }}>
+                              Total {installmentPercentageTotal}%
+                            </span>
+                          </div>
+                          <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:8 }}>
+                            {installmentPercentages.map((value, index) => (
+                              <label key={index} style={{ fontSize:'.68rem', color:'#a0909a', fontWeight:800 }}>
+                                CUOTA {index + 1}
+                                <div style={{ position:'relative', marginTop:5 }}>
+                                  <input aria-label={`Porcentaje cuota ${index + 1}`} type="number" min="0" max="100" value={value} onChange={event => setInstallmentPercentages(current => current.map((item, itemIndex) => itemIndex === index ? Number(event.target.value) : item))} style={{ width:'100%', height:38, borderRadius:9, border:'1px solid rgba(201,114,130,.3)', padding:'0 24px 0 9px', boxSizing:'border-box', color:'#2d1b22', fontWeight:800 }} />
+                                  <span style={{ position:'absolute', right:8, top:10, color:'#c97282', fontWeight:900 }}>%</span>
+                                </div>
+                              </label>
+                            ))}
+                          </div>
+                          <div style={{ display:'flex', justifyContent:'space-between', gap:12, alignItems:'center', marginTop:10 }}>
+                            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#c97282' }}>Pendiente después de hoy</span>
+                            <div style={{ textAlign: 'right' }}>
+                              <div style={{ fontSize: '1rem', fontWeight: 900, color: '#c97282' }}>${remainingUsd.toFixed(2)} USD</div>
+                              <div style={{ fontSize: '0.7rem', color: '#a0909a' }}>Ref. {(remainingUsd * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Bs.</div>
+                            </div>
                           </div>
                         </div>
                       )}
@@ -339,7 +374,7 @@ const LaserPackageModal = ({ isOpen, onClose, isMobile }) => {
                       <div style={{ padding: '16px', backgroundColor: '#fcf9f8', borderRadius: '16px', border: '1px solid rgba(223, 178, 140, 0.2)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 12 }}>
                           <div>
-                            <div style={{ fontSize: '0.76rem', color: '#a0909a', fontWeight: 800, textTransform: 'uppercase' }}>{isFinanced ? 'Primera cuota (30%)' : 'Monto a pagar hoy'}</div>
+                            <div style={{ fontSize: '0.76rem', color: '#a0909a', fontWeight: 800, textTransform: 'uppercase' }}>{isFinanced ? `Primera cuota (${installmentPlan[0]?.percentage || 0}%)` : 'Monto a pagar hoy'}</div>
                             <div style={{ fontSize: '1.45rem', lineHeight: 1.2, color: '#2d1b22', fontWeight: 900 }}>${amountDueUsd.toFixed(2)} USD</div>
                           </div>
                           <div style={{ textAlign: 'right', color: '#a0909a', fontSize: '0.76rem', fontWeight: 700 }}>

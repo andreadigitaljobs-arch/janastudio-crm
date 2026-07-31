@@ -15,7 +15,7 @@ const MODULE_ROLES = {
   scheduling: ['admin', 'reception', 'worker'],
   reception: ['admin', 'reception'],
   checkout: ['admin', 'reception', 'cashier'],
-  clients: ['admin', 'reception', 'cashier', 'worker'],
+  clients: ['admin', 'reception', 'cashier'],
   diagnosis: ['admin', 'reception', 'worker'],
   personnel: ['admin'],
   services: ['admin'],
@@ -25,6 +25,8 @@ const MODULE_ROLES = {
   accounting: ['admin'],
   laser: ['admin', 'reception', 'worker'],
   reports: ['admin'],
+  promotions: ['admin'],
+  settings: ['admin'],
   notifications: ['admin', 'reception', 'cashier', 'worker'],
 };
 

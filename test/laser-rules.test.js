@@ -26,6 +26,23 @@ test('genera las cuotas 30/40/30 en los días 0, 21 y 42', () => {
   assert.deepEqual(plan.map(item => item.dueAt.toISOString().slice(0, 10)), ['2026-07-22', '2026-08-12', '2026-09-02']);
 });
 
+test('permite cuotas láser personalizadas que suman 100%', () => {
+  const twoParts = buildLaserInstallmentPlan({
+    total: 96,
+    sessions: 8,
+    financed: true,
+    percentages: [80, 20, 0],
+    purchasedAt: '2026-07-22T12:00:00Z',
+  });
+  assert.deepEqual(twoParts.map(item => item.percentage), [80, 20]);
+  assert.deepEqual(twoParts.map(item => item.amount), [76.8, 19.2]);
+
+  assert.throws(
+    () => buildLaserInstallmentPlan({ total: 100, sessions: 8, financed: true, percentages: [50, 40, 0] }),
+    /sumar 100/,
+  );
+});
+
 test('separa el plan fraccionado de la moneda usada para pagar la cuota', () => {
   const plan = buildLaserInstallmentPlan({ total: 96, sessions: 8, financed: true, purchasedAt: '2026-07-23T12:00:00Z' });
   assert.equal(plan[0].amount, 28.8);

@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { PenTool, RotateCcw, Check, FileText, Clock, User, Shield } from 'lucide-react';
+import { PenTool, RotateCcw, Check, FileText, User, Shield, Printer } from 'lucide-react';
 
 const CONSENT_TEXT = `Yo, _________________________, declaro que he sido informada(a) de manera clara y completa sobre el procedimiento de depilación láser diodo que se me realizará en JanaStudio.
 
@@ -123,6 +123,14 @@ export default function DigitalConsentForm({
     }
   };
 
+  const printConsent = () => {
+    if (!existingConsent) return;
+    const popup = window.open('', '_blank', 'width=820,height=900');
+    if (!popup) return;
+    popup.document.write(`<!doctype html><html><head><title>Consentimiento láser - ${clientName || existingConsent.signed_by}</title><style>body{font-family:Arial,sans-serif;color:#2d1b22;padding:42px;line-height:1.55}h1{font-size:22px}pre{white-space:pre-wrap;font:14px/1.55 Arial,sans-serif}.signature{max-width:360px;max-height:130px;border-bottom:1px solid #999;margin-top:24px}.meta{color:#765f67;font-size:13px}</style></head><body><h1>Consentimiento informado · Depilación láser</h1><p class="meta">Jana Studio · Firmado por ${existingConsent.signed_by || clientName || ''} · ${new Date(existingConsent.created_at).toLocaleString('es-VE')}</p><pre>${existingConsent.consent_text || CONSENT_TEXT}</pre>${existingConsent.signature_base64 ? `<img class="signature" src="${existingConsent.signature_base64}" alt="Firma"/>` : ''}<p><strong>Profesional:</strong> ${existingConsent.staff_name || staffName || 'N/A'}</p><script>window.onload=()=>window.print()<\/script></body></html>`);
+    popup.document.close();
+  };
+
   if (existingConsent) {
     return (
       <div style={{ padding: isMobile ? '16px' : '24px' }}>
@@ -159,6 +167,9 @@ export default function DigitalConsentForm({
             />
           </div>
         )}
+        <button onClick={printConsent} style={{ width:'100%', height:42, borderRadius:11, border:'1px solid rgba(201,114,130,.3)', background:'#fff', color:'#a0506a', fontWeight:800, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
+          <Printer size={16} /> Imprimir o guardar en PDF
+        </button>
       </div>
     );
   }

@@ -25,12 +25,14 @@ export const getStaffWorkingWindow = (staffId, dateKey, schedules = [], timeOff 
   const row = schedules.find(s => s.staff_id === staffId && s.day_of_week === dayOfWeek);
 
   let workStart, workEnd;
+  let reason = 'scheduled';
   if (row && row.is_working) {
     workStart = timeToMinutes(row.start_time) ?? DEFAULT_WORKING_WINDOW.startMinutes;
     workEnd = timeToMinutes(row.end_time) ?? DEFAULT_WORKING_WINDOW.endMinutes;
   } else if (!row) {
     workStart = DEFAULT_WORKING_WINDOW.startMinutes;
     workEnd = DEFAULT_WORKING_WINDOW.endMinutes;
+    reason = 'unscheduled';
   } else {
     return { isWorking: false, reason: 'day_off', startMinutes: null, endMinutes: null };
   }
@@ -41,7 +43,7 @@ export const getStaffWorkingWindow = (staffId, dateKey, schedules = [], timeOff 
   }
 
   if (dayTimeOffs.length === 0) {
-    return { isWorking: true, reason: 'scheduled', startMinutes: workStart, endMinutes: workEnd };
+    return { isWorking: true, reason, startMinutes: workStart, endMinutes: workEnd };
   }
 
   const partialOffs = dayTimeOffs
@@ -51,7 +53,7 @@ export const getStaffWorkingWindow = (staffId, dateKey, schedules = [], timeOff 
 
   return {
     isWorking: true,
-    reason: 'scheduled',
+    reason,
     startMinutes: workStart,
     endMinutes: workEnd,
     partialTimeOffs: partialOffs

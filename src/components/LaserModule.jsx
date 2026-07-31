@@ -105,6 +105,7 @@ const LaserModule = ({ isMobile }) => {
   
   const [isSellPackageOpen, setIsSellPackageOpen] = useState(false);
   const [selectedPackageForSession, setSelectedPackageForSession] = useState(null);
+  const [selectedPackageForDetail, setSelectedPackageForDetail] = useState(null);
   
   const loadPackages = async () => {
     try {
@@ -382,7 +383,7 @@ const LaserModule = ({ isMobile }) => {
                   onSchedule={setSelectedPackageForSession}
                 />
               ) : (
-                <div key={pkg.id} className="agenda-glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.7)', transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 16px 40px rgba(74, 48, 54, 0.08)'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(74, 48, 54, 0.04)'; }}>
+                <div key={pkg.id} className="agenda-glass-card" onClick={() => setSelectedPackageForDetail(pkg)} style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.7)', transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 16px 40px rgba(74, 48, 54, 0.08)'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(74, 48, 54, 0.04)'; }}>
                   
                   {/* Header */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -438,7 +439,7 @@ const LaserModule = ({ isMobile }) => {
                     </div>
                     
                     <button 
-                      onClick={() => setSelectedPackageForSession(pkg)}
+                      onClick={(e) => { e.stopPropagation(); setSelectedPackageForSession(pkg); }}
                       disabled={pkg.raw.status !== 'active'}
                       className="btn-press"
                       style={{ padding: '10px 20px', borderRadius: '14px', background: '#fff', color: '#c97282', border: '1px solid rgba(201,114,130,0.2)', fontWeight: 800, fontSize: '0.85rem', cursor: pkg.raw.status === 'active' ? 'pointer' : 'not-allowed', opacity: pkg.raw.status === 'active' ? 1 : .5, transition: 'all 0.2s', boxShadow: '0 2px 8px rgba(201,114,130,0.05)' }}
@@ -616,6 +617,150 @@ const LaserModule = ({ isMobile }) => {
             </div>
           </div>
         )}
+      </AnimatedModal>
+
+      {/* Package Detail Modal */}
+      <AnimatedModal isOpen={!!selectedPackageForDetail}>
+        {(overlayClass, cardClass) => {
+          const pkg = selectedPackageForDetail;
+          if (!pkg) return null;
+          const raw = pkg.raw || {};
+          const installments = raw.package_installments || [];
+          const sessions = raw.package_sessions || [];
+          const paid = installments.filter(i => i.status === 'paid').reduce((sum, i) => sum + Number(i.amount), 0);
+          const total = Number(raw.total_amount) || 0;
+          const pending = total - paid;
+          const sortedSessions = [...sessions].sort((a, b) => {
+            const da = a.consumed_at || a.scheduled_at || '';
+            const db = b.consumed_at || b.scheduled_at || '';
+            return da.localeCompare(db);
+          });
+          return (
+            <div className={`modal-overlay ${overlayClass}`} onClick={() => setSelectedPackageForDetail(null)} style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(45,27,34,0.4)', backdropFilter: 'blur(8px)' }}>
+              <div className={`modal-card ${cardClass}`} onClick={e => e.stopPropagation()} style={{ background: '#faf5f5', borderRadius: '24px', width: '95%', maxWidth: '640px', maxHeight: '90vh', overflow: 'auto', boxSizing: 'border-box', boxShadow: '0 25px 60px rgba(45,27,34,0.18)' }}>
+
+                {/* Header */}
+                <div style={{ padding: '28px 28px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'linear-gradient(135deg, #fff0f2 0%, #ffe1e6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c97282', fontWeight: 900, fontSize: '1.5rem', border: '2px solid #fff', boxShadow: '0 4px 12px rgba(201,114,130,0.15)' }}>
+                      {pkg.client.charAt(0)}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#2d1b22' }}>{pkg.client}</div>
+                      <div style={{ fontSize: '0.85rem', color: '#a0909a', fontWeight: 600 }}>{pkg.phone || 'Sin teléfono'}</div>
+                    </div>
+                  </div>
+                  <button onClick={() => setSelectedPackageForDetail(null)} style={{ background: 'rgba(201,114,130,0.08)', border: 'none', borderRadius: '12px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#c97282', fontSize: '1.2rem', fontWeight: 800 }}>✕</button>
+                </div>
+
+                <div style={{ padding: '24px 28px 28px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+                  {/* Status + Package */}
+                  <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                    <div style={{ padding: '8px 16px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 800, background: pkg.status === 'Vencido' ? '#fef2f2' : pkg.status === 'Al día' ? '#fff0f2' : pkg.status === 'Cuota Pendiente' ? '#ffe1e6' : '#ecfdf5', color: pkg.status === 'Vencido' ? '#b42318' : pkg.status === 'Al día' ? '#c97282' : pkg.status === 'Cuota Pendiente' ? '#a0506a' : '#059669' }}>
+                      {pkg.status}
+                    </div>
+                    <div style={{ padding: '8px 16px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 700, background: 'rgba(201,114,130,0.08)', color: '#a0506a' }}>
+                      ✦ {pkg.package}
+                    </div>
+                  </div>
+
+                  {/* Sessions Progress */}
+                  <div style={{ background: '#fff', borderRadius: '18px', padding: '20px', border: '1px solid rgba(223,178,140,0.15)' }}>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#2d1b22', marginBottom: '14px' }}>Progreso de Sesiones</div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.8rem', fontWeight: 700 }}>
+                      <span style={{ color: '#8c767b' }}>Consumidas</span>
+                      <span style={{ color: '#c97282' }}>{pkg.currentSession} / {pkg.totalSessions}</span>
+                    </div>
+                    <div style={{ width: '100%', height: '10px', background: 'rgba(201,114,130,0.1)', borderRadius: '999px', overflow: 'hidden' }}>
+                      <div style={{ width: `${(pkg.currentSession / pkg.totalSessions) * 100}%`, height: '100%', background: 'linear-gradient(90deg, #c48b9f 0%, #c97282 100%)', borderRadius: '999px', transition: 'width 1s cubic-bezier(0.34, 1.56, 0.64, 1)' }} />
+                    </div>
+                  </div>
+
+                  {/* Session History */}
+                  <div style={{ background: '#fff', borderRadius: '18px', padding: '20px', border: '1px solid rgba(223,178,140,0.15)' }}>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#2d1b22', marginBottom: '14px' }}>Historial de Sesiones</div>
+                    {sortedSessions.length === 0 ? (
+                      <div style={{ textAlign: 'center', padding: '16px', color: '#a0909a', fontSize: '0.85rem' }}>Sin sesiones registradas</div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {sortedSessions.map((s, idx) => (
+                          <div key={s.id || idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 14px', background: s.consumed_at ? 'rgba(5,150,105,0.04)' : 'rgba(201,114,130,0.04)', borderRadius: '12px', border: `1px solid ${s.consumed_at ? 'rgba(5,150,105,0.1)' : 'rgba(201,114,130,0.1)'}` }}>
+                            <div>
+                              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22' }}>Sesión {idx + 1}</div>
+                              <div style={{ fontSize: '0.75rem', color: '#a0909a', marginTop: '2px' }}>
+                                {s.consumed_at ? `Realizada: ${new Date(s.consumed_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' })}` : s.scheduled_at ? `Agendada: ${new Date(s.scheduled_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' })}` : 'Sin fecha'}
+                              </div>
+                              {s.staff?.name && <div style={{ fontSize: '0.72rem', color: '#8c767b', marginTop: '2px' }}>Profesional: {s.staff.name}</div>}
+                              {s.notes && <div style={{ fontSize: '0.72rem', color: '#8c767b', marginTop: '2px', fontStyle: 'italic' }}>{s.notes}</div>}
+                            </div>
+                            <div style={{ padding: '4px 10px', borderRadius: '8px', fontSize: '0.7rem', fontWeight: 800, background: s.consumed_at ? '#ecfdf5' : '#fff0f2', color: s.consumed_at ? '#059669' : '#c97282' }}>
+                              {s.consumed_at ? '✓ Realizada' : 'Pendiente'}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Payment History */}
+                  <div style={{ background: '#fff', borderRadius: '18px', padding: '20px', border: '1px solid rgba(223,178,140,0.15)' }}>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#2d1b22', marginBottom: '14px' }}>Historial de Pagos</div>
+
+                    {/* Summary */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '16px' }}>
+                      <div style={{ textAlign: 'center', padding: '12px', background: 'rgba(201,114,130,0.04)', borderRadius: '12px' }}>
+                        <div style={{ fontSize: '0.7rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase' }}>Total</div>
+                        <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#2d1b22' }}>${total.toFixed(2)}</div>
+                      </div>
+                      <div style={{ textAlign: 'center', padding: '12px', background: 'rgba(5,150,105,0.04)', borderRadius: '12px' }}>
+                        <div style={{ fontSize: '0.7rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase' }}>Pagado</div>
+                        <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#059669' }}>${paid.toFixed(2)}</div>
+                      </div>
+                      <div style={{ textAlign: 'center', padding: '12px', background: pending > 0 ? 'rgba(160,80,106,0.04)' : 'rgba(5,150,105,0.04)', borderRadius: '12px' }}>
+                        <div style={{ fontSize: '0.7rem', color: '#a0909a', fontWeight: 700, textTransform: 'uppercase' }}>Pendiente</div>
+                        <div style={{ fontSize: '1.1rem', fontWeight: 900, color: pending > 0 ? '#a0506a' : '#059669' }}>${pending.toFixed(2)}</div>
+                      </div>
+                    </div>
+
+                    {/* Installments */}
+                    {installments.length === 0 ? (
+                      <div style={{ textAlign: 'center', padding: '16px', color: '#a0909a', fontSize: '0.85rem' }}>Sin cuotas registradas</div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {installments.map((inst, idx) => (
+                          <div key={inst.id || idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: inst.status === 'paid' ? 'rgba(5,150,105,0.04)' : 'rgba(245,158,11,0.04)', borderRadius: '12px', border: `1px solid ${inst.status === 'paid' ? 'rgba(5,150,105,0.1)' : 'rgba(245,158,11,0.1)'}` }}>
+                            <div>
+                              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2d1b22' }}>Cuota {inst.installment_number}</div>
+                              <div style={{ fontSize: '0.75rem', color: '#a0909a', marginTop: '2px' }}>
+                                {inst.status === 'paid' ? `Pagada${inst.paid_at ? ` el ${new Date(inst.paid_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'short' })}` : ''}` : 'Pendiente'}
+                                {inst.payment_method && ` · ${inst.payment_method}`}
+                              </div>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                              <div style={{ fontSize: '0.95rem', fontWeight: 900, color: inst.status === 'paid' ? '#059669' : '#d97706' }}>${Number(inst.amount).toFixed(2)}</div>
+                              <div style={{ padding: '3px 8px', borderRadius: '6px', fontSize: '0.65rem', fontWeight: 800, background: inst.status === 'paid' ? '#ecfdf5' : '#fffbeb', color: inst.status === 'paid' ? '#059669' : '#d97706' }}>
+                                {inst.status === 'paid' ? '✓' : '⏳'}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Action Button */}
+                  {raw.status === 'active' && (
+                    <button onClick={() => { setSelectedPackageForDetail(null); setSelectedPackageForSession(pkg); }} className="btn-press" style={{ width: '100%', padding: '16px', borderRadius: '16px', background: 'linear-gradient(135deg, #c48b9f 0%, #c97282 100%)', border: 'none', color: '#fff', fontWeight: 800, fontSize: '1rem', cursor: 'pointer', boxShadow: '0 6px 20px rgba(201,114,130,0.25)' }}>
+                      Agendar Nueva Sesión
+                    </button>
+                  )}
+
+                </div>
+              </div>
+            </div>
+          );
+        }}
       </AnimatedModal>
 
     </div>

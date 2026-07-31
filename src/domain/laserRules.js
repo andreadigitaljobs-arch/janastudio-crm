@@ -38,7 +38,7 @@ export const getLaserCatalogPrice = (service, sessions) => {
   return asMoney(selected ?? service?.price ?? 0);
 };
 
-export const buildLaserInstallmentPlan = ({ total, sessions, financed, purchasedAt = new Date() }) => {
+export const buildLaserInstallmentPlan = ({ total, sessions, financed, percentages = LASER_INSTALLMENT_PERCENTAGES, purchasedAt = new Date() }) => {
   const amount = asMoney(total);
   const count = Number(sessions);
   if (!LASER_SESSION_OPTIONS.includes(count)) throw new Error('Las sesiones deben ser 1, 4 u 8.');
@@ -46,14 +46,23 @@ export const buildLaserInstallmentPlan = ({ total, sessions, financed, purchased
     return [{ installmentNumber: 1, percentage: 100, amount, dueAt: asDate(purchasedAt) }];
   }
 
-  const first = asMoney(amount * 0.30);
-  const second = asMoney(amount * 0.40);
-  const third = asMoney(amount - first - second);
-  return [
-    { installmentNumber: 1, percentage: 30, allocation: 'worker', amount: first, dueAt: addDays(purchasedAt, 0) },
-    { installmentNumber: 2, percentage: 40, allocation: 'partner', amount: second, dueAt: addDays(purchasedAt, 21) },
-    { installmentNumber: 3, percentage: 30, allocation: 'studio', amount: third, dueAt: addDays(purchasedAt, 42) },
-  ];
+  const normalized = percentages.map(Number).filter(value => value > 0);
+  const totalPercentage = normalized.reduce((sum, value) => sum + value, 0);
+  if (normalized.length < 2 || Math.abs(totalPercentage - 100) > 0.001) {
+    throw new Error('Las cuotas deben sumar 100%.');
+  }
+  const allocations = ['worker', 'partner', 'studio'];
+  const amounts = normalized.map((percentage, index) => (
+    index === normalized.length - 1 ? 0 : asMoney(amount * percentage / 100)
+  ));
+  amounts[amounts.length - 1] = asMoney(amount - amounts.reduce((sum, value) => sum + value, 0));
+  return normalized.map((percentage, index) => ({
+    installmentNumber: index + 1,
+    percentage,
+    allocation: allocations[index] || 'studio',
+    amount: amounts[index],
+    dueAt: addDays(purchasedAt, index * 21),
+  }));
 };
 
 export const buildLaserTenderBreakdown = ({ amountUsd, exchangeRate, tenderMode, usdPortion = 0 }) => {

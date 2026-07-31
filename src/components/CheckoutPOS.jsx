@@ -522,12 +522,33 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
     const usdVal = isBs ? (amountVal / fixedRate) : amountVal;
     return acc + usdVal;
   }, 0);
-  const eligiblePromotions = promotions.filter(p => totalAppsInCheckout.some(app => {
+  const promotionMatchesAppointment = (promotion, app) => {
     const service = allServices.find(s => s.id === app.service_id) || app.services || {};
-    return p.scope === 'all' || (p.scope === 'service' && p.service_id === app.service_id) || (p.scope === 'category' && p.category === service.category);
-  }));
-  const appliedPromotion = eligiblePromotions.map(p => ({ ...p, calculated: p.discount_type === 'percent' ? servicePrice * Number(p.discount_value) / 100 : p.discount_type === 'direct_price' ? Math.max(0, servicePrice - Number(p.discount_value)) : Number(p.discount_value) })).sort((a,b)=>b.calculated-a.calculated)[0] || null;
+    return promotion.scope === 'all'
+      || (promotion.scope === 'service' && promotion.service_id === app.service_id)
+      || (promotion.scope === 'category' && promotion.category === service.category);
+  };
+  const eligiblePromotions = promotions.filter(p => totalAppsInCheckout.some(app => promotionMatchesAppointment(p, app)));
+  const appliedPromotion = eligiblePromotions.map(p => {
+    const eligibleBase = totalAppsInCheckout
+      .filter(app => !packageConsumptions[app.id] && promotionMatchesAppointment(p, app))
+      .reduce((sum, app) => sum + (Number(app.total_price) > 0 ? Number(app.total_price) : Number(app.services?.price || 0)), 0);
+    const value = Number(p.discount_value);
+    const calculated = p.discount_type === 'percent'
+      ? eligibleBase * value / 100
+      : p.discount_type === 'direct_price'
+        ? Math.max(0, eligibleBase - value)
+        : Math.min(eligibleBase, value);
+    return { ...p, eligibleBase, calculated };
+  }).sort((a,b)=>b.calculated-a.calculated)[0] || null;
   const promotionDiscount = Math.min(servicePrice, Number(appliedPromotion?.calculated || 0));
+  // La promoción reduce solo la base comisionable de los servicios elegibles,
+  // manteniendo intacto el porcentaje acordado de cada profesional.
+  const getServiceCommissionFactor = (app) => {
+    if (!appliedPromotion || !promotionMatchesAppointment(appliedPromotion, app)) return 1;
+    const eligibleBase = Number(appliedPromotion.eligibleBase || 0);
+    return eligibleBase > 0 ? Math.max(0, 1 - promotionDiscount / eligibleBase) : 1;
+  };
   const totalBeforeDiscount = servicePrice + productsTotal + extrasTotal + totalTips;
   const totalUsd = Math.max(0, totalBeforeDiscount - promotionDiscount);
   const totalBs = (totalUsd * fixedRate).toFixed(2);
@@ -884,7 +905,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
               if (!app.staff_id) return;
               const role = app.staff?.role;
               let price = app.total_price !== undefined && app.total_price !== null && Number(app.total_price) > 0 ? Number(app.total_price) : (app.services?.price || 0);
-              let grossBase = price;
+              let grossBase = price * getServiceCommissionFactor(app);
 
               const includesWashing = app.services?.included_items?.some(i => i.toLowerCase().includes('tratamiento'));
               if (includesWashing && appliedWashes < treatmentCount && treatmentRate > 0) {

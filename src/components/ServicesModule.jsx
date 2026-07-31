@@ -204,7 +204,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
   };
 
   const handleDeleteCategory = async (catObj) => {
-    if (!await confirm(`Â¿Estás seguro de eliminar la categoría "${catObj.name}"?`)) return;
+    if (!await confirm(`¿Estás seguro de eliminar la categoría "${catObj.name}"?`)) return;
     try {
       await dataService.deleteServiceCategory(catObj.name, catObj.icon);
       await fetchCategories();
@@ -231,7 +231,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
   };
 
   const handleDeleteStrategy = async (value) => {
-    if (!await confirm('Â¿Estás seguro de eliminar esta estrategia?')) return;
+    if (!await confirm('¿Estás seguro de eliminar esta estrategia?')) return;
     try {
       await dataService.deleteServiceStrategy(value);
       await fetchStrategies();
@@ -267,7 +267,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
 
   const handleDeleteMasterItem = async (e, id, name) => {
     e.stopPropagation();
-    if (!await confirm(`Â¿Eliminar "${name}" del checklist maestro?`)) return;
+    if (!await confirm(`¿Eliminar "${name}" del checklist maestro?`)) return;
     try {
       await dataService.deleteChecklistItem(id);
       await fetchBaseItems();
@@ -307,7 +307,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
 
   const handleDeleteBillableExtra = async (e, id, name) => {
     e.stopPropagation();
-    if (!await confirm(`Â¿Archivar el extra "${name}"? Se mantendrá en el historial pero ya no se podrá seleccionar para nuevos servicios.`)) return;
+    if (!await confirm(`¿Archivar el extra "${name}"? Se mantendrá en el historial pero ya no se podrá seleccionar para nuevos servicios.`)) return;
     try {
       await dataService.deleteExtra(id);
       await fetchBillableExtras();
@@ -318,7 +318,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
   };
 
   const handleDeleteService = async (id, name) => {
-    if (!await confirm(`Â¿Archivar el servicio "${name}"? Se mantendrá en el historial pero ya no se podrá seleccionar.`)) return;
+    if (!await confirm(`¿Archivar el servicio "${name}"? Se mantendrá en el historial pero ya no se podrá seleccionar.`)) return;
     try {
       setLoading(true);
       await dataService.deleteService(id);

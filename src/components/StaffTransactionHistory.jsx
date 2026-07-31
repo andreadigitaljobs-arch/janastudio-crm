@@ -266,7 +266,6 @@ const StaffTransactionHistory = ({ staffMember, rates, isMobile }) => {
               const extras = appointmentExtras.length > 0 ? appointmentExtras : (metadata.extras || []);
               const products = appointmentProducts.length > 0 ? appointmentProducts : (metadata.products_sold || []);
               const clientCedula = transaction.client?.id_card || appointment?.clients?.id_card || metadata.clientCedula || 'No registrada';
-              const clientPhone = transaction.client?.phone || appointment?.clients?.phone || 'No registrado';
               return (
                 <article
                   key={transaction.id}
@@ -309,7 +308,6 @@ const StaffTransactionHistory = ({ staffMember, rates, isMobile }) => {
                           <div style={{ fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '10px' }}>Cliente y servicio</div>
                           <DetailRow label={'Cliente'} value={clientName} />
                           <DetailRow label={'Cédula'} value={clientCedula} />
-                          <DetailRow label={'Teléfono'} value={clientPhone} />
                           <DetailRow label={'Servicio'} value={serviceName} />
                           {appointment?.staff?.name && <DetailRow label={'Estilista'} value={appointment.staff.name} />}
                         </div>

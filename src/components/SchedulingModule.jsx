@@ -4144,8 +4144,8 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
 
                     <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.12)', margin: '14px 0' }} />
 
-                    {/* Teléfono de contacto */}
-                    <div style={{ marginBottom: '14px' }}>
+                    {/* El teléfono es un dato de recepción, no de la vista personal de la trabajadora. */}
+                    {!isWorkerView && <div style={{ marginBottom: '14px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
                         <Phone size={13} color="#a0506a" />
                         <span style={{ fontSize: '0.78rem', color: '#a0506a', fontWeight: 700 }}>Teléfono de contacto</span>
@@ -4153,7 +4153,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#2d1b22' }}>
                         {selectedDetailedApp.clients?.phone || 'Sin número registrado'}
                       </div>
-                    </div>
+                    </div>}
 
                     <div style={{ height: '1px', background: 'rgba(223, 178, 140, 0.12)', margin: '14px 0' }} />
 
@@ -4209,7 +4209,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                   
                   {/* Completar y Reagendar */}
                   <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '10px' }}>
-                    <button 
+                    <button
                       onClick={() => {
                         showToast?.('Cita completada con éxito', 'success');
                         triggerCloseDetailedApp();
@@ -4219,7 +4219,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     >
                       <Check size={14} strokeWidth={2.5} /> Completar
                     </button>
-                    <button 
+                    {!isWorkerView && <button
                       onClick={() => {
                         triggerCloseDetailedApp();
                         setTimeout(() => {
@@ -4232,7 +4232,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       style={{ height: '44px', fontSize: '0.8rem', borderRadius: '14px', background: '#a0506a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: 800, cursor: 'pointer', border: 'none' }}
                     >
                       <CalendarIcon size={14} /> Reagendar
-                    </button>
+                    </button>}
                   </div>
 
                   {/* Editar Visita y Enviar Recordatorio */}
@@ -4251,7 +4251,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                     >
                       <Pencil size={12} color="#6b4a52" /> Editar Visita
                     </button>
-                    <button
+                    {!isWorkerView && <button
                       onClick={() => {
                         const wpNum = selectedDetailedApp.clients?.phone?.replace(/\D/g, '');
                         if (wpNum) {
@@ -4264,7 +4264,7 @@ const SchedulingModule = ({ isMobile, isTablet = false, isCollapsed = false, rat
                       style={{ height: '42px', fontSize: '0.78rem', borderRadius: '12px', background: '#fff', color: '#6b4a52', border: '1.5px solid rgba(107, 74, 82, 0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: 700, cursor: 'pointer' }}
                     >
                       <Bell size={12} color="#6b4a52" /> Enviar Recordatorio
-                    </button>
+                    </button>}
                   </div>
 
                   {/* Cancelar Visita */}
