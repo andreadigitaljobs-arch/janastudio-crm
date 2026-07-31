@@ -69,7 +69,9 @@ const NewClientModal = ({ isOpen, onClose, onSuccess, onClientCreated }) => {
             bottom: 0, 
             backgroundColor: 'rgba(0,0,0,0.4)', 
             backdropFilter: 'blur(10px)', 
-            zIndex: 10000, 
+            // Debe quedar por encima de flujos que ya viven en otro modal,
+            // como "Agendar orden" (z-index 20000).
+            zIndex: 30000,
             display: 'flex', 
             justifyContent: 'center', 
             alignItems: 'center', 
