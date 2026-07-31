@@ -4,6 +4,12 @@
   "description": "Sistema de gestión para salón de belleza",
   "icons": [
     {
+      "src": "/apple-touch-icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    },
+    {
       "src": "/pwa-icon.webp",
       "type": "image/webp",
       "sizes": "192x192",
