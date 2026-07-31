@@ -62,6 +62,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('grid');
+  const [profitData, setProfitData] = useState({});
   const [isExtrasModalOpen, setIsExtrasModalOpen] = useState(false);
   const [isBillableExtrasModalOpen, setIsBillableExtrasModalOpen] = useState(false);
   const [isCategoriesModalOpen, setIsCategoriesModalOpen] = useState(false);
@@ -99,6 +100,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
     fetchBillableExtras();
     fetchCategories();
     fetchStrategies();
+    fetchProfitability();
     dataService.getInventory().then(setInventory).catch(() => showToast('Error al cargar inventario.', 'error'));
   }, []);
 
@@ -146,6 +148,21 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
       setStrategies(data || []);
     } catch (e) {
       showToast('Error al cargar estrategias.', 'error');
+    }
+  };
+
+  const fetchProfitability = async () => {
+    try {
+      const end = new Date().toISOString();
+      const start = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const data = await dataService.getProfitabilityReport(start, end);
+      const map = {};
+      (data || []).forEach(row => {
+        map[row.service_id] = row;
+      });
+      setProfitData(map);
+    } catch (e) {
+      // Silently fail - profitability is optional
     }
   };
 
@@ -978,6 +995,15 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                         </div>
                       </div>
                       
+                      {profitData[service.id] && !service.isGroup && (
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', padding: '8px 10px', borderRadius: '10px', backgroundColor: Number(profitData[service.id].estimated_margin) >= 50 ? 'rgba(34,197,94,0.06)' : Number(profitData[service.id].estimated_margin) >= 20 ? 'rgba(245,158,11,0.06)' : 'rgba(239,68,68,0.06)', border: `1px solid ${Number(profitData[service.id].estimated_margin) >= 50 ? 'rgba(34,197,94,0.12)' : Number(profitData[service.id].estimated_margin) >= 20 ? 'rgba(245,158,11,0.12)' : 'rgba(239,68,68,0.12)'}` }}>
+                          <span style={{ fontWeight: '700', color: 'var(--text-muted)' }}>Margen</span>
+                          <span style={{ fontWeight: '800', color: Number(profitData[service.id].estimated_margin) >= 50 ? '#22c55e' : Number(profitData[service.id].estimated_margin) >= 20 ? '#f59e0b' : '#ef4444' }}>
+                            {Number(profitData[service.id].estimated_margin || 0).toFixed(1)}%
+                          </span>
+                        </div>
+                      )}
+                      
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(212, 160, 154, 0.12)', paddingTop: '14px', marginTop: '4px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#c97282', fontWeight: '700', backgroundColor: '#faf3f2', padding: '3px 8px', borderRadius: '8px' }}>
                           <Heart size={12} fill="currentColor" /> {service.total_bookings || 0} reservas
@@ -1244,43 +1270,44 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
         {(overlayClass, cardClass) => (
           <div className={overlayClass} style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)',
+            backgroundColor: 'rgba(74, 48, 54, 0.45)', backdropFilter: 'blur(8px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             zIndex: 99999, padding: isMobile ? '12px' : '20px'
           }}>
             <div className={`${cardClass} glass-card jana-scrollbar`} style={{
               width: '100%', maxWidth: '420px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden',
-              display: 'flex', flexDirection: 'column', padding: isMobile ? '20px 16px' : '24px',
-              borderRadius: '28px', border: '1px solid var(--border-color)',
-              boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.2)',
-              backgroundColor: 'white'
+              display: 'flex', flexDirection: 'column', padding: isMobile ? '24px 16px' : '32px',
+              borderRadius: '28px', border: '1px solid rgba(212, 160, 154, 0.25)',
+              boxShadow: '0 20px 50px rgba(74, 48, 54, 0.12)',
+              backgroundColor: 'white',
+              color: '#4a3036'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <div>
-                   <h3 style={{ fontSize: '20px', fontWeight: '800', letterSpacing: '-0.5px' }}><span className="text-pink">Items</span></h3>
+                   <h3 style={{ fontSize: '20px', fontWeight: '800', letterSpacing: '-0.5px', color: '#4a3036' }}>Checklist <span className="text-pink">Items</span></h3>
                 </div>
                 <button 
                   onClick={() => setIsExtrasModalOpen(false)} 
-                  style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: 'white', cursor: 'pointer', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  style={{ background: 'rgba(212, 160, 154, 0.15)', border: 'none', color: '#a0506a', cursor: 'pointer', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
-                  <X size={20} />
+                  <X size={18} />
                 </button>
               </div>
 
-              <div style={{ overflowY: 'auto', flex: 1, paddingRight: '4px', overflowX: 'hidden' }}>
+              <div style={{ overflowY: 'auto', flex: 1, paddingRight: '4px', overflowX: 'hidden', marginBottom: '16px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {baseItems.map(item => (
                     <div key={item.id} style={{ 
                       display: 'flex', gap: '8px', alignItems: 'center', 
-                      padding: '6px 10px', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.02)',
-                      border: '1px solid rgba(255,255,255,0.05)'
+                      padding: '8px 12px', borderRadius: '12px', backgroundColor: '#faf3f2',
+                      border: '1px solid rgba(212, 160, 154, 0.25)'
                     }}>
                       <input 
                         className="form-input" 
                         value={editingItem?.id === item.id ? editingItem.name : item.name} 
                         onChange={(e) => setEditingItem({ ...(editingItem || item), id: item.id, name: e.target.value })}
                         onFocus={() => setEditingItem(item)}
-                        style={{ flex: 1, fontSize: '13px', height: '36px', background: 'transparent', border: 'none', fontWeight: '600', minWidth: 0 }}
+                        style={{ flex: 1, fontSize: '13px', height: '36px', background: 'transparent', border: 'none', color: '#4a3036', fontWeight: '600', minWidth: 0 }}
                       />
 
                       
@@ -1306,7 +1333,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               </div>
 
               {/* Agregar nuevo */}
-              <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '16px', marginTop: '16px' }}>
+              <div style={{ borderTop: '1px solid rgba(212, 160, 154, 0.25)', paddingTop: '16px', marginTop: 'auto' }}>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <input 
                     className="form-input" 
@@ -1329,24 +1356,24 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
       {/* Billable Extras Management Modal */}
       <AnimatedModal isOpen={isBillableExtrasModalOpen}>
         {(overlayClass, cardClass) => (
-          <div className={overlayClass} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px' : '20px' }}>
-            <div className={`${cardClass} glass-card jana-scrollbar`} style={{ width: '100%', maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden', padding: isMobile ? '20px 16px' : '32px', borderRadius: '32px', border: '1px solid var(--border-color)', backgroundColor: 'white' }}>
+          <div className={overlayClass} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(74, 48, 54, 0.45)', backdropFilter: 'blur(8px)', zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: isMobile ? '12px' : '20px' }}>
+            <div className={`${cardClass} glass-card jana-scrollbar`} style={{ width: '100%', maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden', padding: isMobile ? '24px 16px' : '36px', borderRadius: '32px', border: '1px solid rgba(212, 160, 154, 0.25)', backgroundColor: 'white', color: '#4a3036', boxShadow: '0 20px 50px rgba(74, 48, 54, 0.12)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', gap: '16px' }}>
                 <div>
-                  <h3 style={{ fontSize: '20px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <h3 style={{ fontSize: '20px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '10px', color: '#4a3036' }}>
                     <Rocket size={24} color="var(--pink-primary)" /> Servicios Extras
                   </h3>
-                  <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>Servicios con costo extra que se añaden en caja.</p>
+                  <p style={{ fontSize: '12px', color: '#a0506a', marginTop: '4px' }}>Servicios con costo extra que se añaden en caja.</p>
                 </div>
-                <button onClick={() => setIsBillableExtrasModalOpen(false)} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <X size={20} />
+                <button onClick={() => setIsBillableExtrasModalOpen(false)} style={{ background: 'rgba(212, 160, 154, 0.15)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', color: '#a0506a', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <X size={18} />
                 </button>
               </div>
 
               <div className="jana-scrollbar" style={{ maxHeight: '350px', overflowY: 'auto', paddingRight: '8px', marginBottom: '24px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {billableExtras.map(extra => (
-                    <div key={extra.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px', backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div key={extra.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px', backgroundColor: '#faf3f2', borderRadius: '16px', border: '1px solid rgba(212, 160, 154, 0.25)' }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <input 
                           className="form-input"
@@ -1361,11 +1388,11 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                             fontSize: '14px', 
                             fontWeight: '700', 
                             width: '100%',
-                            color: editingExtra?.id === extra.id ? 'var(--pink-primary)' : 'white',
+                            color: '#4a3036',
                             pointerEvents: editingExtra?.id === extra.id ? 'auto' : 'none'
                           }}
                         />
-                        <div style={{ fontSize: '11px', color: 'var(--pink-primary)', marginTop: '4px', fontWeight: '800' }}>PRECIO EN CAJA</div>
+                        <div style={{ fontSize: '11px', color: '#a0506a', marginTop: '4px', fontWeight: '800' }}>PRECIO EN CAJA</div>
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
@@ -1384,9 +1411,10 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                               fontSize: '13px', 
                               fontWeight: '800', 
                               textAlign: 'right', 
-                              background: editingExtra?.id === extra.id ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.2)', 
-                              border: editingExtra?.id === extra.id ? '1px solid var(--pink-primary)' : '1px solid transparent', 
+                              background: editingExtra?.id === extra.id ? '#ffffff' : '#faf3f2',
+                              border: editingExtra?.id === extra.id ? '1px solid var(--pink-primary)' : '1px solid rgba(212, 160, 154, 0.25)',
                               width: '100%',
+                              color: '#4a3036',
                               pointerEvents: editingExtra?.id === extra.id ? 'auto' : 'none'
                             }}
                           />
@@ -1398,7 +1426,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                           </button>
                         ) : (
                           <div style={{ display: 'flex', gap: '8px' }}>
-                            <button onClick={() => setEditingExtra(extra)} className="action-btn" style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'white', flexShrink: 0 }}>
+                            <button onClick={() => setEditingExtra(extra)} className="action-btn" style={{ backgroundColor: 'rgba(212, 160, 154, 0.15)', color: '#a0506a', flexShrink: 0 }}>
                               <Pencil size={14} />
                             </button>
                             <button onClick={(e) => handleDeleteBillableExtra(e, extra.id, extra.name)} className="action-btn" style={{ backgroundColor: 'rgba(255,69,58,0.1)', color: '#ff453a', flexShrink: 0 }}>
@@ -1412,14 +1440,14 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                 </div>
               </div>
 
-              <div style={{ paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+              <div style={{ paddingTop: '20px', borderTop: '1px solid rgba(212, 160, 154, 0.25)' }}>
                 <div className="extra-add-row">
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <label style={{ display: 'block', fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '4px', letterSpacing: '0.5px' }}>NOMBRE DEL EXTRA</label>
+                    <label style={{ display: 'block', fontSize: '10px', fontWeight: '900', color: '#a0506a', marginBottom: '4px', letterSpacing: '0.5px' }}>NOMBRE DEL EXTRA</label>
                     <input className="form-input" placeholder="Ej. Mascarilla..." value={newExtraName} onChange={e => setNewExtraName(e.target.value)} style={{ height: '44px', fontSize: '13px', width: '100%' }} />
                   </div>
                   <div style={{ width: '90px', flexShrink: 0 }}>
-                    <label style={{ display: 'block', fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '4px', letterSpacing: '0.5px' }}>PRECIO</label>
+                    <label style={{ display: 'block', fontSize: '10px', fontWeight: '900', color: '#a0506a', marginBottom: '4px', letterSpacing: '0.5px' }}>PRECIO</label>
                     <div style={{ position: 'relative' }}>
                       <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--pink-primary)', fontSize: '12px', fontWeight: '800' }}>$</span>
                       <input className="form-input" type="number" step="0.01" value={newExtraPrice} onChange={e => setNewExtraPrice(e.target.value)} style={{ height: '44px', paddingLeft: '24px', fontSize: '13px', fontWeight: '800', width: '100%' }} />
@@ -1527,6 +1555,40 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                        )}
                      </div>
 
+                    {profitData[selectedServiceDetail.id] && (
+                      <div style={{ marginBottom: '20px', padding: '16px', borderRadius: '14px', backgroundColor: '#f8f9fa', border: '1px solid var(--border-color)' }}>
+                        <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Desglose de Costos</div>
+                        <div style={{ display: 'grid', gap: '8px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                            <span style={{ color: 'var(--text-secondary)' }}>Precio de venta</span>
+                            <span style={{ fontWeight: '700', color: 'var(--text-primary)' }}>${Number(profitData[selectedServiceDetail.id].price || 0).toFixed(2)}</span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                            <span style={{ color: 'var(--text-secondary)' }}>- Costo materiales</span>
+                            <span style={{ fontWeight: '700', color: '#ef4444' }}>${Number(profitData[selectedServiceDetail.id].estimated_material_cost || 0).toFixed(2)}</span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                            <span style={{ color: 'var(--text-secondary)' }}>- Comisión personal</span>
+                            <span style={{ fontWeight: '700', color: '#ef4444' }}>${Number(profitData[selectedServiceDetail.id].estimated_staff_cost || 0).toFixed(2)}</span>
+                          </div>
+                          <div style={{ borderTop: '1px dashed var(--border-color)', paddingTop: '8px', marginTop: '4px', display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                            <span style={{ fontWeight: '800', color: 'var(--text-primary)' }}>Ganancia neta</span>
+                            <span style={{ fontWeight: '900', color: Number(profitData[selectedServiceDetail.id].estimated_profit) >= 0 ? '#22c55e' : '#ef4444' }}>${Number(profitData[selectedServiceDetail.id].estimated_profit || 0).toFixed(2)}</span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
+                            <span style={{ color: 'var(--text-muted)' }}>Margen de ganancia</span>
+                            <span style={{ fontWeight: '800', color: Number(profitData[selectedServiceDetail.id].estimated_margin) >= 50 ? '#22c55e' : Number(profitData[selectedServiceDetail.id].estimated_margin) >= 20 ? '#f59e0b' : '#ef4444' }}>{Number(profitData[selectedServiceDetail.id].estimated_margin || 0).toFixed(1)}%</span>
+                          </div>
+                        </div>
+                        {rates?.usd > 0 && (
+                          <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-color)', fontSize: '11px', color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between' }}>
+                            <span>Ganancia neta en Bs.</span>
+                            <span style={{ fontWeight: '700', color: '#22c55e' }}>{Math.round(Number(profitData[selectedServiceDetail.id].estimated_profit || 0) * rates.usd).toLocaleString('es-VE')} Bs.</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     <div style={{ display: 'flex', gap: '12px' }}>
                       <button 
                         onClick={() => {
@@ -1633,33 +1695,35 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
         {(overlayClass, cardClass) => (
           <div className={overlayClass} style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)',
+            backgroundColor: 'rgba(74, 48, 54, 0.45)', backdropFilter: 'blur(8px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             zIndex: 99999, padding: isMobile ? '12px' : '20px'
           }}>
             <div className={`${cardClass} glass-card jana-scrollbar`} style={{
               width: '100%', maxWidth: '480px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden',
-              padding: isMobile ? '20px 16px' : '28px', borderRadius: '28px',
-              border: '1px solid rgba(212,160,154,0.2)',
-              boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.6)',
-              position: 'relative'
+              padding: isMobile ? '24px 16px' : '36px', borderRadius: '28px',
+              border: '1px solid rgba(212, 160, 154, 0.25)',
+              boxShadow: '0 20px 50px rgba(74, 48, 54, 0.12)',
+              position: 'relative',
+              backgroundColor: 'white',
+              color: '#4a3036'
             }}>
               <button 
                 onClick={() => setIsCategoriesModalOpen(false)} 
-                style={{ position: 'absolute', right: '20px', top: '20px', background: 'rgba(255,255,255,0.05)', border: 'none', color: 'white', cursor: 'pointer', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ position: 'absolute', right: '20px', top: '20px', background: 'rgba(212, 160, 154, 0.15)', border: 'none', color: '#a0506a', cursor: 'pointer', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
-                <X size={20} />
+                <X size={18} />
               </button>
 
-              <h3 style={{ fontSize: '20px', fontWeight: '800', color: 'white', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', paddingRight: '40px' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#4a3036', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', paddingRight: '40px' }}>
                 <Settings size={20} color="var(--pink-primary)" /> Categorías
               </h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '20px' }}>Agrega o elimina las categorías disponibles para clasificar tus servicios.</p>
+              <p style={{ color: '#a0506a', fontSize: '12px', marginBottom: '20px' }}>Agrega o elimina las categorías disponibles para clasificar tus servicios.</p>
 
               {/* Agregar Categoría */}
-              <div style={{ marginBottom: '24px', backgroundColor: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                <label style={{ display: 'block', fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '0.5px' }}>
-                  {editingCategory ? 'EDITAR CATEGORÁA' : 'NUEVA CATEGORÁA'}
+              <div style={{ marginBottom: '24px', backgroundColor: '#faf3f2', padding: '16px', borderRadius: '16px', border: '1px solid rgba(212, 160, 154, 0.25)' }}>
+                <label style={{ display: 'block', fontSize: '10px', fontWeight: '900', color: '#a0506a', marginBottom: '8px', letterSpacing: '0.5px' }}>
+                  {editingCategory ? 'EDITAR CATEGORÍA' : 'NUEVA CATEGORÍA'}
                 </label>
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
                   <input 
@@ -1667,13 +1731,13 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                     placeholder="Ej. Manicura, Masajes" 
                     value={newCategoryName} 
                     onChange={e => setNewCategoryName(e.target.value)} 
-                    style={{ height: '44px', flex: 1 }} 
+                    style={{ height: '44px', flex: 1, backgroundColor: 'white' }}
                   />
                   {editingCategory && (
                     <button 
                       onClick={handleCancelEditCategory} 
                       className="btn-pink" 
-                      style={{ height: '44px', width: '44px', borderRadius: '12px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }}
+                      style={{ height: '44px', width: '44px', borderRadius: '12px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: 'rgba(212, 160, 154, 0.15)', border: '1px solid rgba(212, 160, 154, 0.2)', color: '#a0506a' }}
                       type="button"
                     >
                       <X size={20} />
@@ -1688,14 +1752,15 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                   </button>
                 </div>
 
-                <label style={{ display: 'block', fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '0.5px' }}>ICONO ASOCIADO</label>
+                <label style={{ display: 'block', fontSize: '10px', fontWeight: '900', color: '#a0506a', marginBottom: '8px', letterSpacing: '0.5px' }}>ICONO ASOCIADO</label>
                 <div style={{ 
                   display: 'grid', 
                   gridTemplateColumns: 'repeat(6, 1fr)', 
                   gap: '8px', 
-                  backgroundColor: 'rgba(0,0,0,0.2)', 
+                  backgroundColor: '#ffffff',
                   padding: '10px', 
-                  borderRadius: '12px' 
+                  borderRadius: '12px',
+                  border: '1px solid rgba(212, 160, 154, 0.2)'
                 }}>
                   {AVAILABLE_ICONS.map(icon => {
                     const isSelected = selectedCategoryIcon === icon.name;
@@ -1710,7 +1775,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                           borderRadius: '8px',
                           border: isSelected ? '1px solid var(--pink-primary)' : '1px solid transparent',
                           background: isSelected ? 'rgba(196, 139, 159, 0.15)' : 'transparent',
-                          color: isSelected ? 'var(--pink-primary)' : 'rgba(255,255,255,0.6)',
+                          color: isSelected ? 'var(--pink-primary)' : '#8b6972',
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
@@ -1728,17 +1793,17 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               {/* Listado de Categorías */}
               <div style={{ maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', paddingRight: '4px' }}>
                 {categories.map((catObj, idx) => (
-                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderRadius: '12px', backgroundColor: '#faf3f2', border: '1px solid rgba(212, 160, 154, 0.25)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <div style={{ color: 'var(--pink-primary)' }}>
                         {getIconComponent(catObj.icon || getFallbackIconName(catObj.name), 20)}
                       </div>
-                      <span style={{ fontSize: '14px', fontWeight: '700', color: 'white' }}>{catObj.name}</span>
+                      <span style={{ fontSize: '14px', fontWeight: '700', color: '#4a3036' }}>{catObj.name}</span>
                     </div>
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <button 
                         onClick={() => handleEditCategoryClick(catObj)} 
-                        style={{ background: 'rgba(196,139,159,0.1)', border: 'none', color: 'var(--pink-primary)', cursor: 'pointer', width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        style={{ background: 'rgba(196,139,159,0.15)', border: 'none', color: 'var(--pink-primary)', cursor: 'pointer', width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                       >
                         <Pencil size={14} />
                       </button>
@@ -1753,7 +1818,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                 ))}
               </div>
 
-              <div style={{ display: 'flex', gap: '12px', marginTop: '24px', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '20px' }}>
+              <div style={{ display: 'flex', gap: '12px', marginTop: '24px', borderTop: '1px solid rgba(212, 160, 154, 0.25)', paddingTop: '20px' }}>
                 <button 
                   onClick={() => setIsCategoriesModalOpen(false)} 
                   className="btn-pink" 
@@ -1772,50 +1837,52 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
         {(overlayClass, cardClass) => (
           <div className={overlayClass} style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)',
+            backgroundColor: 'rgba(74, 48, 54, 0.45)', backdropFilter: 'blur(8px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             zIndex: 99999, padding: isMobile ? '12px' : '20px'
           }}>
             <div className={`${cardClass} glass-card jana-scrollbar`} style={{
               width: '100%', maxWidth: '520px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden',
-              padding: isMobile ? '20px 16px' : '28px', borderRadius: '28px',
-              border: '1px solid rgba(212,160,154,0.2)',
-              boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.6)',
-              position: 'relative'
+              padding: isMobile ? '24px 16px' : '36px', borderRadius: '28px',
+              border: '1px solid rgba(212, 160, 154, 0.25)',
+              boxShadow: '0 20px 50px rgba(74, 48, 54, 0.12)',
+              position: 'relative',
+              backgroundColor: 'white',
+              color: '#4a3036'
             }}>
               <button 
                 onClick={() => setIsStrategiesModalOpen(false)} 
-                style={{ position: 'absolute', right: '20px', top: '20px', background: 'rgba(255,255,255,0.05)', border: 'none', color: 'white', cursor: 'pointer', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ position: 'absolute', right: '20px', top: '20px', background: 'rgba(212, 160, 154, 0.15)', border: 'none', color: '#a0506a', cursor: 'pointer', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
-                <X size={20} />
+                <X size={18} />
               </button>
 
-              <h3 style={{ fontSize: '20px', fontWeight: '800', color: 'white', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', paddingRight: '40px' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#4a3036', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px', paddingRight: '40px' }}>
                 <Crown size={20} color="var(--pink-primary)" /> Estrategias de Venta
               </h3>
-              <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '20px' }}>Configura los tipos de estrategias de venta cruzada y retención para tus servicios.</p>
+              <p style={{ color: '#a0506a', fontSize: '12px', marginBottom: '20px' }}>Configura los tipos de estrategias de venta cruzada y retención para tus servicios.</p>
 
               {/* Agregar Estrategia */}
-              <div style={{ marginBottom: '24px', backgroundColor: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                <div className="strategy-add-grid">
+              <div style={{ marginBottom: '24px', backgroundColor: '#faf3f2', padding: '16px', borderRadius: '16px', border: '1px solid rgba(212, 160, 154, 0.25)' }}>
+                <div className="strategy-add-grid" style={{ marginBottom: '16px' }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '0.5px' }}>VALOR CLAVE</label>
+                    <label style={{ display: 'block', fontSize: '10px', fontWeight: '900', color: '#a0506a', marginBottom: '8px', letterSpacing: '0.5px' }}>VALOR CLAVE</label>
                     <input 
                       className="form-input" 
                       placeholder="Ej. VIP, Promo" 
                       value={newStrategyValue} 
                       onChange={e => setNewStrategyValue(e.target.value)} 
-                      style={{ height: '44px', width: '100%' }} 
+                      style={{ height: '44px', width: '100%', backgroundColor: 'white' }}
                     />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: '10px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '8px', letterSpacing: '0.5px' }}>ETIQUETA VISIBLE</label>
+                    <label style={{ display: 'block', fontSize: '10px', fontWeight: '900', color: '#a0506a', marginBottom: '8px', letterSpacing: '0.5px' }}>ETIQUETA VISIBLE</label>
                     <input 
                       className="form-input" 
                       placeholder="Ej. Servicio VIP Jana" 
                       value={newStrategyLabel} 
                       onChange={e => setNewStrategyLabel(e.target.value)} 
-                      style={{ height: '44px', width: '100%' }} 
+                      style={{ height: '44px', width: '100%', backgroundColor: 'white' }}
                     />
                   </div>
                 </div>
@@ -1831,9 +1898,9 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
               {/* Listado de Estrategias */}
               <div style={{ maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px', paddingRight: '4px' }}>
                 {strategies.map((strat, idx) => (
-                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderRadius: '12px', backgroundColor: '#faf3f2', border: '1px solid rgba(212, 160, 154, 0.25)' }}>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span style={{ fontSize: '14px', fontWeight: '700', color: 'white' }}>{strat.label}</span>
+                      <span style={{ fontSize: '14px', fontWeight: '700', color: '#4a3036' }}>{strat.label}</span>
                       <span style={{ fontSize: '11px', color: 'var(--pink-primary)', fontWeight: '900' }}>VALOR: {strat.value}</span>
                     </div>
                     <button 
@@ -1846,7 +1913,7 @@ const ServicesModule = ({ isMobile, currency, rates }) => {
                 ))}
               </div>
 
-              <div style={{ display: 'flex', gap: '12px', marginTop: '24px', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '20px' }}>
+              <div style={{ display: 'flex', gap: '12px', marginTop: '24px', borderTop: '1px solid rgba(212, 160, 154, 0.25)', paddingTop: '20px' }}>
                 <button 
                   onClick={() => setIsStrategiesModalOpen(false)} 
                   className="btn-pink" 

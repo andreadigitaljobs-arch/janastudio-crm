@@ -526,7 +526,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
     const service = allServices.find(s => s.id === app.service_id) || app.services || {};
     return p.scope === 'all' || (p.scope === 'service' && p.service_id === app.service_id) || (p.scope === 'category' && p.category === service.category);
   }));
-  const appliedPromotion = eligiblePromotions.map(p => ({ ...p, calculated: p.discount_type === 'percent' ? servicePrice * Number(p.discount_value) / 100 : Number(p.discount_value) })).sort((a,b)=>b.calculated-a.calculated)[0] || null;
+  const appliedPromotion = eligiblePromotions.map(p => ({ ...p, calculated: p.discount_type === 'percent' ? servicePrice * Number(p.discount_value) / 100 : p.discount_type === 'direct_price' ? Math.max(0, servicePrice - Number(p.discount_value)) : Number(p.discount_value) })).sort((a,b)=>b.calculated-a.calculated)[0] || null;
   const promotionDiscount = Math.min(servicePrice, Number(appliedPromotion?.calculated || 0));
   const totalBeforeDiscount = servicePrice + productsTotal + extrasTotal + totalTips;
   const totalUsd = Math.max(0, totalBeforeDiscount - promotionDiscount);
@@ -1026,6 +1026,24 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
 
       // Encolar el pago en la cola offline local de Dexie
       await offlineService.enqueuePayment(paymentData);
+
+      // Queue thank you message for WhatsApp integration
+      if (paymentData.clientId && paymentData.clientName) {
+        try {
+          const clientPhone = selectedApp?.clients?.phone || selectedClient?.phone || '';
+          const serviceName = paymentData.serviceName || 'nuestros servicios';
+          const isFirstVisit = !paymentData.appointmentIds || paymentData.appointmentIds.length <= 1;
+          notificationService.queueThankYou(
+            paymentData.clientId,
+            paymentData.clientName,
+            clientPhone,
+            serviceName,
+            isFirstVisit
+          );
+        } catch (notifErr) {
+          console.warn('Could not queue thank you notification:', notifErr);
+        }
+      }
 
       showToast("Cobro recibido. Se está sincronizando de forma segura.", "success");
       
@@ -2348,7 +2366,10 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                   </div>
                 </div>
 
-                {appliedPromotion && <div style={{display:'flex',justifyContent:'space-between',marginTop:12,padding:'9px 12px',borderRadius:10,background:'rgba(201,114,130,.1)',color:'var(--pink-primary)',fontSize:12,fontWeight:800}}><span>Promoción: {appliedPromotion.name}</span><span>- ${formatCurrency(promotionDiscount)}</span></div>}
+                {appliedPromotion && <div style={{display:'flex',flexDirection:'column',gap:4,marginTop:12,padding:'9px 12px',borderRadius:10,background:'rgba(201,114,130,.1)',color:'var(--pink-primary)',fontSize:12,fontWeight:800}}>
+                  <div style={{display:'flex',justifyContent:'space-between'}}><span>Promoción: {appliedPromotion.name}</span><span>- ${formatCurrency(promotionDiscount)}</span></div>
+                  {appliedPromotion.discount_type==='direct_price'&&Number(appliedPromotion.discount_value)>0&&<div style={{fontSize:10,color:'var(--text-secondary)',fontWeight:600}}>Precio original: ${formatCurrency(servicePrice)} → Nuevo: ${formatCurrency(Number(appliedPromotion.discount_value))}</div>}
+                </div>}
                 <div className="checkout-total-hero" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: '12px' }}>
                   <span style={{ fontSize: isMobile ? '13px' : '16px', fontWeight: '900' }}>TOTAL A PAGAR</span>
                   <div style={{ textAlign: 'right' }}>

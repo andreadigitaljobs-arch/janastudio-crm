@@ -454,6 +454,27 @@ const StaffDayColumn = ({
         )}
 
         {/* Bloqueos manuales (Almuerzo, etc.) */}
+        {(workingWindow.partialTimeOffs || []).map((off, idx) => {
+          const top = minutesToY(off.start);
+          const height = (off.end - off.start) * PX_PER_MIN;
+          return (
+            <div
+              key={`partial-off-${idx}`}
+              className="agenda-blocked-slot"
+              style={{
+                position: 'absolute', top: `${top}px`, left: '3px', right: '3px', height: `${height - 2}px`,
+                borderRadius: '8px', padding: '6px 8px', display: 'flex', flexDirection: 'column',
+                justifyContent: 'center', zIndex: 2, fontSize: '0.62rem', fontWeight: 600,
+                background: 'rgba(255, 193, 7, 0.12)',
+                border: '1px dashed rgba(255, 193, 7, 0.5)',
+                color: '#92400e'
+              }}
+            >
+              <div>Bloqueado</div>
+              <div style={{ fontSize: '0.55rem', opacity: 0.8 }}>{formatMinutes(off.start)} – {formatMinutes(off.end)}</div>
+            </div>
+          );
+        })}
         {[].map(block => {
           const top = minutesToY(block.startMinutes);
           const height = (block.endMinutes - block.startMinutes) * PX_PER_MIN;

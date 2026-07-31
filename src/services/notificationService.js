@@ -4,7 +4,12 @@ class NotificationService {
   constructor() {
     this.notificationsKey = 'jana_notifications_list';
     this.swRegistered = false;
+    this.dataService = null;
     this.scheduleServiceWorkerRegistration();
+  }
+
+  setDataService(dataService) {
+    this.dataService = dataService;
   }
 
   scheduleServiceWorkerRegistration() {
@@ -249,6 +254,30 @@ class NotificationService {
         read: true
       }
     ];
+  }
+
+  // ─── Queue Integration (WhatsApp Prep) ────────────────────────────────────
+  async queueWhatsAppNotification(type, recipient, message, scheduledFor = null, metadata = {}) {
+    if (!this.dataService) {
+      console.warn('DataService not initialized. Cannot queue notification.');
+      return null;
+    }
+    try {
+      return await this.dataService.queueNotification(type, recipient, message, scheduledFor, metadata);
+    } catch (err) {
+      console.error('Error queuing WhatsApp notification:', err);
+      return null;
+    }
+  }
+
+  async queueThankYou(clientId, clientName, clientPhone, serviceName, isFirstVisit = false) {
+    if (!this.dataService) return null;
+    try {
+      return await this.dataService.queueThankYouMessage(clientId, clientName, clientPhone, serviceName, isFirstVisit);
+    } catch (err) {
+      console.error('Error queuing thank you message:', err);
+      return null;
+    }
   }
 }
 

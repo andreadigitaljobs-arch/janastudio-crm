@@ -16,29 +16,45 @@ const timeToMinutes = (time) => {
  * ¿Trabaja tal trabajadora tal día, y en qué franja horaria?
  * Si no hay horario configurado para ese día (tabla aún no existe / fila no creada),
  * se asume disponible todo el día (mismo comportamiento de hoy) — nunca "no disponible" por falta de dato.
+ * Soporta time_off con rango horario parcial (start_time/end_time) o día completo (null).
  */
 export const getStaffWorkingWindow = (staffId, dateKey, schedules = [], timeOff = []) => {
-  const isOff = timeOff.some(t => t.staff_id === staffId && t.date === dateKey);
-  if (isOff) {
-    return { isWorking: false, reason: 'time_off', startMinutes: null, endMinutes: null };
-  }
+  const dayTimeOffs = timeOff.filter(t => t.staff_id === staffId && t.date === dateKey);
 
   const dayOfWeek = getDayOfWeek(dateKey);
   const row = schedules.find(s => s.staff_id === staffId && s.day_of_week === dayOfWeek);
 
-  if (!row) {
-    return { isWorking: true, reason: 'unscheduled', ...DEFAULT_WORKING_WINDOW };
-  }
-
-  if (!row.is_working) {
+  let workStart, workEnd;
+  if (row && row.is_working) {
+    workStart = timeToMinutes(row.start_time) ?? DEFAULT_WORKING_WINDOW.startMinutes;
+    workEnd = timeToMinutes(row.end_time) ?? DEFAULT_WORKING_WINDOW.endMinutes;
+  } else if (!row) {
+    workStart = DEFAULT_WORKING_WINDOW.startMinutes;
+    workEnd = DEFAULT_WORKING_WINDOW.endMinutes;
+  } else {
     return { isWorking: false, reason: 'day_off', startMinutes: null, endMinutes: null };
   }
+
+  const fullDayOff = dayTimeOffs.find(t => t.start_time == null && t.end_time == null);
+  if (fullDayOff) {
+    return { isWorking: false, reason: 'time_off', startMinutes: null, endMinutes: null };
+  }
+
+  if (dayTimeOffs.length === 0) {
+    return { isWorking: true, reason: 'scheduled', startMinutes: workStart, endMinutes: workEnd };
+  }
+
+  const partialOffs = dayTimeOffs
+    .filter(t => t.start_time != null && t.end_time != null)
+    .map(t => ({ start: timeToMinutes(t.start_time), end: timeToMinutes(t.end_time) }))
+    .sort((a, b) => a.start - b.start);
 
   return {
     isWorking: true,
     reason: 'scheduled',
-    startMinutes: timeToMinutes(row.start_time) ?? DEFAULT_WORKING_WINDOW.startMinutes,
-    endMinutes: timeToMinutes(row.end_time) ?? DEFAULT_WORKING_WINDOW.endMinutes
+    startMinutes: workStart,
+    endMinutes: workEnd,
+    partialTimeOffs: partialOffs
   };
 };
 
@@ -60,7 +76,7 @@ const overlaps = (aStart, aEnd, bStart, bEnd) => aStart < bEnd && bStart < aEnd;
 
 /**
  * ¿Está libre tal trabajadora a partir de `candidateStartMinutes` por `durationMinutes`?
- * Toma en cuenta horario de trabajo real y solapamiento real con otras citas (no solo hora exacta).
+ * Toma en cuenta horario de trabajo real, solapamiento real con otras citas, y bloqueos parciales (time_off con horas).
  */
 export const isStaffFreeAt = (staffId, dateKey, candidateStartMinutes, durationMinutes, { schedules = [], timeOff = [], appointmentsForDay = [] }) => {
   const window = getStaffWorkingWindow(staffId, dateKey, schedules, timeOff);
@@ -71,6 +87,14 @@ export const isStaffFreeAt = (staffId, dateKey, candidateStartMinutes, durationM
   const candidateEnd = candidateStartMinutes + durationMinutes;
   if (candidateStartMinutes < window.startMinutes || candidateEnd > window.endMinutes) {
     return { free: false, reason: 'outside_hours' };
+  }
+
+  if (window.partialTimeOffs && window.partialTimeOffs.length > 0) {
+    for (const off of window.partialTimeOffs) {
+      if (candidateStartMinutes < off.end && off.start < candidateEnd) {
+        return { free: false, reason: 'time_off' };
+      }
+    }
   }
 
   const busy = getStaffBusyIntervals(staffId, appointmentsForDay);
@@ -90,6 +114,18 @@ export const getStaffFreeIntervals = (staffId, dateKey, { schedules = [], timeOf
   const busy = getStaffBusyIntervals(staffId, appointmentsForDay)
     .filter(b => b.endMinutes > window.startMinutes && b.startMinutes < window.endMinutes)
     .sort((a, b) => a.startMinutes - b.startMinutes);
+
+  if (window.partialTimeOffs && window.partialTimeOffs.length > 0) {
+    const offIntervals = window.partialTimeOffs
+      .filter(off => off.end > window.startMinutes && off.start < window.endMinutes)
+      .map(off => ({
+        startMinutes: Math.max(off.start, window.startMinutes),
+        endMinutes: Math.min(off.end, window.endMinutes),
+        appointmentId: 'time_off_partial'
+      }));
+    busy.push(...offIntervals);
+    busy.sort((a, b) => a.startMinutes - b.startMinutes);
+  }
 
   const free = [];
   let cursor = window.startMinutes;

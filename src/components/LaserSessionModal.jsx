@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Calendar, AlertTriangle, CheckSquare, Sparkles, Loader, Camera } from 'lucide-react';
+import { X, Calendar, AlertTriangle, CheckSquare, Sparkles, Loader, Camera, Shield, FileText } from 'lucide-react';
 import AnimatedModal from './AnimatedModal';
+import DigitalConsentForm from './DigitalConsentForm';
 import { dataService } from '../services/dataService';
 import { notificationService } from '../services/notificationService';
 
@@ -23,6 +24,9 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
   const [beforePhoto, setBeforePhoto] = useState(null);
   const [afterPhoto, setAfterPhoto] = useState(null);
   const [photoPreviews, setPhotoPreviews] = useState({ before: '', after: '' });
+  const [existingConsent, setExistingConsent] = useState(null);
+  const [showConsentForm, setShowConsentForm] = useState(false);
+  const [consentSaved, setConsentSaved] = useState(false);
 
   const dates = [
     { day: 'Hoy', date: new Date().toISOString().split('T')[0] },
@@ -44,14 +48,26 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
       setBeforePhoto(null);
       setAfterPhoto(null);
       setPhotoPreviews({ before: '', after: '' });
+      setShowConsentForm(false);
+      setConsentSaved(false);
+      setExistingConsent(null);
       loadExchangeRate();
       dataService.getStaff().then(rows => {
         const workers = rows.filter(s => !String(s.role || '').toLowerCase().includes('admin'));
         setStaff(workers);
         setSelectedStaffId(workers[0]?.id || '');
       }).catch(console.error);
+      // Load existing laser consent for this client
+      if (packageData?.raw?.client_id) {
+        dataService.getLatestLaserConsent(packageData.raw.client_id).then(consent => {
+          if (consent) {
+            setExistingConsent(consent);
+            setConsentSaved(true);
+          }
+        }).catch(console.error);
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, packageData]);
 
   const loadExchangeRate = async () => {
     try {
@@ -89,6 +105,26 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
       notificationService.sendNotification('Error', 'No se pudo registrar el pago de la cuota.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSaveConsent = async (consentData) => {
+    if (!packageData?.raw?.client_id) return;
+    const selectedStaffMember = staff.find(s => s.id === selectedStaffId);
+    try {
+      const saved = await dataService.saveClientConsent(packageData.raw.client_id, {
+        ...consentData,
+        staff_id: selectedStaffId,
+        staff_name: selectedStaffMember?.display_name || selectedStaffMember?.name || '',
+      });
+      setExistingConsent(saved);
+      setConsentSaved(true);
+      setShowConsentForm(false);
+      setAgreed(true);
+      notificationService.sendNotification('Éxito', 'Consentimiento digital guardado correctamente.');
+    } catch (err) {
+      console.error(err);
+      notificationService.sendNotification('Error', 'No se pudo guardar el consentimiento.');
     }
   };
 
@@ -317,18 +353,78 @@ const LaserSessionModal = ({ isOpen, onClose, isMobile, packageData }) => {
                     />
                   </div>
 
-                  {/* Consent check */}
-                  <div 
-                    style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '16px', background: agreed ? 'rgba(201, 114, 130, 0.05)' : '#fff', border: agreed ? '1px solid rgba(201, 114, 130, 0.3)' : '1px solid rgba(223, 178, 140, 0.3)', borderRadius: '16px', cursor: 'pointer', transition: 'all 0.2s' }}
-                    onClick={() => setAgreed(!agreed)}
-                  >
-                    <div style={{ marginTop: '2px', color: agreed ? '#c97282' : '#a0909a' }}>
-                      <CheckSquare size={20} />
-                    </div>
-                    <div>
-                      <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#2d1b22' }}>Confirmación del Procedimiento</div>
-                      <div style={{ fontSize: '0.8rem', color: '#a0909a', marginTop: '4px', fontWeight: 500, lineHeight: 1.4 }}>Confirmo que se aplicaron las pautas de seguridad para láser diodo.</div>
-                    </div>
+                  {/* Digital Consent */}
+                  <div>
+                    <label style={{ fontSize: '0.95rem', fontWeight: 800, color: '#2d1b22', marginBottom: '8px', display: 'block' }}>
+                      Consentimiento Informado
+                    </label>
+                    {!showConsentForm && !consentSaved && (
+                      <button
+                        onClick={() => setShowConsentForm(true)}
+                        style={{
+                          width: '100%',
+                          padding: '16px',
+                          borderRadius: '14px',
+                          border: '1.5px dashed rgba(201, 114, 130, 0.4)',
+                          background: '#fcf9f8',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '12px',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                        }}
+                      >
+                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'linear-gradient(135deg, #fff0f2 0%, #ffe1e6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          <FileText size={18} color="#c97282" />
+                        </div>
+                        <div style={{ textAlign: 'left' }}>
+                          <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#2d1b22' }}>Firmar Consentimiento Digital</div>
+                          <div style={{ fontSize: '0.75rem', color: '#a0909a', fontWeight: 600, marginTop: '2px' }}>Requerido antes de agendar la sesión</div>
+                        </div>
+                      </button>
+                    )}
+                    {showConsentForm && !consentSaved && (
+                      <div style={{ borderRadius: '16px', border: '1px solid rgba(223, 178, 140, 0.3)', overflow: 'hidden', background: '#fff' }}>
+                        <DigitalConsentForm
+                          clientName={packageData?.client || ''}
+                          staffName={staff.find(s => s.id === selectedStaffId)?.display_name || staff.find(s => s.id === selectedStaffId)?.name || ''}
+                          existingConsent={null}
+                          onSave={handleSaveConsent}
+                          isMobile={isMobile}
+                          onCancel={() => setShowConsentForm(false)}
+                        />
+                      </div>
+                    )}
+                    {consentSaved && existingConsent && (
+                      <div style={{ borderRadius: '16px', border: '1px solid rgba(201, 114, 130, 0.2)', overflow: 'hidden', background: '#fff' }}>
+                        <DigitalConsentForm
+                          clientName={packageData?.client || ''}
+                          staffName={staff.find(s => s.id === selectedStaffId)?.display_name || ''}
+                          existingConsent={existingConsent}
+                          onSave={handleSaveConsent}
+                          isMobile={isMobile}
+                          onCancel={() => {}}
+                        />
+                        <div style={{ padding: '0 16px 16px 16px' }}>
+                          <button
+                            onClick={() => { setShowConsentForm(true); setConsentSaved(false); setExistingConsent(null); }}
+                            style={{
+                              width: '100%',
+                              padding: '10px',
+                              borderRadius: '10px',
+                              border: '1px solid rgba(223, 178, 140, 0.3)',
+                              background: '#fff',
+                              color: '#c97282',
+                              fontWeight: 700,
+                              fontSize: '0.75rem',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            Firmar nuevo consentimiento
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 

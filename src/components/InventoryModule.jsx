@@ -28,6 +28,7 @@ import {
   Clock
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
+import { notificationService } from '../services/notificationService';
 import { useNotifs } from '../context/NotificationContext';
 import { useAuth } from '../context/AuthContext';
 import { useDialog } from '../context/DialogContext';
@@ -46,6 +47,7 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [lowStockAlerts, setLowStockAlerts] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
   const [newItem, setNewItem] = useState({ 
@@ -74,14 +76,16 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
   const fetchInventory = async () => {
     try {
       setLoading(true);
-      const [invData, staffData, movementData] = await Promise.all([
+      const [invData, staffData, movementData, lowStockData] = await Promise.all([
         dataService.getInventory(),
         dataService.getStaff(),
-        dataService.getInventoryMovements()
+        dataService.getInventoryMovements(),
+        dataService.getLowStockItems().catch(() => [])
       ]);
       setInventory(invData);
       setStaff(staffData);
       setHistory(movementData);
+      setLowStockAlerts(lowStockData);
     } catch (error) {
       console.error('Error fetching inventory:', error);
     } finally {
@@ -101,6 +105,16 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
         amount: Math.abs(amount),
         reason: 'Ajuste Manual'
       });
+
+      // Check if stock dropped below min_stock and send notification
+      const item = inventory.find(i => i.id === id);
+      if (item && amount < 0 && newStock <= (item.min_stock || 5)) {
+        const isCritical = newStock === 0;
+        notificationService.sendNotification(
+          isCritical ? '🚨 Stock Agotado' : '⚠️ Stock Bajo',
+          `${item.name} tiene ${newStock} unidades${isCritical ? ' agotadas' : ` restantes (mínimo: ${item.min_stock || 5})`}.`
+        );
+      }
 
       fetchInventory();
     } catch (error) {
@@ -398,6 +412,37 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
 
             <InventoryContainersPanel inventory={inventory} onChanged={fetchInventory} />
 
+            {/* Restocking Alerts Banner (Mobile) */}
+            {lowStockAlerts.length > 0 && (
+              <div style={{ background: 'linear-gradient(135deg, #fef2f2, #fff5f5)', borderRadius: '16px', padding: '16px', border: '1px solid rgba(239,68,68,0.15)', boxShadow: '0 2px 8px rgba(239,68,68,0.06)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '10px', background: 'rgba(239,68,68,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <AlertTriangle size={16} color="#ef4444" />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: '800', color: '#ef4444' }}>{lowStockAlerts.length} productos necesitan reposición</div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Stock por debajo del mínimo establecido</div>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
+                  {lowStockAlerts.slice(0, 4).map((item) => (
+                    <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px', borderRadius: '10px', background: 'white', border: '1px solid rgba(239,68,68,0.12)', minWidth: '180px', flexShrink: 0 }}>
+                      <div style={{ textAlign: 'center', minWidth: '30px' }}>
+                        <div style={{ fontSize: '16px', fontWeight: '800', color: item.stock === 0 ? '#ef4444' : '#f59e0b' }}>{item.stock}</div>
+                        <div style={{ fontSize: '8px', fontWeight: '700', color: 'var(--text-muted)' }}>unid.</div>
+                      </div>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '11px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100px' }}>{item.name}</div>
+                        {item.days_until_stockout != null && (
+                          <div style={{ fontSize: '9px', color: item.days_until_stockout <= 3 ? '#ef4444' : '#f59e0b', fontWeight: '700' }}>~{item.days_until_stockout}d restante</div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Stat Cards */}
             <div className="mi-enter-up mi-delay-1" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '16px' }}>
               <div className="mi-stat" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
@@ -553,23 +598,30 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                 <h4 style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Calendar size={16} color="#c48b9f" /> Próximas reposiciones
                 </h4>
-                <button className="mi-btn" style={{ fontSize: '12px', color: 'var(--pink-primary)', fontWeight: '700', background: 'none', border: 'none', cursor: 'pointer' }}>Ver todas →</button>
               </div>
               <div style={{ display: 'flex', gap: '12px', overflowX: 'auto' }}>
-                {activeProducts.filter(item => Number(item.stock) <= Number(item.min_stock || 5)).slice(0, 3).map((r) => (
-                  <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px', borderRadius: '12px', backgroundColor: '#faf5f5', border: '1px solid var(--border-color)', minWidth: '260px', flexShrink: 0 }}>
-                    <div style={{ textAlign: 'center', minWidth: '40px' }}>
-                      <div style={{ fontSize: '20px', fontWeight: '800', color: 'var(--pink-primary)' }}>{r.stock}</div>
-                      <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)' }}>STOCK</div>
+                {activeProducts.filter(item => Number(item.stock) <= Number(item.min_stock || 5)).slice(0, 3).map((r) => {
+                  const alertData = lowStockAlerts.find(a => a.id === r.id);
+                  return (
+                    <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px', borderRadius: '12px', backgroundColor: '#faf5f5', border: '1px solid var(--border-color)', minWidth: '260px', flexShrink: 0 }}>
+                      <div style={{ textAlign: 'center', minWidth: '40px' }}>
+                        <div style={{ fontSize: '20px', fontWeight: '800', color: 'var(--pink-primary)' }}>{r.stock}</div>
+                        <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)' }}>STOCK</div>
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '12px' }}>{r.name}</div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Proveedor: {r.supplier}</div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Cantidad sugerida: {Math.max(1, Number(r.min_stock || 5) * 2 - Number(r.stock || 0))}</div>
+                        {alertData?.avg_daily_usage > 0 && (
+                          <div style={{ fontSize: '10px', color: alertData.days_until_stockout <= 3 ? '#ef4444' : '#f59e0b', fontWeight: '700', marginTop: '2px' }}>
+                            ~{alertData.days_until_stockout} días hasta agotar
+                          </div>
+                        )}
+                      </div>
+                      <button onClick={() => handeAdjustStock(r.id, r.stock, Math.max(1, Number(r.min_stock || 5) * 2 - Number(r.stock || 0)))} style={{ padding: '6px 10px', borderRadius: '8px', border: '1px solid var(--pink-primary)', background: 'var(--pink-primary)', color: 'white', fontSize: '10px', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap' }}>Reponer</button>
                     </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: '700', color: 'var(--text-primary)', fontSize: '12px' }}>{r.name}</div>
-                      <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Proveedor: {r.supplier}</div>
-                      <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Cantidad sugerida: {Math.max(1, Number(r.min_stock || 5) * 2 - Number(r.stock || 0))}</div>
-                    </div>
-                    <span style={{ padding: '4px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: '700', background: 'rgba(245,158,11,0.1)', color: '#f59e0b', whiteSpace: 'nowrap' }}>Pendiente</span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -583,19 +635,39 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
               <div className="mi-card" style={{ background: 'white', borderRadius: '16px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', border: '1px solid var(--border-color)' }}>
                 <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <AlertTriangle size={14} color="#ef4444" /> Alertas de reposición
+                  {lowStockAlerts.length > 0 && (
+                    <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: '800', color: 'white', background: '#ef4444', borderRadius: '20px', padding: '2px 8px' }}>{lowStockAlerts.length}</span>
+                  )}
                 </h4>
-                {activeProducts.filter(i => i.stock <= (i.min_stock || 5) && i.category !== 'Accesorios').slice(0, 4).map((item, idx) => (
-                  <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 0', borderBottom: idx < 3 ? '1px solid var(--border-color)' : 'none' }}>
-                    <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(196,139,159,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <Package size={14} color="#c48b9f" />
+                {lowStockAlerts.length > 0 ? lowStockAlerts.slice(0, 5).map((item, idx) => {
+                  const isCritical = item.stock === 0;
+                  const stockColor = isCritical ? '#ef4444' : '#f59e0b';
+                  const stockBg = isCritical ? 'rgba(239,68,68,0.1)' : 'rgba(245,158,11,0.1)';
+                  return (
+                    <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 0', borderBottom: idx < 4 ? '1px solid var(--border-color)' : 'none' }}>
+                      <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: stockBg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        {isCritical ? <TrendingUp size={13} color="#ef4444" /> : <TrendingDown size={13} color="#f59e0b" />}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: '600', color: 'var(--text-primary)', fontSize: '12px', lineHeight: '1.3' }}>{item.name}</div>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', fontSize: '10px', color: stockColor, fontWeight: '700', marginTop: '2px' }}>
+                          <span>Stock: {item.stock}</span>
+                          {item.avg_daily_usage > 0 && (
+                            <span style={{ color: 'var(--text-muted)' }}>· {item.days_until_stockout}d restante</span>
+                          )}
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', gap: '3px', flexShrink: 0 }}>
+                        <button onClick={() => handeAdjustStock(item.id, item.stock, 1)} style={{ width: '24px', height: '24px', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Plus size={11} /></button>
+                      </div>
                     </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: '600', color: 'var(--text-primary)', fontSize: '12px', lineHeight: '1.3' }}>{item.name}</div>
-                      <div style={{ fontSize: '10px', color: item.stock === 0 ? '#ef4444' : '#f59e0b', fontWeight: '700' }}>Stock actual: {item.stock}</div>
-                    </div>
+                  );
+                }) : (
+                  <div style={{ textAlign: 'center', padding: '20px 0', color: 'var(--text-muted)', fontSize: '12px' }}>
+                    <Package size={24} style={{ marginBottom: '8px', opacity: 0.2 }} />
+                    <div>No hay alertas de stock bajo</div>
                   </div>
-                ))}
-                <button className="mi-btn" style={{ width: '100%', padding: '8px', marginTop: '8px', borderRadius: '8px', border: 'none', background: 'rgba(196,139,159,0.1)', color: 'var(--pink-primary)', fontWeight: '700', fontSize: '12px', cursor: 'pointer' }}>Ver todas las alertas →</button>
+                )}
               </div>
 
               {/* Categorías con más movimiento */}
@@ -637,10 +709,10 @@ const InventoryModule = ({ isMobile, currency, rates }) => {
                 <h4 style={{ fontSize: '12px', fontWeight: '900', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <ShoppingCart size={14} color="#c48b9f" /> Próxima compra sugerida
                 </h4>
-                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px' }}>{activeProducts.filter(i => Number(i.stock) <= Number(i.min_stock || 5)).length} productos recomendados</div>
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px' }}>{lowStockAlerts.length} productos recomendados</div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                   <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Total estimado</span>
-                  <span style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text-primary)' }}>{formatBs(activeProducts.filter(i => Number(i.stock) <= Number(i.min_stock || 5)).reduce((sum,i) => sum + Math.max(1, Number(i.min_stock || 5) * 2 - Number(i.stock || 0)) * Number(i.cost || 0), 0) * (rates?.usd || 0))}</span>
+                  <span style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text-primary)' }}>{formatBs(lowStockAlerts.reduce((sum, item) => sum + Math.max(1, Number(item.min_stock || 5) * 2 - Number(item.stock || 0)) * (Number(activeProducts.find(p => p.id === item.id)?.cost || 0)), 0) * (rates?.usd || 0))}</span>
                 </div>
                 <button className="btn-pink mi-btn" style={{ width: '100%', padding: '10px', borderRadius: '12px', fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                   <ShoppingCart size={14} /> Generar pedido

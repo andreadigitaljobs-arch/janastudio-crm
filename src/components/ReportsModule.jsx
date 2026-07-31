@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { BarChart3, Calendar, Loader2, TrendingUp, AlertTriangle } from 'lucide-react';
+import { BarChart3, Calendar, Loader2, TrendingUp, AlertTriangle, Sparkles, TrendingDown, DollarSign } from 'lucide-react';
 import { dataService } from '../services/dataService';
 
 const usd = (value) => `$${Number(value || 0).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -62,11 +62,79 @@ const ReportsModule = ({ isMobile, rates }) => {
           {[['Ingresos', totals.revenue], ['Insumos', totals.materials], ['Especialistas', totals.staff], ['Ganancia salón', totals.profit], ['Servicios realizados', totals.services, true]].map(([label, value, integer]) => <div key={label} style={card}><div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 800, textTransform: 'uppercase' }}>{label}</div><div style={{ fontSize: isMobile ? '19px' : '23px', fontWeight: 900, marginTop: '7px', color: label === 'Ganancia salón' ? '#198754' : 'var(--text-primary)' }}>{integer ? value : usd(value)}</div>{!integer && rates?.usd > 0 && <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '3px' }}>Ref. Bs. {(Number(value) * rates.usd).toLocaleString('es-VE', { maximumFractionDigits: 0 })}</div>}</div>)}
         </section>
 
+        {/* Profitability Insights */}
+        {sorted.length > 0 && (
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '12px', marginBottom: '22px' }}>
+            {/* Most Profitable */}
+            <div style={card}>
+              <h3 style={{ fontSize: '14px', marginTop: 0, marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Sparkles size={15} color="#22c55e" /> Más rentable
+              </h3>
+              {sorted.filter(r => Number(r.estimated_profit) > 0).slice(0, 3).map((row, idx) => (
+                <div key={row.service_id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: idx < 2 ? '1px solid var(--border-color)' : 'none' }}>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{row.service_name}</div>
+                    <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{usd(row.price)}</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: '13px', fontWeight: '800', color: '#22c55e' }}>{usd(row.estimated_profit)}</div>
+                    <div style={{ fontSize: '10px', color: '#22c55e', fontWeight: '700' }}>{Number(row.estimated_margin || 0).toFixed(1)}%</div>
+                  </div>
+                </div>
+              ))}
+              {sorted.filter(r => Number(r.estimated_profit) > 0).length === 0 && (
+                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Sin datos suficientes.</div>
+              )}
+            </div>
+            
+            {/* Least Profitable */}
+            <div style={card}>
+              <h3 style={{ fontSize: '14px', marginTop: 0, marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <AlertTriangle size={15} color="#ef4444" /> Menos rentable
+              </h3>
+              {[...sorted].reverse().filter(r => Number(r.estimated_profit) <= Number(sorted[sorted.length - 1]?.estimated_profit || 0) || Number(r.estimated_margin) < 20).slice(0, 3).map((row, idx) => (
+                <div key={row.service_id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: idx < 2 ? '1px solid var(--border-color)' : 'none' }}>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-primary)' }}>{row.service_name}</div>
+                    <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Insumos: {usd(row.estimated_material_cost)} · Personal: {usd(row.estimated_staff_cost)}</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: '13px', fontWeight: '800', color: Number(row.estimated_profit) >= 0 ? '#f59e0b' : '#ef4444' }}>{usd(row.estimated_profit)}</div>
+                    <div style={{ fontSize: '10px', color: Number(row.estimated_margin) < 20 ? '#ef4444' : '#f59e0b', fontWeight: '700' }}>{Number(row.estimated_margin || 0).toFixed(1)}%</div>
+                  </div>
+                </div>
+              ))}
+              {[...sorted].reverse().filter(r => Number(r.estimated_profit) <= 0 || Number(r.estimated_margin) < 20).length === 0 && (
+                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Todos los servicios son rentables.</div>
+              )}
+            </div>
+          </div>
+        )}
+
         {totals.services === 0 && <div style={{ ...card, marginBottom: '22px', background: '#fffaf0', borderColor: '#f5dca8', fontSize: '13px' }}><AlertTriangle size={16} color="#b7791f" style={{ verticalAlign: 'middle', marginRight: '7px' }} />Todavía no hay cobros completados en este período. La tabla muestra la rentabilidad estimada del catálogo; al cobrar, quedará congelado el costo histórico.</div>}
 
         <div style={{ ...card, overflowX: 'auto' }}>
           <h2 style={{ fontSize: '15px', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: '7px' }}><TrendingUp size={17} color="var(--pink-primary)" /> Rentabilidad por servicio</h2>
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '820px' }}><thead><tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '10px', textTransform: 'uppercase' }}>{['Servicio', 'Precio', 'Insumos', 'Pago personal', 'Ganancia estimada', 'Margen', 'Realizados', 'Ganancia real'].map((heading) => <th key={heading} style={{ textAlign: heading === 'Servicio' ? 'left' : 'right', padding: '10px 8px' }}>{heading}</th>)}</tr></thead><tbody>{sorted.map((row) => <tr key={row.service_id} style={{ borderBottom: '1px solid #f3e9eb', fontSize: '12px' }}><td style={{ padding: '11px 8px', fontWeight: 750 }}>{row.service_name}<div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{row.category || 'Sin categoría'}</div></td><td style={{ textAlign: 'right' }}>{usd(row.price)}</td><td style={{ textAlign: 'right' }}>{usd(row.estimated_material_cost)}</td><td style={{ textAlign: 'right' }}>{usd(row.estimated_staff_cost)}</td><td style={{ textAlign: 'right', fontWeight: 850, color: Number(row.estimated_profit) >= 0 ? '#198754' : '#b42318' }}>{usd(row.estimated_profit)}</td><td style={{ textAlign: 'right' }}>{Number(row.estimated_margin || 0).toFixed(1)}%</td><td style={{ textAlign: 'right' }}>{row.services_completed}</td><td style={{ textAlign: 'right', fontWeight: 850 }}>{usd(row.actual_profit)}</td></tr>)}</tbody></table>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '820px' }}><thead><tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '10px', textTransform: 'uppercase' }}>{['Servicio', 'Precio', 'Insumos', 'Pago personal', 'Ganancia estimada', 'Margen', 'Realizados', 'Ganancia real'].map((heading) => <th key={heading} style={{ textAlign: heading === 'Servicio' ? 'left' : 'right', padding: '10px 8px' }}>{heading}</th>)}</tr></thead><tbody>{sorted.map((row) => {
+            const margin = Number(row.estimated_margin || 0);
+            const marginColor = margin >= 50 ? '#22c55e' : margin >= 20 ? '#f59e0b' : '#ef4444';
+            return (
+              <tr key={row.service_id} style={{ borderBottom: '1px solid #f3e9eb', fontSize: '12px' }}>
+                <td style={{ padding: '11px 8px', fontWeight: 750 }}>{row.service_name}<div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{row.category || 'Sin categoría'}</div></td>
+                <td style={{ textAlign: 'right' }}>{usd(row.price)}</td>
+                <td style={{ textAlign: 'right' }}>{usd(row.estimated_material_cost)}</td>
+                <td style={{ textAlign: 'right' }}>{usd(row.estimated_staff_cost)}</td>
+                <td style={{ textAlign: 'right', fontWeight: 850, color: Number(row.estimated_profit) >= 0 ? '#198754' : '#b42318' }}>{usd(row.estimated_profit)}</td>
+                <td style={{ textAlign: 'right' }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: '800', backgroundColor: `${marginColor}12`, color: marginColor }}>
+                    {margin.toFixed(1)}%
+                  </span>
+                </td>
+                <td style={{ textAlign: 'right' }}>{row.services_completed}</td>
+                <td style={{ textAlign: 'right', fontWeight: 850 }}>{usd(row.actual_profit)}</td>
+              </tr>
+            );
+          })}</tbody></table>
         </div>
         <section style={{ display:'grid', gridTemplateColumns:isMobile?'1fr':'repeat(3,1fr)', gap:12, marginTop:16 }}>
           <div style={card}><h3 style={{fontSize:14,marginTop:0}}>Categorías más vendidas</h3>{(management.categories||[]).length===0?<small>Sin ventas completadas.</small>:(management.categories||[]).map(c=><div key={c.category} style={{display:'flex',justifyContent:'space-between',padding:'7px 0',borderBottom:'1px solid #f3e9eb'}}><span>{c.category||'Sin categoría'}</span><strong>{c.completed} · {usd(c.profit)}</strong></div>)}</div>

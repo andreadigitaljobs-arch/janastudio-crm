@@ -80,7 +80,7 @@ function _normalizeStaff(member) {
 export const dataService = {
   supabase,
   invalidateOperationalCache() {
-    _cacheInvalidate('clients', 'clients_lite', 'staff', 'staff_with_images', 'services', 'transactions', 'inventory', 'sale_inventory');
+    _cacheInvalidate('clients', 'clients_lite', 'staff', 'staff_with_images', 'services', 'transactions', 'inventory', 'sale_inventory', 'low_stock');
     _cacheInvalidateAppts();
   },
 
@@ -99,6 +99,8 @@ export const dataService = {
       _cacheInvalidate('staff', 'staff_with_images');
     } else if (table === 'service_costs') {
       _cacheInvalidate('service_costs');
+    } else if (table === 'low_stock') {
+      _cacheInvalidate('low_stock');
     }
   },
 
@@ -200,6 +202,66 @@ export const dataService = {
     }
 
     const { error } = await supabase.from('clients').delete().eq('id', id);
+    if (error) throw error;
+  },
+
+  // ─── Digital Consents ──────────────────────────────────────────────────────
+  async getClientConsents(clientId) {
+    const { data, error } = await supabase
+      .from('clients')
+      .select('consents')
+      .eq('id', clientId)
+      .single();
+    if (error) throw error;
+    return _asArray(data?.consents);
+  },
+
+  async getLatestLaserConsent(clientId) {
+    const consents = await this.getClientConsents(clientId);
+    return consents
+      .filter(c => c.service_type === 'laser')
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0] || null;
+  },
+
+  async saveClientConsent(clientId, consentRecord) {
+    _cacheInvalidate('clients', 'clients_lite');
+    const { data: current, error: fetchErr } = await supabase
+      .from('clients')
+      .select('consents')
+      .eq('id', clientId)
+      .single();
+    if (fetchErr) throw fetchErr;
+
+    const existing = _asArray(current?.consents);
+    const newConsent = {
+      id: crypto.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      ...consentRecord,
+      created_at: new Date().toISOString(),
+    };
+    const updated = [...existing, newConsent];
+
+    const { error } = await supabase
+      .from('clients')
+      .update({ consents: updated })
+      .eq('id', clientId);
+    if (error) throw error;
+    return newConsent;
+  },
+
+  async deleteClientConsent(clientId, consentId) {
+    _cacheInvalidate('clients', 'clients_lite');
+    const { data: current, error: fetchErr } = await supabase
+      .from('clients')
+      .select('consents')
+      .eq('id', clientId)
+      .single();
+    if (fetchErr) throw fetchErr;
+
+    const updated = _asArray(current?.consents).filter(c => c.id !== consentId);
+    const { error } = await supabase
+      .from('clients')
+      .update({ consents: updated })
+      .eq('id', clientId);
     if (error) throw error;
   },
 
@@ -552,8 +614,12 @@ export const dataService = {
     return _asArray(data);
   },
 
-  async addStaffTimeOff(staffId, date, reason = '') {
-    const { data, error } = await supabase.from('staff_time_off').upsert({ staff_id: staffId, date, reason }, { onConflict: 'staff_id,date' }).select().single();
+  async addStaffTimeOff(staffId, date, reason = '', startTime = null, endTime = null) {
+    const { data, error } = await supabase.from('staff_time_off').upsert({
+      staff_id: staffId, date, reason,
+      start_time: startTime || null,
+      end_time: endTime || null
+    }, { onConflict: 'staff_id,date' }).select().single();
     if (error) throw error;
     window.dispatchEvent(new CustomEvent('jana:schedule-changed'));
     return data;
@@ -978,6 +1044,23 @@ export const dataService = {
     return this.addInventoryMovement(movement);
   },
 
+  // ─── Inventory Alerts ───────────────────────────────────────────────────
+  async getLowStockItems() {
+    const cached = _cacheGet('low_stock');
+    if (cached) return cached;
+    const { data, error } = await supabase.rpc('get_low_stock_items');
+    if (error) throw error;
+    const result = _asArray(data);
+    _cacheSet('low_stock', result, 30000);
+    return result;
+  },
+
+  async getInventoryUsageRates() {
+    const { data, error } = await supabase.rpc('get_inventory_usage_rates');
+    if (error) throw error;
+    return _asArray(data);
+  },
+
   async getInventoryMovements() {
     const { data, error } = await supabase
       .from('inventory_movements')
@@ -1191,6 +1274,144 @@ export const dataService = {
       .update({ read: true })
       .eq('id', id);
     if (error) throw error;
+  },
+
+  // ─── Notification Queue (WhatsApp Integration Prep) ────────────────────────
+  async queueNotification(type, recipient, message, scheduledFor = null, metadata = {}) {
+    const { data, error } = await supabase
+      .from('notification_queue')
+      .insert([{
+        type,
+        recipient_phone: recipient.phone || null,
+        recipient_name: recipient.name,
+        recipient_client_id: recipient.clientId || null,
+        message,
+        scheduled_for: scheduledFor || new Date().toISOString(),
+        metadata
+      }])
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  async getPendingNotifications() {
+    const { data, error } = await supabase
+      .from('notification_queue')
+      .select('*')
+      .eq('status', 'pending')
+      .order('scheduled_for', { ascending: true });
+    if (error) throw error;
+    return _asArray(data);
+  },
+
+  async getNotificationQueue({ status, type, limit = 100 } = {}) {
+    let query = supabase
+      .from('notification_queue')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    
+    if (status) query = query.eq('status', status);
+    if (type) query = query.eq('type', type);
+    
+    const { data, error } = await query;
+    if (error) throw error;
+    return _asArray(data);
+  },
+
+  async markNotificationSent(id) {
+    const { error } = await supabase.rpc('mark_notification_sent', { p_id: id });
+    if (error) throw error;
+  },
+
+  async markNotificationFailed(id, errorMessage) {
+    const { error } = await supabase.rpc('mark_notification_failed', { p_id: id, p_error: errorMessage });
+    if (error) throw error;
+  },
+
+  async cancelNotification(id) {
+    const { error } = await supabase
+      .from('notification_queue')
+      .update({ status: 'cancelled' })
+      .eq('id', id);
+    if (error) throw error;
+  },
+
+  async deleteNotification(id) {
+    const { error } = await supabase
+      .from('notification_queue')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+  },
+
+  async getNotificationStats() {
+    const { data, error } = await supabase.rpc('get_notification_stats');
+    if (error) throw error;
+    return data || { pending: 0, sent: 0, failed: 0, today: 0, by_type: {} };
+  },
+
+  async queueBirthdayNotifications() {
+    const { data, error } = await supabase.rpc('queue_birthday_notifications');
+    if (error) throw error;
+    return data || 0;
+  },
+
+  async queueLaserReminders() {
+    const { data, error } = await supabase.rpc('queue_laser_reminders');
+    if (error) throw error;
+    return data || 0;
+  },
+
+  async getNotificationTemplates() {
+    const templates = {};
+    const keys = ['notif_template_birthday', 'notif_template_reminder', 'notif_template_thank_you', 'notif_template_promotion'];
+    await Promise.all(keys.map(async key => {
+      const val = await this.getSystemSetting(key, '');
+      templates[key.replace('notif_template_', '')] = val;
+    }));
+    return templates;
+  },
+
+  async saveNotificationTemplate(type, template) {
+    return this.setSystemSetting(`notif_template_${type}`, template);
+  },
+
+  async queueThankYouMessage(clientId, clientName, clientPhone, serviceName, isFirstVisit = false) {
+    const template = await this.getSystemSetting('notif_template_thank_you', 
+      '¡Gracias por confiar en JanaStudio, {{name}}! 💖 Esperamos verte pronto.');
+    const message = template
+      .replace('{{name}}', clientName)
+      .replace('{{service}}', serviceName || 'nuestros servicios');
+    
+    return this.queueNotification('thank_you', { phone: clientPhone, name: clientName, clientId }, message, null, {
+      auto_generated: true,
+      source: 'checkout',
+      service_name: serviceName,
+      is_first_visit: isFirstVisit
+    });
+  },
+
+  async queuePromotionNotifications(promotionId, promotionTitle, eligibleClients = []) {
+    const template = await this.getSystemSetting('notif_template_promotion',
+      '¡Hola {{name}}! 🌟 Tienes una promo especial en JanaStudio: {{promo_details}}. ¡No te la pierdas!');
+    
+    const queued = [];
+    for (const client of eligibleClients) {
+      if (!client.phone) continue;
+      const message = template
+        .replace('{{name}}', client.name)
+        .replace('{{promo_details}}', promotionTitle);
+      
+      const result = await this.queueNotification('promotion', { phone: client.phone, name: client.name, clientId: client.id }, message, null, {
+        auto_generated: true,
+        source: 'promotion',
+        promotion_id: promotionId
+      });
+      queued.push(result);
+    }
+    return queued;
   },
 
   // ─── System Settings ────────────────────────────────────────────────────────

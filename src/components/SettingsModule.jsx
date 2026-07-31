@@ -1,12 +1,166 @@
 import React, { useEffect, useState } from 'react';
-import { Save, Sliders } from 'lucide-react';
+import { Save, Sliders, Bell } from 'lucide-react';
 import { dataService } from '../services/dataService';
+import NotificationQueuePanel from './NotificationQueuePanel';
 
-export default function SettingsModule() {
-  const [values,setValues]=useState({ official_rate_source:'BCV', laser_worker_pct:'30', laser_partner_pct:'40', laser_studio_pct:'30', laser_session_interval_days:'21', laser_expiration_months:'10' });
-  const [saved,setSaved]=useState(false);
-  useEffect(()=>{ Promise.all(Object.keys(values).map(async key=>[key,await dataService.getSystemSetting(key,values[key])])).then(rows=>setValues(Object.fromEntries(rows))).catch(console.error); },[]);
-  const save=async()=>{ await Promise.all(Object.entries(values).map(([k,v])=>dataService.setSystemSetting(k,v))); setSaved(true); setTimeout(()=>setSaved(false),1800); };
-  const input={height:42,border:'1px solid var(--border-color)',borderRadius:12,padding:'0 12px',width:'100%'};
-  return <div className="animate-fade-in"><div style={{display:'flex',gap:12,alignItems:'center',marginBottom:22}}><Sliders color="var(--pink-primary)"/><div><h1 className="jana-page-title" style={{margin:0}}>Configuración</h1><p style={{margin:'4px 0 0',color:'var(--text-secondary)'}}>Reglas operativas oficiales de JanaStudio.</p></div></div><div className="agenda-glass-card" style={{padding:24,maxWidth:720}}><div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(210px,1fr))',gap:16}}><label>Fuente oficial<select style={input} value={values.official_rate_source} onChange={e=>setValues({...values,official_rate_source:e.target.value})}><option value="BCV">BCV</option></select></label><label>Intervalo láser (días)<input style={input} type="number" value={values.laser_session_interval_days} onChange={e=>setValues({...values,laser_session_interval_days:e.target.value})}/></label><label>Vencimiento (meses)<input style={input} type="number" value={values.laser_expiration_months} onChange={e=>setValues({...values,laser_expiration_months:e.target.value})}/></label><label>Trabajadora %<input style={input} type="number" value={values.laser_worker_pct} onChange={e=>setValues({...values,laser_worker_pct:e.target.value})}/></label><label>Socia/insumos %<input style={input} type="number" value={values.laser_partner_pct} onChange={e=>setValues({...values,laser_partner_pct:e.target.value})}/></label><label>Estudio %<input style={input} type="number" value={values.laser_studio_pct} onChange={e=>setValues({...values,laser_studio_pct:e.target.value})}/></label></div><button className="btn-pink" onClick={save} style={{marginTop:20,height:44,borderRadius:12}}><Save size={16}/> {saved?'Guardado':'Guardar configuración'}</button></div></div>;
+const TABS = [
+  { key: 'general', label: 'General', icon: Sliders },
+  { key: 'notifications', label: 'Notificaciones', icon: Bell },
+];
+
+export default function SettingsModule({ isMobile }) {
+  const [activeTab, setActiveTab] = useState('general');
+  const [values, setValues] = useState({
+    official_rate_source: 'BCV',
+    laser_worker_pct: '30',
+    laser_partner_pct: '40',
+    laser_studio_pct: '30',
+    laser_session_interval_days: '21',
+    laser_expiration_months: '10',
+  });
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    Promise.all(
+      Object.keys(values).map(async (key) => [key, await dataService.getSystemSetting(key, values[key])])
+    )
+      .then((rows) => setValues(Object.fromEntries(rows)))
+      .catch(console.error);
+  }, []);
+
+  const save = async () => {
+    await Promise.all(Object.entries(values).map(([k, v]) => dataService.setSystemSetting(k, v)));
+    setSaved(true);
+    setTimeout(() => setSaved(false), 1800);
+  };
+
+  const input = {
+    height: 42,
+    border: '1px solid var(--border-color)',
+    borderRadius: 12,
+    padding: '0 12px',
+    width: '100%',
+  };
+
+  const renderGeneralTab = () => (
+    <div className="agenda-glass-card" style={{ padding: 24, maxWidth: 720 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(210px,1fr))', gap: 16 }}>
+        <label>
+          Fuente oficial
+          <select
+            style={input}
+            value={values.official_rate_source}
+            onChange={(e) => setValues({ ...values, official_rate_source: e.target.value })}
+          >
+            <option value="BCV">BCV</option>
+          </select>
+        </label>
+        <label>
+          Intervalo láser (días)
+          <input
+            style={input}
+            type="number"
+            value={values.laser_session_interval_days}
+            onChange={(e) => setValues({ ...values, laser_session_interval_days: e.target.value })}
+          />
+        </label>
+        <label>
+          Vencimiento (meses)
+          <input
+            style={input}
+            type="number"
+            value={values.laser_expiration_months}
+            onChange={(e) => setValues({ ...values, laser_expiration_months: e.target.value })}
+          />
+        </label>
+        <label>
+          Trabajadora %
+          <input
+            style={input}
+            type="number"
+            value={values.laser_worker_pct}
+            onChange={(e) => setValues({ ...values, laser_worker_pct: e.target.value })}
+          />
+        </label>
+        <label>
+          Socia/insumos %
+          <input
+            style={input}
+            type="number"
+            value={values.laser_partner_pct}
+            onChange={(e) => setValues({ ...values, laser_partner_pct: e.target.value })}
+          />
+        </label>
+        <label>
+          Estudio %
+          <input
+            style={input}
+            type="number"
+            value={values.laser_studio_pct}
+            onChange={(e) => setValues({ ...values, laser_studio_pct: e.target.value })}
+          />
+        </label>
+      </div>
+      <button className="btn-pink" onClick={save} style={{ marginTop: 20, height: 44, borderRadius: 12 }}>
+        <Save size={16} /> {saved ? 'Guardado' : 'Guardar configuración'}
+      </button>
+    </div>
+  );
+
+  return (
+    <div className="animate-fade-in">
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 22 }}>
+        <Sliders color="var(--pink-primary)" />
+        <div>
+          <h1 className="jana-page-title" style={{ margin: 0 }}>
+            Configuración
+          </h1>
+          <p style={{ margin: '4px 0 0', color: 'var(--text-secondary)' }}>Reglas operativas oficiales de JanaStudio.</p>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div
+        style={{
+          display: 'flex',
+          gap: '4px',
+          marginBottom: '20px',
+          background: 'white',
+          borderRadius: '14px',
+          padding: '4px',
+          border: '1px solid var(--border-color)',
+          maxWidth: isMobile ? '100%' : '400px',
+        }}
+      >
+        {TABS.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            style={{
+              flex: 1,
+              padding: '10px 16px',
+              borderRadius: '10px',
+              border: 'none',
+              background: activeTab === tab.key ? 'var(--pink-primary)' : 'transparent',
+              color: activeTab === tab.key ? 'white' : 'var(--text-secondary)',
+              fontSize: '13px',
+              fontWeight: '700',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+            }}
+          >
+            <tab.icon size={15} />
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'general' && renderGeneralTab()}
+      {activeTab === 'notifications' && <NotificationQueuePanel isMobile={isMobile} />}
+    </div>
+  );
 }

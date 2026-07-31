@@ -65,6 +65,8 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
   const [timeOffList, setTimeOffList] = useState([]);
   const [newTimeOffDate, setNewTimeOffDate] = useState('');
   const [newTimeOffReason, setNewTimeOffReason] = useState('');
+  const [newTimeOffStartTime, setNewTimeOffStartTime] = useState('');
+  const [newTimeOffEndTime, setNewTimeOffEndTime] = useState('');
   const [savingSchedule, setSavingSchedule] = useState(false);
 
   useEffect(() => {
@@ -104,11 +106,20 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
       showToast('Elige una fecha', 'warning');
       return;
     }
-    const created = await dataService.addStaffTimeOff(staffMember.id, newTimeOffDate, newTimeOffReason);
-    setTimeOffList(prev => [...prev.filter(t => t.date !== created.date), created]);
+    const hasStartTime = newTimeOffStartTime && newTimeOffEndTime;
+    const created = await dataService.addStaffTimeOff(
+      staffMember.id,
+      newTimeOffDate,
+      newTimeOffReason,
+      hasStartTime ? newTimeOffStartTime : null,
+      hasStartTime ? newTimeOffEndTime : null
+    );
+    setTimeOffList(prev => [...prev.filter(t => t.date !== created.date || t.start_time !== created.start_time), created]);
     setNewTimeOffDate('');
     setNewTimeOffReason('');
-    showToast('Día libre agregado');
+    setNewTimeOffStartTime('');
+    setNewTimeOffEndTime('');
+    showToast(hasStartTime ? 'Horas bloqueadas' : 'Día libre agregado');
   };
 
   const handleRemoveTimeOff = async (id) => {
@@ -762,12 +773,20 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                     <div style={{ minWidth: '160px' }}>
                       <JanaDatePicker value={newTimeOffDate} onChange={(e) => setNewTimeOffDate(e.target.value)} />
                     </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '100px' }}>
+                      <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800', letterSpacing: '1px' }}>HORA INICIO (opc.)</label>
+                      <JanaTimePicker value={newTimeOffStartTime} onChange={(v) => setNewTimeOffStartTime(v)} />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '100px' }}>
+                      <label style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '800', letterSpacing: '1px' }}>HORA FIN (opc.)</label>
+                      <JanaTimePicker value={newTimeOffEndTime} onChange={(v) => setNewTimeOffEndTime(v)} />
+                    </div>
                     <input
                       className="form-input"
                       placeholder="Motivo (opcional)"
                       value={newTimeOffReason}
                       onChange={e => setNewTimeOffReason(e.target.value)}
-                      style={{ height: '48px', flex: 1, minWidth: '160px' }}
+                      style={{ height: '48px', flex: 1, minWidth: '120px' }}
                     />
                     <button onClick={handleAddTimeOff} style={{
                       height: '48px', padding: '0 20px', borderRadius: '14px', border: 'none',
@@ -785,25 +804,49 @@ const StaffProfileModal = ({ isOpen, onClose, staffMember, inventory = [], onUpd
                   </div>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {[...timeOffList].sort((a, b) => a.date.localeCompare(b.date)).map(t => (
-                      <div key={t.id} style={{
-                        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                        background: 'rgba(201, 114, 130, 0.04)', padding: '12px 18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.06)'
-                      }}>
-                        <div>
-                          <div style={{ fontWeight: '800', color: '#2d1b22', fontSize: '13px', textTransform: 'capitalize' }}>{new Date(`${t.date}T00:00:00`).toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'long' })}</div>
-                          {t.reason && <div style={{ color: 'var(--text-muted)', fontSize: '12px' }}>{t.reason}</div>}
+                    {[...timeOffList].sort((a, b) => a.date.localeCompare(b.date)).map(t => {
+                      const isPartial = t.start_time && t.end_time;
+                      const formatTimeShort = (timeStr) => {
+                        if (!timeStr) return '';
+                        const [h, m] = String(timeStr).split(':');
+                        const hour = parseInt(h);
+                        const ampm = hour >= 12 ? 'PM' : 'AM';
+                        const h12 = hour % 12 || 12;
+                        return `${h12}:${m || '00'} ${ampm}`;
+                      };
+                      return (
+                        <div key={t.id} style={{
+                          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                          background: isPartial ? 'rgba(255, 193, 7, 0.06)' : 'rgba(201, 114, 130, 0.04)',
+                          padding: '12px 18px', borderRadius: '14px',
+                          border: `1px solid ${isPartial ? 'rgba(255, 193, 7, 0.2)' : 'rgba(255,255,255,0.06)'}`
+                        }}>
+                          <div>
+                            <div style={{ fontWeight: '800', color: '#2d1b22', fontSize: '13px', textTransform: 'capitalize' }}>{new Date(`${t.date}T00:00:00`).toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'long' })}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                              {isPartial ? (
+                                <span style={{ fontSize: '11px', fontWeight: '700', color: '#d97706', background: 'rgba(255, 193, 7, 0.12)', padding: '2px 8px', borderRadius: '50px' }}>
+                                  {formatTimeShort(t.start_time)} — {formatTimeShort(t.end_time)}
+                                </span>
+                              ) : (
+                                <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--pink-primary)', background: 'rgba(201, 114, 130, 0.08)', padding: '2px 8px', borderRadius: '50px' }}>
+                                  Día completo
+                                </span>
+                              )}
+                            </div>
+                            {t.reason && <div style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '2px' }}>{t.reason}</div>}
+                          </div>
+                          {isAdmin && (
+                            <button onClick={() => handleRemoveTimeOff(t.id)} style={{
+                              background: 'rgba(255,69,58,0.08)', border: '1px solid rgba(255,69,58,0.15)', padding: '6px 8px',
+                              borderRadius: '10px', cursor: 'pointer', color: '#ff453a', display: 'flex', alignItems: 'center'
+                            }}>
+                              <Trash2 size={15} />
+                            </button>
+                          )}
                         </div>
-                        {isAdmin && (
-                          <button onClick={() => handleRemoveTimeOff(t.id)} style={{
-                            background: 'rgba(255,69,58,0.08)', border: '1px solid rgba(255,69,58,0.15)', padding: '6px 8px',
-                            borderRadius: '10px', cursor: 'pointer', color: '#ff453a', display: 'flex', alignItems: 'center'
-                          }}>
-                            <Trash2 size={15} />
-                          </button>
-                        )}
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>

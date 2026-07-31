@@ -267,7 +267,6 @@ const ScheduleModal = ({
     const duration = svc.duration_minutes || 60;
     const endMin = startMin + duration;
 
-    // Conflicto con otro servicio de ESTA MISMA orden asignado a la misma profesional
     const sameStaffOthers = selectedServices.filter(s => s.staffId === svc.staffId && s._uid !== svc._uid && s.time);
     for (const other of sameStaffOthers) {
       const [oh, om] = other.time.split(':').map(Number);
@@ -276,13 +275,22 @@ const ScheduleModal = ({
       if (startMin < oEnd && oStart < endMin) return 'self_conflict';
     }
 
-    // Conflicto con la agenda real de la profesional
     const ctx = staffAvailability[svc.staffId];
     if (ctx && ctx.dateKey === dateToISO(selectedDate)) {
       const result = isStaffFreeAt(svc.staffId, ctx.dateKey, startMin, duration, ctx);
       if (!result.free) return result.reason;
     }
     return null;
+  };
+
+  const getServiceConflictMessage = (conflict) => {
+    if (conflict === 'self_conflict') {
+      const sameStaffCount = selectedServices.filter(s => s.staffId === selectedServices.find(svc => !getServiceConflict(svc) || true)?.staffId).length;
+      if (sameStaffCount > 1) {
+        return 'Ya está asignada a otro servicio de esta misma orden a esa hora.';
+      }
+    }
+    return CONFLICT_MESSAGES[conflict] || 'Cruce de horario potencial.';
   };
 
   // Prepopulate step selection and direct steps
@@ -1341,12 +1349,12 @@ const ScheduleModal = ({
                                 })()}
 
 
-                               {conflict && (
-                                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.64rem', fontWeight: 650, color: '#d97706', background: '#fffbeb', border: '1px solid #fde68a', padding: '6px 10px', borderRadius: '8px' }}>
-                                   <AlertTriangle size={12} style={{ flexShrink: 0 }} />
-                                   <span>{CONFLICT_MESSAGES[conflict] || 'Cruce de horario potencial.'}</span>
-                                 </div>
-                               )}
+                                {conflict && (
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.64rem', fontWeight: 650, color: '#d97706', background: '#fffbeb', border: '1px solid #fde68a', padding: '6px 10px', borderRadius: '8px' }}>
+                                    <AlertTriangle size={12} style={{ flexShrink: 0 }} />
+                                    <span>{getServiceConflictMessage(conflict)}</span>
+                                  </div>
+                                )}
                              </div>
                            );
                          })}

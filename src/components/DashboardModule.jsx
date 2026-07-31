@@ -3,7 +3,8 @@ import {
   Users, Clock, Calendar, Sparkles, RefreshCw,
   Flower2, Plus, Star, ChevronRight,
   Percent, Scissors, DollarSign, Activity, Award,
-  Bell, ChevronDown, Package, UserPlus, BellRing, X
+  Bell, ChevronDown, Package, UserPlus, BellRing, X,
+  AlertTriangle, TrendingDown
 } from 'lucide-react';
 import {
   Chart as ChartJS, CategoryScale, LinearScale, PointElement,
@@ -13,6 +14,7 @@ import { Line, Doughnut } from 'react-chartjs-2';
 import { useAuth } from '../context/AuthContext';
 import { useDialog } from '../context/DialogContext';
 import { getStaffDisplayName } from '../utils/stringUtils';
+import { dataService } from '../services/dataService';
 
 ChartJS.register(
   CategoryScale, LinearScale, PointElement, LineElement,
@@ -38,6 +40,7 @@ const DashboardModule = ({
     try { return Notification?.permission || 'default'; } catch { return 'default'; }
   });
   const [showNtfBanner, setShowNtfBanner] = useState(true);
+  const [lowStockCount, setLowStockCount] = useState(0);
 
   const [activeServiceIndex, setActiveServiceIndex] = useState(0);
 
@@ -94,6 +97,13 @@ const DashboardModule = ({
     startScroll();
     return () => clearInterval(intervalId);
   }, [isMobile]);
+
+  // Fetch low stock count for alerts
+  useEffect(() => {
+    dataService.getLowStockItems()
+      .then(items => setLowStockCount(items?.length || 0))
+      .catch(() => {});
+  }, []);
 
 
   const formatBs = (amount) => {
@@ -731,6 +741,44 @@ const DashboardModule = ({
               </div>
           </div>
         </div>
+
+        {/* Restocking Alert (Mobile) */}
+        {lowStockCount > 0 && (
+          <div
+            onClick={() => onNavigate('inventory')}
+            style={{
+              width: '100%',
+              borderRadius: '20px',
+              padding: '14px 16px',
+              background: 'linear-gradient(135deg, #fef2f2, #fff5f5)',
+              border: '1px solid rgba(239,68,68,0.12)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              cursor: 'pointer',
+              boxShadow: '0 4px 16px rgba(239,68,68,0.06)',
+              transition: 'all 0.2s'
+            }}
+          >
+            <div style={{
+              width: '38px', height: '38px', borderRadius: '12px',
+              background: 'rgba(239,68,68,0.1)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0
+            }}>
+              <AlertTriangle size={18} color="#ef4444" />
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <span style={{ fontSize: '0.78rem', fontWeight: '700', color: '#ef4444', display: 'block', lineHeight: '1.2' }}>
+                {lowStockCount} producto{lowStockCount > 1 ? 's' : ''} necesita reposición
+              </span>
+              <span style={{ fontSize: '0.62rem', color: 'var(--text-secondary)', display: 'block', marginTop: '2px' }}>
+                Toca para ver el inventario
+              </span>
+            </div>
+            <ChevronRight size={16} color="#ef4444" />
+          </div>
+        )}
 
           {/* Divider + Mini Reportes */}
           <div className="mi-card mi-enter-up mi-delay-4" style={{
@@ -1389,6 +1437,39 @@ const DashboardModule = ({
           </div>
         </div>
       </div>
+
+      {/* ── RESTOCKING ALERTS WIDGET (Desktop) ── */}
+      {lowStockCount > 0 && (
+        <div 
+          onClick={() => onNavigate('inventory')}
+          className="mi-card mi-enter-up mi-delay-4"
+          style={{
+            background: 'linear-gradient(135deg, #fef2f2, #fff5f5)',
+            borderRadius: '22px',
+            border: '1px solid rgba(239,68,68,0.12)',
+            padding: '18px 22px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '14px',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            boxShadow: '0 4px 16px rgba(239,68,68,0.06)'
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(239,68,68,0.1)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(239,68,68,0.06)'; }}
+        >
+          <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'rgba(239,68,68,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <AlertTriangle size={22} color="#ef4444" />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#ef4444' }}>{lowStockCount} producto{lowStockCount > 1 ? 's' : ''} necesita reposición</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '2px' }}>Stock por debajo del mínimo establecido</div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', color: '#ef4444', fontWeight: '600', flexShrink: 0 }}>
+            Ver inventario <ChevronRight size={14} />
+          </div>
+        </div>
+      )}
 
       {/* ── MAIN CONTENT ROW: Agenda + Top Servicios + Top Especialistas (ALINEACIÓN STRETCH) ── */}
       <div className="dashboard-main-row">
