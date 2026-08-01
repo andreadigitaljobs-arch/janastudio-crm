@@ -4,6 +4,7 @@ import {
   inferServiceCategories,
   normalizeServiceCategories,
 } from '../domain/serviceCategoryRules.js';
+import { getBusinessDayRange } from '../utils/dateTime.js';
 
 // ─── Smart In-Memory Cache ────────────────────────────────────────────────────
 const _cache = {};
@@ -474,6 +475,17 @@ export const dataService = {
   async getTodayAppointments() {
     const today = new Date().toISOString().split('T')[0];
     return this.getAppointments(`${today}T00:00:00`, `${today}T23:59:59`);
+  },
+
+  async getCompletedAppointmentsForBusinessDay() {
+    const { start, endExclusive } = getBusinessDayRange();
+    const rows = await this.getAppointmentsByState(['Completado'], start.toISOString());
+    return rows.filter(appointment => {
+      const completedAt = appointment.completed_at || appointment.scheduled_at;
+      if (!completedAt) return false;
+      const timestamp = new Date(completedAt).getTime();
+      return timestamp >= start.getTime() && timestamp < endExclusive.getTime();
+    });
   },
 
   async getClientPastAppointments(clientId, excludeAppointmentId) {
@@ -1493,6 +1505,75 @@ export const dataService = {
              sCat.includes('laser') || sCat.includes('depilación');
     });
     return result;
+  },
+
+  async getStaffTransactions(staffId, startDate, endDate) {
+    let query = supabase
+      .from('transactions')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (startDate) query = query.gte('created_at', startDate);
+    if (endDate) query = query.lte('created_at', endDate);
+    const { data, error } = await query;
+    if (error) throw error;
+    return _asArray(data).filter(transaction => {
+      const involved = _asArray(transaction.metadata?.staffInvolved);
+      return involved.some(member =>
+        String(member.staffId || member.staff_id || member.id) === String(staffId)
+      );
+    });
+  },
+
+  async getStaffProfileStats(staffId, _role = '', startDate = null) {
+    let query = supabase
+      .from('appointment_staff')
+      .select(`
+        id, staff_id, appointment_id, commission_earned, tip_amount,
+        appointments!inner (
+          id, client_id, staff_id, service_id, status, total_price, scheduled_at,
+          started_at, completed_at, created_at,
+          clients (id, name, phone),
+          services (id, name, price, duration_minutes, commission_pct),
+          appointment_services (
+            id, service_id, staff_id, price_paid, status, scheduled_at,
+            started_at, completed_at, duration_minutes,
+            services (id, name, price, duration_minutes)
+          )
+        )
+      `)
+      .eq('staff_id', staffId)
+      .eq('appointments.status', 'Completado')
+      .order('created_at', { referencedTable: 'appointments', ascending: false });
+    if (startDate) query = query.gte('appointments.completed_at', startDate);
+    const { data, error } = await query;
+    if (error) throw error;
+    const rawRecords = _asArray(data).filter(record => record.appointments);
+    const totals = rawRecords.reduce((summary, record) => {
+      const appointment = record.appointments;
+      const serviceName = appointment.services?.name ||
+        appointment.appointment_services?.find(service => String(service.staff_id) === String(staffId))?.services?.name ||
+        'Servicio';
+      summary.totalAppointments += 1;
+      summary.totalServiceComm += Number(record.commission_earned || 0);
+      summary.totalProductComm += Number(record.product_commission || 0);
+      summary.totalTips += Number(record.tip_amount || 0);
+      summary.serviceCounts[serviceName] = (summary.serviceCounts[serviceName] || 0) + 1;
+      return summary;
+    }, {
+      totalAppointments: 0,
+      totalServiceComm: 0,
+      totalProductComm: 0,
+      totalTips: 0,
+      serviceCounts: {}
+    });
+    return {
+      ...totals,
+      topServices: Object.entries(totals.serviceCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([service_name, count]) => ({ service_name, count })),
+      rawRecords
+    };
   },
 
   async uploadLaserProgressPhoto(file, clientPackageId, kind) {

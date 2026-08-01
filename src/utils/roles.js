@@ -5,25 +5,40 @@ export const getRoleKind = (role = '') => {
   if (name === 'admin') return 'admin';
   if (name.includes('recep')) return 'reception';
   if (name.includes('caja')) return 'cashier';
-  if (name.includes('manicurista') || name.includes('lashista') || name.includes('estilista') || name.includes('trabajador')) return 'worker';
+  if (
+    name.includes('manicurista') ||
+    name.includes('lashista') ||
+    name.includes('pestañ') ||
+    name.includes('pestan') ||
+    name.includes('cejas') ||
+    name.includes('láser') ||
+    name.includes('laser') ||
+    name.includes('uñas') ||
+    name.includes('unas') ||
+    name.includes('estilista') ||
+    name.includes('trabajador') ||
+    name.includes('especialista')
+  ) return 'worker';
   return 'other';
 };
 
 const MODULE_ROLES = {
-  dashboard: ['admin', 'reception', 'cashier', 'worker'],
-  'my-profile': ['admin', 'reception', 'cashier', 'worker'],
+  dashboard: ['admin', 'reception', 'cashier'],
+  'my-profile': ['worker'],
+  'stylist-panel': ['worker'],
+  history: ['worker'],
   scheduling: ['admin', 'reception', 'worker'],
   reception: ['admin', 'reception'],
   checkout: ['admin', 'reception', 'cashier'],
   clients: ['admin', 'reception', 'cashier'],
-  diagnosis: ['admin', 'reception', 'worker'],
+  diagnosis: ['admin', 'reception'],
   personnel: ['admin'],
   services: ['admin'],
   costing: ['admin'],
   inventory: ['admin', 'cashier'],
   finance: ['admin', 'cashier'],
   accounting: ['admin'],
-  laser: ['admin', 'reception', 'worker'],
+  laser: ['admin', 'reception'],
   reports: ['admin'],
   promotions: ['admin'],
   settings: ['admin'],

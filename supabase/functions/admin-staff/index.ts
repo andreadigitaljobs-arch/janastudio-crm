@@ -42,7 +42,7 @@ Deno.serve(async (request) => {
       const member = { ...(body.member || {}) }
       const email = String(body.email || member.email || '').trim().toLowerCase()
       const password = String(body.password || '')
-      if (!email || password.length < 8) return json({ error: 'Email and password (8+ characters) are required' }, 400)
+      if (!email || password.length < 6) return json({ error: 'Email and password (6+ characters) are required' }, 400)
       const { data: authData, error: authError } = await admin.auth.admin.createUser({ email, password, email_confirm: true })
       if (authError) return json({ error: authError.message }, 400)
       delete member.password
@@ -82,7 +82,7 @@ Deno.serve(async (request) => {
       const staffId = String(body.staffId || '')
       const email = String(body.email || '').trim().toLowerCase()
       const password = String(body.password || '')
-      if (!staffId || !email || password.length < 8) return json({ error: 'Invalid link request' }, 400)
+      if (!staffId || !email || password.length < 6) return json({ error: 'Invalid link request' }, 400)
       const { data: authData, error: authError } = await admin.auth.admin.createUser({ email, password, email_confirm: true })
       if (authError) return json({ error: authError.message }, 400)
       const { data, error } = await admin.from('staff').update({ auth_user_id: authData.user.id, email })

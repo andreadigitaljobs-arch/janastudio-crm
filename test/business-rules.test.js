@@ -53,5 +53,9 @@ test('los permisos distinguen recepción, caja y trabajadoras', () => {
   assert.equal(canAccessModule('Recepcionista', 'scheduling'), true);
   assert.equal(canAccessModule('Caja', 'finance'), true);
   assert.equal(canAccessModule('Manicurista', 'finance'), false);
+  assert.equal(canAccessModule('Manicurista', 'dashboard'), false);
+  assert.equal(canAccessModule('Pestañas', 'stylist-panel'), true);
+  assert.equal(canAccessModule('Cejas', 'history'), true);
+  assert.equal(canAccessModule('Láser', 'my-profile'), true);
   assert.equal(canAccessModule('Admin', 'accounting'), true);
 });

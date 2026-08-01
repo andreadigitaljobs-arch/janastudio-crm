@@ -17,7 +17,10 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
 
   const allMenuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3, roles: ['Admin', 'Recepcionista', 'Caja', 'Manicurista', 'Lashista'] },
+    { id: 'my-profile', label: 'Mi perfil', icon: UserCircle },
+    { id: 'stylist-panel', label: 'Panel de Estilista', icon: Sparkles },
     { id: 'scheduling', label: 'Agenda', icon: Calendar, roles: ['Admin', 'Recepcionista', 'Manicurista', 'Lashista'] },
+    { id: 'history', label: 'Mi historial', icon: Receipt },
     { id: 'reception', label: 'Recepción', icon: UserCircle, roles: ['Admin', 'Recepcionista'] },
     { id: 'laser', label: 'Centro Láser', icon: LaserGunIcon, roles: ['Admin', 'Recepcionista'] },
     { id: 'clients', label: 'Clientes', icon: Users, roles: ['Admin', 'Recepcionista', 'Manicurista', 'Lashista'] },

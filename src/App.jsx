@@ -40,7 +40,7 @@ import { notificationService } from './services/notificationService';
 import { useDialog } from './context/DialogContext';
 import { useScrollLock } from './hooks/useScrollLock';
 import { useModal } from './context/ModalContext';
-import { canAccessModule } from './utils/roles';
+import { canAccessModule, getRoleKind } from './utils/roles';
 
 const DashboardModule = lazy(() => import('./components/DashboardModule'));
 const ClientModule = lazy(() => import('./components/ClientModule'));
@@ -57,6 +57,9 @@ const ReceptionModule = lazy(() => import('./components/ReceptionModule'));
 const ReportsModule = lazy(() => import('./components/ReportsModule'));
 const LaserModule = lazy(() => import('./components/LaserModule'));
 const ScheduleModal = lazy(() => import('./components/ScheduleModal'));
+const UserProfilePage = lazy(() => import('./components/UserProfilePage'));
+const BarberPanel = lazy(() => import('./components/BarberPanel'));
+const HistoryModule = lazy(() => import('./components/HistoryModule'));
 
 const ModuleFallback = () => <MiniLoader text="Preparando vista..." />;
 const AccountingModule = lazy(() => import('./components/AccountingModule'));
@@ -139,7 +142,10 @@ function App() {
 
   const allMenuItems = useMemo(() => [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
+    { id: 'my-profile', label: 'Mi perfil', icon: UserCircle },
+    { id: 'stylist-panel', label: 'Panel de Estilista', icon: Sparkles },
     { id: 'scheduling', label: 'Agenda', icon: Calendar },
+    { id: 'history', label: 'Mi historial', icon: Receipt },
     { id: 'reception', label: 'Recepción', icon: UserCircle },
     { id: 'checkout', label: 'Caja', icon: Receipt },
     { id: 'laser', label: 'Centro Láser', icon: LaserGunIcon },
@@ -159,6 +165,13 @@ function App() {
   const allowedMenuItems = useMemo(() => {
     return allMenuItems.filter(item => canAccessModule(user?.role, item.id));
   }, [user?.role, allMenuItems]);
+
+  useEffect(() => {
+    if (!user || canAccessModule(user.role, activeTab)) return;
+    const roleHome = getRoleKind(user.role) === 'worker' ? 'stylist-panel' : 'dashboard';
+    setActiveTab(roleHome);
+    localStorage.setItem('jana_active_tab', roleHome);
+  }, [user, activeTab]);
 
   const mobileVisibleItems = useMemo(() => {
     if (allowedMenuItems.length <= 5) {
@@ -517,7 +530,10 @@ function App() {
   };
 
   const renderContent = () => {
-    const authorizedTab = canAccessModule(user?.role, activeTab) ? activeTab : 'dashboard';
+    const roleKind = getRoleKind(user?.role);
+    const roleHome = roleKind === 'worker' ? 'stylist-panel' : 'dashboard';
+    const authorizedTab = canAccessModule(user?.role, activeTab) ? activeTab : roleHome;
+    const currentStaffMember = dbData.staff.find(member => String(member.id) === String(user?.id)) || user;
     switch (authorizedTab) {
       case 'dashboard':
         return <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}><DashboardModule
@@ -535,6 +551,9 @@ function App() {
           onOpenNotifications={handleOpenNotifications}
         /></div>;
       case 'scheduling': return <div className="p-container p-container-agenda"><SchedulingModule isMobile={isMobile} isTablet={isTablet} isCollapsed={isCollapsed} rates={effectiveRates} openScheduleModal={tabParams.openScheduleModal} modalKey={tabParams.modalKey} onOpenNotifications={handleOpenNotifications} onNavigate={handleTabChange} /></div>;
+      case 'my-profile': return <div className="p-container"><UserProfilePage staffMember={currentStaffMember} inventory={dbData.inventory || []} onUpdate={fetchInitialData} isMobile={isMobile} rates={effectiveRates} /></div>;
+      case 'stylist-panel': return <div className="p-container"><BarberPanel isMobile={isMobile} rates={effectiveRates} /></div>;
+      case 'history': return <div className="p-container"><HistoryModule isMobile={isMobile} rates={effectiveRates} onNavigate={handleTabChange} /></div>;
       case 'reception': return <div className="p-container"><ReceptionModule isMobile={isMobile} onNavigate={handleTabChange} /></div>;
       case 'laser': return <div className="p-container"><LaserModule isMobile={isMobile} /></div>;
       case 'services': return <div className="p-container"><ServicesModule isMobile={isMobile} currency={currency} rates={effectiveRates} /></div>;

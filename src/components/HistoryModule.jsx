@@ -145,11 +145,11 @@ const HistoryModule = ({ isMobile, rates, onNavigate }) => {
         let staffQuery = dataService.supabase
           .from('appointment_staff')
           .select(`
-            id, staff_id, appointment_id, commission_earned, product_commission, tip_amount,
+            id, staff_id, appointment_id, commission_earned, tip_amount,
             appointments!inner (
               id, client_id, staff_id, service_id, status, total_price, scheduled_at, started_at, completed_at, created_at,
               clients(id, name, phone, id_card),
-              services(name, price, included_items, commission_stylist, commission_stylist, commission_cashier, commission_receptionist),
+              services(name, price, included_items, commission_pct),
               appointment_extras(id, price, service_extras(name)),
               appointment_products(id, quantity, price, inventory(id, name))
             )
@@ -186,7 +186,7 @@ const HistoryModule = ({ isMobile, rates, onNavigate }) => {
       });
       setHistory(data);
     } catch (error) {
-      console.error('Error fetching history:', error);
+      console.error('Error fetching history:', error?.message || error);
       showToast('Error al cargar historial', 'error');
     } finally {
       setLoading(false);

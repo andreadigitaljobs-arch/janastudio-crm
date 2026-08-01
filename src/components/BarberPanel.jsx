@@ -127,7 +127,11 @@ const BarberPanel = ({ isMobile, rates }) => {
       if (isStylist) {
         setMyServices(data);
       } else {
-        const filtered = data.filter(s => String(s.staff_id) === String(selectedStylist.id));
+        const filtered = data.filter(appointment =>
+          String(appointment.staff_id) === String(selectedStylist.id) ||
+          appointment.appointment_staff?.some(link => String(link.staff_id) === String(selectedStylist.id)) ||
+          appointment.appointment_services?.some(service => String(service.staff_id) === String(selectedStylist.id))
+        );
         setMyServices(filtered);
       }
     } catch (err) {
@@ -146,7 +150,9 @@ const BarberPanel = ({ isMobile, rates }) => {
         if (isStylist) {
           return s.appointment_staff?.some(as => String(as.staff_id) === String(selectedStylist.id));
         } else {
-          return String(s.staff_id) === String(selectedStylist.id);
+          return String(s.staff_id) === String(selectedStylist.id) ||
+            s.appointment_staff?.some(link => String(link.staff_id) === String(selectedStylist.id)) ||
+            s.appointment_services?.some(service => String(service.staff_id) === String(selectedStylist.id));
         }
       });
       setCompletedToday(filtered);
