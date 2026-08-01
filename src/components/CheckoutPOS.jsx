@@ -126,6 +126,26 @@ const CartSellerSelect = ({ value, onChange, options }) => {
     </div>
   );
 };
+
+const getAppointmentServiceRows = (appointment) => {
+  if (appointment?.appointment_services?.length) {
+    return appointment.appointment_services.map((service) => ({
+      ...appointment,
+      ...service,
+      appointment_id: appointment.id,
+      services: service.services || appointment.services,
+      staff: service.staff || appointment.staff,
+      total_price: Number(service.price_paid ?? service.services?.price ?? 0),
+    }));
+  }
+  return appointment ? [appointment] : [];
+};
+
+const getAppointmentServiceTotal = (appointment) => getAppointmentServiceRows(appointment)
+  .reduce((sum, service) => sum + Number(
+    Number(service.total_price) > 0 ? service.total_price : service.services?.price || 0
+  ), 0);
+
 const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, onNavigate }) => {
   const { showToast, triggerConfetti, triggerRocket } = useNotifs();
   const formatCurrency = (amount) => {
@@ -265,7 +285,11 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
 
   useEffect(() => {
     if (selectedApp) {
-      setBundledApps(selectPayableAppointments(selectedApp, pendingServices));
+      setBundledApps(
+        selectedApp.status === 'Por Pagar'
+          ? selectPayableAppointments(selectedApp, pendingServices)
+          : [selectedApp]
+      );
     } else {
       setBundledApps([]);
     }
@@ -278,12 +302,15 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
   useEffect(() => {
     const uniquePayableApps = new Map();
     [...bundledApps, ...linkedApps].forEach((appointment) => {
-      if (appointment?.id && appointment.status === 'Por Pagar') {
+      if (
+        appointment?.id
+        && (appointment.status === 'Por Pagar' || appointment.id === selectedApp?.id)
+      ) {
         uniquePayableApps.set(appointment.id, appointment);
       }
     });
     setTotalAppsInCheckout([...uniquePayableApps.values()]);
-  }, [bundledApps, linkedApps]);
+  }, [bundledApps, linkedApps, selectedApp?.id]);
 
   useEffect(() => {
     if (totalAppsInCheckout.length > 0) {
@@ -512,7 +539,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
 
   const servicePrice = totalAppsInCheckout.reduce((acc, app) => {
     if (packageConsumptions[app.id]) return acc;
-    return acc + (app.total_price !== undefined && app.total_price !== null && Number(app.total_price) > 0 ? Number(app.total_price) : (app.services?.price || 0));
+    return acc + getAppointmentServiceTotal(app);
   }, 0);
   const productsTotal = cart.reduce((acc, p) => acc + (p.price * p.quantity), 0);
   const extrasTotal = totalAppsInCheckout.reduce((acc, app) => acc + (app.appointment_extras?.reduce((subAcc, e) => subAcc + (e.price || 0), 0) || 0), 0);
@@ -555,7 +582,13 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
   
   const remainingBs = Math.max(0, (totalUsd - Number(cashUsd)) * fixedRate).toFixed(2);
   const checkoutClient = selectedApp?.clients || selectedClient;
-  const checkoutHasService = totalAppsInCheckout.some(app => app.service_id !== null && app.service_id !== undefined);
+  const selectedServiceIsOpen = Boolean(
+    selectedApp && ['En Silla', 'En Tratamiento'].includes(selectedApp.status)
+  );
+  const checkoutHasService = totalAppsInCheckout.some(app =>
+    (app.service_id !== null && app.service_id !== undefined)
+    || (app.appointment_services?.length || 0) > 0
+  );
   const hasConfiguredRecurrence = Boolean(
     checkoutClient?.recurrence_enabled && Number(checkoutClient?.recurrence_days) > 0
   );
@@ -792,6 +825,10 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
 
   const handleProcessCheckout = async () => {
     if (loading || checkoutSubmissionRef.current) return;
+    if (selectedServiceIsOpen) {
+      showToast("Finaliza el servicio en Salón en vivo antes de cobrar.", "warning");
+      return;
+    }
     if (!selectedApp && !selectedClient) {
       showToast("Selecciona un cliente para la venta directa", "warning");
       return;
@@ -811,6 +848,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
       
       const checkoutAppointments = totalAppsInCheckout.filter(app =>
         (app.service_id !== null && app.service_id !== undefined)
+        || (app.appointment_services?.length || 0) > 0
         || (app.appointment_extras?.length || 0) > 0
         || (app.appointment_products?.length || 0) > 0
         || Number(app.total_price || 0) > 0
@@ -863,13 +901,14 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
         initialPaymentAmount: paymentMode === 'financed' ? Number(initialPaymentUsd) : 0,
         initialPaymentMethod: paymentMode === 'financed' ? initialPaymentMethod : null,
         appointments: totalAppsInCheckout
+          .flatMap(getAppointmentServiceRows)
           .filter(app => app.service_id !== null && app.service_id !== undefined)
           .map(app => {
             const appExtrasTotal = app.appointment_extras?.reduce((sum, e) => sum + (e.price || 0), 0) || 0;
             const servicePrice = app.total_price !== undefined && app.total_price !== null && Number(app.total_price) > 0 ? Number(app.total_price) : (app.services?.price || 0);
             const includesWashing = app.services?.included_items?.some(i => i.toLowerCase().includes('tratamiento')) || false;
             return {
-              id: app.id,
+              id: app.appointment_id || app.id,
               staff_id: app.staff_id,
               clientName: app.clients?.name || 'Cliente',
               clientCedula: app.clients?.id_card || 'S/C',
@@ -1326,8 +1365,10 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
     showToast(`¡Cliente ${newClient.name} registrado y enlazado!`);
   };
 
-  // Caja solo debe mostrar servicios que ya fueron finalizados.
-  const activeServices = pendingServices.filter(a => a.status === 'Por Pagar');
+  // Caja muestra cuentas abiertas para editarlas y las finalizadas para cobrarlas.
+  const activeServices = pendingServices.filter(a =>
+    ['En Silla', 'En Tratamiento', 'Por Pagar'].includes(a.status)
+  );
   const groupedActiveServices = [];
   activeServices.forEach(app => {
     const existing = groupedActiveServices.find(g => g.client_id === app.client_id);
@@ -1501,19 +1542,20 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
               <TrendingUp size={16} color="var(--text-muted)" />
-              <span style={{ fontWeight: '800', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Lista de Espera por Cobrar</span>
+              <span style={{ fontWeight: '800', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Cuentas abiertas y por cobrar</span>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {groupedActiveServices.length === 0 ? (
-                <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)' }}>No hay clientes por cobrar.</div>
+                <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)' }}>No hay cuentas abiertas ni clientes por cobrar.</div>
               ) : (
                 groupedActiveServices.map(group => {
                   const isSelected = selectedApp?.client_id === group.client_id;
                   const badgeStatus = group.apps.some(a => a.status === 'En Silla') ? 'En Silla' : (group.apps.some(a => a.status === 'En Tratamiento') ? 'En Tratamiento' : 'Por Pagar');
-                  const serviceNames = group.apps.map(a => a.services?.name).filter(Boolean).join(' + ') || 'Venta de Productos';
-                  const staffNames = Array.from(new Set(group.apps.map(a => a.staff?.name?.split(' ')[0]).filter(Boolean))).join(', ') || 'Caja';
-                  const totalUsd = group.apps.reduce((acc, a) => acc + (a.total_price !== undefined && a.total_price !== null && Number(a.total_price) > 0 ? Number(a.total_price) : (a.services?.price || 0)), 0);
+                  const performedServices = group.apps.flatMap(getAppointmentServiceRows);
+                  const serviceNames = performedServices.map(a => a.services?.name).filter(Boolean).join(' + ') || 'Venta de Productos';
+                  const staffNames = Array.from(new Set(performedServices.map(a => a.staff?.name?.split(' ')[0]).filter(Boolean))).join(', ') || 'Caja';
+                  const totalUsd = group.apps.reduce((acc, a) => acc + getAppointmentServiceTotal(a), 0);
                   
                   return (
                     <div 
@@ -1754,16 +1796,20 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                   type="button"
                   className="btn-pink checkout-quick-pay"
                   onClick={handleProcessCheckout}
-                  disabled={loading}
+                  disabled={loading || selectedServiceIsOpen}
+                  title={selectedServiceIsOpen ? 'Finaliza el servicio en Salón en vivo para poder cobrar' : undefined}
                 >
                   {loading ? <RefreshCcw className="animate-spin" size={18} /> : <CreditCard size={18} />}
-                  {loading ? 'Procesando…' : 'Cobrar ahora'}
+                  {loading ? 'Procesando…' : selectedServiceIsOpen ? 'Servicio en curso' : 'Cobrar ahora'}
                 </button>
               </div>
 
               <div className="checkout-service-ledger" style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '8px' : '12px', marginBottom: '24px', padding: isMobile ? '12px 10px' : '20px', backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '16px' }}>
                 {totalAppsInCheckout.map(app => {
-                  const sPrice = app.total_price !== undefined && app.total_price !== null && Number(app.total_price) > 0 ? Number(app.total_price) : (app.services?.price || 0);
+                  const performedServices = getAppointmentServiceRows(app);
+                  const sPrice = getAppointmentServiceTotal(app);
+                  const serviceSummary = performedServices.map(service => service.services?.name).filter(Boolean).join(' + ') || 'Extras';
+                  const staffSummary = [...new Set(performedServices.map(service => service.staff?.name?.split(' ')[0]).filter(Boolean))].join(', ') || 'Caja';
                   const isLinked = app.client_id !== selectedApp?.client_id;
                   return (
                     <div key={app.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', borderBottom: '1px solid rgba(255,255,255,0.03)', paddingBottom: '8px' }}>
@@ -1788,7 +1834,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                           )}
                           {isLinked && <span style={{ color: 'var(--pink-primary)', fontWeight: '800', fontSize: '10px', flexShrink: 0 }}>({app.clients?.name?.split(' ')[0]}):</span>}
                           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'rgba(255,255,255,0.9)' }}>
-                            {app.services ? `Servicio: ${app.services.name}` : 'Extras'}
+                            {`Servicio: ${serviceSummary}`}
                           </span>
                           {' • '}
                           <span 
@@ -1806,7 +1852,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                             }}
                             title="Click para cambiar estilista"
                           >
-                            {app.staff?.name?.split(' ')[0] || 'Caja'}
+                            {staffSummary}
                             <Edit3 size={8} />
                           </span>
                         </div>
@@ -2642,8 +2688,9 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
 
                 <button 
                   onClick={handleProcessCheckout}
-                  disabled={loading}
+                  disabled={loading || selectedServiceIsOpen}
                   className="btn-pink" 
+                  title={selectedServiceIsOpen ? 'Finaliza el servicio en Salón en vivo para poder cobrar' : undefined}
                   style={{ flex: '2', height: isMobile ? '44px' : '54px', borderRadius: '14px', fontSize: isMobile ? '13px' : '15px', gap: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
                   {loading ? (
@@ -2652,7 +2699,7 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
                     </>
                   ) : (
                     <>
-                      <CheckCircle size={isMobile ? 18 : 22} /> FINALIZAR COBRO
+                      <CheckCircle size={isMobile ? 18 : 22} /> {selectedServiceIsOpen ? 'SERVICIO EN CURSO' : 'FINALIZAR COBRO'}
                     </>
                   )}
                 </button>
