@@ -15,6 +15,10 @@ import { useAuth } from '../context/AuthContext';
 import { useDialog } from '../context/DialogContext';
 import { getStaffDisplayName } from '../utils/stringUtils';
 import { dataService } from '../services/dataService';
+import {
+  buildMonthlyClientRanking,
+  buildMonthlyStaffRanking
+} from '../domain/dashboardRankings';
 
 ChartJS.register(
   CategoryScale, LinearScale, PointElement, LineElement,
@@ -28,6 +32,90 @@ const simplifyServiceName = (name) => {
     .replace(/^Adicional de\s+/i, '')
     .replace(/^Servicio de\s+/i, '');
 };
+
+const MonthlyClientRanking = ({ clients, onNavigate, compact = false }) => (
+  <section
+    className="mi-card mi-enter-up mi-delay-8"
+    aria-labelledby={compact ? 'mobile-top-clients-title' : 'top-clients-title'}
+    style={{
+      background: 'linear-gradient(135deg, rgba(255,255,255,0.94) 0%, rgba(253,243,244,0.88) 100%)',
+      backdropFilter: 'blur(16px)',
+      borderRadius: compact ? '24px' : '22px',
+      border: '1px solid rgba(201, 114, 130, 0.12)',
+      padding: compact ? '16px 18px' : '22px',
+      boxShadow: '0 4px 20px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: compact ? '12px' : '0'
+    }}
+  >
+    <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: compact ? 0 : '14px', gap: '12px' }}>
+      <div>
+        <h3
+          id={compact ? 'mobile-top-clients-title' : 'top-clients-title'}
+          className="mi-section-header"
+          style={{ fontSize: compact ? '0.9rem' : '1rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}
+        >
+          Top clientas
+        </h3>
+        <span style={{ display: 'block', marginTop: '3px', color: 'var(--text-muted)', fontSize: '0.64rem' }}>
+          Mayor gasto del mes
+        </span>
+      </div>
+      <button
+        type="button"
+        onClick={() => onNavigate('clients')}
+        aria-label="Ver todas las clientas"
+        style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px', border: 0, background: 'transparent', color: '#c97282', fontSize: compact ? '0.72rem' : '0.75rem', fontWeight: 600, cursor: 'pointer' }}
+      >
+        Ver todo <ChevronRight size={compact ? 12 : 13} />
+      </button>
+    </header>
+
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      {clients.length === 0 ? (
+        <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textAlign: 'center', padding: '18px 0', margin: 0, fontStyle: 'italic' }}>
+          Aún no hay consumos registrados este mes.
+        </p>
+      ) : clients.slice(0, 3).map((client, idx) => (
+        <button
+          type="button"
+          key={client.id}
+          onClick={() => onNavigate('clients', { clientId: client.id })}
+          className="mi-row"
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            padding: '10px 0',
+            border: 0,
+            borderBottom: idx < Math.min(clients.length, 3) - 1 ? '1px solid rgba(201,114,130,0.08)' : 'none',
+            background: 'transparent',
+            color: 'inherit',
+            textAlign: 'left',
+            cursor: 'pointer'
+          }}
+        >
+          <span style={{ width: '26px', height: '26px', borderRadius: '50%', background: idx === 0 ? 'linear-gradient(135deg, #c97282, #a0506a)' : 'transparent', border: idx === 0 ? 'none' : '2px solid rgba(201,114,130,0.25)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: idx === 0 ? '#fff' : '#a0506a', fontSize: '0.65rem', fontWeight: 800, flexShrink: 0 }}>
+            #{idx + 1}
+          </span>
+          <span style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'linear-gradient(135deg, #f8dfe5, #eec5d1)', color: '#8d425c', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 800, flexShrink: 0 }}>
+            {client.initial}
+          </span>
+          <span style={{ flex: 1, minWidth: 0 }}>
+            <strong style={{ display: 'block', color: 'var(--text-primary)', fontSize: '0.82rem', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{client.name}</strong>
+            <span style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.62rem' }}>{client.purchases} {client.purchases === 1 ? 'pago' : 'pagos'} este mes</span>
+          </span>
+          <span style={{ textAlign: 'right', flexShrink: 0 }}>
+            <strong style={{ display: 'block', color: '#a0506a', fontSize: '0.82rem' }}>${client.spent.toFixed(2)}</strong>
+            <span style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.58rem' }}>gastado</span>
+          </span>
+        </button>
+      ))}
+    </div>
+  </section>
+);
 
 const DashboardModule = ({
   isMobile, isTablet, onOpenSale, stats, chartData,
@@ -152,20 +240,33 @@ const DashboardModule = ({
     return list.slice(0, 4);
   }, [dbData]);
 
-  // Ranking real de especialistas por ingresos, a partir de las citas completadas
+  // Ingresos realmente producidos por cada especialista durante el mes actual.
   const topSpecialists = useMemo(() => {
-    const apps = dbData?.appointments || [];
-    const byStaff = {};
-    apps.forEach(apt => {
-      const s = apt.staff;
-      if (!s?.id) return;
-      if (!byStaff[s.id]) byStaff[s.id] = { name: getStaffDisplayName(s), role: (s.role || '').split('|')[0] || 'Especialista', earnings: 0, citas: 0 };
-      byStaff[s.id].earnings += apt.services?.price || 0;
-      byStaff[s.id].citas += 1;
+    return buildMonthlyStaffRanking(dbData?.appointments || []).map(entry => {
+      const name = getStaffDisplayName(entry.staff) || 'Especialista';
+      return {
+        ...entry,
+        name,
+        role: (entry.staff?.role || '').split('|')[0] || 'Especialista',
+        citas: entry.services,
+        initial: name.charAt(0).toUpperCase() || '?'
+      };
     });
-    return Object.values(byStaff)
-      .sort((a, b) => b.earnings - a.earnings)
-      .map(s => ({ ...s, initial: s.name?.charAt(0)?.toUpperCase() || '?' }));
+  }, [dbData]);
+
+  // Clientas que más dinero pagaron durante el mes actual.
+  const topClients = useMemo(() => {
+    return buildMonthlyClientRanking(
+      dbData?.transactions || [],
+      dbData?.clients || []
+    ).map(entry => {
+      const name = entry.client?.name || 'Clienta';
+      return {
+        ...entry,
+        name,
+        initial: name.charAt(0).toUpperCase() || '?'
+      };
+    });
   }, [dbData]);
 
   // Dynamic calculations for premium operational widgets
@@ -1064,7 +1165,7 @@ const DashboardModule = ({
               color: 'var(--text-primary)',
               margin: 0
             }}>
-              Top Especialistas
+              Top estilistas del mes
             </h3>
             <div 
               onClick={() => onNavigate('personnel')}
@@ -1117,19 +1218,21 @@ const DashboardModule = ({
                   {/* Name + role */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.82rem', lineHeight: 1.3 }}>{spec.name}</div>
-                    <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>{spec.role}</div>
+                    <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>{spec.citas} {spec.citas === 1 ? 'servicio' : 'servicios'}</div>
                   </div>
 
                   {/* Earnings */}
                   <div style={{ textAlign: 'right', flexShrink: 0 }}>
                     <div style={{ fontWeight: 800, color: '#a0506a', fontSize: '0.82rem' }}>${formatBs(spec.earnings)}</div>
-                    <div style={{ fontSize: '0.58rem', color: 'var(--text-muted)' }}>ingresos</div>
+                    <div style={{ fontSize: '0.58rem', color: 'var(--text-muted)' }}>generado</div>
                   </div>
                 </div>
               );
             })}
           </div>
         </div>
+
+        <MonthlyClientRanking clients={topClients} onNavigate={onNavigate} compact />
 
         {/* Servicios Destacados Gallery */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -1722,7 +1825,7 @@ const DashboardModule = ({
         {/* TOP ESPECIALISTAS */}
         <div className="mi-card mi-enter-up mi-delay-7" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '22px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', gap: '0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-            <h3 className="mi-section-header" style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>Top especialistas</h3>
+            <h3 className="mi-section-header" style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>Top estilistas del mes</h3>
             <span onClick={() => onNavigate('personnel')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
               Ver todo <ChevronRight size={13} />
             </span>
@@ -1763,13 +1866,13 @@ const DashboardModule = ({
                   {/* Name + role */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.82rem', lineHeight: 1.3 }}>{spec.name}</div>
-                    <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>{spec.role}</div>
+                    <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>{spec.citas} {spec.citas === 1 ? 'servicio' : 'servicios'}</div>
                   </div>
 
                   {/* Earnings */}
                   <div style={{ textAlign: 'right', flexShrink: 0 }}>
                     <div style={{ fontWeight: 800, color: '#a0506a', fontSize: '0.82rem' }}>${formatBs(spec.earnings)}</div>
-                    <div style={{ fontSize: '0.58rem', color: 'var(--text-muted)' }}>ingresos</div>
+                    <div style={{ fontSize: '0.58rem', color: 'var(--text-muted)' }}>generado</div>
                   </div>
                 </div>
               );
@@ -1777,48 +1880,7 @@ const DashboardModule = ({
           </div>
         </div>
 
-        {/* REPORTES */}
-        <div className="mi-card mi-enter-up mi-delay-8" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(253,243,244,0.85) 100%)', backdropFilter: 'blur(16px)', borderRadius: '22px', border: '1px solid rgba(201, 114, 130, 0.12)', padding: '22px', boxShadow: '0 4px 16px rgba(201, 114, 130, 0.06), inset 0 1px 1px rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', gap: '6px', justifyContent: 'center' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h4 className="mi-section-header" style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>Reportes</h4>
-            <span onClick={() => onNavigate('reports')} style={{ fontSize: '0.75rem', color: '#c97282', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              Ver todo <ChevronRight size={13} />
-            </span>
-          </div>
-          <span style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--text-primary)' }}>$12.840</span>
-          <span style={{ fontSize: '0.68rem', color: '#22c55e', fontWeight: '600' }}>
-            ↑ 18% <span style={{ color: 'var(--text-muted)', fontWeight: '400' }}>vs mes anterior</span>
-          </span>
-          <div style={{ height: '90px', width: '100%', position: 'relative', marginTop: '4px' }}>
-            <Line
-              data={{
-                labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
-                datasets: [{
-                  data: [800, 1200, 950, 1400, 1100, 1600, 1800],
-                  borderColor: '#a0506a',
-                  borderWidth: 2,
-                  pointBackgroundColor: '#a0506a',
-                  pointBorderColor: '#ffffff',
-                  pointBorderWidth: 2,
-                  pointRadius: 3,
-                  pointHoverRadius: 5,
-                  fill: true,
-                  backgroundColor: 'rgba(160, 80, 106, 0.06)',
-                  tension: 0.4
-                }]
-              }}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false }, tooltip: { enabled: false } },
-                scales: {
-                  x: { grid: { display: false }, ticks: { color: '#a0506a', font: { size: 8, weight: '600' } }, border: { display: false } },
-                  y: { display: false, min: 0 }
-                }
-              }}
-            />
-          </div>
-        </div>
+        <MonthlyClientRanking clients={topClients} onNavigate={onNavigate} />
 
       </div>
 
