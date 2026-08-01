@@ -752,6 +752,7 @@ const ReceptionModule = ({ isMobile, onNavigate }) => {
             onStart={(appointmentId) => updateLiveAppointment(appointmentId, 'En Tratamiento')}
             onFinish={(appointmentId) => updateLiveAppointment(appointmentId, 'Por Pagar')}
             onCheckout={(appointmentId) => onNavigate?.('checkout', { appointmentId })}
+            onOpenOrder={(appointmentId) => onNavigate?.('checkout', { appointmentId })}
           />
 
           {/* Resumen Rápido */}

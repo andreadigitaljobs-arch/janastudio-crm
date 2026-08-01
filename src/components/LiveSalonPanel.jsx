@@ -89,6 +89,7 @@ export default function LiveSalonPanel({
   onStart,
   onFinish,
   onCheckout,
+  onOpenOrder,
 }) {
   const [now, setNow] = useState(Date.now());
   const [showAll, setShowAll] = useState(false);
@@ -121,6 +122,11 @@ export default function LiveSalonPanel({
     if (status === 'en silla') onStart?.(appointment.id);
     if (status === 'en tratamiento') onFinish?.(appointment.id);
     if (status === 'por pagar') onCheckout?.(appointment.id);
+  };
+
+  const handleOpenOrder = (appointment) => {
+    if (String(appointment.id || '').startsWith('mock-')) return;
+    onOpenOrder?.(appointment.id);
   };
 
   return (
@@ -203,7 +209,25 @@ export default function LiveSalonPanel({
                 ? appointment.completed_at || appointment.started_at || appointment.created_at
                 : appointment.created_at || appointment.scheduled_at;
             return (
-              <article key={appointment.id} style={{ padding: '13px', borderRadius: '16px', background: '#fff', border: `1px solid ${SALON_TOKENS.border}`, boxShadow: '0 6px 18px rgba(100,54,68,0.05)' }}>
+              <article
+                key={appointment.id}
+                role={onOpenOrder ? 'button' : undefined}
+                tabIndex={onOpenOrder ? 0 : undefined}
+                aria-label={onOpenOrder ? `Abrir la cuenta de ${appointment.clients?.name || 'la clienta'} en Caja` : undefined}
+                onClick={() => handleOpenOrder(appointment)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    handleOpenOrder(appointment);
+                  }
+                }}
+                style={{
+                  padding: '13px', borderRadius: '16px', background: '#fff',
+                  border: `1px solid ${SALON_TOKENS.border}`,
+                  boxShadow: '0 6px 18px rgba(100,54,68,0.05)',
+                  cursor: onOpenOrder ? 'pointer' : 'default',
+                }}
+              >
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
                   <div aria-label={`Estación ${index + 1}`} style={{ width: '42px', height: '42px', flexShrink: 0, borderRadius: '14px', display: 'grid', placeItems: 'center', color: meta.color, background: meta.background, border: `1px solid ${meta.color}22` }}>
                     <Scissors size={17} />
@@ -225,7 +249,10 @@ export default function LiveSalonPanel({
                 </div>
                 <button
                   type="button"
-                  onClick={() => handleAction(appointment)}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleAction(appointment);
+                  }}
                   disabled={loading}
                   style={{
                     width: '100%', minHeight: '40px', marginTop: '11px', borderRadius: '11px',

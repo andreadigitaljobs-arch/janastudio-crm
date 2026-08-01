@@ -1144,12 +1144,6 @@ const CheckoutPOS = ({ isMobile, rates, initialAppointmentId, embedded = false, 
           scheduled_at: isExpressService ? null : selectedApp.scheduled_at,
           duration_minutes: selectedServiceForStylist.duration_minutes
         });
-        if (selectedApp.status !== 'Por Pagar') {
-          await dataService.updateAppointment(selectedApp.id, {
-            status: 'Por Pagar',
-            completed_at: checkoutTimestamp
-          });
-        }
       } else {
         newApp = await dataService.createAppointment(buildDirectSaleServiceAppointment({
           clientId,
