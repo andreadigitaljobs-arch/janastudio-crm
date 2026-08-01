@@ -40,7 +40,7 @@ import { notificationService } from './services/notificationService';
 import { useDialog } from './context/DialogContext';
 import { useScrollLock } from './hooks/useScrollLock';
 import { useModal } from './context/ModalContext';
-import { canAccessModule, getRoleKind } from './utils/roles';
+import { canAccessModule, getRoleKind, getRoleName } from './utils/roles';
 
 const DashboardModule = lazy(() => import('./components/DashboardModule'));
 const ClientModule = lazy(() => import('./components/ClientModule'));
@@ -783,15 +783,17 @@ function App() {
           {/* Inicio */}
           <button
             onClick={() => {
-              handleTabChange('dashboard', {});
+              handleTabChange(getRoleKind(user?.role) === 'worker' ? 'stylist-panel' : 'dashboard', {});
               setIsMoreOpen(false);
             }}
-            className={`mobile-nav-btn ${activeTab === 'dashboard' && !isMoreOpen ? 'active' : ''}`}
+            className={`mobile-nav-btn ${activeTab === (getRoleKind(user?.role) === 'worker' ? 'stylist-panel' : 'dashboard') && !isMoreOpen ? 'active' : ''}`}
           >
             <div className="mobile-nav-icon-container">
-              <Home size={20} style={{ color: activeTab === 'dashboard' && !isMoreOpen ? 'var(--magenta-primary)' : 'var(--text-muted)' }} />
+              {getRoleKind(user?.role) === 'worker'
+                ? <Sparkles size={20} style={{ color: activeTab === 'stylist-panel' && !isMoreOpen ? 'var(--magenta-primary)' : 'var(--text-muted)' }} />
+                : <Home size={20} style={{ color: activeTab === 'dashboard' && !isMoreOpen ? 'var(--magenta-primary)' : 'var(--text-muted)' }} />}
             </div>
-            <span>Inicio</span>
+            <span>{getRoleKind(user?.role) === 'worker' ? 'Mi panel' : 'Inicio'}</span>
           </button>
 
           {/* Agenda */}
@@ -809,6 +811,20 @@ function App() {
           </button>
 
           {/* Floating Central Plus (+) Button — main CTA to book an appointment */}
+          {getRoleKind(user?.role) === 'worker' ? (
+            <button
+              onClick={() => {
+                handleTabChange('my-profile', {});
+                setIsMoreOpen(false);
+              }}
+              className={`mobile-nav-btn ${activeTab === 'my-profile' && !isMoreOpen ? 'active' : ''}`}
+            >
+              <div className="mobile-nav-icon-container">
+                <UserCircle size={20} style={{ color: activeTab === 'my-profile' && !isMoreOpen ? 'var(--magenta-primary)' : 'var(--text-muted)' }} />
+              </div>
+              <span>Mi perfil</span>
+            </button>
+          ) : (
           <div style={{
             position: 'relative',
             width: '72px',
@@ -839,23 +855,26 @@ function App() {
               <Plus size={28} strokeWidth={2.5} />
             </button>
           </div>
+          )}
 
           {/* Clientes */}
           <button
             onClick={() => {
-              handleTabChange('clients', {});
+              handleTabChange(getRoleKind(user?.role) === 'worker' ? 'history' : 'clients', {});
               setIsMoreOpen(false);
             }}
-            className={`mobile-nav-btn ${activeTab === 'clients' && !isMoreOpen ? 'active' : ''}`}
+            className={`mobile-nav-btn ${activeTab === (getRoleKind(user?.role) === 'worker' ? 'history' : 'clients') && !isMoreOpen ? 'active' : ''}`}
           >
             <div className="mobile-nav-icon-container">
-              <Users size={20} style={{ color: activeTab === 'clients' && !isMoreOpen ? 'var(--magenta-primary)' : 'var(--text-muted)' }} />
+              {getRoleKind(user?.role) === 'worker'
+                ? <Receipt size={20} style={{ color: activeTab === 'history' && !isMoreOpen ? 'var(--magenta-primary)' : 'var(--text-muted)' }} />
+                : <Users size={20} style={{ color: activeTab === 'clients' && !isMoreOpen ? 'var(--magenta-primary)' : 'var(--text-muted)' }} />}
             </div>
-            <span>Clientes</span>
+            <span>{getRoleKind(user?.role) === 'worker' ? 'Historial' : 'Clientes'}</span>
           </button>
 
           {/* Más */}
-          <button
+          {getRoleKind(user?.role) !== 'worker' && <button
             onClick={() => setIsMoreOpen(prev => !prev)}
             className={`mobile-nav-btn ${isMoreOpen || (activeTab !== 'dashboard' && activeTab !== 'scheduling' && activeTab !== 'clients') ? 'active' : ''}`}
           >
@@ -863,12 +882,12 @@ function App() {
               <MoreHorizontal size={20} style={{ color: isMoreOpen || (activeTab !== 'dashboard' && activeTab !== 'scheduling' && activeTab !== 'clients') ? 'var(--magenta-primary)' : 'var(--text-muted)' }} />
             </div>
             <span>Más</span>
-          </button>
+          </button>}
         </div>
       )}
 
       {/* Mobile More Bottom Drawer */}
-      {isMobile && isMoreOpen && (
+      {isMobile && getRoleKind(user?.role) !== 'worker' && isMoreOpen && (
         <div
           onClick={() => setIsMoreOpen(false)}
           style={{
@@ -880,7 +899,7 @@ function App() {
         />
       )}
 
-      {isMobile && (
+      {isMobile && getRoleKind(user?.role) !== 'worker' && (
         <div className="mobile-more-drawer" style={{
           position: 'fixed', left: 0, right: 0, bottom: 0,
           background: 'linear-gradient(180deg, #fffbfa 0%, #fff2f4 55%, #fce8ea 100%)',
@@ -916,7 +935,7 @@ function App() {
             )}
             <div style={{ flex: 1, minWidth: 0 }}>
               <div className="mobile-more-profile-name">{user?.name || 'Jana'}</div>
-              <div className="mobile-more-profile-role">{user?.role || 'Admin'}</div>
+              <div className="mobile-more-profile-role">{getRoleName(user?.role) || 'Admin'}</div>
             </div>
           </div>
 

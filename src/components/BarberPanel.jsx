@@ -1561,13 +1561,13 @@ const BarberPanel = ({ isMobile, rates }) => {
           </div>
 
           {!isStylist && (
-            <div className="glass-card animate-scale-in" style={{ padding: isMobile ? '20px 16px' : '28px 20px', borderRadius: '24px', textAlign: 'center', border: '1px solid rgba(50, 215, 75, 0.2)', background: 'linear-gradient(135deg, rgba(28,28,30,0.95), rgba(50,215,75,0.02))' }}>
-              <Award size={24} color="#32d74b" style={{ margin: '0 auto 12px' }} />
+            <div className="glass-card animate-scale-in" style={{ padding: isMobile ? '20px 16px' : '28px 20px', borderRadius: '24px', textAlign: 'center', border: '1px solid rgba(196, 139, 159, 0.24)', background: 'rgba(255, 255, 255, 0.9)', boxShadow: '0 12px 30px rgba(160, 80, 106, 0.08)' }}>
+              <Award size={24} color="var(--pink-primary)" style={{ margin: '0 auto 12px' }} />
               <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
                 Ganancia Hoy
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '8px' }}>
-                <div style={{ fontSize: '24px', fontWeight: '900', color: '#32d74b', textShadow: '0 0 15px rgba(50,215,75,0.4)' }}>
+                <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--pink-primary)' }}>
                   ${stats.earnings.toFixed(2)} USD
                 </div>
                 <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '800', marginTop: '4px' }}>
@@ -1586,16 +1586,16 @@ const BarberPanel = ({ isMobile, rates }) => {
             <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
               {isStylist ? "Tratamientos" : "Servicios"}
             </div>
-            <div style={{ fontSize: '26px', fontWeight: '900', marginTop: '8px', color: 'white' }}>{stats.services}</div>
+            <div style={{ fontSize: '26px', fontWeight: '900', marginTop: '8px', color: 'var(--pink-primary)' }}>{stats.services}</div>
           </div>
 
-          <div className="glass-card animate-scale-in" style={{ padding: isMobile ? '20px 16px' : '28px 20px', borderRadius: '24px', textAlign: 'center', border: '1px solid rgba(255, 159, 10, 0.2)', background: 'linear-gradient(135deg, rgba(28,28,30,0.95), rgba(255, 159, 10, 0.02))' }}>
-            <Coins size={24} color="#ff9f0a" style={{ margin: '0 auto 12px', filter: 'drop-shadow(0 0 5px rgba(255, 159, 10, 0.4))' }} />
+          <div className="glass-card animate-scale-in" style={{ padding: isMobile ? '20px 16px' : '28px 20px', borderRadius: '24px', textAlign: 'center', border: '1px solid rgba(196, 139, 159, 0.24)', background: 'rgba(255, 255, 255, 0.9)', boxShadow: '0 12px 30px rgba(160, 80, 106, 0.08)' }}>
+            <Coins size={24} color="var(--pink-primary)" style={{ margin: '0 auto 12px' }} />
             <div style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
               Propinas Hoy
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '8px' }}>
-              <div style={{ fontSize: '24px', fontWeight: '900', color: '#ff9f0a', textShadow: '0 0 15px rgba(255, 159, 10, 0.4)' }}>
+              <div style={{ fontSize: '24px', fontWeight: '900', color: 'var(--pink-primary)' }}>
                 ${stats.tips.toFixed(2)} USD
               </div>
               <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '800', marginTop: '4px' }}>
