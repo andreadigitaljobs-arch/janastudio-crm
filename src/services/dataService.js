@@ -11,14 +11,7 @@ const _cache = {};
 const STAFF_LIST_SELECT = 'id, auth_user_id, email, name, display_name, role, commission_pct, active, created_at, phone, address, specialties, birth_date, id_card, custom_modules';
 const STAFF_DETAIL_SELECT = `${STAFF_LIST_SELECT}, image_url`;
 
-async function _invokeAdminStaff(action, payload = {}) {
-  const { data, error } = await supabase.functions.invoke('admin-staff', {
-    body: { action, ...payload }
-  });
-  if (error) throw new Error(error.message || 'Admin operation failed');
-  if (data?.error) throw new Error(data.error);
-  return data?.data;
-}
+// _invokeAdminStaff removed — replaced by PostgreSQL RPCs
 
 function _cacheGet(key) {
   const entry = _cache[key];
@@ -307,8 +300,17 @@ export const dataService = {
     if (!member.email) throw new Error('El email es obligatorio para crear acceso.');
     if (!member.username) throw new Error('La contraseña es obligatoria para crear acceso.');
     _cacheInvalidate('staff', 'staff_with_images');
-    const { username: password, ...safeMember } = member;
-    return _invokeAdminStaff('create', { member: safeMember, email: member.email, password });
+    const { data, error } = await supabase.rpc('create_staff_with_auth', {
+      p_email: member.email,
+      p_password: member.username,
+      p_name: member.name || '',
+      p_role: member.role || 'Estilista',
+      p_phone: member.phone || null,
+      p_active: member.active !== false,
+      p_commission_pct: member.commission_pct || 0.30
+    });
+    if (error) throw error;
+    return data;
   },
 
   async updateStaff(id, updates) {
@@ -326,11 +328,23 @@ export const dataService = {
 
   async updateStaffAuthCredentials(authUserId, { email, password } = {}) {
     if (!authUserId || (!email && !password)) return;
-    return _invokeAdminStaff('credentials', { authUserId, email, password });
+    const { data, error } = await supabase.rpc('update_staff_auth_credentials', {
+      p_auth_user_id: authUserId,
+      p_email: email || null,
+      p_password: password || null
+    });
+    if (error) throw error;
+    return data;
   },
 
   async linkAuthToStaff(staffId, email, password) {
-    return _invokeAdminStaff('link', { staffId, email, password });
+    const { data, error } = await supabase.rpc('link_auth_to_staff', {
+      p_staff_id: staffId,
+      p_email: email,
+      p_password: password
+    });
+    if (error) throw error;
+    return data;
   },
 
   async deleteStaff(id) {
