@@ -55,19 +55,26 @@ const availableModules = [
   { id: 'checkout', label: 'Caja (Pro)' },
   { id: 'barber', label: 'Panel Estilismo' },
   { id: 'clients', label: 'Clientes' },
+  { id: 'diagnosis', label: 'Diagnóstico Capilar' },
+  { id: 'laser', label: 'Centro Láser' },
   { id: 'personnel', label: 'Personal' },
   { id: 'services', label: 'Servicios' },
   { id: 'inventory', label: 'Inventario' },
   { id: 'finance', label: 'Caja Chica' },
   { id: 'history', label: 'Historial' },
+  { id: 'reports', label: 'Reportes' },
+  { id: 'promotions', label: 'Promociones' },
+  { id: 'settings', label: 'Configuración' },
+  { id: 'notifications', label: 'Notificaciones' },
 ];
 
 const rolePresets = {
   'Admin': availableModules.map(m => m.id),
-  'Estilista': ['scheduling', 'barber', 'clients', 'history'],
-  'Recepcionista': ['reception', 'scheduling', 'clients', 'history'],
+  'Estilista': ['scheduling', 'barber', 'clients', 'diagnosis', 'history'],
+  'Recepcionista': ['reception', 'scheduling', 'clients', 'diagnosis', 'history'],
   'Caja': ['checkout', 'finance', 'inventory', 'clients', 'history'],
-    'Asistente de Tratamiento': ['history']
+  'Asistente de Tratamiento': ['history'],
+  'Láser': ['scheduling', 'laser', 'clients', 'history'],
 };
 
 const PersonnelModule = ({ isMobile, inventory = [] }) => {
