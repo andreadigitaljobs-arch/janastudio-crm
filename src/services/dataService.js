@@ -314,7 +314,14 @@ export const dataService = {
   async updateStaff(id, updates) {
     _cacheInvalidate('staff', 'staff_with_images');
     const { username: _password, ...safeUpdates } = updates;
-    return _invokeAdminStaff('update', { staffId: id, updates: safeUpdates });
+    const { data, error } = await supabase
+      .from('staff')
+      .update(safeUpdates)
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
   },
 
   async updateStaffAuthCredentials(authUserId, { email, password } = {}) {
