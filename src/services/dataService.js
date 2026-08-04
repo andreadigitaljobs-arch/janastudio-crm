@@ -8,7 +8,7 @@ import { getBusinessDayRange } from '../utils/dateTime.js';
 
 // ─── Smart In-Memory Cache ────────────────────────────────────────────────────
 const _cache = {};
-const STAFF_LIST_SELECT = 'id, auth_user_id, email, name, display_name, role, commission_pct, active, created_at, phone, address, specialties, birth_date, id_card';
+const STAFF_LIST_SELECT = 'id, auth_user_id, email, name, display_name, role, commission_pct, active, created_at, phone, address, specialties, birth_date, id_card, custom_modules';
 const STAFF_DETAIL_SELECT = `${STAFF_LIST_SELECT}, image_url`;
 
 async function _invokeAdminStaff(action, payload = {}) {

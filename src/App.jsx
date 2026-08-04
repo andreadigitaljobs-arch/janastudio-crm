@@ -163,11 +163,11 @@ function App() {
   ], []);
 
   const allowedMenuItems = useMemo(() => {
-    return allMenuItems.filter(item => canAccessModule(user?.role, item.id));
-  }, [user?.role, allMenuItems]);
+    return allMenuItems.filter(item => canAccessModule(user?.role, item.id, user?.custom_modules));
+  }, [user?.role, user?.custom_modules, allMenuItems]);
 
   useEffect(() => {
-    if (!user || canAccessModule(user.role, activeTab)) return;
+    if (!user || canAccessModule(user.role, activeTab, user.custom_modules)) return;
     const roleHome = getRoleKind(user.role) === 'worker' ? 'stylist-panel' : 'dashboard';
     setActiveTab(roleHome);
     localStorage.setItem('jana_active_tab', roleHome);
@@ -493,7 +493,7 @@ function App() {
   }, [isMobile]);
 
   const handleTabChange = useCallback((tabId, params = {}) => {
-    if (!canAccessModule(user?.role, tabId)) return;
+    if (!canAccessModule(user?.role, tabId, user?.custom_modules)) return;
 
     if (tabId === 'checkout') {
       handleOpenCheckout(params);
@@ -532,7 +532,7 @@ function App() {
   const renderContent = () => {
     const roleKind = getRoleKind(user?.role);
     const roleHome = roleKind === 'worker' ? 'stylist-panel' : 'dashboard';
-    const authorizedTab = canAccessModule(user?.role, activeTab) ? activeTab : roleHome;
+    const authorizedTab = canAccessModule(user?.role, activeTab, user?.custom_modules) ? activeTab : roleHome;
     const currentStaffMember = dbData.staff.find(member => String(member.id) === String(user?.id)) || user;
     switch (authorizedTab) {
       case 'dashboard':
@@ -722,7 +722,7 @@ function App() {
         </Suspense>
       )}
 
-      {isMobile && canAccessModule(user?.role, 'checkout') && !isSaleModalOpen && (
+      {isMobile && canAccessModule(user?.role, 'checkout', user?.custom_modules) && !isSaleModalOpen && (
         <button
           type="button"
           className="checkout-mobile-launcher"

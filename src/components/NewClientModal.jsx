@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, User, Phone, CreditCard, Loader2, Calendar } from 'lucide-react';
 import { dataService } from '../services/dataService';
@@ -20,6 +20,12 @@ const NewClientModal = ({ isOpen, onClose, onSuccess, onClientCreated }) => {
   });
 
   useScrollLock(isOpen);
+
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({ name: '', phone: '', id_card: '', birth_date: '' });
+    }
+  }, [isOpen]);
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();

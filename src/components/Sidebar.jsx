@@ -35,7 +35,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, rates, isCollapsed, setIsC
   ];
 
   const menuItems = allMenuItems
-    .filter(item => canAccessModule(user?.role, item.id || item.id))
+    .filter(item => canAccessModule(user?.role, item.id || item.id, user?.custom_modules))
     .filter((item, index, self) => self.findIndex(i => i.label === item.label) === index);
 
   const sidebarRef = useRef(null);

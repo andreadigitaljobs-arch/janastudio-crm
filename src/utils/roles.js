@@ -45,7 +45,9 @@ const MODULE_ROLES = {
   notifications: ['admin', 'reception', 'cashier', 'worker'],
 };
 
-export const canAccessModule = (role, moduleId) => {
+export const canAccessModule = (role, moduleId, customModules = null) => {
   const kind = getRoleKind(role);
-  return (MODULE_ROLES[moduleId] || []).includes(kind);
+  if ((MODULE_ROLES[moduleId] || []).includes(kind)) return true;
+  if (customModules?.modules?.includes(moduleId)) return true;
+  return false;
 };
