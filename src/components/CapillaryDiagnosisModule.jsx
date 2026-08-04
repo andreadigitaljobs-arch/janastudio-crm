@@ -303,9 +303,7 @@ const CapillaryDiagnosisModule = ({ isMobile, clients = [], onNavigate, prefillC
 
             {/* SALUD */}
             <div style={{ marginBottom: '16px' }}>
-              <div style={{ ...sectionLabel, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)', fontSize: '10px', letterSpacing: '1px' }}>Salud</span>
-              </div>
+              <div style={{ ...sectionLabel, marginBottom: '10px' }}>Salud</div>
               <div style={checkboxGrid}>
                 <Checkbox checked={diagnosis.salud.embarazos_partos} onChange={() => toggleSalud('embarazos_partos')} label="Embarazos / partos" />
                 <Checkbox checked={diagnosis.salud.caida} onChange={() => toggleSalud('caida')} label="Caída" />
@@ -326,9 +324,7 @@ const CapillaryDiagnosisModule = ({ isMobile, clients = [], onNavigate, prefillC
 
             {/* CUERO CABELLUDO */}
             <div style={{ marginBottom: '16px' }}>
-              <div style={{ ...sectionLabel, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)', fontSize: '10px', letterSpacing: '1px' }}>Cuero cabelludo</span>
-              </div>
+              <div style={{ ...sectionLabel, marginBottom: '10px' }}>Cuero cabelludo</div>
               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'auto auto auto 1fr', gap: '16px', alignItems: 'start' }}>
                 {/* Type */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -369,9 +365,7 @@ const CapillaryDiagnosisModule = ({ isMobile, clients = [], onNavigate, prefillC
 
             {/* TRATAMIENTOS */}
             <div style={{ marginBottom: '16px' }}>
-              <div style={{ ...sectionLabel, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)', fontSize: '10px', letterSpacing: '1px' }}>Tratamientos</span>
-              </div>
+              <div style={{ ...sectionLabel, marginBottom: '10px' }}>Tratamientos</div>
               <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '16px' }}>
                 {/* Tinturado */}
                 <div style={{ border: '1px solid var(--border-color)', borderRadius: '14px', padding: '16px' }}>
