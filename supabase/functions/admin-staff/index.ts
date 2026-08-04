@@ -9,21 +9,29 @@ const json = (body: unknown, status = 200) =>
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   })
 
-function base64UrlDecode(str: string): string {
-  let base64 = str.replace(/-/g, '+').replace(/_/g, '/')
-  while (base64.length % 4) base64 += '='
-  const bytes = Uint8Array.from(base64, (c) => c.charCodeAt(0))
-  return new TextDecoder().decode(bytes)
-}
-
-async function pgQuery(method: string, path: string, body?: unknown) {
-  const dbUrl = Deno.env.get('SUPABASE_DB_URL')!
-  const res = await fetch(`${dbUrl}/${path}`, {
-    method,
-    headers: { 'Content-Type': 'application/json', 'apikey': Deno.env.get('SUPABASE_ANON_KEY')!, 'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}` },
-    body: body ? JSON.stringify(body) : undefined,
-  })
-  return res.json()
+async function verifyJwt(token: string, secret: string): Promise<{ sub?: string } | null> {
+  try {
+    const parts = token.split('.')
+    if (parts.length !== 3) return null
+    const hexToBytes = (hex: string) => Uint8Array.from(hex.match(/.{1,2}/g)!.map(b => parseInt(b, 16)))
+    const key = await crypto.subtle.importKey(
+      'raw',
+      hexToBytes(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['verify']
+    )
+    const valid = await crypto.subtle.verify(
+      'HMAC',
+      key,
+      Uint8Array.from(atob(parts[2].replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0)),
+      new TextEncoder().encode(`${parts[0]}.${parts[1]}`)
+    )
+    if (!valid) return null
+    return JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
+  } catch {
+    return null
+  }
 }
 
 Deno.serve(async (request) => {
@@ -31,54 +39,43 @@ Deno.serve(async (request) => {
   if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405)
 
   try {
-    const authorization = request.headers.get('Authorization') || ''
-    const token = authorization.replace('Bearer ', '')
-    if (!token) return json({ error: 'Unauthorized' }, 401)
-
-    let userId = ''
-    try {
-      const payload = JSON.parse(base64UrlDecode(token.split('.')[1]))
-      userId = payload.sub || ''
-    } catch (_) {
-      return json({ error: 'Invalid token' }, 401)
-    }
-    if (!userId) return json({ error: 'Invalid token' }, 401)
-
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const jwtSecret = Deno.env.get('JWT_SECRET')!
     const headers = { 'Content-Type': 'application/json', 'apikey': serviceKey, 'Authorization': `Bearer ${serviceKey}` }
 
-    const callerRes = await fetch(`${supabaseUrl}/rest/v1/staff?auth_user_id=eq.${userId}&select=id,role,active`, { headers })
+    const authorization = request.headers.get('Authorization') || ''
+    const token = authorization.replace('Bearer ', '')
+    if (!token) return json({ error: 'No token provided' }, 401)
+
+    const payload = await verifyJwt(token, jwtSecret)
+    if (!payload?.sub) return json({ error: 'Invalid token' }, 401)
+
+    const callerRes = await fetch(`${supabaseUrl}/rest/v1/staff?auth_user_id=eq.${payload.sub}&select=id,role,active`, { headers })
     const callers = await callerRes.json()
     const caller = callers?.[0]
-
     if (!caller || caller.active === false || String(caller.role || '').split('|')[0].trim().toLowerCase() !== 'admin') {
       return json({ error: 'Admin access required' }, 403)
     }
 
     const body = await request.json()
     const action = String(body.action || '')
-    const sel = 'id,auth_user_id,email,name,role,commission_pct,active,created_at,image_url,phone,address,birth_date,id_card,display_name,custom_modules'
 
     if (action === 'create') {
       const member = { ...(body.member || {}) }
       const email = String(body.email || member.email || '').trim().toLowerCase()
       const password = String(body.password || '')
       if (!email || password.length < 6) return json({ error: 'Email and password (6+ characters) are required' }, 400)
-
       const authRes = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'apikey': serviceKey, 'Authorization': `Bearer ${serviceKey}` },
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'apikey': serviceKey, 'Authorization': `Bearer ${serviceKey}` },
         body: JSON.stringify({ email, password, email_confirm: true }),
       })
       const authData = await authRes.json()
       if (authData.code) return json({ error: authData.msg || authData.message || 'Auth error' }, 400)
-
       delete member.password
       delete member.username
       const insertRes = await fetch(`${supabaseUrl}/rest/v1/staff`, {
-        method: 'POST',
-        headers: { ...headers, 'Prefer': 'return=representation' },
+        method: 'POST', headers: { ...headers, 'Prefer': 'return=representation' },
         body: JSON.stringify({ ...member, email, auth_user_id: authData.id }),
       })
       const insertData = await insertRes.json()
@@ -86,8 +83,7 @@ Deno.serve(async (request) => {
         await fetch(`${supabaseUrl}/auth/v1/admin/users/${authData.id}`, { method: 'DELETE', headers })
         return json({ error: insertData.message || 'Insert failed' }, 400)
       }
-      const row = Array.isArray(insertData) ? insertData[0] : insertData
-      return json({ data: row })
+      return json({ data: Array.isArray(insertData) ? insertData[0] : insertData })
     }
 
     if (action === 'update') {
@@ -97,14 +93,12 @@ Deno.serve(async (request) => {
       delete updates.auth_user_id
       const staffId = String(body.staffId || '')
       const updateRes = await fetch(`${supabaseUrl}/rest/v1/staff?id=eq.${staffId}`, {
-        method: 'PATCH',
-        headers: { ...headers, 'Prefer': 'return=representation' },
+        method: 'PATCH', headers: { ...headers, 'Prefer': 'return=representation' },
         body: JSON.stringify(updates),
       })
       const updateData = await updateRes.json()
       if (updateRes.status >= 400) return json({ error: updateData.message || 'Update failed' }, 400)
-      const row = Array.isArray(updateData) ? updateData[0] : updateData
-      return json({ data: row })
+      return json({ data: Array.isArray(updateData) ? updateData[0] : updateData })
     }
 
     if (action === 'credentials') {
@@ -113,19 +107,15 @@ Deno.serve(async (request) => {
       if (body.email) { updates.email = String(body.email).trim().toLowerCase(); updates.email_confirm = true }
       if (body.password) updates.password = String(body.password)
       if (!authUserId || Object.keys(updates).length === 0) return json({ data: null })
-
       const credRes = await fetch(`${supabaseUrl}/auth/v1/admin/users/${authUserId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'apikey': serviceKey, 'Authorization': `Bearer ${serviceKey}` },
+        method: 'PUT', headers: { 'Content-Type': 'application/json', 'apikey': serviceKey, 'Authorization': `Bearer ${serviceKey}` },
         body: JSON.stringify(updates),
       })
       const credData = await credRes.json()
       if (credData.code) return json({ error: credData.msg || 'Auth update failed' }, 400)
       if (updates.email) {
         await fetch(`${supabaseUrl}/rest/v1/staff?auth_user_id=eq.${authUserId}`, {
-          method: 'PATCH',
-          headers,
-          body: JSON.stringify({ email: updates.email }),
+          method: 'PATCH', headers, body: JSON.stringify({ email: updates.email }),
         })
       }
       return json({ data: true })
@@ -136,18 +126,14 @@ Deno.serve(async (request) => {
       const email = String(body.email || '').trim().toLowerCase()
       const password = String(body.password || '')
       if (!staffId || !email || password.length < 6) return json({ error: 'Invalid link request' }, 400)
-
       const authRes = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'apikey': serviceKey, 'Authorization': `Bearer ${serviceKey}` },
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'apikey': serviceKey, 'Authorization': `Bearer ${serviceKey}` },
         body: JSON.stringify({ email, password, email_confirm: true }),
       })
       const authData = await authRes.json()
       if (authData.code) return json({ error: authData.msg || 'Auth error' }, 400)
-
       const linkRes = await fetch(`${supabaseUrl}/rest/v1/staff?id=eq.${staffId}`, {
-        method: 'PATCH',
-        headers: { ...headers, 'Prefer': 'return=representation' },
+        method: 'PATCH', headers: { ...headers, 'Prefer': 'return=representation' },
         body: JSON.stringify({ auth_user_id: authData.id, email }),
       })
       const linkData = await linkRes.json()
@@ -155,8 +141,7 @@ Deno.serve(async (request) => {
         await fetch(`${supabaseUrl}/auth/v1/admin/users/${authData.id}`, { method: 'DELETE', headers })
         return json({ error: linkData.message || 'Link failed' }, 400)
       }
-      const row = Array.isArray(linkData) ? linkData[0] : linkData
-      return json({ data: row })
+      return json({ data: Array.isArray(linkData) ? linkData[0] : linkData })
     }
 
     if (action === 'archive') {
@@ -168,14 +153,11 @@ Deno.serve(async (request) => {
       const role = String(member.role || '')
       const archivedRole = role.startsWith('ARCHIVED|') ? role : `ARCHIVED|${role}`
       await fetch(`${supabaseUrl}/rest/v1/staff?id=eq.${staffId}`, {
-        method: 'PATCH',
-        headers,
-        body: JSON.stringify({ role: archivedRole, active: false }),
+        method: 'PATCH', headers, body: JSON.stringify({ role: archivedRole, active: false }),
       })
       if (member.auth_user_id) {
         await fetch(`${supabaseUrl}/auth/v1/admin/users/${member.auth_user_id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json', 'apikey': serviceKey, 'Authorization': `Bearer ${serviceKey}` },
+          method: 'PUT', headers: { 'Content-Type': 'application/json', 'apikey': serviceKey, 'Authorization': `Bearer ${serviceKey}` },
           body: JSON.stringify({ ban_duration: '876000h' }),
         })
       }
