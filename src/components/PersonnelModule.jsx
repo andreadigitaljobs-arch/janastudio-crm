@@ -362,7 +362,6 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
         commission_pct: Number(formData.commission_pct) || 0,
         id_card: formData.id_card || null,
         display_name: formData.display_name || null,
-        washing_rate: formData.washing_rate || 0,
         birth_date: formData.birth_date || null
       };
 
