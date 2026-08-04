@@ -2003,7 +2003,7 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
         if (saved) return saved;
       }
     } catch {}
-    return 'gallery';
+    return 'history';
   });
 
   useEffect(() => {
@@ -4976,10 +4976,10 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
               marginBottom: '16px'
             }}>
               {[
+                { id: 'history', label: 'Historial de visitas', icon: <Calendar size={17} /> },
                 { id: 'gallery', label: 'Galería de trabajos', icon: <ImageIcon size={17} /> },
                 { id: 'diagnoses', label: 'Diagnóstico capilar', icon: <Activity size={17} /> },
-                { id: 'packages', label: 'Paquetes y sesiones', icon: <Package size={17} /> },
-                { id: 'history', label: 'Historial de visitas', icon: <Calendar size={17} /> }
+                { id: 'packages', label: 'Paquetes y sesiones', icon: <Package size={17} /> }
               ].map(tab => {
                 const isActive = activeSubTab === tab.id;
                 return (
