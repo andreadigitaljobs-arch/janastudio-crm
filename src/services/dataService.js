@@ -1464,9 +1464,10 @@ export const dataService = {
   },
 
   async addCapillaryDiagnosis(diagnosis) {
+    const { client_id, ...rest } = diagnosis;
     const { data, error } = await supabase
       .from('capillary_diagnoses')
-      .insert([diagnosis])
+      .insert([{ client_id, data: rest }])
       .select()
       .single();
     if (error) throw error;

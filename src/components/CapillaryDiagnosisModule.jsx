@@ -1,46 +1,78 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import {
-  Search, User, Activity, Scissors, Droplet, FileText, Check, ChevronRight, Loader2
+  Search, Activity, Scissors, Droplet, FileText, Check, ChevronRight, Loader2
 } from 'lucide-react';
-import JanaSelect from './JanaSelect';
 import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
 
 const emptyDiagnosis = {
-  hair_type: 'Normal',
-  porosity: 'Media',
-  scalp_condition: 'Sano',
-  elasticity: 'Buena',
-  overall_score: 7.5,
-  hydration_pct: 70,
-  nutrition_pct: 60,
-  repair_pct: 50,
-  shine_pct: 80,
-  strength_pct: 70,
-  scalp_oil_level: 'Normal',
-  scalp_sensitivity: 'Baja',
-  scalp_flaking: 'No',
-  scalp_hairloss: 'Leve',
-  scalp_inflammation: 'No',
-  scalp_health_pct: 70,
-  observations: '',
-  chemical_history: '',
-  recommended_treatment: '',
-  notes: '',
-  images: []
+  wash_frequency: '',
+  salud: {
+    embarazos_partos: false,
+    problemas_hormonales: false,
+    anticonceptivos_orales: false,
+    caida: false,
+    saborrea: false,
+    caspa: false,
+    alopecia: false,
+    dermatitis: false,
+    descamacion: false,
+    irritacion: false,
+  },
+  cuero_cabelludo: {
+    normal: false,
+    seco: false,
+    graso: false,
+    grosor_fino: false,
+    grosor_medio: false,
+    grosor_grueso: false,
+    tacto_suave: false,
+    tacto_aspero: false,
+    tacto_graso: false,
+    tacto_seco: false,
+    nota: '',
+  },
+  tinturado: { color: '', peroxido: '', fecha: '' },
+  alisado: { marca: '', fecha: '' },
+  hidratacion: { tipo_tratamiento: '', marca: '', fecha: '' },
+  notas: '',
 };
 
 const getInitials = (name = '') => (
   name.trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase()
 );
 
-const SectionCard = ({ icon, title, children, isMobile }) => (
-  <div style={{ background: 'white', borderRadius: '16px', padding: isMobile ? '16px' : '18px', border: '1px solid var(--border-color)' }}>
-    <h5 style={{ margin: '0 0 14px', fontSize: '13px', fontWeight: '850', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-      {icon} {title}
-    </h5>
-    {children}
-  </div>
+const Checkbox = ({ checked, onChange, label }) => (
+  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: 'var(--text-primary)', fontWeight: 600, whiteSpace: 'nowrap' }}>
+    <div
+      onClick={onChange}
+      style={{
+        width: '20px', height: '20px', borderRadius: '5px', flexShrink: 0,
+        border: checked ? '2px solid var(--pink-primary)' : '2px solid #d1d5db',
+        backgroundColor: checked ? 'var(--pink-primary)' : 'white',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        cursor: 'pointer', transition: 'all 0.15s',
+      }}
+    >
+      {checked && <Check size={13} color="white" strokeWidth={3} />}
+    </div>
+    {label}
+  </label>
+);
+
+const SmallInput = ({ value, onChange, placeholder, style }) => (
+  <input
+    type="text"
+    value={value}
+    onChange={onChange}
+    placeholder={placeholder}
+    style={{
+      width: '100%', height: '32px', borderRadius: '8px',
+      border: '1px solid var(--border-color)', padding: '0 10px',
+      fontSize: '12px', color: 'var(--text-primary)', backgroundColor: 'white',
+      outline: 'none', ...style,
+    }}
+  />
 );
 
 const CapillaryDiagnosisModule = ({ isMobile, clients = [], onNavigate, prefillClientId }) => {
@@ -86,17 +118,20 @@ const CapillaryDiagnosisModule = ({ isMobile, clients = [], onNavigate, prefillC
     resetForm();
   };
 
+  const toggleSalud = (key) => setDiagnosis(d => ({
+    ...d, salud: { ...d.salud, [key]: !d.salud[key] }
+  }));
+
+  const toggleCuero = (key) => setDiagnosis(d => ({
+    ...d, cuero_cabelludo: { ...d.cuero_cabelludo, [key]: !d.cuero_cabelludo[key] }
+  }));
+
   const handleSave = async () => {
-    if (!diagnosis.chemical_history && !diagnosis.recommended_treatment) {
-      showToast('Por favor introduce detalles del diagnóstico', 'warning');
-      return;
-    }
     setSaving(true);
     try {
       await dataService.addCapillaryDiagnosis({
         client_id: selectedClient.id,
         ...diagnosis,
-        observations: diagnosis.observations.split('\n').map(s => s.trim()).filter(Boolean)
       });
       setSavedOk(true);
       showToast('Diagnóstico registrado con éxito', 'success');
@@ -107,9 +142,25 @@ const CapillaryDiagnosisModule = ({ isMobile, clients = [], onNavigate, prefillC
     }
   };
 
+  const cardStyle = {
+    background: 'white', borderRadius: '20px', padding: isMobile ? '18px' : '24px',
+    border: '1px solid var(--border-color)', boxShadow: '0 4px 20px rgba(160,80,106,0.04)',
+  };
+
+  const sectionLabel = {
+    fontSize: '11px', fontWeight: '800', color: 'var(--pink-primary)',
+    textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '12px',
+  };
+
+  const checkboxGrid = {
+    display: 'grid',
+    gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(3, 1fr)',
+    gap: '8px 16px',
+  };
+
   return (
     <div className="animate-fade-in" style={{ paddingBottom: '60px' }}>
-      {/* Premium Clean Header Toolbar (matches Archivo de Clientes / Agenda) */}
+      {/* Header */}
       <div className="animate-slide-down" style={{
         display: 'flex', alignItems: 'center', gap: '16px',
         marginBottom: '28px', padding: '12px 0 16px 0', position: 'relative'
@@ -120,16 +171,16 @@ const CapillaryDiagnosisModule = ({ isMobile, clients = [], onNavigate, prefillC
         </div>
         <div style={{ zIndex: 1 }}>
           <h1 className="jana-page-title" style={{ margin: 0, fontSize: isMobile ? '24px' : '28px', letterSpacing: '-0.6px', fontWeight: '850', color: 'var(--text-primary)' }}>
-            Diagnóstico Capilar
+            Ficha Capilar
           </h1>
           <p style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: isMobile ? '12px' : '14px', fontWeight: '500' }}>
-            Registra un nuevo diagnóstico capilar para cualquier clienta, sin tener que entrar a su ficha.
+            Registro de diagnóstico capilar para clientas.
           </p>
         </div>
       </div>
 
       {!selectedClient ? (
-        <div className="glass-card animate-slide-up delay-2" style={{ padding: '24px', background: 'white', borderRadius: '24px', border: '1px solid var(--border-color)', boxShadow: '0 8px 32px rgba(160, 80, 106, 0.04)' }}>
+        <div className="glass-card animate-slide-up delay-2" style={{ ...cardStyle }}>
           <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '10px' }}>
             Buscar clienta
           </label>
@@ -148,11 +199,9 @@ const CapillaryDiagnosisModule = ({ isMobile, clients = [], onNavigate, prefillC
               }}
             />
           </div>
-
           {search.trim() && filteredClients.length === 0 && (
             <p style={{ fontSize: '13px', color: 'var(--text-muted)', textAlign: 'center', padding: '20px 0' }}>No se encontraron clientas.</p>
           )}
-
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {filteredClients.map((c) => (
               <div
@@ -181,7 +230,7 @@ const CapillaryDiagnosisModule = ({ isMobile, clients = [], onNavigate, prefillC
           </div>
         </div>
       ) : savedOk ? (
-        <div className="glass-card animate-fade-in" style={{ padding: '40px 24px', background: 'white', borderRadius: '18px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+        <div className="glass-card animate-fade-in" style={{ ...cardStyle, textAlign: 'center', padding: '40px 24px' }}>
           <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(46,158,91,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
             <Check size={28} color="#2e9e5b" />
           </div>
@@ -213,109 +262,186 @@ const CapillaryDiagnosisModule = ({ isMobile, clients = [], onNavigate, prefillC
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          {/* Client banner */}
           <div className="glass-card" style={{ padding: '14px 16px', background: 'white', borderRadius: '16px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{
-              width: '40px', height: '40px', borderRadius: '50%', flexShrink: 0,
-              background: 'var(--magenta-gradient)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '50%', flexShrink: 0, background: 'var(--magenta-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span style={{ fontSize: '13px', fontWeight: '800', color: 'white' }}>{getInitials(selectedClient.name)}</span>
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)' }}>{selectedClient.name}</div>
               {selectedClient.phone && <div style={{ fontSize: '12.5px', color: 'var(--text-secondary)' }}>{selectedClient.phone}</div>}
             </div>
-            <button
-              onClick={handleChangeClient}
-              style={{ background: 'none', border: 'none', color: 'var(--magenta-primary)', fontSize: '13px', fontWeight: '750', cursor: 'pointer', padding: '6px 10px', borderRadius: '8px', backgroundColor: 'rgba(160,80,106,0.05)' }}
-            >
+            <button onClick={handleChangeClient} style={{ background: 'none', border: 'none', color: 'var(--magenta-primary)', fontSize: '13px', fontWeight: '750', cursor: 'pointer', padding: '6px 10px', borderRadius: '8px', backgroundColor: 'rgba(160,80,106,0.05)' }}>
               Cambiar
             </button>
           </div>
 
-          <SectionCard icon={<Scissors size={13} />} title="Perfil del Cabello" isMobile={isMobile}>
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : '1fr 1fr 1fr 1fr', gap: '12px' }}>
-              <JanaSelect variant="light" label="Grosor de Hebra" value={diagnosis.hair_type} onChange={(val) => setDiagnosis({ ...diagnosis, hair_type: val })}
-                options={[{ label: 'Normal', value: 'Normal' }, { label: 'Fino', value: 'Fino' }, { label: 'Grueso', value: 'Grueso' }, { label: 'Quebradizo', value: 'Quebradizo' }]} />
-              <JanaSelect variant="light" label="Porosidad" value={diagnosis.porosity} onChange={(val) => setDiagnosis({ ...diagnosis, porosity: val })}
-                options={[{ label: 'Baja', value: 'Baja' }, { label: 'Media', value: 'Media' }, { label: 'Alta', value: 'Alta' }]} />
-              <JanaSelect variant="light" label="Condición del Cuero" value={diagnosis.scalp_condition} onChange={(val) => setDiagnosis({ ...diagnosis, scalp_condition: val })}
-                options={[{ label: 'Sano', value: 'Sano' }, { label: 'Seborrea', value: 'Seborrea' }, { label: 'Descamación', value: 'Descamación' }, { label: 'Caída', value: 'Caída' }, { label: 'Sensible', value: 'Sensible' }]} />
-              <JanaSelect variant="light" label="Elasticidad" value={diagnosis.elasticity} onChange={(val) => setDiagnosis({ ...diagnosis, elasticity: val })}
-                options={[{ label: 'Baja', value: 'Baja' }, { label: 'Regular', value: 'Regular' }, { label: 'Buena', value: 'Buena' }]} />
+          {/* Ficha Capilar form */}
+          <div style={cardStyle}>
+            {/* Top fields row */}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+              <div>
+                <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '4px', display: 'block' }}>Nombre</label>
+                <SmallInput value={selectedClient.name || ''} onChange={() => {}} style={{ backgroundColor: '#f0f4f8', fontWeight: 700 }} />
+              </div>
+              <div>
+                <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '4px', display: 'block' }}>Teléfono</label>
+                <SmallInput value={selectedClient.phone || ''} onChange={() => {}} style={{ backgroundColor: '#f0f4f8', fontWeight: 700 }} />
+              </div>
+              <div>
+                <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '4px', display: 'block' }}>Fecha</label>
+                <SmallInput value={new Date().toLocaleDateString('es-VE')} onChange={() => {}} style={{ backgroundColor: '#f0f4f8', fontWeight: 700 }} />
+              </div>
+              <div>
+                <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', marginBottom: '4px', display: 'block' }}>Frecuencia de lavado</label>
+                <SmallInput value={diagnosis.wash_frequency} onChange={e => setDiagnosis({ ...diagnosis, wash_frequency: e.target.value })} placeholder="Ej. 2 veces por semana" />
+              </div>
             </div>
-            <div style={{ marginTop: '14px' }}>
-              <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>Estado General: {diagnosis.overall_score} / 10</label>
-              <input type="range" min="0" max="10" step="0.5" value={diagnosis.overall_score} onChange={e => setDiagnosis({ ...diagnosis, overall_score: Number(e.target.value) })} style={{ width: '100%', accentColor: 'var(--pink-primary)' }} />
-            </div>
-          </SectionCard>
 
-          <SectionCard icon={<Activity size={13} />} title="Condición del Cabello" isMobile={isMobile}>
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '12px 16px' }}>
-              {[
-                { key: 'hydration_pct', label: 'Hidratación' },
-                { key: 'nutrition_pct', label: 'Nutrición' },
-                { key: 'repair_pct', label: 'Reparación' },
-                { key: 'shine_pct', label: 'Brillo' },
-                { key: 'strength_pct', label: 'Fuerza' },
-              ].map((f) => (
-                <div key={f.key}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700', marginBottom: '4px' }}>
-                    <span>{f.label}</span><span>{diagnosis[f.key]}%</span>
+            {/* Divider */}
+            <div style={{ borderTop: '2px dashed #e5e7eb', marginBottom: '16px' }} />
+
+            {/* SALUD */}
+            <div style={{ marginBottom: '16px' }}>
+              <div style={{ ...sectionLabel, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)', fontSize: '10px', letterSpacing: '1px' }}>Salud</span>
+              </div>
+              <div style={checkboxGrid}>
+                <Checkbox checked={diagnosis.salud.embarazos_partos} onChange={() => toggleSalud('embarazos_partos')} label="Embarazos / partos" />
+                <Checkbox checked={diagnosis.salud.caida} onChange={() => toggleSalud('caida')} label="Caída" />
+                <Checkbox checked={diagnosis.salud.dermatitis} onChange={() => toggleSalud('dermatitis')} label="Dermatitis" />
+                <Checkbox checked={diagnosis.salud.problemas_hormonales} onChange={() => toggleSalud('problemas_hormonales')} label="Problemas hormonales" />
+                <Checkbox checked={diagnosis.salud.saborrea} onChange={() => toggleSalud('saborrea')} label="Saborrea" />
+                <Checkbox checked={diagnosis.salud.descamacion} onChange={() => toggleSalud('descamacion')} label="Descamación" />
+                <Checkbox checked={diagnosis.salud.anticonceptivos_orales} onChange={() => toggleSalud('anticonceptivos_orales')} label="Anticonceptivos orales" />
+                <Checkbox checked={diagnosis.salud.caspa} onChange={() => toggleSalud('caspa')} label="Caspa" />
+                <Checkbox checked={diagnosis.salud.irritacion} onChange={() => toggleSalud('irritacion')} label="Irritación" />
+                <Checkbox checked={diagnosis.salud.embarazos_partos} onChange={() => toggleSalud('embarazos_partos')} label="Embarazos / partos" />
+                <Checkbox checked={diagnosis.salud.alopecia} onChange={() => toggleSalud('alopecia')} label="Alopecia" />
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div style={{ borderTop: '2px solid #e5e7eb', marginBottom: '16px' }} />
+
+            {/* CUERO CABELLUDO */}
+            <div style={{ marginBottom: '16px' }}>
+              <div style={{ ...sectionLabel, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)', fontSize: '10px', letterSpacing: '1px' }}>Cuero cabelludo</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'auto auto auto 1fr', gap: '16px', alignItems: 'start' }}>
+                {/* Type */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <Checkbox checked={diagnosis.cuero_cabelludo.normal} onChange={() => toggleCuero('normal')} label="Normal" />
+                  <Checkbox checked={diagnosis.cuero_cabelludo.seco} onChange={() => toggleCuero('seco')} label="Seco" />
+                  <Checkbox checked={diagnosis.cuero_cabelludo.graso} onChange={() => toggleCuero('graso')} label="Graso" />
+                </div>
+                {/* Grosor */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Grosor</span>
+                  <Checkbox checked={diagnosis.cuero_cabelludo.grosor_fino} onChange={() => toggleCuero('grosor_fino')} label="Fino" />
+                  <Checkbox checked={diagnosis.cuero_cabelludo.grosor_medio} onChange={() => toggleCuero('grosor_medio')} label="Medio" />
+                  <Checkbox checked={diagnosis.cuero_cabelludo.grosor_grueso} onChange={() => toggleCuero('grosor_grueso')} label="Grueso" />
+                </div>
+                {/* Tacto */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '2px' }}>Tacto</span>
+                  <Checkbox checked={diagnosis.cuero_cabelludo.tacto_suave} onChange={() => toggleCuero('tacto_suave')} label="Suave" />
+                  <Checkbox checked={diagnosis.cuero_cabelludo.tacto_aspero} onChange={() => toggleCuero('tacto_aspero')} label="Áspero" />
+                  <Checkbox checked={diagnosis.cuero_cabelludo.tacto_graso} onChange={() => toggleCuero('tacto_graso')} label="Graso" />
+                  <Checkbox checked={diagnosis.cuero_cabelludo.tacto_seco} onChange={() => toggleCuero('tacto_seco')} label="Seco" />
+                </div>
+                {/* Nota */}
+                <div>
+                  <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px', display: 'block' }}>Nota:</span>
+                  <textarea
+                    value={diagnosis.cuero_cabelludo.nota}
+                    onChange={e => setDiagnosis({ ...diagnosis, cuero_cabelludo: { ...diagnosis.cuero_cabelludo, nota: e.target.value } })}
+                    placeholder="Observaciones del cuero cabelludo..."
+                    style={{ width: '100%', height: '80px', borderRadius: '10px', border: '1px solid var(--border-color)', padding: '10px', fontSize: '12px', resize: 'vertical', outline: 'none' }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div style={{ borderTop: '2px solid #e5e7eb', marginBottom: '16px' }} />
+
+            {/* TRATAMIENTOS */}
+            <div style={{ marginBottom: '16px' }}>
+              <div style={{ ...sectionLabel, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)', fontSize: '10px', letterSpacing: '1px' }}>Tratamientos</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: '16px' }}>
+                {/* Tinturado */}
+                <div style={{ border: '1px solid var(--border-color)', borderRadius: '14px', padding: '16px' }}>
+                  <h5 style={{ margin: '0 0 12px', fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', textAlign: 'center' }}>Tinturado</h5>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div>
+                      <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)' }}>Color:</label>
+                      <SmallInput value={diagnosis.tinturado.color} onChange={e => setDiagnosis({ ...diagnosis, tinturado: { ...diagnosis.tinturado, color: e.target.value } })} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)' }}>Peróxido:</label>
+                      <SmallInput value={diagnosis.tinturado.peroxido} onChange={e => setDiagnosis({ ...diagnosis, tinturado: { ...diagnosis.tinturado, peroxido: e.target.value } })} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)' }}>fecha:</label>
+                      <SmallInput value={diagnosis.tinturado.fecha} onChange={e => setDiagnosis({ ...diagnosis, tinturado: { ...diagnosis.tinturado, fecha: e.target.value } })} type="date" />
+                    </div>
                   </div>
-                  <input type="range" min="0" max="100" value={diagnosis[f.key]} onChange={e => setDiagnosis({ ...diagnosis, [f.key]: Number(e.target.value) })} style={{ width: '100%', accentColor: 'var(--pink-primary)' }} />
                 </div>
-              ))}
-            </div>
-          </SectionCard>
-
-          <SectionCard icon={<Droplet size={13} />} title="Salud del Cuero Cabelludo" isMobile={isMobile}>
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : '1fr 1fr 1fr', gap: '12px' }}>
-              <JanaSelect variant="light" label="Nivel de Grasa" value={diagnosis.scalp_oil_level} onChange={(val) => setDiagnosis({ ...diagnosis, scalp_oil_level: val })}
-                options={[{ label: 'Bajo', value: 'Bajo' }, { label: 'Normal', value: 'Normal' }, { label: 'Alto', value: 'Alto' }]} />
-              <JanaSelect variant="light" label="Sensibilidad" value={diagnosis.scalp_sensitivity} onChange={(val) => setDiagnosis({ ...diagnosis, scalp_sensitivity: val })}
-                options={[{ label: 'Baja', value: 'Baja' }, { label: 'Media', value: 'Media' }, { label: 'Alta', value: 'Alta' }]} />
-              <JanaSelect variant="light" label="Descamación" value={diagnosis.scalp_flaking} onChange={(val) => setDiagnosis({ ...diagnosis, scalp_flaking: val })}
-                options={[{ label: 'No', value: 'No' }, { label: 'Leve', value: 'Leve' }, { label: 'Sí', value: 'Sí' }]} />
-              <JanaSelect variant="light" label="Caída" value={diagnosis.scalp_hairloss} onChange={(val) => setDiagnosis({ ...diagnosis, scalp_hairloss: val })}
-                options={[{ label: 'No', value: 'No' }, { label: 'Leve', value: 'Leve' }, { label: 'Moderada', value: 'Moderada' }]} />
-              <JanaSelect variant="light" label="Inflamación" value={diagnosis.scalp_inflammation} onChange={(val) => setDiagnosis({ ...diagnosis, scalp_inflammation: val })}
-                options={[{ label: 'No', value: 'No' }, { label: 'Leve', value: 'Leve' }, { label: 'Sí', value: 'Sí' }]} />
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-secondary)', fontWeight: '700', marginBottom: '4px' }}>
-                  <span>Salud general</span><span>{diagnosis.scalp_health_pct}%</span>
+                {/* Alisado */}
+                <div style={{ border: '1px solid var(--border-color)', borderRadius: '14px', padding: '16px' }}>
+                  <h5 style={{ margin: '0 0 12px', fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', textAlign: 'center' }}>Alisado</h5>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div>
+                      <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)' }}>Marca:</label>
+                      <SmallInput value={diagnosis.alisado.marca} onChange={e => setDiagnosis({ ...diagnosis, alisado: { ...diagnosis.alisado, marca: e.target.value } })} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)' }}>fecha:</label>
+                      <SmallInput value={diagnosis.alisado.fecha} onChange={e => setDiagnosis({ ...diagnosis, alisado: { ...diagnosis.alisado, fecha: e.target.value } })} type="date" />
+                    </div>
+                  </div>
                 </div>
-                <input type="range" min="0" max="100" value={diagnosis.scalp_health_pct} onChange={e => setDiagnosis({ ...diagnosis, scalp_health_pct: Number(e.target.value) })} style={{ width: '100%', marginTop: '10px', accentColor: 'var(--pink-primary)' }} />
+                {/* Hidratación */}
+                <div style={{ border: '1px solid var(--border-color)', borderRadius: '14px', padding: '16px' }}>
+                  <h5 style={{ margin: '0 0 12px', fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', textAlign: 'center' }}>Hidratación</h5>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div>
+                      <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)' }}>Tipo de tratamiento:</label>
+                      <SmallInput value={diagnosis.hidratacion.tipo_tratamiento} onChange={e => setDiagnosis({ ...diagnosis, hidratacion: { ...diagnosis.hidratacion, tipo_tratamiento: e.target.value } })} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)' }}>Marca:</label>
+                      <SmallInput value={diagnosis.hidratacion.marca} onChange={e => setDiagnosis({ ...diagnosis, hidratacion: { ...diagnosis.hidratacion, marca: e.target.value } })} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)' }}>fecha:</label>
+                      <SmallInput value={diagnosis.hidratacion.fecha} onChange={e => setDiagnosis({ ...diagnosis, hidratacion: { ...diagnosis.hidratacion, fecha: e.target.value } })} type="date" />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </SectionCard>
 
-          <SectionCard icon={<FileText size={13} />} title="Notas y Observaciones" isMobile={isMobile}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div>
-                <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Observaciones (una por línea)</label>
-                <textarea className="form-input" value={diagnosis.observations} onChange={e => setDiagnosis({ ...diagnosis, observations: e.target.value })}
-                  placeholder={'Se observa acumulación leve de residuos en raíz.\nPuntas ligeramente secas y porosas.'}
-                  style={{ width: '100%', height: '60px', padding: '10px', fontSize: '13px' }} />
-              </div>
-              <div>
-                <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Historial Químico</label>
-                <textarea className="form-input" value={diagnosis.chemical_history} onChange={e => setDiagnosis({ ...diagnosis, chemical_history: e.target.value })}
-                  placeholder="Decoloraciones previas, alisados, tintes..." style={{ width: '100%', height: '60px', padding: '10px', fontSize: '13px' }} />
-              </div>
-              <div>
-                <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Tratamiento Recomendado</label>
-                <textarea className="form-input" value={diagnosis.recommended_treatment} onChange={e => setDiagnosis({ ...diagnosis, recommended_treatment: e.target.value })}
-                  placeholder="Tratamiento molecular, fototerapia, etc..." style={{ width: '100%', height: '60px', padding: '10px', fontSize: '13px' }} />
-              </div>
-              <div>
-                <label style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Notas de Diagnóstico</label>
-                <textarea className="form-input" value={diagnosis.notes} onChange={e => setDiagnosis({ ...diagnosis, notes: e.target.value })}
-                  placeholder="Observaciones adicionales..." style={{ width: '100%', height: '60px', padding: '10px', fontSize: '13px' }} />
-              </div>
+            {/* Divider */}
+            <div style={{ borderTop: '2px solid #e5e7eb', marginBottom: '16px' }} />
+
+            {/* NOTAS */}
+            <div>
+              <label style={{ fontSize: '13px', fontWeight: '800', color: 'var(--text-primary)', display: 'block', marginBottom: '8px' }}>notas:</label>
+              <textarea
+                value={diagnosis.notas}
+                onChange={e => setDiagnosis({ ...diagnosis, notas: e.target.value })}
+                placeholder="Observaciones adicionales..."
+                style={{ width: '100%', height: '100px', borderRadius: '12px', border: '1px solid var(--border-color)', padding: '12px', fontSize: '13px', resize: 'vertical', outline: 'none' }}
+              />
             </div>
-          </SectionCard>
+          </div>
 
+          {/* Save button */}
           <button
             onClick={handleSave}
             disabled={saving}
