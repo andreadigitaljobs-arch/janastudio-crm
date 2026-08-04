@@ -365,19 +365,23 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
         birth_date: formData.birth_date || null
       };
 
-      if (isEditing) {
+        if (isEditing) {
         await dataService.updateStaff(editingId, submissionData);
 
-        // Sincronizar credenciales en Supabase Auth
         const currentStaff = staff.find(s => s.id === editingId);
-        if (currentStaff?.auth_user_id) {
-          await dataService.updateStaffAuthCredentials(currentStaff.auth_user_id, {
-            email: submissionData.email,
-            password: submissionData.username || undefined
-          });
-        } else if (submissionData.email && submissionData.username) {
-          // No tiene auth_user_id aún — crear y vincular
-          await dataService.linkAuthToStaff(editingId, submissionData.email, submissionData.username);
+        const emailChanged = submissionData.email && currentStaff?.email !== submissionData.email;
+        const passwordChanged = submissionData.username && submissionData.username !== currentStaff?.username;
+
+        if (emailChanged || passwordChanged) {
+          const authData = {};
+          if (emailChanged) authData.email = submissionData.email;
+          if (passwordChanged) authData.password = submissionData.username;
+
+          if (currentStaff?.auth_user_id) {
+            await dataService.updateStaffAuthCredentials(currentStaff.auth_user_id, authData);
+          } else if (submissionData.email && submissionData.username) {
+            await dataService.linkAuthToStaff(editingId, submissionData.email, submissionData.username);
+          }
         }
 
         if (editingId === user?.id) {

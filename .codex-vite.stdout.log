@@ -1,0 +1,23 @@
+
+> jana-studio-crm@1.0.0 dev
+> vite --host --port 4174
+
+
+  [32m[1mVITE[22m v6.4.3[39m  [2mready in [0m[1m1258[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m4174[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://10.5.0.2:[1m4174[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://10.100.0.2:[1m4174[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.0.196:[1m4174[22m/[39m
+[2m20:57:59[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/Sidebar.jsx[22m
+[2m20:59:54[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/context/AuthContext.jsx, /src/App.jsx, /src/components/BarberPanel.jsx, /src/components/StaffTransactionHistory.jsx[22m
+[2m20:59:54[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/BarberPanel.jsx[22m
+[2m20:59:56[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [33mhmr invalidate [39m[2m/src/context/AuthContext.jsx[22m Could not Fast Refresh ("useAuth" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2m20:59:56[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/context/AuthContext.jsx[22m
+[2m21:02:24[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/HistoryModule.jsx[22m
+[2m21:03:14[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/HistoryModule.jsx[22m
+[2m21:03:14[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/context/AuthContext.jsx, /src/App.jsx, /src/components/BarberPanel.jsx, /src/components/StaffTransactionHistory.jsx, /src/components/UserProfilePage.jsx, /src/components/HistoryModule.jsx[22m
+[2m21:03:43[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/HistoryModule.jsx[22m
+[2m21:03:43[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/context/AuthContext.jsx, /src/App.jsx, /src/components/BarberPanel.jsx, /src/components/StaffTransactionHistory.jsx, /src/components/UserProfilePage.jsx, /src/components/HistoryModule.jsx[22m
+[2m21:06:32[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/components/Sidebar.jsx, /src/components/SchedulingModule.jsx, /src/components/ScheduleModal.jsx[22m
+[2m21:22:28[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
