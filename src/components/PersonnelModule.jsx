@@ -362,7 +362,8 @@ const PersonnelModule = ({ isMobile, inventory = [] }) => {
         commission_pct: Number(formData.commission_pct) || 0,
         id_card: formData.id_card || null,
         display_name: formData.display_name || null,
-        birth_date: formData.birth_date || null
+        birth_date: formData.birth_date || null,
+        custom_modules: { modules: formData.permissions }
       };
 
         if (isEditing) {

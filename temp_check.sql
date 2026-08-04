@@ -1,0 +1,1 @@
+SELECT name, role, custom_modules FROM janastudio.staff;

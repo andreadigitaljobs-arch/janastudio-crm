@@ -45,9 +45,15 @@ const MODULE_ROLES = {
   notifications: ['admin', 'reception', 'cashier', 'worker'],
 };
 
+export const getRolePermissions = (role = '') => {
+  const part = String(role).split('|')[1] || '';
+  return part ? part.split(',').map(s => s.trim()).filter(Boolean) : [];
+};
+
 export const canAccessModule = (role, moduleId, customModules = null) => {
   const kind = getRoleKind(role);
   if ((MODULE_ROLES[moduleId] || []).includes(kind)) return true;
   if (customModules?.modules?.includes(moduleId)) return true;
+  if (getRolePermissions(role).includes(moduleId)) return true;
   return false;
 };
