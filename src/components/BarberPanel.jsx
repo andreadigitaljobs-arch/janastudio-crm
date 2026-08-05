@@ -724,7 +724,7 @@ const BarberPanel = ({ isMobile, rates }) => {
 
       <nav style={{ display: 'flex', gap: '7px', padding: '4px', marginBottom: '24px', width: 'fit-content', maxWidth: '100%', borderRadius: '13px', background: 'rgba(255,255,255,0.035)', border: '1px solid rgba(255,255,255,0.06)' }}>
         {[
-          { id: 'work', label: isStylist ? 'Panel de tratamiento' : 'Mi silla', icon: <LayoutDashboard size={15} /> },
+          { id: 'work', label: isStylist ? 'Panel de tratamiento' : 'Mi estación', icon: <LayoutDashboard size={15} /> },
           { id: 'history', label: 'Mi historial', icon: <ReceiptText size={15} /> }
         ].map(view => (
           <button
@@ -1050,7 +1050,7 @@ const BarberPanel = ({ isMobile, rates }) => {
                 color="var(--pink-primary)" 
                 style={{ filter: 'drop-shadow(0 1px 3px rgba(212, 175, 55, 0.4))' }} 
               />
-              <span style={{ fontWeight: '800', fontSize: '14px', letterSpacing: '1px', textTransform: 'uppercase' }}>Tu Silla Hoy</span>
+              <span style={{ fontWeight: '800', fontSize: '14px', letterSpacing: '1px', textTransform: 'uppercase' }}>Tu Estación Hoy</span>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -1078,20 +1078,21 @@ const BarberPanel = ({ isMobile, rates }) => {
                       zIndex: 1,
                       animation: 'shadow-scale-small 6s infinite ease-in-out'
                     }} />
-                    <img 
-                      src="/hero_banner.webp" 
-                      alt="Salon" 
-                      style={{ 
-                        width: '80px', 
-                        height: 'auto',
-                        objectFit: 'contain',
-                        zIndex: 3,
-                        filter: 'drop-shadow(0 5px 15px rgba(0,0,0,0.5)) drop-shadow(0 0 10px rgba(212, 175, 55, 0.4))',
-                        animation: 'chair-float-small 6s infinite ease-in-out'
-                      }} 
-                    />
+                    <div style={{ 
+                      width: '80px', 
+                      height: '80px',
+                      borderRadius: '50%',
+                      background: 'rgba(160,80,106,0.08)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      zIndex: 3,
+                      animation: 'chair-float-small 6s infinite ease-in-out'
+                    }}>
+                      <Sparkles size={36} color="var(--pink-primary)" strokeWidth={1.5} />
+                    </div>
                   </div>
-                  <p style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>Buscando clientes... La silla está libre.</p>
+                  <p style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>Buscando clientes... La estación está libre.</p>
                 </div>
               ) : (
                 myServices.map(app => {
