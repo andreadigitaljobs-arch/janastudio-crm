@@ -2042,6 +2042,7 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
     return () => { pObserver.disconnect(); cObserver.disconnect(); };
   }, [activeSubTab, showCollage, gallery]);
   const [diagnoses, setDiagnoses] = useState([]);
+  const [selectedDiagId, setSelectedDiagId] = useState(null);
   const [loadingDiagnoses, setLoadingDiagnoses] = useState(true);
   const [packages, setPackages] = useState([]);
   const [loadingPackages, setLoadingPackages] = useState(true);
@@ -3322,7 +3323,7 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {(() => {
-              const latest = diagnoses[0];
+              const latest = selectedDiagId ? diagnoses.find(d => d.id === selectedDiagId) || diagnoses[0] : diagnoses[0];
               if (!latest) return null;
 
               // Old helper functions removed - now using Ficha Capilar JSONB data
@@ -3493,13 +3494,16 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                   {diagnoses.map(diag => (
                     <div
                       key={diag.id}
+                      onClick={() => setSelectedDiagId(diag.id === selectedDiagId ? null : diag.id)}
                       style={{
                         position: 'relative',
                         padding: isMobile ? '18px 16px' : '20px', 
                         borderRadius: '18px', 
-                        backgroundColor: 'white',
-                        border: '1px solid rgba(160, 80, 106, 0.12)', 
-                        boxShadow: '0 4px 16px rgba(160, 80, 106, 0.04)'
+                        backgroundColor: diag.id === selectedDiagId ? 'rgba(160,80,106,0.04)' : 'white',
+                        border: diag.id === selectedDiagId ? '2px solid var(--pink-primary)' : '1px solid rgba(160, 80, 106, 0.12)', 
+                        boxShadow: diag.id === selectedDiagId ? '0 4px 20px rgba(160,80,106,0.12)' : '0 4px 16px rgba(160, 80, 106, 0.04)',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
                       }}
                     >
                       {!isMobile && (
@@ -3520,6 +3524,7 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                       <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '4px' : '0', marginBottom: '14px', paddingBottom: '14px', borderBottom: '1px solid var(--border-color)' }}>
                         <span style={{ fontSize: isMobile ? '15px' : '14.5px', fontWeight: '800', color: 'var(--pink-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                           <Activity size={15} /> Diagnóstico del {new Date(diag.created_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' })}
+                          {diag.id === selectedDiagId && <span style={{ fontSize: '10px', fontWeight: '800', background: 'var(--pink-primary)', color: 'white', padding: '2px 8px', borderRadius: '10px', marginLeft: '6px' }}>Seleccionado</span>}
                         </span>
                         <span style={{ fontSize: '12.5px', color: 'var(--text-muted)', fontWeight: '600' }}>
                           {new Date(diag.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
