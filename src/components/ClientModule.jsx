@@ -47,7 +47,10 @@ import {
   Droplet,
   Waves,
   Flame,
-  CircleDot
+  CircleDot,
+  Heart,
+  Palette,
+  Wind
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { supabase } from '../lib/supabase';
@@ -3322,284 +3325,130 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
               const latest = diagnoses[0];
               if (!latest) return null;
 
-              const tagFor = (pct) => (
-                pct >= 70 ? { label: 'Buena', bg: 'rgba(46,158,91,0.12)', color: '#2e9e5b' }
-                : pct >= 40 ? { label: 'Regular', bg: 'rgba(230,159,60,0.16)', color: '#c9821f' }
-                : { label: 'Débil', bg: 'rgba(220,80,80,0.12)', color: '#d64545' }
+              // Old helper functions removed - now using Ficha Capilar JSONB data
+
+              const d = latest.data || {};
+              const salud = d.salud || {};
+              const cuero = d.cuero_cabelludo || {};
+              const tinturado = d.tinturado || {};
+              const alisado = d.alisado || {};
+              const hidratacion = d.hidratacion || {};
+
+              const saludChecked = Object.values(salud).filter(Boolean).length;
+              const saludTotal = Object.keys(salud).length || 1;
+              const cueroChecked = Object.values(cuero).filter(v => typeof v === 'boolean' && v).length;
+              const cueroTotal = Object.keys(cuero).filter(k => typeof cuero[k] === 'boolean').length || 1;
+
+              const checkLabel = (label, checked) => (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: '700', color: checked ? 'var(--pink-primary)' : 'var(--text-muted)', padding: '4px 10px', borderRadius: '8px', background: checked ? 'rgba(160,80,106,0.08)' : 'transparent' }}>
+                  <span style={{ width: '14px', height: '14px', borderRadius: '4px', border: `2px solid ${checked ? 'var(--pink-primary)' : 'rgba(160,80,106,0.2)'}`, background: checked ? 'var(--pink-primary)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', color: 'white' }}>{checked ? '✓' : ''}</span>
+                  {label}
+                </span>
               );
-
-              const bars = [
-                { label: 'Hidratación', pct: latest.hydration_pct ?? 70 },
-                { label: 'Nutrición', pct: latest.nutrition_pct ?? 60 },
-                { label: 'Reparación', pct: latest.repair_pct ?? 50 },
-                { label: 'Brillo', pct: latest.shine_pct ?? 80 },
-                { label: 'Fuerza', pct: latest.strength_pct ?? 70 },
-              ];
-
-              const scalpItems = [
-                { icon: <Droplet />, label: 'Nivel de grasa', value: latest.scalp_oil_level || 'Normal' },
-                { icon: <Activity />, label: 'Sensibilidad', value: latest.scalp_sensitivity || 'Baja' },
-                { icon: <CircleDot />, label: 'Descamación', value: latest.scalp_flaking || 'No' },
-                { icon: <Waves />, label: 'Caída', value: latest.scalp_hairloss || 'Leve' },
-                { icon: <Flame />, label: 'Inflamación', value: latest.scalp_inflammation || 'No' },
-              ];
-
-              const getHairTypeData = (val) => {
-                const lower = String(val || '').toLowerCase();
-                if (lower.includes('seco')) {
-                  return { activeIndex: 0, textMin: 'Seco', textMax: 'Graso', desc: 'Falta lípidos. Evitar lavados agresivos y nutrir.' };
-                } else if (lower.includes('graso')) {
-                  return { activeIndex: 2, textMin: 'Seco', textMax: 'Graso', desc: 'Exceso de sebo. Requiere purificación y control.' };
-                } else {
-                  return { activeIndex: 1, textMin: 'Seco', textMax: 'Graso', desc: 'Producción de sebo saludable y equilibrada.' };
-                }
-              };
-
-              const getPorosityData = (val) => {
-                const lower = String(val || '').toLowerCase();
-                if (lower.includes('baja')) {
-                  return { activeIndex: 0, textMin: 'Baja', textMax: 'Alta', desc: 'Cutícula cerrada. Difícil de hidratar.' };
-                } else if (lower.includes('alta')) {
-                  return { activeIndex: 2, textMin: 'Baja', textMax: 'Alta', desc: 'Cutícula abierta. Pierde humedad rápido.' };
-                } else {
-                  return { activeIndex: 1, textMin: 'Baja', textMax: 'Alta', desc: 'Absorción y retención de humedad ideales.' };
-                }
-              };
-
-              const getElasticityData = (val) => {
-                const lower = String(val || '').toLowerCase();
-                if (lower.includes('baja') || lower.includes('debil') || lower.includes('mala')) {
-                  return { activeIndex: 0, textMin: 'Mala', textMax: 'Buena', desc: 'Hebras quebradizas. Falta de proteínas.' };
-                } else if (lower.includes('regular') || lower.includes('media')) {
-                  return { activeIndex: 1, textMin: 'Mala', textMax: 'Buena', desc: 'Resistencia moderada. Evitar calor excesivo.' };
-                } else {
-                  return { activeIndex: 2, textMin: 'Mala', textMax: 'Buena', desc: 'Excelente fuerza y flexibilidad al estirar.' };
-                }
-              };
-
-              const getOverallScoreData = (val) => {
-                const num = parseFloat(val) || 7.5;
-                let desc = 'Cabello debilitado, requiere tratamiento urgente.';
-                if (num >= 8.5) desc = 'Cabello en excelentes condiciones de salud.';
-                else if (num >= 6.0) desc = 'Cabello saludable, requiere mantenimiento.';
-                return { score: num, desc };
-              };
-
-              const hairTypeVal = latest.hair_type || client.hair_type || 'Normal';
-              const hairTypeData = getHairTypeData(hairTypeVal);
-
-              const porosityVal = latest.porosity || 'Media';
-              const porosityData = getPorosityData(porosityVal);
-
-              const elasticityVal = latest.elasticity || 'Buena';
-              const elasticityData = getElasticityData(elasticityVal);
-
-              const overallScoreVal = latest.overall_score ?? 7.5;
-              const overallScoreData = getOverallScoreData(overallScoreVal);
-
-              const scalpHealthPct = latest.scalp_health_pct ?? 70;
-              const observations = Array.isArray(latest.observations)
-                ? latest.observations
-                : (latest.observations ? String(latest.observations).split('\n').filter(Boolean) : []);
-              const images = Array.isArray(latest.images) ? latest.images : [];
 
               return (
                 <>
-                  <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: (isMobile || isTablet) ? '10px' : '12px' }}>
-                    {/* Card 1: Tipo de Cabello */}
-                    <div className="glass-card mi-card" style={{ padding: '16px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '142px' }}>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                          <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--magenta-gradient)', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Scissors size={14} color="white" />
-                          </div>
-                          <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Hebra</span>
+                  <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : '1fr 1fr', gap: '12px' }}>
+                    {/* Card 1: Salud */}
+                    <div className="glass-card mi-card" style={{ padding: '18px', borderRadius: '16px', background: 'white', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                        <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--magenta-gradient)', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Heart size={13} color="white" />
                         </div>
-                        <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '4px' }}>{hairTypeVal}</div>
+                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Salud</span>
+                        <span style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: '800', color: 'var(--pink-primary)', background: 'rgba(160,80,106,0.08)', padding: '3px 10px', borderRadius: '12px' }}>{saludChecked}/{saludTotal}</span>
                       </div>
-                      <div>
-                        <div style={{ display: 'flex', gap: '3px', margin: '4px 0 2px' }}>
-                          {[0, 1, 2].map((idx) => (
-                            <div key={idx} style={{ flex: 1, height: '4px', borderRadius: '2px', background: idx === hairTypeData.activeIndex ? 'var(--pink-primary)' : 'rgba(160,80,106,0.08)', boxShadow: idx === hairTypeData.activeIndex ? '0 0 4px rgba(201, 114, 130, 0.4)' : 'none' }} />
-                          ))}
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '8.5px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', marginBottom: '4px' }}>
-                          <span>{hairTypeData.textMin}</span>
-                          <span>{hairTypeData.textMax}</span>
-                        </div>
-                        <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic', fontWeight: '500', lineHeight: '1.35' }}>"{hairTypeData.desc}"</p>
-                      </div>
-                    </div>
-
-                    {/* Card 2: Porosidad */}
-                    <div className="glass-card mi-card" style={{ padding: '16px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '142px' }}>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                          <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--magenta-gradient)', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <CircleDot size={14} color="white" />
-                          </div>
-                          <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Porosidad</span>
-                        </div>
-                        <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '4px' }}>{porosityVal}</div>
-                      </div>
-                      <div>
-                        <div style={{ display: 'flex', gap: '3px', margin: '4px 0 2px' }}>
-                          {[0, 1, 2].map((idx) => (
-                            <div key={idx} style={{ flex: 1, height: '4px', borderRadius: '2px', background: idx === porosityData.activeIndex ? 'var(--pink-primary)' : 'rgba(160,80,106,0.08)', boxShadow: idx === porosityData.activeIndex ? '0 0 4px rgba(201, 114, 130, 0.4)' : 'none' }} />
-                          ))}
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '8.5px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', marginBottom: '4px' }}>
-                          <span>{porosityData.textMin}</span>
-                          <span>{porosityData.textMax}</span>
-                        </div>
-                        <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic', fontWeight: '500', lineHeight: '1.35' }}>"{porosityData.desc}"</p>
-                      </div>
-                    </div>
-
-                    {/* Card 3: Elasticidad */}
-                    <div className="glass-card mi-card" style={{ padding: '16px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '142px' }}>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                          <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--magenta-gradient)', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Waves size={14} color="white" />
-                          </div>
-                          <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Elasticidad</span>
-                        </div>
-                        <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '4px' }}>{elasticityVal}</div>
-                      </div>
-                      <div>
-                        <div style={{ display: 'flex', gap: '3px', margin: '4px 0 2px' }}>
-                          {[0, 1, 2].map((idx) => (
-                            <div key={idx} style={{ flex: 1, height: '4px', borderRadius: '2px', background: idx === elasticityData.activeIndex ? 'var(--pink-primary)' : 'rgba(160,80,106,0.08)', boxShadow: idx === elasticityData.activeIndex ? '0 0 4px rgba(201, 114, 130, 0.4)' : 'none' }} />
-                          ))}
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '8.5px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', marginBottom: '4px' }}>
-                          <span>{elasticityData.textMin}</span>
-                          <span>{elasticityData.textMax}</span>
-                        </div>
-                        <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic', fontWeight: '500', lineHeight: '1.35' }}>"{elasticityData.desc}"</p>
-                      </div>
-                    </div>
-
-                    {/* Card 4: Estado General */}
-                    <div className="glass-card mi-card" style={{ padding: '16px 14px', borderRadius: '16px', background: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(10px)', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '142px' }}>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                          <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'var(--magenta-gradient)', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Star size={14} color="white" />
-                          </div>
-                          <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Salud</span>
-                        </div>
-                        <div style={{ fontSize: '15px', fontWeight: '850', color: 'var(--text-primary)', marginBottom: '4px' }}>{overallScoreVal}/10</div>
-                      </div>
-                      <div>
-                        <div style={{ height: '4px', borderRadius: '2px', background: 'rgba(160,80,106,0.08)', overflow: 'hidden', margin: '4px 0 2px' }}>
-                          <div style={{ height: '100%', width: `${overallScoreData.score * 10}%`, background: 'var(--magenta-gradient)' }} />
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '8.5px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', marginBottom: '4px' }}>
-                          <span>Crítico</span>
-                          <span>Óptimo</span>
-                        </div>
-                        <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic', fontWeight: '500', lineHeight: '1.35' }}>"{overallScoreData.desc}"</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : '1.1fr 0.9fr', gap: (isMobile || isTablet) ? '12px' : '12px' }}>
-                    <div className="glass-card mi-card" style={{ padding: (isMobile || isTablet) ? '16px' : '20px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
-                      <h4 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Condición del Cabello</h4>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                        {bars.map((b, i) => {
-                          const tag = tagFor(b.pct);
-                          return (
-                            <div key={i}>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                                <span style={{ fontSize: '13.5px', color: 'var(--text-secondary)', fontWeight: '700' }}>{b.label}</span>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                  <span style={{ fontSize: '13.5px', color: 'var(--text-primary)', fontWeight: '850' }}>{b.pct}%</span>
-                                  <span style={{ fontSize: '10px', fontWeight: '800', padding: '3px 10px', borderRadius: '20px', background: tag.bg, color: tag.color, textTransform: 'uppercase', letterSpacing: '0.3px', whiteSpace: 'nowrap' }}>{tag.label}</span>
-                                </div>
-                              </div>
-                              <div style={{ height: '8px', borderRadius: '10px', background: 'rgba(160,80,106,0.06)', overflow: 'hidden' }}>
-                                <div style={{ height: '100%', width: `${b.pct}%`, borderRadius: '10px', background: 'linear-gradient(90deg, var(--pink-primary) 0%, var(--magenta-primary) 100%)' }} />
-                              </div>
-                            </div>
-                          );
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {Object.entries(salud).map(([key, val]) => {
+                          const labels = { embarazos_partos: 'Embarazos/Partos', problemas_hormonales: 'Problemas Hormonales', anticonceptivos_orales: 'Anticonceptivos', caida: 'Caída', saborrea: 'Saborrea', caspa: 'Caspa', dermatitis: 'Dermatitis', descamacion: 'Descamación', irritacion: 'Irritación', alopecia: 'Alopecia' };
+                          return checkLabel(labels[key] || key, val);
                         })}
                       </div>
                     </div>
 
-                    <div className="glass-card mi-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
-                      <h4 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Salud del Cuero Cabelludo</h4>
-                      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: '20px' }}>
-                        <div style={{
-                          width: '114px', height: '114px', borderRadius: '50%', flexShrink: 0,
-                          background: `conic-gradient(var(--magenta-primary) 0deg, var(--pink-primary) ${scalpHealthPct * 3.6}deg, rgba(160,80,106,0.06) ${scalpHealthPct * 3.6}deg 360deg)`,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          boxShadow: '0 4px 12px rgba(160,80,106,0.1)'
-                        }}>
-                          <div style={{ width: '86px', height: '86px', borderRadius: '50%', background: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 2px 5px rgba(0,0,0,0.05)' }}>
-                            <span style={{ fontSize: '20px', fontWeight: '850', color: 'var(--text-primary)' }}>{scalpHealthPct}%</span>
-                            <span style={{ fontSize: '9px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2px' }}>General</span>
-                          </div>
+                    {/* Card 2: Cuero Cabelludo */}
+                    <div className="glass-card mi-card" style={{ padding: '18px', borderRadius: '16px', background: 'white', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                        <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--magenta-gradient)', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <CircleDot size={13} color="white" />
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '11px', width: '100%' }}>
-                          {scalpItems.map((it, i) => (
-                            <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '7px', background: 'white', paddingRight: '6px', zIndex: 1 }}>
-                                {React.cloneElement(it.icon, { size: 12, color: 'var(--magenta-primary)' })}
-                                <span style={{ fontSize: '13.5px', color: 'var(--text-secondary)', fontWeight: '600' }}>{it.label}</span>
-                              </div>
-                              <div style={{ flex: 1, borderBottom: '1px dashed rgba(160,80,106,0.15)', margin: '0 6px', position: 'relative', top: '3px' }} />
-                              <span style={{ fontSize: '13.5px', color: 'var(--text-primary)', fontWeight: '800', background: 'white', paddingLeft: '6px', zIndex: 1 }}>{it.value}</span>
-                            </div>
-                          ))}
-                        </div>
+                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Cuero Cabelludo</span>
+                        <span style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: '800', color: 'var(--pink-primary)', background: 'rgba(160,80,106,0.08)', padding: '3px 10px', borderRadius: '12px' }}>{cueroChecked}/{cueroTotal}</span>
                       </div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {Object.entries(cuero).filter(([k, v]) => typeof v === 'boolean').map(([key, val]) => {
+                          const labels = { normal: 'Normal', seco: 'Seco', graso: 'Graso', grosor_fino: 'Fino', grosor_medio: 'Medio', grosor_grueso: 'Grueso', tacto_suave: 'Suave', tacto_aspero: 'Áspero', tacto_graso: 'Graso', tacto_seco: 'Seco' };
+                          return checkLabel(labels[key] || key, val);
+                        })}
+                      </div>
+                      {cuero.nota && <p style={{ margin: '10px 0 0', fontSize: '12px', color: 'var(--text-secondary)', fontStyle: 'italic' }}>Nota: {cuero.nota}</p>}
                     </div>
                   </div>
 
-                  {(observations.length > 0 || images.length > 0) && (
-                    <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : (observations.length > 0 && images.length > 0 ? '1.2fr 0.8fr' : '1fr'), gap: '12px' }}>
-                      {observations.length > 0 && (
-                        <div className="glass-card mi-card" style={{ 
-                          padding: '24px', 
-                          borderRadius: '20px', 
-                          background: 'rgba(160,80,106,0.015)', 
-                          border: '1px solid rgba(160,80,106,0.1)',
-                          borderLeft: '5px solid var(--magenta-primary)',
-                          maxWidth: '850px',
-                          boxShadow: '0 4px 20px rgba(160,80,106,0.02)'
-                        }}>
-                          <h4 style={{ margin: '0 0 16px', fontSize: '14.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <FileText size={18} color="var(--magenta-primary)" /> Anotaciones del Especialista
-                          </h4>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-                            {observations.map((obs, i) => (
-                              <div key={i} style={{ 
-                                display: 'flex', 
-                                alignItems: 'flex-start', 
-                                gap: '12px',
-                                padding: '12px 0',
-                                borderBottom: i === observations.length - 1 ? 'none' : '1px dashed rgba(160,80,106,0.08)'
-                              }}>
-                                <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'rgba(46,158,91,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
-                                  <Check size={11} color="#2e9e5b" strokeWidth={3} />
-                                </div>
-                                <span style={{ fontSize: '14.5px', color: 'var(--text-secondary)', fontWeight: '500', lineHeight: 1.5 }}>{obs}</span>
-                              </div>
-                            ))}
-                          </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : '1fr 1fr 1fr', gap: '12px' }}>
+                    {/* Tinturado */}
+                    <div className="glass-card mi-card" style={{ padding: '18px', borderRadius: '16px', background: 'white', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                        <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--magenta-gradient)', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Palette size={13} color="white" />
+                        </div>
+                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Tinturado</span>
+                      </div>
+                      {tinturado.color || tinturado.peroxido || tinturado.fecha ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          {tinturado.color && <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}><strong>Color:</strong> {tinturado.color}</div>}
+                          {tinturado.peroxido && <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}><strong>Peróxido:</strong> {tinturado.peroxido}</div>}
+                          {tinturado.fecha && <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}><strong>Fecha:</strong> {tinturado.fecha}</div>}
+                        </div>
+                      ) : <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontStyle: 'italic' }}>Sin datos</span>}
+                    </div>
+
+                    {/* Alisado */}
+                    <div className="glass-card mi-card" style={{ padding: '18px', borderRadius: '16px', background: 'white', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                        <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--magenta-gradient)', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Wind size={13} color="white" />
+                        </div>
+                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Alisado</span>
+                      </div>
+                      {alisado.marca || alisado.fecha ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          {alisado.marca && <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}><strong>Marca:</strong> {alisado.marca}</div>}
+                          {alisado.fecha && <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}><strong>Fecha:</strong> {alisado.fecha}</div>}
+                        </div>
+                      ) : <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontStyle: 'italic' }}>Sin datos</span>}
+                    </div>
+
+                    {/* Hidratación */}
+                    <div className="glass-card mi-card" style={{ padding: '18px', borderRadius: '16px', background: 'white', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                        <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'var(--magenta-gradient)', opacity: 0.85, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Droplet size={13} color="white" />
+                        </div>
+                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Hidratación</span>
+                      </div>
+                      {hidratacion.tipo_tratamiento || hidratacion.marca || hidratacion.fecha ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          {hidratacion.tipo_tratamiento && <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}><strong>Tipo:</strong> {hidratacion.tipo_tratamiento}</div>}
+                          {hidratacion.marca && <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}><strong>Marca:</strong> {hidratacion.marca}</div>}
+                          {hidratacion.fecha && <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}><strong>Fecha:</strong> {hidratacion.fecha}</div>}
+                        </div>
+                      ) : <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontStyle: 'italic' }}>Sin datos</span>}
+                    </div>
+                  </div>
+
+                  {(d.wash_frequency || d.notas) && (
+                    <div className="glass-card mi-card" style={{ padding: '18px', borderRadius: '16px', background: 'white', border: '1px solid rgba(160,80,106,0.15)', boxShadow: '0 4px 16px rgba(160,80,106,0.04)' }}>
+                      {d.wash_frequency && (
+                        <div style={{ marginBottom: d.notas ? '12px' : 0 }}>
+                          <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Frecuencia de lavado: </span>
+                          <span style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: '700' }}>{d.wash_frequency}</span>
                         </div>
                       )}
-                      {images.length > 0 && (
-                        <div className="glass-card mi-card" style={{ padding: '20px', borderRadius: '20px', background: 'white', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
-                          <h4 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: '800', color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Imágenes del Diagnóstico</h4>
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-                            {images.slice(0, 6).map((img, i) => (
-                              <img key={i} src={img} alt="" style={{ width: '100%', aspectRatio: '1', objectFit: 'cover', borderRadius: '10px', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }} />
-                            ))}
-                          </div>
+                      {d.notas && (
+                        <div>
+                          <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '750', textTransform: 'uppercase', letterSpacing: '0.3px' }}>Notas: </span>
+                          <span style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '500' }}>{d.notas}</span>
                         </div>
                       )}
                     </div>
@@ -3678,19 +3527,28 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                       </div>
 
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '14px' }}>
-                        {[
-                          { label: 'Hebra', value: diag.hair_type },
-                          { label: 'Porosidad', value: diag.porosity },
-                          { label: 'Cuero', value: diag.scalp_condition },
-                        ].filter(f => f.value).map((f, i) => {
-                          const style = getBadgeStyle(f.value);
-                          return (
-                            <div key={i} className="mi-tag" style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '6px 12px', borderRadius: '20px', background: style.bg, border: `1px solid ${style.border}`, color: style.color }}>
-                              <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{f.label}:</span>
-                              <span style={{ fontSize: '12.5px', fontWeight: '800' }}>{f.value}</span>
-                            </div>
-                          );
-                        })}
+                        {(() => {
+                          const dd = diag.data || {};
+                          const ss = dd.salud || {};
+                          const cc = dd.cuero_cabelludo || {};
+                          const checked = Object.entries(ss).filter(([,v]) => v).map(([k]) => {
+                            const labels = { embarazos_partos: 'Embarazos', problemas_hormonales: 'Hormonas', caida: 'Caída', saborrea: 'Saborrea', caspa: 'Caspa', dermatitis: 'Dermatitis', descamacion: 'Descamación', irritacion: 'Irritación', alopecia: 'Alopecia', anticonceptivos_orales: 'Anticoncep.' };
+                            return labels[k] || k;
+                          });
+                          const cueroType = cc.normal ? 'Normal' : cc.seco ? 'Seco' : cc.graso ? 'Graso' : '';
+                          return [
+                            cueroType && { label: 'Cuero', value: cueroType },
+                            checked.length > 0 && { label: 'Salud', value: checked.join(', ') },
+                          ].filter(Boolean).map((f, i) => {
+                            const badgeStyle = getBadgeStyle(f.value);
+                            return (
+                              <div key={i} className="mi-tag" style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '6px 12px', borderRadius: '20px', background: badgeStyle.bg, border: `1px solid ${badgeStyle.border}`, color: badgeStyle.color }}>
+                                <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{f.label}:</span>
+                                <span style={{ fontSize: '12.5px', fontWeight: '800' }}>{f.value}</span>
+                              </div>
+                            );
+                          });
+                        })()}
                       </div>
 
                       <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginTop: '12px' }}>

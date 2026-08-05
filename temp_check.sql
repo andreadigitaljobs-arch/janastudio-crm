@@ -1,1 +1,1 @@
-SELECT name, role, custom_modules FROM janastudio.staff;
+SELECT id, client_id, created_at, data, hair_type, porosity, elasticity, overall_score FROM janastudio.capillary_diagnoses ORDER BY created_at DESC LIMIT 10;
