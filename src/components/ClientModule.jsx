@@ -3849,29 +3849,7 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                 </button>
               </div>
 
-              {/* Recommendations */}
-              <div className="ficha-card mi-card" style={{ padding: '20px', borderRadius: '20px', background: 'linear-gradient(160deg, rgba(160,80,106,0.04) 0%, rgba(160,80,106,0.01) 100%)', boxShadow: '0 2px 12px rgba(160,80,106,0.04)' }}>
-                <h4 style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: '850', color: 'var(--text-primary)' }}>Recomendaciones para {clientFirstName}</h4>
-                <div className="ficha-row mi-row" style={{ padding: '14px', borderRadius: '14px', background: 'white', boxShadow: '0 1px 6px rgba(160,80,106,0.04)', marginBottom: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                    <span style={{ fontSize: '9px', fontWeight: '800', color: 'var(--pink-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Siguiente paso recomendado</span>
-                  </div>
-                  <div style={{ fontSize: '15px', fontWeight: '850', color: 'var(--text-primary)', marginBottom: '6px' }}>{activePkg ? activePkg.services?.name || 'Paquete activo' : 'Sin paquete activo'}</div>
-                  <p style={{ margin: '0 0 10px', fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.5 }}>{activePkg ? 'Quedan ' + remaining + ' de ' + activeTotal + ' sesiones. Revisa las citas y el vencimiento antes de continuar.' : 'Cuando se venda un paquete aparecerá aquí con sus sesiones reales.'}</p>
-                  <button type="button" onClick={() => openClientPanel('Detalle del paquete', 'Progreso, sesiones y vencimiento.', activePkg ? packagePanelItems.filter(item => item.id === activePkg.id) : [], 'No hay un paquete activo.')} className="btn-pink btn-interactive mi-btn" style={{ width: '100%', padding: '10px', fontSize: '12px', fontWeight: '750', borderRadius: '12px' }}>Ver detalles del paquete</button>
-                </div>
-                <div className="ficha-row mi-row" style={{ padding: '12px', borderRadius: '12px', background: 'white', boxShadow: '0 1px 6px rgba(160,80,106,0.04)' }}>
-                  <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: '6px' }}>Producto sugerido</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(160,80,106,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Droplet size={16} color="var(--pink-primary)" /></div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '12px', fontWeight: '800', color: 'var(--text-primary)' }}>Seguimiento sincronizado</div>
-                      <div style={{ fontSize: '10.5px', color: 'var(--text-muted)' }}>La información se actualiza desde Centro Láser, Agenda y Caja.</div>
-                    </div>
-                    <span style={{ fontSize: '10px', fontWeight: '700', color: 'var(--pink-primary)', whiteSpace: 'nowrap' }}>Datos reales</span>
-                  </div>
-                </div>
-              </div>
+
             </div>
           </div>
         );
