@@ -3531,30 +3531,11 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                         </span>
                       </div>
 
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '14px' }}>
-                        {(() => {
-                          const dd = diag.data || {};
-                          const ss = dd.salud || {};
-                          const cc = dd.cuero_cabelludo || {};
-                          const checked = Object.entries(ss).filter(([,v]) => v).map(([k]) => {
-                            const labels = { embarazos_partos: 'Embarazos', problemas_hormonales: 'Hormonas', caida: 'Caída', saborrea: 'Saborrea', caspa: 'Caspa', dermatitis: 'Dermatitis', descamacion: 'Descamación', irritacion: 'Irritación', alopecia: 'Alopecia', anticonceptivos_orales: 'Anticoncep.' };
-                            return labels[k] || k;
-                          });
-                          const cueroType = cc.normal ? 'Normal' : cc.seco ? 'Seco' : cc.graso ? 'Graso' : '';
-                          return [
-                            cueroType && { label: 'Cuero', value: cueroType },
-                            checked.length > 0 && { label: 'Salud', value: checked.join(', ') },
-                          ].filter(Boolean).map((f, i) => {
-                            const badgeStyle = getBadgeStyle(f.value);
-                            return (
-                              <div key={i} className="mi-tag" style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '6px 12px', borderRadius: '20px', background: badgeStyle.bg, border: `1px solid ${badgeStyle.border}`, color: badgeStyle.color }}>
-                                <span style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.3px' }}>{f.label}:</span>
-                                <span style={{ fontSize: '12.5px', fontWeight: '800' }}>{f.value}</span>
-                              </div>
-                            );
-                          });
-                        })()}
-                      </div>
+                      {diag.data?.wash_frequency && (
+                        <div style={{ marginBottom: '14px', fontSize: '12.5px', color: 'var(--text-secondary)' }}>
+                          <strong>Frecuencia de lavado:</strong> {diag.data.wash_frequency}
+                        </div>
+                      )}
 
                       <div style={{ display: 'grid', gridTemplateColumns: (isMobile || isTablet) ? '1fr' : 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginTop: '12px' }}>
                         {diag.chemical_history && (
