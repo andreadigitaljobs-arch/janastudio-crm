@@ -3526,9 +3526,19 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                           <Activity size={15} /> Diagnóstico del {new Date(diag.created_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' })}
                           {diag.id === selectedDiagId && <span style={{ fontSize: '10px', fontWeight: '800', background: 'var(--pink-primary)', color: 'white', padding: '2px 8px', borderRadius: '10px', marginLeft: '6px' }}>Seleccionado</span>}
                         </span>
-                        <span style={{ fontSize: '12.5px', color: 'var(--text-muted)', fontWeight: '600' }}>
-                          {new Date(diag.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <span style={{ fontSize: '12.5px', color: 'var(--text-muted)', fontWeight: '600' }}>
+                            {new Date(diag.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); onNavigate?.('diagnosis', { clientId: client.id, editDiagId: diag.id }); }}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: '6px', display: 'flex', alignItems: 'center', color: 'var(--text-muted)' }}
+                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(160,80,106,0.08)'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                          >
+                            <Pencil size={14} />
+                          </button>
+                        </div>
                       </div>
 
                       {diag.data?.wash_frequency && (

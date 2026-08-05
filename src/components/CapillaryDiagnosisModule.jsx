@@ -4,6 +4,7 @@ import {
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { useNotifs } from '../context/NotificationContext';
+import { supabase } from '../lib/supabase';
 
 const emptyDiagnosis = {
   wash_frequency: '',
@@ -75,7 +76,7 @@ const SmallInput = ({ value, onChange, placeholder, style }) => (
   />
 );
 
-const CapillaryDiagnosisModule = ({ isMobile, clients = [], onNavigate, prefillClientId }) => {
+const CapillaryDiagnosisModule = ({ isMobile, clients = [], onNavigate, prefillClientId, editDiagId }) => {
   const { showToast } = useNotifs();
   const [search, setSearch] = useState('');
   const [selectedClient, setSelectedClient] = useState(() => (
@@ -84,6 +85,7 @@ const CapillaryDiagnosisModule = ({ isMobile, clients = [], onNavigate, prefillC
   const [diagnosis, setDiagnosis] = useState(emptyDiagnosis);
   const [saving, setSaving] = useState(false);
   const [savedOk, setSavedOk] = useState(false);
+  const [editingDiag, setEditingDiag] = useState(null);
 
   useEffect(() => {
     if (!prefillClientId) return;
@@ -93,6 +95,22 @@ const CapillaryDiagnosisModule = ({ isMobile, clients = [], onNavigate, prefillC
       setSavedOk(false);
     }
   }, [prefillClientId, clients]);
+
+  useEffect(() => {
+    if (!editDiagId || !selectedClient) return;
+    const loadForEdit = async () => {
+      try {
+        const { data } = await supabase.from('capillary_diagnoses').select('*').eq('id', editDiagId).single();
+        if (data?.data) {
+          setDiagnosis(data.data);
+          setEditingDiag(data);
+        }
+      } catch (err) {
+        showToast('Error al cargar diagnóstico', 'error');
+      }
+    };
+    loadForEdit();
+  }, [editDiagId, selectedClient]);
 
   const filteredClients = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -129,14 +147,20 @@ const CapillaryDiagnosisModule = ({ isMobile, clients = [], onNavigate, prefillC
   const handleSave = async () => {
     setSaving(true);
     try {
-      await dataService.addCapillaryDiagnosis({
-        client_id: selectedClient.id,
-        ...diagnosis,
-      });
+      if (editingDiag) {
+        await supabase.from('capillary_diagnoses').update({ data: diagnosis }).eq('id', editingDiag.id);
+        showToast('Diagnóstico actualizado con éxito', 'success');
+      } else {
+        await dataService.addCapillaryDiagnosis({
+          client_id: selectedClient.id,
+          ...diagnosis,
+        });
+        showToast('Diagnóstico registrado con éxito', 'success');
+      }
       setSavedOk(true);
-      showToast('Diagnóstico registrado con éxito', 'success');
+      setEditingDiag(null);
     } catch (err) {
-      showToast('Error al registrar diagnóstico', 'error');
+      showToast('Error al guardar diagnóstico', 'error');
     } finally {
       setSaving(false);
     }
