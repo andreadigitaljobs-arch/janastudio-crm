@@ -164,7 +164,7 @@ const StaffTransactionHistory = ({ staffMember, rates, isMobile }) => {
               Solo se muestran operaciones asociadas a {staffMember.name}.
             </p>
           </div>
-          <div style={{ display: 'flex', gap: '5px', padding: '3px', borderRadius: '10px', background: 'rgba(0,0,0,0.3)', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '5px', padding: '3px', borderRadius: '10px', background: 'rgba(160,80,106,0.08)', flexWrap: 'wrap' }}>
             {FILTERS.map(option => (
               <button
                 key={option.id}
@@ -194,7 +194,7 @@ const StaffTransactionHistory = ({ staffMember, rates, isMobile }) => {
                 type={'date'}
                 value={customRange.start}
                 onChange={event => setCustomRange(current => ({ ...current, start: event.target.value }))}
-                style={{ width: '100%', marginTop: '6px', padding: '10px', borderRadius: '10px', color: 'white', background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.1)' }}
+                style={{ width: '100%', marginTop: '6px', padding: '10px', borderRadius: '10px', color: 'var(--text-primary)', background: 'rgba(160,80,106,0.04)', border: '1px solid rgba(160,80,106,0.15)' }}
               />
             </label>
             <label style={{ flex: 1, minWidth: '150px', color: 'var(--text-secondary)', fontSize: '11px', fontWeight: '800' }}>
@@ -204,7 +204,7 @@ const StaffTransactionHistory = ({ staffMember, rates, isMobile }) => {
                 value={customRange.end}
                 min={customRange.start || undefined}
                 onChange={event => setCustomRange(current => ({ ...current, end: event.target.value }))}
-                style={{ width: '100%', marginTop: '6px', padding: '10px', borderRadius: '10px', color: 'white', background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.1)' }}
+                style={{ width: '100%', marginTop: '6px', padding: '10px', borderRadius: '10px', color: 'var(--text-primary)', background: 'rgba(160,80,106,0.04)', border: '1px solid rgba(160,80,106,0.15)' }}
               />
             </label>
           </div>

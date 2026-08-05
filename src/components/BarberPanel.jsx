@@ -690,7 +690,7 @@ const BarberPanel = ({ isMobile, rates }) => {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
             <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: isStylist ? 'linear-gradient(135deg, #007aff, #00d2ff)' : 'var(--pink-gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              {isStylist ? <Droplets size={20} color="white" /> : <Sparkles size={20} color="black" />}
+              {isStylist ? <Droplets size={20} color="white" /> : <Sparkles size={20} color="white" />}
             </div>
             <h2 style={{ fontSize: '24px', fontWeight: '900' }}>¡Hola, <span className="text-gold">{selectedStylist.name.split(' ')[0]}!</span></h2>
           </div>
