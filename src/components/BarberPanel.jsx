@@ -741,7 +741,7 @@ const BarberPanel = ({ isMobile, rates }) => {
               cursor: 'pointer',
               fontSize: '12px',
               fontWeight: '850',
-              color: activeView === view.id ? '#080808' : 'var(--text-secondary)',
+              color: activeView === view.id ? '#fff' : 'var(--text-secondary)',
               background: activeView === view.id ? 'var(--pink-primary)' : 'transparent'
             }}
           >
