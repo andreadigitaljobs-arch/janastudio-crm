@@ -176,7 +176,7 @@ const StaffTransactionHistory = ({ staffMember, rates, isMobile }) => {
                   cursor: 'pointer',
                   fontWeight: '850',
                   fontSize: '11px',
-                  color: filter === option.id ? '#080808' : 'var(--text-secondary)',
+                  color: filter === option.id ? '#fff' : 'var(--text-secondary)',
                   background: filter === option.id ? 'var(--pink-primary)' : 'transparent'
                 }}
               >

@@ -30,7 +30,7 @@ const MODULE_ROLES = {
   scheduling: ['admin', 'reception', 'worker'],
   reception: ['admin', 'reception'],
   checkout: ['admin', 'reception', 'cashier'],
-  clients: ['admin', 'reception', 'cashier'],
+  clients: ['admin', 'reception', 'cashier', 'worker'],
   diagnosis: ['admin', 'reception'],
   personnel: ['admin'],
   services: ['admin'],

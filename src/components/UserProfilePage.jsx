@@ -46,13 +46,13 @@ const formatBs = (value) => Number(value || 0).toLocaleString('es-VE', {
   maximumFractionDigits: 2
 });
 
-const MoneyValue = ({ usd, rate }) => {
+const MoneyValue = ({ usd, rate, dark = false }) => {
   const ref = Number(usd || 0);
   const bcv = Number(rate || 0);
   return (
-    <span style={{ display: 'inline-block', lineHeight: 1.05 }}>
+    <span style={{ display: 'inline-block', lineHeight: 1.05, color: dark ? '#4a3036' : 'white' }}>
       <span style={{ display: 'block' }}>${ref.toFixed(2)} USD</span>
-      <span style={{ display: 'block', fontSize: '10px', color: 'rgba(255,255,255,0.48)', fontWeight: '700', marginTop: '5px', letterSpacing: 0 }}>
+      <span style={{ display: 'block', fontSize: '10px', color: dark ? '#a0506a' : 'rgba(255,255,255,0.48)', fontWeight: '700', marginTop: '5px', letterSpacing: 0 }}>
         Ref: {formatBs(ref * bcv)} Bs.
       </span>
     </span>
@@ -263,9 +263,9 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
     }
   };
 
-  const loadProfileData = async () => {
+  const loadProfileData = async (isBackground = false) => {
     try {
-      setLoading(true);
+      if (!isBackground) setLoading(true);
       const isAssistant = staffMember?.role?.toLowerCase().includes('asistente') || staffMember?.role?.toLowerCase().includes('lavado') || staffMember?.role?.toLowerCase().includes('operaciones');
       const monthStart = getBusinessMonthStart().toISOString();
       const weekAgo = new Date(Date.now() - 6 * 24 * 60 * 60 * 1000);
@@ -339,7 +339,7 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
   useEffect(() => {
     if (staffMember) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      loadProfileData();
+      loadProfileData(false);
       setTools(asArray(staffMember.tools));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -348,22 +348,20 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
   useEffect(() => {
     if (!staffMember) return undefined;
     let refreshTimer;
-    const refreshProfile = () => {
+    const refreshProfile = (isBg = true) => {
       dataService.invalidateOperationalCache();
       clearTimeout(refreshTimer);
-      refreshTimer = setTimeout(() => loadProfileData(), 350);
+      refreshTimer = setTimeout(() => loadProfileData(isBg), 350);
     };
     const refreshWhenVisible = () => {
-      if (document.visibilityState === 'visible') refreshProfile();
+      if (document.visibilityState === 'visible') refreshProfile(true);
     };
 
-    window.addEventListener('jana:data-changed', refreshProfile);
-    window.addEventListener('focus', refreshProfile);
+    window.addEventListener('jana:data-changed', () => refreshProfile(true));
     document.addEventListener('visibilitychange', refreshWhenVisible);
     return () => {
       clearTimeout(refreshTimer);
-      window.removeEventListener('jana:data-changed', refreshProfile);
-      window.removeEventListener('focus', refreshProfile);
+      window.removeEventListener('jana:data-changed', () => refreshProfile(true));
       document.removeEventListener('visibilitychange', refreshWhenVisible);
     };
   }, [staffMember]);
@@ -561,36 +559,36 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%', maxWidth: '1100px', margin: '0 auto', paddingBottom: '40px', overflowX: 'hidden' }}>
 
       <style>{`
-        .pp-card { background: var(--bg-secondary, #161616); border: 1px solid rgba(255,255,255,0.06); border-radius: 24px; overflow: hidden; }
-        .pp-card-gold { border-color: rgba(196,139,159,0.2); }
-        .stat-card-pp { padding: 22px; border-radius: 20px; position: relative; overflow: hidden; transition: transform 0.25s ease, border-color 0.25s ease; border: 1px solid rgba(255,255,255,0.04); }
-        .stat-card-pp:hover { transform: translateY(-4px); border-color: rgba(196,139,159,0.2); }
+        .pp-card { background: #ffffff; border: 1px solid rgba(212, 160, 154, 0.25); border-radius: 24px; overflow: hidden; }
+        .pp-card-gold { border-color: rgba(212, 160, 154, 0.35); }
+        .stat-card-pp { padding: 22px; border-radius: 20px; position: relative; overflow: hidden; transition: transform 0.25s ease, border-color 0.25s ease; border: 1px solid rgba(212, 160, 154, 0.2); }
+        .stat-card-pp:hover { transform: translateY(-4px); border-color: rgba(196,139,159,0.35); }
         .sparkbar { border-radius: 3px 3px 0 0; flex: 1; transition: height 0.4s ease; }
         .appt-row-pp { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 14px; transition: background 0.2s; overflow: hidden; }
-        .appt-row-pp:hover { background: rgba(255,255,255,0.03); }
-        .appt-row-pp.next-appt { background: rgba(196,139,159,0.05); border: 1px solid rgba(196,139,159,0.15); }
+        .appt-row-pp:hover { background: #fdf3f4; }
+        .appt-row-pp.next-appt { background: #fbf0f2; border: 1px solid rgba(212, 160, 154, 0.3); }
         @media (max-width: 600px) {
           .appt-row-pp { gap: 8px; padding: 10px 10px; flex-wrap: nowrap; }
           .appt-badge { font-size: 10px !important; padding: 3px 7px !important; }
           .appt-price { font-size: 12px !important; }
         }
-        .goal-bar-track { background: rgba(255,255,255,0.06); border-radius: 4px; height: 6px; overflow: hidden; }
+        .goal-bar-track { background: #faf3f2; border-radius: 4px; height: 6px; overflow: hidden; }
         .goal-bar-fill { height: 100%; border-radius: 4px; transition: width 1s cubic-bezier(0.25,1,0.5,1); }
-        .rank-row { background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.03); border-radius: 12px; padding: 10px 14px; transition: all 0.2s; }
-        .rank-row:hover { background: rgba(255,255,255,0.03); border-color: rgba(196,139,159,0.15); transform: translateX(4px); }
-        .inventory-tool-row { padding: 12px 14px; background: rgba(255,255,255,0.03); border-radius: 16px; border: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: flex-start; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; }
-        .inventory-tool-row:hover, .inventory-tool-row:active { border-color: rgba(196,139,159,0.35); background: rgba(196,139,159,0.04); box-shadow: 0 0 12px rgba(196,139,159,0.1); }
-        .custom-form-input { height: 40px; padding: 0 14px; font-size: 13px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); color: white; width: 100%; outline: none; transition: all 0.2s; }
+        .rank-row { background: #ffffff; border: 1px solid rgba(212, 160, 154, 0.2); border-radius: 12px; padding: 10px 14px; transition: all 0.2s; }
+        .rank-row:hover { background: #fdf3f4; border-color: rgba(212, 160, 154, 0.35); transform: translateX(4px); }
+        .inventory-tool-row { padding: 12px 14px; background: #ffffff; border-radius: 16px; border: 1px solid rgba(212, 160, 154, 0.2); display: flex; justify-content: space-between; align-items: flex-start; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s; }
+        .inventory-tool-row:hover, .inventory-tool-row:active { border-color: rgba(196,139,159,0.35); background: #fdf3f4; box-shadow: 0 0 12px rgba(196,139,159,0.1); }
+        .custom-form-input { height: 40px; padding: 0 14px; font-size: 13px; border-radius: 10px; background: #ffffff; border: 1px solid rgba(212, 160, 154, 0.3); color: #4a3036; width: 100%; outline: none; transition: all 0.2s; }
         .custom-form-input:focus { border-color: var(--pink-primary); box-shadow: 0 0 10px rgba(196,139,159,0.2); }
-        .glow-avatar-border { position: relative; background: linear-gradient(135deg, var(--pink-primary) 0%, #a67c1e 100%); padding: 4px; border-radius: 50%; box-shadow: 0 8px 25px rgba(0,0,0,0.6), 0 0 20px rgba(196,139,159,0.3); transition: transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
+        .glow-avatar-border { position: relative; background: linear-gradient(135deg, var(--pink-primary) 0%, #d4a09a 100%); padding: 4px; border-radius: 50%; box-shadow: 0 6px 20px rgba(74, 48, 54, 0.12), 0 0 20px rgba(196,139,159,0.15); transition: transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
         .glow-avatar-border:hover { transform: scale(1.05) rotate(5deg); }
         .bday-avatar-pulse { animation: bdayAvatarPulse 2s ease-in-out infinite !important; }
-        @keyframes bdayAvatarPulse { 0%,100% { box-shadow: 0 8px 25px rgba(0,0,0,0.6), 0 0 20px rgba(196,139,159,0.4); } 50% { box-shadow: 0 8px 25px rgba(0,0,0,0.6), 0 0 50px rgba(196,139,159,0.9), 0 0 80px rgba(196,139,159,0.35); } }
+        @keyframes bdayAvatarPulse { 0%,100% { box-shadow: 0 6px 20px rgba(74,48,54,0.12), 0 0 20px rgba(196,139,159,0.2); } 50% { box-shadow: 0 6px 20px rgba(74,48,54,0.12), 0 0 40px rgba(196,139,159,0.5), 0 0 60px rgba(196,139,159,0.25); } }
         @keyframes bdayCrownFloat { 0%,100% { transform: translateX(-50%) translateY(0) rotate(-6deg); } 50% { transform: translateX(-50%) translateY(-6px) rotate(6deg); } }
         @keyframes bdayBalloon { 0%,100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-8px) rotate(4deg); } }
         @keyframes bdayShimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
         @keyframes bdayOrb { 0%,100% { transform: scale(1); opacity: 0.7; box-shadow: 0 0 6px rgba(196,139,159,0.6); } 50% { transform: scale(1.5); opacity: 1; box-shadow: 0 0 14px rgba(196,139,159,1); } }
-        .animated-aurora { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(20,20,20,0.95) 0%, rgba(42,34,15,0.85) 50%, rgba(20,20,20,0.95) 100%); background-size: 200% 200%; animation: auroraBg 15s ease infinite; }
+        .animated-aurora { position: absolute; inset: 0; background: linear-gradient(135deg, #fdf3f4 0%, #f7d6dc 50%, #fdf3f4 100%); background-size: 200% 200%; animation: auroraBg 15s ease infinite; }
         @keyframes auroraBg { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
         .anim-0 { animation: slideUpFade 0.5s cubic-bezier(0.22,1,0.36,1) both 0.05s; }
         .anim-1 { animation: slideUpFade 0.5s cubic-bezier(0.22,1,0.36,1) both 0.12s; }
@@ -629,19 +627,19 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
                   <div style={{ position: 'absolute', top: '-24px', left: '50%', fontSize: '26px', zIndex: 5, animation: 'bdayCrownFloat 2.5s ease-in-out infinite', filter: 'drop-shadow(0 2px 6px rgba(196,139,159,0.9))' }}>👑</div>
                 )}
               <div className={`glow-avatar-border${isBirthday ? ' bday-avatar-pulse' : ''}`}>
-                <div style={{ width: '96px', height: '96px', borderRadius: '50%', backgroundColor: '#121212', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '96px', height: '96px', borderRadius: '50%', backgroundColor: '#fdf3f4', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   {staffMember.image_url ? (
                     <img src={staffMember.image_url} alt={staffMember.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
-                    <span style={{ fontSize: '38px', fontWeight: '950', color: 'white' }}>{staffMember.name?.charAt(0) || 'A'}</span>
+                    <span style={{ fontSize: '38px', fontWeight: '950', color: '#4a3036' }}>{staffMember.name?.charAt(0) || 'A'}</span>
                   )}
                 </div>
-                <div style={{ position: 'absolute', bottom: 5, right: 5, width: 14, height: 14, borderRadius: '50%', background: '#30d158', border: '3px solid #161616', boxShadow: '0 0 8px rgba(48,209,88,0.5)' }} />
+                <div style={{ position: 'absolute', bottom: 5, right: 5, width: 14, height: 14, borderRadius: '50%', background: '#30d158', border: '3px solid white', boxShadow: '0 0 8px rgba(48,209,88,0.5)' }} />
               </div>
               </div>
 
               {/* Nombre */}
-              <div style={{ fontSize: '26px', fontWeight: '950', color: '#fff', letterSpacing: '-0.5px', marginTop: '12px', lineHeight: 1.1 }}>{staffMember.name}</div>
+              <div style={{ fontSize: '26px', fontWeight: '950', color: '#4a3036', letterSpacing: '-0.5px', marginTop: '12px', lineHeight: 1.1 }}>{staffMember.name}</div>
 
               {isBirthday && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px', background: 'linear-gradient(135deg, rgba(196,139,159,0.12), rgba(196,139,159,0.04))', border: '1px solid rgba(196,139,159,0.28)', borderRadius: '20px', padding: '7px 18px', boxShadow: '0 0 20px rgba(196,139,159,0.1)' }}>
@@ -665,8 +663,8 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
                   const waNumber = raw.startsWith('0') ? `58${raw.slice(1)}` : `58${raw}`;
                   return (
                     <a href={`https://wa.me/${waNumber}`} target="_blank" rel="noreferrer"
-                      style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', fontWeight: '600', background: 'rgba(255,255,255,0.05)', padding: '4px 12px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.08)', display: 'inline-flex', alignItems: 'center', gap: '5px', textDecoration: 'none' }}>
-                      <Smartphone size={11} color="#888" /> {display}
+                      style={{ fontSize: '11px', color: '#a0506a', fontWeight: '600', background: 'rgba(212, 160, 154, 0.1)', padding: '4px 12px', borderRadius: '20px', border: '1px solid rgba(212, 160, 154, 0.2)', display: 'inline-flex', alignItems: 'center', gap: '5px', textDecoration: 'none' }}>
+                      <Smartphone size={11} color="#a0506a" /> {display}
                     </a>
                   );
                 })()}
@@ -679,21 +677,21 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
                 { val: _today.filter(a => a.status === 'Completado').length, lbl: isAssistant ? 'Tratamientos hoy' : 'Hoy' },
                 { val: _monthly.servicesCount,                                lbl: isAssistant ? 'Tratamientos mes' : 'Este mes' },
                 { val: `${_stats.avgDurationMin} min`,                        lbl: 'Tiempo prom.' },
-                { val: <MoneyValue usd={todayComm} rate={profileRate} />,              lbl: 'Ganancia hoy' },
-                { val: <MoneyValue usd={_monthly.income} rate={profileRate} />,        lbl: 'Ganancia mes' },
+                { val: <MoneyValue usd={todayComm} rate={profileRate} dark={true} />,              lbl: 'Ganancia hoy' },
+                { val: <MoneyValue usd={_monthly.income} rate={profileRate} dark={true} />,        lbl: 'Ganancia mes' },
               ];
               const StatCell = ({ item, borderRight, borderTop }) => (
-                <div style={{ padding: '14px 10px', textAlign: 'center', borderRight: borderRight ? '1px solid rgba(255,255,255,0.04)' : 'none', borderTop: borderTop ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+                <div style={{ padding: '14px 10px', textAlign: 'center', borderRight: borderRight ? '1px solid rgba(212, 160, 154, 0.15)' : 'none', borderTop: borderTop ? '1px solid rgba(212, 160, 154, 0.15)' : 'none' }}>
                   <div style={{ fontSize: '18px', fontWeight: '800', color: 'var(--pink-primary)' }}>{item.val}</div>
-                  <div style={{ fontSize: '10px', color: '#666', marginTop: '3px', letterSpacing: '0.3px' }}>{item.lbl}</div>
+                  <div style={{ fontSize: '10px', color: '#a0506a', marginTop: '3px', letterSpacing: '0.3px' }}>{item.lbl}</div>
                 </div>
               );
               return (
                 <>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', borderTop: '1px solid rgba(212, 160, 154, 0.15)' }}>
                     {stats5.slice(0, 3).map((item, i) => <StatCell key={i} item={item} borderRight={i < 2} borderTop={false} />)}
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', borderTop: '1px solid rgba(212, 160, 154, 0.15)' }}>
                     {stats5.slice(3).map((item, i) => <StatCell key={i} item={item} borderRight={i < 1} borderTop={false} />)}
                   </div>
                 </>
@@ -716,20 +714,20 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
                   <div style={{ position: 'absolute', top: '-26px', left: '50%', fontSize: '28px', zIndex: 5, animation: 'bdayCrownFloat 2.5s ease-in-out infinite', filter: 'drop-shadow(0 2px 8px rgba(196,139,159,0.9))' }}>👑</div>
                 )}
                 <div className={`glow-avatar-border${isBirthday ? ' bday-avatar-pulse' : ''}`}>
-                  <div style={{ width: '108px', height: '108px', borderRadius: '50%', backgroundColor: '#121212', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ width: '108px', height: '108px', borderRadius: '50%', backgroundColor: '#fdf3f4', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {staffMember.image_url ? (
                       <img src={staffMember.image_url} alt={staffMember.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
-                      <span style={{ fontSize: '42px', fontWeight: '950', color: 'white' }}>{staffMember.name?.charAt(0) || 'A'}</span>
+                      <span style={{ fontSize: '42px', fontWeight: '950', color: '#4a3036' }}>{staffMember.name?.charAt(0) || 'A'}</span>
                     )}
                   </div>
-                  <div style={{ position: 'absolute', bottom: 5, right: 5, width: 16, height: 16, borderRadius: '50%', background: '#30d158', border: '3px solid #161616', boxShadow: '0 0 8px rgba(48,209,88,0.5)' }} />
+                  <div style={{ position: 'absolute', bottom: 5, right: 5, width: 16, height: 16, borderRadius: '50%', background: '#30d158', border: '3px solid white', boxShadow: '0 0 8px rgba(48,209,88,0.5)' }} />
                 </div>
               </div>
 
               <div style={{ flex: 1, paddingBottom: '18px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                 <div>
-                <div style={{ fontSize: '28px', fontWeight: '950', color: '#fff', letterSpacing: '-0.5px', marginBottom: '8px', lineHeight: 1.1, transform: 'translateY(-14px)' }}>{staffMember.name}</div>
+                <div style={{ fontSize: '28px', fontWeight: '950', color: '#4a3036', letterSpacing: '-0.5px', marginBottom: '8px', lineHeight: 1.1, transform: 'translateY(-14px)' }}>{staffMember.name}</div>
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                   <span style={{ fontSize: '11px', fontWeight: '900', color: '#121212', background: 'var(--pink-primary)', padding: '4px 12px', borderRadius: '20px', textTransform: 'uppercase', letterSpacing: '1px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
                     <Shield size={11} /> {roleName}
@@ -740,8 +738,8 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
                     const waNumber = raw.startsWith('0') ? `58${raw.slice(1)}` : `58${raw}`;
                     return (
                       <a href={`https://wa.me/${waNumber}`} target="_blank" rel="noreferrer"
-                        style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', fontWeight: '700', background: 'rgba(255,255,255,0.05)', padding: '4px 10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.06)', display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'none' }}>
-                        <Smartphone size={10} /> {display}
+                        style={{ fontSize: '11px', color: '#a0506a', fontWeight: '700', background: 'rgba(212, 160, 154, 0.1)', padding: '4px 10px', borderRadius: '8px', border: '1px solid rgba(212, 160, 154, 0.2)', display: 'inline-flex', alignItems: 'center', gap: '4px', textDecoration: 'none' }}>
+                        <Smartphone size={10} color="#a0506a" /> {display}
                       </a>
                     );
                   })()}
@@ -762,7 +760,7 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
                       <div style={{ fontSize: '11px', fontWeight: '900', letterSpacing: '2.5px', textTransform: 'uppercase', background: 'linear-gradient(90deg, #a67c1e, #ffe066, #c48b9f, #ffe066, #a67c1e)', backgroundSize: '200% auto', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', animation: 'bdayShimmer 2.5s linear infinite' }}>
                         ✦ HOY ES TU DÍA ✦
                       </div>
-                      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginTop: '4px', fontWeight: '600', letterSpacing: '0.5px' }}>El equipo Jana te celebra</div>
+                      <div style={{ fontSize: '11px', color: '#a0506a', marginTop: '4px', fontWeight: '600', letterSpacing: '0.5px' }}>El equipo Jana te celebra</div>
                     </div>
                   </div>
                 )}
@@ -770,17 +768,17 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
             </div>
 
             {/* Quick stats strip desktop */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', borderTop: '1px solid rgba(212, 160, 154, 0.15)' }}>
               {[
                 { val: _today.filter(a => a.status === 'Completado').length, lbl: isAssistant ? 'Tratamientos hoy' : 'Servicios hoy' },
                 { val: _monthly.servicesCount,                                lbl: isAssistant ? 'Tratamientos mes' : 'Este mes' },
-                { val: <MoneyValue usd={todayComm} rate={profileRate} />,              lbl: 'Ganancia hoy' },
-                { val: <MoneyValue usd={_monthly.income} rate={profileRate} />,        lbl: 'Ganancia mes' },
+                { val: <MoneyValue usd={todayComm} rate={profileRate} dark={true} />,              lbl: 'Ganancia hoy' },
+                { val: <MoneyValue usd={_monthly.income} rate={profileRate} dark={true} />,        lbl: 'Ganancia mes' },
                 { val: `${_stats.avgDurationMin} min`,                        lbl: 'Tiempo prom.' },
               ].map((item, i) => (
-                <div key={i} style={{ padding: '16px 20px', textAlign: 'center', borderRight: i < 4 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
+                <div key={i} style={{ padding: '16px 20px', textAlign: 'center', borderRight: i < 4 ? '1px solid rgba(212, 160, 154, 0.15)' : 'none' }}>
                   <div style={{ fontSize: '20px', fontWeight: '800', color: 'var(--pink-primary)' }}>{item.val}</div>
-                  <div style={{ fontSize: '11px', color: '#666', marginTop: '3px', letterSpacing: '0.3px' }}>{item.lbl}</div>
+                  <div style={{ fontSize: '11px', color: '#a0506a', marginTop: '3px', letterSpacing: '0.3px' }}>{item.lbl}</div>
                 </div>
               ))}
             </div>
@@ -796,13 +794,13 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
       ) : (
         <>
           {/* Top: main commission card – full width */}
-          <div className="glass-card anim-1" style={{ background: 'rgba(22,22,22,0.8)', padding: '18px 20px', borderRadius: '18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="glass-card anim-1" style={{ background: 'linear-gradient(135deg, #ffffff 0%, #fdf3f4 100%)', border: '1px solid rgba(212, 160, 154, 0.25)', padding: '18px 20px', borderRadius: '18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <div style={{ fontSize: '9px', fontWeight: '800', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px' }}>
+              <div style={{ fontSize: '9px', fontWeight: '800', color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '8px' }}>
                 {isAssistant ? 'Comisión Tratamiento' : 'Comisión Servicios'}
               </div>
-              <div style={{ fontSize: '30px', fontWeight: '950', color: 'white', letterSpacing: '-0.5px' }}>
-                <MoneyValue usd={_stats.totalServiceComm} rate={profileRate} />
+              <div style={{ fontSize: '30px', fontWeight: '950', color: '#4a3036', letterSpacing: '-0.5px' }}>
+                <MoneyValue usd={_stats.totalServiceComm} rate={profileRate} dark={true} />
               </div>
               <div style={{ height: '2px', background: '#c48b9f', borderRadius: '2px', width: '32px', opacity: 0.7, marginTop: '10px' }} />
             </div>
@@ -814,17 +812,17 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
           {/* Bottom row: 2 compact cards */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }} className="anim-2">
             {[
-              { label: 'Comisión Productos', val: <MoneyValue usd={_stats.totalProductComm} rate={profileRate} />, icon: <ShoppingBag size={17} color="#30d158" />, iconBg: 'rgba(48,209,88,0.1)', iconBorder: 'rgba(48,209,88,0.2)', accentColor: '#30d158' },
-              { label: 'Total Propinas',     val: <MoneyValue usd={_stats.totalTips} rate={profileRate} />,        icon: <TrendingUp size={17} color="#0a84ff" />, iconBg: 'rgba(10,132,255,0.1)', iconBorder: 'rgba(10,132,255,0.2)', accentColor: '#0a84ff' },
+              { label: 'Comisión Productos', val: <MoneyValue usd={_stats.totalProductComm} rate={profileRate} dark={true} />, icon: <ShoppingBag size={17} color="#30d158" />, iconBg: 'rgba(48,209,88,0.1)', iconBorder: 'rgba(48,209,88,0.2)', accentColor: '#30d158' },
+              { label: 'Total Propinas',     val: <MoneyValue usd={_stats.totalTips} rate={profileRate} dark={true} />,        icon: <TrendingUp size={17} color="#0a84ff" />, iconBg: 'rgba(10,132,255,0.1)', iconBorder: 'rgba(10,132,255,0.2)', accentColor: '#0a84ff' },
             ].map((card, i) => (
-              <div key={i} className={`glass-card anim-${i + 3}`} style={{ background: 'rgba(22,22,22,0.8)', padding: '16px 14px', borderRadius: '18px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div key={i} className={`glass-card anim-${i + 3}`} style={{ background: 'linear-gradient(135deg, #ffffff 0%, #fdf3f4 100%)', border: '1px solid rgba(212, 160, 154, 0.25)', padding: '16px 14px', borderRadius: '18px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ fontSize: '9px', fontWeight: '800', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.6px', lineHeight: '1.3' }}>{card.label}</div>
+                  <div style={{ fontSize: '9px', fontWeight: '800', color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.6px', lineHeight: '1.3' }}>{card.label}</div>
                   <div style={{ width: '30px', height: '30px', borderRadius: '9px', background: card.iconBg, border: `1px solid ${card.iconBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     {card.icon}
                   </div>
                 </div>
-                <div style={{ fontSize: '22px', fontWeight: '950', color: 'white', letterSpacing: '-0.5px' }}>{card.val}</div>
+                <div style={{ fontSize: '22px', fontWeight: '950', color: '#4a3036', letterSpacing: '-0.5px' }}>{card.val}</div>
                 <div style={{ height: '2px', background: card.accentColor, borderRadius: '2px', width: '32px', opacity: 0.7 }} />
               </div>
             ))}
@@ -838,15 +836,15 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <Calendar size={17} color="var(--pink-primary)" />
-                  <h4 style={{ fontSize: '13px', fontWeight: '900', color: 'white', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Agenda de hoy</h4>
+                  <h4 style={{ fontSize: '13px', fontWeight: '900', color: '#4a3036', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Agenda de hoy</h4>
                 </div>
-                <span style={{ fontSize: '12px', color: '#555' }}>
+                <span style={{ fontSize: '12px', color: '#a0506a' }}>
                   {_today.filter(a => a.status === 'Completado').length}/{_today.length} completados
                 </span>
               </div>
 
               {_today.length === 0 ? (
-                <div style={{ padding: '32px 20px', textAlign: 'center', color: 'rgba(255,255,255,0.25)', fontSize: '13px', border: '1px dashed rgba(255,255,255,0.07)', borderRadius: '14px' }}>
+                <div style={{ padding: '32px 20px', textAlign: 'center', color: '#a0506a', fontSize: '13px', border: '1px dashed rgba(212, 160, 154, 0.4)', borderRadius: '14px' }}>
                   Sin citas agendadas para hoy
                 </div>
               ) : (
@@ -856,15 +854,15 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
                     const isNext = idx === nextApptIdx;
                     return (
                       <div key={appt.id} className={`appt-row-pp${isNext ? ' next-appt' : ''}`}>
-                        <div style={{ fontSize: '11px', color: isNext ? '#c48b9f' : '#666', width: isMobile ? '48px' : '60px', flexShrink: 0, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                        <div style={{ fontSize: '11px', color: isNext ? '#c48b9f' : '#a0506a', width: isMobile ? '48px' : '60px', flexShrink: 0, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
                           {fmtTime(appt.scheduled_at || appt.created_at)}
                         </div>
                         <div style={{ width: 7, height: 7, borderRadius: '50%', background: cfg.dot, flexShrink: 0 }} />
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: isMobile ? '13px' : '14px', fontWeight: '700', color: 'white', lineHeight: '1.3' }}>
+                          <div style={{ fontSize: isMobile ? '13px' : '14px', fontWeight: '700', color: '#4a3036', lineHeight: '1.3' }}>
                             {appt.clients?.name || 'Cliente'}
                           </div>
-                          <div style={{ fontSize: '11px', color: '#666', lineHeight: '1.3' }}>{appt.services?.name || '—'}</div>
+                          <div style={{ fontSize: '11px', color: '#888', lineHeight: '1.3' }}>{appt.services?.name || '—'}</div>
                         </div>
                         <div className="appt-price" style={{ fontSize: '13px', fontWeight: '800', color: '#c48b9f', flexShrink: 0 }}>
                           ${Number(appt.total_price || 0).toFixed(0)}
@@ -884,12 +882,12 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <Target size={17} color="var(--pink-primary)" />
-                  <h4 style={{ fontSize: '13px', fontWeight: '900', color: 'white', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Metas del mes</h4>
+                  <h4 style={{ fontSize: '13px', fontWeight: '900', color: '#4a3036', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Metas del mes</h4>
                 </div>
                 {!editingGoals ? (
-                  <button onClick={handleOpenGoalEdit} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', color: '#888', cursor: 'pointer', padding: '5px 10px', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', fontWeight: '700', transition: 'all 0.2s' }}
+                  <button onClick={handleOpenGoalEdit} style={{ background: 'rgba(212, 160, 154, 0.1)', border: '1px solid rgba(212, 160, 154, 0.2)', borderRadius: '8px', color: '#a0506a', cursor: 'pointer', padding: '5px 10px', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', fontWeight: '700', transition: 'all 0.2s' }}
                     onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(196,139,159,0.3)'; e.currentTarget.style.color = '#c48b9f'; }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#888'; }}>
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(212, 160, 154, 0.2)'; e.currentTarget.style.color = '#a0506a'; }}>
                     <Pencil size={11} /> Editar
                   </button>
                 ) : (
@@ -897,7 +895,7 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
                     <button onClick={handleSaveGoals} style={{ background: 'rgba(196,139,159,0.15)', border: '1px solid rgba(196,139,159,0.3)', borderRadius: '8px', color: '#c48b9f', cursor: 'pointer', padding: '5px 10px', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: '800' }}>
                       <Check size={11} /> Guardar
                     </button>
-                    <button onClick={() => setEditingGoals(false)} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', color: '#888', cursor: 'pointer', padding: '5px 8px', display: 'flex', alignItems: 'center' }}>
+                    <button onClick={() => setEditingGoals(false)} style={{ background: 'rgba(212, 160, 154, 0.1)', border: '1px solid rgba(212, 160, 154, 0.2)', borderRadius: '8px', color: '#a0506a', cursor: 'pointer', padding: '5px 8px', display: 'flex', alignItems: 'center' }}>
                       <X size={11} />
                     </button>
                   </div>
@@ -911,7 +909,7 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
                     { label: 'Meta ingresos / mes',  key: 'income',   prefix: '$', suffix: ' USD' },
                   ].map(field => (
                     <div key={field.key}>
-                      <div style={{ fontSize: '11px', color: '#888', fontWeight: '700', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{field.label}</div>
+                      <div style={{ fontSize: '11px', color: '#a0506a', fontWeight: '700', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{field.label}</div>
                       <div style={{ position: 'relative' }}>
                         {field.prefix && <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#c48b9f', fontWeight: '800', fontSize: '14px' }}>{field.prefix}</span>}
                         <input
@@ -933,13 +931,13 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
                   ].map((goal, i) => (
                     <div key={i}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                        <span style={{ fontSize: '13px', color: '#aaa' }}>{goal.label}</span>
-                        <span style={{ fontSize: '13px', fontWeight: '700', color: 'white' }}>{goal.val}</span>
+                        <span style={{ fontSize: '13px', color: '#a0506a' }}>{goal.label}</span>
+                        <span style={{ fontSize: '13px', fontWeight: '700', color: '#4a3036' }}>{goal.val}</span>
                       </div>
                       <div className="goal-bar-track">
                         <div className="goal-bar-fill" style={{ width: `${goal.pct}%`, background: goal.color }} />
                       </div>
-                      <div style={{ fontSize: '11px', color: goal.pct >= 100 ? goal.color : '#555', marginTop: '5px', textAlign: 'right' }}>
+                      <div style={{ fontSize: '11px', color: goal.pct >= 100 ? goal.color : '#a0506a', marginTop: '5px', textAlign: 'right' }}>
                         {goal.pct >= 100 ? '¡Meta alcanzada! 🎉' : `${goal.pct}% completado`}
                       </div>
                     </div>
@@ -958,9 +956,9 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <Activity size={17} color="var(--pink-primary)" />
-                  <h4 style={{ fontSize: '13px', fontWeight: '900', color: 'white', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Rendimiento</h4>
+                  <h4 style={{ fontSize: '13px', fontWeight: '900', color: '#4a3036', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Rendimiento</h4>
                 </div>
-                 <div style={{ display: 'flex', gap: '4px', background: 'rgba(0, 0, 0, 0.3)', padding: '2px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.05)', flexWrap: 'wrap' }}>
+                 <div style={{ display: 'flex', gap: '4px', background: '#faf3f2', padding: '2px', borderRadius: '8px', border: '1px solid rgba(212, 160, 154, 0.25)', flexWrap: 'wrap' }}>
                   {[
                     { id: 'diario', label: 'Diario' },
                     { id: 'semana', label: 'Semana' },
@@ -976,7 +974,7 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
                         borderRadius: '6px',
                         border: 'none',
                         background: timeFilter === opt.id ? 'var(--pink-primary)' : 'transparent',
-                        color: timeFilter === opt.id ? '#0a0a00' : 'rgba(255,255,255,0.6)',
+                        color: timeFilter === opt.id ? '#fff' : '#a0506a',
                         fontSize: '11px',
                         fontWeight: '800',
                         cursor: 'pointer',
@@ -992,7 +990,7 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
               {timeFilter === 'rango' && (
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', animation: 'fadeIn 0.2s ease' }}>
                   <div style={{ flex: 1, minWidth: '120px' }}>
-                    <label style={{ display: 'block', fontSize: '9px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Desde</label>
+                    <label style={{ display: 'block', fontSize: '9px', fontWeight: '900', color: '#a0506a', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Desde</label>
                     <input 
                       type="date" 
                       value={customRange.start} 
@@ -1001,16 +999,16 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
                         width: '100%', 
                         padding: '6px 10px', 
                         borderRadius: '8px', 
-                        background: 'rgba(255,255,255,0.05)', 
-                        border: '1px solid rgba(255,255,255,0.1)', 
-                        color: 'white', 
+                        background: '#faf3f2', 
+                        border: '1px solid rgba(212, 160, 154, 0.3)', 
+                        color: '#4a3036', 
                         fontSize: '12px',
                         outline: 'none'
                       }} 
                     />
                   </div>
                   <div style={{ flex: 1, minWidth: '120px' }}>
-                    <label style={{ display: 'block', fontSize: '9px', fontWeight: '900', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Hasta</label>
+                    <label style={{ display: 'block', fontSize: '9px', fontWeight: '900', color: '#a0506a', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Hasta</label>
                     <input 
                       type="date" 
                       value={customRange.end} 
@@ -1019,9 +1017,9 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
                         width: '100%', 
                         padding: '6px 10px', 
                         borderRadius: '8px', 
-                        background: 'rgba(255,255,255,0.05)', 
-                        border: '1px solid rgba(255,255,255,0.1)', 
-                        color: 'white', 
+                        background: '#faf3f2', 
+                        border: '1px solid rgba(212, 160, 154, 0.3)', 
+                        color: '#4a3036', 
                         fontSize: '12px',
                         outline: 'none'
                       }} 
@@ -1033,29 +1031,29 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 {[
                   { icon: <Star size={12} color="#c48b9f" />, lbl: isAssistant ? 'TRATAMIENTOS' : 'SERVICIOS', val: _stats.totalAppointments },
-                  { icon: <Clock size={12} color="#c48b9f" />, lbl: 'TIEMPO PROM.', val: <>{_stats.avgDurationMin}<span style={{ fontSize: '13px', color: '#555', fontWeight: '700' }}> min</span></> },
+                  { icon: <Clock size={12} color="#c48b9f" />, lbl: 'TIEMPO PROM.', val: <>{_stats.avgDurationMin}<span style={{ fontSize: '13px', color: '#a0506a', fontWeight: '700' }}> min</span></> },
                 ].map((item, i) => (
-                  <div key={i} style={{ padding: '18px', background: 'rgba(0,0,0,0.25)', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.03)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#555', fontSize: '11px', fontWeight: '800', letterSpacing: '0.5px', marginBottom: '8px' }}>
+                  <div key={i} style={{ padding: '18px', background: '#faf3f2', borderRadius: '18px', border: '1px solid rgba(212, 160, 154, 0.25)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#a0506a', fontSize: '11px', fontWeight: '800', letterSpacing: '0.5px', marginBottom: '8px' }}>
                       {item.icon} {item.lbl}
                     </div>
-                    <div style={{ fontSize: '30px', fontWeight: '950', color: 'white' }}>{item.val}</div>
+                    <div style={{ fontSize: '30px', fontWeight: '950', color: '#4a3036' }}>{item.val}</div>
                   </div>
                 ))}
               </div>
 
               <div>
-                <div style={{ fontSize: '11px', fontWeight: '800', color: '#555', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '14px' }}>{isAssistant ? 'Tratamientos más realizados' : 'Servicios más realizados'}</div>
+                <div style={{ fontSize: '11px', fontWeight: '800', color: '#a0506a', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '14px' }}>{isAssistant ? 'Tratamientos más realizados' : 'Servicios más realizados'}</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {_stats.topServices.length === 0 ? (
-                    <div style={{ padding: '24px', textAlign: 'center', color: '#444', fontSize: '12px', border: '1px dashed rgba(255,255,255,0.06)', borderRadius: '14px' }}>Sin registros aún</div>
+                    <div style={{ padding: '24px', textAlign: 'center', color: '#a0506a', fontSize: '12px', border: '1px dashed rgba(212, 160, 154, 0.4)', borderRadius: '14px' }}>Sin registros aún</div>
                   ) : _stats.topServices.map((srv, idx) => (
                     <div key={idx} className="rank-row">
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px', marginBottom: '7px' }}>
-                        <span style={{ fontWeight: '700', color: 'white' }}>{srv.service_name}</span>
+                        <span style={{ fontWeight: '700', color: '#4a3036' }}>{srv.service_name}</span>
                         <span style={{ fontWeight: '900', color: '#c48b9f', background: 'rgba(196,139,159,0.08)', border: '1px solid rgba(196,139,159,0.15)', padding: '2px 9px', borderRadius: '7px', fontSize: '10px', whiteSpace: 'nowrap' }}>{srv.count} {isAssistant ? 'tratamientos' : 'servicios'}</span>
                       </div>
-                      <div style={{ height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
+                      <div style={{ height: '4px', background: '#faf3f2', borderRadius: '2px', overflow: 'hidden' }}>
                         <div style={{ width: `${Math.min(100, (srv.count / Math.max(1, _stats.totalAppointments)) * 100)}%`, height: '100%', background: 'var(--pink-gradient)', boxShadow: 'var(--pink-glow)' }} />
                       </div>
                     </div>
@@ -1069,23 +1067,23 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <Wrench size={17} color="var(--pink-primary)" />
-                  <h4 style={{ fontSize: '13px', fontWeight: '900', color: 'white', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Inventario Personal</h4>
+                  <h4 style={{ fontSize: '13px', fontWeight: '900', color: '#4a3036', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Inventario Personal</h4>
                 </div>
                 <button
                   onClick={() => setShowAddTool(!showAddTool)}
-                  style={{ background: showAddTool ? 'rgba(255,255,255,0.05)' : 'rgba(196,139,159,0.1)', border: showAddTool ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(196,139,159,0.25)', borderRadius: '10px', color: showAddTool ? 'white' : '#c48b9f', padding: '7px 13px', fontSize: '11px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', transition: 'all 0.2s' }}
+                  style={{ background: showAddTool ? 'rgba(212, 160, 154, 0.1)' : 'rgba(196,139,159,0.1)', border: showAddTool ? '1px solid rgba(212, 160, 154, 0.2)' : '1px solid rgba(196,139,159,0.25)', borderRadius: '10px', color: showAddTool ? '#4a3036' : '#c48b9f', padding: '7px 13px', fontSize: '11px', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', transition: 'all 0.2s' }}
                 >
                   <Plus size={12} /> {showAddTool ? 'Cerrar' : 'Asignar'}
                 </button>
               </div>
 
               {showAddTool && (
-                <div style={{ padding: '18px', background: 'rgba(0,0,0,0.3)', borderRadius: '18px', border: '1px solid rgba(196,139,159,0.2)' }}>
+                <div style={{ padding: '18px', background: '#faf3f2', borderRadius: '18px', border: '1px solid rgba(196,139,159,0.2)' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <div style={{ display: 'flex', gap: '8px' }}>
                       {['Propia', 'Asignada'].map(opt => (
                         <button key={opt} onClick={() => setNewTool({ ...newTool, ownership: opt })}
-                          style={{ flex: 1, height: '34px', borderRadius: '8px', border: 'none', background: newTool.ownership === opt ? '#c48b9f' : 'rgba(255,255,255,0.04)', color: newTool.ownership === opt ? 'black' : 'white', fontSize: '11px', fontWeight: '900', cursor: 'pointer', transition: 'all 0.2s' }}>
+                          style={{ flex: 1, height: '34px', borderRadius: '8px', border: 'none', background: newTool.ownership === opt ? '#c48b9f' : 'rgba(212, 160, 154, 0.1)', color: newTool.ownership === opt ? 'black' : '#4a3036', fontSize: '11px', fontWeight: '900', cursor: 'pointer', transition: 'all 0.2s' }}>
                           {opt === 'Asignada' ? 'Asignada del Stock' : opt}
                         </button>
                       ))}
@@ -1099,20 +1097,20 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
                       <div style={{ position: 'relative' }}>
                         <button type="button" onClick={() => setDropdownOpen(!dropdownOpen)} className="custom-form-input"
                           style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', border: dropdownOpen ? '1px solid #c48b9f' : undefined }}>
-                          <span style={{ color: newTool.inventory_id ? 'white' : 'rgba(255,255,255,0.4)' }}>
+                          <span style={{ color: newTool.inventory_id ? '#4a3036' : 'rgba(74, 48, 54, 0.4)' }}>
                             {newTool.inventory_id ? availableInventoryTools.find(t => t.id === newTool.inventory_id)?.name : 'Selecciona una herramienta...'}
                           </span>
                           <ChevronDown size={15} color="#c48b9f" style={{ transform: dropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
                         </button>
                         {dropdownOpen && (
-                          <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: '5px', background: 'rgba(20,20,20,0.97)', border: '1px solid rgba(196,139,159,0.3)', borderRadius: '10px', maxHeight: '160px', overflowY: 'auto', zIndex: 100 }}>
+                          <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: '5px', background: '#ffffff', border: '1px solid rgba(196,139,159,0.3)', borderRadius: '10px', maxHeight: '160px', overflowY: 'auto', zIndex: 100 }}>
                             {availableInventoryTools.length === 0 ? (
-                              <div style={{ padding: '12px', color: '#555', fontSize: '13px', textAlign: 'center' }}>Sin herramientas disponibles</div>
+                              <div style={{ padding: '12px', color: '#a0506a', fontSize: '13px', textAlign: 'center' }}>Sin herramientas disponibles</div>
                             ) : availableInventoryTools.map(t => (
                               <div key={t.id} onClick={() => { setNewTool({ ...newTool, inventory_id: t.id }); setDropdownOpen(false); }}
-                                style={{ padding: '10px 14px', color: newTool.inventory_id === t.id ? '#c48b9f' : 'white', background: newTool.inventory_id === t.id ? 'rgba(196,139,159,0.08)' : 'transparent', cursor: 'pointer', fontSize: '13px', borderBottom: '1px solid rgba(255,255,255,0.02)' }}
+                                style={{ padding: '10px 14px', color: newTool.inventory_id === t.id ? '#c48b9f' : '#4a3036', background: newTool.inventory_id === t.id ? 'rgba(196,139,159,0.08)' : 'transparent', cursor: 'pointer', fontSize: '13px', borderBottom: '1px solid rgba(212, 160, 154, 0.15)' }}
                                 onMouseEnter={e => { e.currentTarget.style.background = 'rgba(196,139,159,0.08)'; e.currentTarget.style.color = '#c48b9f'; }}
-                                onMouseLeave={e => { e.currentTarget.style.background = newTool.inventory_id === t.id ? 'rgba(196,139,159,0.08)' : 'transparent'; e.currentTarget.style.color = newTool.inventory_id === t.id ? '#c48b9f' : 'white'; }}>
+                                onMouseLeave={e => { e.currentTarget.style.background = newTool.inventory_id === t.id ? 'rgba(196,139,159,0.08)' : 'transparent'; e.currentTarget.style.color = newTool.inventory_id === t.id ? '#c48b9f' : '#4a3036'; }}>
                                 {t.name} (Ref: ${t.price})
                               </div>
                             ))}
@@ -1129,7 +1127,7 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '280px', overflowY: 'auto' }}>
                 {_tools.length === 0 ? (
-                  <div style={{ padding: '28px', textAlign: 'center', color: '#444', fontSize: '12px', border: '1px dashed rgba(255,255,255,0.06)', borderRadius: '14px' }}>
+                  <div style={{ padding: '28px', textAlign: 'center', color: '#a0506a', fontSize: '12px', border: '1px dashed rgba(212, 160, 154, 0.4)', borderRadius: '14px' }}>
                     Ninguna herramienta registrada en este perfil.
                   </div>
                 ) : _tools.map(tool => (
@@ -1139,8 +1137,8 @@ const UserProfilePage = ({ staffMember, inventory = [], onUpdate, isMobile, rate
                         <Wrench size={16} color={tool.ownership === 'Propia' ? '#c48b9f' : '#30d158'} />
                       </div>
                       <div style={{ minWidth: 0 }}>
-                        <div style={{ fontWeight: '800', fontSize: '13px', color: 'white', marginBottom: '3px' }}>{tool.name}</div>
-                        <div style={{ fontSize: '11px', color: '#888' }}>
+                        <div style={{ fontWeight: '800', fontSize: '13px', color: '#4a3036', marginBottom: '3px' }}>{tool.name}</div>
+                        <div style={{ fontSize: '11px', color: '#a0506a' }}>
                           {tool.brand} · <span style={{ color: tool.ownership === 'Propia' ? '#c48b9f' : '#30d158', fontWeight: '700' }}>{tool.ownership}</span>
                         </div>
                       </div>

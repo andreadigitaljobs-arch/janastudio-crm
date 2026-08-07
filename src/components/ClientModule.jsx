@@ -293,19 +293,8 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
     return 0;
   });
 
-  // Stylists only see clients they created or served — unless granted via custom_modules
-  const roleKind = getRoleKind(user?.role);
-  const isStylist = roleKind === 'stylist';
-  const hasClientsModule = Array.isArray(user?.custom_modules?.modules) && user.custom_modules.modules.includes('clients');
-  const roleFilteredClients = (isStylist && !hasClientsModule)
-    ? sortedClients.filter(c =>
-        c.created_by_staff_id === user?.id ||
-        (c.served_by_staff_ids || []).includes(user?.id)
-      )
-    : sortedClients;
-
   // Filter clients by search
-  const filteredClients = roleFilteredClients.filter(c => {
+  const filteredClients = sortedClients.filter(c => {
     const term = normalizeForSearch(searchTerm);
     const normalizedName = normalizeForSearch(c.name || '');
     const nameMatches = normalizedName.split(' ').some(w => w.startsWith(term));

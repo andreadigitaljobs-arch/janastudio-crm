@@ -40,16 +40,33 @@ export const AuthProvider = ({ children }) => {
       return null;
     }
 
-    const staffProfile = await dataService.getStaffByAuthUserId(authUser.id);
-    if (!staffProfile) {
-      await dataService.supabase.auth.signOut();
-      updateAndCacheUser(null);
+    try {
+      const staffProfile = await dataService.getStaffByAuthUserId(authUser.id);
+      if (!staffProfile) {
+        await dataService.supabase.auth.signOut();
+        updateAndCacheUser(null);
+        return null;
+      }
+
+      const sessionUser = toSessionUser(staffProfile, authUser);
+      updateAndCacheUser(sessionUser);
+      return sessionUser;
+    } catch (error) {
+      console.error('Failed to load staff profile from DB, using cache if available:', error);
+      const cached = localStorage.getItem('jana_auth_user');
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (parsed && parsed.auth_user_id === authUser.id) {
+            setUser(parsed);
+            return parsed;
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
       return null;
     }
-
-    const sessionUser = toSessionUser(staffProfile, authUser);
-    updateAndCacheUser(sessionUser);
-    return sessionUser;
   };
 
   useEffect(() => {
@@ -64,11 +81,14 @@ export const AuthProvider = ({ children }) => {
           if (session?.user) {
             await loadStaffProfile(session.user);
           } else {
-            updateAndCacheUser(null);
+            const hasSessionKey = Object.keys(localStorage).some(key => key.startsWith('sb-') && key.endsWith('-auth-token'));
+            if (!hasSessionKey) {
+              updateAndCacheUser(null);
+            }
           }
         }
       } catch (error) {
-        console.error('Auth session error:', error);
+        console.error('Auth session initialization failed:', error);
       } finally {
         if (mounted) setLoading(false);
       }
@@ -80,7 +100,9 @@ export const AuthProvider = ({ children }) => {
       if (!mounted) return;
 
       if (!session?.user) {
-        updateAndCacheUser(null);
+        if (_event === 'SIGNED_OUT') {
+          updateAndCacheUser(null);
+        }
         setLoading(false);
         return;
       }
