@@ -170,6 +170,8 @@ const CustomSelect = ({ value, onChange, options, isMobile }) => {
 
 const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId, rates, onNavigate }) => {
   const { user } = useAuth();
+  const roleKind = getRoleKind(user?.role);
+  const isWorker = roleKind === 'worker';
   const { showToast } = useNotifs();
   const { confirm } = useDialog();
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
@@ -728,8 +730,8 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                         </div>
 
                         {/* Card Middle: Contacts & Visits */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '12px', alignItems: 'center' }}>
-                          {client.phone ? (
+                        <div style={{ display: 'flex', justifyContent: isWorker ? 'flex-end' : 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '12px', alignItems: 'center' }}>
+                          {client.phone && !isWorker ? (
                             <a
                               href={`tel:${client.phone}`}
                               onClick={(e) => e.stopPropagation()}
@@ -741,9 +743,9 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                             >
                               <Phone size={14} color="var(--pink-primary)" /> {client.phone}
                             </a>
-                          ) : (
+                          ) : !isWorker ? (
                             <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '500' }}>Sin teléfono</span>
-                          )}
+                          ) : null}
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <span style={{ fontSize: '0.85rem', fontWeight: '750', color: 'var(--text-secondary)' }}>
                               {client.total_visits || 0} visitas
@@ -1133,8 +1135,8 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                       <thead>
                         <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'rgba(160, 80, 106, 0.08)' }}>
                           <th style={{ padding: '12px 6px 12px 16px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cliente</th>
-                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cédula / ID</th>
-                          <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contacto</th>
+                          {!isWorker && <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cédula / ID</th>}
+                          {!isWorker && <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contacto</th>}
                           <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Última visita</th>
                           <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Próxima cita</th>
                           <th style={{ padding: '12px 6px', fontSize: '10.5px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Historial</th>
@@ -1153,12 +1155,16 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                                 </div>
                               </div>
                             </td>
-                            <td style={{ padding: '10px 6px' }}>
-                              <div className="skeleton-bar" style={{ width: '70px', height: '10px' }} />
-                            </td>
-                            <td style={{ padding: '10px 6px' }}>
-                              <div className="skeleton-bar" style={{ width: '90px', height: '10px' }} />
-                            </td>
+                            {!isWorker && (
+                              <td style={{ padding: '10px 6px' }}>
+                                <div className="skeleton-bar" style={{ width: '70px', height: '10px' }} />
+                              </td>
+                            )}
+                            {!isWorker && (
+                              <td style={{ padding: '10px 6px' }}>
+                                <div className="skeleton-bar" style={{ width: '90px', height: '10px' }} />
+                              </td>
+                            )}
                             <td style={{ padding: '10px 6px', display: windowWidth < 900 ? 'none' : 'table-cell' }}>
                               <div className="skeleton-bar" style={{ width: '60px', height: '10px' }} />
                             </td>
@@ -1187,8 +1193,8 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                       <thead>
                         <tr style={{ borderBottom: '1px solid var(--border-color)', background: 'rgba(160, 80, 106, 0.08)' }}>
                           <th style={{ padding: '16px 6px 16px 16px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Cliente</th>
-                          <th style={{ padding: '16px 6px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Cédula / ID</th>
-                          <th style={{ padding: '16px 6px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Contacto</th>
+                          {!isWorker && <th style={{ padding: '16px 6px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Cédula / ID</th>}
+                          {!isWorker && <th style={{ padding: '16px 6px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>Contacto</th>}
                           <th style={{ padding: '16px 6px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Última visita</th>
                           <th style={{ padding: '16px 6px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Próxima cita</th>
                           <th style={{ padding: '16px 6px', fontSize: '11px', fontWeight: '800', color: 'var(--magenta-primary)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>Historial</th>
@@ -1240,23 +1246,27 @@ const ClientModule = ({ isMobile, isTablet, clients, onRefresh, initialClientId,
                                   </div>
                                 </div>
                               </td>
-                              <td style={{ padding: '12px 6px', fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>
-                                V-{client.id_card || '00.000.000'}
-                              </td>
-                              <td style={{ padding: '12px 6px', whiteSpace: 'nowrap' }}>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                                  {client.phone && (
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12.5px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
-                                      <Phone size={11} color="var(--pink-primary)" /> {client.phone}
-                                    </div>
-                                  )}
-                                  {client.email && (
-                                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
-                                      {client.email}
-                                    </div>
-                                  )}
-                                </div>
-                              </td>
+                              {!isWorker && (
+                                <td style={{ padding: '12px 6px', fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '600', whiteSpace: 'nowrap' }}>
+                                  V-{client.id_card || '00.000.000'}
+                                </td>
+                              )}
+                              {!isWorker && (
+                                <td style={{ padding: '12px 6px', whiteSpace: 'nowrap' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                                    {client.phone && (
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12.5px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
+                                        <Phone size={11} color="var(--pink-primary)" /> {client.phone}
+                                      </div>
+                                    )}
+                                    {client.email && (
+                                      <div style={{ fontSize: '11px', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
+                                        {client.email}
+                                      </div>
+                                    )}
+                                  </div>
+                                </td>
+                              )}
                               <td style={{ padding: '12px 6px', fontSize: '12.5px', color: 'var(--text-muted)', whiteSpace: 'nowrap', display: windowWidth < 900 ? 'none' : 'table-cell' }}>
                                 {client.last_visit ? new Date(client.last_visit).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
                               </td>
@@ -4336,7 +4346,7 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                 {/* Name & Cédula */}
                 <div style={{ flex: 1, minWidth: 0, paddingBottom: '2px' }}>
                   <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '900', color: 'white', lineHeight: '1.2', letterSpacing: '-0.3px' }}>{client.name}</h3>
-                  <p style={{ margin: '3px 0 0', color: 'rgba(255,255,255,0.75)', fontSize: '11px', fontWeight: '600' }}>V-{client.id_card || '00.000.000'}</p>
+                  {!isWorker && <p style={{ margin: '3px 0 0', color: 'rgba(255,255,255,0.75)', fontSize: '11px', fontWeight: '600' }}>V-{client.id_card || '00.000.000'}</p>}
                 </div>
 
                 {/* Visits badge */}
@@ -4352,7 +4362,7 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
             </div>
 
             {/* Action Buttons */}
-            {client.phone && (
+            {client.phone && !isWorker && (
               <div style={{ display: 'flex', gap: '8px', padding: '14px 20px 0' }}>
                 <a 
                   href={`tel:${client.phone}`}
@@ -4387,7 +4397,7 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
             <div style={{ padding: '14px 20px 20px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                 <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Información</span>
-                {!isEditing && (
+                {!isEditing && !isWorker && (
                   <button
                     onClick={() => setIsEditing(true)}
                     className="btn-interactive mi-btn"
@@ -4580,9 +4590,11 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
 
                 return (
                   <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', alignItems: 'center', margin: '8px 0 10px' }}>
-                    <span style={{ fontSize: '11px', fontWeight: '750', color: 'var(--magenta-primary)', background: 'rgba(160,80,106,0.08)', padding: '3px 10px', borderRadius: '20px' }}>
-                      V-{client.id_card || '00.000.000'}
-                    </span>
+                    {!isWorker && (
+                      <span style={{ fontSize: '11px', fontWeight: '750', color: 'var(--magenta-primary)', background: 'rgba(160,80,106,0.08)', padding: '3px 10px', borderRadius: '20px' }}>
+                        V-{client.id_card || '00.000.000'}
+                      </span>
+                    )}
                     <span style={{ 
                       fontSize: '10px', fontWeight: '800', color: statusColor, 
                       backgroundColor: statusBg, border: `1px solid ${statusBorder}`,
@@ -4594,12 +4606,14 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                 );
               })()}
 
-              <div style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: '600' }}>
-                <Phone size={13} color="var(--magenta-primary)" /> {client.phone || 'Sin teléfono'}
-              </div>
+              {!isWorker && (
+                <div style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: '600' }}>
+                  <Phone size={13} color="var(--magenta-primary)" /> {client.phone || 'Sin teléfono'}
+                </div>
+              )}
 
               {/* Quick Communication Actions (WhatsApp & Call) */}
-              {client.phone && (
+              {client.phone && !isWorker && (
                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '14px' }}>
                     <a 
                       href={`tel:${client.phone}`}
@@ -4665,7 +4679,7 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                 );
               })()}
 
-              {!isEditing && (
+              {!isEditing && !isWorker && (
                 <button
                   onClick={() => setIsEditing(true)}
                   className="btn-interactive mi-btn"
@@ -4733,7 +4747,7 @@ const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, 
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                       <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>Notas rápidas</p>
-                      {!editingNotes && (
+                      {!editingNotes && !isWorker && (
                         <button
                           onClick={() => setEditingNotes(true)}
                           style={{ background: 'none', border: 'none', color: 'var(--magenta-primary)', cursor: 'pointer', padding: '2px 4px', display: 'flex', alignItems: 'center' }}
