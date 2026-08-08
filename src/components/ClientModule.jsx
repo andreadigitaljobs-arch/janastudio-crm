@@ -1945,6 +1945,9 @@ const getWhatsAppNumber = (phone) => {
 };
 
 const ClientDetail = ({ isMobile, isTablet, client, onBack, onDelete, onUpdate, onNavigate }) => {
+  const { user } = useAuth();
+  const roleKind = getRoleKind(user?.role);
+  const isWorker = roleKind === 'worker';
   const { showToast } = useNotifs();
   const { confirm } = useDialog();
   const containerRef = useRef(null);
